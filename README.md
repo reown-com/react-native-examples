@@ -2,7 +2,7 @@
 
 React Native examples implementing WalletConnect v2
 
-Catalogue of wallet and dapp examples WalletConnect's various SDKs via React Native.Each example contains its own README with further instructions and explanations.
+Catalogue of wallet and dapp examples WalletConnect's various SDKs via React Native. Each example contains its own README with further instructions and explanations.
 
 ## Wallets
 
