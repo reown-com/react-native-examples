@@ -1,0 +1,29 @@
+name: release-ios-appkit-internal
+on: workflow_dispatch
+
+jobs:
+  release-internal:
+    uses: ./.github/workflows/release-ios-base.yaml
+    with:
+      name: AppKit React Native
+      root-path: 'dapps/W3MWagmi'
+      xcode-project-path: 'dapps/W3MWagmi/ios/W3MWagmi.xcodeproj'
+      xcode-workspace-path: 'dapps/W3MWagmi/ios/W3MWagmi.xcworkspace'
+      release-type: 'internal'
+      scheme-name: 'W3MWagmi Internal'
+      bundle-id: 'com.walletconnect.web3modal.rnsample.internal'
+      apple-id: '6479817037'
+    secrets:
+      project-id: ${{ secrets.ENV_PROJECT_ID }}
+      relay-url: ${{ secrets.ENV_RELAY_URL }}
+      sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
+      sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
+      apple-username: ${{ secrets.APPLE_USERNAME }}
+      apple-key-id: ${{ secrets.APPLE_KEY_ID }}
+      apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
+      apple-issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
+      match-username: ${{ secrets.MATCH_USERNAME }}
+      match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+      match-git-url: ${{ secrets.MATCH_GIT_URL }}
+      match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
+

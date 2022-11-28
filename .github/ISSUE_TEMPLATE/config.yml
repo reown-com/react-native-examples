@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+    - name: 📱 @reown/appkit-react-native Issue
+      url: https://github.com/reown-com/appkit-react-native/issues
+      about: Please report @reown/appkit-react-native issues in it's specific repository.
+    - name: 🤔 Questions and Help
+      url: https://github.com/orgs/reown-com/discussions
+      about: Looking for help with your app? Please refer to the Reown community's support resources.

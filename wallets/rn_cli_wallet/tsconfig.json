@@ -1,0 +1,22 @@
+{
+  "extends": "@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/assets/*": ["./src/assets/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/constants/*": ["./src/constants/*"],
+      "@/context/*": ["./src/context/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/navigation/*": ["./src/navigation/*"],
+      "@/navigators/*": ["./src/navigators/*"],
+      "@/icons/*": ["./src/icons/*"],
+      "@/screens/*": ["./src/screens/*"],
+      "@/modals/*": ["./src/modals/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/provider/*": ["./src/provider/*"],
+      "@/store/*": ["./src/store/*"]
+    }
+  }
+}

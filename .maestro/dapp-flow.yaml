@@ -1,0 +1,8 @@
+# flow.yaml
+
+appId: "com.walletconnect.modal.viem"
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Connect"
+    timeout: 60000

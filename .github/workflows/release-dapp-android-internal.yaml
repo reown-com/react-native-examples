@@ -1,0 +1,21 @@
+name: release-android-appkit-internal
+on: workflow_dispatch
+
+jobs:
+  release-internal:
+    uses: ./.github/workflows/release-android-base.yaml
+    with:
+      name: AppKit React Native
+      root-path: 'dapps/W3MWagmi'
+      release-type: 'internal'
+      output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk'
+    secrets:
+      project-id: ${{ secrets.ENV_PROJECT_ID }}
+      relay-url: ${{ secrets.ENV_RELAY_URL }}
+      sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
+      sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
+      secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+      firebase-app-id: ${{ secrets.W3M_WAGMI_ANDROID_INTERNAL_FIREBASE_APP_ID }}
+      gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+      keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
+      keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}

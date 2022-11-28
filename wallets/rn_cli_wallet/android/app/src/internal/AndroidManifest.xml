@@ -1,0 +1,21 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+	<application>
+			<activity android:name=".MainActivity">
+				<intent-filter>
+          <data android:scheme="rn-web3wallet-internal" />
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+        </intent-filter>
+        <intent-filter android:autoVerify="true">
+          <data android:scheme="https"/>
+          <data android:host="appkit-lab.reown.com"/>
+					<data android:host="dev.appkit-lab.reown.com"/>
+          <data android:pathPrefix="/rn_walletkit_internal"/>
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+        </intent-filter>
+			</activity>
+	</application>
+</manifest>

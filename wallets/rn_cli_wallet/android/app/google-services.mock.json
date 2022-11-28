@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1234",
+    "project_id": "react-native-wallet",
+    "storage_bucket": "react-native-wallet-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:test:test",
+        "android_client_info": {
+          "package_name": "com.walletconnect.web3wallet.rnsample.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "...",
+          "client_type": 1
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "..."
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}

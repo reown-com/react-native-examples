@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
+    <application
+        android:usesCleartextTraffic="true"
+        tools:targetApi="28"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".MainActivity">
+					<intent-filter>
+						<data android:scheme="rn-web3wallet-debug" />
+						<action android:name="android.intent.action.VIEW" />
+						<category android:name="android.intent.category.DEFAULT" />
+						<category android:name="android.intent.category.BROWSABLE" />
+					</intent-filter>
+					<intent-filter android:autoVerify="true">
+						<action android:name="android.intent.action.VIEW" />
+						<category android:name="android.intent.category.DEFAULT" />
+						<category android:name="android.intent.category.BROWSABLE" />
+						<data android:scheme="https"/>
+						<data android:host="appkit-lab.reown.com"/>
+						<data android:host="dev.appkit-lab.reown.com"/>
+						<data android:pathPrefix="/rn_walletkit_debug"/>
+					</intent-filter>
+			</activity>
+    </application>
+</manifest>

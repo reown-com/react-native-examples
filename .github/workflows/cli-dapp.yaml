@@ -1,0 +1,29 @@
+name: dapp-modal-android
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:    
+  maestro-cloud:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dapps/ModalViem
+    outputs:
+      app: app/build/outputs/apk/release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'zulu'
+      - run: touch .env && echo "ENV_PROJECT_ID=${{ secrets.ENV_PROJECT_ID }}\nENV_RELAY_URL=${{ secrets.ENV_RELAY_URL }}\nENV_SENTRY_DSN=${{ secrets.WCM_SENTRY_DSN }}" >> .env
+      - run: touch ./android/sentry.properties && echo "${{ secrets.WCM_SENTRY_FILE }}" >> ./android/sentry.properties
+      - run: npm install -g yarn
+      - run: yarn
+      - run: yarn android:build
+      - uses: mobile-dev-inc/action-maestro-cloud@v1
+        with:
+          api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
+          app-file: dapps/ModalViem/android/app/build/outputs/apk/release/app-release.apk

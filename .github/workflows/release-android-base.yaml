@@ -1,0 +1,102 @@
+name: release-android-base
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        description: 'Name of the project'
+        required: true
+        type: string
+      root-path:
+        description: 'Path of the react-native project'
+        required: true
+        type: string
+      release-type:
+        description: 'Release type of the project (debug/internal/production)'
+        default: 'internal'
+        type: string
+      output-path:
+        description: 'Path to get the APK file'
+        required: true
+        type: string
+    secrets:
+      project-id:
+        description: 'Reown Cloud ID'
+        required: true
+      firebase-app-id:
+        required: true
+      gsa-key:
+        required: true
+      relay-url:
+        description: 'Relay URL'
+        required: false
+      sentry-dsn:
+        required: true
+      sentry-file:
+        required: true
+      secrets-file:
+        required: true
+      keystore-name:
+        required: true
+      keystore:
+        required: true
+      google-services-file:
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/ci-setup
+        with:
+          root-path: ${{ inputs.root-path }}
+
+      - name: Install Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          architecture: x86_64
+
+      - name: Create env file
+        run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+      
+      - name: Add Sentry file
+        run: touch ${{ inputs.root-path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/android/sentry.properties
+
+      - name: Add Secrets file
+        run: touch ${{ inputs.root-path }}/android/secrets.properties && echo "${{ secrets.secrets-file }}" >> ${{ inputs.root-path }}/android/secrets.properties
+
+      - name: Add Keystore file
+        run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
+
+      - name: Add Google Services file
+        env:
+          google-services-file: ${{ secrets.google-services-file }}
+        if: ${{ env.google-services-file != '' }}
+        run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/android/app/google-services.json
+      
+      - name: Build APK
+        run: |
+          if [ ${{ inputs.release-type }} = 'internal' ]; then
+            cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal
+          else
+            cd ${{ inputs.root-path }} && yarn install && yarn run android:build
+          fi
+  
+      - name: Setup Firebase
+        uses: w9jds/setup-firebase@main
+        with:
+          tools-version: 13.0.1
+          gcp_sa_key: ${{ secrets.gsa-key }}
+      
+      - name: Upload APK
+        env:
+          APP_ID: ${{ secrets.firebase-app-id }}
+        run: |
+          firebase appdistribution:distribute ${{ inputs.output-path }} --app $APP_ID --release-notes "${{ inputs.name }} ${{ inputs.release-type }} release" --groups "flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers"
+        

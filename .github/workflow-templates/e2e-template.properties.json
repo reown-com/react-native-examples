@@ -1,0 +1,4 @@
+{
+    "name": "e2e workflow",
+    "description": "Runs e2e tests on a project"
+}

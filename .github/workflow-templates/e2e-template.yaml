@@ -1,0 +1,33 @@
+name: E2E Workflow
+
+on:
+  push:
+   branches: [ $default-branch ]
+  pull_requests:
+   branches: [ $default-branch ]
+
+jobs:
+  name: ${{ vars.JOB_NAME}}
+  maestro-cloud:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ vars.APP_DIR }}
+    outputs:
+      app: app/build/outputs/apk/debug
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'temurin'
+          cache: gradle      
+      - run: touch .env && echo "ENV_PROJECT_ID=${{ secrets.ENV_PROJECT_ID }}\nENV_RELAY_URL=${{ secrets.ENV_RELAY_URL }}\nENV_SENTRY_DSN=${{ secrets.ENV_SENTRY_DSN }}" >> .env
+      - run: touch ./android/sentry.properties && echo "${{ secrets.ENV_SENTRY_FILE }}" >> ./android/sentry.properties
+      - run: npm install -g yarn
+      - run: yarn
+      - run: yarn android:build
+      - uses: mobile-dev-inc/action-maestro-cloud@v1
+        with:
+          api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
+          app-file: ${{ vars.APP_DIR }}/android/app/build/outputs/apk/release/app-release.apk
