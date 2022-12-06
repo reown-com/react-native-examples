@@ -1,15 +1,39 @@
-### React Native CLI Wallet
+## React Native CLI Wallet
 
-This is a React Native Application that uses the native react-native cli client.
+This is a React Native Application that uses the `react-native` CLI client.
 
-Add more...
+### Installation
 
-### Installation (iOS)
+Inside this directory (`wallets/rn_cli_wallet`), install the React Native dependencies:
 
-- `yarn`
-- `pod install` in `ios` folder
+```bash
+yarn
+```
+
+### Setup (iOS)
+
+If CocoaPods is not installed on your system yet:
+
+```bash
+brew install cocoapods
+```
+
+Install iOS deps:
+
+```bash
+cd ios
+pod install
+```
+
+To run:
+
 - `npx react-native run-ios`
 
-### Installation (Android)
+### Setup (Android)
 
-- Add later.
+1. Follow the [official Environment Setup guidance](https://reactnative.dev/docs/environment-setup) for Android (select `Android` for `Target OS`) to install Android Studio etc.
+2. Set up either a virtual or physical device as outlined in the _Preparing the Android device_ section of the guidance.
+
+To run:
+
+- `npx react-native run-android`
