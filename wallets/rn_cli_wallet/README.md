@@ -10,6 +10,12 @@ Inside this directory (`wallets/rn_cli_wallet`), install the React Native depend
 yarn
 ```
 
+Set up your own `.env` file from the example and **replace `ENV_PROJECT_ID` with your own ProjectId from https://cloud.walletconnect.com**
+
+```bash
+cp .env.example .env
+```
+
 ### Setup (iOS)
 
 If CocoaPods is not installed on your system yet:
