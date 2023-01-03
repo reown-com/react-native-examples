@@ -17,10 +17,6 @@ Catalogue of wallet and dapp examples WalletConnect's various SDKs via React Nat
 - React Native CLI Wallet
 - React Native Expo Wallet
 
-## Workflow Suggestions
-
-- Build debugging all the SDKs into both in separate tabs (Auth / Sign / Chat / Push etc)
-
 ## Support
 
 Feel free to reach out to WalletConnect via [Discord](https://discord.com/invite/kdTQHQ6AFQ) in the Developer Support channels.
