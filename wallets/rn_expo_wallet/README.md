@@ -1,6 +1,6 @@
 ## React Native Expo Wallet
 
-This is a React Native Application that uses the `expo` CLI client.
+This is a React Native Application that uses the `expo` client.
 
 ### Installation
 
