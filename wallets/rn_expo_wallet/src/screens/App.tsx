@@ -43,9 +43,9 @@ export default function App() {
     <View style={styles.container}>
       <Text>WalletConnect</Text>
       <Text>Sign V2 Expo Examples</Text>
-      <Text>Connected: {signClient ? 'true' : 'false'} </Text>
+      <Text>SignClient Initialized: {signClient ? 'true' : 'false'} </Text>
       <Button
-        title={!signClient ? 'Connect' : 'Connected'}
+        title={!signClient ? 'Initialize' : 'Initialized'}
         onPress={() => createClient()}
       />
     </View>
