@@ -17,14 +17,12 @@
     "@types/react-native": "~0.70.6",
     "@walletconnect/react-native-compat": "^2.1.4",
     "@walletconnect/sign-client": "^2.1.4",
-    "big-integer": "^1.6.51",
     "expo": "~47.0.9",
     "expo-status-bar": "~1.4.2",
     "react": "18.1.0",
     "react-native": "0.70.5",
     "react-native-async-storage": "^0.0.1",
-    "react-native-get-random-values": "^1.8.0",
-    "text-encoding": "^0.7.0"
+    "react-native-get-random-values": "^1.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
