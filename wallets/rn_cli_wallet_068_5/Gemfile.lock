@@ -85,7 +85,7 @@ GEM
       colored2 (~> 3.1)
       nanaimo (~> 0.3.0)
       rexml (~> 3.2.4)
-    zeitwerk (2.6.6)
+    zeitwerk (2.6.5)
 
 PLATFORMS
   ruby
@@ -94,7 +94,7 @@ DEPENDENCIES
   cocoapods (~> 1.11, >= 1.11.2)
 
 RUBY VERSION
-   ruby 2.7.5p203
+   ruby 2.7.4p191
 
 BUNDLED WITH
-   2.1.4
+   2.2.27
