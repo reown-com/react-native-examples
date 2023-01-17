@@ -12,13 +12,14 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.11",
     "@tsconfig/react-native": "^2.0.3",
-    "@walletconnect/react-native-compat": "^2.1.4",
-    "@walletconnect/web3wallet": "^1.0.0",
+    "@walletconnect/react-native-compat": "2.2.1",
+    "@walletconnect/sign-client": "2.2.1",
     "big-integer": "^1.6.51",
     "react": "17.0.2",
     "react-native": "0.68.5",
     "react-native-async-storage": "^0.0.1",
     "react-native-get-random-values": "^1.8.0",
+    "react-native-linear-gradient": "^2.6.2",
     "text-encoding": "^0.7.0"
   },
   "devDependencies": {
