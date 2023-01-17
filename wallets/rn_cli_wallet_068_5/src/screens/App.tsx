@@ -129,6 +129,7 @@ const App = () => {
     }
   }, [signClient, WCURI, approvalModal]);
 
+  //@notice: Rendering of Heading + ScrollView of Conenctions + Action Button
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -163,21 +164,6 @@ const App = () => {
               handlePress={() => setApprovalModal(true)}
             />
           </View>
-
-          {/* <Button
-            title={'Connect'}
-            onPress={() =>
-              Alert.alert('Alert Title', 'My Alert Msg', [
-                {
-                  text: 'Cancel',
-                  onPress: () => console.log('Cancel Pressed'),
-                  style: 'cancel',
-                },
-                {text: 'OK', onPress: () => console.log('OK Pressed')},
-              ])
-            }
-            color="#841584"
-          /> */}
         </View>
       </View>
     </SafeAreaView>
