@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.11",
+    "@react-navigation/native": "^6.1.2",
+    "@react-navigation/native-stack": "^6.9.8",
     "@tsconfig/react-native": "^2.0.3",
     "@walletconnect/react-native-compat": "2.2.1",
     "@walletconnect/sign-client": "2.2.1",
@@ -20,6 +22,8 @@
     "react-native-async-storage": "^0.0.1",
     "react-native-get-random-values": "^1.8.0",
     "react-native-linear-gradient": "^2.6.2",
+    "react-native-safe-area-context": "^4.4.1",
+    "react-native-screens": "^3.18.2",
     "text-encoding": "^0.7.0"
   },
   "devDependencies": {

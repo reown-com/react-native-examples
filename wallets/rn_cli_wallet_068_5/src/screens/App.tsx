@@ -105,7 +105,7 @@ const App = () => {
   // @notice Init pairing
   async function pair(params: {uri: string}) {
     const pairing = await signClient.pair({uri: params.uri});
-    console.log('pairing', pairing);
+    // console.log('pairing', pairing);
     setApprovalModal(true);
     return pairing;
   }
@@ -113,7 +113,7 @@ const App = () => {
   // @notice Function to handle the pairing of the client. To init the modal
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-      console.log('SessionProposalMade', {proposal});
+      // console.log('SessionProposalMade', {proposal});
       setPairedProposal(proposal);
     },
     [],
@@ -138,6 +138,10 @@ const App = () => {
       />
       <View style={{padding: 16, flex: 1}}>
         <Text style={styles.heading}>Connections</Text>
+        {/* <Text style={styles.greyText}>
+          Apps you connect with will appear here. To connect 📱 scan or 📋 paste
+          the code that is displayed in the app.
+        </Text> */}
 
         <WalletConnectModal
           proposal={pairedProposal}
@@ -163,6 +167,23 @@ const App = () => {
               copyImage={false}
               handlePress={() => setApprovalModal(true)}
             />
+            <CircleActionButton
+              copyImage={false}
+              handlePress={() =>
+                Alert.alert('Alert Title', 'My Alert Msg', [
+                  {
+                    text: 'Ask me later',
+                    onPress: () => console.log('Ask me later pressed'),
+                  },
+                  {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                  {text: 'OK', onPress: () => console.log('OK Pressed')},
+                ])
+              }
+            />
           </View>
         </View>
       </View>
@@ -176,6 +197,11 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 34,
     fontWeight: 'bold',
+  },
+  greyText: {
+    fontSize: 15,
+    lineHeight: 21,
+    color: '#798686',
   },
   container: {
     height: '100%',
