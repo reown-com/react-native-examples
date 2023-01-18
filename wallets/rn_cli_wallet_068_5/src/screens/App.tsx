@@ -9,6 +9,7 @@ import {
   View,
   TextInput,
   StyleSheet,
+  ImageBackground,
 } from 'react-native';
 
 import {SignClientTypes} from '@walletconnect/types';
@@ -22,7 +23,11 @@ import {SessionTypes} from '@walletconnect/types';
 import '@walletconnect/react-native-compat';
 import {WalletConnectModal} from '../modals/WalletConnectModal';
 
-import {CircleActionButton} from '../components/CircleActionButton';
+import {NavigationContainer} from '@react-navigation/native';
+import {GetStartedButton} from '../components/GetStartedButton';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import OnboardingScreen from './OnboardingScreen';
+import HomeScreen from './HomeScreen';
 
 // Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');
@@ -34,229 +39,52 @@ Object.assign(global, {
   BigInt: BigInt,
 });
 
+const Stack = createNativeStackNavigator();
+
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
-  // const [web3WalletClient, setWeb3WalletClient] = useState<IWeb3Wallet>();
-  const [signClient, setSignClient] = useState<SignClient>();
-  const [approvalModal, setApprovalModal] = useState(false);
-  const [pairedProposal, setPairedProposal] = useState();
-  const [WCURI, setWCUri] = useState<string>();
-  const ETH_ADDRESS_HARDCODE = '0xa36B1F77296081884d0Ae102a888cb7df1aA57Ed';
 
   const backgroundStyle = {
     flex: 1,
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  async function createSignClient() {
-    try {
-      const client = await SignClient.init({
-        projectId: '43a917ec9ac926c2e20f0104e96eacde',
-        relayUrl: 'wss://relay.walletconnect.com',
-        metadata: {
-          name: 'React Native Example',
-          description: 'React Native Web3Wallet for WalletConnect',
-          url: 'https://walletconnect.com/',
-          icons: ['https://avatars.githubusercontent.com/u/37784886'],
-        },
-      });
-      setSignClient(client);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async function handleAccept() {
-    // Get required proposal data
-    const {id, params} = pairedProposal;
-    const {requiredNamespaces, relays} = params;
-
-    if (pairedProposal) {
-      const namespaces: SessionTypes.Namespaces = {};
-      Object.keys(requiredNamespaces).forEach(key => {
-        // ToDO: Revisit for the other accounts we choose.
-        const accounts = [`eip155:1:${ETH_ADDRESS_HARDCODE}`];
-        // requiredNamespaces[key].chains.map((chain) => {
-        // 	selectedAccounts[key].map((acc) =>
-        // 		accounts.push(`${chain}:${acc}`),
-        // 	)
-        // })
-        namespaces[key] = {
-          accounts,
-          methods: requiredNamespaces[key].methods,
-          events: requiredNamespaces[key].events,
-        };
-      });
-
-      const {acknowledged} = await signClient.approve({
-        id: id,
-        relayProtocol: relays[0].protocol,
-        namespaces,
-      });
-      // console.log('Session Proposal id', id);
-      // console.log('Session Proposal relayProtocol', relays[0].protocol);
-      // console.log('Session Proposal namespaces', namespaces);
-
-      setApprovalModal(false);
-      await acknowledged();
-    }
-  }
-
-  // @notice Init pairing
-  async function pair(params: {uri: string}) {
-    const pairing = await signClient.pair({uri: params.uri});
-    // console.log('pairing', pairing);
-    setApprovalModal(true);
-    return pairing;
-  }
-
-  // @notice Function to handle the pairing of the client. To init the modal
-  const onSessionProposal = useCallback(
-    (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-      // console.log('SessionProposalMade', {proposal});
-      setPairedProposal(proposal);
-    },
-    [],
-  );
-
-  const EIP155_SIGNING_METHODS = {
-    PERSONAL_SIGN: 'personal_sign',
-    ETH_SIGN: 'eth_sign',
-    ETH_SIGN_TRANSACTION: 'eth_signTransaction',
-    ETH_SIGN_TYPED_DATA: 'eth_signTypedData',
-    ETH_SIGN_TYPED_DATA_V3: 'eth_signTypedData_v3',
-    ETH_SIGN_TYPED_DATA_V4: 'eth_signTypedData_v4',
-    ETH_SEND_RAW_TRANSACTION: 'eth_sendRawTransaction',
-    ETH_SEND_TRANSACTION: 'eth_sendTransaction',
-  };
-
-  const onSessionRequest = useCallback(
-    async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-      console.log('session_request', requestEvent);
-      // const {topic, params} = requestEvent;
-      // const {request} = params;
-      // const requestSession = signClient.session.get(topic);
-
-      // switch (request.method) {
-      //   case EIP155_SIGNING_METHODS.ETH_SIGN:
-      //   case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-      //     return ModalStore.open('SessionSignModal', {
-      //       requestEvent,
-      //       requestSession,
-      //     });
-
-      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
-      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
-      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
-      //     return ModalStore.open('SessionSignTypedDataModal', {
-      //       requestEvent,
-      //       requestSession,
-      //     });
-
-      //   case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
-      //     return ModalStore.open('SessionSendTransactionModal', {
-      //       requestEvent,
-      //       requestSession,
-      //     });
-
-      //   // case COSMOS_SIGNING_METHODS.COSMOS_SIGN_DIRECT:
-      //   // case COSMOS_SIGNING_METHODS.COSMOS_SIGN_AMINO:
-      //   //   return ModalStore.open('SessionSignCosmosModal', { requestEvent, requestSession })
-
-      //   // case SOLANA_SIGNING_METHODS.SOLANA_SIGN_MESSAGE:
-      //   // case SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION:
-      //   //   return ModalStore.open('SessionSignSolanaModal', { requestEvent, requestSession })
-
-      //   default:
-      //     return ModalStore.open('SessionUnsuportedMethodModal', {
-      //       requestEvent,
-      //       requestSession,
-      //     });
-      // }
-    },
-    [],
-  );
-
-  if (signClient) {
-    signClient.on('session_proposal', onSessionProposal);
-    signClient.on('session_request', onSessionRequest);
-  }
-
-  useEffect(() => {
-    if (!signClient) {
-      createSignClient();
-    }
-  }, [signClient, WCURI, approvalModal]);
+  const backgroundImageSrc = require('../assets/ethCalculatorBG.png');
 
   //@notice: Rendering of Heading + ScrollView of Conenctions + Action Button
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <View style={{padding: 16, flex: 1}}>
-        <Text style={styles.heading}>Connections</Text>
-        {/* <Text style={styles.greyText}>
-          Apps you connect with will appear here. To connect 📱 scan or 📋 paste
-          the code that is displayed in the app.
-        </Text> */}
-
-        <WalletConnectModal
-          proposal={pairedProposal}
-          open={setApprovalModal}
-          visible={approvalModal}
-          handleAccept={handleAccept}
-        />
-        <View style={styles.container}>
-          <Text>Web3Client: {!signClient ? 'Initialize' : 'Initialized'}</Text>
-
-          <TextInput
-            style={styles.textInput}
-            onChangeText={setWCUri}
-            value={WCURI}
-          />
-
-          <View style={styles.flexRow}>
-            <CircleActionButton
-              copyImage={true}
-              handlePress={() => pair({uri: WCURI})}
-            />
-            <CircleActionButton
-              copyImage={false}
-              handlePress={() => setApprovalModal(true)}
-            />
-            <CircleActionButton
-              copyImage={false}
-              handlePress={() =>
-                Alert.alert('Alert Title', 'My Alert Msg', [
-                  {
-                    text: 'Ask me later',
-                    onPress: () => console.log('Ask me later pressed'),
-                  },
-                  {
-                    text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                  },
-                  {text: 'OK', onPress: () => console.log('OK Pressed')},
-                ])
-              }
-            />
-          </View>
-        </View>
-      </View>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
 export default App;
 
 const styles = StyleSheet.create({
-  heading: {
+  backgroundImage: {
+    padding: 16,
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  textContainer: {
+    marginTop: 48,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  welcomeHeading: {
     fontSize: 34,
-    fontWeight: 'bold',
+    lineHeight: 41,
+    fontWeight: '700',
+    marginBottom: 10,
   },
   greyText: {
     fontSize: 15,
