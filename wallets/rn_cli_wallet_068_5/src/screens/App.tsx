@@ -119,8 +119,68 @@ const App = () => {
     [],
   );
 
+  const EIP155_SIGNING_METHODS = {
+    PERSONAL_SIGN: 'personal_sign',
+    ETH_SIGN: 'eth_sign',
+    ETH_SIGN_TRANSACTION: 'eth_signTransaction',
+    ETH_SIGN_TYPED_DATA: 'eth_signTypedData',
+    ETH_SIGN_TYPED_DATA_V3: 'eth_signTypedData_v3',
+    ETH_SIGN_TYPED_DATA_V4: 'eth_signTypedData_v4',
+    ETH_SEND_RAW_TRANSACTION: 'eth_sendRawTransaction',
+    ETH_SEND_TRANSACTION: 'eth_sendTransaction',
+  };
+
+  const onSessionRequest = useCallback(
+    async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
+      console.log('session_request', requestEvent);
+      // const {topic, params} = requestEvent;
+      // const {request} = params;
+      // const requestSession = signClient.session.get(topic);
+
+      // switch (request.method) {
+      //   case EIP155_SIGNING_METHODS.ETH_SIGN:
+      //   case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
+      //     return ModalStore.open('SessionSignModal', {
+      //       requestEvent,
+      //       requestSession,
+      //     });
+
+      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
+      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
+      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
+      //     return ModalStore.open('SessionSignTypedDataModal', {
+      //       requestEvent,
+      //       requestSession,
+      //     });
+
+      //   case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
+      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
+      //     return ModalStore.open('SessionSendTransactionModal', {
+      //       requestEvent,
+      //       requestSession,
+      //     });
+
+      //   // case COSMOS_SIGNING_METHODS.COSMOS_SIGN_DIRECT:
+      //   // case COSMOS_SIGNING_METHODS.COSMOS_SIGN_AMINO:
+      //   //   return ModalStore.open('SessionSignCosmosModal', { requestEvent, requestSession })
+
+      //   // case SOLANA_SIGNING_METHODS.SOLANA_SIGN_MESSAGE:
+      //   // case SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION:
+      //   //   return ModalStore.open('SessionSignSolanaModal', { requestEvent, requestSession })
+
+      //   default:
+      //     return ModalStore.open('SessionUnsuportedMethodModal', {
+      //       requestEvent,
+      //       requestSession,
+      //     });
+      // }
+    },
+    [],
+  );
+
   if (signClient) {
     signClient.on('session_proposal', onSessionProposal);
+    signClient.on('session_request', onSessionRequest);
   }
 
   useEffect(() => {

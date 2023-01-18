@@ -63,7 +63,7 @@ export function WalletConnectModal({
           <Text style={styles.dappTitle}>{name}</Text>
           <Text>would like to connect</Text>
           <Text style={{marginTop: 24}}>REQUESTED PERMISSIONS:</Text>
-          <Text>Chains: {chains[0]}</Text>
+          <Text>Chains: {chains?.[0]}</Text>
 
           <Text style={{marginTop: 24}}>Methods:</Text>
           <View style={styles.flexRowWrapped}>
@@ -72,11 +72,9 @@ export function WalletConnectModal({
             ))}
           </View>
           <Text style={{marginTop: 24}}>Events:</Text>
-          <View style={styles.flexRowWrapped}>
-            {events?.map((event: string) => (
-              <Text>{event}</Text>
-            ))}
-          </View>
+          {events?.map((event: string) => (
+            <Text>{event}</Text>
+          ))}
           <View style={styles.flexRow}>
             <Button onPress={handleAccept} title={'Decline'} color="red" />
             <Button onPress={handleAccept} title={'Accept'} />
@@ -112,7 +110,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: 34,
-    backgroundColor: 'rgba(242, 242, 247, 0.8)',
+    // backgroundColor: 'rgba(242, 242, 247, 0.8)',
+    backgroundColor: 'white',
     width: '90%',
     height: '50%',
   },
