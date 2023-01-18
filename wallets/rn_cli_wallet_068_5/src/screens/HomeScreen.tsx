@@ -24,6 +24,7 @@ import {WalletConnectModal} from '../modals/WalletConnectModal';
 
 import {CircleActionButton} from '../components/CircleActionButton';
 import {NavigationContainer} from '@react-navigation/native';
+import {CopyURIDialog} from '../components/CopyURIDialog';
 
 // Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');
@@ -40,12 +41,14 @@ const HomeScreen = () => {
   // const [web3WalletClient, setWeb3WalletClient] = useState<IWeb3Wallet>();
   const [signClient, setSignClient] = useState<SignClient>();
   const [approvalModal, setApprovalModal] = useState(false);
+  const [copyDialog, setCopyDialog] = useState(false);
   const [pairedProposal, setPairedProposal] = useState();
   const [WCURI, setWCUri] = useState<string>();
   const ETH_ADDRESS_HARDCODE = '0xa36B1F77296081884d0Ae102a888cb7df1aA57Ed';
 
   const backgroundStyle = {
     flex: 1,
+    padding: 16,
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
@@ -104,9 +107,11 @@ const HomeScreen = () => {
   }
 
   // @notice Init pairing
-  async function pair(params: {uri: string}) {
-    const pairing = await signClient.pair({uri: params.uri});
+  async function pair() {
+    const params = {uri: WCURI};
+    const pairing = await signClient.pair({params});
     // console.log('pairing', pairing);
+    setCopyDialog(fa);
     setApprovalModal(true);
     return pairing;
   }
@@ -188,7 +193,7 @@ const HomeScreen = () => {
     if (!signClient) {
       createSignClient();
     }
-  }, [signClient, WCURI, approvalModal]);
+  }, [signClient, WCURI, approvalModal, copyDialog]);
 
   //@notice: Rendering of Heading + ScrollView of Conenctions + Action Button
   return (
@@ -203,6 +208,15 @@ const HomeScreen = () => {
           Apps you connect with will appear here. To connect 📱 scan or 📋 paste
           the code that is displayed in the app.
         </Text> */}
+        <CopyURIDialog
+          pair={() => {
+            setCopyDialog(false);
+            // pair({uri: WCURI});
+          }}
+          wcURI={WCURI}
+          setWCUri={setWCUri}
+          visible={copyDialog}
+        />
 
         <WalletConnectModal
           proposal={pairedProposal}
@@ -213,37 +227,21 @@ const HomeScreen = () => {
         <View style={styles.container}>
           <Text>Web3Client: {!signClient ? 'Initialize' : 'Initialized'}</Text>
 
-          <TextInput
+          {/* <TextInput
             style={styles.textInput}
             onChangeText={setWCUri}
             value={WCURI}
-          />
+          /> */}
 
           <View style={styles.flexRow}>
             <CircleActionButton
               copyImage={true}
-              handlePress={() => pair({uri: WCURI})}
+              // handlePress={() => pair({uri: WCURI})}
+              handlePress={() => setCopyDialog(true)}
             />
             <CircleActionButton
               copyImage={false}
               handlePress={() => setApprovalModal(true)}
-            />
-            <CircleActionButton
-              copyImage={false}
-              handlePress={() =>
-                Alert.alert('Alert Title', 'My Alert Msg', [
-                  {
-                    text: 'Ask me later',
-                    onPress: () => console.log('Ask me later pressed'),
-                  },
-                  {
-                    text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                  },
-                  {text: 'OK', onPress: () => console.log('OK Pressed')},
-                ])
-              }
             />
           </View>
         </View>
@@ -258,6 +256,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 34,
     fontWeight: 'bold',
+    marginTop: 16,
   },
   greyText: {
     fontSize: 15,

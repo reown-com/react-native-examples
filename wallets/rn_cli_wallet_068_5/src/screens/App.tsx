@@ -24,7 +24,7 @@ import '@walletconnect/react-native-compat';
 import {WalletConnectModal} from '../modals/WalletConnectModal';
 
 import {NavigationContainer} from '@react-navigation/native';
-import {GetStartedButton} from '../components/GetStartedButton';
+import {GetStartedButton} from '../components/ConnectButton';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import OnboardingScreen from './OnboardingScreen';
 import HomeScreen from './HomeScreen';
