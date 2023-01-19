@@ -6,6 +6,7 @@ import {ConnectButton} from './ConnectButton';
 interface copyURIDialogProps {
   wcURI: string;
   setWCUri: (arg0: string) => void;
+  setVisible: () => void;
   visible: boolean;
   pair: () => void;
 }
@@ -13,8 +14,11 @@ export function CopyURIDialog({
   visible,
   wcURI,
   setWCUri,
+  setVisible,
   pair,
 }: copyURIDialogProps) {
+  console.log('visible', visible);
+
   return (
     <View>
       <Dialog.Container
@@ -25,10 +29,10 @@ export function CopyURIDialog({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          height: 260,
+          height: 250,
         }}>
         <Dialog.Title>Enter a WalletConnect URI</Dialog.Title>
-        <View style={{marginTop: 8}}>
+        <View>
           <Dialog.Description>
             To get the URI press the 📋 copy to clipboard button in wallet
             connection interfaces.
@@ -44,16 +48,17 @@ export function CopyURIDialog({
             alignItems: 'center',
           }}>
           <TextInput
+            autoFocus
             style={styles.textInput}
             onChangeText={setWCUri}
             value={wcURI}
             placeholder="wc://a13aef..."
+            enablesReturnKeyAutomatically
           />
         </View>
 
         <ConnectButton onPress={pair} />
-        {/* <Dialog.Button label="Connect" onPress={() => console.log('cancel')} /> */}
-        <Dialog.Button label="Cancel" onPress={() => console.log('delete')} />
+        <Dialog.Button label="Cancel" onPress={() => setVisible()} />
       </Dialog.Container>
     </View>
   );

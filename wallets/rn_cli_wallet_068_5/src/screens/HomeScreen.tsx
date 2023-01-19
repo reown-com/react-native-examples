@@ -9,6 +9,7 @@ import {
   View,
   TextInput,
   StyleSheet,
+  Image,
 } from 'react-native';
 
 import {SignClientTypes} from '@walletconnect/types';
@@ -106,20 +107,22 @@ const HomeScreen = () => {
     }
   }
 
+  const handleCancel = () => {
+    setCopyDialog(false);
+  };
+
   // @notice Init pairing
   async function pair() {
-    const params = {uri: WCURI};
-    const pairing = await signClient.pair({params});
-    // console.log('pairing', pairing);
-    setCopyDialog(fa);
+    // const pairing = await signClient.pair({uri: WCURI});
+    handleCancel();
     setApprovalModal(true);
-    return pairing;
+    // return pairing;
   }
 
   // @notice Function to handle the pairing of the client. To init the modal
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-      // console.log('SessionProposalMade', {proposal});
+      // setApprovalModal(true);
       setPairedProposal(proposal);
     },
     [],
@@ -139,6 +142,7 @@ const HomeScreen = () => {
   const onSessionRequest = useCallback(
     async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
       console.log('session_request', requestEvent);
+
       // const {topic, params} = requestEvent;
       // const {request} = params;
       // const requestSession = signClient.session.get(topic);
@@ -202,41 +206,40 @@ const HomeScreen = () => {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
+
+      <CopyURIDialog
+        pair={pair}
+        wcURI={WCURI}
+        setVisible={handleCancel}
+        setWCUri={setWCUri}
+        visible={copyDialog}
+      />
+
+      <WalletConnectModal
+        onModalHide={() => {
+          console.debug('hello');
+        }}
+        proposal={pairedProposal}
+        open={setApprovalModal}
+        visible={approvalModal}
+        handleAccept={handleAccept}
+      />
+
       <View style={{padding: 16, flex: 1}}>
         <Text style={styles.heading}>Connections</Text>
-        {/* <Text style={styles.greyText}>
-          Apps you connect with will appear here. To connect 📱 scan or 📋 paste
-          the code that is displayed in the app.
-        </Text> */}
-        <CopyURIDialog
-          pair={() => {
-            setCopyDialog(false);
-            // pair({uri: WCURI});
-          }}
-          wcURI={WCURI}
-          setWCUri={setWCUri}
-          visible={copyDialog}
-        />
 
-        <WalletConnectModal
-          proposal={pairedProposal}
-          open={setApprovalModal}
-          visible={approvalModal}
-          handleAccept={handleAccept}
-        />
         <View style={styles.container}>
-          <Text>Web3Client: {!signClient ? 'Initialize' : 'Initialized'}</Text>
-
-          {/* <TextInput
-            style={styles.textInput}
-            onChangeText={setWCUri}
-            value={WCURI}
-          /> */}
-
+          <Image
+            source={require('../assets/emptyStateIcon.png')}
+            style={styles.imageContainer}
+          />
+          <Text style={styles.greyText}>
+            Apps you connect with will appear here. To connect 📱 scan or 📋
+            paste the code that is displayed in the app.
+          </Text>
           <View style={styles.flexRow}>
             <CircleActionButton
-              copyImage={true}
-              // handlePress={() => pair({uri: WCURI})}
+              copyImage={false}
               handlePress={() => setCopyDialog(true)}
             />
             <CircleActionButton
@@ -262,6 +265,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 21,
     color: '#798686',
+    width: '80%',
+    textAlign: 'center',
+  },
+  imageContainer: {
+    height: 30,
+    width: 35,
+    marginBottom: 16,
   },
   container: {
     height: '100%',

@@ -22,28 +22,20 @@ export function WalletConnectModal({
   open,
   handleAccept,
 }: WalletConnectModalProps) {
-  console.log('Modal proposal', proposal);
-
   // const description = proposal.params.proposer.metadata.description;
   const name = proposal?.params?.proposer?.metadata?.name;
-  const nameSpaces = proposal?.params?.requiredNamespaces;
   const methods = proposal?.params?.requiredNamespaces.eip155.methods;
   const events = proposal?.params?.requiredNamespaces.eip155.events;
   const chains = proposal?.params?.requiredNamespaces.eip155.chains;
-  // const name = proposal?.params?.proposer?.requiredNamespaces;
-  // const url = proposal.params.proposer.metadata.url;
   const icon = proposal?.params.proposer.metadata.icons[0];
 
-  if (proposal) {
-    const {params} = proposal;
-    console.log('Modal proposal NSS:', params?.requiredNamespaces);
-
-    console.log('Modal methods2', params?.requiredNamespaces.eip155.chains);
-    console.log('Modal methods2', icon);
-  }
+  console.log('WalletConnectModal VISIBLE', visible);
 
   return (
     <Modal
+      onModalHide={() => {
+        console.debug('hello');
+      }}
       animationType="slide"
       transparent={true}
       visible={visible}
@@ -67,13 +59,13 @@ export function WalletConnectModal({
 
           <Text style={{marginTop: 24}}>Methods:</Text>
           <View style={styles.flexRowWrapped}>
-            {methods?.map((method: string) => (
-              <Text>{method}</Text>
+            {methods?.map((method: string, index: number) => (
+              <Text key={index}>{method}</Text>
             ))}
           </View>
           <Text style={{marginTop: 24}}>Events:</Text>
-          {events?.map((event: string) => (
-            <Text>{event}</Text>
+          {events?.map((event: string, index: number) => (
+            <Text key={index}>{event}</Text>
           ))}
           <View style={styles.flexRow}>
             <Button onPress={handleAccept} title={'Decline'} color="red" />
