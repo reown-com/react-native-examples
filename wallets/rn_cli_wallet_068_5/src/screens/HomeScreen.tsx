@@ -28,6 +28,7 @@ import {WalletConnectModal} from '../modals/WalletConnectModal';
 import {CircleActionButton} from '../components/CircleActionButton';
 import {NavigationContainer} from '@react-navigation/native';
 import {CopyURIDialog} from '../components/CopyURIDialog';
+import {PersonalSignModal} from '../modals/PersonalSignModal';
 
 // Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');
@@ -44,6 +45,7 @@ const HomeScreen = () => {
   // const [web3WalletClient, setWeb3WalletClient] = useState<IWeb3Wallet>();
   const [signClient, setSignClient] = useState<SignClient>();
   const [approvalModal, setApprovalModal] = useState(false);
+  const [personalSignModal, setPersonalSignModal] = useState(false);
   const [copyDialog, setCopyDialog] = useState(false);
   const [pairedProposal, setPairedProposal] = useState();
   const [WCURI, setWCUri] = useState<string>();
@@ -117,6 +119,7 @@ const HomeScreen = () => {
   async function pair() {
     const pairing = await signClient.pair({uri: WCURI});
     setCopyDialog(false);
+    setWCUri('');
     return pairing;
   }
 
@@ -141,11 +144,23 @@ const HomeScreen = () => {
 
   const onSessionRequest = useCallback(
     async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-      console.log('session_request', requestEvent);
-
-      // const {topic, params} = requestEvent;
-      // const {request} = params;
+      const {topic, params} = requestEvent;
+      const {request} = params;
       // const requestSession = signClient.session.get(topic);
+
+      // console.log('request', request);
+      // console.log('requestSession', requestSession);
+
+      switch (request.method) {
+        case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
+          setPersonalSignModal(true);
+        // console.log('requstEvent', requestEvent);
+        // console.log('requstSession', requestEvent);
+        // return ModalStore.open('SessionSignModal', {
+        //   requestEvent,
+        //   requestSession,
+        // });
+      }
 
       // switch (request.method) {
       //   case EIP155_SIGNING_METHODS.ETH_SIGN:
@@ -197,7 +212,7 @@ const HomeScreen = () => {
     if (!signClient) {
       createSignClient();
     }
-  }, [signClient, WCURI, approvalModal, copyDialog]);
+  }, [signClient, WCURI, approvalModal, copyDialog, personalSignModal]);
 
   //@notice: Rendering of Heading + ScrollView of Conenctions + Action Button
   return (
@@ -214,8 +229,14 @@ const HomeScreen = () => {
         handleAccept={handleAccept}
       />
 
+      <PersonalSignModal
+        visible={personalSignModal}
+        setVisible={setPersonalSignModal}
+      />
+
       <Modal
         isVisible={copyDialog}
+        backdropOpacity={0.4}
         onModalHide={() => {
           setTimeout(
             () => setApprovalModal(true),
