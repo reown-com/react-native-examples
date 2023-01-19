@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, TextInput, View} from 'react-native';
+import {Button, StyleSheet, TextInput, View} from 'react-native';
 import Dialog from 'react-native-dialog';
 import {ConnectButton} from './ConnectButton';
 
@@ -7,6 +7,7 @@ interface copyURIDialogProps {
   wcURI: string;
   setWCUri: (arg0: string) => void;
   setVisible: () => void;
+  setApprovalModal: (argo0: bool) => void;
   visible: boolean;
   pair: () => void;
 }
@@ -15,6 +16,7 @@ export function CopyURIDialog({
   wcURI,
   setWCUri,
   setVisible,
+  setApprovalModal,
   pair,
 }: copyURIDialogProps) {
   console.log('visible', visible);
@@ -38,7 +40,6 @@ export function CopyURIDialog({
             connection interfaces.
           </Dialog.Description>
         </View>
-
         <View
           style={{
             marginTop: 8,
@@ -56,7 +57,6 @@ export function CopyURIDialog({
             enablesReturnKeyAutomatically
           />
         </View>
-
         <ConnectButton onPress={pair} />
         <Dialog.Button label="Cancel" onPress={() => setVisible()} />
       </Dialog.Container>

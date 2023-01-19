@@ -10,7 +10,9 @@ import {
   TextInput,
   StyleSheet,
   Image,
+  Platform,
 } from 'react-native';
+import Modal from 'react-native-modal';
 
 import {SignClientTypes} from '@walletconnect/types';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
@@ -113,16 +115,14 @@ const HomeScreen = () => {
 
   // @notice Init pairing
   async function pair() {
-    // const pairing = await signClient.pair({uri: WCURI});
-    handleCancel();
-    setApprovalModal(true);
-    // return pairing;
+    const pairing = await signClient.pair({uri: WCURI});
+    setCopyDialog(false);
+    return pairing;
   }
 
   // @notice Function to handle the pairing of the client. To init the modal
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-      // setApprovalModal(true);
       setPairedProposal(proposal);
     },
     [],
@@ -207,23 +207,31 @@ const HomeScreen = () => {
         backgroundColor={backgroundStyle.backgroundColor}
       />
 
-      <CopyURIDialog
-        pair={pair}
-        wcURI={WCURI}
-        setVisible={handleCancel}
-        setWCUri={setWCUri}
-        visible={copyDialog}
-      />
-
       <WalletConnectModal
-        onModalHide={() => {
-          console.debug('hello');
-        }}
         proposal={pairedProposal}
         open={setApprovalModal}
         visible={approvalModal}
         handleAccept={handleAccept}
       />
+
+      <Modal
+        isVisible={copyDialog}
+        onModalHide={() => {
+          setTimeout(
+            () => setApprovalModal(true),
+            Platform.OS === 'ios' ? 200 : 0,
+          );
+        }}
+        backdropColor="transparent">
+        <CopyURIDialog
+          pair={pair}
+          wcURI={WCURI}
+          setVisible={handleCancel}
+          setApprovalModal={setApprovalModal}
+          setWCUri={setWCUri}
+          visible={copyDialog}
+        />
+      </Modal>
 
       <View style={{padding: 16, flex: 1}}>
         <Text style={styles.heading}>Connections</Text>
@@ -239,7 +247,7 @@ const HomeScreen = () => {
           </Text>
           <View style={styles.flexRow}>
             <CircleActionButton
-              copyImage={false}
+              copyImage={true}
               handlePress={() => setCopyDialog(true)}
             />
             <CircleActionButton
