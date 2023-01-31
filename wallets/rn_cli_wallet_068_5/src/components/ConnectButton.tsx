@@ -1,5 +1,5 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet, Image, Text} from 'react-native';
+import {TouchableOpacity, StyleSheet, Text} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface IConnectButtonProps {
@@ -24,10 +24,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    height: 34,
-    width: 220,
+    height: 46,
     marginTop: 16,
-    // marginBottom: 16,
     boxShadow:
       '0px 6px 14px -6px rgba(0, 0, 0, 0.12), 0px 10px 32px -4px rgba(0, 0, 0, 0.1)',
   },

@@ -28,6 +28,8 @@ import {GetStartedButton} from '../components/ConnectButton';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import OnboardingScreen from './OnboardingScreen';
 import HomeScreen from './HomeScreen';
+import SettingsScreen from './Settings';
+import useInitialization from '../hooks/useInitialization';
 
 // Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');
@@ -44,12 +46,9 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    flex: 1,
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  // const initialized = useInitialization();
 
-  const backgroundImageSrc = require('../assets/ethCalculatorBG.png');
+  // console.log('App Web3Wallet initialized...: ', initialized);
 
   //@notice: Rendering of Heading + ScrollView of Conenctions + Action Button
   return (
@@ -60,6 +59,7 @@ const App = () => {
         }}>
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

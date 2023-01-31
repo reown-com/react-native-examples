@@ -15,11 +15,11 @@ export function AcceptRejectButton({
     ? ['#2BEE6C', '#1DC956']
     : ['#F25A67', '#F05142'];
 
-  const buttonText = accept ? 'Accept' : 'Reject';
+  const buttonText = accept ? 'Accept' : 'Decline';
 
   return (
     <TouchableOpacity
-      style={!accept ? {marginRight: 8} : null}
+      style={!accept ? {marginRight: 20} : null}
       onPress={() => onPress()}>
       <LinearGradient colors={acceptButtonColor} style={styles.buttonContainer}>
         <Text style={styles.mainText}>{buttonText}</Text>
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 20,
     height: 56,
-    width: 150,
+    width: 160,
     boxShadow:
       '0px 6px 14px -6px rgba(0, 0, 0, 0.12), 0px 10px 32px -4px rgba(0, 0, 0, 0.1)',
   },

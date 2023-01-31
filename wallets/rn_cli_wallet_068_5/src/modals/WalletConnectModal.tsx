@@ -2,14 +2,28 @@ import React from 'react';
 import {Text, Button, View, StyleSheet, Image} from 'react-native';
 import Modal from 'react-native-modal';
 import {AcceptRejectButton} from '../components/AcceptRejectButton';
+import {Events} from '../components/MethodsModal/Events';
+import {Methods} from '../components/MethodsModal/Methods';
+import {ModalHeader} from '../components/MethodsModal/ModalHeader';
 import {Tag} from '../components/Tag';
 
 interface WalletConnectModalProps {
   proposal: any; //ToDo: fix.
   visible: boolean;
   open: (arg0: boolean) => void;
-  handleAccept: (arg0: any) => void;
+  handleAccept: () => void;
 }
+
+/*
+     @notice: Proposal Modal for initiating the pair()
+     @params: proposal, visible, open, handleAccept
+
+     Rendering
+      1. ModalHeader
+      2. Requested Permissions Text
+      3. Chain + Methods + Events
+      4. Accept/Reject Buttons
+  */
 
 export function WalletConnectModal({
   proposal,
@@ -22,78 +36,34 @@ export function WalletConnectModal({
   const methods = proposal?.params?.requiredNamespaces.eip155.methods;
   const events = proposal?.params?.requiredNamespaces.eip155.events;
   const chains = proposal?.params?.requiredNamespaces.eip155.chains;
-  const icon = proposal?.params.proposer.metadata.icons[0];
+  // const icon = proposal?.params.proposer.metadata.icons[0];
 
   return (
-    <Modal isVisible={visible} backdropOpacity={0.6}>
+    <Modal
+      isVisible={visible}
+      backdropOpacity={0.6}
+      onTouchEnd={() => open(false)}>
       <View style={styles.container}>
         <View style={styles.modalContainer}>
-          {/* <View
-            style={{
-              height: 60,
-              width: '100%',
-              borderWidth: 1,
-              borderColor: 'grey',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}> */}
-          {icon && (
-            <Image
-              source={{
-                uri: 'https://avatars.githubusercontent.com/u/37784886',
-              }}
-              style={styles.imageContainer}
-            />
-          )}
-          {/* {icon && (
-            <Image
-              source={{
-                uri: 'https://avatars.githubusercontent.com/u/37784886',
-              }}
-              style={styles.imageContainer}
-            />
-          )} */}
-          {/* </View> */}
-          <Text style={styles.dappTitle}>{name}</Text>
-          <Text style={styles.wouldLikeToConnectText}>
-            would like to connect
-          </Text>
-          <Text style={styles.urlText}>{url?.slice(8)}</Text>
+          {/* // ToDo: Add in Icon param */}
+          <ModalHeader name={name} url={url} />
 
           <View style={styles.divider} />
-
           <Text style={styles.permissionsText}>REQUESTED PERMISSIONS:</Text>
 
           <View style={styles.chainContainer}>
             <Tag value={chains?.[0].toUpperCase()} grey={true} />
-
-            <View style={styles.methodsContainer}>
-              <Text style={styles.methodEventsTitle}>Methods</Text>
-              <View style={styles.flexRowWrapped}>
-                {methods?.map((method: string, index: number) => (
-                  <Tag key={index} value={method} />
-                ))}
-              </View>
-            </View>
-
-            <View style={styles.methodsContainer}>
-              <Text style={styles.methodEventsTitle}>Events</Text>
-              <View style={styles.flexRowWrapped}>
-                {events?.map((event: string, index: number) => (
-                  <Tag key={index} value={event} />
-                ))}
-              </View>
-            </View>
+            <Methods methods={methods} />
+            <Events events={events} />
           </View>
 
           <View style={styles.flexRow}>
-            <AcceptRejectButton accept={false} onPress={handleAccept} />
+            <AcceptRejectButton
+              accept={false}
+              onPress={() => console.log('reject')}
+            />
             <AcceptRejectButton accept={true} onPress={handleAccept} />
-            {/* <Button onPress={handleAccept} title={'Decline'} color="red" /> */}
-            {/* <Button onPress={handleAccept} title={'Accept'} /> */}
           </View>
-          {/* <Button onPress={() => open(false)} title={'close'} /> */}
         </View>
       </View>
     </Modal>
@@ -122,12 +92,17 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
     borderRadius: 34,
     backgroundColor: 'rgba(242, 242, 247, 0.8)',
     width: '100%',
-    paddingVertical: 16,
+    paddingTop: 30,
     minHeight: '70%',
+    position: 'absolute',
+    bottom: 44,
+  },
+  imageRowContainer: {
+    display: 'flex',
+    flexDirection: 'row',
   },
   rejectButton: {
     color: 'red',
@@ -143,19 +118,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     opacity: 0.6,
   },
-  urlText: {
-    paddingTop: 8,
-    color: 'rgba(60, 60, 67, 0.6)',
-    fontSize: 13,
-    lineHeight: 18,
-    fontWeight: '500',
-  },
-  divider: {
-    width: '100%',
-    height: 1,
-    backgroundColor: 'rgba(60, 60, 67, 0.36)',
-    marginVertical: 16,
-  },
+
   permissionsText: {
     // paddingTop: 8,
     color: 'rgba(60, 60, 67, 0.6)',
@@ -170,8 +133,34 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 8,
   },
+  WCLogoLeft: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    right: -30,
+    top: -8,
+    zIndex: 1,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  WCLogoRight: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    left: -30,
+    top: -8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  emojiContainer: {
+    opacity: 0.8, //ToDo: Fix Transtion later
+    width: 290,
+    height: 44,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
   chainContainer: {
-    width: '80%',
+    width: '90%',
     padding: 10,
     borderRadius: 25,
     backgroundColor: 'rgba(80, 80, 89, 0.1)',
@@ -194,5 +183,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     paddingLeft: 6,
     paddingVertical: 4,
+  },
+  divider: {
+    height: 1,
+    width: '100%',
+    backgroundColor: 'rgba(60, 60, 67, 0.36)',
+    marginVertical: 16,
   },
 });

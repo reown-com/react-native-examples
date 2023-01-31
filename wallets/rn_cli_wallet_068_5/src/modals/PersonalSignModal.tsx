@@ -1,41 +1,79 @@
 import React from 'react';
-import {Alert, Text, Button, View, StyleSheet, Image} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
+import {SignClientTypes} from '@walletconnect/types';
+import {Tag} from '../components/Tag';
+import {Methods} from '../components/MethodsModal/Methods';
+import {Message} from '../components/MethodsModal/Message';
+import {getSignParamsMessage} from '../utils/HelperUtils';
+import {AcceptRejectButton} from '../components/AcceptRejectButton';
+import {ModalHeader} from '../components/MethodsModal/ModalHeader';
+import {approveEIP155Request} from '../utils/EIP155Request';
+// import {SignClientTypes} from '@walletconnect/types';
+// import SignClient from '@walletconnect/sign-client';
 
 interface PersonalSignModalProps {
-  proposal: any; //ToDo: fix.
   visible: boolean;
-  open: (arg0: boolean) => void;
-  setVisible: () => void;
+  setVisible: (arg0: boolean) => void;
+  requestEvent: SignClientTypes.EventArguments['session_request'] | undefined;
+  requestSession: any;
+  signClient: any;
 }
 
 export function PersonalSignModal({
-  proposal,
   visible,
-  open,
   setVisible,
-  handleAccept,
+  requestEvent,
+  requestSession,
+  signClient,
 }: PersonalSignModalProps) {
-  // const description = proposal.params.proposer.metadata.description;
-  // const name = proposal?.params?.proposer?.metadata?.name;
-  // const methods = proposal?.params?.requiredNamespaces.eip155.methods;
-  // const events = proposal?.params?.requiredNamespaces.eip155.events;
-  // const chains = proposal?.params?.requiredNamespaces.eip155.chains;
-  // const icon = proposal?.params.proposer.metadata.icons[0];
+  console.log('PersonalSignModal requestEvent', requestEvent);
+  console.log('PersonalSignModal requestSession', requestSession);
 
-  console.log('PersonalSignModal VISIBLE', visible);
+  const chainID = requestEvent?.params?.chainId?.toUpperCase();
+  const method = requestEvent?.params?.request?.method;
+  const message = getSignParamsMessage(requestEvent?.params?.request?.params);
+
+  const requestName = requestSession?.peer?.metadata?.name;
+  // const requestIcon = requestSession?.peer?.metadata?.icons[0];
+  const requestURL = requestSession?.peer?.metadata?.url;
+  const {topic, params} = requestEvent;
+
+  async function onApprove() {
+    if (requestEvent) {
+      const response = await approveEIP155Request(requestEvent);
+      await signClient.respondSessionRequest({
+        topic,
+        response,
+      });
+      setVisible(false);
+    }
+  }
 
   return (
     <Modal
       onModalHide={() => {
-        console.debug('helloOpning...');
+        // console.debug('helloOpning...');
       }}
-      backdropColor={'transparent'}
+      backdropOpacity={0.6}
       isVisible={visible}>
-      <View style={styles.container}>
-        <View style={styles.modalContainer}>
-          <Text> Personal Sign Modal</Text>
-          <Button onPress={() => setVisible(false)} title={'close'} />
+      <View style={styles.modalContainer}>
+        <ModalHeader name={requestName} url={requestURL} />
+
+        <View style={styles.divider} />
+
+        <View style={styles.chainContainer}>
+          <Tag value={chainID} grey={true} />
+          <Methods methods={[method]} />
+          <Message message={message} />
+        </View>
+
+        <View style={styles.flexRow}>
+          <AcceptRejectButton
+            accept={false}
+            onPress={() => setVisible(false)}
+          />
+          <AcceptRejectButton accept={true} onPress={() => onApprove()} />
         </View>
       </View>
     </Modal>
@@ -43,11 +81,11 @@ export function PersonalSignModal({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+  chainContainer: {
+    width: '90%',
+    padding: 10,
+    borderRadius: 25,
+    backgroundColor: 'rgba(80, 80, 89, 0.1)',
   },
   flexRow: {
     display: 'flex',
@@ -64,12 +102,15 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
     borderRadius: 34,
-    // backgroundColor: 'rgba(242, 242, 247, 0.8)',
-    backgroundColor: 'white',
-    width: '90%',
-    height: '50%',
+    paddingTop: 30,
+    // borderWidth: 1,
+    // borderColor: 'red',
+    backgroundColor: 'rgba(242, 242, 247, 0.9)',
+    width: '100%',
+    position: 'absolute',
+    bottom: 44,
+    // minHeight: '70%',
   },
   rejectButton: {
     color: 'red',
@@ -82,5 +123,11 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: 48,
     height: 48,
+  },
+  divider: {
+    height: 1,
+    width: '100%',
+    backgroundColor: 'rgba(60, 60, 67, 0.36)',
+    marginVertical: 16,
   },
 });

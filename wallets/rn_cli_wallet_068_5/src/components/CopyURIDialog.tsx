@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, StyleSheet, TextInput, View} from 'react-native';
+import {Dimensions, StyleSheet, TextInput, View} from 'react-native';
 import Dialog from 'react-native-dialog';
 import {ConnectButton} from './ConnectButton';
 
@@ -7,7 +7,7 @@ interface copyURIDialogProps {
   wcURI: string;
   setWCUri: (arg0: string) => void;
   setVisible: () => void;
-  setApprovalModal: (argo0: bool) => void;
+  setApprovalModal: () => void;
   visible: boolean;
   pair: () => void;
 }
@@ -16,38 +16,26 @@ export function CopyURIDialog({
   wcURI,
   setWCUri,
   setVisible,
-  setApprovalModal,
   pair,
 }: copyURIDialogProps) {
-  console.log('visible', visible);
+  const windowWidth = Dimensions.get('window').width;
 
+  //ToDO: Fix the width jump on width on paste.
   return (
-    <View>
-      <Dialog.Container
-        visible={visible}
-        blurComponentIOS
-        contentStyle={{
-          backgroundColor: 'rgba(242, 242, 247, 0.8)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: 250,
-        }}>
+    <Dialog.Container
+      visible={visible}
+      blurComponentIOS
+      contentStyle={[styles.mainContainer, {maxWidth: windowWidth * 0.9}]}>
+      <View style={styles.contentContainer}>
         <Dialog.Title>Enter a WalletConnect URI</Dialog.Title>
         <View>
-          <Dialog.Description>
+          <Dialog.Description style={styles.descriptionText}>
             To get the URI press the 📋 copy to clipboard button in wallet
             connection interfaces.
           </Dialog.Description>
         </View>
-        <View
-          style={{
-            marginTop: 8,
-            marginBottom: 16,
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+
+        <View style={styles.flexRow}>
           <TextInput
             autoFocus
             style={styles.textInput}
@@ -57,42 +45,61 @@ export function CopyURIDialog({
             enablesReturnKeyAutomatically
           />
         </View>
+
         <ConnectButton onPress={pair} />
-        <Dialog.Button label="Cancel" onPress={() => setVisible()} />
-      </Dialog.Container>
-    </View>
+        <View style={styles.cancelContainer}>
+          <Dialog.Button
+            style={styles.cancelText}
+            label="Cancel"
+            onPress={() => setVisible()}
+          />
+        </View>
+      </View>
+    </Dialog.Container>
   );
 }
 
 const styles = StyleSheet.create({
-  blueButtonContainer: {
-    marginBottom: 48,
+  mainContainer: {
+    backgroundColor: 'rgba(242, 242, 247, 0.8)',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    height: 56,
-    width: 350,
-    boxShadow:
-      '0px 6px 14px -6px rgba(0, 0, 0, 0.12), 0px 10px 32px -4px rgba(0, 0, 0, 0.1)',
+    alignItems: 'stretch',
+    height: 280,
+    padding: 20,
+    width: '90%',
+    borderRadius: 34,
+  },
+  contentContainer: {
+    display: 'flex',
+    marginTop: -16,
   },
   textInput: {
     height: 44,
     borderRadius: 15,
     padding: 10,
-    width: 220,
+    width: '100%',
     marginTop: 16,
-    // width: '80%',
     backgroundColor: 'white',
   },
-  mainText: {
-    fontSize: 20,
-    lineHeight: 24,
-    fontWeight: '600',
-    color: 'white',
+  descriptionText: {
+    paddingVertical: 4,
+    color: '#798686',
+    fontSize: 15,
+    lineHeight: 18,
   },
-  imageContainer: {
-    width: 24,
-    height: 24,
+  cancelContainer: {
+    height: 46,
+    display: 'flex',
+  },
+  flexRow: {
+    display: 'flex',
+  },
+  cancelText: {
+    color: '#3396FF',
+    fontWeight: '600',
+    fontSize: 20,
+    letterSpacing: 0.38,
+    lineHeight: 24,
   },
 });

@@ -1,4 +1,4 @@
-import {EIP155_SIGNING_METHODS} from '../types/EIP155';
+import {EIP155_SIGNING_METHODS} from '../data/EIP155';
 // import {signClient} from '@/components/WalletConnect/v2/SignClient';
 import {SignClientTypes} from '@walletconnect/types';
 import {useCallback, useEffect} from 'react';

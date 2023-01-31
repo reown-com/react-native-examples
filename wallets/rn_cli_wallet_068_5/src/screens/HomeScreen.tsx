@@ -1,36 +1,41 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
   Text,
-  Button,
   SafeAreaView,
-  Alert,
   StatusBar,
   useColorScheme,
   View,
-  TextInput,
   StyleSheet,
-  Image,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
 import Modal from 'react-native-modal';
 
 import {SignClientTypes} from '@walletconnect/types';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import '@walletconnect/react-native-compat';
-// import {Core} from '@walletconnect/core';
-// import {IWeb3Wallet, Web3Wallet} from '@walletconnect/web3wallet';
+import {Core} from '@walletconnect/core';
+import {IWeb3Wallet, Web3Wallet} from '@walletconnect/web3wallet';
 import SignClient from '@walletconnect/sign-client';
 import {SessionTypes} from '@walletconnect/types';
 
 import '@walletconnect/react-native-compat';
 import {WalletConnectModal} from '../modals/WalletConnectModal';
+import {
+  createOrRestoreEIP155Wallet,
+  eip155Wallets,
+} from '../utils/EIP155Wallet';
 
-import {CircleActionButton} from '../components/CircleActionButton';
-import {NavigationContainer} from '@react-navigation/native';
 import {CopyURIDialog} from '../components/CopyURIDialog';
 import {PersonalSignModal} from '../modals/PersonalSignModal';
+import Sessions from '../components/HomeScreen/Sessions';
+import ActionButtons from '../components/HomeScreen/ActionButtons';
+import {useNavigation} from '@react-navigation/native';
 
-// Required for TextEncoding Issue
+// @ts-expect-error -  is a virtualised module via Babel config.
+import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
+
+// @notice: Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');
 const BigInt = require('big-integer');
 
@@ -40,16 +45,59 @@ Object.assign(global, {
   BigInt: BigInt,
 });
 
+/**
+  @notice: HomeScreen for Web3Wallet Example
+  @dev: Placed the async functions on this page for simplicity
+
+  Async Functions:
+  1) createSignClient(): For creating a SignClient instance
+  2) handleAccept(): To handle the initial connection proposal accept event
+  3) handleReject(): To handle the initial connection reject event
+  4) pair(): To handle the initial connection reject event
+  5) onSessionRequest: To handle the session request event (i.e. eth_sign)
+
+  States:
+  1) signClient: X
+  1) approvalModal: X
+  1) personalSignModal: X
+  1) copyDialog: X
+  1) pairedProposal: X
+
+  Rendering:
+  1) Status Bar
+  2) Modals
+    - PairingModal
+    - MethodsModal
+    - CopyURIDialog
+    - QRCodeModal
+  3) Main Content
+    - Header
+    - Sessions
+    - Action Buttons
+
+**/
+
 const HomeScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
-  // const [web3WalletClient, setWeb3WalletClient] = useState<IWeb3Wallet>();
+  const navigation = useNavigation();
+
+  // Web3Wallet Client
+  const [web3WalletClient, setWeb3WalletClient] = useState<IWeb3Wallet>();
   const [signClient, setSignClient] = useState<SignClient>();
+
+  // Account State
+  const [account, setAccount] = useState<string>();
+
+  // Modal Visibie State
   const [approvalModal, setApprovalModal] = useState(false);
   const [personalSignModal, setPersonalSignModal] = useState(false);
   const [copyDialog, setCopyDialog] = useState(false);
+
+  // Pairing State
   const [pairedProposal, setPairedProposal] = useState();
   const [WCURI, setWCUri] = useState<string>();
-  const ETH_ADDRESS_HARDCODE = '0xa36B1F77296081884d0Ae102a888cb7df1aA57Ed';
+  const [requestEventData, setRequestEventData] = useState();
+  const [requestSession, setRequestSession] = useState();
 
   const backgroundStyle = {
     flex: 1,
@@ -60,8 +108,8 @@ const HomeScreen = () => {
   async function createSignClient() {
     try {
       const client = await SignClient.init({
-        projectId: '43a917ec9ac926c2e20f0104e96eacde',
-        relayUrl: 'wss://relay.walletconnect.com',
+        projectId: ENV_PROJECT_ID,
+        relayUrl: ENV_RELAY_URL,
         metadata: {
           name: 'React Native Example',
           description: 'React Native Web3Wallet for WalletConnect',
@@ -84,7 +132,7 @@ const HomeScreen = () => {
       const namespaces: SessionTypes.Namespaces = {};
       Object.keys(requiredNamespaces).forEach(key => {
         // ToDO: Revisit for the other accounts we choose.
-        const accounts = [`eip155:1:${ETH_ADDRESS_HARDCODE}`];
+        const accounts = [`eip155:1:${account}`];
         // requiredNamespaces[key].chains.map((chain) => {
         // 	selectedAccounts[key].map((acc) =>
         // 		accounts.push(`${chain}:${acc}`),
@@ -115,7 +163,6 @@ const HomeScreen = () => {
     setCopyDialog(false);
   };
 
-  // @notice Init pairing
   async function pair() {
     const pairing = await signClient.pair({uri: WCURI});
     setCopyDialog(false);
@@ -123,7 +170,6 @@ const HomeScreen = () => {
     return pairing;
   }
 
-  // @notice Function to handle the pairing of the client. To init the modal
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
       setPairedProposal(proposal);
@@ -146,59 +192,25 @@ const HomeScreen = () => {
     async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
       const {topic, params} = requestEvent;
       const {request} = params;
-      // const requestSession = signClient.session.get(topic);
-
-      // console.log('request', request);
-      // console.log('requestSession', requestSession);
+      const requestSessionData = signClient?.session.get(topic);
 
       switch (request.method) {
+        case EIP155_SIGNING_METHODS.ETH_SIGN:
         case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
+          setRequestSession(requestSessionData);
+          setRequestEventData(requestEvent);
           setPersonalSignModal(true);
-        // console.log('requstEvent', requestEvent);
-        // console.log('requstSession', requestEvent);
-        // return ModalStore.open('SessionSignModal', {
-        //   requestEvent,
-        //   requestSession,
-        // });
+          return;
+
+        // case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
+        // case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
+        // case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
+        //   return ModalStore.open('SessionSignTypedDataModal', { requestEvent, requestSession })
+
+        // case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
+        // case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
+        //   return ModalStore.open('SessionSendTransactionModal', { requestEvent, requestSession })
       }
-
-      // switch (request.method) {
-      //   case EIP155_SIGNING_METHODS.ETH_SIGN:
-      //   case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-      //     return ModalStore.open('SessionSignModal', {
-      //       requestEvent,
-      //       requestSession,
-      //     });
-
-      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
-      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
-      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
-      //     return ModalStore.open('SessionSignTypedDataModal', {
-      //       requestEvent,
-      //       requestSession,
-      //     });
-
-      //   case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-      //   case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
-      //     return ModalStore.open('SessionSendTransactionModal', {
-      //       requestEvent,
-      //       requestSession,
-      //     });
-
-      //   // case COSMOS_SIGNING_METHODS.COSMOS_SIGN_DIRECT:
-      //   // case COSMOS_SIGNING_METHODS.COSMOS_SIGN_AMINO:
-      //   //   return ModalStore.open('SessionSignCosmosModal', { requestEvent, requestSession })
-
-      //   // case SOLANA_SIGNING_METHODS.SOLANA_SIGN_MESSAGE:
-      //   // case SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION:
-      //   //   return ModalStore.open('SessionSignSolanaModal', { requestEvent, requestSession })
-
-      //   default:
-      //     return ModalStore.open('SessionUnsuportedMethodModal', {
-      //       requestEvent,
-      //       requestSession,
-      //     });
-      // }
     },
     [],
   );
@@ -211,10 +223,22 @@ const HomeScreen = () => {
   useEffect(() => {
     if (!signClient) {
       createSignClient();
+      const {eip155Addresses} = createOrRestoreEIP155Wallet();
+      // const seed = eip155Wallets[eip155Addresses[0]].getMnemonic();
+      setAccount(eip155Addresses[0]);
+      // console.log('EIP...', eip155Addresses);
+      // console.log('seed...', seed);
     }
-  }, [signClient, WCURI, approvalModal, copyDialog, personalSignModal]);
+  }, [
+    signClient,
+    WCURI,
+    approvalModal,
+    copyDialog,
+    personalSignModal,
+    requestEventData,
+    requestSession,
+  ]);
 
-  //@notice: Rendering of Heading + ScrollView of Conenctions + Action Button
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -229,10 +253,15 @@ const HomeScreen = () => {
         handleAccept={handleAccept}
       />
 
-      <PersonalSignModal
-        visible={personalSignModal}
-        setVisible={setPersonalSignModal}
-      />
+      {requestEventData && requestSession && (
+        <PersonalSignModal
+          signClient={signClient}
+          visible={personalSignModal}
+          setVisible={setPersonalSignModal}
+          requestEvent={requestEventData}
+          requestSession={requestSession}
+        />
+      )}
 
       <Modal
         isVisible={copyDialog}
@@ -254,29 +283,18 @@ const HomeScreen = () => {
         />
       </Modal>
 
-      <View style={{padding: 16, flex: 1}}>
-        <Text style={styles.heading}>Connections</Text>
-
-        <View style={styles.container}>
-          <Image
-            source={require('../assets/emptyStateIcon.png')}
-            style={styles.imageContainer}
-          />
-          <Text style={styles.greyText}>
-            Apps you connect with will appear here. To connect 📱 scan or 📋
-            paste the code that is displayed in the app.
-          </Text>
-          <View style={styles.flexRow}>
-            <CircleActionButton
-              copyImage={true}
-              handlePress={() => setCopyDialog(true)}
-            />
-            <CircleActionButton
-              copyImage={false}
-              handlePress={() => setApprovalModal(true)}
-            />
-          </View>
+      <View style={styles.mainScreenContainer}>
+        <View style={styles.flexRow}>
+          <Text style={styles.heading}>Apps</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+            <Text>Settings</Text>
+          </TouchableOpacity>
         </View>
+        <Sessions signClient={signClient} />
+        <ActionButtons
+          setApprovalModal={setApprovalModal}
+          setCopyDialog={setCopyDialog}
+        />
       </View>
     </SafeAreaView>
   );
@@ -296,6 +314,10 @@ const styles = StyleSheet.create({
     color: '#798686',
     width: '80%',
     textAlign: 'center',
+  },
+  mainScreenContainer: {
+    padding: 16,
+    flex: 1,
   },
   imageContainer: {
     height: 30,
@@ -317,10 +339,9 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   flexRow: {
-    position: 'absolute',
-    bottom: 50,
-    right: 0,
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });
