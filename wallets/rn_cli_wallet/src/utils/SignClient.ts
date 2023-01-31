@@ -1,14 +1,18 @@
-import SignClient from '@walletconnect/sign-client';
+import { Core } from '@walletconnect/core'
+import { ICore } from '@walletconnect/types'
+import { Web3Wallet, IWeb3Wallet } from '@walletconnect/web3wallet'
+
 // @ts-expect-error - `@env` is a virtualised module via Babel config.
 import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
 
-export let signClient: SignClient;
+export let web3wallet: IWeb3Wallet
+export let core: ICore
 
-export async function createSignClient() {
+export async function createWeb3Wallet() {
   console.log('[CONFIG] ENV_PROJECT_ID:', ENV_PROJECT_ID);
   console.log('[CONFIG] ENV_RELAY_URL:', ENV_RELAY_URL);
 
-  signClient = await SignClient.init({
+  web3wallet = await Web3Wallet.init({
     logger: 'debug',
     projectId: ENV_PROJECT_ID,
     relayUrl: ENV_RELAY_URL,
@@ -19,4 +23,5 @@ export async function createSignClient() {
       icons: ['https://avatars.githubusercontent.com/u/37784886'],
     },
   });
+
 }

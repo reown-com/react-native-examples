@@ -14,26 +14,22 @@ import Modal from 'react-native-modal';
 import {SignClientTypes} from '@walletconnect/types';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import '@walletconnect/react-native-compat';
-import {Core} from '@walletconnect/core';
-import {IWeb3Wallet, Web3Wallet} from '@walletconnect/web3wallet';
-import SignClient from '@walletconnect/sign-client';
 import {SessionTypes} from '@walletconnect/types';
+import {
+  core,
+  currentETHAddress,
+  web3wallet,
+  _pair,
+} from '../utils/Web3WalletClient';
 
 import '@walletconnect/react-native-compat';
 import {WalletConnectModal} from '../modals/WalletConnectModal';
-import {
-  createOrRestoreEIP155Wallet,
-  eip155Wallets,
-} from '../utils/EIP155Wallet';
 
 import {CopyURIDialog} from '../components/CopyURIDialog';
 import {PersonalSignModal} from '../modals/PersonalSignModal';
 import Sessions from '../components/HomeScreen/Sessions';
 import ActionButtons from '../components/HomeScreen/ActionButtons';
 import {useNavigation} from '@react-navigation/native';
-
-// @ts-expect-error -  is a virtualised module via Babel config.
-import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
 
 // @notice: Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');
@@ -81,10 +77,6 @@ const HomeScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const navigation = useNavigation();
 
-  // Web3Wallet Client
-  const [web3WalletClient, setWeb3WalletClient] = useState<IWeb3Wallet>();
-  const [signClient, setSignClient] = useState<SignClient>();
-
   // Account State
   const [account, setAccount] = useState<string>();
 
@@ -105,24 +97,6 @@ const HomeScreen = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  async function createSignClient() {
-    try {
-      const client = await SignClient.init({
-        projectId: ENV_PROJECT_ID,
-        relayUrl: ENV_RELAY_URL,
-        metadata: {
-          name: 'React Native Example',
-          description: 'React Native Web3Wallet for WalletConnect',
-          url: 'https://walletconnect.com/',
-          icons: ['https://avatars.githubusercontent.com/u/37784886'],
-        },
-      });
-      setSignClient(client);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   async function handleAccept() {
     // Get required proposal data
     const {id, params} = pairedProposal;
@@ -132,7 +106,7 @@ const HomeScreen = () => {
       const namespaces: SessionTypes.Namespaces = {};
       Object.keys(requiredNamespaces).forEach(key => {
         // ToDO: Revisit for the other accounts we choose.
-        const accounts = [`eip155:1:${account}`];
+        const accounts = [`eip155:1:${currentETHAddress}`];
         // requiredNamespaces[key].chains.map((chain) => {
         // 	selectedAccounts[key].map((acc) =>
         // 		accounts.push(`${chain}:${acc}`),
@@ -145,17 +119,13 @@ const HomeScreen = () => {
         };
       });
 
-      const {acknowledged} = await signClient.approve({
-        id: id,
+      await web3wallet.approveSession({
+        id,
         relayProtocol: relays[0].protocol,
         namespaces,
       });
-      // console.log('Session Proposal id', id);
-      // console.log('Session Proposal relayProtocol', relays[0].protocol);
-      // console.log('Session Proposal namespaces', namespaces);
 
       setApprovalModal(false);
-      await acknowledged();
     }
   }
 
@@ -164,7 +134,7 @@ const HomeScreen = () => {
   };
 
   async function pair() {
-    const pairing = await signClient.pair({uri: WCURI});
+    const pairing = await _pair({uri: WCURI});
     setCopyDialog(false);
     setWCUri('');
     return pairing;
@@ -176,17 +146,6 @@ const HomeScreen = () => {
     },
     [],
   );
-
-  const EIP155_SIGNING_METHODS = {
-    PERSONAL_SIGN: 'personal_sign',
-    ETH_SIGN: 'eth_sign',
-    ETH_SIGN_TRANSACTION: 'eth_signTransaction',
-    ETH_SIGN_TYPED_DATA: 'eth_signTypedData',
-    ETH_SIGN_TYPED_DATA_V3: 'eth_signTypedData_v3',
-    ETH_SIGN_TYPED_DATA_V4: 'eth_signTypedData_v4',
-    ETH_SEND_RAW_TRANSACTION: 'eth_sendRawTransaction',
-    ETH_SEND_TRANSACTION: 'eth_sendTransaction',
-  };
 
   const onSessionRequest = useCallback(
     async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
@@ -215,22 +174,12 @@ const HomeScreen = () => {
     [],
   );
 
-  if (signClient) {
-    signClient.on('session_proposal', onSessionProposal);
-    signClient.on('session_request', onSessionRequest);
+  if (web3wallet) {
+    web3wallet.on('session_proposal', onSessionProposal);
+    web3wallet.on('session_request', onSessionRequest);
   }
 
-  useEffect(() => {
-    if (!signClient) {
-      createSignClient();
-      const {eip155Addresses} = createOrRestoreEIP155Wallet();
-      // const seed = eip155Wallets[eip155Addresses[0]].getMnemonic();
-      setAccount(eip155Addresses[0]);
-      // console.log('EIP...', eip155Addresses);
-      // console.log('seed...', seed);
-    }
-  }, [
-    signClient,
+  useEffect(() => {}, [
     WCURI,
     approvalModal,
     copyDialog,
@@ -255,7 +204,7 @@ const HomeScreen = () => {
 
       {requestEventData && requestSession && (
         <PersonalSignModal
-          signClient={signClient}
+          signClient={web3wallet}
           visible={personalSignModal}
           setVisible={setPersonalSignModal}
           requestEvent={requestEventData}
@@ -290,7 +239,7 @@ const HomeScreen = () => {
             <Text>Settings</Text>
           </TouchableOpacity>
         </View>
-        <Sessions signClient={signClient} />
+        <Sessions signClient={web3wallet} />
         <ActionButtons
           setApprovalModal={setApprovalModal}
           setCopyDialog={setCopyDialog}
