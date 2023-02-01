@@ -24,22 +24,23 @@ const SettingsScreen = () => {
   };
 
   return (
-    <SafeAreaView>
+    <View>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
       <View style={styles.textContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text>⬅️</Text>
-        </TouchableOpacity>
-        <Text style={styles.welcomeHeading}>Settings</Text>
-        <Text style={styles.normalText}>ETH Address:</Text>
-        <Text style={styles.greyText}>{currentETHAddress}</Text>
-        <Text style={styles.normalText}>ETH Seed Phrase:</Text>
-        <Text style={styles.greyText}>{currentETHMnemonic}</Text>
+        <View style={styles.smallMarginTop}>
+          <Text style={styles.normalText}>ETH Address:</Text>
+          <Text style={styles.greyText}>{currentETHAddress}</Text>
+        </View>
+
+        <View style={styles.smallMarginTop}>
+          <Text style={styles.normalText}>ETH Seed Phrase:</Text>
+          <Text style={styles.greyText}>{currentETHMnemonic}</Text>
+        </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -51,6 +52,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  smallMarginTop: {
+    marginTop: 16,
   },
   textContainer: {
     padding: 16,

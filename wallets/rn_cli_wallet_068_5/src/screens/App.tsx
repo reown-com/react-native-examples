@@ -25,6 +25,7 @@ const Stack = createNativeStackNavigator();
 const App = () => {
   const initializedWeb3Wallet = useInitialization();
 
+  // Leaving so we can see the state of the Web3Wallet SDK
   console.log('initializedWeb3Wallet', initializedWeb3Wallet);
 
   return (
@@ -35,7 +36,11 @@ const App = () => {
         }}>
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{headerShown: true, headerTitle: ''}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

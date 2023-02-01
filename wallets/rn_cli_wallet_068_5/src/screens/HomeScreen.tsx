@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Platform,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import Modal from 'react-native-modal';
 
@@ -253,7 +254,10 @@ const HomeScreen = () => {
         <View style={styles.flexRow}>
           <Text style={styles.heading}>Apps</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-            <Text>Settings</Text>
+            <Image
+              source={require('../assets/SettingsIcon.png')}
+              style={styles.imageContainer}
+            />
           </TouchableOpacity>
         </View>
         <Sessions />
@@ -272,7 +276,6 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 34,
     fontWeight: 'bold',
-    marginTop: 16,
   },
   greyText: {
     fontSize: 15,
@@ -286,9 +289,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageContainer: {
-    height: 30,
-    width: 35,
-    marginBottom: 16,
+    height: 24,
+    width: 24,
   },
   container: {
     height: '100%',
