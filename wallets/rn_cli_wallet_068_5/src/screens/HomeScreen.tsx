@@ -13,33 +13,19 @@ import Modal from 'react-native-modal';
 
 import {SignClientTypes} from '@walletconnect/types';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import '@walletconnect/react-native-compat';
 import {SessionTypes} from '@walletconnect/types';
-import {
-  core,
-  currentETHAddress,
-  web3wallet,
-  _pair,
-} from '../utils/Web3WalletClient';
+import {currentETHAddress, web3wallet, _pair} from '../utils/Web3WalletClient';
 
-import '@walletconnect/react-native-compat';
 import {WalletConnectModal} from '../modals/WalletConnectModal';
 
 import {CopyURIDialog} from '../components/CopyURIDialog';
-import {PersonalSignModal} from '../modals/PersonalSignModal';
+import {SignModal} from '../modals/SignModal';
 import Sessions from '../components/HomeScreen/Sessions';
 import ActionButtons from '../components/HomeScreen/ActionButtons';
 import {useNavigation} from '@react-navigation/native';
-
-// @notice: Required for TextEncoding Issue
-const TextEncodingPolyfill = require('text-encoding');
-const BigInt = require('big-integer');
-
-Object.assign(global, {
-  TextEncoder: TextEncodingPolyfill.TextEncoder,
-  TextDecoder: TextEncodingPolyfill.TextDecoder,
-  BigInt: BigInt,
-});
+import {EIP155_SIGNING_METHODS} from '../data/EIP155';
+import {SignTypedDataModal} from '../modals/SignTypedDataModal';
+import {SendTransactionModal} from '../modals/SendTransactionModal';
 
 /**
   @notice: HomeScreen for Web3Wallet Example
@@ -55,7 +41,7 @@ Object.assign(global, {
   States:
   1) signClient: X
   1) approvalModal: X
-  1) personalSignModal: X
+  1) signModal: X
   1) copyDialog: X
   1) pairedProposal: X
 
@@ -77,12 +63,11 @@ const HomeScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const navigation = useNavigation();
 
-  // Account State
-  const [account, setAccount] = useState<string>();
-
-  // Modal Visibie State
+  // Modal Visible State
   const [approvalModal, setApprovalModal] = useState(false);
-  const [personalSignModal, setPersonalSignModal] = useState(false);
+  const [signModal, setSignModal] = useState(false);
+  const [signTypedDataModal, setSignTypedDataModal] = useState(false);
+  const [sendTransactionModal, setSendTransactionModal] = useState(false);
   const [copyDialog, setCopyDialog] = useState(false);
 
   // Pairing State
@@ -105,13 +90,12 @@ const HomeScreen = () => {
     if (pairedProposal) {
       const namespaces: SessionTypes.Namespaces = {};
       Object.keys(requiredNamespaces).forEach(key => {
-        // ToDO: Revisit for the other accounts we choose.
+        // ToDO: Revisit for the other NETWORK accounts we choose.
         const accounts = [`eip155:1:${currentETHAddress}`];
-        // requiredNamespaces[key].chains.map((chain) => {
-        // 	selectedAccounts[key].map((acc) =>
-        // 		accounts.push(`${chain}:${acc}`),
-        // 	)
-        // })
+        // requiredNamespaces[key].chains.map(chain => {
+        //   selectedAccounts[key].map(acc => accounts.push(`${chain}:${acc}`));
+        // });
+
         namespaces[key] = {
           accounts,
           methods: requiredNamespaces[key].methods,
@@ -151,24 +135,30 @@ const HomeScreen = () => {
     async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
       const {topic, params} = requestEvent;
       const {request} = params;
-      const requestSessionData = signClient?.session.get(topic);
+      const requestSessionData =
+        web3wallet.engine.signClient.session.get(topic);
 
       switch (request.method) {
         case EIP155_SIGNING_METHODS.ETH_SIGN:
         case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
           setRequestSession(requestSessionData);
           setRequestEventData(requestEvent);
-          setPersonalSignModal(true);
+          setSignModal(true);
           return;
 
-        // case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
-        // case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
-        // case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
-        //   return ModalStore.open('SessionSignTypedDataModal', { requestEvent, requestSession })
-
-        // case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-        // case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
-        //   return ModalStore.open('SessionSendTransactionModal', { requestEvent, requestSession })
+        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
+        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
+        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
+          setRequestSession(requestSessionData);
+          setRequestEventData(requestEvent);
+          setSignTypedDataModal(true);
+          return;
+        case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
+        case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
+          setRequestSession(requestSessionData);
+          setRequestEventData(requestEvent);
+          setSendTransactionModal(true);
+          return;
       }
     },
     [],
@@ -183,7 +173,8 @@ const HomeScreen = () => {
     WCURI,
     approvalModal,
     copyDialog,
-    personalSignModal,
+    signModal,
+    sendTransactionModal,
     requestEventData,
     requestSession,
   ]);
@@ -202,13 +193,39 @@ const HomeScreen = () => {
         handleAccept={handleAccept}
       />
 
-      {requestEventData && requestSession && (
-        <PersonalSignModal
-          signClient={web3wallet}
-          visible={personalSignModal}
-          setVisible={setPersonalSignModal}
+      {requestEventData && requestSession && signModal && (
+        <SignModal
+          web3wallet={web3wallet}
+          visible={signModal}
+          setVisible={setSignModal}
           requestEvent={requestEventData}
           requestSession={requestSession}
+          setRequestEventData={setRequestEventData}
+          setRequestSession={setRequestSession}
+        />
+      )}
+
+      {requestEventData && requestSession && sendTransactionModal && (
+        <SendTransactionModal
+          web3wallet={web3wallet}
+          visible={sendTransactionModal}
+          setVisible={setSendTransactionModal}
+          requestEvent={requestEventData}
+          requestSession={requestSession}
+          setRequestEventData={setRequestEventData}
+          setRequestSession={setRequestSession}
+        />
+      )}
+
+      {requestEventData && requestSession && signTypedDataModal && (
+        <SignTypedDataModal
+          web3wallet={web3wallet}
+          visible={signTypedDataModal}
+          setVisible={setSignTypedDataModal}
+          requestEvent={requestEventData}
+          requestSession={requestSession}
+          setRequestEventData={setRequestEventData}
+          setRequestSession={setRequestSession}
         />
       )}
 
@@ -239,7 +256,7 @@ const HomeScreen = () => {
             <Text>Settings</Text>
           </TouchableOpacity>
         </View>
-        <Sessions signClient={web3wallet} />
+        <Sessions />
         <ActionButtons
           setApprovalModal={setApprovalModal}
           setCopyDialog={setCopyDialog}

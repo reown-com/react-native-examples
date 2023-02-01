@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 
 interface IMessageProps {
   message: string;
@@ -9,12 +9,19 @@ export function Message({message}: IMessageProps) {
   return (
     <View style={styles.methodsContainer}>
       <Text style={styles.methodEventsTitle}>Message</Text>
-      <Text style={styles.messageText}>{message}</Text>
+      <ScrollView
+        showsVerticalScrollIndicator
+        contentContainerStyle={styles.messageContainer}>
+        <Text style={styles.messageText}>{message}</Text>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  messageContainer: {
+    maxHeight: 200,
+  },
   methodsContainer: {
     backgroundColor: 'white',
     borderRadius: 20,

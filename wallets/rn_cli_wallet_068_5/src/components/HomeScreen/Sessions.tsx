@@ -1,51 +1,42 @@
 import React from 'react';
-import {
-  View,
-  Image,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
-import SignClient from '@walletconnect/sign-client';
+import {View, Image, Text, StyleSheet, ScrollView} from 'react-native';
 import IndividualSession from './IndividualSession';
+import {web3wallet} from '../../utils/Web3WalletClient';
 
-interface ISessionsProps {
-  signClient: SignClient | undefined;
-}
-
-const Sessions = ({signClient}: ISessionsProps) => {
-  const sessions = signClient?.session?.values;
+const Sessions = () => {
+  const sessions = Object.values(web3wallet.getActiveSessions());
 
   // @notice: Empty State with no Session
-  const emptyState = (
-    <View style={styles.container}>
-      <Image
-        source={require('../../assets/emptyStateIcon.png')}
-        style={styles.imageContainer}
-      />
-      <Text style={styles.greyText}>
-        Apps you connect with will appear here. To connect 📱 scan or 📋 paste
-        the code that is displayed in the app.
-      </Text>
-    </View>
-  );
+  if (!sessions || sessions.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={require('../../assets/emptyStateIcon.png')}
+          style={styles.imageContainer}
+        />
+        <Text style={styles.greyText}>
+          Apps you connect with will appear here. To connect 📱 scan or 📋 paste
+          the code that is displayed in the app.
+        </Text>
+      </View>
+    );
+  }
 
+  // @notice: Main Rendering of Sessions
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-      {sessions
-        ? sessions.map((session, index) => {
-            const {name, icons, url} = session.peer.metadata;
-            return (
-              <IndividualSession
-                key={index}
-                icons={icons.toString()}
-                name={name}
-                url={url}
-              />
-            );
-          })
-        : emptyState}
+      {sessions &&
+        sessions.map((session, index) => {
+          const {name, icons, url} = session?.peer.metadata;
+          return (
+            <IndividualSession
+              key={index}
+              icons={icons.toString()}
+              name={name}
+              url={url}
+            />
+          );
+        })}
     </ScrollView>
   );
 };
@@ -88,6 +79,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   container: {
+    flex: 1,
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',

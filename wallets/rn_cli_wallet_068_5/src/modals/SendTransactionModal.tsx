@@ -5,58 +5,70 @@ import {SignClientTypes} from '@walletconnect/types';
 import {Tag} from '../components/Tag';
 import {Methods} from '../components/MethodsModal/Methods';
 import {Message} from '../components/MethodsModal/Message';
-import {getSignParamsMessage} from '../utils/HelperUtils';
 import {AcceptRejectButton} from '../components/AcceptRejectButton';
 import {ModalHeader} from '../components/MethodsModal/ModalHeader';
-import {approveEIP155Request} from '../utils/EIP155Request';
-// import {SignClientTypes} from '@walletconnect/types';
-// import SignClient from '@walletconnect/sign-client';
+import {
+  approveEIP155Request,
+  rejectEIP155Request,
+} from '../utils/EIP155Request';
+import {web3wallet} from '../utils/Web3WalletClient';
 
-interface PersonalSignModalProps {
+interface SendTransactionModalProps {
   visible: boolean;
   setVisible: (arg0: boolean) => void;
   requestEvent: SignClientTypes.EventArguments['session_request'] | undefined;
   requestSession: any;
-  signClient: any;
+  setRequestEventData: (arg0: string) => void;
+  setRequestSession: (arg0: string) => void;
 }
 
-export function PersonalSignModal({
+export function SendTransactionModal({
   visible,
   setVisible,
   requestEvent,
   requestSession,
-  signClient,
-}: PersonalSignModalProps) {
-  console.log('PersonalSignModal requestEvent', requestEvent);
-  console.log('PersonalSignModal requestSession', requestSession);
-
+}: // setRequestEventData,
+// setRequestSession,
+SendTransactionModalProps) {
   const chainID = requestEvent?.params?.chainId?.toUpperCase();
   const method = requestEvent?.params?.request?.method;
-  const message = getSignParamsMessage(requestEvent?.params?.request?.params);
 
   const requestName = requestSession?.peer?.metadata?.name;
   // const requestIcon = requestSession?.peer?.metadata?.icons[0];
   const requestURL = requestSession?.peer?.metadata?.url;
+
   const {topic, params} = requestEvent;
+  const {request, chainId} = params;
+  const transaction = request.params[0];
 
   async function onApprove() {
     if (requestEvent) {
       const response = await approveEIP155Request(requestEvent);
-      await signClient.respondSessionRequest({
+      await web3wallet.respondSessionRequest({
         topic,
         response,
       });
+      // setRequestEventData('');
+      // setRequestSession('');
+      setVisible(false);
+    }
+  }
+
+  async function onReject() {
+    if (requestEvent) {
+      const response = rejectEIP155Request(requestEvent);
+      await web3wallet.respondSessionRequest({
+        topic,
+        response,
+      });
+      // setRequestEventData('');
+      // setRequestSession('');
       setVisible(false);
     }
   }
 
   return (
-    <Modal
-      onModalHide={() => {
-        // console.debug('helloOpning...');
-      }}
-      backdropOpacity={0.6}
-      isVisible={visible}>
+    <Modal backdropOpacity={0.6} isVisible={visible}>
       <View style={styles.modalContainer}>
         <ModalHeader name={requestName} url={requestURL} />
 
@@ -65,14 +77,11 @@ export function PersonalSignModal({
         <View style={styles.chainContainer}>
           <Tag value={chainID} grey={true} />
           <Methods methods={[method]} />
-          <Message message={message} />
+          <Message message={JSON.stringify(transaction, null, 2)} />
         </View>
 
         <View style={styles.flexRow}>
-          <AcceptRejectButton
-            accept={false}
-            onPress={() => setVisible(false)}
-          />
+          <AcceptRejectButton accept={false} onPress={() => onReject()} />
           <AcceptRejectButton accept={true} onPress={() => onApprove()} />
         </View>
       </View>
@@ -104,13 +113,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 34,
     paddingTop: 30,
-    // borderWidth: 1,
-    // borderColor: 'red',
     backgroundColor: 'rgba(242, 242, 247, 0.9)',
     width: '100%',
     position: 'absolute',
     bottom: 44,
-    // minHeight: '70%',
   },
   rejectButton: {
     color: 'red',

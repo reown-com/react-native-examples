@@ -13,6 +13,7 @@ import {formatJsonRpcError, formatJsonRpcResult} from '@json-rpc-tools/utils';
 import {SignClientTypes} from '@walletconnect/types';
 import {getSdkError} from '@walletconnect/utils';
 import {providers} from 'ethers';
+import {currentETHAddress} from '../utils/Web3WalletClient';
 
 export async function approveEIP155Request(
   requestEvent: SignClientTypes.EventArguments['session_request'],
@@ -20,7 +21,7 @@ export async function approveEIP155Request(
   const {params, id} = requestEvent;
   const {chainId, request} = params;
   const wallet =
-    eip155Wallets[getWalletAddressFromParams(eip155Addresses, params)];
+    eip155Wallets[getWalletAddressFromParams([currentETHAddress], params)];
 
   switch (request.method) {
     case EIP155_SIGNING_METHODS.PERSONAL_SIGN:

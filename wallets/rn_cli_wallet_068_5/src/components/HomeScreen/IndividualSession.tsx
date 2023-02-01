@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 interface IndividualSessionProps {
-  name: string;
+  name: string | undefined;
   icons: string;
   url: string;
 }
@@ -18,7 +18,7 @@ const IndividualSession = ({name, icons, url}: IndividualSessionProps) => {
           />
         ) : null}
         <View style={styles.textContainer}>
-          <Text style={styles.mainText}>{name}</Text>
+          <Text style={styles.mainText}>{name ? name : 'No Name'}</Text>
           <Text style={styles.greyText}>{url.slice(8)} </Text>
         </View>
       </View>

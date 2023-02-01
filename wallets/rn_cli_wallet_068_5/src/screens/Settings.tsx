@@ -5,15 +5,18 @@ import {
   useColorScheme,
   View,
   StyleSheet,
-  ImageBackground,
+  TouchableOpacity,
 } from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import '@walletconnect/react-native-compat';
-import {GetStartedButton} from '../components/GetStartedButton';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {currentETHAddress, currentETHMnemonic} from '../utils/Web3WalletClient';
+import {useNavigation} from '@react-navigation/native';
 
 const SettingsScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
+  const navigation = useNavigation();
 
   const backgroundStyle = {
     flex: 1,
@@ -21,19 +24,22 @@ const SettingsScreen = () => {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <SafeAreaView>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
       <View style={styles.textContainer}>
-        <Text style={styles.welcomeHeading}>Welcome</Text>
-        <Text style={styles.greyText}>
-          We made this Example Wallet App to help developers integrate the
-          WalletConnect SDK and provide an amazing experience to their users.
-        </Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text>⬅️</Text>
+        </TouchableOpacity>
+        <Text style={styles.welcomeHeading}>Settings</Text>
+        <Text style={styles.normalText}>ETH Address:</Text>
+        <Text style={styles.greyText}>{currentETHAddress}</Text>
+        <Text style={styles.normalText}>ETH Seed Phrase:</Text>
+        <Text style={styles.greyText}>{currentETHMnemonic}</Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -47,16 +53,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textContainer: {
-    marginTop: 48,
+    padding: 16,
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   welcomeHeading: {
     fontSize: 34,
     lineHeight: 41,
     fontWeight: '700',
     marginBottom: 10,
+  },
+  normalText: {
+    fontSize: 15,
+    lineHeight: 21,
   },
   greyText: {
     fontSize: 15,

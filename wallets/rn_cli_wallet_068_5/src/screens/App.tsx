@@ -6,10 +6,9 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import OnboardingScreen from './OnboardingScreen';
 import HomeScreen from './HomeScreen';
-// import SettingsScreen from './Settings';
+import SettingsScreen from './Settings';
 
 import useInitialization from '../hooks/useInitialization';
-import {createOrRestoreEIP155Wallet} from '../utils/EIP155Wallet';
 
 // Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');
@@ -24,10 +23,9 @@ Object.assign(global, {
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  useInitialization();
+  const initializedWeb3Wallet = useInitialization();
 
-  // What do with this wallet store?
-  // const {eip155Addresses} = createOrRestoreEIP155Wallet();
+  console.log('initializedWeb3Wallet', initializedWeb3Wallet);
 
   return (
     <NavigationContainer>
@@ -37,7 +35,7 @@ const App = () => {
         }}>
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
-        {/* <Stack.Screen name="Settings" component={SettingsScreen} /> */}
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
