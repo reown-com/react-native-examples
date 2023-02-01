@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Button, View, StyleSheet, Image} from 'react-native';
+import {Text, View, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
 import {AcceptRejectButton} from '../components/AcceptRejectButton';
 import {Events} from '../components/MethodsModal/Events';
@@ -7,7 +7,7 @@ import {Methods} from '../components/MethodsModal/Methods';
 import {ModalHeader} from '../components/MethodsModal/ModalHeader';
 import {Tag} from '../components/Tag';
 
-interface WalletConnectModalProps {
+interface PairModalProps {
   proposal: any; //ToDo: fix.
   visible: boolean;
   open: (arg0: boolean) => void;
@@ -25,12 +25,12 @@ interface WalletConnectModalProps {
       4. Accept/Reject Buttons
   */
 
-export function WalletConnectModal({
+export function PairModal({
   proposal,
   visible,
   open,
   handleAccept,
-}: WalletConnectModalProps) {
+}: PairModalProps) {
   const name = proposal?.params?.proposer?.metadata?.name;
   const url = proposal?.params?.proposer?.metadata.url;
   const methods = proposal?.params?.requiredNamespaces.eip155.methods;

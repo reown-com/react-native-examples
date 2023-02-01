@@ -17,7 +17,7 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {SessionTypes} from '@walletconnect/types';
 import {currentETHAddress, web3wallet, _pair} from '../utils/Web3WalletClient';
 
-import {WalletConnectModal} from '../modals/WalletConnectModal';
+import {PairModal} from '../modals/PairModal';
 
 import {CopyURIDialog} from '../components/CopyURIDialog';
 import {SignModal} from '../modals/SignModal';
@@ -187,7 +187,7 @@ const HomeScreen = () => {
         backgroundColor={backgroundStyle.backgroundColor}
       />
 
-      <WalletConnectModal
+      <PairModal
         proposal={pairedProposal}
         open={setApprovalModal}
         visible={approvalModal}
