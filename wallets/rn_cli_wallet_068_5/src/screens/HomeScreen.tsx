@@ -125,6 +125,7 @@ const HomeScreen = () => {
     return pairing;
   }
 
+  // ToDo / Consider: How best to move onSessionProposal() + onSessionRequest() + the if statement Listeners.
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
       setPairedProposal(proposal);
