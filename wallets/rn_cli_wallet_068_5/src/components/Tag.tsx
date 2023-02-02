@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     marginRight: 4,
     marginBottom: 8,
-    width: 80, // Fix This. This is a hack to make the tags the same width.
+    width: 105, // ToDO:Fix This. This is a hack to make the tags the same width.
   },
   mainText: {
     fontSize: 13,

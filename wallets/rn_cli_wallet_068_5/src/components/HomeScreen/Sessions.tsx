@@ -4,6 +4,7 @@ import IndividualSession from './IndividualSession';
 import {web3wallet} from '../../utils/Web3WalletClient';
 
 const Sessions = () => {
+  console.log('web3Wallet', web3wallet);
   const sessions = Object.values(web3wallet.getActiveSessions());
 
   // @notice: Empty State with no Session
@@ -11,12 +12,12 @@ const Sessions = () => {
     return (
       <View style={styles.container}>
         <Image
-          source={require('../../assets/emptyStateIcon.png')}
+          source={require('../../assets/Tick.png')}
           style={styles.imageContainer}
         />
         <Text style={styles.greyText}>
-          Apps you connect with will appear here. To connect 📱 scan or 📋 paste
-          the code that is displayed in the app.
+          Apps you connect with will appear here. To connect scan or paste the
+          code that is displayed in the app.
         </Text>
       </View>
     );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   StatusBar,
   useColorScheme,
@@ -13,16 +13,23 @@ import {GetStartedButton} from '../components/GetStartedButton';
 import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
 import {SafeAreaView} from 'react-native-safe-area-context';
+// import {web3wallet} from '../utils/Web3WalletClient';
+import useInitialization from '../hooks/useInitialization';
+
+const backgroundImageSrc = require('../assets/ethCalculatorBG.png');
 
 const OnboardingScreen = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const initialized = useInitialization();
 
+  useEffect(() => {
+    console.log('Web3WalletSDK initialized:', initialized);
+  }, [initialized]);
+
+  const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     flex: 1,
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-
-  const backgroundImageSrc = require('../assets/ethCalculatorBG.png');
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>

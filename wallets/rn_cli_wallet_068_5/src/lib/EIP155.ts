@@ -18,6 +18,7 @@ export default class EIP155Lib {
   }
 
   static init({mnemonic}: IInitArgs) {
+    // console.log('EIP155Lib.init', mnemonic);
     const wallet = mnemonic
       ? Wallet.fromMnemonic(mnemonic)
       : Wallet.createRandom();

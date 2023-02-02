@@ -20,7 +20,7 @@ export function CircleActionButton({
     <TouchableOpacity onPress={handlePress}>
       <LinearGradient
         colors={['#3396FF', '#0D7DF2']}
-        style={styles.blueButtonContainer}>
+        style={[styles.blueButtonContainer, styles.shadow]}>
         <Image
           source={copyImage ? clipboardImage : QRCodeImage}
           style={styles.imageContainer}
@@ -32,7 +32,6 @@ export function CircleActionButton({
 
 const styles = StyleSheet.create({
   blueButtonContainer: {
-    boxShadow: 'inset 0px 2px 8px rgba(255, 255, 255, 0.25)',
     marginRight: 20,
     display: 'flex',
     justifyContent: 'center',
@@ -41,9 +40,19 @@ const styles = StyleSheet.create({
     height: 56,
     width: 56,
   },
-
   imageContainer: {
     width: 24,
     height: 24,
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+
+    elevation: 10,
   },
 });

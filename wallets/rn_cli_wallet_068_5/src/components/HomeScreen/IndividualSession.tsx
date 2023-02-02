@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Image, Text, StyleSheet} from 'react-native';
 
 interface IndividualSessionProps {
   name: string | undefined;
@@ -7,9 +7,10 @@ interface IndividualSessionProps {
   url: string;
 }
 
+//ToDo: Change to TouchableOpacity and navigate to Session
 const IndividualSession = ({name, icons, url}: IndividualSessionProps) => {
   return (
-    <TouchableOpacity style={styles.sessionContainer}>
+    <View style={styles.sessionContainer}>
       <View style={styles.flexRow}>
         {icons ? (
           <Image
@@ -22,9 +23,9 @@ const IndividualSession = ({name, icons, url}: IndividualSessionProps) => {
           <Text style={styles.greyText}>{url.slice(8)} </Text>
         </View>
       </View>
-      {/* // ToDo: Replace with Chevron */}
+      {/* // ToDo: Replace with Chevron when above is fixed */}
       {/* <Text>CHECK</Text> */}
-    </TouchableOpacity>
+    </View>
   );
 };
 

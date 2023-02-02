@@ -1,12 +1,16 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet, Image, Text} from 'react-native';
+import {TouchableOpacity, StyleSheet, Text} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
+import {web3wallet} from '../utils/Web3WalletClient';
 
 export function GetStartedButton() {
   const navigation = useNavigation();
+
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+    <TouchableOpacity
+      onPress={() => navigation.navigate('Home')}
+      disabled={!web3wallet}>
       <LinearGradient
         colors={['#3396FF', '#0D7DF2']}
         style={styles.blueButtonContainer}>

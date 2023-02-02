@@ -27,6 +27,8 @@ import {useNavigation} from '@react-navigation/native';
 import {EIP155_SIGNING_METHODS} from '../data/EIP155';
 import {SignTypedDataModal} from '../modals/SignTypedDataModal';
 import {SendTransactionModal} from '../modals/SendTransactionModal';
+import {W3WText} from '../components/W3WText';
+import {TextContent} from '../utils/Text';
 
 /**
   @notice: HomeScreen for Web3Wallet Example
@@ -84,18 +86,17 @@ const HomeScreen = () => {
   };
 
   async function handleAccept() {
-    // Get required proposal data
     const {id, params} = pairedProposal;
     const {requiredNamespaces, relays} = params;
 
     if (pairedProposal) {
       const namespaces: SessionTypes.Namespaces = {};
+      console.log('nameSpaces: ', requiredNamespaces);
       Object.keys(requiredNamespaces).forEach(key => {
-        // ToDO: Revisit for the other NETWORK accounts we choose.
-        const accounts = [`eip155:1:${currentETHAddress}`];
-        // requiredNamespaces[key].chains.map(chain => {
-        //   selectedAccounts[key].map(acc => accounts.push(`${chain}:${acc}`));
-        // });
+        const accounts: string[] = [];
+        requiredNamespaces[key].chains.map(chain => {
+          [currentETHAddress].map(acc => accounts.push(`${chain}:${acc}`));
+        });
 
         namespaces[key] = {
           accounts,
@@ -197,7 +198,6 @@ const HomeScreen = () => {
 
       {requestEventData && requestSession && signModal && (
         <SignModal
-          web3wallet={web3wallet}
           visible={signModal}
           setVisible={setSignModal}
           requestEvent={requestEventData}
@@ -209,7 +209,6 @@ const HomeScreen = () => {
 
       {requestEventData && requestSession && sendTransactionModal && (
         <SendTransactionModal
-          web3wallet={web3wallet}
           visible={sendTransactionModal}
           setVisible={setSendTransactionModal}
           requestEvent={requestEventData}
@@ -221,7 +220,6 @@ const HomeScreen = () => {
 
       {requestEventData && requestSession && signTypedDataModal && (
         <SignTypedDataModal
-          web3wallet={web3wallet}
           visible={signTypedDataModal}
           setVisible={setSignTypedDataModal}
           requestEvent={requestEventData}
@@ -231,6 +229,7 @@ const HomeScreen = () => {
         />
       )}
 
+      {/* // ToDo: Consider moving this to a separate component / Fix onModalHide() */}
       <Modal
         isVisible={copyDialog}
         backdropOpacity={0.4}
@@ -253,7 +252,7 @@ const HomeScreen = () => {
 
       <View style={styles.mainScreenContainer}>
         <View style={styles.flexRow}>
-          <Text style={styles.heading}>Apps</Text>
+          <W3WText value={TextContent.AppsTitle} />
           <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
             <Image
               source={require('../assets/SettingsIcon.png')}
@@ -286,7 +285,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   mainScreenContainer: {
-    padding: 16,
+    padding: 20,
     flex: 1,
   },
   imageContainer: {

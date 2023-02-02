@@ -1,23 +1,14 @@
 import React from 'react';
-import {
-  Text,
-  StatusBar,
-  useColorScheme,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import {Text, StatusBar, useColorScheme, View, StyleSheet} from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import '@walletconnect/react-native-compat';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {currentETHAddress, currentETHMnemonic} from '../utils/Web3WalletClient';
-import {useNavigation} from '@react-navigation/native';
+import {currentETHAddress} from '../utils/Web3WalletClient';
+
+import {eip155Wallets} from '../utils/EIP155Wallet';
 
 const SettingsScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
-  const navigation = useNavigation();
-
   const backgroundStyle = {
     flex: 1,
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -37,7 +28,9 @@ const SettingsScreen = () => {
 
         <View style={styles.smallMarginTop}>
           <Text style={styles.normalText}>ETH Seed Phrase:</Text>
-          <Text style={styles.greyText}>{currentETHMnemonic}</Text>
+          <Text style={styles.greyText}>
+            {eip155Wallets[currentETHAddress].getMnemonic()}
+          </Text>
         </View>
       </View>
     </View>

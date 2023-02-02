@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import '@walletconnect/react-native-compat';
 
 import {NavigationContainer} from '@react-navigation/native';
@@ -9,6 +9,7 @@ import HomeScreen from './HomeScreen';
 import SettingsScreen from './Settings';
 
 import useInitialization from '../hooks/useInitialization';
+import {web3wallet} from '../utils/Web3WalletClient';
 
 // Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');
@@ -23,11 +24,6 @@ Object.assign(global, {
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const initializedWeb3Wallet = useInitialization();
-
-  // Leaving so we can see the state of the Web3Wallet SDK
-  console.log('initializedWeb3Wallet', initializedWeb3Wallet);
-
   return (
     <NavigationContainer>
       <Stack.Navigator
