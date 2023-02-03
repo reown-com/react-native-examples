@@ -1,5 +1,10 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet, Text} from 'react-native';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
 import {web3wallet} from '../utils/Web3WalletClient';
@@ -13,9 +18,11 @@ export function GetStartedButton() {
       onPress={() => navigation.navigate('Home')}
       disabled={!web3wallet}>
       <LinearGradient
-        colors={['#3396FF', '#0D7DF2']}
+        colors={!web3wallet ? ['#E5E5E5', '#E1EAEE'] : ['#3396FF', '#0D7DF2']}
         style={styles.blueButtonContainer}>
-        <Text style={styles.mainText}>Get Started</Text>
+        <Text style={!web3wallet ? styles.disabledText : styles.mainText}>
+          {!web3wallet ? 'Talking to Vitalik...' : 'Get Started'}
+        </Text>
       </LinearGradient>
     </TouchableOpacity>
   );
@@ -38,6 +45,12 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontWeight: '600',
     color: 'white',
+  },
+  disabledText: {
+    fontSize: 20,
+    lineHeight: 24,
+    fontWeight: '600',
+    color: 'black',
   },
   imageContainer: {
     width: 24,
