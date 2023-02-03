@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import '@walletconnect/react-native-compat';
 
 import {NavigationContainer} from '@react-navigation/native';
@@ -7,9 +7,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import OnboardingScreen from './OnboardingScreen';
 import HomeScreen from './HomeScreen';
 import SettingsScreen from './Settings';
-
-import useInitialization from '../hooks/useInitialization';
-import {web3wallet} from '../utils/Web3WalletClient';
 
 // Required for TextEncoding Issue
 const TextEncodingPolyfill = require('text-encoding');

@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     display: 'flex',
-    marginTop: -16,
+    // marginTop: -16,
   },
   textInput: {
     height: 44,

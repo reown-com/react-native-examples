@@ -29,6 +29,7 @@ import {SignTypedDataModal} from '../modals/SignTypedDataModal';
 import {SendTransactionModal} from '../modals/SendTransactionModal';
 import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
+import {CopyWCURIModal} from '../modals/CopyWCURIModal';
 
 /**
   @notice: HomeScreen for Web3Wallet Example
@@ -91,7 +92,6 @@ const HomeScreen = () => {
 
     if (pairedProposal) {
       const namespaces: SessionTypes.Namespaces = {};
-      console.log('nameSpaces: ', requiredNamespaces);
       Object.keys(requiredNamespaces).forEach(key => {
         const accounts: string[] = [];
         requiredNamespaces[key].chains.map(chain => {
@@ -123,6 +123,9 @@ const HomeScreen = () => {
     const pairing = await _pair({uri: WCURI});
     setCopyDialog(false);
     setWCUri('');
+    if (Platform.OS === 'android') {
+      setApprovalModal(true);
+    }
     return pairing;
   }
 
@@ -167,12 +170,12 @@ const HomeScreen = () => {
     [],
   );
 
-  if (web3wallet) {
-    web3wallet.on('session_proposal', onSessionProposal);
-    web3wallet.on('session_request', onSessionRequest);
-  }
-
-  useEffect(() => {}, [
+  useEffect(() => {
+    if (web3wallet) {
+      web3wallet.on('session_proposal', onSessionProposal);
+      web3wallet.on('session_request', onSessionRequest);
+    }
+  }, [
     WCURI,
     approvalModal,
     copyDialog,
@@ -180,6 +183,8 @@ const HomeScreen = () => {
     sendTransactionModal,
     requestEventData,
     requestSession,
+    onSessionProposal,
+    onSessionRequest,
   ]);
 
   return (
@@ -194,6 +199,18 @@ const HomeScreen = () => {
         open={setApprovalModal}
         visible={approvalModal}
         handleAccept={handleAccept}
+      />
+
+      <CopyWCURIModal
+        pair={pair}
+        wcURI={WCURI}
+        setVisible={handleCancel}
+        copyDialog={copyDialog}
+        setApprovalModal={setApprovalModal}
+        setWCUri={setWCUri}
+        visible={copyDialog}
+        pairedProposal={pairedProposal}
+        approvalModal={approvalModal}
       />
 
       {requestEventData && requestSession && signModal && (
@@ -229,27 +246,6 @@ const HomeScreen = () => {
         />
       )}
 
-      {/* // ToDo: Consider moving this to a separate component / Fix onModalHide() */}
-      <Modal
-        isVisible={copyDialog}
-        backdropOpacity={0.4}
-        onModalHide={() => {
-          setTimeout(
-            () => setApprovalModal(true),
-            Platform.OS === 'ios' ? 200 : 0,
-          );
-        }}
-        backdropColor="transparent">
-        <CopyURIDialog
-          pair={pair}
-          wcURI={WCURI}
-          setVisible={handleCancel}
-          setApprovalModal={setApprovalModal}
-          setWCUri={setWCUri}
-          visible={copyDialog}
-        />
-      </Modal>
-
       <View style={styles.mainScreenContainer}>
         <View style={styles.flexRow}>
           <W3WText value={TextContent.AppsTitle} />
@@ -261,10 +257,7 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
         <Sessions />
-        <ActionButtons
-          setApprovalModal={setApprovalModal}
-          setCopyDialog={setCopyDialog}
-        />
+        <ActionButtons setCopyDialog={setCopyDialog} />
       </View>
     </SafeAreaView>
   );

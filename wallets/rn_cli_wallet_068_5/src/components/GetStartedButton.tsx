@@ -9,6 +9,7 @@ export function GetStartedButton() {
 
   return (
     <TouchableOpacity
+      hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
       onPress={() => navigation.navigate('Home')}
       disabled={!web3wallet}>
       <LinearGradient

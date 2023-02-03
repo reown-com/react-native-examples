@@ -1,11 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Image, Text, StyleSheet, ScrollView} from 'react-native';
 import IndividualSession from './IndividualSession';
 import {web3wallet} from '../../utils/Web3WalletClient';
 
 const Sessions = () => {
-  console.log('web3Wallet', web3wallet);
   const sessions = Object.values(web3wallet.getActiveSessions());
+
+  useEffect(() => {}, [sessions]);
 
   // @notice: Empty State with no Session
   if (!sessions || sessions.length === 0) {

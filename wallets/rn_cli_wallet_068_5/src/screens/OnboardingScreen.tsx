@@ -13,7 +13,6 @@ import {GetStartedButton} from '../components/GetStartedButton';
 import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
 import {SafeAreaView} from 'react-native-safe-area-context';
-// import {web3wallet} from '../utils/Web3WalletClient';
 import useInitialization from '../hooks/useInitialization';
 
 const backgroundImageSrc = require('../assets/ethCalculatorBG.png');
@@ -67,7 +66,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     height: '103%',
-    // width: '105%',
   },
   textContainer: {
     marginVertical: 16,
