@@ -19,8 +19,6 @@ interface SignModalProps {
   setVisible: (arg0: boolean) => void;
   requestEvent: SignClientTypes.EventArguments['session_request'] | undefined;
   requestSession: any;
-  // setRequestEventData: () => void;
-  // setRequestSession: () => void;
 }
 
 export function SignModal({
@@ -28,9 +26,7 @@ export function SignModal({
   setVisible,
   requestEvent,
   requestSession,
-}: // setRequestEventData,
-// setRequestSession,
-SignModalProps) {
+}: SignModalProps) {
   const chainID = requestEvent?.params?.chainId?.toUpperCase();
   const method = requestEvent?.params?.request?.method;
   const message = getSignParamsMessage(requestEvent?.params?.request?.params);
@@ -71,7 +67,9 @@ SignModalProps) {
         <View style={styles.divider} />
 
         <View style={styles.chainContainer}>
-          <Tag value={chainID} grey={true} />
+          <View style={styles.flexRowWrapped}>
+            <Tag value={chainID} grey={true} />
+          </View>
           <Methods methods={[method]} />
           <Message message={message} />
         </View>
@@ -100,7 +98,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   modalContainer: {

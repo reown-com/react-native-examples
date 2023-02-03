@@ -18,8 +18,6 @@ interface SendTransactionModalProps {
   setVisible: (arg0: boolean) => void;
   requestEvent: SignClientTypes.EventArguments['session_request'] | undefined;
   requestSession: any;
-  setRequestEventData: (arg0: string) => void;
-  setRequestSession: (arg0: string) => void;
 }
 
 export function SendTransactionModal({
@@ -27,9 +25,7 @@ export function SendTransactionModal({
   setVisible,
   requestEvent,
   requestSession,
-}: // setRequestEventData,
-// setRequestSession,
-SendTransactionModalProps) {
+}: SendTransactionModalProps) {
   const chainID = requestEvent?.params?.chainId?.toUpperCase();
   const method = requestEvent?.params?.request?.method;
 
@@ -71,7 +67,9 @@ SendTransactionModalProps) {
         <View style={styles.divider} />
 
         <View style={styles.chainContainer}>
-          <Tag value={chainID} grey={true} />
+          <View style={styles.flexRowWrapped}>
+            <Tag value={chainID} grey={true} />
+          </View>
           <Methods methods={[method]} />
           <Message message={JSON.stringify(transaction, null, 2)} />
         </View>
@@ -100,7 +98,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   modalContainer: {

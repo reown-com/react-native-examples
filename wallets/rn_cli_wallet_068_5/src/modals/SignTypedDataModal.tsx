@@ -19,8 +19,6 @@ interface SignTypedDataModalProps {
   setVisible: (arg0: boolean) => void;
   requestEvent: SignClientTypes.EventArguments['session_request'] | undefined;
   requestSession: any;
-  setRequestEventData: (arg0: string) => void;
-  setRequestSession: (arg0: string) => void;
 }
 
 export function SignTypedDataModal({
@@ -28,8 +26,6 @@ export function SignTypedDataModal({
   setVisible,
   requestEvent,
   requestSession,
-  setRequestEventData,
-  setRequestSession,
 }: SignTypedDataModalProps) {
   const chainID = requestEvent?.params?.chainId?.toUpperCase();
   const method = requestEvent?.params?.request?.method;
@@ -71,7 +67,9 @@ export function SignTypedDataModal({
         <View style={styles.divider} />
 
         <View style={styles.chainContainer}>
-          <Tag value={chainID} grey={true} />
+          <View style={styles.flexRowWrapped}>
+            <Tag value={chainID} grey={true} />
+          </View>
           <Methods methods={[method]} />
           <Message message={JSON.stringify(message, null, 2)} />
         </View>
@@ -100,7 +98,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   modalContainer: {

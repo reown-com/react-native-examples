@@ -111,6 +111,7 @@ const HomeScreen = () => {
   }
 
   // ToDo / Consider: How best to move onSessionProposal() + onSessionRequest() + the if statement Listeners.
+  // Know there is an events config we did in web-examples app
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
       setPairedProposal(proposal);
@@ -155,9 +156,6 @@ const HomeScreen = () => {
     if (web3wallet) {
       web3wallet.on('session_proposal', onSessionProposal);
       web3wallet.on('session_request', onSessionRequest);
-    }
-    if (successPair) {
-      console.log('successPair', successPair);
     }
   }, [
     WCURI,

@@ -20,7 +20,6 @@ export function CopyURIDialog({
 }: copyURIDialogProps) {
   const windowWidth = Dimensions.get('window').width;
 
-  //ToDO: Fix the width jump on width on paste.
   return (
     <Dialog.Container
       visible={visible}
