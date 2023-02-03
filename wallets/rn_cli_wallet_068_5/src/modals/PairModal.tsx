@@ -36,7 +36,7 @@ export function PairModal({
   const methods = proposal?.params?.requiredNamespaces.eip155.methods;
   const events = proposal?.params?.requiredNamespaces.eip155.events;
   const chains = proposal?.params?.requiredNamespaces.eip155.chains;
-  // const icon = proposal?.params.proposer.metadata.icons[0];
+  const icon = proposal?.params.proposer.metadata.icons[0];
 
   return (
     <Modal
@@ -45,14 +45,20 @@ export function PairModal({
       onTouchEnd={() => open(false)}>
       <View style={styles.container}>
         <View style={styles.modalContainer}>
-          {/* // ToDo: Add in Icon param */}
-          <ModalHeader name={name} url={url} />
+          <ModalHeader name={name} url={url} icon={icon} />
 
           <View style={styles.divider} />
           <Text style={styles.permissionsText}>REQUESTED PERMISSIONS:</Text>
 
           <View style={styles.chainContainer}>
-            <Tag value={chains?.[0].toUpperCase()} grey={true} />
+            <View style={styles.flexRowWrapped}>
+              {chains?.map((chain: string, index: number) => {
+                return (
+                  <Tag key={index} value={chain.toUpperCase()} grey={true} />
+                );
+              })}
+            </View>
+
             <Methods methods={methods} />
             <Events events={events} />
           </View>

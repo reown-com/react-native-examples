@@ -43,6 +43,7 @@ export async function createOrRestoreEIP155Wallet() {
     wallet1 = EIP155Lib.init({});
   }
 
+  // @notice / Warning!!! : This is a test wallet, do not use it for real transactions
   setLocalStorage(wallet1?.getMnemonic());
   address1 = wallet1.getAddress();
 

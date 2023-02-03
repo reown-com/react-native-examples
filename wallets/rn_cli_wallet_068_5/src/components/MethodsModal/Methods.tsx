@@ -22,6 +22,7 @@ export function Methods({methods}: IMethodsProps) {
 
 const styles = StyleSheet.create({
   methodsContainer: {
+    marginTop: 4,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 8,

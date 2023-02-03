@@ -4,16 +4,17 @@ import {Image, StyleSheet, Text, View} from 'react-native';
 interface IModalHeaderProps {
   name: string;
   url: string;
-  //   icon: string;
+  icon: string;
 }
 
-export function ModalHeader({name, url}: IModalHeaderProps) {
+export function ModalHeader({name, url, icon}: IModalHeaderProps) {
+  console.log('icon', icon);
   return (
     <View style={styles.modalHeaderContainer}>
       <View style={styles.imageRowContainer}>
         <Image
           source={{
-            uri: 'https://avatars.githubusercontent.com/u/37784886',
+            uri: icon,
           }}
           style={styles.WCLogoLeft}
         />

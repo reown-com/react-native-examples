@@ -30,9 +30,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingTop: 4,
     borderRadius: 28,
-    marginRight: 4,
+    marginRight: 10,
     marginBottom: 8,
-    width: 105, // ToDO:Fix This. This is a hack to make the tags the same width.
   },
   mainText: {
     fontSize: 13,
