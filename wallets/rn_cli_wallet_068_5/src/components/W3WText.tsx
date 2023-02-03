@@ -9,7 +9,7 @@ interface IW3WTextProps {
 }
 
 /*
-  @notice W3WText Component
+  @notice W3WText Component (Unfinished / not swapped out for all TEXT components)
   @params value, color
   @returns Text
   @dev: This component is used to render the W3W text in the W3Wallet App

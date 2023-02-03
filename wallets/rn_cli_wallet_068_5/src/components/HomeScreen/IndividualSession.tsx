@@ -7,7 +7,7 @@ interface IndividualSessionProps {
   url: string;
 }
 
-//ToDo: Change to TouchableOpacity and navigate to Session
+//ToDo: Change to TouchableOpacity and navigate to Session on next Sprint
 const IndividualSession = ({name, icons, url}: IndividualSessionProps) => {
   return (
     <View style={styles.sessionContainer}>
@@ -23,8 +23,7 @@ const IndividualSession = ({name, icons, url}: IndividualSessionProps) => {
           <Text style={styles.greyText}>{url.slice(8)} </Text>
         </View>
       </View>
-      {/* // ToDo: Replace with Chevron when above is fixed */}
-      {/* <Text>CHECK</Text> */}
+      {/* // ToDo: Add in Chevron  */}
     </View>
   );
 };

@@ -38,10 +38,11 @@ export function CopyURIDialog({
         <View style={styles.flexRow}>
           <TextInput
             autoFocus
-            style={styles.textInput}
+            style={[styles.textInput, {width: windowWidth * 0.8}]}
             onChangeText={setWCUri}
             value={wcURI}
             placeholder="wc://a13aef..."
+            clearButtonMode="always"
             enablesReturnKeyAutomatically
           />
         </View>
@@ -72,13 +73,11 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     display: 'flex',
-    // marginTop: -16,
   },
   textInput: {
     height: 44,
     borderRadius: 15,
     padding: 10,
-    width: '100%',
     marginTop: 16,
     backgroundColor: 'white',
   },
@@ -93,7 +92,8 @@ const styles = StyleSheet.create({
     display: 'flex',
   },
   flexRow: {
-    display: 'flex',
+    flex: 1,
+    alignItems: 'stretch',
   },
   cancelText: {
     color: '#3396FF',

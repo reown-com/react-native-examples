@@ -36,7 +36,7 @@ SignModalProps) {
   const message = getSignParamsMessage(requestEvent?.params?.request?.params);
 
   const requestName = requestSession?.peer?.metadata?.name;
-  // const requestIcon = requestSession?.peer?.metadata?.icons[0];
+  const requestIcon = requestSession?.peer?.metadata?.icons[0];
   const requestURL = requestSession?.peer?.metadata?.url;
 
   const {topic} = requestEvent;
@@ -48,8 +48,6 @@ SignModalProps) {
         topic,
         response,
       });
-      // setRequestEventData(undefined);
-      // setRequestSession(undefined);
       setVisible(false);
     }
   }
@@ -61,8 +59,6 @@ SignModalProps) {
         topic,
         response,
       });
-      // setRequestEventData(undefined);
-      // setRequestSession(undefined);
       setVisible(false);
     }
   }
@@ -70,7 +66,7 @@ SignModalProps) {
   return (
     <Modal backdropOpacity={0.6} isVisible={visible}>
       <View style={styles.modalContainer}>
-        <ModalHeader name={requestName} url={requestURL} />
+        <ModalHeader name={requestName} url={requestURL} icon={requestIcon} />
 
         <View style={styles.divider} />
 

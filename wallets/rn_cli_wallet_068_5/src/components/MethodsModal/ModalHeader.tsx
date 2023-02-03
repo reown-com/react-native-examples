@@ -7,8 +7,8 @@ interface IModalHeaderProps {
   icon: string;
 }
 
+//ToDo: QoL: Add in the Emoji scroll animation
 export function ModalHeader({name, url, icon}: IModalHeaderProps) {
-  console.log('icon', icon);
   return (
     <View style={styles.modalHeaderContainer}>
       <View style={styles.imageRowContainer}>
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   emojiContainer: {
-    opacity: 0.8, //ToDo: Fix Transtion later
+    opacity: 0.8,
     width: 290,
     height: 44,
     borderRadius: 8,

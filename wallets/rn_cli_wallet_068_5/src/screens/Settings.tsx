@@ -74,8 +74,6 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    // ToDo: Fix this by passing props in StyleSheet
-    // backgroundColor: isDarkMode ? Colors.black : Colors.white,
   },
   textInput: {
     height: 40,

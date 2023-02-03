@@ -59,6 +59,7 @@ const HomeScreen = () => {
   const [requestEventData, setRequestEventData] = useState();
   const [requestSession, setRequestSession] = useState();
 
+  // To Revist on Dark Mode Sprint
   const backgroundStyle = {
     flex: 1,
     padding: 16,
@@ -273,8 +274,6 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    // ToDo: Fix this by passing props in StyleSheet
-    // backgroundColor: isDarkMode ? Colors.black : Colors.white,
   },
   textInput: {
     height: 40,

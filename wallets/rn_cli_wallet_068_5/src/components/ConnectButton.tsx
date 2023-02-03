@@ -6,6 +6,7 @@ interface IConnectButtonProps {
   onPress: () => void;
 }
 
+//ToDo: QOL - Replace Text with W3WText Component
 export function ConnectButton({onPress}: IConnectButtonProps) {
   return (
     <TouchableOpacity onPress={() => onPress()}>

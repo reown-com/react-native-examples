@@ -6,6 +6,7 @@ interface IndividualSessionProps {
   setCopyDialog: (arg0: boolean) => void;
 }
 
+/* // ToDo: Add in QR Modal Module */
 const ActionButtons = ({setCopyDialog}: IndividualSessionProps) => {
   return (
     <View style={styles.absoluteFlexRow}>
@@ -15,7 +16,6 @@ const ActionButtons = ({setCopyDialog}: IndividualSessionProps) => {
           setCopyDialog(true);
         }}
       />
-      {/* // ToDo: Add in after QRCode Module is complete */}
       {/* <CircleActionButton
         copyImage={false}
         handlePress={() => setApprovalModal(true)}

@@ -16,7 +16,7 @@ export function GetStartedButton() {
         colors={!web3wallet ? ['#E5E5E5', '#E1EAEE'] : ['#3396FF', '#0D7DF2']}
         style={styles.blueButtonContainer}>
         <Text style={!web3wallet ? styles.disabledText : styles.mainText}>
-          {!web3wallet ? 'Talking to Vitalik...' : 'Get Started'}
+          {!web3wallet ? 'Initializing...' : 'Get Started'}
         </Text>
       </LinearGradient>
     </TouchableOpacity>

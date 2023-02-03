@@ -4,8 +4,6 @@ import LinearGradient from 'react-native-linear-gradient';
 
 interface CircleActionButtonProps {
   copyImage: boolean;
-  //   visible: boolean;
-  //   open: (arg0: boolean) => void;
   handlePress: () => void;
 }
 
