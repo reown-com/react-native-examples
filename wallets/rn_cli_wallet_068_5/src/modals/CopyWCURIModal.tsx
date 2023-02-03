@@ -28,7 +28,6 @@ export function CopyWCURIModal({
 
   // @notice iOS and Android had workarounds for the modal not closing properly
   if (Platform.OS === 'ios') {
-    console.log('entering here...', copyDialog);
     return (
       <Modal
         isVisible={copyDialog}
@@ -55,7 +54,6 @@ export function CopyWCURIModal({
   }
 
   //@notice: Android implementation
-  console.log('android entering...');
   return (
     <CopyURIDialog
       pair={pair}

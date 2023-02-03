@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  Text,
   SafeAreaView,
   StatusBar,
   useColorScheme,
@@ -10,7 +9,6 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import Modal from 'react-native-modal';
 
 import {SignClientTypes} from '@walletconnect/types';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
@@ -19,7 +17,6 @@ import {currentETHAddress, web3wallet, _pair} from '../utils/Web3WalletClient';
 
 import {PairModal} from '../modals/PairModal';
 
-import {CopyURIDialog} from '../components/CopyURIDialog';
 import {SignModal} from '../modals/SignModal';
 import Sessions from '../components/HomeScreen/Sessions';
 import ActionButtons from '../components/HomeScreen/ActionButtons';
@@ -36,30 +33,11 @@ import {CopyWCURIModal} from '../modals/CopyWCURIModal';
   @dev: Placed the async functions on this page for simplicity
 
   Async Functions:
-  1) createSignClient(): For creating a SignClient instance
-  2) handleAccept(): To handle the initial connection proposal accept event
-  3) handleReject(): To handle the initial connection reject event
-  4) pair(): To handle the initial connection reject event
-  5) onSessionRequest: To handle the session request event (i.e. eth_sign)
-
-  States:
-  1) signClient: X
-  1) approvalModal: X
-  1) signModal: X
-  1) copyDialog: X
-  1) pairedProposal: X
-
-  Rendering:
-  1) Status Bar
-  2) Modals
-    - PairingModal
-    - MethodsModal
-    - CopyURIDialog
-    - QRCodeModal
-  3) Main Content
-    - Header
-    - Sessions
-    - Action Buttons
+  1) handleAccept(): To handle the initial connection proposal accept event
+  2) handleCancel(): For the CopyWCURIModal Cancel.
+  3) pair(): To handle the initial connection reject event
+  4) onSessionProposal: To handle the initial pairing proposal event
+  5) onSessionRequest: To handle the session request event (i.e. eth_sign, eth_signTypedData, eth_sendTransaction)
 
 **/
 
@@ -73,6 +51,7 @@ const HomeScreen = () => {
   const [signTypedDataModal, setSignTypedDataModal] = useState(false);
   const [sendTransactionModal, setSendTransactionModal] = useState(false);
   const [copyDialog, setCopyDialog] = useState(false);
+  const [successPair, setSuccessPair] = useState(false);
 
   // Pairing State
   const [pairedProposal, setPairedProposal] = useState();
@@ -112,6 +91,7 @@ const HomeScreen = () => {
       });
 
       setApprovalModal(false);
+      setSuccessPair(true);
     }
   }
 
@@ -175,6 +155,9 @@ const HomeScreen = () => {
       web3wallet.on('session_proposal', onSessionProposal);
       web3wallet.on('session_request', onSessionRequest);
     }
+    if (successPair) {
+      console.log('successPair', successPair);
+    }
   }, [
     WCURI,
     approvalModal,
@@ -185,6 +168,7 @@ const HomeScreen = () => {
     requestSession,
     onSessionProposal,
     onSessionRequest,
+    successPair,
   ]);
 
   return (
