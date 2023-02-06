@@ -13,7 +13,7 @@ Catalogue of wallet and dapp examples WalletConnect's various SDKs via React Nat
 - Submit any issues / feature requests.
 
 Note:
-If you are switching between all of these wallets i.e. `rn_cli_068_5` & `rn_cli_070_6`, recommend clearing cache and using this one command block.
+If you are switching between these wallets (i.e. `rn_cli_068_5` & `rn_cli_070_6`), it is recommended to clear caches using the following command:
 
 ```
 watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache
