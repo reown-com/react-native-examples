@@ -16,6 +16,14 @@ Set up your own `.env` file from the example and **replace `ENV_PROJECT_ID` with
 cp .env.example .env
 ```
 
+### Testing the Wallet
+
+- Go to our [React App](https://react-app.walletconnect.com/)
+- Get the WC URI
+- Paste into the React Native Wallet
+- Pair (Approve or reject)
+- Perform actions on the React App to test the various methods
+
 ### Setup (iOS)
 
 If CocoaPods is not installed on your system yet:
