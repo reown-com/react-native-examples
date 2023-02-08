@@ -4,6 +4,10 @@ React Native examples implementing WalletConnect v2
 
 Catalogue of wallet and dapp examples WalletConnect's various SDKs via React Native. Each example contains its own README with further instructions and explanations.
 
+### Wallet (Demo)
+
+https://user-images.githubusercontent.com/45455218/217548710-778dbba8-5a5a-4f48-86c2-c3299347083b.mov
+
 ## Getting Started
 
 - Ensure your[ React Native environment](https://reactnative.dev/docs/next/environment-setup) has been properly setup (XCode, ruby etc). Note for Mac users to have the correct Ruby versions if doing a fresh install.
@@ -11,6 +15,28 @@ Catalogue of wallet and dapp examples WalletConnect's various SDKs via React Nat
 - Check the respective `/wallet` folder to see the `rn_cli_wallet` or `rn_expo_wallet` repo
 - Read through the various README files for further information
 - Submit any issues / feature requests.
+
+Note:
+If you are switching between these wallets (i.e. `rn_cli_068_5` & `rn_cli_070_6`), it is recommended to clear caches using the following command:
+
+```
+watchman watch-del-all && rm -rf node_modules/ && yarn cache clean && yarn install && yarn start -- --reset-cache
+```
+
+If you run into issues with the simulator version:
+
+```
+npx react-native run-ios
+error No simulator available with name "iPhone 13".
+```
+
+Change the flag with:
+
+```
+npx react-native run-ios --simulator="iPhone 14"
+```
+
+If you have `/ios` or Pod Issues, delete the `Podfile.lock` and re-run `pod update && pod install` worked for my case
 
 ## Wallets
 
