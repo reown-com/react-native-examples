@@ -15,18 +15,18 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {SessionTypes} from '@walletconnect/types';
 import {currentETHAddress, web3wallet, _pair} from '../utils/Web3WalletClient';
 
-import {PairModal} from '../modals/PairModal';
+import {PairModal} from '../components/Modals/PairModal';
 
-import {SignModal} from '../modals/SignModal';
+import {SignModal} from '../components/Modals/SignModal';
 import Sessions from '../components/HomeScreen/Sessions';
 import ActionButtons from '../components/HomeScreen/ActionButtons';
 import {useNavigation} from '@react-navigation/native';
 import {EIP155_SIGNING_METHODS} from '../data/EIP155';
-import {SignTypedDataModal} from '../modals/SignTypedDataModal';
-import {SendTransactionModal} from '../modals/SendTransactionModal';
+import {SignTypedDataModal} from '../components/Modals/SignTypedDataModal';
+import {SendTransactionModal} from '../components/Modals/SendTransactionModal';
 import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
-import {CopyWCURIModal} from '../modals/CopyWCURIModal';
+import {CopyWCURIModal} from '../components/Modals/CopyWCURIModal';
 
 /**
   @notice: HomeScreen for Web3Wallet Example

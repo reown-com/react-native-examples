@@ -1,11 +1,11 @@
 import React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
-import {AcceptRejectButton} from '../components/AcceptRejectButton';
-import {Events} from '../components/Modal/Events';
-import {Methods} from '../components/Modal/Methods';
-import {ModalHeader} from '../components/Modal/ModalHeader';
-import {Tag} from '../components/Tag';
+import {AcceptRejectButton} from '../AcceptRejectButton';
+import {Events} from '../Modal/Events';
+import {Methods} from '../Modal/Methods';
+import {ModalHeader} from '../Modal/ModalHeader';
+import {Tag} from '../Tag';
 
 interface PairModalProps {
   proposal: any; //ToDo: fix.
@@ -31,6 +31,7 @@ export function PairModal({
   open,
   handleAccept,
 }: PairModalProps) {
+  // Note: Current namespaces is for EIP155 only (i.e. methods, events, chains)
   const name = proposal?.params?.proposer?.metadata?.name;
   const url = proposal?.params?.proposer?.metadata.url;
   const methods = proposal?.params?.requiredNamespaces.eip155.methods;

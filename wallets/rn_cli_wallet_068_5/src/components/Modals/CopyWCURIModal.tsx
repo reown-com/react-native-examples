@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {Platform} from 'react-native';
-import {CopyURIDialog} from '../components/CopyURIDialog';
+import {CopyURIDialog} from '../CopyURIDialog';
 import Modal from 'react-native-modal';
 
 interface CopyWCURIModalProps {

@@ -9,14 +9,7 @@ interface IW3WTextProps {
 }
 
 /*
-  @notice W3WText Component (Unfinished / not swapped out for all TEXT components)
-  @params value, color
-  @returns Text
-  @dev: This component is used to render the W3W text in the W3Wallet App
-  Types:
-    1. Heading Text
-    1. Body Text
-  Color:
+  3WText Component (Unfinished / not swapped out for all TEXT components)
 */
 
 export function W3WText({type, value, color}: IW3WTextProps) {

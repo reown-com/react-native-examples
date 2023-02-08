@@ -1,21 +1,18 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {View, Image, Text, StyleSheet, ScrollView} from 'react-native';
 import IndividualSession from './IndividualSession';
 import {web3wallet} from '../../utils/Web3WalletClient';
 
+const TickImage = require('../../assets/Tick.png');
+
 const Sessions = () => {
   const sessions = Object.values(web3wallet.getActiveSessions());
-
-  useEffect(() => {}, [sessions]);
 
   // @notice: Empty State with no Session
   if (!sessions || sessions.length === 0) {
     return (
       <View style={styles.container}>
-        <Image
-          source={require('../../assets/Tick.png')}
-          style={styles.imageContainer}
-        />
+        <Image source={TickImage} style={styles.imageContainer} />
         <Text style={styles.greyText}>
           Apps you connect with will appear here. To connect scan or paste the
           code that is displayed in the app.
