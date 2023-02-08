@@ -27,18 +27,17 @@ const Sessions = () => {
   // @notice: Main Rendering of Sessions
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-      {sessions &&
-        sessions.map((session, index) => {
-          const {name, icons, url} = session?.peer.metadata;
-          return (
-            <IndividualSession
-              key={index}
-              icons={icons.toString()}
-              name={name}
-              url={url}
-            />
-          );
-        })}
+      {sessions.map((session, index) => {
+        const {name, icons, url} = session?.peer.metadata;
+        return (
+          <IndividualSession
+            key={index}
+            icons={icons.toString()}
+            name={name}
+            url={url}
+          />
+        );
+      })}
     </ScrollView>
   );
 };

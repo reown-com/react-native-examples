@@ -2,9 +2,9 @@ import React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
 import {AcceptRejectButton} from '../components/AcceptRejectButton';
-import {Events} from '../components/MethodsModal/Events';
-import {Methods} from '../components/MethodsModal/Methods';
-import {ModalHeader} from '../components/MethodsModal/ModalHeader';
+import {Events} from '../components/Modal/Events';
+import {Methods} from '../components/Modal/Methods';
+import {ModalHeader} from '../components/Modal/ModalHeader';
 import {Tag} from '../components/Tag';
 
 interface PairModalProps {

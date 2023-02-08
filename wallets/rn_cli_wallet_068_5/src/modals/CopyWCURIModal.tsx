@@ -7,8 +7,8 @@ interface CopyWCURIModalProps {
   pair: any;
   WCURI: string;
   setVisible: () => void;
-  setApprovalModal: (arg0: boolean) => void;
-  setWCUri: (arg0: string) => void;
+  setApprovalModal: (visible: boolean) => void;
+  setWCUri: (wcURI: string) => void;
   copyDialog: boolean;
   pairedProposal: any;
   approvalModal: boolean;

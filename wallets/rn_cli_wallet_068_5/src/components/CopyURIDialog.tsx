@@ -5,7 +5,7 @@ import {ConnectButton} from './ConnectButton';
 
 interface copyURIDialogProps {
   wcURI: string;
-  setWCUri: (arg0: string) => void;
+  setWCUri: (wcURI: string) => void;
   setVisible: () => void;
   setApprovalModal: () => void;
   visible: boolean;
@@ -29,8 +29,8 @@ export function CopyURIDialog({
         <Dialog.Title>Enter a WalletConnect URI</Dialog.Title>
         <View>
           <Dialog.Description style={styles.descriptionText}>
-            To get the URI press the 📋 copy to clipboard button in wallet
-            connection interfaces.
+            To get the URI press the copy to clipboard button from your dapp's
+            WalletConnect interface.
           </Dialog.Description>
         </View>
 

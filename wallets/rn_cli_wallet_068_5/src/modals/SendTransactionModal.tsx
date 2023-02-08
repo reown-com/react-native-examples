@@ -3,10 +3,10 @@ import {View, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
 import {SignClientTypes} from '@walletconnect/types';
 import {Tag} from '../components/Tag';
-import {Methods} from '../components/MethodsModal/Methods';
-import {Message} from '../components/MethodsModal/Message';
+import {Methods} from '../components/Modal/Methods';
+import {Message} from '../components/Modal/Message';
 import {AcceptRejectButton} from '../components/AcceptRejectButton';
-import {ModalHeader} from '../components/MethodsModal/ModalHeader';
+import {ModalHeader} from '../components/Modal/ModalHeader';
 import {
   approveEIP155Request,
   rejectEIP155Request,
