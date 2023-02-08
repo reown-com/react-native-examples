@@ -11,8 +11,11 @@ https://user-images.githubusercontent.com/45455218/217548710-778dbba8-5a5a-4f48-
 
 ## Wallets
 
-- React Native CLI Wallet `wallets/rn_cli_wallet`
+Full Example
 - React Native CLI Wallet (0.68.5) `wallets/rn_cli_wallet_068_5`
+
+Skeleton Example (WIP)
+- React Native CLI Wallet `wallets/rn_cli_wallet`
 - React Native Expo Wallet `wallets/rn_expo_wallet`
 
 ## Getting Started
