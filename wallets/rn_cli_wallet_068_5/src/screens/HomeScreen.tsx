@@ -152,13 +152,12 @@ const HomeScreen = () => {
     [],
   );
 
+  useEffect(() => {
+    if (approvalModal || copyDialog || signModal || sendTransactionModal) {
+      web3wallet.on('session_proposal', onSessionProposal);
+      web3wallet.on('session_request', onSessionRequest);
     }
-  if (web3wallet) {
-    web3wallet.on('session_proposal', onSessionProposal);
-    web3wallet.on('session_request', onSessionRequest);
-  }
-
-  useEffect(() => {}, [
+  }, [
     WCURI,
     approvalModal,
     copyDialog,
