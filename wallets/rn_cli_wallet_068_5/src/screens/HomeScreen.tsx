@@ -154,6 +154,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (
+      copyDialog ||
       approvalModal ||
       signTypedDataModal ||
       signModal ||
