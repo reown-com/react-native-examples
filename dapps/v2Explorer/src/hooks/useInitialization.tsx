@@ -17,7 +17,6 @@ export default function useInitialization() {
     try {
       await createUniversalProvider();
       web3Provider = new ethers.providers.Web3Provider(universalProvider);
-
       setInitialized(true);
     } catch (err: unknown) {
       console.log('Error for initializing', err);
