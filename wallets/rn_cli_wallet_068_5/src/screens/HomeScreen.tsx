@@ -153,7 +153,12 @@ const HomeScreen = () => {
   );
 
   useEffect(() => {
-    if (approvalModal || copyDialog || signModal || sendTransactionModal) {
+    if (
+      approvalModal ||
+      signTypedDataModal ||
+      signModal ||
+      sendTransactionModal
+    ) {
       web3wallet.on('session_proposal', onSessionProposal);
       web3wallet.on('session_request', onSessionRequest);
     }
@@ -162,6 +167,7 @@ const HomeScreen = () => {
     approvalModal,
     copyDialog,
     signModal,
+    signTypedDataModal,
     sendTransactionModal,
     requestEventData,
     requestSession,
