@@ -4,6 +4,10 @@ React Native examples implementing WalletConnect v2
 
 Catalogue of wallet and dapp examples WalletConnect's various SDKs via React Native. Each example contains its own README with further instructions and explanations.
 
+### Wallet (Demo)
+
+https://user-images.githubusercontent.com/45455218/217548710-778dbba8-5a5a-4f48-86c2-c3299347083b.mov
+
 ## Getting Started
 
 - Ensure your[ React Native environment](https://reactnative.dev/docs/next/environment-setup) has been properly setup (XCode, ruby etc). Note for Mac users to have the correct Ruby versions if doing a fresh install.
