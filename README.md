@@ -8,6 +8,13 @@ Catalogue of wallet and dapp examples WalletConnect's various SDKs via React Nat
 
 https://user-images.githubusercontent.com/45455218/217548710-778dbba8-5a5a-4f48-86c2-c3299347083b.mov
 
+
+## Wallets
+
+- React Native CLI Wallet wallets/rn_cli_wallet
+- React Native CLI Wallet (0.68.5) wallets/rn_cli_wallet_068_5
+- React Native Expo Wallet wallets/rn_expo_wallet
+
 ## Getting Started
 
 - Ensure your[ React Native environment](https://reactnative.dev/docs/next/environment-setup) has been properly setup (XCode, ruby etc). Note for Mac users to have the correct Ruby versions if doing a fresh install.
@@ -38,10 +45,6 @@ npx react-native run-ios --simulator="iPhone 14"
 
 If you have `/ios` or Pod Issues, delete the `Podfile.lock` and re-run `pod update && pod install` worked for my case
 
-## Wallets
-
-- React Native CLI Wallet
-- React Native Expo Wallet
 
 ## Support
 
