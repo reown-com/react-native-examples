@@ -51,5 +51,14 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>awallet</string>
+		<string>trust</string>
+		<string>rainbow</string>
+		<string>walletapp</string>
+		<string>spot</string>
+		<string>zerion</string>
+	</array>
 </dict>
 </plist>
