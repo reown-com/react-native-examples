@@ -5,7 +5,8 @@ import UniversalProvider from '@walletconnect/universal-provider';
 import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
 
 export let universalProvider;
-export let session;
+export let currentWCURI;
+export let universalProviderSession;
 export let provider;
 
 export async function createUniversalProvider() {
@@ -13,7 +14,7 @@ export async function createUniversalProvider() {
   //   console.log('[CONFIG] ENV_RELAY_URL:', ENV_RELAY_URL);
 
   try {
-    provider = await UniversalProvider.init({
+    universalProvider = await UniversalProvider.init({
       logger: 'info',
       relayUrl: ENV_RELAY_URL,
       projectId: ENV_PROJECT_ID,
@@ -29,37 +30,31 @@ export async function createUniversalProvider() {
     // console.log('provider....tom', provider.session);
     // This is equivalent to: await provider.enable() ? in V1;
 
-    if (!provider.session || provider.session === undefined) {
-      console.log('noooo');
-      session = await provider.connect({
-        namespaces: {
-          eip155: {
-            methods: [
-              'eth_sendTransaction',
-              'eth_signTransaction',
-              'eth_sign',
-              'personal_sign',
-              'eth_signTypedData',
-            ],
-            chains: ['eip155:1'],
-            events: ['chainChanged', 'accountsChanged'],
-            rpcMap: {
-              1: `https://rpc.walletconnect.com?chainId=eip155:1&projectId=${ENV_PROJECT_ID}`,
-            },
+    universalProvider.on('display_uri', uri => {
+      currentWCURI = uri;
+      console.log('UProvider URI:', uri);
+    });
+
+    universalProviderSession = await universalProvider.connect({
+      namespaces: {
+        eip155: {
+          methods: [
+            'eth_sendTransaction',
+            'eth_signTransaction',
+            'eth_sign',
+            'personal_sign',
+            'eth_signTypedData',
+          ],
+          chains: ['eip155:1'],
+          events: ['chainChanged', 'accountsChanged'],
+          rpcMap: {
+            1: 'https://rpc.walletconnect.com?chainId=eip155:1&projectId=8a0ba6f700740986e9dce03011f84a4b',
           },
         },
-      });
-    } else {
-      console.log('entering...?');
-      // Subscribe for pairing URI
-      provider.on('display_uri', uri => {
-        console.log(uri);
-      });
-    }
+      },
+    });
 
-    console.log('provider session2 ...', session);
-
-    // console.log('Finished connecting', universalProvider);
+    console.log('UP SESSION', universalProviderSession);
   } catch {
     console.log('Error for connecting');
   }

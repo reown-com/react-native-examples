@@ -27,18 +27,22 @@ import {ethers} from 'ethers';
 import '@walletconnect/react-native-compat';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import useInitialization, {web3Provider} from '../hooks/useInitialization';
-import {universalProvider, session} from '../utils/UniversalProvider';
+import {
+  universalProvider,
+  universalProviderSession,
+  currentWCURI,
+} from '../utils/UniversalProvider';
+import {ExplorerModal} from '../components/ExplorerModal';
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-  const [currentWCURI, setcurrentWCURI] = useState('');
 
   // Initialize a provider
   const initialized = useInitialization();
 
   useEffect(() => {
     console.log('App Initalized: ', initialized);
-    console.log('App SESSION: ', session);
+    console.log('useEffect currentWCURI', currentWCURI);
   }, [initialized]);
 
   const backgroundStyle = {
@@ -70,9 +74,7 @@ function App(): JSX.Element {
     // const tempApp = 'https://spot.so';
     // const tempApp = 'https://argent.link/app';
     const tempApp = 'https://aw.app';
-    const tempURI =
-      'wc:72120319b9fd7cf882882da2c0a00e76dce773d8db1bc8cb7e64a39b50d50a32@2?relay-protocol=irn&symKey=f0068701743003ec01aa6ab01210b59c2dfd1f4cab85b07cd97b1c4d22e04e94';
-    console.log('currentWCURI: ', currentWCURI);
+
     const testtwo = formatUniversalUrl(tempApp, currentWCURI);
     console.log('testtwo: ', testtwo);
     // const t4st =
@@ -92,23 +94,30 @@ function App(): JSX.Element {
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <View
-        style={{
-          height: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        }}>
-        <Text style={{color: 'blue'}}> React Native dApp V2 Side</Text>
-        <Button title="Link" onPress={() => navigateTo()} />
-      </View>
-    </SafeAreaView>
+    <>
+      <SafeAreaView style={backgroundStyle}>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor}
+        />
+        <View
+          style={{
+            height: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          }}>
+          {universalProviderSession ? (
+            <Text style={{color: 'white'}}>Connected 👉🥺👈</Text>
+          ) : null}
+          {/* <Button title="Link" onPress={() => navigateTo()} /> */}
+        </View>
+      </SafeAreaView>
+      {!universalProviderSession ? (
+        <ExplorerModal onPress={() => navigateTo()} />
+      ) : null}
+    </>
   );
 }
 
