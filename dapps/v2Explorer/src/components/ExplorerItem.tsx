@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import {navigateDeepLink} from '../utils/ExplorerUtils';
+import {currentWCURI} from '../utils/UniversalProvider';
 
 interface ExplorerItemProps {
   explorerData: any;
@@ -23,7 +25,9 @@ export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
       {explorerData.map((item, index) => {
         return (
           <TouchableOpacity
-            // onPress={() => {}}
+            onPress={() =>
+              navigateDeepLink(item.mobile.universal, currentWCURI)
+            }
             key={index}
             style={styles.explorerItem}>
             <Image
@@ -45,24 +49,26 @@ export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
 const styles = StyleSheet.create({
   explorerContainer: {
     display: 'flex',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
   },
   explorerItem: {
-    width: '33%',
-    height: 75,
+    width: '25%',
+    // height: 75,
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 8,
   },
   explorerIcon: {
-    height: 32,
-    width: 32,
+    height: 60,
+    width: 60,
     borderRadius: 8,
   },
   explorerIconText: {
     color: 'white',
-    marginTop: 8,
+    marginVertical: 8,
     maxWidth: 100,
   },
 });

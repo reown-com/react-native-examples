@@ -16,7 +16,8 @@ export default function useInitialization() {
   const onInitialize = useCallback(async () => {
     try {
       await createUniversalProvider();
-      // web3Provider = new ethers.providers.Web3Provider(universalProvider);
+      web3Provider = new ethers.providers.Web3Provider(universalProvider);
+      console.log('initialization web3Provier', web3Provider);
       setInitialized(true);
     } catch (err: unknown) {
       console.log('Error for initializing', err);

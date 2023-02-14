@@ -1,24 +1,27 @@
 import React, {useEffect, useState} from 'react';
 import {
-  ActivityIndicator,
   Image,
+  Modal,
   StyleSheet,
   Text,
-  Touchable,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {universalProviderSession} from '../utils/UniversalProvider';
-import {ExplorerItem, ExplorerItems} from './ExplorerItem';
+import {ExplorerItem} from './ExplorerItem';
+
+interface ExplorerModalProps {
+  modalVisible: boolean;
+  close: () => void;
+}
 
 // Populate with the data...
-export function ExplorerModal() {
+export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
   let [isLoading, setIsLoading] = useState(true);
   let [explorerData, setExplorerData] = useState([]);
 
   useEffect(() => {
     fetch(
-      'https://explorer-api.walletconnect.com/v3/all?projectId=e899c82be21d4acca2c8aec45e893598&sdks=sign_v2&entries=12&page=1',
+      'https://explorer-api.walletconnect.com/v3/all?projectId=e899c82be21d4acca2c8aec45e893598&sdks=sign_v2&entries=8&page=1',
     )
       .then(res => res.json())
       .then(
@@ -39,23 +42,30 @@ export function ExplorerModal() {
   }, [explorerData]);
 
   return (
-    <View style={styles.wcContainer}>
-      <View style={styles.flexRow}>
-        <Image style={styles.wcLogo} source={require('../assets/WCLogo.png')} />
-        <View style={styles.closeContainer}>
+    <Modal transparent={true} visible={modalVisible} animationType="slide">
+      <View style={styles.wcContainer}>
+        <View style={styles.flexRow}>
           <Image
-            style={styles.closeImage}
-            source={require('../assets/Close.png')}
+            style={styles.wcLogo}
+            source={require('../assets/WCLogo.png')}
           />
+          <TouchableOpacity
+            style={styles.closeContainer}
+            onPress={() => close()}>
+            <Image
+              style={styles.closeImage}
+              source={require('../assets/Close.png')}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.connectWalletContainer}>
+          <View style={styles.sectionTitleContainer}>
+            <Text style={styles.sectionTitle}>Connect your wallet</Text>
+          </View>
+          <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
         </View>
       </View>
-      <View style={styles.connectWalletContainer}>
-        <View style={styles.sectionTitleContainer}>
-          <Text style={styles.sectionTitle}>Connect your wallet</Text>
-        </View>
-        <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
-      </View>
-    </View>
+    </Modal>
   );
 }
 
@@ -64,7 +74,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     position: 'absolute',
     bottom: 0,
-    height: 420,
+    height: 360,
     width: '100%',
     backgroundColor: '#0D7DF2',
     // borderWidth: 1,
@@ -88,6 +98,7 @@ const styles = StyleSheet.create({
   connectWalletContainer: {
     height: '90%',
     display: 'flex',
+    // flexDirection: 'column',
     paddingBottom: 60,
     width: '100%',
     backgroundColor: '#141414',
@@ -98,7 +109,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 16,
+    paddingVertical: 16,
   },
   sectionTitle: {
     fontWeight: '600',
