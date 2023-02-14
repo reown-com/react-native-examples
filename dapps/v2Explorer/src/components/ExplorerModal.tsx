@@ -21,7 +21,7 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
 
   useEffect(() => {
     fetch(
-      'https://explorer-api.walletconnect.com/v3/all?projectId=e899c82be21d4acca2c8aec45e893598&sdks=sign_v2&entries=8&page=1',
+      'https://explorer-api.walletconnect.com/v3/all?projectId=e899c82be21d4acca2c8aec45e893598&sdks=sign_v2&entries=7&page=1',
     )
       .then(res => res.json())
       .then(

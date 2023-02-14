@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {navigateDeepLink} from '../utils/ExplorerUtils';
 import {currentWCURI} from '../utils/UniversalProvider';
+import {ViewAllBox} from './ViewAllBox';
 
 interface ExplorerItemProps {
   explorerData: any;
@@ -42,6 +43,7 @@ export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
           </TouchableOpacity>
         );
       })}
+      <ViewAllBox />
     </View>
   );
 };
@@ -64,7 +66,7 @@ const styles = StyleSheet.create({
   explorerIcon: {
     height: 60,
     width: 60,
-    borderRadius: 8,
+    borderRadius: 16,
   },
   explorerIconText: {
     color: 'white',
