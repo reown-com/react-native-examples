@@ -1,23 +1,27 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Image,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {ExplorerItem} from './ExplorerItem';
+import {Image, Modal, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {InitialExplorerContent} from './InitialExplorerContent';
+import {ViewAllExplorerContent} from './ViewAllExplorerContent';
 
 interface ExplorerModalProps {
   modalVisible: boolean;
+  // viewAllContentVisible: boolean;
+  // setViewAllContentVisible: (value: boolean) => void;
   close: () => void;
 }
 
 // Populate with the data...
-export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
-  let [isLoading, setIsLoading] = useState(true);
-  let [explorerData, setExplorerData] = useState([]);
+export function ExplorerModal({
+  modalVisible,
+  close,
+}: // setViewAllContentVisible,
+// viewAllContentVisible,
+ExplorerModalProps) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [viewAllContentVisible, setViewAllContentVisible] = useState(false);
+  const [explorerData, setExplorerData] = useState([]);
+  const [viewAllExplorerData, setViewAllExplorerData] = useState([]);
 
   useEffect(() => {
     fetch(
@@ -39,7 +43,30 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
           // setError(error);
         },
       );
+    fetch(
+      'https://explorer-api.walletconnect.com/v3/all?projectId=e899c82be21d4acca2c8aec45e893598&sdks=sign_v2',
+    )
+      .then(res => res.json())
+      .then(
+        wallet => {
+          const tempRes = [];
+          Object.keys(wallet?.listings).forEach(function (key) {
+            tempRes.push(wallet?.listings[key]);
+          });
+          setIsLoading(false);
+          setViewAllExplorerData(tempRes);
+        },
+        error => {
+          setIsLoading(false);
+          console.log('error', error);
+          // setError(error);
+        },
+      );
   }, [explorerData]);
+
+  const openViewAllContent = () => {
+    setViewAllContentVisible(true);
+  };
 
   return (
     <Modal transparent={true} visible={modalVisible} animationType="slide">
@@ -51,7 +78,8 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
           />
           <TouchableOpacity
             style={styles.closeContainer}
-            onPress={() => close()}>
+            onPress={() => close()}
+            hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
             <Image
               style={styles.closeImage}
               source={require('../assets/Close.png')}
@@ -59,10 +87,18 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
           </TouchableOpacity>
         </View>
         <View style={styles.connectWalletContainer}>
-          <View style={styles.sectionTitleContainer}>
-            <Text style={styles.sectionTitle}>Connect your wallet</Text>
-          </View>
-          <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
+          {!viewAllContentVisible ? (
+            <InitialExplorerContent
+              isLoading={isLoading}
+              explorerData={explorerData}
+              openViewAllContent={openViewAllContent}
+            />
+          ) : (
+            <ViewAllExplorerContent
+              explorerData={viewAllExplorerData}
+              setViewAllContentVisible={setViewAllContentVisible}
+            />
+          )}
         </View>
       </View>
     </Modal>
@@ -74,7 +110,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     position: 'absolute',
     bottom: 0,
-    height: 360,
+    maxHeight: 600,
     width: '100%',
     backgroundColor: '#0D7DF2',
     // borderWidth: 1,
@@ -96,10 +132,10 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   connectWalletContainer: {
-    height: '90%',
+    height: '100%',
     display: 'flex',
     // flexDirection: 'column',
-    paddingBottom: 60,
+    paddingBottom: 24,
     width: '100%',
     backgroundColor: '#141414',
     borderTopLeftRadius: 30,
@@ -107,6 +143,7 @@ const styles = StyleSheet.create({
   },
   sectionTitleContainer: {
     display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 16,
@@ -132,6 +169,10 @@ const styles = StyleSheet.create({
   closeImage: {
     width: 12,
     height: 12,
+  },
+  chevronImage: {
+    width: 8,
+    height: 18,
   },
   closeContainer: {
     height: 28,

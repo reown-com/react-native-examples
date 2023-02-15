@@ -29,11 +29,13 @@ function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [modalVisible, setModalVisible] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
+  // const [viewAllContentVisible, setViewAllContentVisible] = useState(false);
 
   // Initialize a provider
   const initialized = useInitialization();
 
   const close = () => {
+    // setViewAllContentVisible(false);
     setModalVisible(false);
   };
 
@@ -53,7 +55,13 @@ function App(): JSX.Element {
     if (universalProviderSession) {
       getAddress();
     }
-  }, [initialized, getAddress, currentAccount, modalVisible]);
+  }, [
+    initialized,
+    getAddress,
+    currentAccount,
+    modalVisible,
+    // viewAllContentVisible,
+  ]);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -68,7 +76,12 @@ function App(): JSX.Element {
         />
 
         {!universalProviderSession ? (
-          <ExplorerModal modalVisible={modalVisible} close={close} />
+          <ExplorerModal
+            modalVisible={modalVisible}
+            close={close}
+            // setViewAllContentVisible={setViewAllContentVisible}
+            // viewAllContentVisible={viewAllContentVisible}
+          />
         ) : null}
 
         <View

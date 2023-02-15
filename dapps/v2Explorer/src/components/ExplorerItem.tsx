@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import {navigateDeepLink} from '../utils/ExplorerUtils';
 import {currentWCURI} from '../utils/UniversalProvider';
-import {ViewAllBox} from './ViewAllBox';
 
 interface ExplorerItemProps {
   explorerData: any;
@@ -22,7 +21,7 @@ export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
   }
 
   return (
-    <View style={styles.explorerContainer}>
+    <>
       {explorerData.map((item, index) => {
         return (
           <TouchableOpacity
@@ -43,8 +42,7 @@ export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
           </TouchableOpacity>
         );
       })}
-      <ViewAllBox />
-    </View>
+    </>
   );
 };
 
