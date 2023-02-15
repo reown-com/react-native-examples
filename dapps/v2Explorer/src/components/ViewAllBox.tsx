@@ -1,14 +1,15 @@
 import * as React from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {Image, StyleSheet, View, Text, TouchableOpacity} from 'react-native';
 
 interface ViewAllBoxProps {
   open: () => void;
 }
+const viewAllIcon = require('../assets/ViewAll.png');
 
 export const ViewAllBox = ({open}: ViewAllBoxProps) => {
   return (
     <TouchableOpacity onPress={() => open()} style={styles.explorerItem}>
-      <View style={styles.explorerIcon} />
+      <Image style={styles.explorerIcon} source={viewAllIcon} />
       <View>
         <Text style={styles.explorerIconText} numberOfLines={1}>
           View All
@@ -23,7 +24,6 @@ const styles = StyleSheet.create({
     height: 60,
     width: 60,
     borderRadius: 16,
-    backgroundColor: 'grey',
   },
   explorerItem: {
     width: '25%',

@@ -1,5 +1,5 @@
-import * as React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import React, {useEffect, useRef} from 'react';
+import {StyleSheet, View, Text, Animated} from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
 import {ViewAllBox} from './ViewAllBox';
 
@@ -14,8 +14,18 @@ export const InitialExplorerContent = ({
   explorerData,
   openViewAllContent,
 }: InitialExplorerContentProps) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
   return (
-    <View>
+    <Animated.View style={{opacity: fadeAnim}}>
       <View style={styles.sectionTitleContainer}>
         <Text style={styles.sectionTitle}>Connect your wallet</Text>
       </View>
@@ -23,7 +33,7 @@ export const InitialExplorerContent = ({
         <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
         <ViewAllBox open={openViewAllContent} />
       </View>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -47,5 +57,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 4,
   },
 });

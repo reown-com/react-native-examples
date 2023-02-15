@@ -62,9 +62,11 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   explorerIcon: {
-    height: 60,
-    width: 60,
+    height: 59,
+    width: 59,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   explorerIconText: {
     color: 'white',

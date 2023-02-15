@@ -82,7 +82,7 @@ ExplorerModalProps) {
             hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
             <Image
               style={styles.closeImage}
-              source={require('../assets/Close.png')}
+              source={require('../assets/CloseWhite.png')}
             />
           </TouchableOpacity>
         </View>
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   closeContainer: {
     height: 28,
     width: 28,
-    backgroundColor: 'white',
+    backgroundColor: '#141414',
     borderRadius: 14,
     display: 'flex',
     justifyContent: 'center',

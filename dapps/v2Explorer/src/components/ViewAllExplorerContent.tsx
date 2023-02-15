@@ -1,5 +1,7 @@
-import * as React from 'react';
+import React, {useRef, useEffect} from 'react';
 import {
+  Animated,
+  Easing,
   StyleSheet,
   View,
   Text,
@@ -21,8 +23,18 @@ export const ViewAllExplorerContent = ({
   explorerData,
   setViewAllContentVisible,
 }: ViewAllExplorerContentProps) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
   return (
-    <View>
+    <Animated.View style={{opacity: fadeAnim}}>
       <View style={styles.sectionBackContainer}>
         <TouchableOpacity
           style={styles.twentyWidth}
@@ -44,7 +56,7 @@ export const ViewAllExplorerContent = ({
         indicatorStyle="white">
         <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 };
 
@@ -77,6 +89,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 100,
+    paddingHorizontal: 4,
   },
   sectionTitle: {
     fontWeight: '600',
