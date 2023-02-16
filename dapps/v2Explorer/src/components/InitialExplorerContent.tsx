@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {StyleSheet, View, Text, Animated} from 'react-native';
+import {StyleSheet, View, Text, Animated, useColorScheme} from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
 import {ViewAllBox} from './ViewAllBox';
 
@@ -16,6 +16,8 @@ export const InitialExplorerContent = ({
 }: InitialExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
+  const isDarkMode = useColorScheme() === 'dark';
+
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -27,7 +29,10 @@ export const InitialExplorerContent = ({
   return (
     <Animated.View style={{opacity: fadeAnim}}>
       <View style={styles.sectionTitleContainer}>
-        <Text style={styles.sectionTitle}>Connect your wallet</Text>
+        <Text
+          style={isDarkMode ? styles.sectionTitle : styles.sectionTitleBlack}>
+          Connect your wallet
+        </Text>
       </View>
       <View style={styles.explorerContainer}>
         <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
@@ -48,6 +53,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontWeight: '600',
     color: 'white',
+    fontSize: 20,
+    lineHeight: 24,
+  },
+  sectionTitleBlack: {
+    fontWeight: '600',
+    color: '#141414',
     fontSize: 20,
     lineHeight: 24,
   },

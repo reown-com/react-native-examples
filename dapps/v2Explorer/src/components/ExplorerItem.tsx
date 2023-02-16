@@ -6,6 +6,7 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
+  useColorScheme,
 } from 'react-native';
 import {navigateDeepLink} from '../utils/ExplorerUtils';
 import {currentWCURI} from '../utils/UniversalProvider';
@@ -16,6 +17,8 @@ interface ExplorerItemProps {
 }
 
 export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
+  const isDarkMode = useColorScheme() === 'dark';
+
   if (isLoading) {
     return <ActivityIndicator color="#FFFFFF" />;
   }
@@ -35,7 +38,13 @@ export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
               source={{uri: item.image_url.md}}
             />
             <View>
-              <Text style={styles.explorerIconText} numberOfLines={1}>
+              <Text
+                style={
+                  isDarkMode
+                    ? styles.explorerIconText
+                    : styles.explorerIconTextBlack
+                }
+                numberOfLines={1}>
                 {item.name}
               </Text>
             </View>
@@ -66,10 +75,15 @@ const styles = StyleSheet.create({
     width: 59,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(0, 0, 0, 0.1)',
   },
   explorerIconText: {
     color: 'white',
+    marginVertical: 8,
+    maxWidth: 100,
+  },
+  explorerIconTextBlack: {
+    color: '#1F1F1F',
     marginVertical: 8,
     maxWidth: 100,
   },

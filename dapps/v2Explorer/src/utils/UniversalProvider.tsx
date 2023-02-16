@@ -30,6 +30,26 @@ export async function createUniversalProvider() {
       console.log('UProvider URI:', uri);
     });
 
+    // Subscribe to session ping
+    universalProvider.on('session_ping', ({id, topic}) => {
+      console.log(id, topic);
+    });
+
+    // Subscribe to session event
+    universalProvider.on('session_event', ({event, chainId}) => {
+      console.log(event, chainId);
+    });
+
+    // Subscribe to session update
+    universalProvider.on('session_update', ({topic, params}) => {
+      console.log(topic, params);
+    });
+
+    // Subscribe to session delete
+    universalProvider.on('session_delete', ({id, topic}) => {
+      console.log(id, topic);
+    });
+
     universalProviderSession = await universalProvider.connect({
       namespaces: {
         eip155: {
@@ -43,7 +63,7 @@ export async function createUniversalProvider() {
           chains: ['eip155:1'],
           events: ['chainChanged', 'accountsChanged'],
           rpcMap: {
-            1: 'https://rpc.walletconnect.com?chainId=eip155:1&projectId=0a72d9e7655033b377ce656013533d60',
+            1: `https://rpc.walletconnect.com?chainId=eip155:1&projectId=${ENV_PROJECT_ID}`,
           },
         },
       },

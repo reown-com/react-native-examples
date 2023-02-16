@@ -1,13 +1,13 @@
 import React, {useRef, useEffect} from 'react';
 import {
   Animated,
-  Easing,
   StyleSheet,
   View,
   Text,
   TouchableOpacity,
   Image,
   ScrollView,
+  useColorScheme,
 } from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
 
@@ -24,6 +24,7 @@ export const ViewAllExplorerContent = ({
   setViewAllContentVisible,
 }: ViewAllExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const isDarkMode = useColorScheme() === 'dark';
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -46,7 +47,10 @@ export const ViewAllExplorerContent = ({
           />
         </TouchableOpacity>
         <View style={styles.sixtyWidth}>
-          <Text style={styles.sectionTitle}>Connect your wallet</Text>
+          <Text
+            style={isDarkMode ? styles.sectionTitle : styles.sectionTitleBlack}>
+            Connect your wallet
+          </Text>
         </View>
         <View style={styles.twentyWidth} />
       </View>
@@ -94,6 +98,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontWeight: '600',
     color: 'white',
+    fontSize: 20,
+    lineHeight: 24,
+  },
+  sectionTitleBlack: {
+    fontWeight: '600',
+    color: '#1f1f1f',
     fontSize: 20,
     lineHeight: 24,
   },

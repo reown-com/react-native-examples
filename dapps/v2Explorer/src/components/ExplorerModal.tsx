@@ -1,7 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {Image, Modal, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  useColorScheme,
+} from 'react-native';
 import {InitialExplorerContent} from './InitialExplorerContent';
 import {ViewAllExplorerContent} from './ViewAllExplorerContent';
+
+// @ts-expect-error - `@env` is a virtualised module via Babel config.
+import {fetchInitialWallets, fetchViewAllWallets} from '../utils/ExplorerUtils';
 
 interface ExplorerModalProps {
   modalVisible: boolean;
@@ -23,45 +33,17 @@ ExplorerModalProps) {
   const [explorerData, setExplorerData] = useState([]);
   const [viewAllExplorerData, setViewAllExplorerData] = useState([]);
 
+  const isDarkMode = useColorScheme() === 'dark';
+
+  const fetchWallets = async () => {
+    Promise.all([
+      fetchInitialWallets(setIsLoading, setExplorerData),
+      fetchViewAllWallets(setIsLoading, setViewAllExplorerData),
+    ]);
+  };
+
   useEffect(() => {
-    fetch(
-      'https://explorer-api.walletconnect.com/v3/all?projectId=e899c82be21d4acca2c8aec45e893598&sdks=sign_v2&entries=7&page=1',
-    )
-      .then(res => res.json())
-      .then(
-        wallet => {
-          const tempRes = [];
-          Object.keys(wallet?.listings).forEach(function (key) {
-            tempRes.push(wallet?.listings[key]);
-          });
-          setIsLoading(false);
-          setExplorerData(tempRes);
-        },
-        error => {
-          setIsLoading(false);
-          console.log('error', error);
-          // setError(error);
-        },
-      );
-    fetch(
-      'https://explorer-api.walletconnect.com/v3/all?projectId=e899c82be21d4acca2c8aec45e893598&sdks=sign_v2',
-    )
-      .then(res => res.json())
-      .then(
-        wallet => {
-          const tempRes = [];
-          Object.keys(wallet?.listings).forEach(function (key) {
-            tempRes.push(wallet?.listings[key]);
-          });
-          setIsLoading(false);
-          setViewAllExplorerData(tempRes);
-        },
-        error => {
-          setIsLoading(false);
-          console.log('error', error);
-          // setError(error);
-        },
-      );
+    fetchWallets();
   }, [explorerData]);
 
   const openViewAllContent = () => {
@@ -77,16 +59,27 @@ ExplorerModalProps) {
             source={require('../assets/WCLogo.png')}
           />
           <TouchableOpacity
-            style={styles.closeContainer}
+            style={
+              isDarkMode ? styles.closeContainer : styles.closeContainerLight
+            }
             onPress={() => close()}
             hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
             <Image
               style={styles.closeImage}
-              source={require('../assets/CloseWhite.png')}
+              source={
+                isDarkMode
+                  ? require('../assets/CloseWhite.png')
+                  : require('../assets/Close.png')
+              }
             />
           </TouchableOpacity>
         </View>
-        <View style={styles.connectWalletContainer}>
+        <View
+          style={
+            isDarkMode
+              ? styles.connectWalletContainer
+              : styles.connectWalletContainerLight
+          }>
           {!viewAllContentVisible ? (
             <InitialExplorerContent
               isLoading={isLoading}
@@ -114,8 +107,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#0D7DF2',
     // borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    // borderColor: 'rgba(0, 0, 0, 0.1)',
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
@@ -134,10 +126,18 @@ const styles = StyleSheet.create({
   connectWalletContainer: {
     height: '100%',
     display: 'flex',
-    // flexDirection: 'column',
     paddingBottom: 24,
     width: '100%',
     backgroundColor: '#141414',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+  },
+  connectWalletContainerLight: {
+    height: '100%',
+    display: 'flex',
+    paddingBottom: 24,
+    width: '100%',
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
@@ -184,6 +184,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.1)',
-    borderStyle: 'solid',
+  },
+  closeContainerLight: {
+    height: 28,
+    width: 28,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
   },
 });
+function initialWallets() {
+  throw new Error('Function not implemented.');
+}

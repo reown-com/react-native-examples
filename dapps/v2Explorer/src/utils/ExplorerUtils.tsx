@@ -1,5 +1,8 @@
 import {Alert, Linking} from 'react-native';
 
+// @ts-expect-error - `@env` is a virtualised module via Babel config.
+import {ENV_PROJECT_ID} from '@env';
+
 function formatNativeUrl(appUrl: string, wcUri: string): string {
   let safeAppUrl = appUrl;
   if (!safeAppUrl.includes('://')) {
@@ -44,4 +47,54 @@ export const navigateDeepLink = async (appLink: string, wcURI: string) => {
   //   } else {
   //     Alert.alert(`Don't know how to open this URL: ${testtwo}`);
   //   }
+};
+
+export const fetchInitialWallets = async (
+  setIsLoading: (loading: boolean) => void,
+  setExplorerData: (data: any) => void,
+) => {
+  fetch(
+    `https://explorer-api.walletconnect.com/v3/wallets?projectId=${ENV_PROJECT_ID}&sdks=sign_v2&entries=7&page=1`,
+  )
+    .then(res => res.json())
+    .then(
+      wallet => {
+        const tempRes = [];
+        Object.keys(wallet?.listings).forEach(function (key) {
+          tempRes.push(wallet?.listings[key]);
+        });
+        setIsLoading(false);
+        setExplorerData(tempRes);
+      },
+      error => {
+        setIsLoading(false);
+        console.log('error', error);
+        // setError(error);
+      },
+    );
+};
+
+export const fetchViewAllWallets = async (
+  setIsLoading: (loading: boolean) => void,
+  setViewAllExplorerData: (data: any) => void,
+) => {
+  fetch(
+    `https://explorer-api.walletconnect.com/v3/wallets?projectId=${ENV_PROJECT_ID}&sdks=sign_v2`,
+  )
+    .then(res => res.json())
+    .then(
+      wallet => {
+        const tempRes = [];
+        Object.keys(wallet?.listings).forEach(function (key) {
+          tempRes.push(wallet?.listings[key]);
+        });
+        setIsLoading(false);
+        setViewAllExplorerData(tempRes);
+      },
+      error => {
+        setIsLoading(false);
+        console.log('error', error);
+        // setError(error);
+      },
+    );
 };
