@@ -29,13 +29,11 @@ function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [modalVisible, setModalVisible] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
-  // const [viewAllContentVisible, setViewAllContentVisible] = useState(false);
 
-  // Initialize a provider
+  // Initialize universal provider
   const initialized = useInitialization();
 
   const close = () => {
-    // setViewAllContentVisible(false);
     setModalVisible(false);
   };
 
@@ -50,18 +48,13 @@ function App(): JSX.Element {
   }, []);
 
   useEffect(() => {
+    // Logs to help developers debug
     // console.log('App Initalized: ', initialized);
     // console.log('useEffect currentWCURI', currentWCURI);
     if (universalProviderSession) {
       getAddress();
     }
-  }, [
-    initialized,
-    getAddress,
-    currentAccount,
-    modalVisible,
-    // viewAllContentVisible,
-  ]);
+  }, [initialized, getAddress, currentAccount, modalVisible]);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -76,22 +69,10 @@ function App(): JSX.Element {
         />
 
         {!universalProviderSession ? (
-          <ExplorerModal
-            modalVisible={modalVisible}
-            close={close}
-            // setViewAllContentVisible={setViewAllContentVisible}
-            // viewAllContentVisible={viewAllContentVisible}
-          />
+          <ExplorerModal modalVisible={modalVisible} close={close} />
         ) : null}
 
-        <View
-          style={{
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
+        <View style={[styles.container, backgroundStyle.backgroundColor]}>
           {universalProviderSession ? (
             <View>
               <Text style={styles.whiteText}>👉🥺👈</Text>
@@ -113,6 +94,12 @@ function App(): JSX.Element {
 export default App;
 
 const styles = StyleSheet.create({
+  container: {
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   whiteText: {
     color: 'white',
     textAlign: 'center',

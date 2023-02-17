@@ -9,15 +9,17 @@ import {
 } from 'react-native';
 
 interface ViewAllBoxProps {
-  open: () => void;
+  setViewAllContentVisible: any;
 }
 const viewAllIcon = require('../assets/ViewAll.png');
 
-export const ViewAllBox = ({open}: ViewAllBoxProps) => {
+export const ViewAllBox = ({setViewAllContentVisible}: ViewAllBoxProps) => {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <TouchableOpacity onPress={() => open()} style={styles.explorerItem}>
+    <TouchableOpacity
+      onPress={() => setViewAllContentVisible(true)}
+      style={styles.explorerItem}>
       <Image style={styles.explorerIcon} source={viewAllIcon} />
       <View>
         <Text

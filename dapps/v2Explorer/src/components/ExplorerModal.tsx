@@ -1,32 +1,23 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Image,
-  Modal,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  useColorScheme,
-} from 'react-native';
+import {StyleSheet, View, useColorScheme, Dimensions} from 'react-native';
+import Modal from 'react-native-modal';
 import {InitialExplorerContent} from './InitialExplorerContent';
 import {ViewAllExplorerContent} from './ViewAllExplorerContent';
 
-// @ts-expect-error - `@env` is a virtualised module via Babel config.
+//@ts-expect-error - `@env` is a virtualised module via Babel config.
 import {fetchInitialWallets, fetchViewAllWallets} from '../utils/ExplorerUtils';
+import {ExplorerModalHeader} from './ExplorerModalHeader';
 
 interface ExplorerModalProps {
   modalVisible: boolean;
   // viewAllContentVisible: boolean;
-  // setViewAllContentVisible: (value: boolean) => void;
   close: () => void;
 }
 
+const deviceWidth = Dimensions.get('window').width;
+
 // Populate with the data...
-export function ExplorerModal({
-  modalVisible,
-  close,
-}: // setViewAllContentVisible,
-// viewAllContentVisible,
-ExplorerModalProps) {
+export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   const [viewAllContentVisible, setViewAllContentVisible] = useState(false);
@@ -43,37 +34,20 @@ ExplorerModalProps) {
   };
 
   useEffect(() => {
-    fetchWallets();
+    if (!explorerData) {
+      fetchWallets();
+    }
   }, [explorerData]);
 
-  const openViewAllContent = () => {
-    setViewAllContentVisible(true);
-  };
-
   return (
-    <Modal transparent={true} visible={modalVisible} animationType="slide">
+    <Modal
+      style={styles.wcContainer}
+      // deviceWidth={deviceWidth}
+      isVisible={modalVisible}
+      onModalHide={() => setViewAllContentVisible(false)}
+      useNativeDriver>
       <View style={styles.wcContainer}>
-        <View style={styles.flexRow}>
-          <Image
-            style={styles.wcLogo}
-            source={require('../assets/WCLogo.png')}
-          />
-          <TouchableOpacity
-            style={
-              isDarkMode ? styles.closeContainer : styles.closeContainerLight
-            }
-            onPress={() => close()}
-            hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
-            <Image
-              style={styles.closeImage}
-              source={
-                isDarkMode
-                  ? require('../assets/CloseWhite.png')
-                  : require('../assets/Close.png')
-              }
-            />
-          </TouchableOpacity>
-        </View>
+        <ExplorerModalHeader close={close} />
         <View
           style={
             isDarkMode
@@ -84,7 +58,7 @@ ExplorerModalProps) {
             <InitialExplorerContent
               isLoading={isLoading}
               explorerData={explorerData}
-              openViewAllContent={openViewAllContent}
+              setViewAllContentVisible={setViewAllContentVisible}
             />
           ) : (
             <ViewAllExplorerContent
@@ -100,11 +74,12 @@ ExplorerModalProps) {
 
 const styles = StyleSheet.create({
   wcContainer: {
-    display: 'flex',
+    flex: 1,
     position: 'absolute',
     bottom: 0,
+    left: -10,
     maxHeight: 600,
-    width: '100%',
+    width: deviceWidth,
     backgroundColor: '#0D7DF2',
     // borderWidth: 1,
     // borderColor: 'rgba(0, 0, 0, 0.1)',
@@ -162,14 +137,7 @@ const styles = StyleSheet.create({
   highlight: {
     fontWeight: '700',
   },
-  wcLogo: {
-    width: 181,
-    height: 28,
-  },
-  closeImage: {
-    width: 12,
-    height: 12,
-  },
+
   chevronImage: {
     width: 8,
     height: 18,

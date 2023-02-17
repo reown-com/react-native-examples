@@ -6,13 +6,13 @@ import {ViewAllBox} from './ViewAllBox';
 interface InitialExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
-  openViewAllContent: () => void;
+  setViewAllContentVisible: () => void;
 }
 
 export const InitialExplorerContent = ({
   isLoading,
   explorerData,
-  openViewAllContent,
+  setViewAllContentVisible,
 }: InitialExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -36,7 +36,7 @@ export const InitialExplorerContent = ({
       </View>
       <View style={styles.explorerContainer}>
         <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
-        <ViewAllBox open={openViewAllContent} />
+        <ViewAllBox setViewAllContentVisible={setViewAllContentVisible} />
       </View>
     </Animated.View>
   );
