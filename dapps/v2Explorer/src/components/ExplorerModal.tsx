@@ -1,5 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, useColorScheme, Dimensions} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  View,
+  useColorScheme,
+  Dimensions,
+  ScrollView,
+  Text,
+} from 'react-native';
 import Modal from 'react-native-modal';
 import {InitialExplorerContent} from './InitialExplorerContent';
 import {ViewAllExplorerContent} from './ViewAllExplorerContent';
@@ -8,17 +15,19 @@ import {ViewAllExplorerContent} from './ViewAllExplorerContent';
 import {fetchInitialWallets, fetchViewAllWallets} from '../utils/ExplorerUtils';
 import {ExplorerModalHeader} from './ExplorerModalHeader';
 
+const MODAL_HEIGHT = Dimensions.get('window').height * 0.7;
+const DEVICE_WIDTH = Dimensions.get('window').width;
+
 interface ExplorerModalProps {
   modalVisible: boolean;
   // viewAllContentVisible: boolean;
   close: () => void;
 }
 
-const deviceWidth = Dimensions.get('window').width;
-
 // Populate with the data...
 export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const [isViewAllLoading, setViewAllLoading] = useState(true);
 
   const [viewAllContentVisible, setViewAllContentVisible] = useState(false);
   const [explorerData, setExplorerData] = useState([]);
@@ -26,18 +35,33 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
 
   const isDarkMode = useColorScheme() === 'dark';
 
-  const fetchWallets = async () => {
-    Promise.all([
-      fetchInitialWallets(setIsLoading, setExplorerData),
-      fetchViewAllWallets(setIsLoading, setViewAllExplorerData),
-    ]);
+  const loading = (loadingState: boolean) => {
+    setIsLoading(loadingState);
   };
 
+  const loadingViewAll = (loadingState: boolean) => {
+    setViewAllLoading(loadingState);
+  };
+
+  const fetchExplorerData = (data: any) => {
+    setExplorerData(data);
+  };
+
+  const fetchViewAllExplorerData = (data: any) => {
+    setViewAllExplorerData(data);
+  };
+
+  const fetchWallets = useCallback(() => {
+    fetchInitialWallets(loading, fetchExplorerData);
+    fetchViewAllWallets(loadingViewAll, fetchViewAllExplorerData);
+  }, []);
+
   useEffect(() => {
-    if (!explorerData) {
+    if (!explorerData.length) {
       fetchWallets();
     }
-  }, [explorerData]);
+    console.log('ed', explorerData?.length);
+  }, [explorerData, fetchWallets, isLoading]);
 
   return (
     <Modal
@@ -78,8 +102,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     left: -10,
-    maxHeight: 600,
-    width: deviceWidth,
+    maxHeight: MODAL_HEIGHT,
+    width: DEVICE_WIDTH,
     backgroundColor: '#0D7DF2',
     // borderWidth: 1,
     // borderColor: 'rgba(0, 0, 0, 0.1)',
@@ -101,7 +125,7 @@ const styles = StyleSheet.create({
   connectWalletContainer: {
     height: '100%',
     display: 'flex',
-    paddingBottom: 24,
+    // paddingBottom: 24,
     width: '100%',
     backgroundColor: '#141414',
     borderTopLeftRadius: 30,
@@ -110,7 +134,7 @@ const styles = StyleSheet.create({
   connectWalletContainerLight: {
     height: '100%',
     display: 'flex',
-    paddingBottom: 24,
+    // paddingBottom: 24,
     width: '100%',
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 30,
@@ -165,6 +189,3 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0, 0, 0, 0.1)',
   },
 });
-function initialWallets() {
-  throw new Error('Function not implemented.');
-}

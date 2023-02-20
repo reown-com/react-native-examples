@@ -8,6 +8,8 @@ import {
   Image,
   ScrollView,
   useColorScheme,
+  Dimensions,
+  FlatList,
 } from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
 
@@ -36,35 +38,56 @@ export const ViewAllExplorerContent = ({
 
   return (
     <Animated.View style={{opacity: fadeAnim}}>
-      <View style={styles.sectionBackContainer}>
-        <TouchableOpacity
-          style={styles.twentyWidth}
-          onPress={() => setViewAllContentVisible(false)}
-          hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
-          <Image
-            style={styles.chevronImage}
-            source={require('../assets/Chevron.png')}
-          />
-        </TouchableOpacity>
-        <View style={styles.sixtyWidth}>
-          <Text
-            style={isDarkMode ? styles.sectionTitle : styles.sectionTitleBlack}>
-            Connect your wallet
-          </Text>
+      {/* <View> */}
+      <>
+        <View style={styles.sectionBackContainer}>
+          <TouchableOpacity
+            style={styles.twentyWidth}
+            onPress={() => setViewAllContentVisible(false)}
+            hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
+            <Image
+              style={styles.chevronImage}
+              source={require('../assets/Chevron.png')}
+            />
+          </TouchableOpacity>
+          <View style={styles.sixtyWidth}>
+            <Text
+              style={
+                isDarkMode ? styles.sectionTitle : styles.sectionTitleBlack
+              }>
+              Connect your wallet
+            </Text>
+          </View>
+          <View style={styles.twentyWidth} />
         </View>
-        <View style={styles.twentyWidth} />
-      </View>
-      <ScrollView
-        contentContainerStyle={styles.scrollExplorerContainer}
-        bounces
-        indicatorStyle="white">
-        <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
-      </ScrollView>
+
+        {/* <FlatList
+          data={explorerData}
+          renderItem={({item}) => (
+            <View style={{height: 100, width: 100, backgroundColor: 'red'}}>
+              <Text> {item.name}</Text>
+            </View>
+          )}
+          keyExtractor={item => item.id}
+        > */}
+        <ScrollView
+          scrollEnabled={true}
+          nestedScrollEnabled={true}
+          contentContainerStyle={styles.scrollExplorerContainer}
+          bounces
+          showsVerticalScrollIndicator
+          indicatorStyle={isDarkMode ? 'white' : 'black'}>
+          <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
+        </ScrollView>
+      </>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
+  viewAllContainer: {
+    height: 600,
+  },
   sectionBackContainer: {
     flexDirection: 'row',
     flex: 1,
@@ -87,13 +110,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollExplorerContainer: {
-    display: 'flex',
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 100,
     paddingHorizontal: 4,
+    // flexGrow: 1,
+    // height: 500,
   },
   sectionTitle: {
     fontWeight: '600',

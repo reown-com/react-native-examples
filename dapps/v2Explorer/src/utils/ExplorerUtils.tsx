@@ -32,10 +32,6 @@ export const navigateDeepLink = async (appLink: string, wcURI: string) => {
     return;
   }
   const testtwo = formatUniversalUrl(appLink, wcURI);
-  //   console.log('testtwo: ', testtwo);
-
-  //Then fallback on Native Link
-  //const testtwo = formatNativeUrl(appLink, wcURI);
 
   await Linking.openURL(testtwo);
   //   const supported = await Linking.canOpenURL(testtwo);
@@ -50,8 +46,8 @@ export const navigateDeepLink = async (appLink: string, wcURI: string) => {
 };
 
 export const fetchInitialWallets = async (
-  setIsLoading: (loading: boolean) => void,
-  setExplorerData: (data: any) => void,
+  setIsLoading: () => void,
+  setExplorerData: () => void,
 ) => {
   fetch(
     `https://explorer-api.walletconnect.com/v3/wallets?projectId=${ENV_PROJECT_ID}&sdks=sign_v2&entries=7&page=1`,
@@ -63,20 +59,20 @@ export const fetchInitialWallets = async (
         Object.keys(wallet?.listings).forEach(function (key) {
           tempRes.push(wallet?.listings[key]);
         });
-        setIsLoading(false);
+        setIsLoading(true);
         setExplorerData(tempRes);
+        setIsLoading(false);
       },
       error => {
         setIsLoading(false);
         console.log('error', error);
-        // setError(error);
       },
     );
 };
 
 export const fetchViewAllWallets = async (
-  setIsLoading: (loading: boolean) => void,
-  setViewAllExplorerData: (data: any) => void,
+  setIsLoading: () => void,
+  setViewAllExplorerData: () => void,
 ) => {
   fetch(
     `https://explorer-api.walletconnect.com/v3/wallets?projectId=${ENV_PROJECT_ID}&sdks=sign_v2`,
@@ -90,6 +86,7 @@ export const fetchViewAllWallets = async (
         });
         setIsLoading(false);
         setViewAllExplorerData(tempRes);
+        setIsLoading(true);
       },
       error => {
         setIsLoading(false);

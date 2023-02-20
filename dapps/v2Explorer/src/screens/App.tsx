@@ -8,6 +8,7 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import {
   SafeAreaView,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,

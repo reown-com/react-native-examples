@@ -1,5 +1,12 @@
 import React, {useEffect, useRef} from 'react';
-import {StyleSheet, View, Text, Animated, useColorScheme} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Animated,
+  useColorScheme,
+  ScrollView,
+} from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
 import {ViewAllBox} from './ViewAllBox';
 
@@ -15,7 +22,6 @@ export const InitialExplorerContent = ({
   setViewAllContentVisible,
 }: InitialExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
   const isDarkMode = useColorScheme() === 'dark';
 
   useEffect(() => {
