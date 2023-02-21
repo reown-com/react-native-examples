@@ -28,9 +28,14 @@ export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
       {explorerData.map((item, index) => {
         return (
           <TouchableOpacity
-            onPress={() =>
-              navigateDeepLink(item.mobile.universal, currentWCURI)
-            }
+            onPress={() => {
+              console.log('item.mobile.universal', item);
+              navigateDeepLink(
+                item.mobile.universal,
+                item.mobile.native,
+                currentWCURI,
+              );
+            }}
             key={index}
             style={styles.explorerItem}>
             <Image

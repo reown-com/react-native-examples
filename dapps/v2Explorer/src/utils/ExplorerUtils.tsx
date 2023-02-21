@@ -10,7 +10,7 @@ function formatNativeUrl(appUrl: string, wcUri: string): string {
     safeAppUrl = `${safeAppUrl}://`;
   }
   const encodedWcUrl = encodeURIComponent(wcUri);
-
+  console.log(`${safeAppUrl}wc?uri=${encodedWcUrl}`);
   return `${safeAppUrl}wc?uri=${encodedWcUrl}`;
 }
 
@@ -24,25 +24,39 @@ function formatUniversalUrl(appUrl: string, wcUri: string): string {
   return `${plainAppUrl}/wc?uri=${encodedWcUrl}`;
 }
 
-export const navigateDeepLink = async (appLink: string, wcURI: string) => {
-  // If Universal Link provided
-  if (appLink == null) {
-    const tempCoolWallet = formatNativeUrl('coolwallet:', wcURI);
-    await Linking.openURL(tempCoolWallet);
-    return;
+export const navigateDeepLink = async (
+  universalLink: string,
+  deepLink: string,
+  wcURI: string,
+) => {
+  let tempDeepLink;
+  // console.log('incoming universal', universalLink);
+  // console.log('incoming deepLink', deepLink);
+
+  if (universalLink && universalLink !== '') {
+    tempDeepLink = formatUniversalUrl(universalLink, wcURI);
+  } else {
+    tempDeepLink = formatNativeUrl(deepLink, wcURI);
   }
-  const testtwo = formatUniversalUrl(appLink, wcURI);
 
-  await Linking.openURL(testtwo);
-  //   const supported = await Linking.canOpenURL(testtwo);
+  // if (
+  //   appLink &&
+  //   appLink === '' &&
+  //   !appLink.includes('https://') &&
+  //   !appLink.includes('http://')
+  // ) {
+  //   tempDeepLink = formatNativeUrl(appLink, wcURI);
+  // } else {
+  //   tempDeepLink = formatUniversalUrl(appLink, wcURI);
+  // }
 
-  //   if (supported) {
-  //     // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-  //     // by some browser in the mobile
-  //     await Linking.openURL(testtwo);
-  //   } else {
-  //     Alert.alert(`Don't know how to open this URL: ${testtwo}`);
-  //   }
+  try {
+    // Note: Could not use .canOpenURL() to check if the app is installed
+    // Due to having to add it to the iOS info
+    await Linking.openURL(tempDeepLink);
+  } catch (error) {
+    Alert.alert(`Unable to open this DeepLink: ${tempDeepLink}`);
+  }
 };
 
 export const fetchInitialWallets = async (
@@ -91,7 +105,6 @@ export const fetchViewAllWallets = async (
       error => {
         setIsLoading(false);
         console.log('error', error);
-        // setError(error);
       },
     );
 };
