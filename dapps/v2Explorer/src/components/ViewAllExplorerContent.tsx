@@ -8,8 +8,6 @@ import {
   Image,
   ScrollView,
   useColorScheme,
-  Dimensions,
-  FlatList,
 } from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
 
@@ -38,7 +36,6 @@ export const ViewAllExplorerContent = ({
 
   return (
     <Animated.View style={{opacity: fadeAnim}}>
-      {/* <View> */}
       <>
         <View style={styles.sectionBackContainer}>
           <TouchableOpacity
@@ -61,18 +58,8 @@ export const ViewAllExplorerContent = ({
           <View style={styles.twentyWidth} />
         </View>
 
-        {/* <FlatList
-          data={explorerData}
-          renderItem={({item}) => (
-            <View style={{height: 100, width: 100, backgroundColor: 'red'}}>
-              <Text> {item.name}</Text>
-            </View>
-          )}
-          keyExtractor={item => item.id}
-        > */}
         <ScrollView
           scrollEnabled={true}
-          nestedScrollEnabled={true}
           contentContainerStyle={styles.scrollExplorerContainer}
           bounces
           showsVerticalScrollIndicator
@@ -90,7 +77,7 @@ const styles = StyleSheet.create({
   },
   sectionBackContainer: {
     flexDirection: 'row',
-    flex: 1,
+    display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingVertical: 16,
@@ -109,8 +96,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  scrollViewContainer: {
+    // flex: 1,
+    width: '80%',
+    paddingBottom: 100,
+    alignSelf: 'center',
+  },
+  scrollViewContentContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'lightgrey',
+    paddingBottom: 50,
+  },
   scrollExplorerContainer: {
-    flex: 1,
+    // flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',

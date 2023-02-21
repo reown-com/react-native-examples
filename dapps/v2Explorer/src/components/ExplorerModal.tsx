@@ -1,12 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  StyleSheet,
-  View,
-  useColorScheme,
-  Dimensions,
-  ScrollView,
-  Text,
-} from 'react-native';
+import {StyleSheet, View, useColorScheme, Dimensions} from 'react-native';
 import Modal from 'react-native-modal';
 import {InitialExplorerContent} from './InitialExplorerContent';
 import {ViewAllExplorerContent} from './ViewAllExplorerContent';
@@ -20,7 +13,6 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 
 interface ExplorerModalProps {
   modalVisible: boolean;
-  // viewAllContentVisible: boolean;
   close: () => void;
 }
 
@@ -60,13 +52,10 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
     if (!explorerData.length) {
       fetchWallets();
     }
-    console.log('ed', explorerData?.length);
-  }, [explorerData, fetchWallets, isLoading]);
+  }, [explorerData, fetchWallets, isLoading, isViewAllLoading]);
 
   return (
     <Modal
-      style={styles.wcContainer}
-      // deviceWidth={deviceWidth}
       isVisible={modalVisible}
       onModalHide={() => setViewAllContentVisible(false)}
       useNativeDriver>
@@ -98,11 +87,11 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
 
 const styles = StyleSheet.create({
   wcContainer: {
-    flex: 1,
+    // flex: 1,
     position: 'absolute',
-    bottom: 0,
-    left: -10,
-    maxHeight: MODAL_HEIGHT,
+    bottom: -20,
+    left: -20,
+    // maxHeight: MODAL_HEIGHT,
     width: DEVICE_WIDTH,
     backgroundColor: '#0D7DF2',
     // borderWidth: 1,
@@ -123,10 +112,12 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   connectWalletContainer: {
-    height: '100%',
+    // height: '100%',
+    maxHeight: MODAL_HEIGHT,
+
     display: 'flex',
     // paddingBottom: 24,
-    width: '100%',
+    // width: '100%',
     backgroundColor: '#141414',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -135,6 +126,7 @@ const styles = StyleSheet.create({
     height: '100%',
     display: 'flex',
     // paddingBottom: 24,
+    maxHeight: MODAL_HEIGHT,
     width: '100%',
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 30,

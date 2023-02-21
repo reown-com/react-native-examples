@@ -1,14 +1,6 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React, {useEffect, useState, useCallback} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -49,7 +41,7 @@ function App(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    // Logs to help developers debug
+    // NOTE: Logs to help developers debug
     // console.log('App Initalized: ', initialized);
     // console.log('useEffect currentWCURI', currentWCURI);
     if (universalProviderSession) {
@@ -58,37 +50,36 @@ function App(): JSX.Element {
   }, [initialized, getAddress, currentAccount, modalVisible]);
 
   const backgroundStyle = {
+    flex: 1,
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
   return (
-    <>
-      <SafeAreaView style={backgroundStyle}>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
-        />
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
+      />
 
-        {!universalProviderSession ? (
-          <ExplorerModal modalVisible={modalVisible} close={close} />
-        ) : null}
+      {!universalProviderSession ? (
+        <ExplorerModal modalVisible={modalVisible} close={close} />
+      ) : null}
 
-        <View style={[styles.container, backgroundStyle.backgroundColor]}>
-          {universalProviderSession ? (
-            <View>
-              <Text style={styles.whiteText}>👉🥺👈</Text>
-              <Text style={styles.whiteText}>Address: {currentAccount}</Text>
-            </View>
-          ) : (
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              style={styles.connectWalletButton}>
-              <Text style={styles.whiteText}>Connect Wallet</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </SafeAreaView>
-    </>
+      <View style={[styles.container, backgroundStyle.backgroundColor]}>
+        {universalProviderSession ? (
+          <View>
+            <Text style={styles.whiteText}>👉🥺👈</Text>
+            <Text style={styles.whiteText}>Address: {currentAccount}</Text>
+          </View>
+        ) : (
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={styles.connectWalletButton}>
+            <Text style={styles.whiteText}>Connect Wallet</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -96,8 +87,7 @@ export default App;
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    display: 'flex',
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -8,7 +8,7 @@ import {
   universalProvider,
 } from '../utils/UniversalProvider';
 
-export let web3Provider;
+export let web3Provider: ethers.providers.Web3Provider;
 
 export default function useInitialization() {
   const [initialized, setInitialized] = useState(false);

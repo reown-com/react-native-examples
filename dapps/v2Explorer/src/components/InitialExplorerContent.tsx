@@ -1,12 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  Animated,
-  useColorScheme,
-  ScrollView,
-} from 'react-native';
+import {StyleSheet, View, Text, Animated, useColorScheme} from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
 import {ViewAllBox} from './ViewAllBox';
 

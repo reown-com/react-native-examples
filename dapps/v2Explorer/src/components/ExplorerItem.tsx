@@ -25,7 +25,7 @@ export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
 
   return (
     <>
-      {explorerData.map((item, index) => {
+      {explorerData.map((item: any, index: number) => {
         return (
           <TouchableOpacity
             onPress={() => {
@@ -70,10 +70,10 @@ const styles = StyleSheet.create({
   },
   explorerItem: {
     width: '25%',
-    // height: 75,
+    height: 75,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 8,
+    marginVertical: 16,
   },
   explorerIcon: {
     height: 59,
