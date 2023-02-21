@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
   },
   explorerItem: {
     width: '25%',
-    // height: 75,
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 8,

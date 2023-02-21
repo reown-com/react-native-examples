@@ -112,12 +112,8 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   connectWalletContainer: {
-    // height: '100%',
     maxHeight: MODAL_HEIGHT,
-
     display: 'flex',
-    // paddingBottom: 24,
-    // width: '100%',
     backgroundColor: '#141414',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -125,7 +121,6 @@ const styles = StyleSheet.create({
   connectWalletContainerLight: {
     height: '100%',
     display: 'flex',
-    // paddingBottom: 24,
     maxHeight: MODAL_HEIGHT,
     width: '100%',
     backgroundColor: '#FFFFFF',

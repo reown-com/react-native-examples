@@ -110,15 +110,12 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
   },
   scrollExplorerContainer: {
-    // flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 100,
     paddingHorizontal: 4,
-    // flexGrow: 1,
-    // height: 500,
   },
   sectionTitle: {
     fontWeight: '600',
