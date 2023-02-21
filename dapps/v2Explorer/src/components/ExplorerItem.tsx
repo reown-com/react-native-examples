@@ -29,7 +29,6 @@ export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
         return (
           <TouchableOpacity
             onPress={() => {
-              console.log('item.mobile.universal', item);
               navigateDeepLink(
                 item.mobile.universal,
                 item.mobile.native,

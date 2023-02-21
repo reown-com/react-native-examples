@@ -10,7 +10,6 @@ function formatNativeUrl(appUrl: string, wcUri: string): string {
     safeAppUrl = `${safeAppUrl}://`;
   }
   const encodedWcUrl = encodeURIComponent(wcUri);
-  console.log(`${safeAppUrl}wc?uri=${encodedWcUrl}`);
   return `${safeAppUrl}wc?uri=${encodedWcUrl}`;
 }
 
@@ -30,8 +29,6 @@ export const navigateDeepLink = async (
   wcURI: string,
 ) => {
   let tempDeepLink;
-  // console.log('incoming universal', universalLink);
-  // console.log('incoming deepLink', deepLink);
 
   if (universalLink && universalLink !== '') {
     tempDeepLink = formatUniversalUrl(universalLink, wcURI);
