@@ -10,7 +10,7 @@ This example uses
 
 ### Installation
 
-Inside this directory (`wallets/rn_expo_wallet`), install the React Native
+Inside this directory (`dapps/v2Explorer`), install React Native
 
 ```bash
 yarn
