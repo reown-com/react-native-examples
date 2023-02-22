@@ -1,3 +1,6 @@
+import 'react-native-get-random-values';
+import '@ethersproject/shims';
+
 import React, {useEffect, useState, useCallback} from 'react';
 import {
   SafeAreaView,
@@ -8,9 +11,6 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-
-import 'react-native-get-random-values';
-import '@ethersproject/shims';
 
 import '@walletconnect/react-native-compat';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
@@ -42,7 +42,7 @@ function App(): JSX.Element {
 
   useEffect(() => {
     // NOTE: Logs to help developers debug
-    // console.log('App Initalized: ', initialized);
+    // console.log('App Initialized: ', initialized);
     // console.log('useEffect currentWCURI', currentWCURI);
     if (universalProviderSession) {
       getAddress();

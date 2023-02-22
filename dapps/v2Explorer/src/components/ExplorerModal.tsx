@@ -27,25 +27,16 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
 
   const isDarkMode = useColorScheme() === 'dark';
 
-  const loading = (loadingState: boolean) => {
-    setIsLoading(loadingState);
-  };
-
-  const loadingViewAll = (loadingState: boolean) => {
-    setViewAllLoading(loadingState);
-  };
-
-  const fetchExplorerData = (data: any) => {
-    setExplorerData(data);
-  };
-
-  const fetchViewAllExplorerData = (data: any) => {
-    setViewAllExplorerData(data);
-  };
-
   const fetchWallets = useCallback(() => {
-    fetchInitialWallets(loading, fetchExplorerData);
-    fetchViewAllWallets(loadingViewAll, fetchViewAllExplorerData);
+    fetchInitialWallets().then(wallets => {
+      setIsLoading(false);
+      setExplorerData(wallets);
+    });
+
+    fetchViewAllWallets().then(wallets => {
+      setViewAllLoading(false);
+      setViewAllExplorerData(wallets);
+    });
   }, []);
 
   useEffect(() => {
@@ -87,15 +78,11 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
 
 const styles = StyleSheet.create({
   wcContainer: {
-    // flex: 1,
     position: 'absolute',
     bottom: -20,
     left: -20,
-    // maxHeight: MODAL_HEIGHT,
     width: DEVICE_WIDTH,
     backgroundColor: '#0D7DF2',
-    // borderWidth: 1,
-    // borderColor: 'rgba(0, 0, 0, 0.1)',
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },

@@ -27,27 +27,27 @@ export async function createUniversalProvider() {
 
     universalProvider.on('display_uri', uri => {
       currentWCURI = uri;
-      console.log('UProvider URI:', uri);
+      console.log('UniversalProvider display_uri event:', uri);
     });
 
     // Subscribe to session ping
     universalProvider.on('session_ping', ({id, topic}) => {
-      console.log(id, topic);
+      console.log('session_ping', id, topic);
     });
 
     // Subscribe to session event
     universalProvider.on('session_event', ({event, chainId}) => {
-      console.log(event, chainId);
+      console.log('session_event', event, chainId);
     });
 
     // Subscribe to session update
     universalProvider.on('session_update', ({topic, params}) => {
-      console.log(topic, params);
+      console.log('session_update', topic, params);
     });
 
     // Subscribe to session delete
     universalProvider.on('session_delete', ({id, topic}) => {
-      console.log(id, topic);
+      console.log('session_delete', id, topic);
     });
 
     universalProviderSession = await universalProvider.connect({

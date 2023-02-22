@@ -36,17 +36,6 @@ export const navigateDeepLink = async (
     tempDeepLink = formatNativeUrl(deepLink, wcURI);
   }
 
-  // if (
-  //   appLink &&
-  //   appLink === '' &&
-  //   !appLink.includes('https://') &&
-  //   !appLink.includes('http://')
-  // ) {
-  //   tempDeepLink = formatNativeUrl(appLink, wcURI);
-  // } else {
-  //   tempDeepLink = formatUniversalUrl(appLink, wcURI);
-  // }
-
   try {
     // Note: Could not use .canOpenURL() to check if the app is installed
     // Due to having to add it to the iOS info
@@ -56,51 +45,37 @@ export const navigateDeepLink = async (
   }
 };
 
-export const fetchInitialWallets = async (
-  setIsLoading: () => void,
-  setExplorerData: () => void,
-) => {
-  fetch(
+export const fetchInitialWallets = () => {
+  return fetch(
     `https://explorer-api.walletconnect.com/v3/wallets?projectId=${ENV_PROJECT_ID}&sdks=sign_v2&entries=7&page=1`,
   )
     .then(res => res.json())
     .then(
       wallet => {
-        const tempRes = [];
-        Object.keys(wallet?.listings).forEach(function (key) {
-          tempRes.push(wallet?.listings[key]);
-        });
-        setIsLoading(true);
-        setExplorerData(tempRes);
-        setIsLoading(false);
+        const result = Object.keys(wallet?.listings).map(
+          key => wallet?.listings[key],
+        );
+        return result;
       },
       error => {
-        setIsLoading(false);
         console.log('error', error);
       },
     );
 };
 
-export const fetchViewAllWallets = async (
-  setIsLoading: () => void,
-  setViewAllExplorerData: () => void,
-) => {
-  fetch(
+export const fetchViewAllWallets = () => {
+  return fetch(
     `https://explorer-api.walletconnect.com/v3/wallets?projectId=${ENV_PROJECT_ID}&sdks=sign_v2`,
   )
     .then(res => res.json())
     .then(
       wallet => {
-        const tempRes = [];
-        Object.keys(wallet?.listings).forEach(function (key) {
-          tempRes.push(wallet?.listings[key]);
-        });
-        setIsLoading(false);
-        setViewAllExplorerData(tempRes);
-        setIsLoading(true);
+        const result = Object.keys(wallet?.listings).map(
+          key => wallet?.listings[key],
+        );
+        return result;
       },
       error => {
-        setIsLoading(false);
         console.log('error', error);
       },
     );
