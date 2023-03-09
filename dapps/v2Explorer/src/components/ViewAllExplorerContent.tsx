@@ -10,6 +10,7 @@ import {
   useColorScheme,
 } from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
+import Chevron from '../assets/Chevron.png';
 
 interface ViewAllExplorerContentProps {
   isLoading: boolean;
@@ -42,10 +43,7 @@ export const ViewAllExplorerContent = ({
             style={styles.twentyWidth}
             onPress={() => setViewAllContentVisible(false)}
             hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
-            <Image
-              style={styles.chevronImage}
-              source={require('../assets/Chevron.png')}
-            />
+            <Image style={styles.chevronImage} source={Chevron} />
           </TouchableOpacity>
           <View style={styles.sixtyWidth}>
             <Text
@@ -57,7 +55,7 @@ export const ViewAllExplorerContent = ({
           </View>
           <View style={styles.twentyWidth} />
         </View>
-
+        {/* TODO: Refactor with Flatlist */}
         <ScrollView
           scrollEnabled={true}
           contentContainerStyle={styles.scrollExplorerContainer}

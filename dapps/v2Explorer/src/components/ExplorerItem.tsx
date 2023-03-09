@@ -43,11 +43,10 @@ export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
             />
             <View>
               <Text
-                style={
-                  isDarkMode
-                    ? styles.explorerIconText
-                    : styles.explorerIconTextBlack
-                }
+                style={[
+                  styles.explorerIconText,
+                  isDarkMode && styles.explorerIconTextDark,
+                ]}
                 numberOfLines={1}>
                 {item.name}
               </Text>
@@ -75,20 +74,20 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   explorerIcon: {
-    height: 59,
-    width: 59,
+    height: 60,
+    width: 60,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.1)',
   },
   explorerIconText: {
-    color: 'white',
-    marginVertical: 8,
-    maxWidth: 100,
-  },
-  explorerIconTextBlack: {
     color: '#1F1F1F',
-    marginVertical: 8,
+    marginTop: 5,
     maxWidth: 100,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  explorerIconTextDark: {
+    color: 'white',
   },
 });
