@@ -4,6 +4,7 @@ import '@ethersproject/shims';
 import React, {useEffect, useState, useCallback} from 'react';
 import {
   ActivityIndicator,
+  Linking,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -30,8 +31,20 @@ function App(): JSX.Element {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
 
+  const handleSessionDisconnect = useCallback(
+    async (_: string, topic: string) => {
+      if (topic === universalProviderSession?.topic) {
+        clearSession();
+        setCurrentAccount(null);
+      }
+    },
+    [],
+  );
+
   // Initialize universal provider
-  const initialized = useInitialization();
+  const initialized = useInitialization({
+    onSessionDisconnect: handleSessionDisconnect,
+  });
 
   const close = () => {
     setModalVisible(false);
@@ -73,6 +86,16 @@ function App(): JSX.Element {
     }
   }, [initialized, getAddress, currentAccount, modalVisible]);
 
+  useEffect(() => {
+    const urlListener = Linking.addEventListener('url', ({url}) => {
+      console.log('urlListener', url);
+    });
+
+    return () => {
+      urlListener.remove();
+    };
+  }, []);
+
   // Improve this
   const backgroundStyle = {
     flex: 1,
@@ -93,12 +116,13 @@ function App(): JSX.Element {
       <View style={[styles.container, backgroundStyle.backgroundColor]}>
         {universalProviderSession ? (
           <View style={styles.container}>
-            <Text style={styles.text}>👉🥺👈</Text>
-            <Text style={styles.text}>Address: {currentAccount}</Text>
+            <Text style={[styles.text, isDarkMode && styles.whiteText]}>
+              Address: {currentAccount}
+            </Text>
             <TouchableOpacity
-              style={styles.blueButton}
+              style={[styles.blueButton, styles.disconnectButton]}
               onPress={handleDisconnect}>
-              <Text style={styles.whiteText}>Disconnect</Text>
+              <Text style={styles.blueButtonText}>Disconnect</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -107,7 +131,7 @@ function App(): JSX.Element {
             style={styles.blueButton}
             disabled={!initialized}>
             {initialized ? (
-              <Text style={styles.whiteText}>Connect Wallet</Text>
+              <Text style={styles.blueButtonText}>Connect Wallet</Text>
             ) : (
               <ActivityIndicator size="small" color="white" />
             )}
@@ -125,15 +149,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 8,
   },
   text: {
-    textAlign: 'center',
     fontWeight: '700',
   },
   whiteText: {
     color: 'white',
-    textAlign: 'center',
-    fontWeight: '700',
   },
   blueButton: {
     display: 'flex',
@@ -146,5 +168,12 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  blueButtonText: {
+    color: 'white',
+    fontWeight: '700',
+  },
+  disconnectButton: {
+    marginTop: 20,
   },
 });

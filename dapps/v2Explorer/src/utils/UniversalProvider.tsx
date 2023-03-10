@@ -11,7 +11,11 @@ export let web3Provider: ethers.providers.Web3Provider | undefined;
 export let currentWCURI: string;
 export let universalProviderSession: SessionTypes.Struct | undefined;
 
-export async function createUniversalProvider() {
+interface Props {
+  onSessionDisconnect?: (id: string, topic: string) => void;
+}
+
+export async function createUniversalProvider({onSessionDisconnect}: Props) {
   console.log('[CONFIG] ENV_PROJECT_ID:', ENV_PROJECT_ID);
   console.log('[CONFIG] ENV_RELAY_URL:', ENV_RELAY_URL);
 
@@ -49,9 +53,13 @@ export async function createUniversalProvider() {
     });
 
     // Subscribe to session delete
-    universalProvider.on('session_delete', ({id, topic}) => {
-      console.log('session_delete', id, topic);
-    });
+    universalProvider.on(
+      'session_delete',
+      ({id, topic}: {id: string; topic: string}) => {
+        onSessionDisconnect?.(id, topic);
+        console.log('session_delete', id, topic);
+      },
+    );
   } catch {
     console.log('Error for connecting');
   }
