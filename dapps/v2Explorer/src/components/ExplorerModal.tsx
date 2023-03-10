@@ -60,6 +60,7 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
     <Modal
       isVisible={modalVisible}
       style={styles.modal}
+      hideModalContentWhileAnimating
       onModalHide={() => setViewAllContentVisible(false)}
       useNativeDriver>
       <ImageBackground
