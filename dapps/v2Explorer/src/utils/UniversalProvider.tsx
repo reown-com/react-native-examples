@@ -70,25 +70,36 @@ export function clearSession() {
   web3Provider = undefined;
 }
 
-export async function createUniversalProviderSession() {
-  universalProviderSession = await universalProvider.connect({
-    namespaces: {
-      eip155: {
-        methods: [
-          'eth_sendTransaction',
-          'eth_signTransaction',
-          'eth_sign',
-          'personal_sign',
-          'eth_signTypedData',
-        ],
-        chains: ['eip155:1'],
-        events: ['chainChanged', 'accountsChanged'],
-        rpcMap: {
-          1: `https://rpc.walletconnect.com?chainId=eip155:1&projectId=${ENV_PROJECT_ID}`,
+export async function createUniversalProviderSession(callbacks?: {
+  onSuccess?: () => void;
+  onFailure?: (error: any) => void;
+}) {
+  await universalProvider
+    .connect({
+      namespaces: {
+        eip155: {
+          methods: [
+            'eth_sendTransaction',
+            'eth_signTransaction',
+            'eth_sign',
+            'personal_sign',
+            'eth_signTypedData',
+          ],
+          chains: ['eip155:1'],
+          events: ['chainChanged', 'accountsChanged'],
+          rpcMap: {
+            1: `https://rpc.walletconnect.com?chainId=eip155:1&projectId=${ENV_PROJECT_ID}`,
+          },
         },
       },
-    },
-  });
-
-  web3Provider = new ethers.providers.Web3Provider(universalProvider);
+    })
+    .then(session => {
+      universalProviderSession = session;
+      web3Provider = new ethers.providers.Web3Provider(universalProvider);
+      callbacks?.onSuccess?.();
+    })
+    .catch(error => {
+      console.log('Error creating session', error);
+      callbacks?.onFailure?.(error);
+    });
 }

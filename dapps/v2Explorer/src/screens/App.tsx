@@ -1,7 +1,7 @@
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
 
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -61,10 +61,22 @@ function App(): JSX.Element {
     }
   }, []);
 
-  const handleConnect = useCallback(async () => {
-    createUniversalProviderSession();
-    setModalVisible(true);
+  const handleSessionCreated = useCallback(async () => {
+    getAddress();
+    setModalVisible(false);
+  }, [getAddress]);
+
+  const handleSessionRejected = useCallback(async () => {
+    setModalVisible(false);
   }, []);
+
+  const handleConnect = useCallback(async () => {
+    createUniversalProviderSession({
+      onSuccess: handleSessionCreated,
+      onFailure: handleSessionRejected,
+    });
+    setModalVisible(true);
+  }, [handleSessionCreated, handleSessionRejected]);
 
   const handleDisconnect = useCallback(async () => {
     try {
@@ -75,15 +87,6 @@ function App(): JSX.Element {
       console.log('Error for disconnecting', err);
     }
   }, []);
-
-  useEffect(() => {
-    // NOTE: Logs to help developers debug
-    // console.log('App Initialized: ', initialized);
-    // console.log('useEffect currentWCURI', currentWCURI);
-    if (universalProviderSession) {
-      getAddress();
-    }
-  }, [initialized, getAddress, currentAccount, modalVisible]);
 
   // Improve this
   const backgroundStyle = {
@@ -97,13 +100,8 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-
-      {!universalProviderSession ? (
-        <ExplorerModal modalVisible={modalVisible} close={close} />
-      ) : null}
-
       <View style={[styles.container, backgroundStyle.backgroundColor]}>
-        {universalProviderSession ? (
+        {currentAccount ? (
           <View style={styles.container}>
             <Text style={[styles.text, isDarkMode && styles.whiteText]}>
               Address: {currentAccount}
@@ -126,6 +124,7 @@ function App(): JSX.Element {
             )}
           </TouchableOpacity>
         )}
+        <ExplorerModal modalVisible={modalVisible} close={close} />
       </View>
     </SafeAreaView>
   );

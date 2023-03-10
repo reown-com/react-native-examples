@@ -81,6 +81,7 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
             />
           ) : (
             <ViewAllExplorerContent
+              isLoading={isViewAllLoading}
               explorerData={viewAllExplorerData}
               setViewAllContentVisible={setViewAllContentVisible}
             />

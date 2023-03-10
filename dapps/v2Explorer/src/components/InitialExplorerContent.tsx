@@ -6,7 +6,7 @@ import {ViewAllBox} from './ViewAllBox';
 interface InitialExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
-  setViewAllContentVisible: () => void;
+  setViewAllContentVisible: (value: boolean) => void;
 }
 
 export const InitialExplorerContent = ({

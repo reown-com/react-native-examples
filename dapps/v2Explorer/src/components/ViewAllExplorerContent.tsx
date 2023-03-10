@@ -15,7 +15,6 @@ import Chevron from '../assets/Chevron.png';
 interface ViewAllExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
-  openViewAllContent: () => void;
   setViewAllContentVisible: (value: boolean) => void;
 }
 
