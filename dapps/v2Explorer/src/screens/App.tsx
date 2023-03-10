@@ -3,6 +3,7 @@ import '@ethersproject/shims';
 
 import React, {useEffect, useState, useCallback} from 'react';
 import {
+  ActivityIndicator,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -14,8 +15,14 @@ import {
 
 import '@walletconnect/react-native-compat';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import useInitialization, {web3Provider} from '../hooks/useInitialization';
-import {universalProviderSession} from '../utils/UniversalProvider';
+import useInitialization from '../hooks/useInitialization';
+import {
+  universalProviderSession,
+  universalProvider,
+  web3Provider,
+  clearSession,
+  createUniversalProviderSession,
+} from '../utils/UniversalProvider';
 import {ExplorerModal} from '../components/ExplorerModal';
 
 function App(): JSX.Element {
@@ -32,11 +39,28 @@ function App(): JSX.Element {
 
   const getAddress = useCallback(async () => {
     try {
-      const signer = web3Provider.getSigner();
-      const currentAddress = await signer.getAddress();
-      setCurrentAccount(currentAddress);
+      if (web3Provider) {
+        const signer = web3Provider.getSigner();
+        const currentAddress = await signer.getAddress();
+        setCurrentAccount(currentAddress);
+      }
     } catch (err: unknown) {
-      console.log('Error for initializing', err);
+      console.log('Error in getAddress', err);
+    }
+  }, []);
+
+  const handleConnect = useCallback(async () => {
+    createUniversalProviderSession();
+    setModalVisible(true);
+  }, []);
+
+  const handleDisconnect = useCallback(async () => {
+    try {
+      await universalProvider.disconnect();
+      clearSession();
+      setCurrentAccount(null);
+    } catch (err: unknown) {
+      console.log('Error for disconnecting', err);
     }
   }, []);
 
@@ -49,6 +73,7 @@ function App(): JSX.Element {
     }
   }, [initialized, getAddress, currentAccount, modalVisible]);
 
+  // Improve this
   const backgroundStyle = {
     flex: 1,
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -67,15 +92,25 @@ function App(): JSX.Element {
 
       <View style={[styles.container, backgroundStyle.backgroundColor]}>
         {universalProviderSession ? (
-          <View>
-            <Text style={styles.whiteText}>👉🥺👈</Text>
-            <Text style={styles.whiteText}>Address: {currentAccount}</Text>
+          <View style={styles.container}>
+            <Text style={styles.text}>👉🥺👈</Text>
+            <Text style={styles.text}>Address: {currentAccount}</Text>
+            <TouchableOpacity
+              style={styles.blueButton}
+              onPress={handleDisconnect}>
+              <Text style={styles.whiteText}>Disconnect</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <TouchableOpacity
-            onPress={() => setModalVisible(true)}
-            style={styles.connectWalletButton}>
-            <Text style={styles.whiteText}>Connect Wallet</Text>
+            onPress={handleConnect}
+            style={styles.blueButton}
+            disabled={!initialized}>
+            {initialized ? (
+              <Text style={styles.whiteText}>Connect Wallet</Text>
+            ) : (
+              <ActivityIndicator size="small" color="white" />
+            )}
           </TouchableOpacity>
         )}
       </View>
@@ -91,12 +126,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  text: {
+    textAlign: 'center',
+    fontWeight: '700',
+  },
   whiteText: {
     color: 'white',
     textAlign: 'center',
     fontWeight: '700',
   },
-  connectWalletButton: {
+  blueButton: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

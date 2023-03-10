@@ -3,10 +3,13 @@ import UniversalProvider from '@walletconnect/universal-provider';
 
 // @ts-expect-error - `@env` is a virtualised module via Babel config.
 import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
+import {SessionTypes} from '@walletconnect/types';
+import {ethers} from 'ethers';
 
-export let universalProvider;
-export let currentWCURI;
-export let universalProviderSession;
+export let universalProvider: UniversalProvider;
+export let web3Provider: ethers.providers.Web3Provider | undefined;
+export let currentWCURI: string;
+export let universalProviderSession: SessionTypes.Struct | undefined;
 
 export async function createUniversalProvider() {
   console.log('[CONFIG] ENV_PROJECT_ID:', ENV_PROJECT_ID);
@@ -49,26 +52,35 @@ export async function createUniversalProvider() {
     universalProvider.on('session_delete', ({id, topic}) => {
       console.log('session_delete', id, topic);
     });
-
-    universalProviderSession = await universalProvider.connect({
-      namespaces: {
-        eip155: {
-          methods: [
-            'eth_sendTransaction',
-            'eth_signTransaction',
-            'eth_sign',
-            'personal_sign',
-            'eth_signTypedData',
-          ],
-          chains: ['eip155:1'],
-          events: ['chainChanged', 'accountsChanged'],
-          rpcMap: {
-            1: `https://rpc.walletconnect.com?chainId=eip155:1&projectId=${ENV_PROJECT_ID}`,
-          },
-        },
-      },
-    });
   } catch {
     console.log('Error for connecting');
   }
+}
+
+export function clearSession() {
+  universalProviderSession = undefined;
+  web3Provider = undefined;
+}
+
+export async function createUniversalProviderSession() {
+  universalProviderSession = await universalProvider.connect({
+    namespaces: {
+      eip155: {
+        methods: [
+          'eth_sendTransaction',
+          'eth_signTransaction',
+          'eth_sign',
+          'personal_sign',
+          'eth_signTypedData',
+        ],
+        chains: ['eip155:1'],
+        events: ['chainChanged', 'accountsChanged'],
+        rpcMap: {
+          1: `https://rpc.walletconnect.com?chainId=eip155:1&projectId=${ENV_PROJECT_ID}`,
+        },
+      },
+    },
+  });
+
+  web3Provider = new ethers.providers.Web3Provider(universalProvider);
 }
