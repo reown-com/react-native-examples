@@ -5,7 +5,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {createUniversalProvider} from '../utils/UniversalProvider';
 
 interface Props {
-  onSessionDisconnect?: (id: string, topic: string) => void;
+  onSessionDisconnect?: ({id, topic}: {id: string; topic: string}) => void;
 }
 
 export default function useInitialization({onSessionDisconnect}: Props) {

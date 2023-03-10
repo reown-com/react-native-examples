@@ -4,7 +4,6 @@ import '@ethersproject/shims';
 import React, {useEffect, useState, useCallback} from 'react';
 import {
   ActivityIndicator,
-  Linking,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -32,7 +31,7 @@ function App(): JSX.Element {
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
 
   const handleSessionDisconnect = useCallback(
-    async (_: string, topic: string) => {
+    async ({topic}: {topic: string}) => {
       if (topic === universalProviderSession?.topic) {
         clearSession();
         setCurrentAccount(null);
@@ -85,16 +84,6 @@ function App(): JSX.Element {
       getAddress();
     }
   }, [initialized, getAddress, currentAccount, modalVisible]);
-
-  useEffect(() => {
-    const urlListener = Linking.addEventListener('url', ({url}) => {
-      console.log('urlListener', url);
-    });
-
-    return () => {
-      urlListener.remove();
-    };
-  }, []);
 
   // Improve this
   const backgroundStyle = {

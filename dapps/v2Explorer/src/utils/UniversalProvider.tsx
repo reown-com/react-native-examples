@@ -12,7 +12,7 @@ export let currentWCURI: string;
 export let universalProviderSession: SessionTypes.Struct | undefined;
 
 interface Props {
-  onSessionDisconnect?: (id: string, topic: string) => void;
+  onSessionDisconnect?: ({id, topic}: {id: string; topic: string}) => void;
 }
 
 export async function createUniversalProvider({onSessionDisconnect}: Props) {
@@ -56,7 +56,7 @@ export async function createUniversalProvider({onSessionDisconnect}: Props) {
     universalProvider.on(
       'session_delete',
       ({id, topic}: {id: string; topic: string}) => {
-        onSessionDisconnect?.(id, topic);
+        onSessionDisconnect?.({id, topic});
         console.log('session_delete', id, topic);
       },
     );
