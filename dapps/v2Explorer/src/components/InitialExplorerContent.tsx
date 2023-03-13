@@ -1,20 +1,31 @@
 import React, {useEffect, useRef} from 'react';
-import {StyleSheet, View, Text, Animated, useColorScheme} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Animated,
+  useColorScheme,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
 import {ViewAllBox} from './ViewAllBox';
+import QRIcon from '../assets/QR.png';
 
 interface InitialExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
-  setViewAllContentVisible: (value: boolean) => void;
+  onViewAllPress: () => void;
   currentWCURI: string;
+  onQRPress: () => void;
 }
 
 export const InitialExplorerContent = ({
   isLoading,
   explorerData,
-  setViewAllContentVisible,
+  onViewAllPress,
   currentWCURI,
+  onQRPress,
 }: InitialExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const isDarkMode = useColorScheme() === 'dark';
@@ -33,6 +44,12 @@ export const InitialExplorerContent = ({
           style={[styles.sectionTitle, isDarkMode && styles.sectionTitleDark]}>
           Connect your wallet
         </Text>
+        <TouchableOpacity
+          onPress={onQRPress}
+          style={styles.qrButton}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+          <Image source={QRIcon} style={styles.qrIcon} />
+        </TouchableOpacity>
       </View>
       <View style={styles.explorerContainer}>
         <ExplorerItem
@@ -40,7 +57,7 @@ export const InitialExplorerContent = ({
           explorerData={explorerData}
           currentWCURI={currentWCURI}
         />
-        <ViewAllBox setViewAllContentVisible={setViewAllContentVisible} />
+        <ViewAllBox onPress={onViewAllPress} />
       </View>
     </Animated.View>
   );
@@ -63,6 +80,7 @@ const styles = StyleSheet.create({
     color: '#141414',
     fontSize: 20,
     lineHeight: 24,
+    textAlign: 'center',
   },
   sectionTitleDark: {
     color: 'white',
@@ -73,5 +91,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 4,
+  },
+  qrButton: {
+    position: 'absolute',
+    right: 16,
+  },
+  qrIcon: {
+    height: 24,
+    width: 24,
   },
 });

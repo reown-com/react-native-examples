@@ -15,14 +15,14 @@ import Chevron from '../assets/Chevron.png';
 interface ViewAllExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
-  setViewAllContentVisible: (value: boolean) => void;
+  onBackPress: () => void;
   currentWCURI: string;
 }
 
 export const ViewAllExplorerContent = ({
   isLoading,
   explorerData,
-  setViewAllContentVisible,
+  onBackPress,
   currentWCURI,
 }: ViewAllExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -39,22 +39,22 @@ export const ViewAllExplorerContent = ({
   return (
     <Animated.View style={{opacity: fadeAnim}}>
       <>
-        <View style={styles.sectionBackContainer}>
+        <View style={styles.sectionContainer}>
           <TouchableOpacity
-            style={styles.twentyWidth}
-            onPress={() => setViewAllContentVisible(false)}
+            style={styles.backButton}
+            onPress={onBackPress}
             hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
-            <Image style={styles.chevronImage} source={Chevron} />
+            <Image style={styles.chevronIcon} source={Chevron} />
           </TouchableOpacity>
-          <View style={styles.sixtyWidth}>
-            <Text
-              style={
-                isDarkMode ? styles.sectionTitle : styles.sectionTitleBlack
-              }>
-              Connect your wallet
-            </Text>
-          </View>
-          <View style={styles.twentyWidth} />
+          <Text
+            style={[
+              styles.sectionTitle,
+              isDarkMode && styles.sectionTitleDark,
+            ]}>
+            Connect your wallet
+          </Text>
+
+          <View style={styles.backButton} />
         </View>
         {/* TODO: Refactor with Flatlist */}
         <ScrollView
@@ -75,42 +75,21 @@ export const ViewAllExplorerContent = ({
 };
 
 const styles = StyleSheet.create({
-  viewAllContainer: {
-    height: 600,
-  },
-  sectionBackContainer: {
+  sectionContainer: {
     flexDirection: 'row',
     display: 'flex',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 24,
   },
-  chevronImage: {
-    width: 8,
+  backButton: {
+    width: 18,
     height: 18,
   },
-  twentyWidth: {
-    width: '20%',
-  },
-  sixtyWidth: {
-    width: '60%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scrollViewContainer: {
-    // flex: 1,
-    width: '80%',
-    paddingBottom: 100,
-    alignSelf: 'center',
-  },
-  scrollViewContentContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'lightgrey',
-    paddingBottom: 50,
+  chevronIcon: {
+    width: 8,
+    height: 18,
   },
   scrollExplorerContainer: {
     flexDirection: 'row',
@@ -122,14 +101,11 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontWeight: '600',
-    color: 'white',
-    fontSize: 20,
-    lineHeight: 24,
-  },
-  sectionTitleBlack: {
-    fontWeight: '600',
     color: '#1f1f1f',
     fontSize: 20,
     lineHeight: 24,
+  },
+  sectionTitleDark: {
+    color: 'white',
   },
 });

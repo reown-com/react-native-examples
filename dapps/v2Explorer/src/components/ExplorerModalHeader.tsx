@@ -7,6 +7,8 @@ import {
   useColorScheme,
 } from 'react-native';
 
+import WCLogo from '../assets/WCLogo.png';
+
 interface ExplorerModalHeaderProps {
   close: () => void;
 }
@@ -15,10 +17,10 @@ export const ExplorerModalHeader = ({close}: ExplorerModalHeaderProps) => {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <View style={styles.flexRow}>
-      <Image style={styles.wcLogo} source={require('../assets/WCLogo.png')} />
+    <View style={styles.container}>
+      <Image style={styles.wcLogo} source={WCLogo} />
       <TouchableOpacity
-        style={isDarkMode ? styles.closeContainer : styles.closeContainerLight}
+        style={[styles.closeContainer, isDarkMode && styles.closeContainerDark]}
         onPress={() => close()}
         hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
         <Image
@@ -35,7 +37,7 @@ export const ExplorerModalHeader = ({close}: ExplorerModalHeaderProps) => {
 };
 
 const styles = StyleSheet.create({
-  flexRow: {
+  container: {
     paddingVertical: 8,
     display: 'flex',
     flexDirection: 'row',
@@ -53,17 +55,6 @@ const styles = StyleSheet.create({
   closeContainer: {
     height: 28,
     width: 28,
-    backgroundColor: '#141414',
-    borderRadius: 14,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
-  },
-  closeContainerLight: {
-    height: 28,
-    width: 28,
     backgroundColor: '#FFFFFF',
     borderRadius: 14,
     display: 'flex',
@@ -71,5 +62,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  closeContainerDark: {
+    backgroundColor: '#141414',
   },
 });

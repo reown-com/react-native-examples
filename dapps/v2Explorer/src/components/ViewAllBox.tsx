@@ -10,24 +10,19 @@ import {
 
 import ViewAllIcon from '../assets/ViewAll.png';
 
-interface ViewAllBoxProps {
-  setViewAllContentVisible: any;
+interface Props {
+  onPress: any;
 }
 
-export const ViewAllBox = ({setViewAllContentVisible}: ViewAllBoxProps) => {
+export const ViewAllBox = ({onPress}: Props) => {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <TouchableOpacity
-      onPress={() => setViewAllContentVisible(true)}
-      style={styles.explorerItem}>
-      <Image style={styles.explorerIcon} source={ViewAllIcon} />
+    <TouchableOpacity onPress={onPress} style={styles.container}>
+      <Image style={styles.icon} source={ViewAllIcon} />
       <View>
         <Text
-          style={[
-            styles.explorerIconText,
-            isDarkMode && styles.explorerIconTextDark,
-          ]}
+          style={[styles.text, isDarkMode && styles.textDark]}
           numberOfLines={1}>
           View All
         </Text>
@@ -37,27 +32,27 @@ export const ViewAllBox = ({setViewAllContentVisible}: ViewAllBoxProps) => {
 };
 
 const styles = StyleSheet.create({
-  explorerIcon: {
+  icon: {
     height: 60,
     width: 60,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.1)',
   },
-  explorerItem: {
+  container: {
     width: '25%',
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 8,
   },
-  explorerIconText: {
+  text: {
     color: '#1f1f1f',
     marginVertical: 8,
     maxWidth: 100,
     fontWeight: '600',
     fontSize: 12,
   },
-  explorerIconTextDark: {
+  textDark: {
     color: 'white',
   },
 });
