@@ -57,8 +57,8 @@ export const fetchInitialWallets = () => {
         );
         return result;
       },
-      error => {
-        console.log('error', error);
+      () => {
+        Alert.alert('Error', 'Error fetching initial wallets');
       },
     );
 };
@@ -75,8 +75,8 @@ export const fetchViewAllWallets = () => {
         );
         return result;
       },
-      error => {
-        console.log('error', error);
+      () => {
+        Alert.alert('Error', 'Error fetching all wallets');
       },
     );
 };

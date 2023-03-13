@@ -5,6 +5,7 @@ import UniversalProvider from '@walletconnect/universal-provider';
 import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
 import {SessionTypes} from '@walletconnect/types';
 import {ethers} from 'ethers';
+import {Alert} from 'react-native';
 
 export let universalProvider: UniversalProvider;
 export let web3Provider: ethers.providers.Web3Provider | undefined;
@@ -27,7 +28,7 @@ export async function createUniversalProvider() {
       },
     });
   } catch {
-    console.log('Error for connecting');
+    Alert.alert('Error', 'Error connecting to WalletConnect');
   }
 }
 

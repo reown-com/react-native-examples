@@ -4,6 +4,7 @@ import '@ethersproject/shims';
 import React, {useState, useCallback, useEffect} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -83,7 +84,7 @@ function App(): JSX.Element {
       clearSession();
       setCurrentAccount(null);
     } catch (err: unknown) {
-      console.log('Error for disconnecting', err);
+      Alert.alert('Error', 'Error disconnecting');
     }
   }, []);
 
