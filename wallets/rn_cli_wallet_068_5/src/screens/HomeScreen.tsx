@@ -102,6 +102,7 @@ const HomeScreen = () => {
 
   async function pair() {
     const pairing = await _pair({uri: WCURI});
+    console.log('pairing', pairing);
     setCopyDialog(false);
     setWCUri('');
     if (Platform.OS === 'android') {
@@ -114,6 +115,7 @@ const HomeScreen = () => {
   // Know there is an events config we did in web-examples app
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
+      console.log('onSessionProposal.22..', proposal);
       setPairedProposal(proposal);
     },
     [],
@@ -153,6 +155,7 @@ const HomeScreen = () => {
   );
 
   useEffect(() => {
+    console.log('useEffect.1..');
     if (
       copyDialog ||
       approvalModal ||

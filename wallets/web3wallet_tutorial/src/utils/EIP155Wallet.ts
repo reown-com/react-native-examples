@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import EIP155Lib from '../lib/EIP155';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import EIP155Lib from "./EIP155Lib";
 
 export let wallet1: EIP155Lib;
 export let wallet2: EIP155Lib;
@@ -14,23 +14,23 @@ let address2: string;
  */
 export const setLocalStorage = async (mnemonic: any) => {
   try {
-    const value = await AsyncStorage.setItem('EIP155_MNEMONIC_1', mnemonic);
+    const value = await AsyncStorage.setItem("EIP155_MNEMONIC_1", mnemonic);
     if (value !== null) {
       return value;
     }
   } catch (e) {
-    console.log('setLocalStorage Error:', e);
+    console.log("setLocalStorage Error:", e);
   }
 };
 
 export const getLocalStorage = async () => {
   try {
-    const value = await AsyncStorage.getItem('EIP155_MNEMONIC_1');
+    const value = await AsyncStorage.getItem("EIP155_MNEMONIC_1");
     if (value !== null) {
       return value;
     }
   } catch (e) {
-    console.log('getLocalStorage Error:', e);
+    console.log("getLocalStorage Error:", e);
   }
 };
 
@@ -39,7 +39,7 @@ export async function createOrRestoreEIP155Wallet() {
   let mnemonic1 = await getLocalStorage();
 
   if (mnemonic1) {
-    wallet1 = EIP155Lib.init({mnemonic: mnemonic1});
+    wallet1 = EIP155Lib.init({ mnemonic: mnemonic1 });
   } else {
     wallet1 = EIP155Lib.init({});
   }

@@ -10,8 +10,8 @@ import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
 import {createOrRestoreEIP155Wallet} from './EIP155Wallet';
 
 export async function createWeb3Wallet() {
-  // console.log('ENV_PROJECT_ID', ENV_PROJECT_ID);
-  // console.log('ENV_RELAY_URL', ENV_RELAY_URL);
+  console.log('ENV_PROJECT_ID', ENV_PROJECT_ID);
+  console.log('ENV_RELAY_URL', ENV_RELAY_URL);
   core = new Core({
     // @notice: If you want the debugger / logs
     // logger: 'debug',

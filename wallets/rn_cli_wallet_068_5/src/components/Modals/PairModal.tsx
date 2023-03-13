@@ -31,6 +31,7 @@ export function PairModal({
   open,
   handleAccept,
 }: PairModalProps) {
+  console.log('PairModal: ', proposal);
   // Note: Current namespaces is for EIP155 only (i.e. methods, events, chains)
   const name = proposal?.params?.proposer?.metadata?.name;
   const url = proposal?.params?.proposer?.metadata.url;
