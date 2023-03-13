@@ -74,8 +74,8 @@ export async function createUniversalProviderSession(callbacks?: {
   onSuccess?: () => void;
   onFailure?: (error: any) => void;
 }) {
-  await universalProvider
-    .connect({
+  try {
+    universalProviderSession = await universalProvider.connect({
       namespaces: {
         eip155: {
           methods: [
@@ -92,14 +92,10 @@ export async function createUniversalProviderSession(callbacks?: {
           },
         },
       },
-    })
-    .then(session => {
-      universalProviderSession = session;
-      web3Provider = new ethers.providers.Web3Provider(universalProvider);
-      callbacks?.onSuccess?.();
-    })
-    .catch(error => {
-      console.log('Error creating session', error);
-      callbacks?.onFailure?.(error);
     });
+    web3Provider = new ethers.providers.Web3Provider(universalProvider);
+    callbacks?.onSuccess?.();
+  } catch (error) {
+    callbacks?.onFailure?.(error);
+  }
 }
