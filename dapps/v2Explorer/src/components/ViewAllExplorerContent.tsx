@@ -16,12 +16,14 @@ interface ViewAllExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
   setViewAllContentVisible: (value: boolean) => void;
+  currentWCURI: string;
 }
 
 export const ViewAllExplorerContent = ({
   isLoading,
   explorerData,
   setViewAllContentVisible,
+  currentWCURI,
 }: ViewAllExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const isDarkMode = useColorScheme() === 'dark';
@@ -61,7 +63,11 @@ export const ViewAllExplorerContent = ({
           bounces
           showsVerticalScrollIndicator
           indicatorStyle={isDarkMode ? 'white' : 'black'}>
-          <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
+          <ExplorerItem
+            isLoading={isLoading}
+            explorerData={explorerData}
+            currentWCURI={currentWCURI}
+          />
         </ScrollView>
       </>
     </Animated.View>

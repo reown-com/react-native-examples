@@ -20,10 +20,15 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 interface ExplorerModalProps {
   modalVisible: boolean;
   close: () => void;
+  currentWCURI: string;
 }
 
 // Populate with the data...
-export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
+export function ExplorerModal({
+  modalVisible,
+  close,
+  currentWCURI,
+}: ExplorerModalProps) {
   // TODO: change loading names to more clearer ones.
   const [isLoading, setIsLoading] = useState(true);
   const [isViewAllLoading, setViewAllLoading] = useState(true);
@@ -79,12 +84,14 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
               isLoading={isLoading}
               explorerData={explorerData}
               setViewAllContentVisible={setViewAllContentVisible}
+              currentWCURI={currentWCURI}
             />
           ) : (
             <ViewAllExplorerContent
               isLoading={isViewAllLoading}
               explorerData={viewAllExplorerData}
               setViewAllContentVisible={setViewAllContentVisible}
+              currentWCURI={currentWCURI}
             />
           )}
         </View>

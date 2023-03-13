@@ -9,14 +9,18 @@ import {
   useColorScheme,
 } from 'react-native';
 import {navigateDeepLink} from '../utils/ExplorerUtils';
-import {currentWCURI} from '../utils/UniversalProvider';
 
 interface ExplorerItemProps {
   explorerData: any;
   isLoading: boolean;
+  currentWCURI: string;
 }
 
-export const ExplorerItem = ({explorerData, isLoading}: ExplorerItemProps) => {
+export const ExplorerItem = ({
+  explorerData,
+  isLoading,
+  currentWCURI,
+}: ExplorerItemProps) => {
   const isDarkMode = useColorScheme() === 'dark';
 
   if (isLoading) {

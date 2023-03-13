@@ -8,14 +8,9 @@ import {ethers} from 'ethers';
 
 export let universalProvider: UniversalProvider;
 export let web3Provider: ethers.providers.Web3Provider | undefined;
-export let currentWCURI: string;
 export let universalProviderSession: SessionTypes.Struct | undefined;
 
-interface Props {
-  onSessionDisconnect?: ({id, topic}: {id: string; topic: string}) => void;
-}
-
-export async function createUniversalProvider({onSessionDisconnect}: Props) {
+export async function createUniversalProvider() {
   console.log('[CONFIG] ENV_PROJECT_ID:', ENV_PROJECT_ID);
   console.log('[CONFIG] ENV_RELAY_URL:', ENV_RELAY_URL);
 
@@ -31,35 +26,6 @@ export async function createUniversalProvider({onSessionDisconnect}: Props) {
         icons: ['https://avatars.githubusercontent.com/u/37784886'],
       },
     });
-
-    universalProvider.on('display_uri', uri => {
-      currentWCURI = uri;
-      console.log('UniversalProvider display_uri event:', uri);
-    });
-
-    // Subscribe to session ping
-    universalProvider.on('session_ping', ({id, topic}) => {
-      console.log('session_ping', id, topic);
-    });
-
-    // Subscribe to session event
-    universalProvider.on('session_event', ({event, chainId}) => {
-      console.log('session_event', event, chainId);
-    });
-
-    // Subscribe to session update
-    universalProvider.on('session_update', ({topic, params}) => {
-      console.log('session_update', topic, params);
-    });
-
-    // Subscribe to session delete
-    universalProvider.on(
-      'session_delete',
-      ({id, topic}: {id: string; topic: string}) => {
-        onSessionDisconnect?.({id, topic});
-        console.log('session_delete', id, topic);
-      },
-    );
   } catch {
     console.log('Error for connecting');
   }

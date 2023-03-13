@@ -7,12 +7,14 @@ interface InitialExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
   setViewAllContentVisible: (value: boolean) => void;
+  currentWCURI: string;
 }
 
 export const InitialExplorerContent = ({
   isLoading,
   explorerData,
   setViewAllContentVisible,
+  currentWCURI,
 }: InitialExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const isDarkMode = useColorScheme() === 'dark';
@@ -33,7 +35,11 @@ export const InitialExplorerContent = ({
         </Text>
       </View>
       <View style={styles.explorerContainer}>
-        <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
+        <ExplorerItem
+          isLoading={isLoading}
+          explorerData={explorerData}
+          currentWCURI={currentWCURI}
+        />
         <ViewAllBox setViewAllContentVisible={setViewAllContentVisible} />
       </View>
     </Animated.View>

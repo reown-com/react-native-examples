@@ -1,7 +1,7 @@
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
 
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -29,21 +29,10 @@ function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const [modalVisible, setModalVisible] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
-
-  const handleSessionDisconnect = useCallback(
-    async ({topic}: {topic: string}) => {
-      if (topic === universalProviderSession?.topic) {
-        clearSession();
-        setCurrentAccount(null);
-      }
-    },
-    [],
-  );
+  const [currentWCURI, setCurrentWCURI] = useState<string | null>(null);
 
   // Initialize universal provider
-  const initialized = useInitialization({
-    onSessionDisconnect: handleSessionDisconnect,
-  });
+  const initialized = useInitialization();
 
   const close = () => {
     setModalVisible(false);
@@ -59,26 +48,36 @@ function App(): JSX.Element {
     } catch (err: unknown) {
       console.log('Error in getAddress', err);
     }
-  }, []);
+  }, [setCurrentAccount]);
 
-  const handleSessionCreated = useCallback(async () => {
+  const onSessionCreated = useCallback(async () => {
     getAddress();
     setModalVisible(false);
   }, [getAddress]);
 
-  const handleSessionRejected = useCallback(async () => {
+  const onSessionRejected = useCallback(async () => {
     setModalVisible(false);
   }, []);
 
-  const handleConnect = useCallback(async () => {
+  const onSessionDelete = useCallback(
+    async ({topic}: {topic: string}) => {
+      if (topic === universalProviderSession?.topic) {
+        clearSession();
+        setCurrentAccount(null);
+      }
+    },
+    [setCurrentAccount],
+  );
+
+  const onConnect = useCallback(async () => {
     createUniversalProviderSession({
-      onSuccess: handleSessionCreated,
-      onFailure: handleSessionRejected,
+      onSuccess: onSessionCreated,
+      onFailure: onSessionRejected,
     });
     setModalVisible(true);
-  }, [handleSessionCreated, handleSessionRejected]);
+  }, [onSessionCreated, onSessionRejected]);
 
-  const handleDisconnect = useCallback(async () => {
+  const onDisconnect = useCallback(async () => {
     try {
       await universalProvider.disconnect();
       clearSession();
@@ -87,6 +86,38 @@ function App(): JSX.Element {
       console.log('Error for disconnecting', err);
     }
   }, []);
+
+  const subscribeToEvents = useCallback(async () => {
+    if (universalProvider) {
+      universalProvider.on('display_uri', (uri: string) => {
+        setCurrentWCURI(uri);
+      });
+
+      // Subscribe to session ping
+      universalProvider.on('session_ping', ({id, topic}) => {
+        console.log('session_ping', id, topic);
+      });
+
+      // Subscribe to session event
+      universalProvider.on('session_event', ({event, chainId}) => {
+        console.log('session_event', event, chainId);
+      });
+
+      // Subscribe to session update
+      universalProvider.on('session_update', ({topic, params}) => {
+        console.log('session_update', topic, params);
+      });
+
+      // Subscribe to session delete
+      universalProvider.on('session_delete', onSessionDelete);
+    }
+  }, [onSessionDelete]);
+
+  useEffect(() => {
+    if (initialized) {
+      subscribeToEvents();
+    }
+  }, [initialized, subscribeToEvents]);
 
   // Improve this
   const backgroundStyle = {
@@ -108,13 +139,13 @@ function App(): JSX.Element {
             </Text>
             <TouchableOpacity
               style={[styles.blueButton, styles.disconnectButton]}
-              onPress={handleDisconnect}>
+              onPress={onDisconnect}>
               <Text style={styles.blueButtonText}>Disconnect</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <TouchableOpacity
-            onPress={handleConnect}
+            onPress={onConnect}
             style={styles.blueButton}
             disabled={!initialized}>
             {initialized ? (
@@ -124,7 +155,13 @@ function App(): JSX.Element {
             )}
           </TouchableOpacity>
         )}
-        <ExplorerModal modalVisible={modalVisible} close={close} />
+        {currentWCURI ? (
+          <ExplorerModal
+            modalVisible={modalVisible}
+            close={close}
+            currentWCURI={currentWCURI}
+          />
+        ) : null}
       </View>
     </SafeAreaView>
   );
