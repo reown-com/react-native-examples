@@ -53,14 +53,5 @@ export default function useInitialization() {
 }
 
 export async function web3WalletPair(params: { uri: string }) {
-  console.log("incoming uri", params.uri);
-  try {
-    const pairing = await core.pairing.pair({
-      uri: params.uri,
-    });
-    console.log("pairing", pairing);
-    return pairing;
-  } catch (err: unknown) {
-    console.log("Error for pairing", err);
-  }
+  return await core.pairing.pair({ uri: params.uri });
 }
