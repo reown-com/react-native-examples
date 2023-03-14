@@ -10,18 +10,20 @@ import {
   useColorScheme,
 } from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
+import Chevron from '../assets/Chevron.png';
 
 interface ViewAllExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
-  openViewAllContent: () => void;
   setViewAllContentVisible: (value: boolean) => void;
+  currentWCURI: string;
 }
 
 export const ViewAllExplorerContent = ({
   isLoading,
   explorerData,
   setViewAllContentVisible,
+  currentWCURI,
 }: ViewAllExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const isDarkMode = useColorScheme() === 'dark';
@@ -42,10 +44,7 @@ export const ViewAllExplorerContent = ({
             style={styles.twentyWidth}
             onPress={() => setViewAllContentVisible(false)}
             hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
-            <Image
-              style={styles.chevronImage}
-              source={require('../assets/Chevron.png')}
-            />
+            <Image style={styles.chevronImage} source={Chevron} />
           </TouchableOpacity>
           <View style={styles.sixtyWidth}>
             <Text
@@ -57,14 +56,18 @@ export const ViewAllExplorerContent = ({
           </View>
           <View style={styles.twentyWidth} />
         </View>
-
+        {/* TODO: Refactor with Flatlist */}
         <ScrollView
           scrollEnabled={true}
           contentContainerStyle={styles.scrollExplorerContainer}
           bounces
           showsVerticalScrollIndicator
           indicatorStyle={isDarkMode ? 'white' : 'black'}>
-          <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
+          <ExplorerItem
+            isLoading={isLoading}
+            explorerData={explorerData}
+            currentWCURI={currentWCURI}
+          />
         </ScrollView>
       </>
     </Animated.View>

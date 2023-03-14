@@ -1,12 +1,18 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {StyleSheet, View, useColorScheme, Dimensions} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  useColorScheme,
+  Dimensions,
+  ImageBackground,
+} from 'react-native';
 import Modal from 'react-native-modal';
 import {InitialExplorerContent} from './InitialExplorerContent';
 import {ViewAllExplorerContent} from './ViewAllExplorerContent';
 
-//@ts-expect-error - `@env` is a virtualised module via Babel config.
 import {fetchInitialWallets, fetchViewAllWallets} from '../utils/ExplorerUtils';
 import {ExplorerModalHeader} from './ExplorerModalHeader';
+import Background from '../assets/Background.png';
 
 const MODAL_HEIGHT = Dimensions.get('window').height * 0.7;
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -14,19 +20,29 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 interface ExplorerModalProps {
   modalVisible: boolean;
   close: () => void;
+  currentWCURI: string;
 }
 
 // Populate with the data...
-export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
+export function ExplorerModal({
+  modalVisible,
+  close,
+  currentWCURI,
+}: ExplorerModalProps) {
+  // TODO: change loading names to more clearer ones.
   const [isLoading, setIsLoading] = useState(true);
   const [isViewAllLoading, setViewAllLoading] = useState(true);
 
   const [viewAllContentVisible, setViewAllContentVisible] = useState(false);
+
+  // TODO: change explorerData to more clearer names.
   const [explorerData, setExplorerData] = useState([]);
   const [viewAllExplorerData, setViewAllExplorerData] = useState([]);
 
+  // TODO: move to utils
   const isDarkMode = useColorScheme() === 'dark';
 
+  // TODO: could be cleaner
   const fetchWallets = useCallback(() => {
     fetchInitialWallets().then(wallets => {
       setIsLoading(false);
@@ -48,9 +64,14 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
   return (
     <Modal
       isVisible={modalVisible}
+      style={styles.modal}
+      hideModalContentWhileAnimating
       onModalHide={() => setViewAllContentVisible(false)}
       useNativeDriver>
-      <View style={styles.wcContainer}>
+      <ImageBackground
+        style={styles.wcContainer}
+        source={Background}
+        imageStyle={styles.wcImage}>
         <ExplorerModalHeader close={close} />
         <View
           style={
@@ -63,26 +84,32 @@ export function ExplorerModal({modalVisible, close}: ExplorerModalProps) {
               isLoading={isLoading}
               explorerData={explorerData}
               setViewAllContentVisible={setViewAllContentVisible}
+              currentWCURI={currentWCURI}
             />
           ) : (
             <ViewAllExplorerContent
+              isLoading={isViewAllLoading}
               explorerData={viewAllExplorerData}
               setViewAllContentVisible={setViewAllContentVisible}
+              currentWCURI={currentWCURI}
             />
           )}
         </View>
-      </View>
+      </ImageBackground>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  modal: {
+    margin: 0,
+    width: DEVICE_WIDTH,
+  },
   wcContainer: {
     position: 'absolute',
     bottom: -20,
-    left: -20,
-    width: DEVICE_WIDTH,
-    backgroundColor: '#0D7DF2',
+  },
+  wcImage: {
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },

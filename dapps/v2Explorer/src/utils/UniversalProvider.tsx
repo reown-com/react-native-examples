@@ -3,14 +3,17 @@ import UniversalProvider from '@walletconnect/universal-provider';
 
 // @ts-expect-error - `@env` is a virtualised module via Babel config.
 import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
+import {SessionTypes} from '@walletconnect/types';
+import {ethers} from 'ethers';
+import {Alert} from 'react-native';
 
-export let universalProvider;
-export let currentWCURI;
-export let universalProviderSession;
+export let universalProvider: UniversalProvider;
+export let web3Provider: ethers.providers.Web3Provider | undefined;
+export let universalProviderSession: SessionTypes.Struct | undefined;
 
 export async function createUniversalProvider() {
-  console.log('[CONFIG] ENV_PROJECT_ID:', ENV_PROJECT_ID);
-  console.log('[CONFIG] ENV_RELAY_URL:', ENV_RELAY_URL);
+  // console.log('[CONFIG] ENV_PROJECT_ID:', ENV_PROJECT_ID);
+  // console.log('[CONFIG] ENV_RELAY_URL:', ENV_RELAY_URL);
 
   try {
     universalProvider = await UniversalProvider.init({
@@ -24,32 +27,21 @@ export async function createUniversalProvider() {
         icons: ['https://avatars.githubusercontent.com/u/37784886'],
       },
     });
+  } catch {
+    Alert.alert('Error', 'Error connecting to WalletConnect');
+  }
+}
 
-    universalProvider.on('display_uri', uri => {
-      currentWCURI = uri;
-      console.log('UniversalProvider display_uri event:', uri);
-    });
+export function clearSession() {
+  universalProviderSession = undefined;
+  web3Provider = undefined;
+}
 
-    // Subscribe to session ping
-    universalProvider.on('session_ping', ({id, topic}) => {
-      console.log('session_ping', id, topic);
-    });
-
-    // Subscribe to session event
-    universalProvider.on('session_event', ({event, chainId}) => {
-      console.log('session_event', event, chainId);
-    });
-
-    // Subscribe to session update
-    universalProvider.on('session_update', ({topic, params}) => {
-      console.log('session_update', topic, params);
-    });
-
-    // Subscribe to session delete
-    universalProvider.on('session_delete', ({id, topic}) => {
-      console.log('session_delete', id, topic);
-    });
-
+export async function createUniversalProviderSession(callbacks?: {
+  onSuccess?: () => void;
+  onFailure?: (error: any) => void;
+}) {
+  try {
     universalProviderSession = await universalProvider.connect({
       namespaces: {
         eip155: {
@@ -68,7 +60,9 @@ export async function createUniversalProvider() {
         },
       },
     });
-  } catch {
-    console.log('Error for connecting');
+    web3Provider = new ethers.providers.Web3Provider(universalProvider);
+    callbacks?.onSuccess?.();
+  } catch (error) {
+    callbacks?.onFailure?.(error);
   }
 }

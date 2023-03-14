@@ -6,13 +6,15 @@ import {ViewAllBox} from './ViewAllBox';
 interface InitialExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
-  setViewAllContentVisible: () => void;
+  setViewAllContentVisible: (value: boolean) => void;
+  currentWCURI: string;
 }
 
 export const InitialExplorerContent = ({
   isLoading,
   explorerData,
   setViewAllContentVisible,
+  currentWCURI,
 }: InitialExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const isDarkMode = useColorScheme() === 'dark';
@@ -24,17 +26,20 @@ export const InitialExplorerContent = ({
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
-
   return (
-    <Animated.View style={{opacity: fadeAnim}}>
+    <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
       <View style={styles.sectionTitleContainer}>
         <Text
-          style={isDarkMode ? styles.sectionTitle : styles.sectionTitleBlack}>
+          style={[styles.sectionTitle, isDarkMode && styles.sectionTitleDark]}>
           Connect your wallet
         </Text>
       </View>
       <View style={styles.explorerContainer}>
-        <ExplorerItem isLoading={isLoading} explorerData={explorerData} />
+        <ExplorerItem
+          isLoading={isLoading}
+          explorerData={explorerData}
+          currentWCURI={currentWCURI}
+        />
         <ViewAllBox setViewAllContentVisible={setViewAllContentVisible} />
       </View>
     </Animated.View>
@@ -42,6 +47,10 @@ export const InitialExplorerContent = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    // TODO: Use safearea insets to make sure the content is not covered by the bottom bar in iOS
+    paddingBottom: 30,
+  },
   sectionTitleContainer: {
     display: 'flex',
     flexDirection: 'row',
@@ -51,18 +60,14 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontWeight: '600',
-    color: 'white',
-    fontSize: 20,
-    lineHeight: 24,
-  },
-  sectionTitleBlack: {
-    fontWeight: '600',
     color: '#141414',
     fontSize: 20,
     lineHeight: 24,
   },
+  sectionTitleDark: {
+    color: 'white',
+  },
   explorerContainer: {
-    display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',

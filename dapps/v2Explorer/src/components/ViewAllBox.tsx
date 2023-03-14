@@ -8,10 +8,11 @@ import {
   useColorScheme,
 } from 'react-native';
 
+import ViewAllIcon from '../assets/ViewAll.png';
+
 interface ViewAllBoxProps {
   setViewAllContentVisible: any;
 }
-const viewAllIcon = require('../assets/ViewAll.png');
 
 export const ViewAllBox = ({setViewAllContentVisible}: ViewAllBoxProps) => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -20,12 +21,13 @@ export const ViewAllBox = ({setViewAllContentVisible}: ViewAllBoxProps) => {
     <TouchableOpacity
       onPress={() => setViewAllContentVisible(true)}
       style={styles.explorerItem}>
-      <Image style={styles.explorerIcon} source={viewAllIcon} />
+      <Image style={styles.explorerIcon} source={ViewAllIcon} />
       <View>
         <Text
-          style={
-            isDarkMode ? styles.explorerIconText : styles.explorerIconTextBlack
-          }
+          style={[
+            styles.explorerIconText,
+            isDarkMode && styles.explorerIconTextDark,
+          ]}
           numberOfLines={1}>
           View All
         </Text>
@@ -49,13 +51,13 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   explorerIconText: {
-    color: 'white',
-    marginVertical: 8,
-    maxWidth: 100,
-  },
-  explorerIconTextBlack: {
     color: '#1f1f1f',
     marginVertical: 8,
     maxWidth: 100,
+    fontWeight: '600',
+    fontSize: 12,
+  },
+  explorerIconTextDark: {
+    color: 'white',
   },
 });

@@ -1,14 +1,8 @@
 import 'react-native-get-random-values';
 import '@ethersproject/shims';
-import {ethers} from 'ethers';
 
 import {useCallback, useEffect, useState} from 'react';
-import {
-  createUniversalProvider,
-  universalProvider,
-} from '../utils/UniversalProvider';
-
-export let web3Provider: ethers.providers.Web3Provider;
+import {createUniversalProvider} from '../utils/UniversalProvider';
 
 export default function useInitialization() {
   const [initialized, setInitialized] = useState(false);
@@ -16,7 +10,6 @@ export default function useInitialization() {
   const onInitialize = useCallback(async () => {
     try {
       await createUniversalProvider();
-      web3Provider = new ethers.providers.Web3Provider(universalProvider);
       setInitialized(true);
     } catch (err: unknown) {
       console.log('Error for initializing', err);
