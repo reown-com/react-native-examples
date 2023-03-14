@@ -142,18 +142,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
-  flexRow: {
-    paddingVertical: 8,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-  },
-  wcContainerText: {
-    fontWeight: '600',
-    fontSize: 20,
-    lineHeight: 24,
-  },
   connectWalletContainer: {
     maxHeight: MODAL_HEIGHT,
     display: 'flex',
@@ -169,53 +157,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-  },
-  sectionTitleContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  sectionTitle: {
-    fontWeight: '600',
-    color: 'white',
-    fontSize: 20,
-    lineHeight: 24,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-
-  chevronImage: {
-    width: 8,
-    height: 18,
-  },
-  closeContainer: {
-    height: 28,
-    width: 28,
-    backgroundColor: '#141414',
-    borderRadius: 14,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
-  },
-  closeContainerLight: {
-    height: 28,
-    width: 28,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
   },
 });

@@ -1,15 +1,7 @@
 import React, {useEffect, useRef} from 'react';
-import {
-  Animated,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  useColorScheme,
-  View,
-} from 'react-native';
-import Chevron from '../assets/Chevron.png';
+import {Animated, StyleSheet, useColorScheme} from 'react-native';
 import {DEVICE_WIDTH} from '../constants/Platform';
+import NavigationHeader from './NavigationHeader';
 import QrCode from './QRCode';
 
 interface Props {
@@ -30,19 +22,7 @@ function QRView({uri, onBackPress}: Props) {
   }, [fadeAnim]);
   return (
     <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
-      <View style={styles.sectionTitleContainer}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={onBackPress}
-          hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
-          <Image style={styles.chevronIcon} source={Chevron} />
-        </TouchableOpacity>
-        <Text
-          style={[styles.sectionTitle, isDarkMode && styles.sectionTitleDark]}>
-          Scan the code
-        </Text>
-        {<View style={styles.backButton} />}
-      </View>
+      <NavigationHeader title="Scan the code" onBackPress={onBackPress} />
       <QrCode
         uri={uri}
         size={DEVICE_WIDTH * 0.9}
@@ -56,30 +36,6 @@ const styles = StyleSheet.create({
   container: {
     paddingBottom: 50,
     width: DEVICE_WIDTH,
-  },
-  sectionTitleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-  },
-  backButton: {
-    width: 18,
-    height: 18,
-  },
-  chevronIcon: {
-    width: 8,
-    height: 18,
-  },
-  sectionTitle: {
-    fontWeight: '600',
-    color: '#141414',
-    fontSize: 20,
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  sectionTitleDark: {
-    color: 'white',
   },
 });
 
