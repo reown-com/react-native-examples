@@ -1,5 +1,5 @@
 //Based on https://github.com/WalletConnect/web3modal/blob/V2/packages/ui/src/utils/QrCode.ts
-import React from 'react';
+import React, {ReactNode} from 'react';
 import {Line, Rect, Circle} from 'react-native-svg';
 import QRCodeUtil from 'qrcode';
 
@@ -46,8 +46,7 @@ export const QrCodeUtil = {
   ) {
     const dotColor = theme === 'light' ? '#141414' : '#fff';
     const edgeColor = theme === 'light' ? '#fff' : '#141414';
-    // const dots: TemplateResult[] = [];
-    const dots = [];
+    const dots: ReactNode[] = [];
     const matrix = getMatrix(uri, 'Q');
     const cellSize = size / matrix.length;
     const qrList = [
@@ -64,6 +63,7 @@ export const QrCodeUtil = {
         const dotSize = cellSize * (QRCODE_MATRIX_MARGIN - i * 2);
         dots.push(
           <Rect
+            key={`rect_${x1 + cellSize * i}_${y1 + cellSize * i}`}
             fill={i % 2 === 0 ? dotColor : edgeColor}
             height={dotSize}
             rx={dotSize * borderRadius}
@@ -137,6 +137,7 @@ export const QrCodeUtil = {
         cys.forEach(cy => {
           dots.push(
             <Circle
+              key={`circle_${cx}_${cy}`}
               cx={cx}
               cy={cy}
               fill={dotColor}
@@ -183,6 +184,7 @@ export const QrCodeUtil = {
         groups.forEach(([y1, y2]) => {
           dots.push(
             <Line
+              key={`line_${cx}_${y1}_${y2}`}
               x1={cx}
               x2={cx}
               y1={y1}
