@@ -8,15 +8,15 @@ interface PairingModalProps {
     | SignClientTypes.EventArguments["session_proposal"]
     | undefined;
   handleAccept: () => void;
+  handleReject: () => void;
 }
 
 export default function PairingModal({
   visible,
-  setModalVisible,
   currentProposal,
   handleAccept,
+  handleReject,
 }: PairingModalProps) {
-  // CurrentProposal values
   const name = currentProposal?.params?.proposer?.metadata?.name;
   const url = currentProposal?.params?.proposer?.metadata.url;
   const methods = currentProposal?.params?.requiredNamespaces.eip155.methods;
@@ -39,22 +39,24 @@ export default function PairingModal({
 
           <Text>Chains: {chains}</Text>
 
-          <View style={{ marginVertical: 8 }}>
-            <Text style={{ textAlign: "center" }}>Methods:</Text>
+          <View style={styles.marginVertical8}>
+            <Text style={styles.subHeading}>Methods:</Text>
             {methods?.map((method) => (
-              <Text key={method}>{method}</Text>
+              <Text style={styles.centerText} key={method}>
+                {method}
+              </Text>
             ))}
           </View>
 
-          <View style={{ marginVertical: 8 }}>
-            <Text style={{ textAlign: "center" }}>Events:</Text>
+          <View style={styles.marginVertical8}>
+            <Text style={styles.subHeading}>Events:</Text>
             {events?.map((events) => (
-              <Text key={events}>{events}</Text>
+              <Text style={styles.centerText}>{events}</Text>
             ))}
           </View>
 
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            <Button onPress={() => setModalVisible(false)} title="Cancel" />
+          <View style={styles.flexRow}>
+            <Button onPress={() => handleReject()} title="Cancel" />
             <Button onPress={() => handleAccept()} title="Accept" />
           </View>
         </View>
@@ -79,7 +81,6 @@ const styles = StyleSheet.create({
     height: "50%",
     position: "absolute",
     backgroundColor: "white",
-    // marginBottom: 100,
     bottom: 0,
   },
   dappLogo: {
@@ -87,5 +88,20 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 8,
     marginVertical: 4,
+  },
+  flexRow: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  marginVertical8: {
+    marginVertical: 8,
+    textAlign: "center",
+  },
+  subHeading: {
+    textAlign: "center",
+    fontWeight: "600",
+  },
+  centerText: {
+    textAlign: "center",
   },
 });

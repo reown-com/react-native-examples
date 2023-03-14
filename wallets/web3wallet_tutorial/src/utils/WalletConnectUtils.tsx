@@ -35,8 +35,6 @@ async function createWeb3Wallet() {
       icons: ["https://avatars.githubusercontent.com/u/37784886"],
     },
   });
-
-  // ToDo: Extend for other chains...
 }
 
 // Initialize the Web3Wallet

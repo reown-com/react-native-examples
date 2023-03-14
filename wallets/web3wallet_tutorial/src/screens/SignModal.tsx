@@ -12,7 +12,6 @@ interface SignModalProps {
   setModalVisible: (arg1: boolean) => void;
   requestSession: any;
   requestEvent: SignClientTypes.EventArguments["session_request"] | undefined;
-  handleAccept: () => void;
 }
 
 export default function SignModal({
@@ -20,13 +19,10 @@ export default function SignModal({
   setModalVisible,
   requestEvent,
   requestSession,
-  handleAccept,
 }: SignModalProps) {
   // CurrentProposal values
 
   if (!requestEvent || !requestSession) return null;
-  console.log("requestEventData", requestEvent);
-  console.log("requestSession", requestSession);
 
   const chainID = requestEvent?.params?.chainId?.toUpperCase();
   const method = requestEvent?.params?.request?.method;
@@ -77,11 +73,15 @@ export default function SignModal({
           <Text>{message}</Text>
 
           <Text>Chains: {chainID}</Text>
-          <Text>{method}</Text>
+
+          <View style={styles.marginVertical8}>
+            <Text style={styles.subHeading}>Method:</Text>
+            <Text>{method}</Text>
+          </View>
 
           <View style={{ display: "flex", flexDirection: "row" }}>
-            <Button onPress={() => setModalVisible(false)} title="Cancel" />
-            <Button onPress={() => handleAccept()} title="Accept" />
+            <Button onPress={() => onReject()} title="Cancel" />
+            <Button onPress={() => onApprove()} title="Accept" />
           </View>
         </View>
       </View>
@@ -113,5 +113,12 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 8,
     marginVertical: 4,
+  },
+  marginVertical8: {
+    marginVertical: 8,
+  },
+  subHeading: {
+    textAlign: "center",
+    fontWeight: "600",
   },
 });

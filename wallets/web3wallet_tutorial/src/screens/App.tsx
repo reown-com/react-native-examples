@@ -1,7 +1,10 @@
+import "fast-text-encoding";
+import "@walletconnect/react-native-compat";
 import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { registerRootComponent } from "expo";
 import { SignClientTypes } from "@walletconnect/types";
+import { getSdkError } from "@walletconnect/utils";
 
 import useInitialization, {
   currentETHAddress,
@@ -15,16 +18,14 @@ import { EIP155_SIGNING_METHODS } from "../utils/EIP155Lib";
 import SignModal from "./SignModal";
 
 export default function App() {
-  const initalized = useInitialization();
-  // ToDo: To Patch later...
-  // useWalletConnectEventsManager(initalized);
+  useInitialization();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [signModalVisible, setSignModalVisible] = useState(false);
+  const [successfulSession, setSuccessfulSession] = useState(false);
 
   const [currentWCURI, setCurrentWCURI] = useState("");
-  const [currentProposal, setCurrentProposal] =
-    useState<SignClientTypes.EventArguments["session_proposal"]>();
+  const [currentProposal, setCurrentProposal] = useState();
 
   const [requestSession, setRequestSession] = useState();
   const [requestEventData, setRequestEventData] = useState();
@@ -68,10 +69,39 @@ export default function App() {
       });
 
       setModalVisible(false);
+      setCurrentWCURI("");
+      setCurrentProposal(undefined);
+      setSuccessfulSession(true);
     }
   }
 
-  // ToDo: Add a reject handling
+  async function disconnect() {
+    const activeSessions = await web3wallet.getActiveSessions();
+    const topic = Object.values(activeSessions)[0].topic;
+
+    if (activeSessions) {
+      await web3wallet.disconnectSession({
+        topic,
+        reason: getSdkError("USER_DISCONNECTED"),
+      });
+    }
+    setSuccessfulSession(false);
+  }
+
+  async function handleReject() {
+    const { id } = currentProposal;
+
+    if (currentProposal) {
+      await web3wallet.rejectSession({
+        id,
+        reason: getSdkError("USER_REJECTED_METHODS"),
+      });
+
+      setModalVisible(false);
+      setCurrentWCURI("");
+      setCurrentProposal(undefined);
+    }
+  }
 
   const onSessionRequest = useCallback(
     async (requestEvent: SignClientTypes.EventArguments["session_request"]) => {
@@ -95,7 +125,15 @@ export default function App() {
   useEffect(() => {
     web3wallet?.on("session_proposal", onSessionProposal);
     web3wallet?.on("session_request", onSessionRequest);
-  }, [pair, handleAccept]);
+  }, [
+    pair,
+    handleAccept,
+    handleReject,
+    currentETHAddress,
+    onSessionRequest,
+    onSessionProposal,
+    successfulSession,
+  ]);
 
   return (
     <View style={styles.container}>
@@ -103,34 +141,28 @@ export default function App() {
 
       <View style={styles.container}>
         <Text>Web3Wallet Tutorial</Text>
-        <Text style={{ textAlign: "center", marginVertical: 8 }}>
-          ETH Address: {currentETHAddress ? currentETHAddress : "No address"}
+        <Text style={styles.addressContent}>
+          ETH Address: {currentETHAddress ? currentETHAddress : "Loading..."}
         </Text>
 
-        {!requestEventData ||
-          (!requestSession && (
-            <View>
-              <TextInput
-                style={{
-                  height: 40,
-                  width: 250,
-                  borderColor: "gray",
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  marginVertical: 10,
-                  padding: 4,
-                }}
-                onChangeText={setCurrentWCURI}
-                value={currentWCURI}
-                placeholder="Enter WC URI (wc:1234...)"
-              />
-              <Button onPress={() => pair()} title="Pair Session" />
-            </View>
-          ))}
+        {!successfulSession ? (
+          <View>
+            <TextInput
+              style={styles.textInputContainer}
+              onChangeText={setCurrentWCURI}
+              value={currentWCURI}
+              placeholder="Enter WC URI (wc:1234...)"
+            />
+            <Button onPress={() => pair()} title="Pair Session" />
+          </View>
+        ) : (
+          <Button onPress={() => disconnect()} title="Disconnect" />
+        )}
       </View>
 
       <PairingModal
         handleAccept={handleAccept}
+        handleReject={handleReject}
         visible={modalVisible}
         setModalVisible={setModalVisible}
         currentProposal={currentProposal}
@@ -161,8 +193,20 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "40%",
     position: "absolute",
-    // marginBottom: 100,
     bottom: 0,
+  },
+  textInputContainer: {
+    height: 40,
+    width: 250,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 10,
+    marginVertical: 10,
+    padding: 4,
+  },
+  addressContent: {
+    textAlign: "center",
+    marginVertical: 8,
   },
 });
 
