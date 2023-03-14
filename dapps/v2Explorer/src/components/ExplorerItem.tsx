@@ -43,7 +43,7 @@ export const ExplorerItem = ({
             style={styles.explorerItem}>
             <Image
               style={styles.explorerIcon}
-              source={{uri: item.image_url.md}}
+              source={{uri: item.image_url.sm}}
             />
             <View>
               <Text

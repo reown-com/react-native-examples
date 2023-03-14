@@ -47,7 +47,7 @@ function App(): JSX.Element {
         setCurrentAccount(currentAddress);
       }
     } catch (err: unknown) {
-      console.log('Error in getAddress', err);
+      Alert.alert('Error', 'Error getting the Address');
     }
   }, [setCurrentAccount]);
 
@@ -58,6 +58,7 @@ function App(): JSX.Element {
 
   const onSessionRejected = useCallback(async () => {
     setModalVisible(false);
+    Alert.alert('Error', 'Session rejected');
   }, []);
 
   const onSessionDelete = useCallback(

@@ -45,7 +45,7 @@ function QRView({uri, onBackPress}: Props) {
       </View>
       <QrCode
         uri={uri}
-        size={DEVICE_WIDTH * 0.8}
+        size={DEVICE_WIDTH * 0.9}
         theme={isDarkMode ? 'dark' : 'light'}
       />
     </Animated.View>
@@ -54,7 +54,7 @@ function QRView({uri, onBackPress}: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 30,
+    paddingBottom: 50,
     width: DEVICE_WIDTH,
   },
   sectionTitleContainer: {
