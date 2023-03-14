@@ -1,4 +1,6 @@
+// import {COSMOS_MAINNET_CHAINS, TCosmosChain} from '@/data/COSMOSData';
 import {EIP155_CHAINS, TEIP155Chain} from '../data/EIP155';
+// import {SOLANA_CHAINS, TSolanaChain} from '@/data/SolanaData';
 import {utils} from 'ethers';
 
 /**

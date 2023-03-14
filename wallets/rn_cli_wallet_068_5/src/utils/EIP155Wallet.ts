@@ -34,7 +34,6 @@ export const getLocalStorage = async () => {
   }
 };
 
-// Function to create or restore a wallet
 export async function createOrRestoreEIP155Wallet() {
   let mnemonic1 = await getLocalStorage();
 
