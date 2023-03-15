@@ -1,6 +1,12 @@
 import React, {useRef, useEffect} from 'react';
-import {Animated, StyleSheet, ScrollView, useColorScheme} from 'react-native';
-import {ExplorerItem} from './ExplorerItem';
+import {
+  Animated,
+  StyleSheet,
+  useColorScheme,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
+import ExplorerItem, {ITEM_HEIGHT} from './ExplorerItem';
 
 import NavigationHeader from './NavigationHeader';
 
@@ -35,30 +41,32 @@ export const ViewAllExplorerContent = ({
           title="Connect your Wallet"
           onBackPress={onBackPress}
         />
-        {/* TODO: Refactor with Flatlist */}
-        <ScrollView
-          scrollEnabled={true}
-          contentContainerStyle={styles.scrollExplorerContainer}
-          bounces
-          showsVerticalScrollIndicator
-          indicatorStyle={isDarkMode ? 'white' : 'black'}>
-          <ExplorerItem
-            isLoading={isLoading}
-            explorerData={explorerData}
-            currentWCURI={currentWCURI}
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <FlatList
+            data={explorerData || []}
+            contentContainerStyle={styles.listContentContainer}
+            indicatorStyle={isDarkMode ? 'white' : 'black'}
+            showsVerticalScrollIndicator
+            numColumns={4}
+            getItemLayout={(data, index) => ({
+              length: ITEM_HEIGHT,
+              offset: ITEM_HEIGHT * index,
+              index,
+            })}
+            renderItem={({item}) => (
+              <ExplorerItem currentWCURI={currentWCURI} walletInfo={item} />
+            )}
           />
-        </ScrollView>
+        )}
       </>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollExplorerContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
+  listContentContainer: {
     paddingBottom: 100,
     paddingHorizontal: 4,
   },

@@ -1,9 +1,10 @@
 import React, {useEffect, useRef} from 'react';
-import {StyleSheet, View, Animated} from 'react-native';
-import {ExplorerItem} from './ExplorerItem';
+import {StyleSheet, View, Animated, ActivityIndicator} from 'react-native';
+import ExplorerItem from './ExplorerItem';
 import {ViewAllBox} from './ViewAllBox';
 import QRIcon from '../assets/QR.png';
 import NavigationHeader from './NavigationHeader';
+import {WalletInfo} from '../types/api';
 
 interface InitialExplorerContentProps {
   isLoading: boolean;
@@ -29,6 +30,7 @@ export const InitialExplorerContent = ({
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
+
   return (
     <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
       <NavigationHeader
@@ -38,11 +40,17 @@ export const InitialExplorerContent = ({
         actionIconStyle={styles.qrIcon}
       />
       <View style={styles.explorerContainer}>
-        <ExplorerItem
-          isLoading={isLoading}
-          explorerData={explorerData}
-          currentWCURI={currentWCURI}
-        />
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          explorerData.map((item: WalletInfo) => (
+            <ExplorerItem
+              walletInfo={item}
+              key={item.id}
+              currentWCURI={currentWCURI}
+            />
+          ))
+        )}
         <ViewAllBox onPress={onViewAllPress} />
       </View>
     </Animated.View>

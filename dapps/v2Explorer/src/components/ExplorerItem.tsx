@@ -2,96 +2,89 @@ import React from 'react';
 import {
   Image,
   Text,
-  ActivityIndicator,
-  View,
   TouchableOpacity,
   StyleSheet,
   useColorScheme,
 } from 'react-native';
+import {WalletInfo} from '../types/api';
 import {navigateDeepLink} from '../utils/ExplorerUtils';
 
 interface ExplorerItemProps {
-  explorerData: any;
-  isLoading: boolean;
   currentWCURI: string;
+  walletInfo: WalletInfo;
 }
 
-export const ExplorerItem = ({
-  explorerData,
-  isLoading,
-  currentWCURI,
-}: ExplorerItemProps) => {
+export const ITEM_HEIGHT = 80;
+
+function ExplorerItem({currentWCURI, walletInfo}: ExplorerItemProps) {
   const isDarkMode = useColorScheme() === 'dark';
 
-  if (isLoading) {
-    return <ActivityIndicator color="#FFFFFF" />;
-  }
+  const onPress = () => {
+    navigateDeepLink(
+      walletInfo.mobile.universal,
+      walletInfo.mobile.native,
+      currentWCURI,
+    );
+  };
 
   return (
-    <>
-      {explorerData.map((item: any, index: number) => {
-        return (
-          <TouchableOpacity
-            onPress={() => {
-              navigateDeepLink(
-                item.mobile.universal,
-                item.mobile.native,
-                currentWCURI,
-              );
-            }}
-            key={index}
-            style={styles.explorerItem}>
-            <Image
-              style={styles.explorerIcon}
-              source={{uri: item.image_url.sm}}
-            />
-            <View>
-              <Text
-                style={[
-                  styles.explorerIconText,
-                  isDarkMode && styles.explorerIconTextDark,
-                ]}
-                numberOfLines={1}>
-                {item.name}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        );
-      })}
-    </>
+    <TouchableOpacity
+      onPress={onPress}
+      key={walletInfo.id}
+      style={styles.container}>
+      <Image style={styles.icon} source={{uri: walletInfo.image_url.md}} />
+      <Text
+        style={[styles.name, isDarkMode && styles.nameDark]}
+        numberOfLines={1}>
+        {walletInfo.name}
+      </Text>
+      {walletInfo.isInstalled ? (
+        <Text
+          style={[
+            styles.installedText,
+            isDarkMode && styles.installedTextDark,
+          ]}>
+          Installed
+        </Text>
+      ) : null}
+    </TouchableOpacity>
   );
-};
+}
+
+export default ExplorerItem;
 
 const styles = StyleSheet.create({
-  explorerContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  explorerItem: {
+  container: {
     width: '25%',
-    height: 75,
-    justifyContent: 'center',
+    height: 80,
+    justifyContent: 'flex-start',
     alignItems: 'center',
     marginVertical: 16,
   },
-  explorerIcon: {
+  icon: {
     height: 60,
     width: 60,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.1)',
   },
-  explorerIconText: {
+  name: {
     color: '#1F1F1F',
     marginTop: 5,
     maxWidth: 100,
     fontSize: 12,
     fontWeight: '600',
   },
-  explorerIconTextDark: {
+  nameDark: {
     color: 'white',
+  },
+  installedText: {
+    color: '#9EA9A9',
+    fontSize: 10,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  installedTextDark: {
+    color: '#6E7777',
   },
 });

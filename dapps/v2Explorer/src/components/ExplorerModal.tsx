@@ -4,12 +4,13 @@ import Modal from 'react-native-modal';
 import {InitialExplorerContent} from './InitialExplorerContent';
 import {ViewAllExplorerContent} from './ViewAllExplorerContent';
 
-import {fetchInitialWallets, fetchViewAllWallets} from '../utils/ExplorerUtils';
+import {fetchAllWallets} from '../utils/ExplorerUtils';
 import {ExplorerModalHeader} from './ExplorerModalHeader';
 import Background from '../assets/Background.png';
 import {DEVICE_HEIGHT, DEVICE_WIDTH} from '../constants/Platform';
 import QRView from './QRView';
 import {Routes} from '../constants/Routes';
+import {WalletInfo} from '../types/api';
 
 const MODAL_HEIGHT = DEVICE_HEIGHT * 0.7;
 const INITIAL_ROUTE = 'INIT_WALLETS';
@@ -26,13 +27,9 @@ export function ExplorerModal({
   close,
   currentWCURI,
 }: ExplorerModalProps) {
-  // TODO: change loading names to more clearer ones.
-  const [isLoading, setIsLoading] = useState(true);
-  const [isViewAllLoading, setViewAllLoading] = useState(true);
-
-  // TODO: change explorerData to more clearer names.
-  const [explorerData, setExplorerData] = useState([]);
-  const [viewAllExplorerData, setViewAllExplorerData] = useState([]);
+  const [isWalletListLoading, setWalletListLoading] = useState(true);
+  const [initialWallets, setInitialWallets] = useState<WalletInfo[]>([]);
+  const [allWallets, setAllWallets] = useState<WalletInfo[]>([]);
 
   // TODO: move to utils
   const isDarkMode = useColorScheme() === 'dark';
@@ -41,14 +38,12 @@ export function ExplorerModal({
 
   // TODO: could be cleaner
   const fetchWallets = useCallback(() => {
-    fetchInitialWallets().then(wallets => {
-      setIsLoading(false);
-      setExplorerData(wallets);
-    });
-
-    fetchViewAllWallets().then(wallets => {
-      setViewAllLoading(false);
-      setViewAllExplorerData(wallets);
+    fetchAllWallets().then(wallets => {
+      setWalletListLoading(false);
+      if (wallets) {
+        setInitialWallets(wallets.slice(0, 7));
+        setAllWallets(wallets);
+      }
     });
   }, []);
 
@@ -69,8 +64,8 @@ export function ExplorerModal({
     return {
       ['INIT_WALLETS']: (
         <InitialExplorerContent
-          isLoading={isLoading}
-          explorerData={explorerData}
+          isLoading={isWalletListLoading}
+          explorerData={initialWallets}
           onViewAllPress={() => onNavigate('ALL_WALLETS')}
           currentWCURI={currentWCURI}
           onQRPress={() => onNavigate('QR_CODE')}
@@ -78,8 +73,8 @@ export function ExplorerModal({
       ),
       ['ALL_WALLETS']: (
         <ViewAllExplorerContent
-          isLoading={isViewAllLoading}
-          explorerData={viewAllExplorerData}
+          isLoading={isWalletListLoading}
+          explorerData={allWallets}
           onBackPress={onBackPress}
           currentWCURI={currentWCURI}
         />
@@ -88,19 +83,18 @@ export function ExplorerModal({
     };
   }, [
     currentWCURI,
-    explorerData,
-    isLoading,
-    isViewAllLoading,
+    initialWallets,
+    isWalletListLoading,
     onBackPress,
     onNavigate,
-    viewAllExplorerData,
+    allWallets,
   ]);
 
   useEffect(() => {
-    if (!explorerData.length) {
+    if (!initialWallets.length) {
       fetchWallets();
     }
-  }, [explorerData, fetchWallets, isLoading, isViewAllLoading]);
+  }, [initialWallets, fetchWallets, isWalletListLoading]);
 
   return (
     <Modal
