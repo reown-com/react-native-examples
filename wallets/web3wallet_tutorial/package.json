@@ -1,0 +1,32 @@
+{
+  "name": "web3wallet_tutorial",
+  "version": "1.0.0",
+  "main": "src/screens/App.tsx",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@ethersproject/shims": "^5.7.0",
+    "@json-rpc-tools/utils": "^1.7.6",
+    "@react-native-async-storage/async-storage": "^1.17.11",
+    "@walletconnect/react-native-compat": "^2.4.9",
+    "@walletconnect/web3wallet": "^1.4.0",
+    "ethers": "5.4",
+    "expo": "~48.0.6",
+    "fast-text-encoding": "^1.0.6",
+    "react": "18.2.0",
+    "react-native": "0.71.3",
+    "react-native-dotenv": "^3.4.8",
+    "react-native-get-random-values": "^1.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~18.0.14",
+    "@types/react-native": "^0.71.3",
+    "typescript": "^4.9.4"
+  },
+  "private": true
+}
