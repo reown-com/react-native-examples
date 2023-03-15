@@ -9,23 +9,22 @@ export let web3wallet: IWeb3Wallet;
 export let core: ICore;
 export let currentETHAddress: string;
 
-// @ts-expect-error - `@env` is a virtualised module via Babel config.
-import { ENV_PROJECT_ID } from "@env";
 import { useState, useCallback, useEffect } from "react";
 import { createOrRestoreEIP155Wallet } from "./EIP155Wallet";
 
-// Docs for Web3Wallet: https://docs.walletconnect.com/2.0/javascript/web3wallet/wallet-usage
 async function createWeb3Wallet() {
   // Here we create / restore an EIP155 wallet
   const { eip155Addresses } = await createOrRestoreEIP155Wallet();
   currentETHAddress = eip155Addresses[0];
 
-  // Note leaving the console log for devs to see the ENV_PROJECT_ID
-  // console.log("ENV_PROJECT_ID", ENV_PROJECT_ID);
+  // HardCoding it here for ease of tutorial
+  // Paste your project ID here
+  const ENV_PROJECT_ID = "XXX";
   const core = new Core({
     projectId: ENV_PROJECT_ID,
   });
 
+  // Edit the metadata to your preference
   web3wallet = await Web3Wallet.init({
     core,
     metadata: {

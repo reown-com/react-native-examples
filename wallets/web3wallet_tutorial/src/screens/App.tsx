@@ -1,9 +1,8 @@
 import "fast-text-encoding";
 import "@walletconnect/react-native-compat";
-import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { registerRootComponent } from "expo";
-import { SignClientTypes } from "@walletconnect/types";
+import { SignClientTypes, SessionTypes } from "@walletconnect/types";
 import { getSdkError } from "@walletconnect/utils";
 
 import useInitialization, {
@@ -11,9 +10,8 @@ import useInitialization, {
   web3wallet,
   web3WalletPair,
 } from "../utils/WalletConnectUtils";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PairingModal from "./PairingModal";
-import { SessionTypes } from "@walletconnect/types";
 import { EIP155_SIGNING_METHODS } from "../utils/EIP155Lib";
 import SignModal from "./SignModal";
 
@@ -137,8 +135,6 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
-
       <View style={styles.container}>
         <Text>Web3Wallet Tutorial</Text>
         <Text style={styles.addressContent}>

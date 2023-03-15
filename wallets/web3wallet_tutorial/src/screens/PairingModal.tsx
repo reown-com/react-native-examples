@@ -51,7 +51,9 @@ export default function PairingModal({
           <View style={styles.marginVertical8}>
             <Text style={styles.subHeading}>Events:</Text>
             {events?.map((events) => (
-              <Text style={styles.centerText}>{events}</Text>
+              <Text style={styles.centerText} key={events}>
+                {events}
+              </Text>
             ))}
           </View>
 

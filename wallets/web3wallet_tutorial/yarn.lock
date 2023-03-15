@@ -4392,11 +4392,6 @@ expo-modules-core@1.2.4:
     compare-versions "^3.4.0"
     invariant "^2.2.4"
 
-expo-status-bar@~1.4.4:
-  version "1.4.4"
-  resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-1.4.4.tgz"
-  integrity sha512-5DV0hIEWgatSC3UgQuAZBoQeaS9CqeWRZ3vzBR9R/+IUD87Adbi4FGhU10nymRqFXOizGsureButGZIXPs7zEA==
-
 expo@~48.0.6:
   version "48.0.6"
   resolved "https://registry.npmjs.org/expo/-/expo-48.0.6.tgz"
