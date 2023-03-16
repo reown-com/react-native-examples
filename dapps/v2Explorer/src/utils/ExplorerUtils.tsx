@@ -6,7 +6,10 @@ import {WalletInfo} from '../types/api';
 import {isAndroid} from '../constants/Platform';
 import InstalledAppModule from '../modules/InstalledAppModule';
 
-function getUrlParams(url: string): {[key: string]: string} {
+function getUrlParams(url: string | null): {[key: string]: string} {
+  if (!url) {
+    return {};
+  }
   const regex = /[?&]([^=#]+)=([^&#]*)/g;
   const params: {[key: string]: string} = {};
   let match: RegExpExecArray | null;
@@ -18,20 +21,13 @@ function getUrlParams(url: string): {[key: string]: string} {
   return params;
 }
 
-export async function isAppInstalled(wallet: WalletInfo): Promise<boolean> {
-  if (isAndroid) {
-    const appUrl = wallet?.app?.android;
-    if (appUrl) {
-      // TODO: Change this when explorer-api returns the package name
-      const packageName = getUrlParams(appUrl).id;
-      return packageName
-        ? await InstalledAppModule.isAppInstalled(packageName)
-        : false;
-    }
-    return false;
-  } else {
-    return false;
-  }
+export async function isAppInstalled(
+  packageName?: string,
+  appScheme?: string,
+): Promise<boolean> {
+  return await InstalledAppModule.isAppInstalled(
+    isAndroid ? packageName : appScheme,
+  );
 }
 
 function formatNativeUrl(appUrl: string, wcUri: string): string {
@@ -81,7 +77,9 @@ const setInstalledFlag = async (
   wallets: WalletInfo[],
 ): Promise<WalletInfo[]> => {
   const promises = wallets.map(async wallet => {
-    const isInstalled = await isAppInstalled(wallet);
+    const packageName = getUrlParams(wallet?.app?.android)?.id;
+    const appScheme = wallet?.mobile?.native;
+    const isInstalled = await isAppInstalled(packageName, appScheme);
     return {...wallet, isInstalled};
   });
   return Promise.all(promises);

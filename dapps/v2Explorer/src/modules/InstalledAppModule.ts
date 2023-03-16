@@ -1,25 +1,29 @@
-/**
- * This exposes the native CalendarModule module as a JS module. This has a
- * function 'isAppInstalled' which takes the following parameter:
- *
- * 1. String name: A string representing the name of the app
- * For Android: package name is required (e.g. com.facebook.katana)
- * For iOS: scheme name is required (e.g. fb://) -> schemes need to be added to info.plist inside LSApplicationQueriesSchemes
- */
 import {Linking, NativeModules, Platform} from 'react-native';
 
 const {InstalledAppModule} = NativeModules;
+const isAndroid = Platform.OS === 'android';
 
 interface InstalledAppInterface {
-  isAppInstalled(name: string): Promise<boolean>;
+  /**
+   * Checks if an app is installed on the device by receiving Package name for Android (e.g. com.walletconnect.example)
+   * or App Scheme for iOS (e.g. wc://)
+   *
+   * NOTE: As of iOS 9, your app needs to provide the LSApplicationQueriesSchemes key inside Info.plist.
+   *
+   * @param name - String representing the app name
+   */
+  isAppInstalled(name?: string): Promise<boolean>;
 }
 
-function isAppInstalled(name: string): Promise<boolean> {
-  const isAndroid = Platform.OS === 'android';
+function isAppInstalled(name?: string): Promise<boolean> {
+  if (!name) {
+    return Promise.resolve(false);
+  }
+
   if (isAndroid) {
     return InstalledAppModule.isAppInstalled(name);
   } else {
-    return Linking.canOpenURL(name);
+    return Linking.canOpenURL(name).catch(() => false);
   }
 }
 
