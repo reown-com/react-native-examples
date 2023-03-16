@@ -5,25 +5,25 @@ const isAndroid = Platform.OS === 'android';
 
 interface InstalledAppInterface {
   /**
-   * Checks if an app is installed on the device by receiving Package name for Android (e.g. com.walletconnect.example)
+   * Checks if an app is installed on the device by receiving the applicationId for Android (e.g. com.walletconnect.example)
    * or App Scheme for iOS (e.g. wc://)
    *
    * NOTE: As of iOS 9, your app needs to provide the LSApplicationQueriesSchemes key inside Info.plist.
    *
-   * @param name - String representing the app name
+   * @param id - String representing the appId or scheme
    */
-  isAppInstalled(name?: string): Promise<boolean>;
+  isAppInstalled(id?: string | null): Promise<boolean>;
 }
 
-function isAppInstalled(name?: string): Promise<boolean> {
-  if (!name) {
+function isAppInstalled(id?: string | null): Promise<boolean> {
+  if (!id) {
     return Promise.resolve(false);
   }
 
   if (isAndroid) {
-    return InstalledAppModule.isAppInstalled(name);
+    return InstalledAppModule.isAppInstalled(id);
   } else {
-    return Linking.canOpenURL(name).catch(() => false);
+    return Linking.canOpenURL(id).catch(() => false);
   }
 }
 

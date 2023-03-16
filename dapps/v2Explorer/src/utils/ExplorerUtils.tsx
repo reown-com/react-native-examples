@@ -22,12 +22,25 @@ function getUrlParams(url: string | null): {[key: string]: string} {
 }
 
 export async function isAppInstalled(
-  packageName?: string,
-  appScheme?: string,
+  applicationId?: string | null,
+  appScheme?: string | null,
 ): Promise<boolean> {
   return await InstalledAppModule.isAppInstalled(
-    isAndroid ? packageName : appScheme,
+    isAndroid ? applicationId : appScheme,
   );
+}
+
+function getScheme(url: string): string | null {
+  if (!url) {
+    return null;
+  }
+
+  const scheme = url.split('://')[0];
+  // Schemes from explorer-api should't have this urls, but just in case
+  if (!scheme || scheme === 'http' || scheme === 'https') {
+    return null;
+  }
+  return `${scheme}://`;
 }
 
 function formatNativeUrl(appUrl: string, wcUri: string): string {
@@ -65,8 +78,7 @@ export const navigateDeepLink = async (
 
   try {
     // Note: Could not use .canOpenURL() to check if the app is installed
-    // Due to having to add it to the iOS info
-
+    // Due to having to add it to the iOS info.plist
     await Linking.openURL(tempDeepLink);
   } catch (error) {
     Alert.alert(`Unable to open this DeepLink: ${tempDeepLink}`);
@@ -77,9 +89,9 @@ const setInstalledFlag = async (
   wallets: WalletInfo[],
 ): Promise<WalletInfo[]> => {
   const promises = wallets.map(async wallet => {
-    const packageName = getUrlParams(wallet?.app?.android)?.id;
-    const appScheme = wallet?.mobile?.native;
-    const isInstalled = await isAppInstalled(packageName, appScheme);
+    const applicationId = getUrlParams(wallet?.app?.android)?.id;
+    const appScheme = getScheme(wallet?.mobile?.native);
+    const isInstalled = await isAppInstalled(applicationId, appScheme);
     return {...wallet, isInstalled};
   });
   return Promise.all(promises);

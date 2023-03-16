@@ -85,7 +85,8 @@ function App(): JSX.Element {
       clearSession();
       setCurrentAccount(null);
     } catch (err: unknown) {
-      Alert.alert('Error', 'Error disconnecting');
+      // TODO: Improve this, check why is alerting a lot, and check MaxListeners warning
+      // Alert.alert('Error', 'Error disconnecting');
     }
   }, []);
 
