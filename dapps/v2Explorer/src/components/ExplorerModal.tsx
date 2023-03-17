@@ -7,12 +7,11 @@ import {ViewAllExplorerContent} from './ViewAllExplorerContent';
 import {fetchAllWallets} from '../utils/ExplorerUtils';
 import {ExplorerModalHeader} from './ExplorerModalHeader';
 import Background from '../assets/Background.png';
-import {DEVICE_HEIGHT, DEVICE_WIDTH} from '../constants/Platform';
+import {DEVICE_WIDTH} from '../constants/Platform';
 import QRView from './QRView';
 import {Routes} from '../constants/Routes';
 import {WalletInfo} from '../types/api';
 
-const MODAL_HEIGHT = DEVICE_HEIGHT * 0.7;
 const INITIAL_ROUTE = 'INIT_WALLETS';
 
 interface ExplorerModalProps {
@@ -100,7 +99,9 @@ export function ExplorerModal({
     <Modal
       isVisible={modalVisible}
       style={styles.modal}
+      propagateSwipe
       hideModalContentWhileAnimating
+      onBackdropPress={close}
       onModalHide={() => {
         setViewStack([INITIAL_ROUTE]);
       }}
@@ -111,11 +112,10 @@ export function ExplorerModal({
         imageStyle={styles.wcImage}>
         <ExplorerModalHeader close={close} />
         <View
-          style={
-            isDarkMode
-              ? styles.connectWalletContainer
-              : styles.connectWalletContainerLight
-          }>
+          style={[
+            styles.connectWalletContainer,
+            isDarkMode && styles.connectWalletContainerDark,
+          ]}>
           {SCREENS[viewStack.at(-1) || INITIAL_ROUTE]}
         </View>
       </ImageBackground>
@@ -126,30 +126,21 @@ export function ExplorerModal({
 const styles = StyleSheet.create({
   modal: {
     margin: 0,
-    width: DEVICE_WIDTH,
+    justifyContent: 'flex-end',
   },
   wcContainer: {
-    position: 'absolute',
-    bottom: -20,
+    width: DEVICE_WIDTH,
   },
   wcImage: {
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
   connectWalletContainer: {
-    maxHeight: MODAL_HEIGHT,
-    display: 'flex',
-    backgroundColor: '#141414',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-  },
-  connectWalletContainerLight: {
-    height: '100%',
-    display: 'flex',
-    maxHeight: MODAL_HEIGHT,
-    width: '100%',
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
+  },
+  connectWalletContainerDark: {
+    backgroundColor: '#141414',
   },
 });

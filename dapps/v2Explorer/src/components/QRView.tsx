@@ -47,8 +47,7 @@ function QRView({uri, onBackPress}: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 50,
-    width: DEVICE_WIDTH,
+    paddingBottom: 24,
   },
 });
 

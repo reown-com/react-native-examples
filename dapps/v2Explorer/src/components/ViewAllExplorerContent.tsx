@@ -5,7 +5,9 @@ import {
   useColorScheme,
   FlatList,
   ActivityIndicator,
+  View,
 } from 'react-native';
+import {DEVICE_HEIGHT} from '../constants/Platform';
 import ExplorerItem, {ITEM_HEIGHT} from './ExplorerItem';
 
 import NavigationHeader from './NavigationHeader';
@@ -42,15 +44,18 @@ export const ViewAllExplorerContent = ({
           onBackPress={onBackPress}
         />
         {isLoading ? (
-          <ActivityIndicator />
+          <View style={styles.loader}>
+            <ActivityIndicator color={isDarkMode ? 'white' : 'black'} />
+          </View>
         ) : (
           <FlatList
             data={explorerData || []}
+            style={styles.list}
             contentContainerStyle={styles.listContentContainer}
             indicatorStyle={isDarkMode ? 'white' : 'black'}
             showsVerticalScrollIndicator
             numColumns={4}
-            getItemLayout={(data, index) => ({
+            getItemLayout={(_, index) => ({
               length: ITEM_HEIGHT,
               offset: ITEM_HEIGHT * index,
               index,
@@ -66,8 +71,15 @@ export const ViewAllExplorerContent = ({
 };
 
 const styles = StyleSheet.create({
+  list: {
+    maxHeight: DEVICE_HEIGHT * 0.6,
+  },
   listContentContainer: {
-    paddingBottom: 100,
     paddingHorizontal: 4,
+    paddingBottom: 12,
+  },
+  loader: {
+    height: DEVICE_HEIGHT * 0.2,
+    justifyContent: 'center',
   },
 });

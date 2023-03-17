@@ -58,7 +58,8 @@ function App(): JSX.Element {
 
   const onSessionError = useCallback(async () => {
     setModalVisible(false);
-    Alert.alert('Error', 'Error creating session');
+    // TODO: Improve this, check why is alerting a lot, and check MaxListeners warning
+    // Alert.alert('Error', 'Error creating session');
   }, []);
 
   const onSessionDelete = useCallback(
@@ -85,8 +86,7 @@ function App(): JSX.Element {
       clearSession();
       setCurrentAccount(null);
     } catch (err: unknown) {
-      // TODO: Improve this, check why is alerting a lot, and check MaxListeners warning
-      // Alert.alert('Error', 'Error disconnecting');
+      Alert.alert('Error', 'Error disconnecting');
     }
   }, []);
 
@@ -158,13 +158,11 @@ function App(): JSX.Element {
             )}
           </TouchableOpacity>
         )}
-        {currentWCURI ? (
-          <ExplorerModal
-            modalVisible={modalVisible}
-            close={close}
-            currentWCURI={currentWCURI}
-          />
-        ) : null}
+        <ExplorerModal
+          modalVisible={modalVisible}
+          close={close}
+          currentWCURI={currentWCURI}
+        />
       </View>
     </SafeAreaView>
   );
