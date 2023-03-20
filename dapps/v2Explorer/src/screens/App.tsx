@@ -24,7 +24,7 @@ import {
   clearSession,
   createUniversalProviderSession,
 } from '../utils/UniversalProvider';
-import {ExplorerModal} from '../components/ExplorerModal';
+import ExplorerModal from '../components/ExplorerModal';
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';

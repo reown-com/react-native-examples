@@ -19,12 +19,12 @@ interface ViewAllExplorerContentProps {
   currentWCURI: string;
 }
 
-export const ViewAllExplorerContent = ({
+function ViewAllExplorerContent({
   isLoading,
   explorerData,
   onBackPress,
   currentWCURI,
-}: ViewAllExplorerContentProps) => {
+}: ViewAllExplorerContentProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -68,7 +68,7 @@ export const ViewAllExplorerContent = ({
       </>
     </Animated.View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   list: {
@@ -83,3 +83,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default ViewAllExplorerContent;

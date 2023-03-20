@@ -15,7 +15,7 @@ interface ExplorerModalHeaderProps {
   close: () => void;
 }
 
-export const ExplorerModalHeader = ({close}: ExplorerModalHeaderProps) => {
+function ExplorerModalHeader({close}: ExplorerModalHeaderProps) {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
@@ -32,7 +32,7 @@ export const ExplorerModalHeader = ({close}: ExplorerModalHeaderProps) => {
       </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -65,3 +65,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#141414',
   },
 });
+
+export default ExplorerModalHeader;

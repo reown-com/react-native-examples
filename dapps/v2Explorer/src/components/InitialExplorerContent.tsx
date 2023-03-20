@@ -7,7 +7,7 @@ import {
   useColorScheme,
 } from 'react-native';
 import ExplorerItem from './ExplorerItem';
-import {ViewAllBox} from './ViewAllBox';
+import ViewAllBox from './ViewAllBox';
 import QRIcon from '../assets/QR.png';
 import NavigationHeader from './NavigationHeader';
 import {WalletInfo} from '../types/api';
@@ -21,13 +21,13 @@ interface InitialExplorerContentProps {
   onQRPress: () => void;
 }
 
-export const InitialExplorerContent = ({
+function InitialExplorerContent({
   isLoading,
   explorerData,
   onViewAllPress,
   currentWCURI,
   onQRPress,
-}: InitialExplorerContentProps) => {
+}: InitialExplorerContentProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -65,7 +65,7 @@ export const InitialExplorerContent = ({
       )}
     </Animated.View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -88,3 +88,5 @@ const styles = StyleSheet.create({
     width: 24,
   },
 });
+
+export default InitialExplorerContent;

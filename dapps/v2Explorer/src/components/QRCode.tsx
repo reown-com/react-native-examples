@@ -10,7 +10,7 @@ interface Props {
   theme?: 'light' | 'dark';
 }
 
-function QrCode({uri, size, theme = 'light'}: Props) {
+function QRCode({uri, size, theme = 'light'}: Props) {
   const dots = useMemo(
     () => QrCodeUtil.generate(uri, size, size / 4, theme),
     [uri, size, theme],
@@ -26,8 +26,6 @@ function QrCode({uri, size, theme = 'light'}: Props) {
   );
 }
 
-export default QrCode;
-
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
@@ -37,3 +35,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
 });
+
+export default QRCode;

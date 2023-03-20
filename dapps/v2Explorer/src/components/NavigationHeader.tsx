@@ -54,7 +54,6 @@ function NavigationHeader({
     </View>
   );
 }
-export default NavigationHeader;
 
 const styles = StyleSheet.create({
   container: {
@@ -84,3 +83,5 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
+export default NavigationHeader;

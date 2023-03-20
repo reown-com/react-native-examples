@@ -1,11 +1,11 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, View, useColorScheme, ImageBackground} from 'react-native';
 import Modal from 'react-native-modal';
-import {InitialExplorerContent} from './InitialExplorerContent';
-import {ViewAllExplorerContent} from './ViewAllExplorerContent';
+import InitialExplorerContent from './InitialExplorerContent';
+import ViewAllExplorerContent from './ViewAllExplorerContent';
 
 import {fetchAllWallets} from '../utils/ExplorerUtils';
-import {ExplorerModalHeader} from './ExplorerModalHeader';
+import ExplorerModalHeader from './ExplorerModalHeader';
 import Background from '../assets/Background.png';
 import {DEVICE_WIDTH} from '../constants/Platform';
 import QRView from './QRView';
@@ -20,8 +20,7 @@ interface ExplorerModalProps {
   currentWCURI: string;
 }
 
-// Populate with the data...
-export function ExplorerModal({
+function ExplorerModal({
   modalVisible,
   close,
   currentWCURI,
@@ -122,6 +121,8 @@ export function ExplorerModal({
     </Modal>
   );
 }
+
+export default ExplorerModal;
 
 const styles = StyleSheet.create({
   modal: {

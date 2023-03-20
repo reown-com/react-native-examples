@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import {Alert, Animated, StyleSheet, useColorScheme} from 'react-native';
 import {DEVICE_WIDTH} from '../constants/Platform';
 import NavigationHeader from './NavigationHeader';
-import QrCode from './QRCode';
+import QRCode from './QRCode';
 import CopyIcon from '../assets/Copy.png';
 import Clipboard from '@react-native-clipboard/clipboard';
 
@@ -36,7 +36,7 @@ function QRView({uri, onBackPress}: Props) {
         actionIcon={CopyIcon}
         onActionPress={copyToClipboard}
       />
-      <QrCode
+      <QRCode
         uri={uri}
         size={DEVICE_WIDTH * 0.9}
         theme={isDarkMode ? 'dark' : 'light'}

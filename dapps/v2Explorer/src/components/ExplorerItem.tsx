@@ -51,8 +51,6 @@ function ExplorerItem({currentWCURI, walletInfo}: ExplorerItemProps) {
   );
 }
 
-export default ExplorerItem;
-
 const styles = StyleSheet.create({
   container: {
     width: '25%',
@@ -88,3 +86,5 @@ const styles = StyleSheet.create({
     color: '#6E7777',
   },
 });
+
+export default ExplorerItem;

@@ -14,7 +14,7 @@ interface Props {
   onPress: any;
 }
 
-export const ViewAllBox = ({onPress}: Props) => {
+function ViewAllBox({onPress}: Props) {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
@@ -29,7 +29,7 @@ export const ViewAllBox = ({onPress}: Props) => {
       </View>
     </TouchableOpacity>
   );
-};
+}
 
 const styles = StyleSheet.create({
   icon: {
@@ -56,3 +56,5 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
+export default ViewAllBox;
