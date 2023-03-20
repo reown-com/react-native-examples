@@ -22,6 +22,15 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>awallet</string>
+		<string>trust</string>
+		<string>rainbow</string>
+		<string>walletapp</string>
+		<string>spot</string>
+		<string>zerion</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -51,14 +60,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>awallet</string>
-		<string>trust</string>
-		<string>rainbow</string>
-		<string>walletapp</string>
-		<string>spot</string>
-		<string>zerion</string>
-	</array>
 </dict>
 </plist>
