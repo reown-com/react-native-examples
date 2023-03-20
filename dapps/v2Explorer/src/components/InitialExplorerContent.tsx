@@ -69,7 +69,6 @@ function InitialExplorerContent({
 
 const styles = StyleSheet.create({
   container: {
-    // TODO: Use safearea insets to make sure the content is not covered by the bottom bar in iOS
     paddingBottom: 12,
   },
   explorerContainer: {

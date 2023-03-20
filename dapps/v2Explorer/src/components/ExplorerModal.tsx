@@ -29,7 +29,6 @@ function ExplorerModal({
   const [initialWallets, setInitialWallets] = useState<WalletInfo[]>([]);
   const [allWallets, setAllWallets] = useState<WalletInfo[]>([]);
 
-  // TODO: move to utils
   const isDarkMode = useColorScheme() === 'dark';
 
   const [viewStack, setViewStack] = useState<Routes[]>([INITIAL_ROUTE]);
@@ -122,8 +121,6 @@ function ExplorerModal({
   );
 }
 
-export default ExplorerModal;
-
 const styles = StyleSheet.create({
   modal: {
     margin: 0,
@@ -145,3 +142,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#141414',
   },
 });
+
+export default ExplorerModal;
