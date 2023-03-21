@@ -1,23 +1,26 @@
 import React, {useEffect, useRef} from 'react';
-import {StyleSheet, View, Text, Animated, useColorScheme} from 'react-native';
+import {StyleSheet, View, Animated} from 'react-native';
 import {ExplorerItem} from './ExplorerItem';
 import {ViewAllBox} from './ViewAllBox';
+import QRIcon from '../assets/QR.png';
+import NavigationHeader from './NavigationHeader';
 
 interface InitialExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
-  setViewAllContentVisible: (value: boolean) => void;
+  onViewAllPress: () => void;
   currentWCURI: string;
+  onQRPress: () => void;
 }
 
 export const InitialExplorerContent = ({
   isLoading,
   explorerData,
-  setViewAllContentVisible,
+  onViewAllPress,
   currentWCURI,
+  onQRPress,
 }: InitialExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const isDarkMode = useColorScheme() === 'dark';
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -28,19 +31,19 @@ export const InitialExplorerContent = ({
   }, [fadeAnim]);
   return (
     <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
-      <View style={styles.sectionTitleContainer}>
-        <Text
-          style={[styles.sectionTitle, isDarkMode && styles.sectionTitleDark]}>
-          Connect your wallet
-        </Text>
-      </View>
+      <NavigationHeader
+        title="Connect your Wallet"
+        onActionPress={onQRPress}
+        actionIcon={QRIcon}
+        actionIconStyle={styles.qrIcon}
+      />
       <View style={styles.explorerContainer}>
         <ExplorerItem
           isLoading={isLoading}
           explorerData={explorerData}
           currentWCURI={currentWCURI}
         />
-        <ViewAllBox setViewAllContentVisible={setViewAllContentVisible} />
+        <ViewAllBox onPress={onViewAllPress} />
       </View>
     </Animated.View>
   );
@@ -51,27 +54,15 @@ const styles = StyleSheet.create({
     // TODO: Use safearea insets to make sure the content is not covered by the bottom bar in iOS
     paddingBottom: 30,
   },
-  sectionTitleContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  sectionTitle: {
-    fontWeight: '600',
-    color: '#141414',
-    fontSize: 20,
-    lineHeight: 24,
-  },
-  sectionTitleDark: {
-    color: 'white',
-  },
   explorerContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 4,
+  },
+  qrIcon: {
+    height: 24,
+    width: 24,
   },
 });

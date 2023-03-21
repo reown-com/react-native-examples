@@ -47,7 +47,7 @@ function App(): JSX.Element {
         setCurrentAccount(currentAddress);
       }
     } catch (err: unknown) {
-      console.log('Error in getAddress', err);
+      Alert.alert('Error', 'Error getting the Address');
     }
   }, [setCurrentAccount]);
 
@@ -56,8 +56,9 @@ function App(): JSX.Element {
     setModalVisible(false);
   }, [getAddress]);
 
-  const onSessionRejected = useCallback(async () => {
+  const onSessionError = useCallback(async () => {
     setModalVisible(false);
+    Alert.alert('Error', 'Error creating session');
   }, []);
 
   const onSessionDelete = useCallback(
@@ -73,10 +74,10 @@ function App(): JSX.Element {
   const onConnect = useCallback(async () => {
     createUniversalProviderSession({
       onSuccess: onSessionCreated,
-      onFailure: onSessionRejected,
+      onFailure: onSessionError,
     });
     setModalVisible(true);
-  }, [onSessionCreated, onSessionRejected]);
+  }, [onSessionCreated, onSessionError]);
 
   const onDisconnect = useCallback(async () => {
     try {

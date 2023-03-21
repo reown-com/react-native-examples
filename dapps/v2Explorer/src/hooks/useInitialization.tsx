@@ -3,6 +3,7 @@ import '@ethersproject/shims';
 
 import {useCallback, useEffect, useState} from 'react';
 import {createUniversalProvider} from '../utils/UniversalProvider';
+import {Alert} from 'react-native';
 
 export default function useInitialization() {
   const [initialized, setInitialized] = useState(false);
@@ -12,7 +13,7 @@ export default function useInitialization() {
       await createUniversalProvider();
       setInitialized(true);
     } catch (err: unknown) {
-      console.log('Error for initializing', err);
+      Alert.alert('Error', 'Error initializing');
     }
   }, []);
 
