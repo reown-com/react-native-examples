@@ -12,6 +12,7 @@ import QRIcon from '../assets/QR.png';
 import NavigationHeader from './NavigationHeader';
 import {WalletInfo} from '../types/api';
 import {DEVICE_HEIGHT} from '../constants/Platform';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 
 interface InitialExplorerContentProps {
   isLoading: boolean;
@@ -49,7 +50,9 @@ function InitialExplorerContent({
       />
       {isLoading ? (
         <View style={styles.loader}>
-          <ActivityIndicator color={isDarkMode ? 'white' : 'black'} />
+          <ActivityIndicator
+            color={isDarkMode ? LightTheme.accent : DarkTheme.accent}
+          />
         </View>
       ) : (
         <View style={styles.explorerContainer}>

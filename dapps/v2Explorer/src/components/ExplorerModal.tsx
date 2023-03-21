@@ -11,6 +11,7 @@ import {DEVICE_WIDTH} from '../constants/Platform';
 import QRView from './QRView';
 import {Routes} from '../constants/Routes';
 import {WalletInfo} from '../types/api';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 
 const INITIAL_ROUTE = 'INIT_WALLETS';
 
@@ -134,12 +135,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
   },
   connectWalletContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: LightTheme.background1,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
   connectWalletContainerDark: {
-    backgroundColor: '#141414',
+    backgroundColor: DarkTheme.background1,
   },
 });
 

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import ViewAllIcon from '../assets/ViewAll.png';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 
 interface Props {
   onPress: any;
@@ -37,7 +38,7 @@ const styles = StyleSheet.create({
     width: 60,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)',
+    borderColor: LightTheme.overlayThin,
   },
   container: {
     width: '25%',
@@ -46,14 +47,14 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   text: {
-    color: '#1f1f1f',
+    color: LightTheme.foreground1,
     marginVertical: 8,
     maxWidth: 100,
     fontWeight: '600',
     fontSize: 12,
   },
   textDark: {
-    color: 'white',
+    color: DarkTheme.foreground1,
   },
 });
 

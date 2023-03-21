@@ -15,15 +15,19 @@ interface InstalledAppInterface {
   isAppInstalled(id?: string | null): Promise<boolean>;
 }
 
-function isAppInstalled(id?: string | null): Promise<boolean> {
+async function isAppInstalled(id?: string | null): Promise<boolean> {
   if (!id) {
     return Promise.resolve(false);
   }
 
   if (isAndroid) {
-    return InstalledAppModule.isAppInstalled(id);
+    return await InstalledAppModule.isAppInstalled(id);
   } else {
-    return Linking.canOpenURL(id).catch(() => false);
+    try {
+      return await Linking.canOpenURL(id);
+    } catch {
+      return false;
+    }
   }
 }
 

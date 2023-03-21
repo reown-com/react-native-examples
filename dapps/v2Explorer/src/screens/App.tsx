@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 
 import '@walletconnect/react-native-compat';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import useInitialization from '../hooks/useInitialization';
 import {
   universalProviderSession,
@@ -25,9 +24,13 @@ import {
   createUniversalProviderSession,
 } from '../utils/UniversalProvider';
 import ExplorerModal from '../components/ExplorerModal';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const backgroundColor = isDarkMode
+    ? DarkTheme.background2
+    : LightTheme.background2;
   const [modalVisible, setModalVisible] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<string | null>(null);
   const [currentWCURI, setCurrentWCURI] = useState<string | null>(null);
@@ -122,26 +125,24 @@ function App(): JSX.Element {
     }
   }, [initialized, subscribeToEvents]);
 
-  // Improve this
-  const backgroundStyle = {
-    flex: 1,
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaView style={[styles.safeArea, {backgroundColor}]}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+        backgroundColor={backgroundColor}
       />
-      <View style={[styles.container, backgroundStyle.backgroundColor]}>
+      <View style={[styles.container, {backgroundColor}]}>
         {currentAccount ? (
           <View style={styles.container}>
             <Text style={[styles.text, isDarkMode && styles.whiteText]}>
               Address: {currentAccount}
             </Text>
             <TouchableOpacity
-              style={[styles.blueButton, styles.disconnectButton]}
+              style={[
+                styles.blueButton,
+                styles.disconnectButton,
+                isDarkMode && styles.blueButtonDark,
+              ]}
               onPress={onDisconnect}>
               <Text style={styles.blueButtonText}>Disconnect</Text>
             </TouchableOpacity>
@@ -149,7 +150,7 @@ function App(): JSX.Element {
         ) : (
           <TouchableOpacity
             onPress={onConnect}
-            style={styles.blueButton}
+            style={[styles.blueButton, isDarkMode && styles.blueButtonDark]}
             disabled={!initialized}>
             {initialized ? (
               <Text style={styles.blueButtonText}>Connect Wallet</Text>
@@ -171,6 +172,9 @@ function App(): JSX.Element {
 export default App;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -187,13 +191,16 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    color: 'white',
-    backgroundColor: '#3396FF',
+    backgroundColor: LightTheme.accent,
     borderRadius: 20,
     width: 150,
     height: 50,
     borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderColor: LightTheme.overlayThin,
+  },
+  blueButtonDark: {
+    backgroundColor: DarkTheme.accent,
+    borderColor: DarkTheme.overlayThin,
   },
   blueButtonText: {
     color: 'white',

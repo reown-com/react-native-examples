@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   View,
 } from 'react-native';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 import {DEVICE_HEIGHT} from '../constants/Platform';
 import ExplorerItem, {ITEM_HEIGHT} from './ExplorerItem';
 
@@ -45,7 +46,9 @@ function ViewAllExplorerContent({
         />
         {isLoading ? (
           <View style={styles.loader}>
-            <ActivityIndicator color={isDarkMode ? 'white' : 'black'} />
+            <ActivityIndicator
+              color={isDarkMode ? LightTheme.accent : DarkTheme.accent}
+            />
           </View>
         ) : (
           <FlatList

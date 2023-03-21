@@ -5,7 +5,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {createUniversalProvider} from '../utils/UniversalProvider';
 import {Alert} from 'react-native';
 
-export default function useInitialization() {
+function useInitialization() {
   const [initialized, setInitialized] = useState(false);
 
   const onInitialize = useCallback(async () => {
@@ -25,3 +25,5 @@ export default function useInitialization() {
 
   return initialized;
 }
+
+export default useInitialization;

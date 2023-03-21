@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import Chevron from '../assets/Chevron.png';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 
 interface Props {
   title: string;
@@ -75,12 +76,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: '600',
-    color: '#1f1f1f',
+    color: LightTheme.foreground1,
     fontSize: 20,
     lineHeight: 24,
   },
   titleDark: {
-    color: 'white',
+    color: DarkTheme.foreground1,
   },
 });
 
