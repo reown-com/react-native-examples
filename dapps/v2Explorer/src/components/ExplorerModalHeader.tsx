@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 
 import WCLogo from '../assets/WCLogo.png';
+import Close from '../assets/Close.png';
+import CloseWhite from '../assets/CloseWhite.png';
 
 interface ExplorerModalHeaderProps {
   close: () => void;
@@ -21,15 +23,11 @@ export const ExplorerModalHeader = ({close}: ExplorerModalHeaderProps) => {
       <Image style={styles.wcLogo} source={WCLogo} />
       <TouchableOpacity
         style={[styles.closeContainer, isDarkMode && styles.closeContainerDark]}
-        onPress={() => close()}
+        onPress={close}
         hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
         <Image
           style={styles.closeImage}
-          source={
-            isDarkMode
-              ? require('../assets/CloseWhite.png')
-              : require('../assets/Close.png')
-          }
+          source={isDarkMode ? CloseWhite : Close}
         />
       </TouchableOpacity>
     </View>

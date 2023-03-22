@@ -2,6 +2,46 @@ import {Alert, Linking} from 'react-native';
 
 // @ts-expect-error - `@env` is a virtualised module via Babel config.
 import {ENV_PROJECT_ID} from '@env';
+import {WalletInfo} from '../types/api';
+import {isAndroid} from '../constants/Platform';
+import InstalledAppModule from '../modules/InstalledAppModule';
+
+function getUrlParams(url: string | null): {[key: string]: string} {
+  if (!url) {
+    return {};
+  }
+  const regex = /[?&]([^=#]+)=([^&#]*)/g;
+  const params: {[key: string]: string} = {};
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(url)) !== null) {
+    params[match[1]] = decodeURIComponent(match[2]);
+  }
+
+  return params;
+}
+
+export async function isAppInstalled(
+  applicationId?: string | null,
+  appScheme?: string | null,
+): Promise<boolean> {
+  return await InstalledAppModule.isAppInstalled(
+    isAndroid ? applicationId : appScheme,
+  );
+}
+
+function getScheme(url: string): string | null {
+  if (!url) {
+    return null;
+  }
+
+  const scheme = url.split('://')[0];
+  // Schemes from explorer-api should't have this urls, but just in case
+  if (!scheme || scheme === 'http' || scheme === 'https') {
+    return null;
+  }
+  return `${scheme}://`;
+}
 
 function formatNativeUrl(appUrl: string, wcUri: string): string {
   let safeAppUrl = appUrl;
@@ -38,39 +78,33 @@ export const navigateDeepLink = async (
 
   try {
     // Note: Could not use .canOpenURL() to check if the app is installed
-    // Due to having to add it to the iOS info
+    // Due to having to add it to the iOS info.plist
     await Linking.openURL(tempDeepLink);
   } catch (error) {
     Alert.alert(`Unable to open this DeepLink: ${tempDeepLink}`);
   }
 };
 
-export const fetchInitialWallets = () => {
-  return fetch(
-    `https://explorer-api.walletconnect.com/v3/wallets?projectId=${ENV_PROJECT_ID}&sdks=sign_v2&entries=7&page=1`,
-  )
-    .then(res => res.json())
-    .then(
-      wallet => {
-        const result = Object.keys(wallet?.listings).map(
-          key => wallet?.listings[key],
-        );
-        return result;
-      },
-      () => {
-        Alert.alert('Error', 'Error fetching initial wallets');
-      },
-    );
+const setInstalledFlag = async (
+  wallets: WalletInfo[],
+): Promise<WalletInfo[]> => {
+  const promises = wallets.map(async wallet => {
+    const applicationId = getUrlParams(wallet?.app?.android)?.id;
+    const appScheme = getScheme(wallet?.mobile?.native);
+    const isInstalled = await isAppInstalled(applicationId, appScheme);
+    return {...wallet, isInstalled};
+  });
+  return Promise.all(promises);
 };
 
-export const fetchViewAllWallets = () => {
+export const fetchAllWallets = () => {
   return fetch(
     `https://explorer-api.walletconnect.com/v3/wallets?projectId=${ENV_PROJECT_ID}&sdks=sign_v2`,
   )
     .then(res => res.json())
     .then(
       wallet => {
-        const result = Object.keys(wallet?.listings).map(
+        const result: WalletInfo[] = Object.keys(wallet?.listings).map(
           key => wallet?.listings[key],
         );
         return result;
@@ -78,5 +112,18 @@ export const fetchViewAllWallets = () => {
       () => {
         Alert.alert('Error', 'Error fetching all wallets');
       },
-    );
+    )
+    .then(async (wallets: WalletInfo[] | void) => {
+      if (wallets) {
+        return (await setInstalledFlag(wallets)).sort((a, b) => {
+          if (a.isInstalled && !b.isInstalled) {
+            return -1;
+          } else if (!a.isInstalled && b.isInstalled) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+      }
+    });
 };

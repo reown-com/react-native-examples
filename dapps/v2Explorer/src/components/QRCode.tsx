@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Svg} from 'react-native-svg';
 import {View, Image, StyleSheet} from 'react-native';
 import {QrCodeUtil} from '../utils/QrCode';
@@ -11,7 +11,11 @@ interface Props {
 }
 
 function QrCode({uri, size, theme = 'light'}: Props) {
-  const dots = QrCodeUtil.generate(uri, size, size / 4, theme);
+  const dots = useMemo(
+    () => QrCodeUtil.generate(uri, size, size / 4, theme),
+    [uri, size, theme],
+  );
+
   return (
     <View style={styles.container}>
       <Svg height={size} width={size}>

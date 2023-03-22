@@ -1,9 +1,17 @@
 import React, {useEffect, useRef} from 'react';
-import {StyleSheet, View, Animated} from 'react-native';
-import {ExplorerItem} from './ExplorerItem';
+import {
+  StyleSheet,
+  View,
+  Animated,
+  ActivityIndicator,
+  useColorScheme,
+} from 'react-native';
+import ExplorerItem from './ExplorerItem';
 import {ViewAllBox} from './ViewAllBox';
 import QRIcon from '../assets/QR.png';
 import NavigationHeader from './NavigationHeader';
+import {WalletInfo} from '../types/api';
+import {DEVICE_HEIGHT} from '../constants/Platform';
 
 interface InitialExplorerContentProps {
   isLoading: boolean;
@@ -21,6 +29,7 @@ export const InitialExplorerContent = ({
   onQRPress,
 }: InitialExplorerContentProps) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const isDarkMode = useColorScheme() === 'dark';
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -29,6 +38,7 @@ export const InitialExplorerContent = ({
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
+
   return (
     <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
       <NavigationHeader
@@ -37,14 +47,22 @@ export const InitialExplorerContent = ({
         actionIcon={QRIcon}
         actionIconStyle={styles.qrIcon}
       />
-      <View style={styles.explorerContainer}>
-        <ExplorerItem
-          isLoading={isLoading}
-          explorerData={explorerData}
-          currentWCURI={currentWCURI}
-        />
-        <ViewAllBox onPress={onViewAllPress} />
-      </View>
+      {isLoading ? (
+        <View style={styles.loader}>
+          <ActivityIndicator color={isDarkMode ? 'white' : 'black'} />
+        </View>
+      ) : (
+        <View style={styles.explorerContainer}>
+          {explorerData.map((item: WalletInfo) => (
+            <ExplorerItem
+              walletInfo={item}
+              key={item.id}
+              currentWCURI={currentWCURI}
+            />
+          ))}
+          <ViewAllBox onPress={onViewAllPress} />
+        </View>
+      )}
     </Animated.View>
   );
 };
@@ -52,7 +70,7 @@ export const InitialExplorerContent = ({
 const styles = StyleSheet.create({
   container: {
     // TODO: Use safearea insets to make sure the content is not covered by the bottom bar in iOS
-    paddingBottom: 30,
+    paddingBottom: 12,
   },
   explorerContainer: {
     flexDirection: 'row',
@@ -60,6 +78,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 4,
+  },
+  loader: {
+    height: DEVICE_HEIGHT * 0.2,
+    justifyContent: 'center',
   },
   qrIcon: {
     height: 24,
