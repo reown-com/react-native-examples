@@ -6,7 +6,6 @@ import {
   ActivityIndicator,
   Alert,
   SafeAreaView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -32,8 +31,8 @@ function App(): JSX.Element {
     ? DarkTheme.background2
     : LightTheme.background2;
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentAccount, setCurrentAccount] = useState<string | null>(null);
-  const [currentWCURI, setCurrentWCURI] = useState<string | null>(null);
+  const [currentAccount, setCurrentAccount] = useState<string>();
+  const [currentWCURI, setCurrentWCURI] = useState<string>();
 
   // Initialize universal provider
   const initialized = useInitialization();
@@ -69,7 +68,8 @@ function App(): JSX.Element {
     async ({topic}: {topic: string}) => {
       if (topic === universalProviderSession?.topic) {
         clearSession();
-        setCurrentAccount(null);
+        setCurrentAccount(undefined);
+        setCurrentWCURI(undefined);
       }
     },
     [setCurrentAccount],
@@ -87,7 +87,8 @@ function App(): JSX.Element {
     try {
       await universalProvider.disconnect();
       clearSession();
-      setCurrentAccount(null);
+      setCurrentAccount(undefined);
+      setCurrentWCURI(undefined);
     } catch (err: unknown) {
       Alert.alert('Error', 'Error disconnecting');
     }
@@ -127,10 +128,6 @@ function App(): JSX.Element {
 
   return (
     <SafeAreaView style={[styles.safeArea, {backgroundColor}]}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundColor}
-      />
       <View style={[styles.container, {backgroundColor}]}>
         {currentAccount ? (
           <View style={styles.container}>

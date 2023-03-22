@@ -16,6 +16,7 @@ interface Props {
   onActionPress?: () => void;
   actionIcon?: any;
   actionIconStyle?: any;
+  actionDisabled?: boolean;
 }
 
 function NavigationHeader({
@@ -24,6 +25,7 @@ function NavigationHeader({
   onActionPress,
   actionIcon,
   actionIconStyle,
+  actionDisabled,
 }: Props) {
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -33,6 +35,7 @@ function NavigationHeader({
         <TouchableOpacity
           style={styles.button}
           onPress={onBackPress}
+          disabled={actionDisabled}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
           <Image style={styles.backIcon} source={Chevron} />
         </TouchableOpacity>
@@ -46,8 +49,12 @@ function NavigationHeader({
         <TouchableOpacity
           style={styles.button}
           onPress={onActionPress}
+          disabled={actionDisabled}
           hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
-          <Image style={actionIconStyle} source={actionIcon} />
+          <Image
+            style={[actionIconStyle, actionDisabled && styles.actionDisabled]}
+            source={actionIcon}
+          />
         </TouchableOpacity>
       ) : (
         <View style={styles.button} />
@@ -82,6 +89,10 @@ const styles = StyleSheet.create({
   },
   titleDark: {
     color: DarkTheme.foreground1,
+  },
+  // Handle better when themes are added
+  actionDisabled: {
+    tintColor: LightTheme.foreground3,
   },
 });
 

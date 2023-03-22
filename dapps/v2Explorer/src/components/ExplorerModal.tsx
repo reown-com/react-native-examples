@@ -18,7 +18,7 @@ const INITIAL_ROUTE = 'INIT_WALLETS';
 interface ExplorerModalProps {
   modalVisible: boolean;
   close: () => void;
-  currentWCURI: string;
+  currentWCURI?: string;
 }
 
 function ExplorerModal({
@@ -34,7 +34,6 @@ function ExplorerModal({
 
   const [viewStack, setViewStack] = useState<Routes[]>([INITIAL_ROUTE]);
 
-  // TODO: could be cleaner
   const fetchWallets = useCallback(() => {
     fetchAllWallets().then(wallets => {
       setWalletListLoading(false);
@@ -47,12 +46,12 @@ function ExplorerModal({
 
   const onNavigate = useCallback(
     (route: Routes) => {
-      setViewStack([...viewStack, route]);
+      setViewStack(viewStack.concat([route]));
     },
     [viewStack],
   );
 
-  const onBackPress = useCallback(() => {
+  const onNavigateBack = useCallback(() => {
     if (viewStack.length > 1) {
       setViewStack(viewStack.slice(0, -1));
     }
@@ -73,26 +72,26 @@ function ExplorerModal({
         <ViewAllExplorerContent
           isLoading={isWalletListLoading}
           explorerData={allWallets}
-          onBackPress={onBackPress}
+          onBackPress={onNavigateBack}
           currentWCURI={currentWCURI}
         />
       ),
-      ['QR_CODE']: <QRView uri={currentWCURI} onBackPress={onBackPress} />,
+      ['QR_CODE']: <QRView uri={currentWCURI} onBackPress={onNavigateBack} />,
     };
   }, [
     currentWCURI,
     initialWallets,
     isWalletListLoading,
-    onBackPress,
+    onNavigateBack,
     onNavigate,
     allWallets,
   ]);
 
   useEffect(() => {
-    if (!initialWallets.length) {
+    if (!allWallets.length) {
       fetchWallets();
     }
-  }, [initialWallets, fetchWallets, isWalletListLoading]);
+  }, [allWallets, fetchWallets, isWalletListLoading]);
 
   return (
     <Modal
@@ -115,7 +114,7 @@ function ExplorerModal({
             styles.connectWalletContainer,
             isDarkMode && styles.connectWalletContainerDark,
           ]}>
-          {SCREENS[viewStack.at(-1) || INITIAL_ROUTE]}
+          {SCREENS[viewStack.at(-1) ?? INITIAL_ROUTE]}
         </View>
       </ImageBackground>
     </Modal>

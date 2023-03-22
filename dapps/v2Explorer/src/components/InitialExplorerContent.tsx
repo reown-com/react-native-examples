@@ -18,7 +18,7 @@ interface InitialExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
   onViewAllPress: () => void;
-  currentWCURI: string;
+  currentWCURI?: string;
   onQRPress: () => void;
 }
 
@@ -48,12 +48,11 @@ function InitialExplorerContent({
         actionIcon={QRIcon}
         actionIconStyle={styles.qrIcon}
       />
-      {isLoading ? (
-        <View style={styles.loader}>
-          <ActivityIndicator
-            color={isDarkMode ? LightTheme.accent : DarkTheme.accent}
-          />
-        </View>
+      {isLoading || !currentWCURI ? (
+        <ActivityIndicator
+          style={styles.loader}
+          color={isDarkMode ? LightTheme.accent : DarkTheme.accent}
+        />
       ) : (
         <View style={styles.explorerContainer}>
           {explorerData.map((item: WalletInfo) => (
@@ -83,7 +82,6 @@ const styles = StyleSheet.create({
   },
   loader: {
     height: DEVICE_HEIGHT * 0.2,
-    justifyContent: 'center',
   },
   qrIcon: {
     height: 24,
