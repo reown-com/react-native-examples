@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "v2Explorer.app"
+               BuildableName = "Web3Modal.app"
                BlueprintName = "v2Explorer"
                ReferencedContainer = "container:v2Explorer.xcodeproj">
             </BuildableReference>
@@ -55,7 +55,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "v2Explorer.app"
+            BuildableName = "Web3Modal.app"
             BlueprintName = "v2Explorer"
             ReferencedContainer = "container:v2Explorer.xcodeproj">
          </BuildableReference>
@@ -72,7 +72,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "v2Explorer.app"
+            BuildableName = "Web3Modal.app"
             BlueprintName = "v2Explorer"
             ReferencedContainer = "container:v2Explorer.xcodeproj">
          </BuildableReference>
@@ -83,6 +83,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
+      customArchiveName = "Web3Modal"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>
