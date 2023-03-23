@@ -1,4 +1,4 @@
-package com.v2explorer;
+package com.walletconnect.web3modal.rnsample;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -13,7 +13,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "v2Explorer";
+    return "Web3Modal";
   }
 
   /**

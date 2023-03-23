@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
                BuildableName = "Web3Modal.app"
-               BlueprintName = "v2Explorer"
-               ReferencedContainer = "container:v2Explorer.xcodeproj">
+               BlueprintName = "Web3Modal"
+               ReferencedContainer = "container:Web3Modal.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "v2ExplorerTests.xctest"
-               BlueprintName = "v2ExplorerTests"
-               ReferencedContainer = "container:v2Explorer.xcodeproj">
+               BuildableName = "Web3ModalTests.xctest"
+               BlueprintName = "Web3ModalTests"
+               ReferencedContainer = "container:Web3Modal.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -56,8 +56,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "Web3Modal.app"
-            BlueprintName = "v2Explorer"
-            ReferencedContainer = "container:v2Explorer.xcodeproj">
+            BlueprintName = "Web3Modal"
+            ReferencedContainer = "container:Web3Modal.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -73,8 +73,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
             BuildableName = "Web3Modal.app"
-            BlueprintName = "v2Explorer"
-            ReferencedContainer = "container:v2Explorer.xcodeproj">
+            BlueprintName = "Web3Modal"
+            ReferencedContainer = "container:Web3Modal.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

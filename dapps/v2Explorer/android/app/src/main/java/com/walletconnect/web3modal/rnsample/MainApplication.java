@@ -1,4 +1,4 @@
-package com.v2explorer;
+package com.walletconnect.web3modal.rnsample;
 
 import android.app.Application;
 import com.facebook.react.PackageList;
