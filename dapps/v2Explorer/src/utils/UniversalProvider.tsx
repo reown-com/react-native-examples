@@ -12,8 +12,8 @@ export let web3Provider: ethers.providers.Web3Provider | undefined;
 export let universalProviderSession: SessionTypes.Struct | undefined;
 
 export async function createUniversalProvider() {
-  console.log('[CONFIG] ENV_PROJECT_ID:', ENV_PROJECT_ID);
-  console.log('[CONFIG] ENV_RELAY_URL:', ENV_RELAY_URL);
+  // console.log('[CONFIG] ENV_PROJECT_ID:', ENV_PROJECT_ID);
+  // console.log('[CONFIG] ENV_RELAY_URL:', ENV_RELAY_URL);
 
   try {
     universalProvider = await UniversalProvider.init({
