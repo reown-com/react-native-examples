@@ -72,8 +72,11 @@ export const navigateDeepLink = async (
 
   if (universalLink && universalLink !== '') {
     tempDeepLink = formatUniversalUrl(universalLink, wcURI);
-  } else {
+  } else if (deepLink && deepLink !== '') {
     tempDeepLink = formatNativeUrl(deepLink, wcURI);
+  } else {
+    Alert.alert('No valid link found for this wallet');
+    return;
   }
 
   try {
