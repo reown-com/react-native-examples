@@ -1,4 +1,6 @@
-["argent",
+[
+"ambire",
+"argent",
 "avacus",
 "awallet",
 "beewallet.app",
@@ -8,6 +10,7 @@
 "celo",
 "coolwallet",
 "cosmostation",
+"cryptowallet",
 "fireblocks-wc",
 "frontier",
 "hideoutWallet",
@@ -16,6 +19,7 @@
 "ledgerlive",
 "lilico",
 "lobstr",
+"loopring",
 "mathwallet",
 "metaone",
 "mewwallet",

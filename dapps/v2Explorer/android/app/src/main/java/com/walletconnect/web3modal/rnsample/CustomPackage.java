@@ -1,4 +1,4 @@
-package com.v2explorer;
+package com.walletconnect.web3modal.rnsample;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
