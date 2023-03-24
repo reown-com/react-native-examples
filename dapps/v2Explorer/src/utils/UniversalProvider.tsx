@@ -54,9 +54,7 @@ export async function createUniversalProviderSession(callbacks?: {
           ],
           chains: ['eip155:1'],
           events: ['chainChanged', 'accountsChanged'],
-          rpcMap: {
-            1: `https://rpc.walletconnect.com?chainId=eip155:1&projectId=${ENV_PROJECT_ID}`,
-          },
+          rpcMap: {},
         },
       },
     });
