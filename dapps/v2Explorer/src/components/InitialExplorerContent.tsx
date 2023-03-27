@@ -7,27 +7,28 @@ import {
   useColorScheme,
 } from 'react-native';
 import ExplorerItem from './ExplorerItem';
-import {ViewAllBox} from './ViewAllBox';
+import ViewAllBox from './ViewAllBox';
 import QRIcon from '../assets/QR.png';
 import NavigationHeader from './NavigationHeader';
 import {WalletInfo} from '../types/api';
 import {DEVICE_HEIGHT} from '../constants/Platform';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 
 interface InitialExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
   onViewAllPress: () => void;
-  currentWCURI: string;
+  currentWCURI?: string;
   onQRPress: () => void;
 }
 
-export const InitialExplorerContent = ({
+function InitialExplorerContent({
   isLoading,
   explorerData,
   onViewAllPress,
   currentWCURI,
   onQRPress,
-}: InitialExplorerContentProps) => {
+}: InitialExplorerContentProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -47,10 +48,11 @@ export const InitialExplorerContent = ({
         actionIcon={QRIcon}
         actionIconStyle={styles.qrIcon}
       />
-      {isLoading ? (
-        <View style={styles.loader}>
-          <ActivityIndicator color={isDarkMode ? 'white' : 'black'} />
-        </View>
+      {isLoading || !currentWCURI ? (
+        <ActivityIndicator
+          style={styles.loader}
+          color={isDarkMode ? LightTheme.accent : DarkTheme.accent}
+        />
       ) : (
         <View style={styles.explorerContainer}>
           {explorerData.map((item: WalletInfo) => (
@@ -65,11 +67,10 @@ export const InitialExplorerContent = ({
       )}
     </Animated.View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    // TODO: Use safearea insets to make sure the content is not covered by the bottom bar in iOS
     paddingBottom: 12,
   },
   explorerContainer: {
@@ -81,10 +82,11 @@ const styles = StyleSheet.create({
   },
   loader: {
     height: DEVICE_HEIGHT * 0.2,
-    justifyContent: 'center',
   },
   qrIcon: {
     height: 24,
     width: 24,
   },
 });
+
+export default InitialExplorerContent;

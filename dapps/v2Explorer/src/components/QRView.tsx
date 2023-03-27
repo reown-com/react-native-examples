@@ -1,13 +1,20 @@
 import React, {useEffect, useRef} from 'react';
-import {Alert, Animated, StyleSheet, useColorScheme} from 'react-native';
-import {DEVICE_WIDTH} from '../constants/Platform';
+import {
+  ActivityIndicator,
+  Alert,
+  Animated,
+  StyleSheet,
+  useColorScheme,
+} from 'react-native';
+import {DEVICE_HEIGHT, DEVICE_WIDTH} from '../constants/Platform';
 import NavigationHeader from './NavigationHeader';
-import QrCode from './QRCode';
+import QRCode from './QRCode';
 import CopyIcon from '../assets/Copy.png';
 import Clipboard from '@react-native-clipboard/clipboard';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 
 interface Props {
-  uri: string;
+  uri?: string;
   onBackPress: () => void;
 }
 
@@ -16,7 +23,7 @@ function QRView({uri, onBackPress}: Props) {
   const isDarkMode = useColorScheme() === 'dark';
 
   const copyToClipboard = () => {
-    Clipboard.setString(uri);
+    Clipboard.setString(uri!);
     Alert.alert('Copied to clipboard');
   };
 
@@ -35,12 +42,20 @@ function QRView({uri, onBackPress}: Props) {
         onBackPress={onBackPress}
         actionIcon={CopyIcon}
         onActionPress={copyToClipboard}
+        actionDisabled={!uri}
       />
-      <QrCode
-        uri={uri}
-        size={DEVICE_WIDTH * 0.9}
-        theme={isDarkMode ? 'dark' : 'light'}
-      />
+      {uri ? (
+        <QRCode
+          uri={uri}
+          size={DEVICE_WIDTH * 0.9}
+          theme={isDarkMode ? 'dark' : 'light'}
+        />
+      ) : (
+        <ActivityIndicator
+          style={styles.loader}
+          color={isDarkMode ? LightTheme.accent : DarkTheme.accent}
+        />
+      )}
     </Animated.View>
   );
 }
@@ -48,6 +63,9 @@ function QRView({uri, onBackPress}: Props) {
 const styles = StyleSheet.create({
   container: {
     paddingBottom: 24,
+  },
+  loader: {
+    height: DEVICE_HEIGHT * 0.4,
   },
 });
 

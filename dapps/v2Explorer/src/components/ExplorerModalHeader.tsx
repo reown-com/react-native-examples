@@ -10,12 +10,13 @@ import {
 import WCLogo from '../assets/WCLogo.png';
 import Close from '../assets/Close.png';
 import CloseWhite from '../assets/CloseWhite.png';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 
 interface ExplorerModalHeaderProps {
   close: () => void;
 }
 
-export const ExplorerModalHeader = ({close}: ExplorerModalHeaderProps) => {
+function ExplorerModalHeader({close}: ExplorerModalHeaderProps) {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
@@ -32,7 +33,7 @@ export const ExplorerModalHeader = ({close}: ExplorerModalHeaderProps) => {
       </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -53,15 +54,15 @@ const styles = StyleSheet.create({
   closeContainer: {
     height: 28,
     width: 28,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: LightTheme.background1,
     borderRadius: 14,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
   },
   closeContainerDark: {
-    backgroundColor: '#141414',
+    backgroundColor: DarkTheme.background1,
   },
 });
+
+export default ExplorerModalHeader;

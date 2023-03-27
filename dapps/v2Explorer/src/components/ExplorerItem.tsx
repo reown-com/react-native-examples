@@ -6,6 +6,7 @@ import {
   StyleSheet,
   useColorScheme,
 } from 'react-native';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 import {WalletInfo} from '../types/api';
 import {navigateDeepLink} from '../utils/ExplorerUtils';
 
@@ -51,8 +52,6 @@ function ExplorerItem({currentWCURI, walletInfo}: ExplorerItemProps) {
   );
 }
 
-export default ExplorerItem;
-
 const styles = StyleSheet.create({
   container: {
     width: '25%',
@@ -66,25 +65,27 @@ const styles = StyleSheet.create({
     width: 60,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    borderColor: LightTheme.overlayThin,
   },
   name: {
-    color: '#1F1F1F',
+    color: LightTheme.foreground1,
     marginTop: 5,
     maxWidth: 100,
     fontSize: 12,
     fontWeight: '600',
   },
   nameDark: {
-    color: 'white',
+    color: DarkTheme.foreground1,
   },
   installedText: {
-    color: '#9EA9A9',
+    color: LightTheme.foreground3,
     fontSize: 10,
     fontWeight: '700',
     textTransform: 'uppercase',
   },
   installedTextDark: {
-    color: '#6E7777',
+    color: DarkTheme.foreground3,
   },
 });
+
+export default ExplorerItem;

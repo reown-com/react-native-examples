@@ -1,27 +1,27 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {StyleSheet, View, useColorScheme, ImageBackground} from 'react-native';
 import Modal from 'react-native-modal';
-import {InitialExplorerContent} from './InitialExplorerContent';
-import {ViewAllExplorerContent} from './ViewAllExplorerContent';
+import InitialExplorerContent from './InitialExplorerContent';
+import ViewAllExplorerContent from './ViewAllExplorerContent';
 
 import {fetchAllWallets} from '../utils/ExplorerUtils';
-import {ExplorerModalHeader} from './ExplorerModalHeader';
+import ExplorerModalHeader from './ExplorerModalHeader';
 import Background from '../assets/Background.png';
 import {DEVICE_WIDTH} from '../constants/Platform';
 import QRView from './QRView';
 import {Routes} from '../constants/Routes';
 import {WalletInfo} from '../types/api';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 
 const INITIAL_ROUTE = 'INIT_WALLETS';
 
 interface ExplorerModalProps {
   modalVisible: boolean;
   close: () => void;
-  currentWCURI: string;
+  currentWCURI?: string;
 }
 
-// Populate with the data...
-export function ExplorerModal({
+function ExplorerModal({
   modalVisible,
   close,
   currentWCURI,
@@ -30,12 +30,10 @@ export function ExplorerModal({
   const [initialWallets, setInitialWallets] = useState<WalletInfo[]>([]);
   const [allWallets, setAllWallets] = useState<WalletInfo[]>([]);
 
-  // TODO: move to utils
   const isDarkMode = useColorScheme() === 'dark';
 
   const [viewStack, setViewStack] = useState<Routes[]>([INITIAL_ROUTE]);
 
-  // TODO: could be cleaner
   const fetchWallets = useCallback(() => {
     fetchAllWallets().then(wallets => {
       setWalletListLoading(false);
@@ -48,12 +46,12 @@ export function ExplorerModal({
 
   const onNavigate = useCallback(
     (route: Routes) => {
-      setViewStack([...viewStack, route]);
+      setViewStack(viewStack.concat([route]));
     },
     [viewStack],
   );
 
-  const onBackPress = useCallback(() => {
+  const onNavigateBack = useCallback(() => {
     if (viewStack.length > 1) {
       setViewStack(viewStack.slice(0, -1));
     }
@@ -74,26 +72,26 @@ export function ExplorerModal({
         <ViewAllExplorerContent
           isLoading={isWalletListLoading}
           explorerData={allWallets}
-          onBackPress={onBackPress}
+          onBackPress={onNavigateBack}
           currentWCURI={currentWCURI}
         />
       ),
-      ['QR_CODE']: <QRView uri={currentWCURI} onBackPress={onBackPress} />,
+      ['QR_CODE']: <QRView uri={currentWCURI} onBackPress={onNavigateBack} />,
     };
   }, [
     currentWCURI,
     initialWallets,
     isWalletListLoading,
-    onBackPress,
+    onNavigateBack,
     onNavigate,
     allWallets,
   ]);
 
   useEffect(() => {
-    if (!initialWallets.length) {
+    if (!allWallets.length) {
       fetchWallets();
     }
-  }, [initialWallets, fetchWallets, isWalletListLoading]);
+  }, [allWallets, fetchWallets, isWalletListLoading]);
 
   return (
     <Modal
@@ -116,7 +114,7 @@ export function ExplorerModal({
             styles.connectWalletContainer,
             isDarkMode && styles.connectWalletContainerDark,
           ]}>
-          {SCREENS[viewStack.at(-1) || INITIAL_ROUTE]}
+          {SCREENS[viewStack.at(-1) ?? INITIAL_ROUTE]}
         </View>
       </ImageBackground>
     </Modal>
@@ -136,11 +134,13 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
   },
   connectWalletContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: LightTheme.background1,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
   connectWalletContainerDark: {
-    backgroundColor: '#141414',
+    backgroundColor: DarkTheme.background1,
   },
 });
+
+export default ExplorerModal;

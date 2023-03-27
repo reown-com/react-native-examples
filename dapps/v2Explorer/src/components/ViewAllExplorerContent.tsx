@@ -5,8 +5,8 @@ import {
   useColorScheme,
   FlatList,
   ActivityIndicator,
-  View,
 } from 'react-native';
+import {DarkTheme, LightTheme} from '../constants/Colors';
 import {DEVICE_HEIGHT} from '../constants/Platform';
 import ExplorerItem, {ITEM_HEIGHT} from './ExplorerItem';
 
@@ -16,15 +16,15 @@ interface ViewAllExplorerContentProps {
   isLoading: boolean;
   explorerData: any;
   onBackPress: () => void;
-  currentWCURI: string;
+  currentWCURI?: string;
 }
 
-export const ViewAllExplorerContent = ({
+function ViewAllExplorerContent({
   isLoading,
   explorerData,
   onBackPress,
   currentWCURI,
-}: ViewAllExplorerContentProps) => {
+}: ViewAllExplorerContentProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -43,10 +43,11 @@ export const ViewAllExplorerContent = ({
           title="Connect your Wallet"
           onBackPress={onBackPress}
         />
-        {isLoading ? (
-          <View style={styles.loader}>
-            <ActivityIndicator color={isDarkMode ? 'white' : 'black'} />
-          </View>
+        {isLoading || !currentWCURI ? (
+          <ActivityIndicator
+            style={styles.loader}
+            color={isDarkMode ? LightTheme.accent : DarkTheme.accent}
+          />
         ) : (
           <FlatList
             data={explorerData || []}
@@ -68,7 +69,7 @@ export const ViewAllExplorerContent = ({
       </>
     </Animated.View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   list: {
@@ -79,7 +80,8 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   loader: {
-    height: DEVICE_HEIGHT * 0.2,
-    justifyContent: 'center',
+    height: DEVICE_HEIGHT * 0.4,
   },
 });
+
+export default ViewAllExplorerContent;
