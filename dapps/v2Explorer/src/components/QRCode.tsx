@@ -21,7 +21,11 @@ function QRCode({uri, size, theme = 'light'}: Props) {
       <Svg height={size} width={size}>
         {dots}
       </Svg>
-      <Image source={WCIsotype} style={[styles.logo, {width: size / 4}]} />
+      <Image
+        source={WCIsotype}
+        resizeMode="contain"
+        style={[styles.logo, {width: size / 4}]}
+      />
     </View>
   );
 }
