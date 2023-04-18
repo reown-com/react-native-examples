@@ -27,6 +27,7 @@ import {SendTransactionModal} from '../components/Modals/SendTransactionModal';
 import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
 import {CopyWCURIModal} from '../components/Modals/CopyWCURIModal';
+import {W3InboxModal} from '../components/Modals/W3InboxModal';
 
 /**
   @notice: HomeScreen for Web3Wallet Example
@@ -42,7 +43,7 @@ import {CopyWCURIModal} from '../components/Modals/CopyWCURIModal';
 **/
 
 const HomeScreen = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const isDarkMode = useColorScheme() === 'white';
   const navigation = useNavigation();
 
   // Modal Visible State
@@ -52,6 +53,7 @@ const HomeScreen = () => {
   const [sendTransactionModal, setSendTransactionModal] = useState(false);
   const [copyDialog, setCopyDialog] = useState(false);
   const [successPair, setSuccessPair] = useState(false);
+  const [web3InboxModal, setWeb3InboxModal] = useState(false);
 
   // Pairing State
   const [pairedProposal, setPairedProposal] = useState();
@@ -98,6 +100,10 @@ const HomeScreen = () => {
 
   const handleCancel = () => {
     setCopyDialog(false);
+  };
+
+  const handleWebView = () => {
+    setWeb3InboxModal(true);
   };
 
   async function pair() {
@@ -163,6 +169,7 @@ const HomeScreen = () => {
       web3wallet.on('session_proposal', onSessionProposal);
       web3wallet.on('session_request', onSessionRequest);
     }
+    console.log('modalState W3I', web3InboxModal);
   }, [
     WCURI,
     approvalModal,
@@ -175,6 +182,7 @@ const HomeScreen = () => {
     onSessionProposal,
     onSessionRequest,
     successPair,
+    web3InboxModal,
   ]);
 
   return (
@@ -236,6 +244,10 @@ const HomeScreen = () => {
         />
       )}
 
+      {web3InboxModal && (
+        <W3InboxModal visible={web3InboxModal} setVisible={setWeb3InboxModal} />
+      )}
+
       <View style={styles.mainScreenContainer}>
         <View style={styles.flexRow}>
           <W3WText value={TextContent.AppsTitle} />
@@ -247,7 +259,10 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
         <Sessions />
-        <ActionButtons setCopyDialog={setCopyDialog} />
+        <ActionButtons
+          setCopyDialog={setCopyDialog}
+          handleWebView={handleWebView}
+        />
       </View>
     </SafeAreaView>
   );

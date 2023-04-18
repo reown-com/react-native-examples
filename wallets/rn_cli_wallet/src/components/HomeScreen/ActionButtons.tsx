@@ -4,10 +4,14 @@ import {CircleActionButton} from '../CircleActionButton';
 
 interface IndividualSessionProps {
   setCopyDialog: (arg0: boolean) => void;
+  handleWebView: (arg0: boolean) => void;
 }
 
 /* // ToDo: Add in QR Modal Module */
-const ActionButtons = ({setCopyDialog}: IndividualSessionProps) => {
+const ActionButtons = ({
+  setCopyDialog,
+  handleWebView,
+}: IndividualSessionProps) => {
   return (
     <View style={styles.absoluteFlexRow}>
       <CircleActionButton
@@ -16,10 +20,13 @@ const ActionButtons = ({setCopyDialog}: IndividualSessionProps) => {
           setCopyDialog(true);
         }}
       />
-      {/* <CircleActionButton
+      <CircleActionButton
         copyImage={false}
-        handlePress={() => setApprovalModal(true)}
-      /> */}
+        handlePress={() => {
+          handleWebView(true);
+          console.log('logging...');
+        }}
+      />
     </View>
   );
 };

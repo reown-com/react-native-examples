@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: '700',
     lineHeight: 41,
-    fontFamily: 'SF Pro Rounded Medium',
+    // fontFamily: 'SF Pro Rounded Medium',
     color: FONT_COLORS.GREY8,
     letterSpacing: 0.374,
   },
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     letterSpacing: 0.374,
     fontWeight: '500',
-    fontFamily: 'SF Pro Rounded Thin',
+    // fontFamily: 'SF Pro Rounded Thin',
     color: '#798686',
   },
   imageContainer: {

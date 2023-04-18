@@ -7,7 +7,7 @@ export let currentETHAddress: string;
 
 // @ts-expect-error - env is a virtualised module via Babel config.
 import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
-import {createOrRestoreEIP155Wallet} from './EIP155Wallet';
+// import {createOrRestoreEIP155Wallet} from './EIP155Wallet';
 
 export async function createWeb3Wallet() {
   // console.log('ENV_PROJECT_ID', ENV_PROJECT_ID);
@@ -19,8 +19,8 @@ export async function createWeb3Wallet() {
     relayUrl: ENV_RELAY_URL,
   });
 
-  const {eip155Addresses} = await createOrRestoreEIP155Wallet();
-  currentETHAddress = eip155Addresses[0];
+  // const {eip155Addresses} = await createOrRestoreEIP155Wallet();
+  // currentETHAddress = eip155Addresses[0];
 
   web3wallet = await Web3Wallet.init({
     core,
