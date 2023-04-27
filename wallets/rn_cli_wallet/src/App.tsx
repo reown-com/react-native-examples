@@ -16,6 +16,7 @@ import {
   StatusBar,
   useColorScheme,
   View,
+  NativeModules,
 } from 'react-native';
 
 import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
@@ -34,6 +35,7 @@ Object.assign(global, {
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
+  const {BackgroundServiceModule} = NativeModules;
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -45,6 +47,26 @@ const App = () => {
   useEffect(() => {
     console.log('App Initalized: ', initialized);
   }, [initialized]);
+
+  useEffect(() => {
+    BackgroundServiceModule.startService().then((status: string) =>
+      console.log(status),
+    );
+    () =>
+      BackgroundServiceModule.stopService().then((status: string) =>
+        console.log(status),
+      );
+  }, [BackgroundServiceModule]);
+
+  const handleOnPress = async () => {
+    console.log('Is initialized: ', initialized);
+    try {
+      const phoneId: string = await BackgroundServiceModule.getPhoneID();
+      console.log({phoneId});
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -61,7 +83,7 @@ const App = () => {
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
           <Button
-            onPress={() => console.log('Is initialized: ', initialized)}
+            onPress={handleOnPress}
             title="Check Sign Client Initialization"
             color="#841584"
             accessibilityLabel="Learn more about this purple button"
