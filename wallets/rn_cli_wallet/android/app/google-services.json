@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "222905275039",
+    "project_id": "react-native-1ac2b",
+    "storage_bucket": "react-native-1ac2b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222905275039:android:e0038fcb646d9a0c8c88aa",
+        "android_client_info": {
+          "package_name": "com.rn_cli_wallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "222905275039-qe87ceeffidaki7ifkr9br3eh82mcot8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtXWFrKHw5cs_NkZAHMslITG0P6cQmzNM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "222905275039-qe87ceeffidaki7ifkr9br3eh82mcot8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222905275039:android:4e262a2d3b692b188c88aa",
+        "android_client_info": {
+          "package_name": "com.walletconnect.web3modal.rnsample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "222905275039-qe87ceeffidaki7ifkr9br3eh82mcot8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtXWFrKHw5cs_NkZAHMslITG0P6cQmzNM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "222905275039-qe87ceeffidaki7ifkr9br3eh82mcot8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

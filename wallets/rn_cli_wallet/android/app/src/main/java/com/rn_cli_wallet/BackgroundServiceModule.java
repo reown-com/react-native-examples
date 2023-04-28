@@ -37,6 +37,12 @@ import java.util.List;
 
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
+
+import org.bouncycastle.crypto.modes.ChaCha20Poly1305;
+import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.crypto.params.ParametersWithIV;
+import org.bouncycastle.util.encoders.Hex;
+
 import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
 import java.nio.ByteBuffer;
@@ -106,20 +112,21 @@ public class BackgroundServiceModule extends ReactContextBaseJavaModule {
         response.resolve("DecryptionBackgroundService stopped");
     }
 
-    @ReactMethod
-    public void getKey(Promise promise) {
+    public SecretKey getKey() {
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
             KeyStore.SecretKeyEntry secretKeyEntry = (KeyStore.SecretKeyEntry) keyStore.getEntry(KEY_ALIAS, null);
             if (secretKeyEntry != null) {
                 SecretKey secretKey = secretKeyEntry.getSecretKey();
-                promise.resolve("Key found " + secretKey);
+                return secretKey;
             } else {
                 throw new NoSuchProviderException("Private key not found for alias: " + KEY_ALIAS);
             }
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException | NoSuchProviderException | CertificateException | IOException e) {
-            promise.reject("Error getting key from keychain", e);
+            Log.d("KeyStore Error", e.toString());
+
+            return null;
         }
     }
 
@@ -195,5 +202,28 @@ public class BackgroundServiceModule extends ReactContextBaseJavaModule {
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException | NoSuchProviderException | CertificateException | IOException e) {
             promise.reject("Error getting key from keychain", e);
         }
+    }
+
+    public static String stringToHex(String input) {
+        StringBuilder hexString = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            String hex = Integer.toHexString(c);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+    public byte[] decryptPayload(String key, byte[] input) throws Exception {
+        ChaCha20Poly1305 chacha = new ChaCha20Poly1305();
+        KeyParameter keyParam = new KeyParameter(Hex.decode(stringToHex(key)));
+        byte[] iv = new byte[12];
+        chacha.init(false, new ParametersWithIV(keyParam, iv));
+        byte[] decryptedTextBytes = new byte[chacha.getOutputSize(input.length)];
+        int outputSize = chacha.processBytes(input, 0, input.length, decryptedTextBytes, 0);
+        chacha.doFinal(decryptedTextBytes, outputSize);
+        return decryptedTextBytes;
     }
 }
