@@ -18,6 +18,7 @@ import {
   View,
   NativeModules,
 } from 'react-native';
+import * as Keychain from 'react-native-keychain';
 
 import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
 import '@walletconnect/react-native-compat';
@@ -49,18 +50,74 @@ const App = () => {
   }, [initialized]);
 
   useEffect(() => {
-    BackgroundServiceModule.startService().then((status: string) =>
-      console.log(status),
-    );
+    async function handleBackgroundService() {
+      const status = await BackgroundServiceModule.startService();
+      console.log({status});
+    }
+    handleBackgroundService();
     () =>
       BackgroundServiceModule.stopService().then((status: string) =>
         console.log(status),
       );
   }, [BackgroundServiceModule]);
 
-  const handleOnPress = async () => {
-    console.log('Is initialized: ', initialized);
+  const handleOnPressGetKey = async () => {
     try {
+      // Get pw credentials
+      const keyFromRNKeychain = await Keychain.getGenericPassword();
+      console.log({keyFromRNKeychain});
+    } catch (keyFromRNKeychainError) {
+      console.error({keyFromRNKeychainError});
+    }
+    try {
+      // Get internet credentials
+      const internetCredsFromRNKeychain = await Keychain.getInternetCredentials(
+        'https://notify.walletconnect.com',
+      );
+      console.log({internetCredsFromRNKeychain});
+    } catch (internetCredsFromRNKeychainError) {
+      console.error({internetCredsFromRNKeychainError});
+    }
+    try {
+      const keyFromNativeKeychain = await BackgroundServiceModule.getKey();
+      console.log({keyFromNativeKeychain});
+    } catch (keyFromNativeKeychainError) {
+      console.log({keyFromNativeKeychainError});
+    }
+    try {
+      const plainText = await BackgroundServiceModule.decrypt();
+      console.log({plainText});
+    } catch (decryptError) {
+      console.log({decryptError});
+    }
+  };
+  const handleOnPressStoreKey = async () => {
+    console.log('Is initialized: ', initialized);
+
+    try {
+      const generatedKey = await BackgroundServiceModule.generateAndStoreKey();
+      console.log({generatedKey});
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      // Store the credentials
+      const username = 'my_key_alias';
+      const password = 'WalletConnectFTW';
+      const keyChainResult = await Keychain.setGenericPassword(
+        username,
+        password,
+      );
+      console.log({keyChainResult});
+
+      const internetCredsResult = await Keychain.setInternetCredentials(
+        'https://notify.walletconnect.com',
+        username,
+        password,
+      );
+      console.log({internetCredsResult});
+
       const phoneId: string = await BackgroundServiceModule.getPhoneID();
       console.log({phoneId});
     } catch (error) {
@@ -82,9 +139,18 @@ const App = () => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
+          <View style={{marginBottom: 4}}>
+            <Button
+              onPress={handleOnPressStoreKey}
+              title="Store key"
+              color="#841584"
+              accessibilityLabel="Learn more about this purple button"
+            />
+          </View>
+
           <Button
-            onPress={handleOnPress}
-            title="Check Sign Client Initialization"
+            onPress={handleOnPressGetKey}
+            title="Get key"
             color="#841584"
             accessibilityLabel="Learn more about this purple button"
           />
