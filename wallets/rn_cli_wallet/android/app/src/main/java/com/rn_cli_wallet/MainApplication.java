@@ -2,6 +2,10 @@ package com.rn_cli_wallet;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -9,9 +13,14 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.rn_cli_wallet.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import com.oblador.keychain.KeychainPackage;
 
 public class MainApplication extends Application implements ReactApplication {
     public static Application App;
@@ -57,6 +66,12 @@ public class MainApplication extends Application implements ReactApplication {
     App = this;
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    FirebaseMessaging.getInstance().getToken().addOnSuccessListener(new OnSuccessListener<String>() {
+        @Override
+        public void onSuccess(String s) {
+            Log.d("New token", s);
+        }
+    });
   }
 
   /**

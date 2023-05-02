@@ -91,11 +91,37 @@ const App = () => {
       console.log({decryptError});
     }
   };
+  const handleGetKey = async () => {
+    try {
+      // Get pw credentials
+      const internetCredsFromRNKeychain =
+        await BackgroundServiceModule.getInternetCredentialsForServer(
+          'https://topic.walletconnect.com',
+        );
+      console.log({internetCredsFromRNKeychain});
+    } catch (internetCredsFromRNKeychainError) {
+      console.error({internetCredsFromRNKeychainError});
+    }
+  };
+
+  const handleTestFlow = async () => {
+    try {
+      const plainText = await BackgroundServiceModule.testFlow(
+        'some_topic_id_2',
+      );
+      console.log({plainText});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleOnPressStoreKey = async () => {
     console.log('Is initialized: ', initialized);
 
     try {
-      const generatedKey = await BackgroundServiceModule.generateAndStoreKey();
+      const generatedKey = await BackgroundServiceModule.generateAndStoreKey(
+        'some_topic_id_2',
+      );
       console.log({generatedKey});
     } catch (error) {
       console.log(error);
@@ -105,16 +131,21 @@ const App = () => {
       // Store the credentials
       const username = 'my_key_alias';
       const password = 'WalletConnectFTW';
-      const keyChainResult = await Keychain.setGenericPassword(
-        username,
-        password,
-      );
-      console.log({keyChainResult});
+      // const keyChainResult = await Keychain.setGenericPassword(
+      //   username,
+      //   password,
+      // );
+      // console.log({keyChainResult});
 
       const internetCredsResult = await Keychain.setInternetCredentials(
-        'https://notify.walletconnect.com',
+        'https://topic.walletconnect.com',
         username,
         password,
+        {
+          accessible: Keychain.ACCESSIBLE.ALWAYS,
+          accessControl: Keychain.ACCESS_CONTROL.APPLICATION_PASSWORD,
+          authenticationPrompt: 'Please provide creds',
+        },
       );
       console.log({internetCredsResult});
 
@@ -147,9 +178,17 @@ const App = () => {
               accessibilityLabel="Learn more about this purple button"
             />
           </View>
+          <View style={{marginBottom: 4}}>
+            <Button
+              onPress={handleTestFlow}
+              title="Test flow"
+              color="#841584"
+              accessibilityLabel="Learn more about this purple button"
+            />
+          </View>
 
           <Button
-            onPress={handleOnPressGetKey}
+            onPress={handleGetKey}
             title="Get key"
             color="#841584"
             accessibilityLabel="Learn more about this purple button"

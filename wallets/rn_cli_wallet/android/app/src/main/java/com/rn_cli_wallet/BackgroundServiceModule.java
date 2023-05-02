@@ -6,33 +6,42 @@ import android.provider.Settings;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.oblador.keychain.KeychainModule;
+
 import android.security.keystore.KeyProperties;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PublicKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.security.SecureRandom;
 import java.security.GeneralSecurityException;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import java.nio.charset.StandardCharsets;
 
 import java.io.IOException;
 
+import java.security.spec.ECGenParameterSpec;
 import java.util.List;
 
 import android.os.Build;
@@ -50,10 +59,9 @@ import java.nio.ByteBuffer;
 public class BackgroundServiceModule extends ReactContextBaseJavaModule {
     private static ReactApplicationContext reactContext;
     private static final String MODULE_NAME = "BackgroundServiceModule";
-    private static final String KEY_ALIAS = "wc_my_key_alias";
     private static final int KEY_SIZE = 256;
     private static final String BLOCK_MODE = KeyProperties.BLOCK_MODE_CBC;
-    private static final String ENCRYPTION_PADDING = KeyProperties.ENCRYPTION_PADDING_PKCS7;
+    private static final String ENCRYPTION_PADDING = KeyProperties.ENCRYPTION_PADDING_NONE;
 
     private static byte[] nonce = new byte[12];
     private static byte[] aad = "".getBytes(StandardCharsets.UTF_8);
@@ -112,16 +120,16 @@ public class BackgroundServiceModule extends ReactContextBaseJavaModule {
         response.resolve("DecryptionBackgroundService stopped");
     }
 
-    public SecretKey getKey() {
+    public SecretKey oldGetKey(String keyAlias) {
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
-            KeyStore.SecretKeyEntry secretKeyEntry = (KeyStore.SecretKeyEntry) keyStore.getEntry(KEY_ALIAS, null);
+            KeyStore.SecretKeyEntry secretKeyEntry = (KeyStore.SecretKeyEntry) keyStore.getEntry(keyAlias, null);
             if (secretKeyEntry != null) {
                 SecretKey secretKey = secretKeyEntry.getSecretKey();
                 return secretKey;
             } else {
-                throw new NoSuchProviderException("Private key not found for alias: " + KEY_ALIAS);
+                throw new NoSuchProviderException("Private key not found for alias: " + keyAlias);
             }
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException | NoSuchProviderException | CertificateException | IOException e) {
             Log.d("KeyStore Error", e.toString());
@@ -130,18 +138,49 @@ public class BackgroundServiceModule extends ReactContextBaseJavaModule {
         }
     }
 
+    private byte[] getKey(String keyAlias) throws Exception {
+        KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+        keyStore.load(null);
+        KeyStore.Entry entry = keyStore.getEntry(keyAlias, null);
+        if (entry == null) {
+            throw new Exception("No key found with alias: " + keyAlias);
+        }
+        if (!(entry instanceof KeyStore.SecretKeyEntry)) {
+            throw new Exception("Found key is not a SecretKeyEntry");
+        }
+        KeyStore.SecretKeyEntry secretKeyEntry = (KeyStore.SecretKeyEntry) entry;
+        SecretKey keystoreSecretKey = secretKeyEntry.getSecretKey();
+
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, "AndroidKeyStore");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            keyPairGenerator.initialize(new KeyGenParameterSpec.Builder(keyAlias, KeyProperties.PURPOSE_SIGN)
+                    .setDigests(KeyProperties.DIGEST_SHA256)
+                    .setAlgorithmParameterSpec(new ECGenParameterSpec("secp256r1"))
+                    .setUserAuthenticationRequired(false)
+                    .build());
+        }
+        KeyPair ephemeralKeyPair = keyPairGenerator.generateKeyPair();
+        KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH");
+        keyAgreement.init(ephemeralKeyPair.getPrivate());
+        keyAgreement.doPhase(keystoreSecretKey, true);
+        Log.d("get key","got keystore secret key");
+        byte[] sharedSecret = keyAgreement.generateSecret();
+        Log.d("get key","Shared key generated");
+
+        return sharedSecret;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @ReactMethod
-    public void generateAndStoreKey(Promise promise) throws Exception {
+    public void generateAndStoreKey(String keyAlias, Promise promise) throws Exception {
         // Get the Android KeyStore instance
         KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
-
         // Check if the key already exists
-        if (!keyStore.containsAlias(KEY_ALIAS)) {
+        if (!keyStore.containsAlias(keyAlias)) {
             // Generate a symmetric key
             KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
-            KeyGenParameterSpec keySpec = new KeyGenParameterSpec.Builder(KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+            KeyGenParameterSpec keySpec = new KeyGenParameterSpec.Builder(keyAlias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(BLOCK_MODE)
                     .setEncryptionPaddings(ENCRYPTION_PADDING)
                     .setKeySize(KEY_SIZE)
@@ -156,7 +195,8 @@ public class BackgroundServiceModule extends ReactContextBaseJavaModule {
         }
     }
 
-    public static byte[] encrypt(String plaintext, SecretKey key) throws Exception {
+    @NonNull
+    public static byte[] encrypt(@NonNull String plaintext, SecretKey key) throws Exception {
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(nonce);
 
@@ -174,12 +214,12 @@ public class BackgroundServiceModule extends ReactContextBaseJavaModule {
         return byteBuffer.array();
     }
     @ReactMethod
-    public static void decrypt(Promise promise) throws GeneralSecurityException {
+    public static void decrypt(String keyAlias, Promise promise) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("ChaCha20-Poly1305");
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
-            KeyStore.SecretKeyEntry secretKeyEntry = (KeyStore.SecretKeyEntry) keyStore.getEntry(KEY_ALIAS, null);
+            KeyStore.SecretKeyEntry secretKeyEntry = (KeyStore.SecretKeyEntry) keyStore.getEntry(keyAlias, null);
             if (secretKeyEntry != null) {
                 SecretKey secretKey = secretKeyEntry.getSecretKey();
                 Log.d("Fetched secret key", secretKey.toString());
@@ -197,14 +237,30 @@ public class BackgroundServiceModule extends ReactContextBaseJavaModule {
                     promise.reject("Failed to decrypt", e);
                 }
             } else {
-                throw new NoSuchProviderException("Private key not found for alias: " + KEY_ALIAS);
+                throw new NoSuchProviderException("Private key not found for alias: " + keyAlias);
             }
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException | NoSuchProviderException | CertificateException | IOException e) {
             promise.reject("Error getting key from keychain", e);
         }
     }
 
-    public static String stringToHex(String input) {
+
+    public byte[] encryptPayload(@NonNull String keyAlias, @NonNull String input) throws Exception {
+        ChaCha20Poly1305 chacha = new ChaCha20Poly1305();
+        byte[] sharedSecretKey = getKey(keyAlias);
+        KeyParameter keyParameter = new KeyParameter(sharedSecretKey);
+        byte[] iv = new byte[12];
+        chacha.init(true, new ParametersWithIV(keyParameter, iv));
+        Log.d("Init chacha", "ChaCha ready");
+        byte[] inputBytes = input.getBytes(StandardCharsets.UTF_8);
+        byte[] encryptedTextBytes = new byte[chacha.getOutputSize(inputBytes.length)];
+        int outputSize = chacha.processBytes(inputBytes, 0, inputBytes.length, encryptedTextBytes, 0);
+        chacha.doFinal(encryptedTextBytes, outputSize);
+        return encryptedTextBytes;
+    }
+
+    @NonNull
+    public static String stringToHex(@NonNull String input) {
         StringBuilder hexString = new StringBuilder();
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
@@ -216,7 +272,8 @@ public class BackgroundServiceModule extends ReactContextBaseJavaModule {
         }
         return hexString.toString();
     }
-    public byte[] decryptPayload(String key, byte[] input) throws Exception {
+
+    public byte[] decryptPayload1(String key, @NonNull byte[] input) throws Exception {
         ChaCha20Poly1305 chacha = new ChaCha20Poly1305();
         KeyParameter keyParam = new KeyParameter(Hex.decode(stringToHex(key)));
         byte[] iv = new byte[12];
@@ -225,5 +282,43 @@ public class BackgroundServiceModule extends ReactContextBaseJavaModule {
         int outputSize = chacha.processBytes(input, 0, input.length, decryptedTextBytes, 0);
         chacha.doFinal(decryptedTextBytes, outputSize);
         return decryptedTextBytes;
+    }
+
+    public byte[] oldDecryptPayload(@NonNull String keyAlias, @NonNull byte[] input) throws Exception {
+        ChaCha20Poly1305 chacha = new ChaCha20Poly1305();
+        byte[] sharedSecretKey = getKey(keyAlias);
+        KeyParameter keyParam = new KeyParameter(sharedSecretKey);
+        byte[] iv = new byte[12];
+        chacha.init(false, new ParametersWithIV(keyParam, iv));
+        byte[] decryptedTextBytes = new byte[chacha.getOutputSize(input.length)];
+        int outputSize = chacha.processBytes(input, 0, input.length, decryptedTextBytes, 0);
+        chacha.doFinal(decryptedTextBytes, outputSize);
+        return decryptedTextBytes;
+    }
+
+    public byte[] decryptPayload(@NonNull String keyAlias, @NonNull byte[] input) throws Exception {
+        ChaCha20Poly1305 chacha = new ChaCha20Poly1305();
+        byte[] sharedSecretKey = getKey(keyAlias);
+        KeyParameter keyParam = new KeyParameter(sharedSecretKey);
+        byte[] iv = new byte[12];
+        chacha.init(false, new ParametersWithIV(keyParam, iv));
+        byte[] decryptedTextBytes = new byte[chacha.getOutputSize(input.length)];
+        int outputSize = chacha.processBytes(input, 0, input.length, decryptedTextBytes, 0);
+        chacha.doFinal(decryptedTextBytes, outputSize);
+        return decryptedTextBytes;
+    }
+
+    @ReactMethod
+    public void testFlow(String keyAlias, Promise promise) {
+        try {
+            byte[] encryptedPayload = encryptPayload(keyAlias, "HelloWalletConnectfam!");
+            Log.d("Encrypted", encryptedPayload.toString());
+            byte[] decryptedPayload = decryptPayload(keyAlias, encryptedPayload);
+            String decryptedPlainText = new String(decryptedPayload, StandardCharsets.UTF_8);
+            promise.resolve(decryptedPlainText);
+        } catch (Exception e){
+            Log.d("Error", e.getMessage());
+            promise.reject("Failed to encrypt & decrypt");
+        }
     }
 }
