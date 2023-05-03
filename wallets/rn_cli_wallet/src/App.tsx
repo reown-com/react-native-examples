@@ -9,6 +9,8 @@
  */
 
 import React, {useEffect} from 'react';
+import {Alert} from 'react-native';
+import messaging from '@react-native-firebase/messaging';
 import {
   Button,
   SafeAreaView,
@@ -48,6 +50,17 @@ const App = () => {
   useEffect(() => {
     console.log('App Initalized: ', initialized);
   }, [initialized]);
+
+  useEffect(() => {
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage);
+    });
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     async function handleBackgroundService() {

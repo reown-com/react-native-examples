@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useState} from 'react';
-import {createPushClient, createSignClient} from '../utils/SignClient';
+import {createPushClient, createSignClient} from '../utils/Clients';
 
 export default function useInitialization() {
   const [initialized, setInitialized] = useState(false);
