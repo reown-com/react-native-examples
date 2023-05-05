@@ -2430,7 +2430,7 @@
     lodash.isequal "4.5.0"
     uint8arrays "^3.1.0"
 
-"@walletconnect/encoding@^1.0.2":
+"@walletconnect/encoding@1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@walletconnect/encoding/-/encoding-1.0.2.tgz#cb3942ad038d6a6bf01158f66773062dd25724da"
   integrity sha512-CrwSBrjqJ7rpGQcTL3kU+Ief+Bcuu9PH6JLOb+wM6NITX1GTxR/MfNwnQfhLKK6xpRAyj2/nM04OOH6wS8Imag==
@@ -2672,7 +2672,7 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/react-native@^1.0.0-alpha.2":
+"@web3modal/react-native@1.0.0-alpha.2":
   version "1.0.0-alpha.2"
   resolved "https://registry.yarnpkg.com/@web3modal/react-native/-/react-native-1.0.0-alpha.2.tgz#ef8b6a65998cdad197868be7f9c1fa50a6c6739e"
   integrity sha512-q6FivEz0LYQ6UCBaHpLEN6MNQLRxZDKBNwXrfUliVy4CYF4qwLCTRby4wNHwXrB+BibwHHu6sYI/49mCzyy77g==
