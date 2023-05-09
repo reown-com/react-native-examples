@@ -15,7 +15,7 @@
     "@react-native-async-storage/async-storage": "^1.17.11",
     "@react-native-clipboard/clipboard": "^1.11.2",
     "@walletconnect/encoding": "1.0.2",
-    "@web3modal/react-native": "1.0.0-alpha.2",
+    "@web3modal/react-native": "1.0.0-alpha.3",
     "react": "18.2.0",
     "react-native": "0.71.2",
     "react-native-get-random-values": "^1.8.0",
