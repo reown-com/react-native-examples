@@ -30,7 +30,7 @@ export function CircleActionButton({
 
 const styles = StyleSheet.create({
   blueButtonContainer: {
-    marginRight: 20,
+    marginRight: 8,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

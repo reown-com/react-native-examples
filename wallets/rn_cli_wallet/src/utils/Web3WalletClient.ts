@@ -10,17 +10,15 @@ import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
 // import {createOrRestoreEIP155Wallet} from './EIP155Wallet';
 
 export async function createWeb3Wallet() {
-  // console.log('ENV_PROJECT_ID', ENV_PROJECT_ID);
-  // console.log('ENV_RELAY_URL', ENV_RELAY_URL);
   core = new Core({
-    // @notice: If you want the debugger / logs
-    // logger: 'debug',
     projectId: ENV_PROJECT_ID,
     relayUrl: ENV_RELAY_URL,
   });
 
+  // Note: I was commenting here in and out because these functions slow down the wallet
   // const {eip155Addresses} = await createOrRestoreEIP155Wallet();
   // currentETHAddress = eip155Addresses[0];
+  // console.log('currentETHAddress', currentETHAddress);
 
   web3wallet = await Web3Wallet.init({
     core,

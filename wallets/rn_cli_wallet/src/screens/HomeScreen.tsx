@@ -28,6 +28,7 @@ import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
 import {CopyWCURIModal} from '../components/Modals/CopyWCURIModal';
 import {W3InboxModal} from '../components/Modals/W3InboxModal';
+import Web3InboxButton from '../components/HomeScreen/Web3InboxButton';
 
 /**
   @notice: HomeScreen for Web3Wallet Example
@@ -260,9 +261,11 @@ const HomeScreen = () => {
         </View>
         <Sessions />
         <ActionButtons
+          leftAligned={true}
           setCopyDialog={setCopyDialog}
           handleWebView={handleWebView}
         />
+        <Web3InboxButton leftAligned={false} handleWebView={handleWebView} />
       </View>
     </SafeAreaView>
   );
