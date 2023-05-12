@@ -16,7 +16,7 @@
     "@react-navigation/native-stack": "^6.9.8",
     "@tsconfig/react-native": "^2.0.3",
     "@walletconnect/react-native-compat": "2.2.1",
-    "@walletconnect/sign-client": "^2.7.3",
+    "@walletconnect/sign-client": "2.2.1",
     "@walletconnect/web3wallet": "^1.1.1",
     "big-integer": "^1.6.51",
     "ethers": "^5.7.2",
