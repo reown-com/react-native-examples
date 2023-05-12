@@ -16,7 +16,7 @@
     "@types/react": "~18.0.24",
     "@types/react-native": "~0.70.6",
     "@walletconnect/react-native-compat": "^2.1.4",
-    "@walletconnect/sign-client": "^2.1.4",
+    "@walletconnect/sign-client": "^2.7.3",
     "expo": "~47.0.9",
     "expo-status-bar": "~1.4.2",
     "react": "18.1.0",
