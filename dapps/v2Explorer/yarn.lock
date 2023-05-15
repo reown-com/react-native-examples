@@ -2672,10 +2672,10 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/react-native@1.0.0-alpha.2":
-  version "1.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@web3modal/react-native/-/react-native-1.0.0-alpha.2.tgz#ef8b6a65998cdad197868be7f9c1fa50a6c6739e"
-  integrity sha512-q6FivEz0LYQ6UCBaHpLEN6MNQLRxZDKBNwXrfUliVy4CYF4qwLCTRby4wNHwXrB+BibwHHu6sYI/49mCzyy77g==
+"@web3modal/react-native@1.0.0-alpha.3":
+  version "1.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@web3modal/react-native/-/react-native-1.0.0-alpha.3.tgz#6b2c48cf015a10654d660c8decc2ed1924e5098f"
+  integrity sha512-WaeeqG0bDBM+n6ujUZaFO9+VbwcciSd1fDZC6sNaG/v0Ldh2St9dTp891gTNRGy5WreyHl8Chb9upkyEiK1DDQ==
   dependencies:
     "@ethersproject/shims" "5.7.0"
     "@walletconnect/react-native-compat" "2.7.1"
