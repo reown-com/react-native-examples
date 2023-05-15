@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   SafeAreaView,
   StyleSheet,
+  Text,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
@@ -19,7 +21,8 @@ import {BlockchainActions} from '../components/BlockchainActions';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
-  const {isConnected} = useWeb3Modal();
+  const [clientId, setClientId] = useState<string>();
+  const {isConnected, provider} = useWeb3Modal();
   const backgroundColor = isDarkMode
     ? DarkTheme.background2
     : LightTheme.background2;
@@ -29,11 +32,38 @@ function App() {
     Alert.alert('Copied to clipboard');
   };
 
+  useEffect(() => {
+    async function getClientId() {
+      if (provider && isConnected) {
+        const _clientId = await provider?.client?.core.crypto.getClientId();
+        setClientId(_clientId);
+      } else {
+        setClientId(undefined);
+      }
+    }
+
+    getClientId();
+  }, [isConnected, provider]);
+
   return (
     <SafeAreaView style={[styles.safeArea, {backgroundColor}]}>
       <View style={[styles.container, {backgroundColor}]}>
-        <Web3Button style={styles.web3Button} />
-        {isConnected && <BlockchainActions />}
+        {clientId && (
+          <TouchableOpacity
+            style={[styles.card, isDarkMode && styles.cardDark]}
+            onPress={() => onCopy(clientId)}>
+            <Text style={[styles.propTitle, isDarkMode && styles.darkText]}>
+              {'Client ID:'}{' '}
+              <Text style={[styles.propValue, isDarkMode && styles.darkText]}>
+                {clientId}
+              </Text>
+            </Text>
+          </TouchableOpacity>
+        )}
+        <View style={styles.centerContainer}>
+          <Web3Button style={styles.web3Button} />
+          {isConnected && <BlockchainActions />}
+        </View>
         <Web3Modal
           projectId={ENV_PROJECT_ID}
           providerMetadata={providerMetadata}
@@ -51,11 +81,40 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+  card: {
+    margin: 16,
+    marginBottom: 64,
+    padding: 16,
+    borderColor: LightTheme.accent,
+    backgroundColor: LightTheme.background1,
+    borderWidth: 1,
+    borderRadius: 16,
+    shadowColor: LightTheme.foreground1,
+    shadowOffset: {width: 0, height: 0},
+    shadowOpacity: 0.3,
+  },
+  cardDark: {
+    backgroundColor: DarkTheme.background1,
+    borderColor: DarkTheme.accent,
+    shadowColor: DarkTheme.foreground1,
+    shadowOpacity: 0.5,
+  },
+  propTitle: {
+    fontWeight: 'bold',
+  },
+  propValue: {
+    fontWeight: 'normal',
+  },
+  darkText: {
+    color: DarkTheme.foreground1,
+  },
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 8,
+  },
+  centerContainer: {
+    justifyContent: 'center',
+    flex: 1,
   },
   web3Button: {
     width: 180,
