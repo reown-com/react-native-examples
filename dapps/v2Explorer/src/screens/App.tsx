@@ -1,7 +1,14 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, useColorScheme, View} from 'react-native';
+import {
+  Alert,
+  SafeAreaView,
+  StyleSheet,
+  useColorScheme,
+  View,
+} from 'react-native';
 import '@walletconnect/react-native-compat';
 import {useWeb3Modal, Web3Button, Web3Modal} from '@web3modal/react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 // @ts-expect-error - `@env` is a virtualised module via Babel config.
 import {ENV_PROJECT_ID} from '@env';
@@ -17,6 +24,11 @@ function App() {
     ? DarkTheme.background2
     : LightTheme.background2;
 
+  const onCopy = (value: string) => {
+    Clipboard.setString(value);
+    Alert.alert('Copied to clipboard');
+  };
+
   return (
     <SafeAreaView style={[styles.safeArea, {backgroundColor}]}>
       <View style={[styles.container, {backgroundColor}]}>
@@ -26,6 +38,7 @@ function App() {
           projectId={ENV_PROJECT_ID}
           providerMetadata={providerMetadata}
           sessionParams={sessionParams}
+          onCopyClipboard={onCopy}
         />
       </View>
     </SafeAreaView>
