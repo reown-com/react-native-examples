@@ -8,8 +8,10 @@ interface ITagProps {
 
 export function Tag({value, grey}: ITagProps) {
   return (
-    <View style={grey ? styles.greyTagContainer : styles.tagContainer}>
-      <Text style={grey ? styles.greyMainText : styles.mainText}>{value}</Text>
+    <View style={[styles.tagContainer, grey && styles.greyTagContainer]}>
+      <Text style={[styles.mainText, grey && styles.greyMainText]}>
+        {value}
+      </Text>
     </View>
   );
 }
@@ -26,12 +28,6 @@ const styles = StyleSheet.create({
   },
   greyTagContainer: {
     backgroundColor: 'rgba(60, 60, 67, 0.33)',
-    minHeight: 26,
-    paddingHorizontal: 8,
-    paddingTop: 4,
-    borderRadius: 28,
-    marginRight: 10,
-    marginBottom: 8,
   },
   mainText: {
     fontSize: 13,
@@ -40,13 +36,6 @@ const styles = StyleSheet.create({
     color: 'rgba(0, 172, 229, 1)',
   },
   greyMainText: {
-    fontSize: 13,
-    lineHeight: 18,
-    fontWeight: '600',
     color: 'rgba(255, 255, 255, 1)',
-  },
-  imageContainer: {
-    width: 24,
-    height: 24,
   },
 });

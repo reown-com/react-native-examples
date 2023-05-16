@@ -75,8 +75,8 @@ export function SendTransactionModal({
         </View>
 
         <View style={styles.flexRow}>
-          <AcceptRejectButton accept={false} onPress={() => onReject()} />
-          <AcceptRejectButton accept={true} onPress={() => onApprove()} />
+          <AcceptRejectButton accept={false} onPress={onReject} />
+          <AcceptRejectButton accept={true} onPress={onApprove} />
         </View>
       </View>
     </Modal>

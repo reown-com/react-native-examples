@@ -42,8 +42,4 @@ const styles = StyleSheet.create({
     fontFamily: 'SFProRounded-Thin',
     color: '#798686',
   },
-  imageContainer: {
-    width: 24,
-    height: 24,
-  },
 });

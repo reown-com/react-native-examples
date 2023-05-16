@@ -1,8 +1,7 @@
 import React from 'react';
 import {Text, StatusBar, useColorScheme, View, StyleSheet} from 'react-native';
-
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import '@walletconnect/react-native-compat';
+
 import {currentETHAddress} from '../utils/Web3WalletClient';
 
 import {eip155Wallets} from '../utils/EIP155Wallet';

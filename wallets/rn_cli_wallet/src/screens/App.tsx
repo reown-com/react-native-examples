@@ -1,22 +1,10 @@
 import React from 'react';
-import '@walletconnect/react-native-compat';
-
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import OnboardingScreen from './OnboardingScreen';
 import HomeScreen from './HomeScreen';
 import SettingsScreen from './Settings';
-
-// Required for TextEncoding Issue
-const TextEncodingPolyfill = require('text-encoding');
-const BigInt = require('big-integer');
-
-Object.assign(global, {
-  TextEncoder: TextEncodingPolyfill.TextEncoder,
-  TextDecoder: TextEncodingPolyfill.TextDecoder,
-  BigInt: BigInt,
-});
 
 const Stack = createNativeStackNavigator();
 

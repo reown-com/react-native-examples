@@ -6,16 +6,14 @@ import {
   StyleSheet,
   ImageBackground,
 } from 'react-native';
-
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import '@walletconnect/react-native-compat';
+import {SafeAreaView} from 'react-native-safe-area-context';
+
 import {GetStartedButton} from '../components/GetStartedButton';
 import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import useInitialization from '../hooks/useInitialization';
-
-const backgroundImageSrc = require('../assets/ethCalculatorBG.png');
+import backgroundImageSrc from '../assets/ethCalculatorBG.png';
 
 const OnboardingScreen = () => {
   const initialized = useInitialization();

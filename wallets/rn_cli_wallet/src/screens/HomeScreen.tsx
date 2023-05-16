@@ -256,17 +256,6 @@ const HomeScreen = () => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  heading: {
-    fontSize: 34,
-    fontWeight: 'bold',
-  },
-  greyText: {
-    fontSize: 15,
-    lineHeight: 21,
-    color: '#798686',
-    width: '80%',
-    textAlign: 'center',
-  },
   mainScreenContainer: {
     padding: 20,
     flex: 1,
@@ -274,18 +263,6 @@ const styles = StyleSheet.create({
   imageContainer: {
     height: 24,
     width: 24,
-  },
-  container: {
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textInput: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-    width: '80%',
   },
   flexRow: {
     display: 'flex',

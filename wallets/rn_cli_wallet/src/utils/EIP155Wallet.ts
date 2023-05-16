@@ -12,18 +12,18 @@ let address2: string;
 /**
  * Utilities
  */
-export const setLocalStorage = async (mnemonic: any) => {
+export const setMnemonic = async (mnemonic: any) => {
   try {
     const value = await AsyncStorage.setItem('EIP155_MNEMONIC_1', mnemonic);
     if (value !== null) {
       return value;
     }
   } catch (e) {
-    console.log('setLocalStorage Error:', e);
+    console.log('setMnemonic Error:', e);
   }
 };
 
-export const getLocalStorage = async () => {
+export const getMnemonic = async () => {
   try {
     const value = await AsyncStorage.getItem('EIP155_MNEMONIC_1');
     if (value !== null) {
@@ -35,7 +35,7 @@ export const getLocalStorage = async () => {
 };
 
 export async function createOrRestoreEIP155Wallet() {
-  let mnemonic1 = await getLocalStorage();
+  let mnemonic1 = await getMnemonic();
 
   if (mnemonic1) {
     wallet1 = EIP155Lib.init({mnemonic: mnemonic1});
@@ -44,7 +44,7 @@ export async function createOrRestoreEIP155Wallet() {
   }
 
   // @notice / Warning!!! : This is a test wallet, do not use it for real transactions
-  setLocalStorage(wallet1?.getMnemonic());
+  setMnemonic(wallet1?.getMnemonic());
   address1 = wallet1.getAddress();
 
   eip155Wallets = {
