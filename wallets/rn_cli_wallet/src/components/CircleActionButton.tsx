@@ -2,13 +2,13 @@ import React from 'react';
 import {TouchableOpacity, StyleSheet, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
+import clipboardImage from '../assets/Copy.png';
+import QRCodeImage from '../assets/QRCode.png';
+
 interface CircleActionButtonProps {
   copyImage: boolean;
   handlePress: () => void;
 }
-
-const clipboardImage = require('../assets/Copy.png');
-const QRCodeImage = require('../assets/QRCode.png');
 
 export function CircleActionButton({
   copyImage,

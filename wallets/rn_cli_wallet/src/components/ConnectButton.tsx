@@ -27,8 +27,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     height: 46,
     marginTop: 16,
-    boxShadow:
-      '0px 6px 14px -6px rgba(0, 0, 0, 0.12), 0px 10px 32px -4px rgba(0, 0, 0, 0.1)',
   },
   mainText: {
     fontSize: 20,

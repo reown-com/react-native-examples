@@ -32,8 +32,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     height: 56,
     width: 350,
-    boxShadow:
-      '0px 6px 14px -6px rgba(0, 0, 0, 0.12), 0px 10px 32px -4px rgba(0, 0, 0, 0.1)',
   },
   mainText: {
     fontSize: 20,

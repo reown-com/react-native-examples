@@ -31,46 +31,44 @@ const OnboardingScreen = () => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <SafeAreaView style={styles.container}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <SafeAreaView style={{flex: 1}}>
-        <ImageBackground
-          source={backgroundImageSrc}
-          resizeMode="cover"
-          style={styles.backgroundImage}>
-          <View style={styles.textContainer}>
-            <W3WText value={'Welcome'} />
-            <W3WText
-              value={TextContent.welcomeDescription}
-              color={'grey'}
-              type={'body'}
-            />
-          </View>
-
-          <GetStartedButton />
-        </ImageBackground>
-      </SafeAreaView>
-    </View>
+      <ImageBackground
+        source={backgroundImageSrc}
+        resizeMode="contain"
+        style={styles.backgroundImage}>
+        <View style={styles.textContainer}>
+          <W3WText value={'Welcome'} />
+          <W3WText
+            value={TextContent.welcomeDescription}
+            color={'grey'}
+            type={'body'}
+          />
+        </View>
+        <GetStartedButton />
+      </ImageBackground>
+    </SafeAreaView>
   );
 };
 
 export default OnboardingScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
   backgroundImage: {
-    paddingHorizontal: 20,
     flex: 1,
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: '103%',
   },
   textContainer: {
-    marginVertical: 16,
-    display: 'flex',
-    justifyContent: 'center',
+    marginTop: 16,
+    paddingHorizontal: 16,
     alignItems: 'center',
   },
 });
