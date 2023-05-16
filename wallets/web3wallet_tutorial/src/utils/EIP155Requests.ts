@@ -3,7 +3,7 @@ import {
   EIP155_SIGNING_METHODS,
   TEIP155Chain,
 } from "./EIP155Lib";
-import { eip155Wallets } from "../utils/EIP155Wallet";
+import { eip155Wallets } from "./EIP155Wallet";
 import {
   getSignParamsMessage,
   getSignTypedDataParamsData,
@@ -13,7 +13,7 @@ import { formatJsonRpcError, formatJsonRpcResult } from "@json-rpc-tools/utils";
 import { SignClientTypes } from "@walletconnect/types";
 import { getSdkError } from "@walletconnect/utils";
 import { providers } from "ethers";
-import { currentETHAddress } from "../utils/WalletConnectUtils";
+import { currentETHAddress } from "./WalletConnectUtils";
 
 export async function approveEIP155Request(
   requestEvent: SignClientTypes.EventArguments["session_request"]
