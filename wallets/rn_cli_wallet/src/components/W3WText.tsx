@@ -28,9 +28,8 @@ export function W3WText({type, value, color}: IW3WTextProps) {
 const styles = StyleSheet.create({
   headingText: {
     fontSize: 34,
-    fontWeight: '700',
     lineHeight: 41,
-    fontFamily: 'SF Pro Rounded Medium',
+    fontFamily: 'SFProRounded-Medium',
     color: FONT_COLORS.GREY8,
     letterSpacing: 0.374,
   },
@@ -40,8 +39,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 21,
     letterSpacing: 0.374,
-    fontWeight: '500',
-    fontFamily: 'SF Pro Rounded Thin',
+    fontFamily: 'SFProRounded-Thin',
     color: '#798686',
   },
   imageContainer: {
