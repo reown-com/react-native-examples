@@ -40,7 +40,6 @@ import { CopyURIDialog } from '../components/CopyURIDialog';
   5) onSessionRequest: To handle the session request event (i.e. eth_sign, eth_signTypedData, eth_sendTransaction)
 
 **/
-
 const HomeScreen = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const navigation = useNavigation();
@@ -62,7 +61,7 @@ const HomeScreen = () => {
   const backgroundStyle = {
     flex: 1,
     padding: 16,
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    backgroundColor: isDarkMode ? '#141414' : '#FFFFFF',
   };
 
   async function handleDecline() {
@@ -264,6 +263,7 @@ const styles = StyleSheet.create({
   mainScreenContainer: {
     padding: 20,
     flex: 1,
+    // backgroundColor:'white'
   },
   imageContainer: {
     height: 24,

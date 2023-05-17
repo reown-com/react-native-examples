@@ -45,8 +45,8 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-RNWeb3Wallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNWeb3Wallet.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = RNWeb3Wallet/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-RNWeb3Wallet-RNWeb3WalletTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNWeb3Wallet-RNWeb3WalletTests.release.xcconfig"; path = "Target Support Files/Pods-RNWeb3Wallet-RNWeb3WalletTests/Pods-RNWeb3Wallet-RNWeb3WalletTests.release.xcconfig"; sourceTree = "<group>"; };
-		91CBA0F64BFB4C1794CA7DE0 /* SFProRounded-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProRounded-Thin.otf"; path = "../src/assets/fonts/SFProRounded-Thin.otf"; sourceTree = "<group>"; };
-		B0A6B6C12AC44C2EB0C4CC2A /* SFProRounded-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProRounded-Medium.otf"; path = "../src/assets/fonts/SFProRounded-Medium.otf"; sourceTree = "<group>"; };
+		91CBA0F64BFB4C1794CA7DE0 /* SFProRounded-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProRounded-Thin.otf"; path = "../src/assets/fonts/SFProRounded-Thin.otf"; sourceTree = "<group>"; };
+		B0A6B6C12AC44C2EB0C4CC2A /* SFProRounded-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProRounded-Medium.otf"; path = "../src/assets/fonts/SFProRounded-Medium.otf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -160,7 +160,6 @@
 				91CBA0F64BFB4C1794CA7DE0 /* SFProRounded-Thin.otf */,
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -505,6 +504,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W5R8AG9K22;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = RNWeb3Wallet/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RN Web3Wallet";
@@ -533,6 +533,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = W5R8AG9K22;
 				INFOPLIST_FILE = RNWeb3Wallet/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RN Web3Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -31,14 +31,12 @@ export function CopyURIDialog({
       visible={visible}
       useNativeDriver
       contentStyle={[styles.mainContainer, {maxWidth: windowWidth * 0.9}]}>
-      <View style={styles.contentContainer}>
+      <View>
         <Dialog.Title>Enter a WalletConnect URI</Dialog.Title>
-        <View>
-          <Dialog.Description style={styles.descriptionText}>
-            To get the URI press the copy to clipboard button from your dapp's
-            WalletConnect interface.
-          </Dialog.Description>
-        </View>
+        <Dialog.Description style={styles.descriptionText}>
+          To get the URI press the copy to clipboard button from your dapp's
+          WalletConnect interface.
+        </Dialog.Description>
 
         <View style={styles.flexRow}>
           <TextInput
@@ -67,17 +65,12 @@ export function CopyURIDialog({
 
 const styles = StyleSheet.create({
   mainContainer: {
-    backgroundColor: 'rgb(242, 242, 247)',
-    display: 'flex',
     justifyContent: 'center',
     alignItems: 'stretch',
     height: 300,
     padding: 20,
     width: '90%',
     borderRadius: 34,
-  },
-  contentContainer: {
-    display: 'flex',
   },
   textInput: {
     height: 44,
