@@ -93,13 +93,13 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.v2explorer"
+    namespace "com.walletconnect.web3modal.rnsample"
     defaultConfig {
-        applicationId "com.v2explorer"
+        applicationId "com.walletconnect.web3modal.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 5
+        versionName "1.1"
     }
 
     splits {

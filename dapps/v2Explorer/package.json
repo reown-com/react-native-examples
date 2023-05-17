@@ -1,9 +1,10 @@
 {
-  "name": "v2Explorer",
+  "name": "web3modal",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "android:build": "cd android && ./gradlew assembleRelease",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
@@ -11,12 +12,10 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-private-methods": "^7.18.6",
-    "@ethersproject/shims": "5.6.0",
     "@react-native-async-storage/async-storage": "^1.17.11",
-    "@walletconnect/react-native-compat": "^2.4.0",
-    "@walletconnect/universal-provider": "^2.4.0",
-    "ethers": "5.6.9",
-    "net": "^1.0.2",
+    "@react-native-clipboard/clipboard": "^1.11.2",
+    "@walletconnect/encoding": "1.0.2",
+    "@web3modal/react-native": "1.0.0-alpha.3",
     "react": "18.2.0",
     "react-native": "0.71.2",
     "react-native-get-random-values": "^1.8.0",

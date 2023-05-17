@@ -1,168 +1,75 @@
-import 'react-native-get-random-values';
-import '@ethersproject/shims';
-
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  ActivityIndicator,
   Alert,
   SafeAreaView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
-
 import '@walletconnect/react-native-compat';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import useInitialization from '../hooks/useInitialization';
-import {
-  universalProviderSession,
-  universalProvider,
-  web3Provider,
-  clearSession,
-  createUniversalProviderSession,
-} from '../utils/UniversalProvider';
-import {ExplorerModal} from '../components/ExplorerModal';
+import {useWeb3Modal, Web3Button, Web3Modal} from '@web3modal/react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 
-function App(): JSX.Element {
+// @ts-expect-error - `@env` is a virtualised module via Babel config.
+import {ENV_PROJECT_ID} from '@env';
+
+import {DarkTheme, LightTheme} from '../constants/Colors';
+import {providerMetadata, sessionParams} from '../constants/Config';
+import {BlockchainActions} from '../components/BlockchainActions';
+
+function App() {
   const isDarkMode = useColorScheme() === 'dark';
-  const [modalVisible, setModalVisible] = useState(false);
-  const [currentAccount, setCurrentAccount] = useState<string | null>(null);
-  const [currentWCURI, setCurrentWCURI] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string>();
+  const {isConnected, provider} = useWeb3Modal();
+  const backgroundColor = isDarkMode
+    ? DarkTheme.background2
+    : LightTheme.background2;
 
-  // Initialize universal provider
-  const initialized = useInitialization();
-
-  const close = () => {
-    setModalVisible(false);
+  const onCopy = (value: string) => {
+    Clipboard.setString(value);
+    Alert.alert('Copied to clipboard');
   };
-
-  const getAddress = useCallback(async () => {
-    try {
-      if (web3Provider) {
-        const signer = web3Provider.getSigner();
-        const currentAddress = await signer.getAddress();
-        setCurrentAccount(currentAddress);
-      }
-    } catch (err: unknown) {
-      console.log('Error in getAddress', err);
-    }
-  }, [setCurrentAccount]);
-
-  const onSessionCreated = useCallback(async () => {
-    getAddress();
-    setModalVisible(false);
-  }, [getAddress]);
-
-  const onSessionRejected = useCallback(async () => {
-    setModalVisible(false);
-  }, []);
-
-  const onSessionDelete = useCallback(
-    async ({topic}: {topic: string}) => {
-      if (topic === universalProviderSession?.topic) {
-        clearSession();
-        setCurrentAccount(null);
-      }
-    },
-    [setCurrentAccount],
-  );
-
-  const onConnect = useCallback(async () => {
-    createUniversalProviderSession({
-      onSuccess: onSessionCreated,
-      onFailure: onSessionRejected,
-    });
-    setModalVisible(true);
-  }, [onSessionCreated, onSessionRejected]);
-
-  const onDisconnect = useCallback(async () => {
-    try {
-      await universalProvider.disconnect();
-      clearSession();
-      setCurrentAccount(null);
-    } catch (err: unknown) {
-      Alert.alert('Error', 'Error disconnecting');
-    }
-  }, []);
-
-  const subscribeToEvents = useCallback(async () => {
-    if (universalProvider) {
-      universalProvider.on('display_uri', (uri: string) => {
-        setCurrentWCURI(uri);
-      });
-
-      // Subscribe to session ping
-      universalProvider.on('session_ping', ({id, topic}) => {
-        console.log('session_ping', id, topic);
-      });
-
-      // Subscribe to session event
-      universalProvider.on('session_event', ({event, chainId}) => {
-        console.log('session_event', event, chainId);
-      });
-
-      // Subscribe to session update
-      universalProvider.on('session_update', ({topic, params}) => {
-        console.log('session_update', topic, params);
-      });
-
-      // Subscribe to session delete
-      universalProvider.on('session_delete', onSessionDelete);
-    }
-  }, [onSessionDelete]);
 
   useEffect(() => {
-    if (initialized) {
-      subscribeToEvents();
+    async function getClientId() {
+      if (provider && isConnected) {
+        const _clientId = await provider?.client?.core.crypto.getClientId();
+        setClientId(_clientId);
+      } else {
+        setClientId(undefined);
+      }
     }
-  }, [initialized, subscribeToEvents]);
 
-  // Improve this
-  const backgroundStyle = {
-    flex: 1,
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+    getClientId();
+  }, [isConnected, provider]);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <View style={[styles.container, backgroundStyle.backgroundColor]}>
-        {currentAccount ? (
-          <View style={styles.container}>
-            <Text style={[styles.text, isDarkMode && styles.whiteText]}>
-              Address: {currentAccount}
-            </Text>
-            <TouchableOpacity
-              style={[styles.blueButton, styles.disconnectButton]}
-              onPress={onDisconnect}>
-              <Text style={styles.blueButtonText}>Disconnect</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
+    <SafeAreaView style={[styles.safeArea, {backgroundColor}]}>
+      <View style={[styles.container, {backgroundColor}]}>
+        {clientId && (
           <TouchableOpacity
-            onPress={onConnect}
-            style={styles.blueButton}
-            disabled={!initialized}>
-            {initialized ? (
-              <Text style={styles.blueButtonText}>Connect Wallet</Text>
-            ) : (
-              <ActivityIndicator size="small" color="white" />
-            )}
+            style={[styles.card, isDarkMode && styles.cardDark]}
+            onPress={() => onCopy(clientId)}>
+            <Text style={[styles.propTitle, isDarkMode && styles.darkText]}>
+              {'Client ID:'}{' '}
+              <Text style={[styles.propValue, isDarkMode && styles.darkText]}>
+                {clientId}
+              </Text>
+            </Text>
           </TouchableOpacity>
         )}
-        {currentWCURI ? (
-          <ExplorerModal
-            modalVisible={modalVisible}
-            close={close}
-            currentWCURI={currentWCURI}
-          />
-        ) : null}
+        <View style={styles.centerContainer}>
+          <Web3Button style={styles.web3Button} />
+          {isConnected && <BlockchainActions />}
+        </View>
+        <Web3Modal
+          projectId={ENV_PROJECT_ID}
+          providerMetadata={providerMetadata}
+          sessionParams={sessionParams}
+          onCopyClipboard={onCopy}
+        />
       </View>
     </SafeAreaView>
   );
@@ -171,35 +78,46 @@ function App(): JSX.Element {
 export default App;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  card: {
+    margin: 16,
+    marginBottom: 64,
+    padding: 16,
+    borderColor: LightTheme.accent,
+    backgroundColor: LightTheme.background2,
+    borderWidth: 1,
+    borderRadius: 16,
+    shadowColor: LightTheme.foreground1,
+    shadowOffset: {width: 0, height: 0},
+    shadowOpacity: 0.3,
+    elevation: 4,
+  },
+  cardDark: {
+    backgroundColor: DarkTheme.background2,
+    borderColor: DarkTheme.accent,
+    shadowColor: DarkTheme.foreground1,
+    shadowOpacity: 0.5,
+  },
+  propTitle: {
+    fontWeight: 'bold',
+  },
+  propValue: {
+    fontWeight: 'normal',
+  },
+  darkText: {
+    color: DarkTheme.foreground1,
+  },
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 8,
   },
-  text: {
-    fontWeight: '700',
-  },
-  whiteText: {
-    color: 'white',
-  },
-  blueButton: {
-    display: 'flex',
+  centerContainer: {
     justifyContent: 'center',
-    alignItems: 'center',
-    color: 'white',
-    backgroundColor: '#3396FF',
-    borderRadius: 20,
-    width: 150,
-    height: 50,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
+    flex: 1,
   },
-  blueButtonText: {
-    color: 'white',
-    fontWeight: '700',
-  },
-  disconnectButton: {
-    marginTop: 20,
+  web3Button: {
+    width: 180,
   },
 });

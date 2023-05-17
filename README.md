@@ -25,12 +25,12 @@ Skeleton Example (WIP)
 
 ## Dapps
 
-- Dapp V2 Explorer: `dapps/v2Explorer`
+- Dapp V2 Explorer: `dapps/v2Explorer` or by checking out the alpha SDK [here](https://github.com/WalletConnect/web3modal-react-native)
 
 ## Getting Started
 
 - Ensure your[ React Native environment](https://reactnative.dev/docs/next/environment-setup) has been properly setup (XCode, ruby etc). Note for Mac users to have the correct Ruby versions if doing a fresh install.
-- Read through our [JS-React Native guide](https://docs.walletconnect.com/2.0/javascript/guides/react-native)
+- Read through our [React Native guide](https://docs.walletconnect.com/2.0/reactnative/overview)
 - Check the respective `/wallet` folder to see the `rn_cli_wallet` or `rn_expo_wallet` repo
 - Read through the various README files for further information
 - Submit any issues / feature requests.
