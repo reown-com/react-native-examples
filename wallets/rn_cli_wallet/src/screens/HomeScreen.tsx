@@ -5,7 +5,6 @@ import {
   useColorScheme,
   View,
   StyleSheet,
-  Platform,
   TouchableOpacity,
   Image,
 } from 'react-native';
@@ -13,6 +12,7 @@ import {
 import {SignClientTypes} from '@walletconnect/types';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {SessionTypes} from '@walletconnect/types';
+import { getSdkError } from '@walletconnect/utils'
 import {currentETHAddress, web3wallet, _pair} from '../utils/Web3WalletClient';
 
 import {PairModal} from '../components/Modals/PairModal';
@@ -26,7 +26,7 @@ import {SignTypedDataModal} from '../components/Modals/SignTypedDataModal';
 import {SendTransactionModal} from '../components/Modals/SendTransactionModal';
 import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
-import {CopyWCURIModal} from '../components/Modals/CopyWCURIModal';
+import { CopyURIDialog } from '../components/CopyURIDialog';
 
 /**
   @notice: HomeScreen for Web3Wallet Example
@@ -54,8 +54,7 @@ const HomeScreen = () => {
   const [successPair, setSuccessPair] = useState(false);
 
   // Pairing State
-  const [pairedProposal, setPairedProposal] = useState();
-  const [WCURI, setWCUri] = useState<string>();
+  const [pairedProposal, setPairedProposal] = useState<SignClientTypes.EventArguments['session_proposal']>();
   const [requestEventData, setRequestEventData] = useState();
   const [requestSession, setRequestSession] = useState();
 
@@ -65,6 +64,17 @@ const HomeScreen = () => {
     padding: 16,
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  async function handleDecline() {
+    setApprovalModal(false);
+
+    if(!pairedProposal) return;
+
+    web3wallet.rejectSession({
+      id: pairedProposal.id,
+      reason: getSdkError('USER_REJECTED_METHODS'),
+    });
+  }
 
   async function handleAccept() {
     const {id, params} = pairedProposal;
@@ -100,13 +110,14 @@ const HomeScreen = () => {
     setCopyDialog(false);
   };
 
-  async function pair() {
-    const pairing = await _pair({uri: WCURI});
+  async function pair(uri:string) {
+    const pairing = await _pair({uri});
     setCopyDialog(false);
-    setWCUri('');
-    if (Platform.OS === 'android') {
+
+    // @notice iOS has an issue with modals, so we need to delay the approval modal
+    setTimeout(() => {
       setApprovalModal(true);
-    }
+    }, 1200);
     return pairing;
   }
 
@@ -164,7 +175,6 @@ const HomeScreen = () => {
       web3wallet.on('session_request', onSessionRequest);
     }
   }, [
-    WCURI,
     approvalModal,
     copyDialog,
     signModal,
@@ -189,18 +199,13 @@ const HomeScreen = () => {
         open={setApprovalModal}
         visible={approvalModal}
         handleAccept={handleAccept}
+        handleDecline={handleDecline}
       />
 
-      <CopyWCURIModal
+      <CopyURIDialog
         pair={pair}
-        wcURI={WCURI}
         setVisible={handleCancel}
-        copyDialog={copyDialog}
-        setApprovalModal={setApprovalModal}
-        setWCUri={setWCUri}
         visible={copyDialog}
-        pairedProposal={pairedProposal}
-        approvalModal={approvalModal}
       />
 
       {requestEventData && requestSession && signModal && (
