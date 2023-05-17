@@ -9,13 +9,12 @@ interface IndividualSessionProps {
 
 //ToDo: Change to TouchableOpacity and navigate to Session on next Sprint
 const IndividualSession = ({name, icons, url}: IndividualSessionProps) => {
+  const icon = icons ? icons : null;
   return (
     <View style={styles.sessionContainer}>
       <View style={styles.flexRow}>
-        {icons ? (
-          <Image
-            source={{uri: icons.toString()}}
-            style={styles.iconContainer}
+        {icon ? (
+          <Image source={{uri: icon}} style={styles.iconContainer}
           />
         ) : null}
         <View style={styles.textContainer}>

@@ -34,7 +34,7 @@ export function SendTransactionModal({
   const requestURL = requestSession?.peer?.metadata?.url;
 
   const {topic, params} = requestEvent;
-  const {request, chainId} = params;
+  const {request} = params;
   const transaction = request.params[0];
 
   async function onApprove() {
