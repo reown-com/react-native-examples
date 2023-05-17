@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "rn_cli_wallet.app"
-               BlueprintName = "rn_cli_wallet"
-               ReferencedContainer = "container:rn_cli_wallet.xcodeproj">
+               BuildableName = "RNWeb3Wallet.app"
+               BlueprintName = "RNWeb3Wallet"
+               ReferencedContainer = "container:RNWeb3Wallet.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "rn_cli_walletTests.xctest"
-               BlueprintName = "rn_cli_walletTests"
-               ReferencedContainer = "container:rn_cli_wallet.xcodeproj">
+               BuildableName = "RNWeb3WalletTests.xctest"
+               BlueprintName = "RNWeb3WalletTests"
+               ReferencedContainer = "container:RNWeb3Wallet.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "rn_cli_wallet.app"
-            BlueprintName = "rn_cli_wallet"
-            ReferencedContainer = "container:rn_cli_wallet.xcodeproj">
+            BuildableName = "RNWeb3Wallet.app"
+            BlueprintName = "RNWeb3Wallet"
+            ReferencedContainer = "container:RNWeb3Wallet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "rn_cli_wallet.app"
-            BlueprintName = "rn_cli_wallet"
-            ReferencedContainer = "container:rn_cli_wallet.xcodeproj">
+            BuildableName = "RNWeb3Wallet.app"
+            BlueprintName = "RNWeb3Wallet"
+            ReferencedContainer = "container:RNWeb3Wallet.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -96,9 +96,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
     
-    namespace "com.rn_cli_wallet"
+    namespace "com.walletconnect.web3wallet.rnsample"
     defaultConfig {
-        applicationId "com.rn_cli_wallet"
+        applicationId "com.walletconnect.web3wallet.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

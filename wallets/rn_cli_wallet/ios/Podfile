@@ -20,7 +20,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'rn_cli_wallet' do
+target 'RNWeb3Wallet' do
   config = use_native_modules!
 
   # Flags change depending on the env values.
@@ -42,7 +42,7 @@ target 'rn_cli_wallet' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'rn_cli_walletTests' do
+  target 'RNWeb3WalletTests' do
     inherit! :complete
     # Pods for testing
   end

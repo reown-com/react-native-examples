@@ -1,4 +1,4 @@
-package com.rn_cli_wallet;
+package com.walletconnect.web3wallet.rnsample;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

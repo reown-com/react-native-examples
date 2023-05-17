@@ -1,4 +1,4 @@
-package com.rn_cli_wallet;
+package com.walletconnect.web3wallet.rnsample;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -13,7 +13,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "rn_cli_wallet";
+    return "RN Web3Wallet";
   }
 
   /**
