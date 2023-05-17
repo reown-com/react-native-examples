@@ -31,6 +31,8 @@ local.properties
 *.iml
 *.hprof
 .cxx/
+*.keystore
+!debug.keystore
 
 # node.js
 #
@@ -39,12 +41,6 @@ npm-debug.log
 yarn-error.log
 .env.local
 .env
-
-# BUCK
-buck-out/
-\.buckd/
-*.keystore
-!debug.keystore
 
 # fastlane
 #
@@ -64,3 +60,6 @@ buck-out/
 # Ruby / CocoaPods
 /ios/Pods/
 /vendor/bundle/
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
