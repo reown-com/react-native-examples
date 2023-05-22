@@ -17,7 +17,7 @@
     "@walletconnect/encoding": "1.0.2",
     "@web3modal/react-native": "1.0.0-alpha.4",
     "react": "18.2.0",
-    "react-native": "^0.71.8",
+    "react-native": "0.71.8",
     "react-native-get-random-values": "^1.8.0",
     "react-native-modal": "^13.0.1",
     "react-native-svg": "^13.8.0"
