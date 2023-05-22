@@ -60,10 +60,13 @@ function App() {
             </Text>
           </TouchableOpacity>
         )}
-        <View style={styles.centerContainer}>
-          <Web3Button style={styles.web3Button} />
-          {isConnected && <BlockchainActions />}
-        </View>
+        {isConnected ? (
+          <BlockchainActions />
+        ) : (
+          <View style={styles.centerContainer}>
+            <Web3Button />
+          </View>
+        )}
         <Web3Modal
           projectId={ENV_PROJECT_ID}
           providerMetadata={providerMetadata}
@@ -116,8 +119,5 @@ const styles = StyleSheet.create({
   centerContainer: {
     justifyContent: 'center',
     flex: 1,
-  },
-  web3Button: {
-    width: 180,
   },
 });
