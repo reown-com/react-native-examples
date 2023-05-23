@@ -13,13 +13,21 @@ import {
   ScrollView,
   StatusBar,
   Text,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {
+  useWalletConnect,
+  withWalletConnect,
+} from '@walletconnect/react-native-dapp';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
+  const connector = useWalletConnect();
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -36,10 +44,21 @@ const App = () => {
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
           <Text>Test</Text>
+          <TouchableOpacity onPress={() => connector.connect()}>
+            <Text>CONNECT</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default App;
+export default withWalletConnect(App, {
+  clientMeta: {
+    description: 'Connect with WalletConnect',
+  },
+  redirectUrl: 'yourappscheme://',
+  storageOptions: {
+    asyncStorage: AsyncStorage,
+  },
+});

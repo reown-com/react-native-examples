@@ -8,12 +8,13 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "postinstall": "rn-nodeify --yarn --install crypto,stream"
+    "postinstall": "rn-nodeify --yarn --install crypto,stream,process"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.17.11",
     "@walletconnect/react-native-compat": "^2.7.6",
     "@walletconnect/react-native-dapp": "^1.8.0",
+    "process": "^0.11.0",
     "react": "17.0.2",
     "react-native": "0.68.5",
     "react-native-crypto": "^2.2.0",
