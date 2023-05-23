@@ -36,15 +36,23 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-
       <View
         style={{
-          backgroundColor: isDarkMode ? Colors.black : Colors.white,
+          backgroundColor: Colors.white,
+          height: '100%',
+          width: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}>
-        <Text>Test</Text>
-        <TouchableOpacity onPress={() => connector.connect()}>
-          <Text>CONNECT</Text>
-        </TouchableOpacity>
+        {connector?.connected ? (
+          <TouchableOpacity onPress={() => connector.killSession()}>
+            <Text>Kill session</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => connector.connect()}>
+            <Text>CONNECT</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -52,7 +60,10 @@ function App(): JSX.Element {
 
 export default withWalletConnect(App, {
   clientMeta: {
-    description: 'Connect with WalletConnect',
+    name: 'Deprecated App',
+    description: 'RN dApp by WalletConnect',
+    url: 'https://walletconnect.com/',
+    icons: ['https://avatars.githubusercontent.com/u/37784886'],
   },
   redirectUrl: 'yourappscheme://',
   storageOptions: {
