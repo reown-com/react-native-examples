@@ -5,7 +5,7 @@ import {hashMessage} from '@ethersproject/hash';
 import type {Bytes, SignatureLike} from '@ethersproject/bytes';
 import {getTypedDataExample} from '../constants/eip712';
 import {_TypedDataEncoder} from 'ethers/lib/utils';
-import type {FormattedRpcResponse} from '../types/methods';
+import type {FormattedRpcResponse, RpcRequestParams} from '../types/methods';
 
 export function verifyMessage(
   message: Bytes | string,
@@ -32,9 +32,10 @@ const verifyEip155MessageSignature = (
   address: string,
 ) => verifyMessage(message, signature).toLowerCase() === address.toLowerCase();
 
-export const testSignMessage = async (
-  web3Provider?: ethers.providers.Web3Provider,
-) => {
+export const signMessage = async ({
+  web3Provider,
+  method,
+}: RpcRequestParams): Promise<FormattedRpcResponse> => {
   if (!web3Provider) {
     throw new Error('web3Provider not connected');
   }
@@ -48,16 +49,17 @@ export const testSignMessage = async (
   const signature = await web3Provider.send('personal_sign', [hexMsg, address]);
   const valid = verifyEip155MessageSignature(msg, signature, address);
   return {
-    method: 'personal_sign',
+    method,
     address,
     valid,
     result: signature,
   };
 };
 
-export const testEthSign: () => Promise<FormattedRpcResponse> = async (
-  web3Provider?: ethers.providers.Web3Provider,
-) => {
+export const ethSign = async ({
+  web3Provider,
+  method,
+}: RpcRequestParams): Promise<FormattedRpcResponse> => {
   if (!web3Provider) {
     throw new Error('web3Provider not connected');
   }
@@ -72,16 +74,17 @@ export const testEthSign: () => Promise<FormattedRpcResponse> = async (
   const signature = await web3Provider.send('eth_sign', [address, hexMsg]);
   const valid = verifyEip155MessageSignature(msg, signature, address);
   return {
-    method: 'eth_sign (standard)',
+    method,
     address,
     valid,
     result: signature,
   };
 };
 
-export const testSignTypedData: () => Promise<FormattedRpcResponse> = async (
-  web3Provider?: ethers.providers.Web3Provider,
-) => {
+export const signTypedData = async ({
+  web3Provider,
+  method,
+}: RpcRequestParams): Promise<FormattedRpcResponse> => {
   if (!web3Provider) {
     throw new Error('web3Provider not connected');
   }
@@ -119,16 +122,17 @@ export const testSignTypedData: () => Promise<FormattedRpcResponse> = async (
       signature,
     ).toLowerCase() === address?.toLowerCase();
   return {
-    method: 'eth_signTypedData',
+    method,
     address,
     valid,
     result: signature,
   };
 };
 
-export const testSendTransaction: () => Promise<FormattedRpcResponse> = async (
-  web3Provider?: ethers.providers.Web3Provider,
-) => {
+export const sendTransaction = async ({
+  web3Provider,
+  method,
+}: RpcRequestParams): Promise<FormattedRpcResponse> => {
   if (!web3Provider) {
     throw new Error('web3Provider not connected');
   }
@@ -156,16 +160,17 @@ export const testSendTransaction: () => Promise<FormattedRpcResponse> = async (
   console.log('Transaction was mined in block:', receipt.blockNumber);
 
   return {
-    method: 'eth_sendTransaction',
+    method,
     address,
     valid: true,
     result: transactionHash,
   };
 };
 
-export const testSignTransaction: () => Promise<FormattedRpcResponse> = async (
-  web3Provider?: ethers.providers.Web3Provider,
-) => {
+export const signTransaction = async ({
+  web3Provider,
+  method,
+}: RpcRequestParams): Promise<FormattedRpcResponse> => {
   if (!web3Provider) {
     throw new Error('web3Provider not connected');
   }
@@ -184,7 +189,7 @@ export const testSignTransaction: () => Promise<FormattedRpcResponse> = async (
   const signedTx = await web3Provider.send('eth_signTransaction', [tx]);
 
   return {
-    method: 'eth_signTransaction',
+    method,
     address,
     valid: true,
     result: signedTx,
