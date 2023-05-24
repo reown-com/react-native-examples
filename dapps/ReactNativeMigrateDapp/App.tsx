@@ -5,40 +5,12 @@
  * @format
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import WalletConnectProvider from '@walletconnect/react-native-dapp';
 import React from 'react';
 
 import Navigator from './src/navigation';
 
-const clientMeta = {
-  name: 'Deprecated App',
-  description: 'RN dApp by WalletConnect',
-  url: 'https://walletconnect.com/',
-  icons: ['https://avatars.githubusercontent.com/u/37784886'],
-};
-
-const signingMethods = [
-  'eth_sendTransaction',
-  'eth_signTransaction',
-  'eth_sign',
-  'personal_sign',
-  'eth_signTypedData',
-];
-
 function App(): JSX.Element {
-  return (
-    <WalletConnectProvider
-      bridge="https://bridge.walletconnect.org"
-      clientMeta={clientMeta}
-      redirectUrl="yourappscheme://"
-      signingMethods={signingMethods}
-      storageOptions={{
-        asyncStorage: AsyncStorage,
-      }}>
-      <Navigator />
-    </WalletConnectProvider>
-  );
+  return <Navigator />;
 }
 
 export default App;

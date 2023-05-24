@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -8,24 +8,57 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useWalletConnect } from '@walletconnect/react-native-dapp';
+import { Web3Modal, useWeb3Modal } from '@web3modal/react-native';
 import { signMessage } from '../utils/MethodUtils';
 
+const PROJECT_ID = 'YOUR_PROJECT_ID';
+
+const clientMeta = {
+  name: 'Migrated v2 App',
+  description: 'RN dApp by WalletConnect',
+  url: 'https://walletconnect.com/',
+  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+};
+
+export const sessionParams = {
+  namespaces: {
+    eip155: {
+      methods: [
+        'eth_sendTransaction',
+        'eth_signTransaction',
+        'eth_sign',
+        'personal_sign',
+        'eth_signTypedData',
+      ],
+      chains: ['eip155:1'],
+      events: ['chainChanged', 'accountsChanged'],
+      rpcMap: {},
+    },
+  },
+};
+
 function DappConnect() {
-  const connector = useWalletConnect();
-  const [result, setResult] = useState<string | undefined>(undefined);
+  const { isConnected, provider, open, address } = useWeb3Modal();
+  const [result, setResult] = useState<string | undefined>('');
   const [loading, setLoading] = useState(false);
 
+  const peerMeta = useMemo(() => {
+    if (isConnected) {
+      return provider?.session?.peer.metadata;
+    }
+  }, [isConnected, provider]);
+
   const onKillSession = () => {
-    connector.killSession();
+    provider?.disconnect();
     setResult(undefined);
     setLoading(false);
   };
 
   const wrapAction = async (action: any) => {
     setLoading(true);
+    setResult(undefined);
     try {
-      const _result = await action(connector);
+      const _result = await action(provider, address);
       setResult(JSON.stringify(_result, null, 2));
     } catch (error: any) {
       setResult(error.message);
@@ -36,27 +69,22 @@ function DappConnect() {
 
   return (
     <>
-      {connector?.connected ? (
+      {isConnected ? (
         <ScrollView
           style={styles.container}
           contentContainerStyle={styles.contentContainer}>
-          <Image
-            style={styles.icon}
-            source={{ uri: connector.peerMeta?.icons[0] }}
-          />
+          {peerMeta && (
+            <>
+              <Image style={styles.icon} source={{ uri: peerMeta?.icons[0] }} />
+              <View style={styles.card}>
+                <Text style={styles.title}>Connected to:</Text>
+                <Text>{peerMeta?.name}</Text>
+              </View>
+            </>
+          )}
           <View style={styles.card}>
-            <Text style={styles.title}>Connected to:</Text>
-            <Text>{connector.peerMeta?.name}</Text>
-          </View>
-          <View style={styles.card}>
-            <Text style={styles.title}>Accounts:</Text>
-            {connector.accounts?.map(account => (
-              <Text key={account}>{account}</Text>
-            ))}
-          </View>
-          <View style={styles.card}>
-            <Text style={styles.title}>Chain ID:</Text>
-            <Text>{connector.chainId}</Text>
+            <Text style={styles.title}>Account:</Text>
+            <Text>{address}</Text>
           </View>
           <View style={styles.card}>
             <Text style={styles.title}>Action result:</Text>
@@ -79,13 +107,16 @@ function DappConnect() {
         </ScrollView>
       ) : (
         <View style={styles.connectContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => connector.connect()}>
+          <TouchableOpacity style={styles.button} onPress={() => open()}>
             <Text style={styles.buttonText}>Connect</Text>
           </TouchableOpacity>
         </View>
       )}
+      <Web3Modal
+        projectId={PROJECT_ID}
+        providerMetadata={clientMeta}
+        sessionParams={sessionParams}
+      />
     </>
   );
 }

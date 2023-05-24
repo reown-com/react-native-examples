@@ -1,14 +1,15 @@
-import WalletConnect from '@walletconnect/client';
-
-export const signMessage = async (connector: WalletConnect) => {
-  if (!connector || !connector.connected) {
+export const signMessage = async (provider: any, address: string) => {
+  if (!provider) {
     throw new Error('Not connected');
   }
 
   // Draft Message Parameters
   const message = 'My email is john@doe.com';
-  const msgParams = [message, connector.accounts[0]];
+  const msgParams = [message, address];
 
-  const result = await connector.signPersonalMessage(msgParams);
-  return result;
+  const result = await provider.request({
+    method: 'personal_sign',
+    params: msgParams,
+  });
+  return JSON.stringify(result);
 };
