@@ -17,7 +17,7 @@ function Home({ navigation }: Props) {
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('DappConnect')}>
-        <Text style={styles.buttonText}>Go to connect screen</Text>
+        <Text style={styles.buttonText}>Go to connection screen</Text>
       </TouchableOpacity>
     </View>
   );
