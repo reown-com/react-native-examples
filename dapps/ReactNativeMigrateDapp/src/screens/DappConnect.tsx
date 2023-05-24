@@ -55,10 +55,6 @@ function DappConnect() {
             ))}
           </View>
           <View style={styles.card}>
-            <Text style={styles.title}>Chain ID:</Text>
-            <Text>{connector.chainId}</Text>
-          </View>
-          <View style={styles.card}>
             <Text style={styles.title}>Action result:</Text>
             {loading ? (
               <ActivityIndicator size="small" />
