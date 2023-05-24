@@ -11,8 +11,9 @@ function Home({ navigation }: Props) {
         This example is meant to help you migrate from react-native-dapp to
         @web3modal/react-native
       </Text>
-      <Text style={styles.importantText}>
-        WalletConnect v1 will be deprecated the 28th June
+      <Text style={styles.text}>
+        {'WalletConnect v1 will stop working on the \n'}
+        <Text style={styles.red}>28th of June</Text>
       </Text>
       <TouchableOpacity
         style={styles.button}
@@ -29,6 +30,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 16,
+    backgroundColor: 'white',
   },
   button: {
     backgroundColor: '#3396FF',
@@ -43,10 +45,14 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  importantText: {
-    marginVertical: 16,
+  text: {
     fontWeight: 'bold',
+    marginTop: 20,
     fontSize: 16,
+    textAlign: 'center',
+  },
+  red: {
+    color: 'red',
   },
 });
 

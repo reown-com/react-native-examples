@@ -35,11 +35,11 @@ function DappConnect() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}>
+    <>
       {connector?.connected ? (
-        <View>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}>
           <Image
             style={styles.icon}
             source={{ uri: connector.peerMeta?.icons[0] }}
@@ -76,7 +76,7 @@ function DappConnect() {
               <Text style={styles.buttonText}>Disconnect</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </ScrollView>
       ) : (
         <View style={styles.connectContainer}>
           <TouchableOpacity
@@ -86,7 +86,7 @@ function DappConnect() {
           </TouchableOpacity>
         </View>
       )}
-    </ScrollView>
+    </>
   );
 }
 
@@ -98,9 +98,10 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 8,
     paddingVertical: 16,
-    alignItems: 'center',
   },
   connectContainer: {
+    backgroundColor: 'white',
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
