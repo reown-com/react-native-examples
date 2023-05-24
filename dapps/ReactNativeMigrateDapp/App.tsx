@@ -18,12 +18,21 @@ const clientMeta = {
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
 };
 
+const signingMethods = [
+  'eth_sendTransaction',
+  'eth_signTransaction',
+  'eth_sign',
+  'personal_sign',
+  'eth_signTypedData',
+];
+
 function App(): JSX.Element {
   return (
     <WalletConnectProvider
       bridge="https://bridge.walletconnect.org"
       clientMeta={clientMeta}
       redirectUrl="yourappscheme://"
+      signingMethods={signingMethods}
       storageOptions={{
         asyncStorage: AsyncStorage,
       }}>
