@@ -8,7 +8,9 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "maestro": "maestro test .maestro",
+    "maestro:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro"
   },
   "dependencies": {
     "@babel/plugin-proposal-private-methods": "^7.18.6",
