@@ -1,8 +1,13 @@
-export const providerMetadata = {
+import {IProviderMetadata} from '@web3modal/react-native';
+
+export const providerMetadata: IProviderMetadata = {
   name: 'React Native V2 dApp',
   description: 'RN dApp by WalletConnect',
   url: 'https://walletconnect.com/',
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  redirect: {
+    native: 'w3msample://',
+  },
 };
 
 export const sessionParams = {

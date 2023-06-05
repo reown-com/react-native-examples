@@ -1794,14 +1794,14 @@
   resolved "https://registry.yarnpkg.com/@pedrouid/environment/-/environment-1.0.1.tgz#858f0f8a057340e0b250398b75ead77d6f4342ec"
   integrity sha512-HaW78NszGzRZd9SeoI3JD11JqY+lubnaOx7Pewj5pfjqWXOEATpeKIFb9Z4t2WBUK2iryiXX3lzWwmYWgUL0Ug==
 
-"@react-native-async-storage/async-storage@^1.17.11":
-  version "1.17.11"
-  resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.17.11.tgz#7ec329c1b9f610e344602e806b04d7c928a2341d"
-  integrity sha512-bzs45n5HNcDq6mxXnSsOHysZWn1SbbebNxldBXCQs8dSvF8Aor9KCdpm+TpnnGweK3R6diqsT8lFhX77VX0NFw==
+"@react-native-async-storage/async-storage@1.18.1":
+  version "1.18.1"
+  resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.18.1.tgz#b1aea4f07fb1dba3325b857b770671517ddab221"
+  integrity sha512-70aFW8fVCKl+oA1AKPFDpE6s4t9pulj2QeLX+MabEmzfT3urd/3cckv45WJvtocdoIH/oXA3Y+YcCRJCcNa8mA==
   dependencies:
     merge-options "^3.0.4"
 
-"@react-native-clipboard/clipboard@^1.11.2":
+"@react-native-clipboard/clipboard@1.11.2":
   version "1.11.2"
   resolved "https://registry.yarnpkg.com/@react-native-clipboard/clipboard/-/clipboard-1.11.2.tgz#e826d0336b34e67294aaffa6878308900bc7d197"
   integrity sha512-bHyZVW62TuleiZsXNHS1Pv16fWc0fh8O9WvBzl4h2fykqZRW9a+Pv/RGTH56E3X2PqzHP38K5go8zmCZUoIsoQ==
@@ -2419,10 +2419,10 @@
     "@typescript-eslint/types" "5.50.0"
     eslint-visitor-keys "^3.3.0"
 
-"@walletconnect/core@2.7.6":
-  version "2.7.6"
-  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.7.6.tgz#d1773e6f06ec077a25504e3944c3c9ba82fa1c9e"
-  integrity sha512-EPzKfH9EpOVmJhfedddpNjG6Lz0zWnAZSBvXSeuBlOyD3Aayiky3HuiDcpK+YyRzyWEsh2kWMvvTZ6v0uFAApQ==
+"@walletconnect/core@2.7.7":
+  version "2.7.7"
+  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.7.7.tgz#49ddaa9d8aff365cd347b951d9b4c1c39a949e83"
+  integrity sha512-/Tmrjx9XDG8qylsUFU2fWvMoxlDwW+zzUcCgTaebMAmssCZ8NSknbBdjAdAKiey1TaLEgFkaCxXgXfioinWNYg==
   dependencies:
     "@walletconnect/heartbeat" "1.2.1"
     "@walletconnect/jsonrpc-provider" "1.0.13"
@@ -2435,8 +2435,8 @@
     "@walletconnect/relay-auth" "^1.0.4"
     "@walletconnect/safe-json" "^1.0.2"
     "@walletconnect/time" "^1.0.2"
-    "@walletconnect/types" "2.7.6"
-    "@walletconnect/utils" "2.7.6"
+    "@walletconnect/types" "2.7.7"
+    "@walletconnect/utils" "2.7.7"
     events "^3.3.0"
     lodash.isequal "4.5.0"
     uint8arrays "^3.1.0"
@@ -2563,10 +2563,10 @@
     pino "7.11.0"
     tslib "1.14.1"
 
-"@walletconnect/react-native-compat@2.7.6":
-  version "2.7.6"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.7.6.tgz#ce44e7dcec0ad93db1af6b1e29c31ca19c96738d"
-  integrity sha512-uxW241I8tr6Ga5TAy3A6qQmViGbSie9NjYVynyYIXfciEyaPjMXkFrbwezx6f35Z6Em5JGHW3TMvVxlkX0kgLg==
+"@walletconnect/react-native-compat@2.7.7":
+  version "2.7.7"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.7.7.tgz#ed314cf270ec86a3b4858946535ddf0de957a2e4"
+  integrity sha512-puNxGJUMhXpqhHhdx3pgVnuo8iQDMYHb9q0KnzUgPg6ebUNwm1wz2DfCSo5Mjlq2MQ2vIDD8GVF0OVsrFLgZrg==
   dependencies:
     events "3.3.0"
     fast-text-encoding "^1.0.6"
@@ -2605,19 +2605,19 @@
   dependencies:
     tslib "1.14.1"
 
-"@walletconnect/sign-client@2.7.6":
-  version "2.7.6"
-  resolved "https://registry.yarnpkg.com/@walletconnect/sign-client/-/sign-client-2.7.6.tgz#c6fda665043c5fbcc6085f8b5c7a666bb1fdc233"
-  integrity sha512-u3wVjK1XAhj1ZVzAs+SP5VYEP2FWYH/y6tnaLHLqZcsoZ/a2sGCnJlK9y7HA6q3jLBt6lVBkT1qSU4pmBY4xlw==
+"@walletconnect/sign-client@2.7.7":
+  version "2.7.7"
+  resolved "https://registry.yarnpkg.com/@walletconnect/sign-client/-/sign-client-2.7.7.tgz#a2be064eaff37ab036919bd33f1cf9ddf4681fdd"
+  integrity sha512-lTyF8ZEp+HwPNBW/Fw5iWnMm9O5tC1qwf5YfhNczZ7+q6+UUopOoRrsAvwqftJIkgKmfC8lHT52G/XM2JGVjbQ==
   dependencies:
-    "@walletconnect/core" "2.7.6"
+    "@walletconnect/core" "2.7.7"
     "@walletconnect/events" "^1.0.1"
     "@walletconnect/heartbeat" "1.2.1"
     "@walletconnect/jsonrpc-utils" "1.0.8"
     "@walletconnect/logger" "^2.0.1"
     "@walletconnect/time" "^1.0.2"
-    "@walletconnect/types" "2.7.6"
-    "@walletconnect/utils" "2.7.6"
+    "@walletconnect/types" "2.7.7"
+    "@walletconnect/utils" "2.7.7"
     events "^3.3.0"
 
 "@walletconnect/time@^1.0.2":
@@ -2627,10 +2627,10 @@
   dependencies:
     tslib "1.14.1"
 
-"@walletconnect/types@2.7.6":
-  version "2.7.6"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.7.6.tgz#60db56d8005d2b3168217eb65386bae52930a478"
-  integrity sha512-678xFaf5AULHMsd1JdN1X+iMHUt75bPUAOsQ0oSA4mtKZW/vS1jMqe3siXQKEOXFWyIJoQD1Q8clDO9oZ00/hg==
+"@walletconnect/types@2.7.7":
+  version "2.7.7"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.7.7.tgz#c02831a17b6162d8594c45e3cc4668015e022f51"
+  integrity sha512-Z4Y+BKPX7X1UBCf7QV35mVy2QU9CS+5G+EthCaJwpieirZNHamHEwNXUjuUUb3PrYOLwlfRYUT5edeFW9wvoeQ==
   dependencies:
     "@walletconnect/events" "^1.0.1"
     "@walletconnect/heartbeat" "1.2.1"
@@ -2639,26 +2639,26 @@
     "@walletconnect/logger" "^2.0.1"
     events "^3.3.0"
 
-"@walletconnect/universal-provider@2.7.6":
-  version "2.7.6"
-  resolved "https://registry.yarnpkg.com/@walletconnect/universal-provider/-/universal-provider-2.7.6.tgz#e54decb3986128b1229492f509f999f4e5b715b1"
-  integrity sha512-Iuv8PWAgVqQX+uzK6ExK8072bSJFndg8Sln+o/VRhd1pEEZunvM0TK+SK7YUYdOe602v6nJm6qXZX0MJ5OjDYQ==
+"@walletconnect/universal-provider@2.7.7":
+  version "2.7.7"
+  resolved "https://registry.yarnpkg.com/@walletconnect/universal-provider/-/universal-provider-2.7.7.tgz#5c9017672b5d1255442533395eda67b19ffb2f2f"
+  integrity sha512-MY+R1sLmIKjFYjanWUM6bOM077+SnShSUfSjCTrsoZE2RDddcSz9EtcATovBSPfzPwUTS20mgcgrkRT4zrFRyQ==
   dependencies:
     "@walletconnect/jsonrpc-http-connection" "^1.0.7"
     "@walletconnect/jsonrpc-provider" "1.0.13"
     "@walletconnect/jsonrpc-types" "^1.0.2"
     "@walletconnect/jsonrpc-utils" "^1.0.7"
     "@walletconnect/logger" "^2.0.1"
-    "@walletconnect/sign-client" "2.7.6"
-    "@walletconnect/types" "2.7.6"
-    "@walletconnect/utils" "2.7.6"
+    "@walletconnect/sign-client" "2.7.7"
+    "@walletconnect/types" "2.7.7"
+    "@walletconnect/utils" "2.7.7"
     eip1193-provider "1.0.1"
     events "^3.3.0"
 
-"@walletconnect/utils@2.7.6":
-  version "2.7.6"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.7.6.tgz#42ff9d7bb3c1874aa85d480181c6a7aafc34c90f"
-  integrity sha512-IS5eRWihW3L4qHG7pT9L8NtjuY5gbE0D5yqcgT2wnZ/1IDl9OihVT37CWM66Ppf6i195Uuwagfl+Qw8RlECeKg==
+"@walletconnect/utils@2.7.7":
+  version "2.7.7"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.7.7.tgz#e2d8732f8ac3ffbc1de13e923891b256eb3bbefb"
+  integrity sha512-ozh9gvRAdXkiu+6nOAkoDCokDVPXK/tNATrrYuOhhR+EmGDjlZU2d27HT+HiGREdza0b1HdZN4XneGm0gERV5w==
   dependencies:
     "@stablelib/chacha20poly1305" "1.0.1"
     "@stablelib/hkdf" "1.0.1"
@@ -2668,7 +2668,7 @@
     "@walletconnect/relay-api" "^1.0.9"
     "@walletconnect/safe-json" "^1.0.2"
     "@walletconnect/time" "^1.0.2"
-    "@walletconnect/types" "2.7.6"
+    "@walletconnect/types" "2.7.7"
     "@walletconnect/window-getters" "^1.0.1"
     "@walletconnect/window-metadata" "^1.0.1"
     detect-browser "5.3.0"
@@ -2690,17 +2690,18 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/react-native@1.0.0-alpha.4":
-  version "1.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@web3modal/react-native/-/react-native-1.0.0-alpha.4.tgz#254406217f96fa18d9b3355a802913fa6d74e9e0"
-  integrity sha512-8WGjc5FMSQuvjZlQ//DKyOyzvgPyiEjZQoXT35oyZniHvfNUWc+P1C8+3M0xWDjj52Si5/5iER/+MmkSZfq22w==
+"@web3modal/react-native@1.0.0-alpha.6":
+  version "1.0.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/@web3modal/react-native/-/react-native-1.0.0-alpha.6.tgz#3b2828038a1046646ba27c73ad49730c4703e0af"
+  integrity sha512-W/aszShKrMLlJOb/x8r3MZ3HvFlzsBwuLlUsdhJrYlhscBOwZC4Wxj9tNiVczNZvrGVJaRG0mgldluFQ/GbNkA==
   dependencies:
     "@ethersproject/shims" "5.7.0"
-    "@walletconnect/react-native-compat" "2.7.6"
-    "@walletconnect/universal-provider" "2.7.6"
+    "@walletconnect/core" "2.7.7"
+    "@walletconnect/react-native-compat" "2.7.7"
+    "@walletconnect/universal-provider" "2.7.7"
     ethers "5.7.2"
-    qrcode "1.5.0"
-    valtio "1.10.3"
+    qrcode "1.5.3"
+    valtio "1.10.5"
 
 abort-controller@^3.0.0:
   version "3.0.0"
@@ -6802,10 +6803,10 @@ prop-types@*, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
-proxy-compare@2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/proxy-compare/-/proxy-compare-2.5.0.tgz#0387c5e4d283ba9b1c0353bb20def4449b06bbd2"
-  integrity sha512-f1us0OsVAJ3tdIMXGQx2lmseYS4YXe4W+sKF5g5ww/jV+5ogMadPt+sIZ+88Ga9kvMJsrRNWzCrKPpr6pMWYbA==
+proxy-compare@2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/proxy-compare/-/proxy-compare-2.5.1.tgz#17818e33d1653fbac8c2ec31406bce8a2966f600"
+  integrity sha512-oyfc0Tx87Cpwva5ZXezSp5V9vht1c7dZBhvuV/y3ctkgMVUmiAGDVeeB0dKhGSyT0v1ZTEQYpe/RXlBVBNuCLA==
 
 pump@^3.0.0:
   version "3.0.0"
@@ -6820,10 +6821,10 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.0.tgz#f67fa67c94da8f4d0cfff981aee4118064199b8f"
   integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
 
-qrcode@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/qrcode/-/qrcode-1.5.0.tgz#95abb8a91fdafd86f8190f2836abbfc500c72d1b"
-  integrity sha512-9MgRpgVc+/+47dFvQeD6U2s0Z92EsKzcHogtum4QB+UNd025WOJSHvn/hjk9xmzj7Stj95CyUAs31mrjxliEsQ==
+qrcode@1.5.3:
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/qrcode/-/qrcode-1.5.3.tgz#03afa80912c0dccf12bc93f615a535aad1066170"
+  integrity sha512-puyri6ApkEHYiVl4CFzo1tDkAZ+ATcnbJrJ6RiBM1Fhctdn/ix9MTE3hRph33omisEbC/2fcfemsseiKgBPKZg==
   dependencies:
     dijkstrajs "^1.0.1"
     encode-utf8 "^1.0.3"
@@ -6902,10 +6903,10 @@ react-native-dotenv@^3.4.7:
   dependencies:
     dotenv "^16.0.3"
 
-react-native-get-random-values@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/react-native-get-random-values/-/react-native-get-random-values-1.8.0.tgz#1cb4bd4bd3966a356e59697b8f372999fe97cb16"
-  integrity sha512-H/zghhun0T+UIJLmig3+ZuBCvF66rdbiWUfRSNS6kv5oDSpa1ZiVyvRWtuPesQpT8dXj+Bv7WJRQOUP+5TB1sA==
+react-native-get-random-values@1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/react-native-get-random-values/-/react-native-get-random-values-1.9.0.tgz#6cb30511c406922e75fe73833dc1812a85bfb37e"
+  integrity sha512-+29IR2oxzxNVeaRwCqGZ9ABadzMI8SLTBidrIDXPOkKnm5+kEmLt34QKM4JV+d2usPErvKyS85le0OmGTHnyWQ==
   dependencies:
     fast-base64-decode "^1.0.0"
 
@@ -6914,7 +6915,7 @@ react-native-gradle-plugin@^0.71.18:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.18.tgz#20ef199bc85be32e45bb6cc069ec2e7dcb1a74a6"
   integrity sha512-7F6bD7B8Xsn3JllxcwHhFcsl9aHIig47+3eN4IHFNqfLhZr++3ElDrcqfMzugM+niWbaMi7bJ0kAkAL8eCpdWg==
 
-react-native-modal@^13.0.1:
+react-native-modal@13.0.1:
   version "13.0.1"
   resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-13.0.1.tgz#691f1e646abb96fa82c1788bf18a16d585da37cd"
   integrity sha512-UB+mjmUtf+miaG/sDhOikRfBOv0gJdBU2ZE1HtFWp6UixW9jCk/bhGdHUgmZljbPpp0RaO/6YiMmQSSK3kkMaw==
@@ -6922,10 +6923,10 @@ react-native-modal@^13.0.1:
     prop-types "^15.6.2"
     react-native-animatable "1.3.3"
 
-react-native-svg@^13.8.0:
-  version "13.8.0"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-13.8.0.tgz#b6a22cf77f8098f910490a13aeb160a37e182f97"
-  integrity sha512-G8Mx6W86da+vFimZBJvA93POw8yz0fgDS5biy6oIjMWVJVQSDzCyzwO/zY0yuZmCDhKSZzogl5m0wXXvW2OcTA==
+react-native-svg@^13.9.0:
+  version "13.9.0"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-13.9.0.tgz#8df8a690dd00362601f074dec5d3a86dd0f99c7f"
+  integrity sha512-Ey18POH0dA0ob/QiwCBVrxIiwflhYuw0P0hBlOHeY4J5cdbs8ngdKHeWC/Kt9+ryP6fNoEQ1PUgPYw2Bs/rp5Q==
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
@@ -8005,12 +8006,12 @@ v8-to-istanbul@^9.0.1:
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^1.6.0"
 
-valtio@1.10.3:
-  version "1.10.3"
-  resolved "https://registry.yarnpkg.com/valtio/-/valtio-1.10.3.tgz#273eda9ba6459869798b4f58c84514e18fb80ed8"
-  integrity sha512-t3Ez/+baJ+Z5tIyeaI6nCAbW/hrmcq2jditwg/X++o5IvCdiGirQKTOv1kJq0glgUo13v5oABCVGcinggBfiKw==
+valtio@1.10.5:
+  version "1.10.5"
+  resolved "https://registry.yarnpkg.com/valtio/-/valtio-1.10.5.tgz#7852125e3b774b522827d96bd9c76d285c518678"
+  integrity sha512-jTp0k63VXf4r5hPoaC6a6LCG4POkVSh629WLi1+d5PlajLsbynTMd7qAgEiOSPxzoX5iNvbN7iZ/k/g29wrNiQ==
   dependencies:
-    proxy-compare "2.5.0"
+    proxy-compare "2.5.1"
     use-sync-external-store "1.2.0"
 
 vary@~1.1.2:
