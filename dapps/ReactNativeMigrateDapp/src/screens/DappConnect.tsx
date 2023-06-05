@@ -18,6 +18,10 @@ const clientMeta = {
   description: 'RN dApp by WalletConnect',
   url: 'https://walletconnect.com/',
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  redirect: {
+    native: 'YOUR_APP_SCHEME://',
+    universal: 'YOUR_APP_UNIVERSAL_LINK.com',
+  },
 };
 
 export const sessionParams = {
