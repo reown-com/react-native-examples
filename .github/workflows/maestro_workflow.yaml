@@ -1,6 +1,6 @@
 # .github/workflows/android.yaml
 
-name: Build and upload to Maestro Cloud
+name: e2e-dapp-android
 
 on:
   push:
@@ -17,12 +17,14 @@ jobs:
     outputs:
       app: app/build/outputs/apk/debug
     steps:
-      - run: yarn install
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           java-version: 11
           distribution: 'temurin'
+          cache: gradle      
+      - run: npm install -g yarn
+      - run: yarn
       - run: yarn android:build
       - uses: mobile-dev-inc/action-maestro-cloud@v1
         with:
