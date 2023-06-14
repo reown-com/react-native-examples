@@ -27,7 +27,6 @@ export function W3InboxModal({visible, setVisible}: W3InboxModalProps) {
     const registerResponse = await chatClient.register({
       account: message.params.account,
       onSign: async onSignMessage => {
-        console.log(onSignMessage);
         console.log({onSignMessage, currentETHAddress});
         const wallet =
           eip155Wallets[
@@ -36,15 +35,20 @@ export function W3InboxModal({visible, setVisible}: W3InboxModalProps) {
               message.params.account,
             )
           ];
-        const signature = await wallet.signMessage(message);
-        console.log({signature});
+
+        const signature = await wallet.signMessage(onSignMessage);
         return signature;
       },
     });
 
     console.log({registerResponse});
-    // 3. forward response from chat client to w3i
-    webViewRef.current?.injectJavaScript('window.web3inbox.chat.postMessage()');
+    webViewRef.current?.injectJavaScript(
+      `window.web3inbox.chat.postMessage(${JSON.stringify({
+        id: message.id,
+        jsonrpc: '2.0',
+        result: registerResponse,
+      })})`,
+    );
     //
   }, []);
   console.log({WEB3INBOX_URL});

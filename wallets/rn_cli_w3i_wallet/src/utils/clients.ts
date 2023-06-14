@@ -1,5 +1,4 @@
-import {ChatClient} from '@walletconnect/chat-client';
-import {ChatClient as IChatClient} from '@walletconnect/chat-client/dist/types/client';
+import {ChatClient, IChatClient} from '@walletconnect/chat-client';
 import {Core} from '@walletconnect/core';
 import {SyncClient, SyncStore} from '@walletconnect/sync-client';
 import {ICore} from '@walletconnect/types';
