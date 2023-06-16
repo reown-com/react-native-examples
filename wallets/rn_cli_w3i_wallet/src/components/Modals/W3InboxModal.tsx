@@ -3,9 +3,8 @@ import {TouchableOpacity, Text} from 'react-native';
 import Modal from 'react-native-modal';
 // import {SafeAreaView} from 'react-native-safe-area-context';
 import {WebView, WebViewMessageEvent} from 'react-native-webview';
-import {chatClient, currentETHAddress} from '../../utils/clients';
-import {getWalletAddressFromParams} from '../../utils/HelperUtils';
-import {eip155Wallets} from '../../utils/EIP155Wallet';
+import {currentETHAddress} from '../../utils/clients';
+import {generateResponse} from '../../utils/Web3Inbox';
 
 interface W3InboxModalProps {
   visible: boolean;
@@ -18,40 +17,20 @@ export function W3InboxModal({visible, setVisible}: W3InboxModalProps) {
   const WEB3INBOX_BASE_URL = 'https://web3inbox-dev-hidden.vercel.app/';
   const WEB3INBOX_QUERY_PARAMS = `?chatProvider=${RN}&authProvider=${RN}&pushProvider=${RN}&account=${currentETHAddress}`;
   const WEB3INBOX_URL = `${WEB3INBOX_BASE_URL}${WEB3INBOX_QUERY_PARAMS}`;
+  console.log({WEB3INBOX_URL});
   const handleMessage = useCallback(async (event: WebViewMessageEvent) => {
     console.log(event);
     if (!event.nativeEvent.data) {
       return;
     }
     const message = JSON.parse(event.nativeEvent.data);
-    const registerResponse = await chatClient.register({
-      account: message.params.account,
-      onSign: async onSignMessage => {
-        console.log({onSignMessage, currentETHAddress});
-        const wallet =
-          eip155Wallets[
-            getWalletAddressFromParams(
-              [currentETHAddress],
-              message.params.account,
-            )
-          ];
-
-        const signature = await wallet.signMessage(onSignMessage);
-        return signature;
-      },
-    });
-
-    console.log({registerResponse});
-    webViewRef.current?.injectJavaScript(
-      `window.web3inbox.chat.postMessage(${JSON.stringify({
-        id: message.id,
-        jsonrpc: '2.0',
-        result: registerResponse,
-      })})`,
-    );
-    //
+    console.log({message});
+    const injectedJavascript = await generateResponse('chat', message);
+    if (!injectedJavascript) {
+      return;
+    }
+    webViewRef.current?.injectJavaScript(injectedJavascript);
   }, []);
-  console.log({WEB3INBOX_URL});
   return (
     <Modal backdropOpacity={0.6} isVisible={visible}>
       <TouchableOpacity onPress={() => setVisible(false)}>
