@@ -17,15 +17,17 @@ export function W3InboxModal({visible, setVisible}: W3InboxModalProps) {
   const WEB3INBOX_BASE_URL = 'https://web3inbox-dev-hidden.vercel.app/';
   const WEB3INBOX_QUERY_PARAMS = `?chatProvider=${RN}&authProvider=${RN}&pushProvider=${RN}&account=${currentETHAddress}`;
   const WEB3INBOX_URL = `${WEB3INBOX_BASE_URL}${WEB3INBOX_QUERY_PARAMS}`;
-  console.log({WEB3INBOX_URL});
+
   const handleMessage = useCallback(async (event: WebViewMessageEvent) => {
-    console.log(event);
     if (!event.nativeEvent.data) {
       return;
     }
     const message = JSON.parse(event.nativeEvent.data);
     console.log({message});
-    const injectedJavascript = await generateResponse('chat', message);
+    const injectedJavascript = await generateResponse(
+      message.targetClient,
+      message,
+    );
     if (!injectedJavascript) {
       return;
     }

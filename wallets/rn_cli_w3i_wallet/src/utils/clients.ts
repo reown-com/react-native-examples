@@ -5,10 +5,12 @@ import {ICore} from '@walletconnect/types';
 import {IWeb3Wallet, Web3Wallet} from '@walletconnect/web3wallet';
 // @ts-expect-error - env is a virtualised module via Babel config.
 import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
+import {IWalletClient, WalletClient} from '@walletconnect/push-client';
 import {createOrRestoreEIP155Wallet} from './EIP155Wallet';
 
 export let web3wallet: IWeb3Wallet;
 export let chatClient: IChatClient;
+export let pushWalletClient: IWalletClient;
 export let core: ICore;
 export let currentETHAddress: string;
 
@@ -53,5 +55,14 @@ export async function createChatClient() {
     projectId: ENV_PROJECT_ID,
     syncClient,
     SyncStoreController: SyncStore,
+  });
+}
+
+export async function createPushWalletClient() {
+  pushWalletClient = await WalletClient.init({
+    core,
+    projectId: process.env.ENV_PROJECT_ID,
+    relayUrl: process.env.ENV_RELAY_URL,
+    logger: 'trace',
   });
 }

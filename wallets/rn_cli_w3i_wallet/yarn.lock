@@ -2600,16 +2600,16 @@
     "@ethersproject/transactions" "^5.7.0"
     isomorphic-unfetch "^3.1.0"
 
-"@walletconnect/chat-client@0.7.1-ac6d1fc":
-  version "0.7.1-ac6d1fc"
-  resolved "https://registry.yarnpkg.com/@walletconnect/chat-client/-/chat-client-0.7.1-ac6d1fc.tgz#6b71e8a6699bbda551117f3e0d76bfb085f41fca"
-  integrity sha512-yxnJadooXR6gs7WMxHxUT0bh7wloEDqD8crsGWPfrdiyvcyk9rCWCGQAT4552hJJ1fcPe9ml1J0OZlh8S3YX9A==
+"@walletconnect/chat-client@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/chat-client/-/chat-client-0.7.1.tgz#b172fcf4ce136b61a498d61f3920a712cc859105"
+  integrity sha512-AmbkPssb1+hM71TSVW/M8FO8E3FeoNKEWfMgA9q1A/iakWSwRz2CyfcP57DWcyPGW0sHHOeIhrEgI6nWjozJdw==
   dependencies:
     "@noble/ed25519" "^1.7.1"
     "@walletconnect/cacao" "^1.0.2"
     "@walletconnect/core" "^2.7.8"
-    "@walletconnect/did-jwt" "^2.0.1-eef14a9"
-    "@walletconnect/identity-keys" "^0.1.5-f6dacbd"
+    "@walletconnect/did-jwt" "^2.0.0"
+    "@walletconnect/identity-keys" "^0.1.5"
     "@walletconnect/jsonrpc-utils" "^1.0.6"
     "@walletconnect/logger" "^2.0.1"
     "@walletconnect/time" "^1.0.2"
@@ -2644,7 +2644,7 @@
     lodash.isequal "4.5.0"
     uint8arrays "^3.1.0"
 
-"@walletconnect/did-jwt@2.0.1", "@walletconnect/did-jwt@^2.0.1-eef14a9":
+"@walletconnect/did-jwt@2.0.1", "@walletconnect/did-jwt@^2.0.0":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@walletconnect/did-jwt/-/did-jwt-2.0.1.tgz#7133f3faa6396e86a3c7e758bd2ddf13c700e269"
   integrity sha512-wu6Mth4pV3kgE2WfSSyoZoRS0B4Kp1TLSVmD22NhfosVDFWSan0lF7wIqcPVTV7lGm/wTiOvJvTT7HfQtKXwGw==
@@ -2677,7 +2677,7 @@
     "@walletconnect/time" "^1.0.2"
     tslib "1.14.1"
 
-"@walletconnect/identity-keys@0.1.5", "@walletconnect/identity-keys@^0.1.5-f6dacbd":
+"@walletconnect/identity-keys@0.1.5", "@walletconnect/identity-keys@^0.1.5":
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@walletconnect/identity-keys/-/identity-keys-0.1.5.tgz#6c2bd16eeb3aa2c26d081eb621e7c673feac36ba"
   integrity sha512-i+5MYZbQ9mo/18tJ3L3thDnBjro1QJurird0S0hn5WevbTSMh9yWljDcvHjIH6FqDsohb39tGydBe4WkDAjGLA==
