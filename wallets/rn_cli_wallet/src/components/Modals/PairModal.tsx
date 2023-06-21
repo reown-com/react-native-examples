@@ -65,10 +65,7 @@ export function PairModal({
           </View>
 
           <View style={styles.flexRow}>
-            <AcceptRejectButton
-              accept={false}
-              onPress={handleDecline}
-            />
+            <AcceptRejectButton accept={false} onPress={handleDecline} />
             <AcceptRejectButton accept={true} onPress={handleAccept} />
           </View>
         </View>

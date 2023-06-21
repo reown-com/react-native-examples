@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Linking} from 'react-native';
 import Modal from 'react-native-modal';
 import {SignClientTypes} from '@walletconnect/types';
 import {Tag} from '../Tag';
@@ -34,8 +34,17 @@ export function SignModal({
   const requestName = requestSession?.peer?.metadata?.name;
   const requestIcon = requestSession?.peer?.metadata?.icons[0];
   const requestURL = requestSession?.peer?.metadata?.url;
+  const redirect = requestSession?.peer?.metadata?.redirect;
 
   const {topic} = requestEvent;
+
+  function onRedirect() {
+    if (redirect) {
+      Linking.openURL(redirect.native || redirect.universal);
+    } else {
+      // TODO: Minimizer.goBack or show toast
+    }
+  }
 
   async function onApprove() {
     if (requestEvent) {
@@ -45,6 +54,7 @@ export function SignModal({
         response,
       });
       setVisible(false);
+      onRedirect();
     }
   }
 
@@ -56,6 +66,7 @@ export function SignModal({
         response,
       });
       setVisible(false);
+      onRedirect();
     }
   }
 
