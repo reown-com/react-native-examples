@@ -1,4 +1,4 @@
-import {IProviderMetadata} from '@web3modal/react-native';
+import {IProviderMetadata} from '@walletconnect/modal-react-native';
 
 export const providerMetadata: IProviderMetadata = {
   name: 'React Native V2 dApp',

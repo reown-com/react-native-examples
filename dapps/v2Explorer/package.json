@@ -1,5 +1,5 @@
 {
-  "name": "web3modal",
+  "name": "walletconnectmodal",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
     "@react-native-async-storage/async-storage": "1.18.1",
     "@react-native-clipboard/clipboard": "1.11.2",
     "@walletconnect/encoding": "1.0.2",
-    "@web3modal/react-native": "1.0.0-alpha.8",
+    "@walletconnect/modal-react-native": "^1.0.0-rc.1",
     "react": "18.2.0",
     "react-native": "0.71.8",
     "react-native-get-random-values": "1.9.0",
