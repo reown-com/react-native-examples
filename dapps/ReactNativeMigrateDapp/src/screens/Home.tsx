@@ -9,7 +9,7 @@ function Home({ navigation }: Props) {
     <View style={styles.container}>
       <Text>
         This example is meant to help you migrate from react-native-dapp to
-        @web3modal/react-native
+        @walletconnect/modal-react-native
       </Text>
       <Text style={styles.text}>
         {'WalletConnect v1 will stop working on the \n'}

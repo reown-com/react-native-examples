@@ -8,7 +8,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Web3Modal, useWeb3Modal } from '@web3modal/react-native';
+import {
+  WalletConnectModal,
+  useWalletConnectModal,
+} from '@walletconnect/modal-react-native';
 import { signMessage } from '../utils/MethodUtils';
 
 const PROJECT_ID = 'YOUR_PROJECT_ID';
@@ -42,7 +45,7 @@ export const sessionParams = {
 };
 
 function DappConnect() {
-  const { isConnected, provider, open, address } = useWeb3Modal();
+  const { isConnected, provider, open, address } = useWalletConnectModal();
   const [result, setResult] = useState<string | undefined>('');
   const [loading, setLoading] = useState(false);
 
@@ -116,7 +119,7 @@ function DappConnect() {
           </TouchableOpacity>
         </View>
       )}
-      <Web3Modal
+      <WalletConnectModal
         projectId={PROJECT_ID}
         providerMetadata={clientMeta}
         sessionParams={sessionParams}
