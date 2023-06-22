@@ -7,7 +7,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  Linking,
 } from 'react-native';
 
 import {SignClientTypes} from '@walletconnect/types';
@@ -27,6 +26,7 @@ import {SendTransactionModal} from '../components/Modals/SendTransactionModal';
 import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
 import {CopyURIDialog} from '../components/CopyURIDialog';
+import {handleDeepLinkRedirect} from '../utils/LinkingUtils';
 
 /**
   @notice: HomeScreen for Web3Wallet Example
@@ -107,14 +107,8 @@ const HomeScreen = () => {
       setApprovalModal(false);
       setSuccessPair(true);
 
-      const redirect = session?.peer?.metadata?.redirect;
-      if (redirect?.native) {
-        Linking.openURL(redirect.native);
-      } else if (redirect?.universal) {
-        Linking.openURL(redirect.universal);
-      } else {
-        // TODO: implement Minimizer.goBack() or show toast to go back
-      }
+      const sessionMetadata = session?.peer?.metadata;
+      handleDeepLinkRedirect(sessionMetadata);
     }
   }
 

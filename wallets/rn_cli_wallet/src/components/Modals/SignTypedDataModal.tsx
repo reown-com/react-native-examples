@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, StyleSheet, Linking} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
-import {SignClientTypes} from '@walletconnect/types';
+import {SignClientTypes, CoreTypes} from '@walletconnect/types';
 import {Tag} from '../Tag';
 import {Methods} from '../Modal/Methods';
 import {Message} from '../Modal/Message';
@@ -13,6 +13,7 @@ import {
   rejectEIP155Request,
 } from '../../utils/EIP155Request';
 import {web3wallet} from '../../utils/Web3WalletClient';
+import {handleDeepLinkRedirect} from '../../utils/LinkingUtils';
 
 interface SignTypedDataModalProps {
   visible: boolean;
@@ -34,16 +35,12 @@ export function SignTypedDataModal({
   const requestName = requestSession?.peer?.metadata?.name;
   const requestIcon = requestSession?.peer?.metadata?.icons[0];
   const requestURL = requestSession?.peer?.metadata?.url;
-  const redirect = requestSession?.peer?.metadata?.redirect;
+  const requestMetadata: CoreTypes.Metadata = requestSession?.peer?.metadata;
 
   const {topic} = requestEvent;
 
   function onRedirect() {
-    if (redirect) {
-      Linking.openURL(redirect.native || redirect.universal);
-    } else {
-      // TODO: Minimizer.goBack or show toast
-    }
+    handleDeepLinkRedirect(requestMetadata);
   }
 
   async function onApprove() {
