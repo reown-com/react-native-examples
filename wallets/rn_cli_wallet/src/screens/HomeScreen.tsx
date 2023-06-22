@@ -108,7 +108,7 @@ const HomeScreen = () => {
       setSuccessPair(true);
 
       const sessionMetadata = session?.peer?.metadata;
-      handleDeepLinkRedirect(sessionMetadata);
+      handleDeepLinkRedirect(sessionMetadata?.redirect);
     }
   }
 

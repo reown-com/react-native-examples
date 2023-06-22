@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
-import {SignClientTypes, CoreTypes} from '@walletconnect/types';
+import {SignClientTypes} from '@walletconnect/types';
 import {Tag} from '../Tag';
 import {Methods} from '../Modal/Methods';
 import {Message} from '../Modal/Message';
@@ -33,14 +33,14 @@ export function SendTransactionModal({
   const requestName = requestSession?.peer?.metadata?.name;
   const requestIcon = requestSession?.peer?.metadata?.icons[0];
   const requestURL = requestSession?.peer?.metadata?.url;
-  const requestMetadata: CoreTypes.Metadata = requestSession?.peer?.metadata;
+  const requestMetadata = requestSession?.peer?.metadata;
 
   const {topic, params} = requestEvent;
   const {request} = params;
   const transaction = request.params[0];
 
   function onRedirect() {
-    handleDeepLinkRedirect(requestMetadata);
+    handleDeepLinkRedirect(requestMetadata?.redirect);
   }
 
   async function onApprove() {
