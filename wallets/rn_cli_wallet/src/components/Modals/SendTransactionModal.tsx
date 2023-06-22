@@ -33,7 +33,8 @@ export function SendTransactionModal({
   const requestName = requestSession?.peer?.metadata?.name;
   const requestIcon = requestSession?.peer?.metadata?.icons[0];
   const requestURL = requestSession?.peer?.metadata?.url;
-  const requestMetadata = requestSession?.peer?.metadata;
+  const requestMetadata: SignClientTypes.Metadata =
+    requestSession?.peer?.metadata;
 
   const {topic, params} = requestEvent;
   const {request} = params;
