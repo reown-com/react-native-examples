@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -32,7 +31,6 @@ function App() {
 
   const onCopy = (value: string) => {
     Clipboard.setString(value);
-    Alert.alert('Copied to clipboard');
   };
 
   const handleButtonPress = async () => {
