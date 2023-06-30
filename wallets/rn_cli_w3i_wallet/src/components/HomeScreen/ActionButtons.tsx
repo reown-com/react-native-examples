@@ -24,7 +24,6 @@ const ActionButtons = ({
         copyImage={false}
         handlePress={() => {
           handleWebView(true);
-          console.log('logging...');
         }}
       />
     </View>

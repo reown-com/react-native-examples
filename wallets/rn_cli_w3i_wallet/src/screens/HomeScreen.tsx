@@ -169,7 +169,6 @@ const HomeScreen = () => {
       web3wallet.on('session_proposal', onSessionProposal);
       web3wallet.on('session_request', onSessionRequest);
     }
-    console.log('modalState W3I', web3InboxModal);
   }, [
     WCURI,
     approvalModal,

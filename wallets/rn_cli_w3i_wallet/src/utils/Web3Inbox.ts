@@ -11,9 +11,19 @@ type TMessage = {
   params?: any;
 };
 
+function replacer(key: string, value: any) {
+  if (value instanceof Map) {
+    return {
+      dataType: 'Map',
+      value: Array.from(value.entries()), // or with spread: value: [...value]
+    };
+  } else {
+    return value;
+  }
+}
+
 const chatMethods = {
   register: async (params: any) => {
-    console.log({registerParams: params});
     return chatClient.register({
       account: params.account,
       onSign: async onSignMessage => {
@@ -63,6 +73,8 @@ const chatMethods = {
   reject: async (params: any) => chatClient.reject({id: params.id}),
   unregister: async (params: any) =>
     chatClient.unregister({account: params.account}),
+  // TODO: getMutedContacts is not supported yet
+  getMutedContacts: () => {},
 };
 
 const pushMethods = {
@@ -103,7 +115,7 @@ const pushMethods = {
       topic: params.topic,
       scope: params.scope,
     }),
-  deleteSubscription: (params: any) =>
+  deleteSubscription: async (params: any) =>
     pushWalletClient.deleteSubscription({
       topic: params.topic,
     }),
@@ -123,7 +135,6 @@ export const generateResponse = async (
   target: 'chat' | 'push' | 'auth',
   {id, jsonrpc, method, params}: TMessage,
 ) => {
-  console.log({params, method});
   if (target === 'chat') {
     const chatMethod = chatMethods[method as TChatMethod];
     if (!chatMethod) {
@@ -131,11 +142,12 @@ export const generateResponse = async (
     }
     try {
       const response = await chatMethod({...params, id});
-      return `window.web3inbox.chat.postMessage(${JSON.stringify({
+      const payload = JSON.stringify({
         id,
-        result: response,
+        result: response ? JSON.stringify(response, replacer) : null,
         jsonrpc,
-      })})`;
+      });
+      return `window.web3inbox.chat.postMessage(${payload})`;
     } catch (error) {
       console.log(`Failed to call ${method} on ${target}`);
       console.error(error);
@@ -149,11 +161,12 @@ export const generateResponse = async (
     }
     try {
       const response = await pushMethod({...params, id});
-      return `window.web3inbox.push.postMessage(${JSON.stringify({
+      const payload = JSON.stringify({
         id,
-        result: response,
+        result: response ? JSON.stringify(response, replacer) : null,
         jsonrpc,
-      })})`;
+      });
+      return `window.web3inbox.push.postMessage(${payload})`;
     } catch (error) {
       console.log(`Failed to call ${method} on ${target}`);
       console.error(error);

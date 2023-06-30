@@ -1,8 +1,12 @@
-import React, {ReactNode, useCallback, useMemo, useRef} from 'react';
+import React, {ReactNode, useCallback, useEffect, useMemo, useRef} from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
 import {WebView, WebViewMessageEvent} from 'react-native-webview';
-import {currentETHAddress} from '../../utils/clients';
+import {
+  chatClient,
+  currentETHAddress,
+  pushWalletClient,
+} from '../../utils/clients';
 import {generateResponse} from '../../utils/Web3Inbox';
 
 interface W3InboxModalProps {
@@ -24,7 +28,8 @@ export function W3InboxModal({
   const webViewRef = useRef<WebView>(null);
 
   const RN = 'reactnative';
-  const WEB3INBOX_BASE_URL = 'https://web3inbox-dev-hidden.vercel.app/';
+  const WEB3INBOX_BASE_URL =
+    'https://web3inbox-dev-hidden-git-chore-rn-message-walletconnect1.vercel.app/';
   const WEB3INBOX_PROVIDER_QUERY_PARAMS = `?chatProvider=${RN}&authProvider=${RN}&pushProvider=${RN}&account=${currentETHAddress}`;
 
   const WEB3INBOX_VISIBILITY_QUERY_PARAMS = useMemo(
@@ -48,6 +53,131 @@ export function W3InboxModal({
       return;
     }
     webViewRef.current?.injectJavaScript(injectedJavascript);
+  }, []);
+
+  useEffect(() => {
+    chatClient.on('chat_message', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.chat.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'chat_message',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+    chatClient.on('chat_ping', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.chat.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'chat_ping',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+    chatClient.on('chat_invite', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.chat.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'chat_invite',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+    chatClient.on('chat_invite_accepted', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.chat.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'chat_invite_accepted',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+    chatClient.on('chat_invite_rejected', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.chat.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'chat_invite_rejected',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+    chatClient.on('chat_left', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.chat.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'chat_left',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+
+    // Push client events
+    pushWalletClient.on('push_subscription', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.push.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'push_subscription',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+    pushWalletClient.on('push_message', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.push.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'push_message',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+    pushWalletClient.on('push_proposal', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.push.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'push_proposal',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+    pushWalletClient.on('push_response', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.push.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'push_response',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+    pushWalletClient.on('push_update', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.push.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'push_update',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
+    pushWalletClient.on('push_delete', event => {
+      webViewRef.current?.injectJavaScript(
+        `window.web3inbox.push.postMessage(${JSON.stringify({
+          id: Date.now(),
+          method: 'push_delete',
+          params: event,
+          jsonrpc: '2.0',
+        })})`,
+      );
+    });
   }, []);
 
   return (
