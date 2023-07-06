@@ -2507,10 +2507,10 @@
     pino "7.11.0"
     tslib "1.14.1"
 
-"@walletconnect/modal-react-native@1.0.0-rc.4":
-  version "1.0.0-rc.4"
-  resolved "https://registry.yarnpkg.com/@walletconnect/modal-react-native/-/modal-react-native-1.0.0-rc.4.tgz#e9b6c453fe1d2cd281322824720a8dd9aa6d64a9"
-  integrity sha512-z5qHiOKyVOFCNxVNSBBURRkpfvrdkJ5kggbZESYiNLdsFwTOpjMhivFBHsjfFFIq3B7tJr7M/pn/fhiCA+ZsFw==
+"@walletconnect/modal-react-native@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@walletconnect/modal-react-native/-/modal-react-native-1.0.0-rc.5.tgz#141defde93db920808ad626e0e9f12e05ed77181"
+  integrity sha512-he2bD12C1rg0g0qB5rcqtCxXYkxiYE5swZYv2RbVzAzKTOmI7gT8j8f+HDrctgCFkQIGXNqDB1DPPeft7fYhTQ==
   dependencies:
     "@ethersproject/shims" "5.7.0"
     "@walletconnect/core" "2.9.0"
