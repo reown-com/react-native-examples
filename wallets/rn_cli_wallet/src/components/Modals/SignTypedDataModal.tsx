@@ -13,6 +13,7 @@ import {
   rejectEIP155Request,
 } from '../../utils/EIP155Request';
 import {web3wallet} from '../../utils/Web3WalletClient';
+import {handleDeepLinkRedirect} from '../../utils/LinkingUtils';
 
 interface SignTypedDataModalProps {
   visible: boolean;
@@ -34,8 +35,14 @@ export function SignTypedDataModal({
   const requestName = requestSession?.peer?.metadata?.name;
   const requestIcon = requestSession?.peer?.metadata?.icons[0];
   const requestURL = requestSession?.peer?.metadata?.url;
+  const requestMetadata: SignClientTypes.Metadata =
+    requestSession?.peer?.metadata;
 
   const {topic} = requestEvent;
+
+  function onRedirect() {
+    handleDeepLinkRedirect(requestMetadata?.redirect);
+  }
 
   async function onApprove() {
     if (requestEvent) {
@@ -45,6 +52,7 @@ export function SignTypedDataModal({
         response,
       });
       setVisible(false);
+      onRedirect();
     }
   }
 
@@ -56,6 +64,7 @@ export function SignTypedDataModal({
         response,
       });
       setVisible(false);
+      onRedirect();
     }
   }
 
