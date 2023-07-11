@@ -15,7 +15,6 @@ import {
   ethSign,
   sendTransaction,
   signMessage,
-  signTransaction,
   signTypedData,
 } from '../utils/MethodUtil';
 import {RequestModal} from './RequestModal';
@@ -79,10 +78,6 @@ export function BlockchainActions({onDisconnect}: Props) {
       {
         method: 'eth_sendTransaction',
         callback: wrapRpcRequest('eth_sendTransaction', sendTransaction),
-      },
-      {
-        method: 'eth_signTransaction',
-        callback: wrapRpcRequest('eth_signTransaction', signTransaction),
       },
       {
         method: 'personal_sign',

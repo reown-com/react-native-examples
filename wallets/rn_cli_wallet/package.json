@@ -16,7 +16,7 @@
     "@react-native-async-storage/async-storage": "^1.17.11",
     "@react-navigation/native": "^6.1.2",
     "@react-navigation/native-stack": "^6.9.8",
-    "@walletconnect/react-native-compat": "2.8.2",
+    "@walletconnect/react-native-compat": "2.8.4",
     "@walletconnect/web3wallet": "1.8.2",
     "ethers": "^5.7.2",
     "react": "18.2.0",
