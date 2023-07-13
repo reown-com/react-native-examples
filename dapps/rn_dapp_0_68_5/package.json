@@ -10,8 +10,13 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "1.19.0",
+    "@walletconnect/modal-react-native": "1.0.0-rc.6",
     "react": "17.0.2",
-    "react-native": "0.68.5"
+    "react-native": "0.68.5",
+    "react-native-get-random-values": "1.9.0",
+    "react-native-modal": "13.0.1",
+    "react-native-svg": "13.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
