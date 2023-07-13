@@ -1,3 +1,6 @@
+// Required to make BigInt work on Android with RN < 0.70
+if (typeof BigInt === 'undefined') global.BigInt = require('big-integer')
+
 import {
   SafeAreaView,
   StyleSheet,
