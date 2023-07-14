@@ -9,7 +9,9 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "maestro": "maestro test ../../.maestro",
+    "maestro:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro"
   },
   "dependencies": {
     "@json-rpc-tools/utils": "^1.7.6",

@@ -3,6 +3,5 @@ appId: "com.walletconnect.web3modal.rnsample"
 ---
 - launchApp
 - extendedWaitUntil:
-    visible: "Connect"
-    timeout: 60_000  
-- tapOn: "Connect"
+    visible: "Connect Wallet"
+    timeout: 60_000

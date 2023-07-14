@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "maestro": "maestro test .maestro",
+    "maestro": "maestro test ../../.maestro",
     "maestro:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro"
   },
   "dependencies": {
