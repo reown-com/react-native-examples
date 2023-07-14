@@ -6,5 +6,3 @@ appId: "com.walletconnect.web3wallet.rnsample"
     visible: "Get Started"
     timeout: 60_000  
 - tapOn: "Get Started"
-- runFlow:    
-    file: "subflows/connect.yaml"

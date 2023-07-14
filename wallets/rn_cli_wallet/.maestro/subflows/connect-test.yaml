@@ -1,5 +1,0 @@
-# flow.yaml
-appId: "com.walletconnect.web3wallet.rnsample"
----
-- tapOn:
-    point: "90%,88%"
