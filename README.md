@@ -25,7 +25,7 @@ Skeleton Example (WIP)
 
 ## Dapps
 
-- Dapp V2 Explorer: `dapps/v2Explorer` or by checking out the alpha SDK [here](https://github.com/WalletConnect/web3modal-react-native)
+- Dapp V2 Explorer: `dapps/v2Explorer` or by checking out the alpha SDK [here](https://github.com/WalletConnect/modal-react-native)
 
 ## Getting Started
 

@@ -34,17 +34,17 @@ export function RequestModal({
       <View style={styles.innerContainer}>
         {isLoading && (
           <>
-            <Text style={styles.title}>Pending JSON-RPC Request</Text>
+            <Text style={styles.title}>Pending Request</Text>
             <ActivityIndicator color="#3396FF" style={styles.loader} />
             <Text style={styles.center}>
-              Approve or reject request using your wallet
+              Approve or reject request using your wallet if needed
             </Text>
           </>
         )}
         {rpcResponse && (
           <>
             <Text style={[styles.title, styles.successText]}>
-              JSON-RPC Request Response
+              Request Response
             </Text>
             {Object.keys(rpcResponse).map(key => (
               <Text key={key} style={styles.subtitle}>
@@ -59,7 +59,7 @@ export function RequestModal({
         {rpcError && (
           <>
             <Text style={[styles.title, styles.failureText]}>
-              JSON-RPC Request Failure
+              Request Failure
             </Text>
             <Text style={styles.subtitle}>
               Method: <Text style={styles.responseText}>{rpcError.method}</Text>

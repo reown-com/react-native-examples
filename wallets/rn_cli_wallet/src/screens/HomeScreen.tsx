@@ -10,9 +10,8 @@ import {
 } from 'react-native';
 
 import {SignClientTypes} from '@walletconnect/types';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {SessionTypes} from '@walletconnect/types';
-import { getSdkError } from '@walletconnect/utils'
+import {getSdkError} from '@walletconnect/utils';
 import {currentETHAddress, web3wallet, _pair} from '../utils/Web3WalletClient';
 
 import {PairModal} from '../components/Modals/PairModal';
@@ -26,7 +25,8 @@ import {SignTypedDataModal} from '../components/Modals/SignTypedDataModal';
 import {SendTransactionModal} from '../components/Modals/SendTransactionModal';
 import {W3WText} from '../components/W3WText';
 import {TextContent} from '../utils/Text';
-import { CopyURIDialog } from '../components/CopyURIDialog';
+import {CopyURIDialog} from '../components/CopyURIDialog';
+import {handleDeepLinkRedirect} from '../utils/LinkingUtils';
 
 /**
   @notice: HomeScreen for Web3Wallet Example
@@ -53,7 +53,9 @@ const HomeScreen = () => {
   const [successPair, setSuccessPair] = useState(false);
 
   // Pairing State
-  const [pairedProposal, setPairedProposal] = useState<SignClientTypes.EventArguments['session_proposal']>();
+  const [pairedProposal, setPairedProposal] =
+    useState<SignClientTypes.EventArguments['session_proposal']>();
+
   const [requestEventData, setRequestEventData] = useState();
   const [requestSession, setRequestSession] = useState();
 
@@ -67,7 +69,9 @@ const HomeScreen = () => {
   async function handleDecline() {
     setApprovalModal(false);
 
-    if(!pairedProposal) return;
+    if (!pairedProposal) {
+      return;
+    }
 
     web3wallet.rejectSession({
       id: pairedProposal.id,
@@ -94,7 +98,7 @@ const HomeScreen = () => {
         };
       });
 
-      await web3wallet.approveSession({
+      const session = await web3wallet.approveSession({
         id,
         relayProtocol: relays[0].protocol,
         namespaces,
@@ -102,6 +106,9 @@ const HomeScreen = () => {
 
       setApprovalModal(false);
       setSuccessPair(true);
+
+      const sessionMetadata = session?.peer?.metadata;
+      handleDeepLinkRedirect(sessionMetadata?.redirect);
     }
   }
 
@@ -109,7 +116,7 @@ const HomeScreen = () => {
     setCopyDialog(false);
   };
 
-  async function pair(uri:string) {
+  async function pair(uri: string) {
     const pairing = await _pair({uri});
     setCopyDialog(false);
 

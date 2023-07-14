@@ -12,6 +12,7 @@ import {
   rejectEIP155Request,
 } from '../../utils/EIP155Request';
 import {web3wallet} from '../../utils/Web3WalletClient';
+import {handleDeepLinkRedirect} from '../../utils/LinkingUtils';
 
 interface SendTransactionModalProps {
   visible: boolean;
@@ -32,10 +33,16 @@ export function SendTransactionModal({
   const requestName = requestSession?.peer?.metadata?.name;
   const requestIcon = requestSession?.peer?.metadata?.icons[0];
   const requestURL = requestSession?.peer?.metadata?.url;
+  const requestMetadata: SignClientTypes.Metadata =
+    requestSession?.peer?.metadata;
 
   const {topic, params} = requestEvent;
   const {request} = params;
   const transaction = request.params[0];
+
+  function onRedirect() {
+    handleDeepLinkRedirect(requestMetadata?.redirect);
+  }
 
   async function onApprove() {
     if (requestEvent) {
@@ -45,6 +52,7 @@ export function SendTransactionModal({
         response,
       });
       setVisible(false);
+      onRedirect();
     }
   }
 
@@ -56,6 +64,7 @@ export function SendTransactionModal({
         response,
       });
       setVisible(false);
+      onRedirect();
     }
   }
 

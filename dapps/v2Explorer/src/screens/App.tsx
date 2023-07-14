@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -9,7 +8,10 @@ import {
   View,
 } from 'react-native';
 import '@walletconnect/react-native-compat';
-import {useWeb3Modal, Web3Button, Web3Modal} from '@web3modal/react-native';
+import {
+  useWalletConnectModal,
+  WalletConnectModal,
+} from '@walletconnect/modal-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 // @ts-expect-error - `@env` is a virtualised module via Babel config.
@@ -22,14 +24,20 @@ import {BlockchainActions} from '../components/BlockchainActions';
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const [clientId, setClientId] = useState<string>();
-  const {isConnected, provider} = useWeb3Modal();
+  const {isConnected, provider, open} = useWalletConnectModal();
   const backgroundColor = isDarkMode
     ? DarkTheme.background2
     : LightTheme.background2;
 
   const onCopy = (value: string) => {
     Clipboard.setString(value);
-    Alert.alert('Copied to clipboard');
+  };
+
+  const handleButtonPress = async () => {
+    if (isConnected) {
+      return provider?.disconnect();
+    }
+    return open();
   };
 
   useEffect(() => {
@@ -60,11 +68,18 @@ function App() {
             </Text>
           </TouchableOpacity>
         )}
-        <View style={styles.centerContainer}>
-          <Web3Button style={styles.web3Button} />
-          {isConnected && <BlockchainActions />}
-        </View>
-        <Web3Modal
+        {isConnected ? (
+          <BlockchainActions onDisconnect={handleButtonPress} />
+        ) : (
+          <View style={styles.centerContainer}>
+            <TouchableOpacity style={styles.button} onPress={handleButtonPress}>
+              <Text style={styles.text}>
+                {isConnected ? 'Disconnect' : 'Connect Wallet'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        <WalletConnectModal
           projectId={ENV_PROJECT_ID}
           providerMetadata={providerMetadata}
           sessionParams={sessionParams}
@@ -117,7 +132,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
   },
-  web3Button: {
-    width: 180,
+  button: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#3396FF',
+    borderRadius: 20,
+    width: 200,
+    height: 50,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    marginTop: 4,
+  },
+  text: {
+    color: 'white',
+    fontWeight: '700',
   },
 });
