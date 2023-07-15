@@ -9,8 +9,9 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "maestro": "maestro test ../../.maestro",
-    "maestro:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro"
+    "e2e": "maestro test ../../.maestro",
+    "e2e:studio": "maestro studio",
+    "e2e:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro"
   },
   "dependencies": {
     "@babel/plugin-proposal-private-methods": "^7.18.6",
