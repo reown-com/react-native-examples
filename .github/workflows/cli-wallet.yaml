@@ -1,10 +1,8 @@
 name: cli-wallet-android
 
-on:
-  push:
-    branches: [ feat/E2E-maestro ]
-  # pull_request:
-  #   branches: [ main ]
+on:  
+  pull_request:
+    branches: [ main ]
 
 jobs:    
   maestro-cloud:
