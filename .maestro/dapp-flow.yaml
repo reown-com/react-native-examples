@@ -1,0 +1,7 @@
+# flow.yaml
+appId: "com.walletconnect.web3modal.rnsample"
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Connect Wallet"
+    timeout: 60_000
