@@ -11,7 +11,7 @@ jobs:
       run:
         working-directory: wallets/rn_cli_wallet
     outputs:
-      app: app/build/outputs/apk/debug
+      app: app/build/outputs/apk/release
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
