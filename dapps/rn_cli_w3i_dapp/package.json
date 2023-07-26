@@ -1,5 +1,5 @@
 {
-  "name": "rn_cli_w3i_wallet",
+  "name": "rn_cli_w3i_dapp",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -17,6 +17,7 @@
     "@react-navigation/native-stack": "^6.9.12",
     "@walletconnect/chat-client": "^0.7.1",
     "@walletconnect/core": "^2.8.5",
+    "@walletconnect/modal-react-native": "^1.0.0-rc.7",
     "@walletconnect/push-client": "^0.10.4",
     "@walletconnect/react-native-compat": "^2.8.5",
     "@walletconnect/sync-client": "^0.3.7",
