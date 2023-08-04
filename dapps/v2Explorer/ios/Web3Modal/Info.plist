@@ -39,46 +39,48 @@
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>ambire</string>
-		<string>argent</string>
-		<string>avacus</string>
-		<string>awallet</string>
-		<string>beewallet.app</string>
-		<string>bitizen</string>
-		<string>bitkeep</string>
-		<string>blocto</string>
-		<string>celo</string>
-		<string>coolwallet</string>
-		<string>cosmostation</string>
-		<string>cryptowallet</string>
-		<string>fireblocks-wc</string>
-		<string>frontier</string>
-		<string>hideoutWallet</string>
-		<string>imtokenv2</string>
-		<string>keyring</string>
-		<string>ledgerlive</string>
-		<string>lilico</string>
-		<string>lobstr</string>
-		<string>loopring</string>
-		<string>mathwallet</string>
-		<string>metaone</string>
-		<string>mewwallet</string>
-		<string>moneyunstoppable</string>
-		<string>ndj-backpack</string>
-		<string>obvious</string>
-		<string>omni</string>
-		<string>opto</string>
-		<string>pitaka</string>
-		<string>plasmawallet</string>
-		<string>premawallet</string>
-		<string>rainbow</string>
-		<string>robinhood-wallet</string>
-		<string>safepalwallet</string>
-		<string>spot</string>
-		<string>timeless-wallet</string>
+		<string>metamask</string>
 		<string>trust</string>
-		<string>unstoppabledomains</string>
+		<string>safe</string>
+		<string>rainbow</string>
+		<string>uniswap</string>
 		<string>zerion</string>
+		<string>imtokenv2</string>
+		<string>spot</string>
+		<string>omni</string>
+		<string>dfw</string>
+		<string>tpoutside</string>
+		<string>robinhood-wallet</string>
+		<string>frontier</string>
+		<string>blockchain-wallet</string>
+		<string>safepalwallet</string>
+		<string>bitkeep</string>
+		<string>oneinch</string>
+		<string>exodus</string>
+		<string>bnc</string>
+		<string>ledgerlive</string>
+		<string>mewwallet</string>
+		<string>awallet</string>
+		<string>keyring</string>
+		<string>lobstr</string>
+		<string>ontoprovider</string>
+		<string>mathwallet</string>
+		<string>unstoppabledomains</string>
+		<string>obvious</string>
+		<string>fireblocks-wc</string>
+		<string>ambire</string>
+		<string>internetmoney</string>
+		<string>walletnow</string>
+		<string>bitcoincom</string>
+		<string>coin98</string>
+		<string>arculuswc</string>
+		<string>cryptobrowser</string>
+		<string>chainapp</string>
+		<string>huddln</string>
+		<string>verso</string>
+		<string>haha</string>
+		<string>modularwallet</string>
+		<string>coinomi</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

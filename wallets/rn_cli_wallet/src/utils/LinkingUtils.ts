@@ -1,4 +1,4 @@
-import {Linking, Alert} from 'react-native';
+import {Linking} from 'react-native';
 
 export const handleDeepLinkRedirect = (redirect?: {
   native?: string;
@@ -11,16 +11,16 @@ export const handleDeepLinkRedirect = (redirect?: {
         if (redirect?.universal) {
           Linking.openURL(redirect.universal);
         } else {
-          Alert.alert('Failed to redirect', 'Please go back to dapp manually');
+          //Show success toast
         }
       });
     } else if (redirect?.universal) {
       Linking.openURL(redirect.universal);
     } else {
-      Alert.alert('Failed to redirect', 'Please go back to dapp manually');
+      //Show success toast
     }
   } catch (error) {
     console.log(error);
-    Alert.alert('Failed to redirect', 'Please go back to dapp manually');
+    //Show success toast
   }
 };
