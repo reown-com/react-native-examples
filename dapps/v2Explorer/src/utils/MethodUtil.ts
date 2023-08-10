@@ -147,7 +147,7 @@ export const sendTransaction = async ({
     throw new Error('No address found');
   }
 
-  const amount = sanitizeHex(numberToHex(0));
+  const amount = sanitizeHex(numberToHex(0.0001));
   const transaction = {
     to: address,
     value: amount,
