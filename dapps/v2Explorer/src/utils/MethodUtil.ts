@@ -1,5 +1,5 @@
 import {numberToHex, sanitizeHex, utf8ToHex} from '@walletconnect/encoding';
-import {ethers, TypedDataDomain, TypedDataField} from 'ethers';
+import {TypedDataDomain, TypedDataField} from 'ethers';
 import {recoverAddress} from '@ethersproject/transactions';
 import {hashMessage} from '@ethersproject/hash';
 import type {Bytes, SignatureLike} from '@ethersproject/bytes';
@@ -137,17 +137,22 @@ export const sendTransaction = async ({
     throw new Error('web3Provider not connected');
   }
 
-  // Get the signer from the UniversalProvider
+  // Get the signer from the Provider
   const signer = web3Provider.getSigner();
 
   const {chainId} = await web3Provider.getNetwork();
 
-  const amount = ethers.utils.parseEther('0.0001');
-  const address = '0x0000000000000000000000000000000000000000';
+  const [address] = await web3Provider.listAccounts();
+  if (!address) {
+    throw new Error('No address found');
+  }
+
+  const amount = sanitizeHex(numberToHex(0.0001));
   const transaction = {
     to: address,
     value: amount,
     chainId,
+    data: '0x',
   };
 
   // Send the transaction using the signer
