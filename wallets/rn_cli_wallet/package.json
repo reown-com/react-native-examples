@@ -24,7 +24,6 @@
     "ethers": "^5.7.2",
     "react": "18.2.0",
     "react-native": "0.72.3",
-    "react-native-async-storage": "^0.0.1",
     "react-native-dialog": "^9.3.0",
     "react-native-get-random-values": "^1.8.0",
     "react-native-linear-gradient": "^2.6.2",
