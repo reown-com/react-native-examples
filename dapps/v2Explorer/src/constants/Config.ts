@@ -13,13 +13,8 @@ export const providerMetadata: IProviderMetadata = {
 export const sessionParams = {
   namespaces: {
     eip155: {
-      methods: [
-        'eth_sendTransaction',
-        'eth_sign',
-        'personal_sign',
-        'eth_signTypedData',
-      ],
-      chains: ['eip155:1'],
+      methods: ['eth_sendTransaction', 'personal_sign'],
+      chains: ['eip155:5'],
       events: ['chainChanged', 'accountsChanged'],
       rpcMap: {},
     },

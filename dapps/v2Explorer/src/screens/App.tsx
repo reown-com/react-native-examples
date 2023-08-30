@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,6 +8,9 @@ import {
   View,
 } from 'react-native';
 import '@walletconnect/react-native-compat';
+import {createWalletClient, createPublicClient, http, custom} from 'viem';
+import {goerli} from 'viem/chains';
+
 import {
   useWalletConnectModal,
   WalletConnectModal,
@@ -20,10 +23,14 @@ import {ENV_PROJECT_ID} from '@env';
 import {DarkTheme, LightTheme} from '../constants/Colors';
 import {providerMetadata, sessionParams} from '../constants/Config';
 import {BlockchainActions} from '../components/BlockchainActions';
+import {parseEther} from 'ethers/lib/utils';
+import Contract from '../constants/Contract';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const [clientId, setClientId] = useState<string>();
+  const [client, setClient] = useState<any>();
+  const [publicClient, setPublicClient] = useState<any>();
   const {isConnected, provider, open} = useWalletConnectModal();
   const backgroundColor = isDarkMode
     ? DarkTheme.background2
@@ -53,6 +60,77 @@ function App() {
     getClientId();
   }, [isConnected, provider]);
 
+  console.log('client', client);
+
+  useEffect(() => {
+    if (isConnected && provider) {
+      const _client = createWalletClient({
+        chain: goerli,
+        transport: custom(provider),
+      });
+
+      const _publicClient = createPublicClient({
+        chain: goerli,
+        transport: custom(provider),
+      });
+
+      setClient(_client);
+      setPublicClient(_publicClient);
+    }
+  }, [isConnected, provider]);
+
+  //// send transaction
+  // const onAction = async () => {
+  //   const [address] = await client.getAddresses();
+
+  //   const hash = await client.sendTransaction({
+  //     account: address,
+  //     to: '0x4B599F4a9F089cEE3ab875c96987087B25e501F3',
+  //     value: parseEther('0.001'),
+  //   });
+  //   console.log('hash', hash);
+  // };
+
+  //// sign a message
+  // const onAction = async () => {
+  //   const [address] = await client.getAddresses();
+
+  //   const signature = await client.signMessage({
+  //     account: address,
+  //     message: 'Hello World!',
+  //   });
+
+  //   console.log('signature', signature);
+  // };
+
+  // write a contract
+  // const onAction = async () => {
+  //   const [account] = await client.getAddresses();
+
+  //   const {request} = await publicClient.simulateContract({
+  //     account,
+  //     address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+  //     abi: Contract.goerliABI,
+  //     functionName: 'mint',
+  //   });
+  //   const response = await client.writeContract(request);
+  //   console.log('response', response);
+  // };
+
+  // read contract
+  const onAction = async () => {
+    const [account] = await client.getAddresses();
+
+    const data = await publicClient.readContract({
+      account,
+      address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+      abi: Contract.goerliABI,
+      functionName: 'totalSupply',
+    });
+
+    console.log('data', data);
+  };
+
   return (
     <SafeAreaView style={[styles.safeArea, {backgroundColor}]}>
       <View style={[styles.container, {backgroundColor}]}>
@@ -69,7 +147,12 @@ function App() {
           </TouchableOpacity>
         )}
         {isConnected ? (
-          <BlockchainActions onDisconnect={handleButtonPress} />
+          <>
+            <TouchableOpacity onPress={onAction}>
+              <Text>Test</Text>
+            </TouchableOpacity>
+            <BlockchainActions onDisconnect={handleButtonPress} />
+          </>
         ) : (
           <View style={styles.centerContainer}>
             <TouchableOpacity style={styles.button} onPress={handleButtonPress}>
