@@ -9,12 +9,16 @@ import {
   useWalletConnectModal,
 } from '@walletconnect/modal-react-native';
 
-const providerMetadata = {
+const clientMetadata = {
   name: 'Web3Inbox React Native Example',
   description:
     'An example app to showcase how to use Web3Inbox React Native SDK',
   url: 'https://github.com/WalletConnect/web3inbox-js-sdk',
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
+};
+
+const providerMetadata = {
+  ...clientMetadata,
   redirect: {
     native: 'YOUR_APP_SCHEME://',
     universal: 'YOUR_APP_UNIVERSAL_LINK.com',
@@ -30,6 +34,23 @@ export default function Native() {
   const toggleWeb3InboxModal = useCallback(
     () => setIsVisible(isCurrentlyVisible => !isCurrentlyVisible),
     [],
+  );
+
+  const handleSign = useCallback(
+    async (message: string) => {
+      if (!provider || !address) {
+        return '';
+      }
+      const response = await provider?.request(
+        {
+          method: 'personal_sign',
+          params: [message, address],
+        },
+        'eip155:1',
+      );
+      return response as string;
+    },
+    [provider, address],
   );
 
   return (
@@ -53,20 +74,13 @@ export default function Native() {
       />
       {address && isConnected && (
         <Web3Inbox
+          clientMetadata={clientMetadata}
           projectId={projectId}
           ethAddress={address}
-          onSign={async (message: string) => {
-            const response = await provider?.request(
-              {
-                method: 'personal_sign',
-                params: [message, address],
-              },
-              'eip155:1',
-            );
-            return response as string;
-          }}
+          onSign={handleSign}
           visible={isVisible}
           setVisible={toggleWeb3InboxModal}
+          chatEnabled={false}
         />
       )}
     </View>
