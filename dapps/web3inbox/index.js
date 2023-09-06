@@ -56,30 +56,28 @@ async function registerClient(deviceToken, clientId) {
     .catch(error => console.log('error', error));
 }
 
+PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+
 messaging()
   .getToken()
   .then(async token => {
-    console.log({token});
-    const authStatus = await messaging().requestPermission();
+    const authStatus = await messaging().requestPermission(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    );
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     console.log({enabled});
 
-    if (!enabled) {
-      PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-      );
+    if (enabled) {
+      notifyClient = await NotifyClient.init({
+        core,
+        projectId,
+        relayUrl,
+      });
+      const clientId = await notifyClient.core.crypto.getClientId();
+      await registerClient(token, clientId);
     }
-    messaging().setAutoInitEnabled(true);
-
-    notifyClient = await NotifyClient.init({
-      core,
-      projectId,
-      relayUrl,
-    });
-    const clientId = await notifyClient.core.crypto.getClientId();
-    await registerClient(token, clientId);
   });
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
@@ -90,7 +88,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
       relayUrl,
     });
   }
-  if (!remoteMessage.data?.blob || remoteMessage.data?.topic) {
+  if (!remoteMessage.data?.blob || !remoteMessage.data?.topic) {
     console.log('Missing blob or topic on notification message.');
     return;
   }
