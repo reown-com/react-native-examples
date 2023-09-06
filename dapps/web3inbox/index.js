@@ -23,6 +23,39 @@ globalThis.crypto.subtle = {
   digest: polyfillDigest,
 };
 
+let notifyClient;
+
+const projectId = process.env.ENV_PROJECT_ID;
+const relayUrl = process.env.ENV_RELAY_URL;
+const core = new Core({
+  projectId,
+  relayUrl,
+});
+
+async function registerClient(deviceToken, clientId) {
+  const body = JSON.stringify({
+    client_id: clientId,
+    token: deviceToken,
+    type: 'fcm',
+  });
+
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body,
+  };
+
+  return fetch(
+    `https://echo.walletconnect.com/${projectId}/clients`,
+    requestOptions,
+  )
+    .then(response => response.json())
+    .then(result => console.log(result))
+    .catch(error => console.log('error', error));
+}
+
 messaging()
   .getToken()
   .then(async token => {
@@ -39,24 +72,29 @@ messaging()
       );
     }
     messaging().setAutoInitEnabled(true);
+
+    notifyClient = await NotifyClient.init({
+      core,
+      projectId,
+      relayUrl,
+    });
+    const clientId = await notifyClient.core.crypto.getClientId();
+    await registerClient(token, clientId);
   });
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  const projectId = process.env.ENV_PROJECT_ID;
-  const relayUrl = process.env.ENV_RELAY_URL;
-  const core = new Core({
-    projectId,
-    relayUrl,
-  });
-  const notifyClient = await NotifyClient.init({
-    core,
-    projectId,
-    relayUrl,
-  });
-  console.log({blob: remoteMessage.data?.blob});
-  if (!remoteMessage.data?.blob || !notifyClient) {
+  if (!notifyClient) {
+    notifyClient = await NotifyClient.init({
+      core,
+      projectId,
+      relayUrl,
+    });
+  }
+  if (!remoteMessage.data?.blob || remoteMessage.data?.topic) {
+    console.log('Missing blob or topic on notification message.');
     return;
   }
+
   const decryptedMessage = await notifyClient?.decryptMessage({
     topic: remoteMessage.data?.topic,
     encryptedMessage: remoteMessage.data?.blob,
