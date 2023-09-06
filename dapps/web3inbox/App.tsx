@@ -30,12 +30,6 @@ const projectId = ENV_PROJECT_ID as string;
 export default function Native() {
   const {provider, isConnected, address, open} = useWalletConnectModal();
   const [isVisible, setIsVisible] = useState(true);
-
-  const toggleWeb3InboxModal = useCallback(
-    () => setIsVisible(isCurrentlyVisible => !isCurrentlyVisible),
-    [],
-  );
-
   const handleSign = useCallback(
     async (message: string) => {
       if (!provider || !address) {
@@ -51,6 +45,11 @@ export default function Native() {
       return response as string;
     },
     [provider, address],
+  );
+
+  const toggleWeb3InboxModal = useCallback(
+    () => setIsVisible(isCurrentlyVisible => !isCurrentlyVisible),
+    [],
   );
 
   return (
