@@ -7,7 +7,11 @@ import App from './App';
 import {name as appName} from './app.json';
 import crypto from 'react-native-quick-crypto';
 import messaging from '@react-native-firebase/messaging';
-import notifee, {AndroidVisibility, EventType} from '@notifee/react-native';
+import notifee, {
+  AndroidImportance,
+  AndroidVisibility,
+  EventType,
+} from '@notifee/react-native';
 import {NotifyClient} from '@walletconnect/notify-client';
 import {Core} from '@walletconnect/core';
 
@@ -56,31 +60,47 @@ async function registerClient(deviceToken, clientId) {
     .catch(error => console.log('error', error));
 }
 
-PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-
 messaging()
   .getToken()
-  .then(async token => {
-    const authStatus = await messaging().requestPermission(
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-    );
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-    console.log({enabled});
+  .then(token => console.log({token}));
 
-    if (enabled) {
-      notifyClient = await NotifyClient.init({
-        core,
-        projectId,
-        relayUrl,
-      });
-      const clientId = await notifyClient.core.crypto.getClientId();
-      await registerClient(token, clientId);
-    }
-  });
+messaging().onTokenRefresh(async token => {
+  console.log({token});
+  const authStatus2 = await PermissionsAndroid.request(
+    PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+  );
+  console.log({authStatus2});
+  const authStatus = await messaging().requestPermission(
+    PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+  );
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    notifyClient = await NotifyClient.init({
+      core,
+      projectId,
+      relayUrl,
+    });
+    const clientId = await notifyClient.core.crypto.getClientId();
+    return registerClient(token, clientId);
+  }
+
+  return;
+});
+
+notifee.createChannel({
+  id: 'default',
+  name: 'Default Channel',
+  lights: false,
+  vibration: true,
+  importance: AndroidImportance.HIGH,
+  visibility: AndroidVisibility.PUBLIC,
+});
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log(remoteMessage);
   if (!notifyClient) {
     notifyClient = await NotifyClient.init({
       core,
@@ -102,22 +122,18 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
     JSON.stringify(decryptedMessage),
   );
 
-  const channelId = await notifee.createChannel({
-    id: 'default',
-    name: 'Default Channel',
-  });
-
   // Display a notification
-  await notifee.displayNotification({
+  return notifee.displayNotification({
     title: decryptedMessage.title,
     body: decryptedMessage.body,
     android: {
-      channelId,
+      channelId: 'default',
+      importance: AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC,
       smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
       // pressAction is needed if you want the notification to open the app when pressed
       pressAction: {
-        id: 'mark-as-read',
+        id: 'default',
       },
     },
   });

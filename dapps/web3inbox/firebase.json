@@ -1,0 +1,5 @@
+{
+  "react-native": {
+    "messaging_android_headless_task_timeout": 86400000
+  }
+}
