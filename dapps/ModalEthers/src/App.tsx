@@ -136,16 +136,21 @@ function App(): JSX.Element {
   };
 
   const onWriteContract = async () => {
+    if (!client) {
+      return;
+    }
+
+    const [address] = await client.listAccounts();
+    const signer = client.getSigner(address);
+
     const contract = new ethers.Contract(
       ContractUtils.contractAddress,
       ContractUtils.goerliABI,
-      client,
+      signer,
     );
 
-    // Write contract
-    console.log(contract);
     const receipt = await contract.mint();
-    const hash = receipt.transactionHash;
+    const hash = receipt.hash;
     console.log('receipt', receipt);
     return {
       method: 'write contract',

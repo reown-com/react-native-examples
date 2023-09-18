@@ -94,13 +94,6 @@ const goerliABI = [
     type: 'function',
   },
   {
-    inputs: [{internalType: 'uint256', name: 'tokenId', type: 'uint256'}],
-    name: 'mint',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
     inputs: [],
     name: 'name',
     outputs: [{internalType: 'string', name: '', type: 'string'}],
