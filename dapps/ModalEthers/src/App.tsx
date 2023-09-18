@@ -13,8 +13,9 @@ import {
 } from '@walletconnect/modal-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
-import {createPublicClient, createWalletClient, custom, parseEther} from 'viem';
-import {goerli} from 'viem/chains';
+import {numberToHex, sanitizeHex} from '@walletconnect/encoding';
+import {ethers} from 'ethers';
+import {Web3Provider} from '@ethersproject/providers';
 
 import ContractUtils from './utils/ContractUtils';
 import ConfigUtils from './utils/ConfigUtils';
@@ -22,27 +23,17 @@ import {RequestModal} from './components/RequestModal';
 
 function App(): JSX.Element {
   const {isConnected, provider, open} = useWalletConnectModal();
-  const [client, setClient] = useState<any>();
-  const [publicClient, setPublicClient] = useState<any>();
+  const [client, setClient] = useState<Web3Provider>();
   const [modalVisible, setModalVisible] = useState(false);
   const [rpcResponse, setRpcResponse] = useState<any>();
   const [loading, setLoading] = useState(false);
 
-  // Init viem when the wallet is connected
+  // Init ethers client when the wallet is connected
   useEffect(() => {
     if (isConnected && provider) {
-      const _client = createWalletClient({
-        chain: goerli,
-        transport: custom(provider),
-      });
-
-      const _publicClient = createPublicClient({
-        chain: goerli,
-        transport: custom(provider),
-      });
+      const _client = new ethers.providers.Web3Provider(provider);
 
       setClient(_client);
-      setPublicClient(_publicClient);
     }
   }, [isConnected, provider]);
 
@@ -82,27 +73,46 @@ function App(): JSX.Element {
   };
 
   const onSendTransaction = async () => {
-    const [address] = await client.getAddresses();
+    if (!client) {
+      return;
+    }
 
-    const hash = await client.sendTransaction({
-      account: address,
+    const signer = client.getSigner();
+
+    const {chainId} = await client.getNetwork();
+
+    const amount = sanitizeHex(numberToHex(0.0001));
+    const transaction = {
       to: '0x4B599F4a9F089cEE3ab875c96987087B25e501F3',
-      value: parseEther('0.001'),
-    });
+      value: amount,
+      chainId,
+    };
+
+    // Send the transaction using the signer
+    const txResponse = await signer.sendTransaction(transaction);
+    const transactionHash = txResponse.hash;
+    console.log('transactionHash is ' + transactionHash);
+
+    // Wait for the transaction to be mined (optional)
+    const receipt = await txResponse.wait();
+    console.log('Transaction was mined in block:', receipt.blockNumber);
 
     return {
       method: 'send transaction',
-      response: hash,
+      blockNumber: receipt.blockNumber,
+      result: transactionHash,
     };
   };
 
   const onSignMessage = async () => {
-    const [address] = await client.getAddresses();
+    if (!client) {
+      return;
+    }
 
-    const signature = await client.signMessage({
-      account: address,
-      message: 'Hello World!',
-    });
+    const [address] = await client.listAccounts();
+    const signer = client.getSigner(address);
+
+    const signature = await signer?.signMessage('Hello World!');
     return {
       method: 'sign message',
       signature: signature,
@@ -110,32 +120,33 @@ function App(): JSX.Element {
   };
 
   const onReadContract = async () => {
-    const [account] = await client.getAddresses();
+    const contract = new ethers.Contract(
+      ContractUtils.contractAddress,
+      ContractUtils.goerliABI,
+      client,
+    );
 
-    const data = await publicClient.readContract({
-      account,
-      address: ContractUtils.contractAddress,
-      abi: ContractUtils.goerliABI,
-      functionName: 'totalSupply',
-    });
+    // Read contract information
+    const totalSupply = await contract.totalSupply();
 
     return {
       method: 'read contract',
-      data,
+      data: totalSupply,
     };
   };
 
   const onWriteContract = async () => {
-    const [account] = await client.getAddresses();
+    const contract = new ethers.Contract(
+      ContractUtils.contractAddress,
+      ContractUtils.goerliABI,
+      client,
+    );
 
-    const {request} = await publicClient.simulateContract({
-      account,
-      address: ContractUtils.contractAddress,
-      abi: ContractUtils.goerliABI,
-      functionName: 'mint',
-    });
-    const hash = await client.writeContract(request);
-
+    // Write contract
+    console.log(contract);
+    const receipt = await contract.mint();
+    const hash = receipt.transactionHash;
+    console.log('receipt', receipt);
     return {
       method: 'write contract',
       response: hash,

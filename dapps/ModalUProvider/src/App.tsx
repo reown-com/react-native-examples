@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,38 +13,16 @@ import {
 } from '@walletconnect/modal-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
-import {createPublicClient, createWalletClient, custom, parseEther} from 'viem';
-import {goerli} from 'viem/chains';
+import {numberToHex, sanitizeHex, utf8ToHex} from '@walletconnect/encoding';
 
-import ContractUtils from './utils/ContractUtils';
 import ConfigUtils from './utils/ConfigUtils';
 import {RequestModal} from './components/RequestModal';
 
 function App(): JSX.Element {
   const {isConnected, provider, open} = useWalletConnectModal();
-  const [client, setClient] = useState<any>();
-  const [publicClient, setPublicClient] = useState<any>();
   const [modalVisible, setModalVisible] = useState(false);
   const [rpcResponse, setRpcResponse] = useState<any>();
   const [loading, setLoading] = useState(false);
-
-  // Init viem when the wallet is connected
-  useEffect(() => {
-    if (isConnected && provider) {
-      const _client = createWalletClient({
-        chain: goerli,
-        transport: custom(provider),
-      });
-
-      const _publicClient = createPublicClient({
-        chain: goerli,
-        transport: custom(provider),
-      });
-
-      setClient(_client);
-      setPublicClient(_publicClient);
-    }
-  }, [isConnected, provider]);
 
   const onConnect = () => {
     if (isConnected) {
@@ -82,65 +60,74 @@ function App(): JSX.Element {
   };
 
   const onSendTransaction = async () => {
-    const [address] = await client.getAddresses();
+    if (!provider) {
+      return;
+    }
 
-    const hash = await client.sendTransaction({
-      account: address,
+    const chainId = await provider.request({
+      method: 'eth_chainId',
+    });
+    const amount = sanitizeHex(numberToHex(0.0001));
+
+    const accounts: string[] | undefined = await provider?.request({
+      method: 'eth_accounts',
+    });
+
+    if (!accounts) {
+      return;
+    }
+
+    const address = accounts[0];
+
+    const transaction = {
+      from: address,
       to: '0x4B599F4a9F089cEE3ab875c96987087B25e501F3',
-      value: parseEther('0.001'),
+      value: amount,
+      chainId,
+      data: '0x',
+    };
+
+    const txResponse = await provider.request({
+      method: 'eth_sendTransaction',
+      params: [transaction],
     });
 
     return {
       method: 'send transaction',
-      response: hash,
+      result: txResponse,
     };
   };
 
   const onSignMessage = async () => {
-    const [address] = await client.getAddresses();
+    if (!provider) {
+      return;
+    }
 
-    const signature = await client.signMessage({
-      account: address,
-      message: 'Hello World!',
+    const accounts: string[] | undefined = await provider?.request({
+      method: 'eth_accounts',
     });
+
+    if (!accounts) {
+      return;
+    }
+
+    const address = accounts[0];
+
+    const message = utf8ToHex('Hello World!');
+    const signature = await provider.request({
+      method: 'personal_sign',
+      params: [message, address],
+    });
+
     return {
       method: 'sign message',
       signature: signature,
     };
   };
 
-  const onReadContract = async () => {
-    const [account] = await client.getAddresses();
+  // const onReadContract = async () => {};
 
-    const data = await publicClient.readContract({
-      account,
-      address: ContractUtils.contractAddress,
-      abi: ContractUtils.goerliABI,
-      functionName: 'totalSupply',
-    });
-
-    return {
-      method: 'read contract',
-      data,
-    };
-  };
-
-  const onWriteContract = async () => {
-    const [account] = await client.getAddresses();
-
-    const {request} = await publicClient.simulateContract({
-      account,
-      address: ContractUtils.contractAddress,
-      abi: ContractUtils.goerliABI,
-      functionName: 'mint',
-    });
-    const hash = await client.writeContract(request);
-
-    return {
-      method: 'write contract',
-      response: hash,
-    };
-  };
+  // const onWriteContract = async () => {};
 
   return (
     <SafeAreaView>
@@ -162,7 +149,7 @@ function App(): JSX.Element {
           onPress={onAction(onSignMessage)}>
           <Text style={styles.buttonText}>Sign Message</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.button, !isConnected && styles.buttonDisabled]}
           disabled={!isConnected}
           onPress={onAction(onReadContract)}>
@@ -173,7 +160,7 @@ function App(): JSX.Element {
           disabled={!isConnected}
           onPress={onAction(onWriteContract)}>
           <Text style={styles.buttonText}>Write Contract</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <WalletConnectModal
         projectId={ConfigUtils.PROJECT_ID}

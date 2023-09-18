@@ -1,5 +1,5 @@
 {
-  "name": "modal-viem",
+  "name": "modal-uprovider",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -13,13 +13,13 @@
     "@react-native-async-storage/async-storage": "1.19.3",
     "@react-native-clipboard/clipboard": "1.11.2",
     "@react-native-community/netinfo": "9.4.1",
+    "@walletconnect/encoding": "1.0.2",
     "@walletconnect/modal-react-native": "1.0.0-rc.11",
     "react": "18.2.0",
     "react-native": "0.72.4",
     "react-native-get-random-values": "1.9.0",
     "react-native-modal": "13.0.1",
-    "react-native-svg": "13.13.0",
-    "viem": "1.10.14"
+    "react-native-svg": "13.13.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
