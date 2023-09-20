@@ -125,10 +125,6 @@ function App(): JSX.Element {
     };
   };
 
-  // const onReadContract = async () => {};
-
-  // const onWriteContract = async () => {};
-
   return (
     <SafeAreaView>
       <View style={styles.container}>
@@ -149,18 +145,6 @@ function App(): JSX.Element {
           onPress={onAction(onSignMessage)}>
           <Text style={styles.buttonText}>Sign Message</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          style={[styles.button, !isConnected && styles.buttonDisabled]}
-          disabled={!isConnected}
-          onPress={onAction(onReadContract)}>
-          <Text style={styles.buttonText}>Read Contract</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, !isConnected && styles.buttonDisabled]}
-          disabled={!isConnected}
-          onPress={onAction(onWriteContract)}>
-          <Text style={styles.buttonText}>Write Contract</Text>
-        </TouchableOpacity> */}
       </View>
       <WalletConnectModal
         projectId={ConfigUtils.PROJECT_ID}
