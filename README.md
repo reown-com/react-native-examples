@@ -25,7 +25,9 @@ Skeleton Example (WIP)
 
 ## Dapps
 
-- Dapp V2 Explorer: `dapps/v2Explorer` or by checking out the alpha SDK [here](https://github.com/WalletConnect/modal-react-native)
+- WalletConnect Modal + Viem: `dapps/ModalViem`
+- WalletConnect Modal + Ethers v5: `dapps/ModalEthers`
+- WalletConnect Modal + Universal Provider: `dapps/ModalUProvider`
 
 ## Getting Started
 
