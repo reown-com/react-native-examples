@@ -20,23 +20,70 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.walletconnect.modal.rnviemsample</string>
+			<string>com.walletconnect.modal.rnuprovidersample</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>wcmuprovidersample</string>
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>metamask</string>
+		<string>trust</string>
+		<string>safe</string>
+		<string>rainbow</string>
+		<string>uniswap</string>
+		<string>zerion</string>
+		<string>imtokenv2</string>
+		<string>spot</string>
+		<string>omni</string>
+		<string>dfw</string>
+		<string>tpoutside</string>
+		<string>robinhood-wallet</string>
+		<string>frontier</string>
+		<string>blockchain-wallet</string>
+		<string>safepalwallet</string>
+		<string>bitkeep</string>
+		<string>oneinch</string>
+		<string>exodus</string>
+		<string>bnc</string>
+		<string>ledgerlive</string>
+		<string>mewwallet</string>
+		<string>awallet</string>
+		<string>keyring</string>
+		<string>lobstr</string>
+		<string>ontoprovider</string>
+		<string>mathwallet</string>
+		<string>unstoppabledomains</string>
+		<string>obvious</string>
+		<string>fireblocks-wc</string>
+		<string>ambire</string>
+		<string>internetmoney</string>
+		<string>walletnow</string>
+		<string>bitcoincom</string>
+		<string>coin98</string>
+		<string>arculuswc</string>
+		<string>cryptobrowser</string>
+		<string>chainapp</string>
+		<string>huddln</string>
+		<string>verso</string>
+		<string>haha</string>
+		<string>modularwallet</string>
+		<string>coinomi</string>
+	</array>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -49,7 +96,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
