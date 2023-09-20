@@ -7,7 +7,10 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "e2e": "maestro test ../../.maestro",
+    "e2e:studio": "maestro studio",
+    "e2e:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.19.3",
