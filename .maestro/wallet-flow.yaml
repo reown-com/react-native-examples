@@ -4,5 +4,5 @@ appId: "com.walletconnect.web3wallet.rnsample"
 - launchApp
 - extendedWaitUntil:
     visible: "Get Started"
-    timeout: 60_000  
+    timeout: 60000  
 - tapOn: "Get Started"
