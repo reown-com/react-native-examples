@@ -83,7 +83,7 @@ function App(): JSX.Element {
 
     const amount = sanitizeHex(numberToHex(0.0001));
     const transaction = {
-      to: '0x4B599F4a9F089cEE3ab875c96987087B25e501F3',
+      to: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // vitalik.eth
       value: amount,
       chainId,
     };

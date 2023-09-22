@@ -86,7 +86,7 @@ function App(): JSX.Element {
 
     const hash = await client.sendTransaction({
       account: address,
-      to: '0x4B599F4a9F089cEE3ab875c96987087B25e501F3',
+      to: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // vitalik.eth
       value: parseEther('0.001'),
     });
 
