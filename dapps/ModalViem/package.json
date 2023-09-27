@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android --appId com.walletconnect.modal.rnviemsample",
+    "android:build": "cd android && ./gradlew assembleRelease",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
