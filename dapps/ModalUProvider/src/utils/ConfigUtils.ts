@@ -1,6 +1,5 @@
+import {PROJECT_ID, SENTRY_DSN} from '@env';
 import {IProviderMetadata} from '@walletconnect/modal-react-native';
-
-const PROJECT_ID = '90369b5c91c6f7fffe308df2b30f3ace';
 
 const providerMetadata: IProviderMetadata = {
   name: 'Modal with UProvider',
@@ -25,6 +24,7 @@ const sessionParams = {
 
 export default {
   PROJECT_ID,
+  SENTRY_DSN,
   providerMetadata,
   sessionParams,
 };
