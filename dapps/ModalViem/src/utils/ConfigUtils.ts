@@ -1,4 +1,4 @@
-import {PROJECT_ID} from '@env';
+import {ENV_PROJECT_ID} from '@env';
 import {IProviderMetadata} from '@walletconnect/modal-react-native';
 
 const providerMetadata: IProviderMetadata = {
@@ -23,7 +23,7 @@ const sessionParams = {
 };
 
 export default {
-  PROJECT_ID,
+  ENV_PROJECT_ID,
   providerMetadata,
   sessionParams,
 };

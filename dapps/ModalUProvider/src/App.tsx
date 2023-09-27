@@ -20,7 +20,7 @@ import ConfigUtils from './utils/ConfigUtils';
 import {RequestModal} from './components/RequestModal';
 
 Sentry.init({
-  dsn: ConfigUtils.SENTRY_DSN,
+  dsn: ConfigUtils.ENV_SENTRY_DSN,
 });
 
 function App(): JSX.Element {
@@ -152,7 +152,7 @@ function App(): JSX.Element {
         </TouchableOpacity>
       </View>
       <WalletConnectModal
-        projectId={ConfigUtils.PROJECT_ID}
+        projectId={ConfigUtils.ENV_PROJECT_ID}
         providerMetadata={ConfigUtils.providerMetadata}
         sessionParams={ConfigUtils.sessionParams}
         onCopyClipboard={onCopy}
