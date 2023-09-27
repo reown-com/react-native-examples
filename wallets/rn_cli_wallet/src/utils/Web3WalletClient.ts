@@ -5,7 +5,6 @@ export let web3wallet: IWeb3Wallet;
 export let core: ICore;
 export let currentETHAddress: string;
 
-// @ts-expect-error - env is a virtualised module via Babel config.
 import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
 import {createOrRestoreEIP155Wallet} from './EIP155Wallet';
 

@@ -19,6 +19,7 @@
     "@react-native-async-storage/async-storage": "1.19.1",
     "@react-navigation/native": "6.1.7",
     "@react-navigation/native-stack": "6.9.13",
+    "@sentry/react-native": "^5.10.0",
     "@walletconnect/react-native-compat": "2.9.2",
     "@walletconnect/web3wallet": "1.8.8",
     "ethers": "5.7.2",
