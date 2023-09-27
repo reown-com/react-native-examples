@@ -1,4 +1,4 @@
-name: v2explorer-android
+name: dapp-modal-android
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: dapps/v2Explorer
+        working-directory: dapps/ModalUProvider
     outputs:
       app: app/build/outputs/apk/release
     steps:
@@ -26,4 +26,4 @@ jobs:
       - uses: mobile-dev-inc/action-maestro-cloud@v1
         with:
           api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
-          app-file: dapps/v2Explorer/android/app/build/outputs/apk/release/app-release.apk
+          app-file: dapps/ModalUProvider/android/app/build/outputs/apk/release/app-release.apk

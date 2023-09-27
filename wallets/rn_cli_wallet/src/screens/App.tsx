@@ -1,10 +1,16 @@
 import React from 'react';
+import {ENV_SENTRY_DSN} from '@env';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import * as Sentry from '@sentry/react-native';
 
 import OnboardingScreen from './OnboardingScreen';
 import HomeScreen from './HomeScreen';
 import SettingsScreen from './Settings';
+
+Sentry.init({
+  dsn: ENV_SENTRY_DSN,
+});
 
 const Stack = createNativeStackNavigator();
 
@@ -27,4 +33,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Sentry.wrap(App);

@@ -192,7 +192,7 @@ function App(): JSX.Element {
         </TouchableOpacity>
       </View>
       <WalletConnectModal
-        projectId={ConfigUtils.PROJECT_ID}
+        projectId={ConfigUtils.ENV_PROJECT_ID}
         providerMetadata={ConfigUtils.providerMetadata}
         sessionParams={ConfigUtils.sessionParams}
         onCopyClipboard={onCopy}
