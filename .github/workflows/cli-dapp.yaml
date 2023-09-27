@@ -19,7 +19,8 @@ jobs:
           java-version: 11
           distribution: 'temurin'
           cache: gradle      
-      - run: touch .env && echo "ENV_PROJECT_ID=${{ secrets.ENV_PROJECT_ID }}\nENV_RELAY_URL=${{ secrets.ENV_RELAY_URL }}" >> .env      
+      - run: touch .env && echo "ENV_PROJECT_ID=${{ secrets.ENV_PROJECT_ID }}\nENV_RELAY_URL=${{ secrets.ENV_RELAY_URL }}\nENV_SENTRY_DSN=${{ secrets.WCM_SENTRY_DSN }}" >> .env
+      - run: touch ../android/sentry.properties && echo ${{ secrets.WCM_SENTRY_FILE }} >> ../android/sentry.properties
       - run: npm install -g yarn
       - run: yarn
       - run: yarn android:build
