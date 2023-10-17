@@ -12,12 +12,19 @@ import {
   W3mButton,
 } from '@web3modal/wagmi-react-native';
 import {FlexView, Text} from '@web3modal/ui-react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+
 import {WagmiConfig} from 'wagmi';
 import {mainnet, polygon, arbitrum} from 'wagmi/chains';
-import {ENV_PROJECT_ID} from '@env';
+import {ENV_PROJECT_ID, ENV_SENTRY_DSN} from '@env';
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: ENV_SENTRY_DSN,
+});
 
 // 1. Get projectId
 const projectId = ENV_PROJECT_ID;
@@ -33,6 +40,12 @@ const metadata = {
   },
 };
 
+const clipboardClient = {
+  setString: async (value: string) => {
+    Clipboard.setString(value);
+  },
+};
+
 const chains = [mainnet, polygon, arbitrum];
 
 const wagmiConfig = defaultWagmiConfig({chains, projectId, metadata});
@@ -42,6 +55,7 @@ createWeb3Modal({
   projectId,
   chains,
   wagmiConfig,
+  clipboardClient,
 });
 
 function App(): JSX.Element {

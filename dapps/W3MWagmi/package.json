@@ -4,22 +4,25 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "android:build": "cd android && ./gradlew assembleRelease",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "^1.19.3",
-    "@react-native-community/netinfo": "^9.4.1",
-    "@web3modal/wagmi-react-native": "1.0.0-alpha.6",
+    "@react-native-async-storage/async-storage": "1.19.3",
+    "@react-native-clipboard/clipboard": "1.12.1",
+    "@react-native-community/netinfo": "9.4.1",
+    "@sentry/react-native": "5.11.1",
+    "@web3modal/wagmi-react-native": "1.0.0-alpha.9",
     "react": "18.2.0",
     "react-native": "0.72.6",
-    "react-native-get-random-values": "^1.9.0",
-    "react-native-modal": "^13.0.1",
-    "react-native-svg": "^13.14.0",
-    "viem": "^1.16.4",
-    "wagmi": "^1.4.3"
+    "react-native-get-random-values": "1.9.0",
+    "react-native-modal": "13.0.1",
+    "react-native-svg": "13.14.0",
+    "viem": "1.16.6",
+    "wagmi": "1.4.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
+apply from: new File(["node", "--print", "require.resolve('@sentry/react-native/package.json')"].execute().text.trim(), "../sentry.gradle")
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -75,11 +76,11 @@ android {
 
     namespace "com.w3mwagmi"
     defaultConfig {
-        applicationId "com.w3mwagmi"
+        applicationId "com.walletconnect.web3modal.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 13
+        versionName "1.1"
     }
     signingConfigs {
         debug {
