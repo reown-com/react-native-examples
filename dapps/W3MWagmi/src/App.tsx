@@ -12,6 +12,8 @@ import {
   W3mButton,
 } from '@web3modal/wagmi-react-native';
 import {FlexView, Text} from '@web3modal/ui-react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+
 import {WagmiConfig} from 'wagmi';
 import {mainnet, polygon, arbitrum} from 'wagmi/chains';
 import {ENV_PROJECT_ID} from '@env';
@@ -33,6 +35,12 @@ const metadata = {
   },
 };
 
+const clipboardClient = {
+  setString: async (value: string) => {
+    Clipboard.setString(value);
+  },
+};
+
 const chains = [mainnet, polygon, arbitrum];
 
 const wagmiConfig = defaultWagmiConfig({chains, projectId, metadata});
@@ -42,6 +50,7 @@ createWeb3Modal({
   projectId,
   chains,
   wagmiConfig,
+  clipboardClient,
 });
 
 function App(): JSX.Element {
