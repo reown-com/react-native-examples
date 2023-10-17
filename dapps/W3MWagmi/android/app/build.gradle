@@ -75,10 +75,10 @@ android {
 
     namespace "com.w3mwagmi"
     defaultConfig {
-        applicationId "com.w3mwagmi"
+        applicationId "com.walletconnect.web3modal.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        versionCode 12
         versionName "1.0"
     }
     signingConfigs {
