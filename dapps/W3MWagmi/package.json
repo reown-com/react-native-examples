@@ -14,6 +14,7 @@
     "@react-native-async-storage/async-storage": "1.19.3",
     "@react-native-clipboard/clipboard": "1.12.1",
     "@react-native-community/netinfo": "9.4.1",
+    "@sentry/react-native": "5.11.1",
     "@web3modal/wagmi-react-native": "1.0.0-alpha.9",
     "react": "18.2.0",
     "react-native": "0.72.6",

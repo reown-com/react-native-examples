@@ -16,10 +16,15 @@ import Clipboard from '@react-native-clipboard/clipboard';
 
 import {WagmiConfig} from 'wagmi';
 import {mainnet, polygon, arbitrum} from 'wagmi/chains';
-import {ENV_PROJECT_ID} from '@env';
+import {ENV_PROJECT_ID, ENV_SENTRY_DSN} from '@env';
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: ENV_SENTRY_DSN,
+});
 
 // 1. Get projectId
 const projectId = ENV_PROJECT_ID;
