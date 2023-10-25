@@ -91,7 +91,7 @@ function App(): JSX.Element {
     <WagmiConfig config={wagmiConfig}>
       <SafeAreaView style={[styles.container, isDarkMode && styles.dark]}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <Text style={styles.title} variant="large-700">
+        <Text style={styles.title} variant="large-600">
           Web3Modal + wagmi
         </Text>
         <FlexView gap="xs">
