@@ -15,7 +15,20 @@ import {FlexView, Text} from '@web3modal/ui-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import {WagmiConfig} from 'wagmi';
-import {mainnet, polygon, arbitrum} from 'wagmi/chains';
+import {
+  arbitrum,
+  mainnet,
+  polygon,
+  avalanche,
+  bsc,
+  optimism,
+  gnosis,
+  zkSync,
+  zora,
+  base,
+  celo,
+  aurora,
+} from 'wagmi/chains';
 import {ENV_PROJECT_ID, ENV_SENTRY_DSN} from '@env';
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
@@ -46,7 +59,20 @@ const clipboardClient = {
   },
 };
 
-const chains = [mainnet, polygon, arbitrum];
+const chains = [
+  mainnet,
+  polygon,
+  avalanche,
+  arbitrum,
+  bsc,
+  optimism,
+  gnosis,
+  zkSync,
+  zora,
+  base,
+  celo,
+  aurora,
+];
 
 const wagmiConfig = defaultWagmiConfig({chains, projectId, metadata});
 
