@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android  --appId com.walletconnect.modal.uprovider",
-    "android:build": "cd android && ./gradlew assembleRelease",
+    "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
