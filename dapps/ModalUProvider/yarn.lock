@@ -2394,10 +2394,10 @@
     pino "7.11.0"
     tslib "1.14.1"
 
-"@walletconnect/modal-react-native@1.0.0-rc.12":
-  version "1.0.0-rc.12"
-  resolved "https://registry.yarnpkg.com/@walletconnect/modal-react-native/-/modal-react-native-1.0.0-rc.12.tgz#c8cee98b66149fdc6a16352d84954e29885faa2a"
-  integrity sha512-BCIFNmWu3I6oI28Pi8dFmF7XDmE2a0W5eaI13up1kG4VNtVeVUfb8geAWMMQwjBUY+lkKPKDY+XmiBo8432Bog==
+"@walletconnect/modal-react-native@1.0.0-rc.13":
+  version "1.0.0-rc.13"
+  resolved "https://registry.yarnpkg.com/@walletconnect/modal-react-native/-/modal-react-native-1.0.0-rc.13.tgz#0347522fa40c081a90f35cb30a6fd66733a4b723"
+  integrity sha512-r02YCg5J05FwY5QRnyb6Uajs+H19ggM1G05JMwE5tEA96m0bpZt62kgt3Tst2Bzd3aUJZiQaiS3qdLEui+NjrQ==
   dependencies:
     "@walletconnect/core" "2.10.4"
     "@walletconnect/react-native-compat" "2.10.4"

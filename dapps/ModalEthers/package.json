@@ -19,7 +19,7 @@
     "@react-native-clipboard/clipboard": "1.11.2",
     "@react-native-community/netinfo": "9.4.1",
     "@walletconnect/encoding": "1.0.2",
-    "@walletconnect/modal-react-native": "1.0.0-rc.12",
+    "@walletconnect/modal-react-native": "1.0.0-rc.13",
     "ethers": "5.7.2",
     "react": "18.2.0",
     "react-native": "0.72.4",
