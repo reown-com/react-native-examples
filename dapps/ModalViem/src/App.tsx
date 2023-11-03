@@ -13,8 +13,15 @@ import {
 } from '@walletconnect/modal-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
-import {createPublicClient, createWalletClient, custom, parseEther} from 'viem';
-import {goerli} from 'viem/chains';
+import {
+  createPublicClient,
+  createWalletClient,
+  custom,
+  parseEther,
+  PublicClient,
+  WalletClient,
+} from 'viem';
+import {mainnet} from 'viem/chains';
 
 import ContractUtils from './utils/ContractUtils';
 import ConfigUtils from './utils/ConfigUtils';
@@ -22,8 +29,8 @@ import {RequestModal} from './components/RequestModal';
 
 function App(): JSX.Element {
   const {isConnected, provider, open} = useWalletConnectModal();
-  const [client, setClient] = useState<any>();
-  const [publicClient, setPublicClient] = useState<any>();
+  const [client, setClient] = useState<WalletClient>();
+  const [publicClient, setPublicClient] = useState<PublicClient>();
   const [modalVisible, setModalVisible] = useState(false);
   const [rpcResponse, setRpcResponse] = useState<any>();
   const [loading, setLoading] = useState(false);
@@ -32,12 +39,10 @@ function App(): JSX.Element {
   useEffect(() => {
     if (isConnected && provider) {
       const _client = createWalletClient({
-        chain: goerli,
         transport: custom(provider),
       });
 
       const _publicClient = createPublicClient({
-        chain: goerli,
         transport: custom(provider),
       });
 
@@ -82,9 +87,13 @@ function App(): JSX.Element {
   };
 
   const onSendTransaction = async () => {
+    if (!client) {
+      return;
+    }
     const [address] = await client.getAddresses();
 
     const hash = await client.sendTransaction({
+      chain: mainnet,
       account: address,
       to: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // vitalik.eth
       value: parseEther('0.001'),
@@ -97,6 +106,9 @@ function App(): JSX.Element {
   };
 
   const onSignMessage = async () => {
+    if (!client) {
+      return;
+    }
     const [address] = await client.getAddresses();
 
     const signature = await client.signMessage({
@@ -110,11 +122,14 @@ function App(): JSX.Element {
   };
 
   const onReadContract = async () => {
+    if (!client || !publicClient) {
+      return;
+    }
     const [account] = await client.getAddresses();
 
     const data = await publicClient.readContract({
       account,
-      address: ContractUtils.contractAddress,
+      address: ContractUtils.contractAddress as `0x${string}`,
       abi: ContractUtils.goerliABI,
       functionName: 'totalSupply',
     });
@@ -126,15 +141,19 @@ function App(): JSX.Element {
   };
 
   const onWriteContract = async () => {
+    if (!client || !publicClient) {
+      return;
+    }
+
     const [account] = await client.getAddresses();
 
     const {request} = await publicClient.simulateContract({
       account,
-      address: ContractUtils.contractAddress,
+      address: ContractUtils.contractAddress as `0x${string}`,
       abi: ContractUtils.goerliABI,
       functionName: 'mint',
     });
-    const hash = await client.writeContract(request);
+    const hash = await client?.writeContract(request);
 
     return {
       method: 'write contract',
