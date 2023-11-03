@@ -8,7 +8,7 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest",
+    "test": "jest", 
     "e2e": "maestro test ../../.maestro",
     "e2e:studio": "maestro studio",
     "e2e:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro"
@@ -17,7 +17,6 @@
     "@react-native-async-storage/async-storage": "1.19.3",
     "@react-native-clipboard/clipboard": "1.11.2",
     "@react-native-community/netinfo": "9.4.1",
-    "@sentry/react-native": "5.9.2",
     "@walletconnect/encoding": "1.0.2",
     "@walletconnect/modal-react-native": "1.0.0-rc.13",
     "react": "18.2.0",

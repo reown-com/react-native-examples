@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as Sentry from '@sentry/react-native';
 
 import {
   useWalletConnectModal,
@@ -18,10 +17,6 @@ import {numberToHex, sanitizeHex, utf8ToHex} from '@walletconnect/encoding';
 
 import ConfigUtils from './utils/ConfigUtils';
 import {RequestModal} from './components/RequestModal';
-
-Sentry.init({
-  dsn: ConfigUtils.ENV_SENTRY_DSN,
-});
 
 function App(): JSX.Element {
   const {isConnected, provider, open} = useWalletConnectModal();
@@ -193,4 +188,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Sentry.wrap(App);
+export default App;
