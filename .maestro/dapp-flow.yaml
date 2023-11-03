@@ -1,5 +1,5 @@
 # flow.yaml
-appId: "com.walletconnect.modal.rnuprovidersample"
+appId: "com.walletconnect.modal.viem"
 ---
 - launchApp
 - extendedWaitUntil:
