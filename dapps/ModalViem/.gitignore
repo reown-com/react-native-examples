@@ -67,3 +67,4 @@ yarn-error.log
 
 # env files
 .env
+sentry.properties

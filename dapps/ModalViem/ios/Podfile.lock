@@ -493,8 +493,14 @@ PODS:
     - React-Core
   - RNCClipboard (1.11.2):
     - React-Core
+  - RNSentry (5.12.0):
+    - React-Core
+    - Sentry/HybridSDK (= 8.14.2)
   - RNSVG (13.13.0):
     - React-Core
+  - Sentry/HybridSDK (8.14.2):
+    - SentryPrivate (= 8.14.2)
+  - SentryPrivate (8.14.2)
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
@@ -567,6 +573,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
+  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -584,6 +591,8 @@ SPEC REPOS:
     - fmt
     - libevent
     - OpenSSL-Universal
+    - Sentry
+    - SentryPrivate
     - SocketRocket
     - YogaKit
 
@@ -673,6 +682,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
     :path: "../node_modules/@react-native-clipboard/clipboard"
+  RNSentry:
+    :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   Yoga:
@@ -733,7 +744,10 @@ SPEC CHECKSUMS:
   ReactCommon: 4b2bdcb50a3543e1c2b2849ad44533686610826d
   RNCAsyncStorage: c913ede1fa163a71cea118ed4670bbaaa4b511bb
   RNCClipboard: 3f0451a8100393908bea5c5c5b16f96d45f30bfc
+  RNSentry: 22ec5cbcdfffeea7fae88695467a3af5f8d94790
   RNSVG: ed492aaf3af9ca01bc945f7a149d76d62e73ec82
+  Sentry: e0ea366f95ebb68f26d6030d8c22d6b2e6d23dd0
+  SentryPrivate: 949a21fa59872427edc73b524c3ec8456761d97f
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

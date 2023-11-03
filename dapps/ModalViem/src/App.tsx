@@ -12,6 +12,8 @@ import {
   WalletConnectModal,
 } from '@walletconnect/modal-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
+import * as Sentry from '@sentry/react-native';
+import {ENV_SENTRY_DSN} from '@env';
 
 import {
   createPublicClient,
@@ -26,6 +28,12 @@ import {mainnet} from 'viem/chains';
 import ContractUtils from './utils/ContractUtils';
 import ConfigUtils from './utils/ConfigUtils';
 import {RequestModal} from './components/RequestModal';
+
+if (!__DEV__ && ENV_SENTRY_DSN) {
+  Sentry.init({
+    dsn: ENV_SENTRY_DSN,
+  });
+}
 
 function App(): JSX.Element {
   const {isConnected, provider, open} = useWalletConnectModal();
