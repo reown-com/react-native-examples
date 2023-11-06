@@ -1,6 +1,5 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
-apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -76,7 +75,7 @@ android {
 
     namespace "com.modalviem"
     defaultConfig {
-        applicationId "com.walletconnect.modal.rnuprovidersample"
+        applicationId "com.walletconnect.modal.uprovider"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

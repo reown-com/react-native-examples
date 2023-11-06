@@ -75,7 +75,7 @@ android {
 
     namespace "com.modalviem"
     defaultConfig {
-        applicationId "com.walletconnect.modal.rnetherssample"
+        applicationId "com.walletconnect.modal.ethers"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

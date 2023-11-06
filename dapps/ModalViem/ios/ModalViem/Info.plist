@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>ModalViem</string>
+	<string>Modal RN</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,7 +26,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.walletconnect.modal.rnviemsample</string>
+			<string>com.walletconnect.modal.viem</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>wcmviemsample</string>

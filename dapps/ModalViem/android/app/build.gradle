@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
+apply from: new File(["node", "--print", "require.resolve('@sentry/react-native/package.json')"].execute().text.trim(), "../sentry.gradle")
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -75,7 +76,7 @@ android {
 
     namespace "com.modalviem"
     defaultConfig {
-        applicationId "com.walletconnect.modal.rnviemsample"
+        applicationId "com.walletconnect.modal.viem"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

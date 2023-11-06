@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,6 +12,8 @@ import {
   WalletConnectModal,
 } from '@walletconnect/modal-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
+import * as Sentry from '@sentry/react-native';
+import {ENV_SENTRY_DSN} from '@env';
 
 import {
   createPublicClient,
@@ -27,29 +29,43 @@ import ContractUtils from './utils/ContractUtils';
 import ConfigUtils from './utils/ConfigUtils';
 import {RequestModal} from './components/RequestModal';
 
+if (!__DEV__ && ENV_SENTRY_DSN) {
+  Sentry.init({
+    dsn: ENV_SENTRY_DSN,
+  });
+}
+
 function App(): JSX.Element {
   const {isConnected, provider, open} = useWalletConnectModal();
-  const [client, setClient] = useState<WalletClient>();
-  const [publicClient, setPublicClient] = useState<PublicClient>();
   const [modalVisible, setModalVisible] = useState(false);
   const [rpcResponse, setRpcResponse] = useState<any>();
   const [loading, setLoading] = useState(false);
 
-  // Init viem when the wallet is connected
-  useEffect(() => {
-    if (isConnected && provider) {
-      const _client = createWalletClient({
-        transport: custom(provider),
-      });
+  const walletClient: WalletClient | undefined = useMemo(
+    () =>
+      createWalletClient({
+        chain: mainnet,
+        transport: custom({
+          async request({method, params}) {
+            return await provider?.request({method, params});
+          },
+        }),
+      }),
+    [provider],
+  );
 
-      const _publicClient = createPublicClient({
-        transport: custom(provider),
-      });
-
-      setClient(_client);
-      setPublicClient(_publicClient);
-    }
-  }, [isConnected, provider]);
+  const publicClient: PublicClient | undefined = useMemo(
+    () =>
+      createPublicClient({
+        chain: mainnet,
+        transport: custom({
+          async request({method, params}) {
+            return await provider?.request({method, params});
+          },
+        }),
+      }),
+    [provider],
+  );
 
   const onConnect = () => {
     if (isConnected) {
@@ -87,12 +103,12 @@ function App(): JSX.Element {
   };
 
   const onSendTransaction = async () => {
-    if (!client) {
+    if (!walletClient) {
       return;
     }
-    const [address] = await client.getAddresses();
+    const [address] = await walletClient.getAddresses();
 
-    const hash = await client.sendTransaction({
+    const hash = await walletClient.sendTransaction({
       chain: mainnet,
       account: address,
       to: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // vitalik.eth
@@ -106,12 +122,12 @@ function App(): JSX.Element {
   };
 
   const onSignMessage = async () => {
-    if (!client) {
+    if (!walletClient) {
       return;
     }
-    const [address] = await client.getAddresses();
+    const [address] = await walletClient.getAddresses();
 
-    const signature = await client.signMessage({
+    const signature = await walletClient.signMessage({
       account: address,
       message: 'Hello World!',
     });
@@ -122,10 +138,10 @@ function App(): JSX.Element {
   };
 
   const onReadContract = async () => {
-    if (!client || !publicClient) {
+    if (!walletClient || !publicClient) {
       return;
     }
-    const [account] = await client.getAddresses();
+    const [account] = await walletClient.getAddresses();
 
     const data = await publicClient.readContract({
       account,
@@ -141,11 +157,11 @@ function App(): JSX.Element {
   };
 
   const onWriteContract = async () => {
-    if (!client || !publicClient) {
+    if (!walletClient || !publicClient) {
       return;
     }
 
-    const [account] = await client.getAddresses();
+    const [account] = await walletClient.getAddresses();
 
     const {request} = await publicClient.simulateContract({
       account,
@@ -153,7 +169,7 @@ function App(): JSX.Element {
       abi: ContractUtils.goerliABI,
       functionName: 'mint',
     });
-    const hash = await client?.writeContract(request);
+    const hash = await walletClient?.writeContract(request);
 
     return {
       method: 'write contract',
@@ -161,14 +177,13 @@ function App(): JSX.Element {
     };
   };
 
-  return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.button} onPress={onConnect}>
-          <Text style={styles.buttonText}>
-            {isConnected ? 'Disconnect' : 'Connect'}
-          </Text>
-        </TouchableOpacity>
+  const actionButtonsTemplate = () => {
+    if (!isConnected) {
+      return null;
+    }
+
+    return (
+      <>
         <TouchableOpacity
           style={[styles.button, !isConnected && styles.buttonDisabled]}
           disabled={!isConnected}
@@ -193,6 +208,20 @@ function App(): JSX.Element {
           onPress={onAction(onWriteContract)}>
           <Text style={styles.buttonText}>Write Contract</Text>
         </TouchableOpacity>
+      </>
+    );
+  };
+
+  return (
+    <SafeAreaView>
+      <View style={styles.container}>
+        <Text style={styles.title}>WalletConnectModal + Viem</Text>
+        <TouchableOpacity style={styles.button} onPress={onConnect}>
+          <Text style={styles.buttonText}>
+            {isConnected ? 'Disconnect' : 'Connect'}
+          </Text>
+        </TouchableOpacity>
+        {actionButtonsTemplate()}
       </View>
       <WalletConnectModal
         projectId={ConfigUtils.ENV_PROJECT_ID}
@@ -212,6 +241,7 @@ function App(): JSX.Element {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#fff',
     alignItems: 'center',
     height: '100%',
     justifyContent: 'center',
@@ -221,8 +251,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#3396FF',
     borderRadius: 20,
-    width: 200,
-    height: 50,
+    width: 150,
+    height: 40,
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.1)',
     marginTop: 4,
@@ -232,7 +262,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontWeight: '700',
+    fontWeight: '500',
+  },
+  title: {
+    fontSize: 26,
+    color: '#333',
+    fontWeight: 'bold',
+    marginBottom: 30,
   },
 });
 

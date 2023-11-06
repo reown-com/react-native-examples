@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android --appId com.walletconnect.modal.rnetherssample",
-    "android:build": "cd android && ./gradlew assembleRelease",
+    "android": "react-native run-android --appId com.walletconnect.modal.ethers",
+    "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",

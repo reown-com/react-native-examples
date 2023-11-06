@@ -499,7 +499,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.modal.rnetherssample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.modal.ethers;
 				PRODUCT_NAME = ModalEthers;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -526,7 +526,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.modal.rnetherssample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.modal.ethers;
 				PRODUCT_NAME = ModalEthers;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

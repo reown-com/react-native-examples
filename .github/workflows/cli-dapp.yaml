@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: dapps/ModalUProvider
+        working-directory: dapps/ModalViem
     outputs:
       app: app/build/outputs/apk/release
     steps:
@@ -27,4 +27,4 @@ jobs:
       - uses: mobile-dev-inc/action-maestro-cloud@v1
         with:
           api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
-          app-file: dapps/ModalUProvider/android/app/build/outputs/apk/release/app-release.apk
+          app-file: dapps/ModalViem/android/app/build/outputs/apk/release/app-release.apk
