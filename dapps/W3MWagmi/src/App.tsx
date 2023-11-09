@@ -1,3 +1,4 @@
+import '@walletconnect/react-native-compat';
 import React from 'react';
 import {
   SafeAreaView,
@@ -96,7 +97,7 @@ function App(): JSX.Element {
         <Text style={styles.title} variant="large-600">
           Web3Modal + wagmi
         </Text>
-        <FlexView gap="xs">
+        <FlexView style={styles.buttonContainer}>
           <W3mButton balance="show" />
           <SignMessage />
           <SendTransaction />
@@ -114,6 +115,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
+  },
+  buttonContainer: {
+    gap: 4,
   },
   dark: {
     backgroundColor: '#141414',

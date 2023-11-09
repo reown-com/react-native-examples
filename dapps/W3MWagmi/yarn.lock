@@ -2838,6 +2838,15 @@
     fast-text-encoding "^1.0.6"
     react-native-url-polyfill "^2.0.0"
 
+"@walletconnect/react-native-compat@2.10.4":
+  version "2.10.4"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.10.4.tgz#2d28b61e63ab69b6d364d3946bdb13753bdecf30"
+  integrity sha512-U19UHlVfxBWO1Vslmx1W8mU5xbyejzDKeXOsK61nlByzc1SzPZUz5s6o4TTBox5ILBNOoZUitUY2d+vgfnKg8g==
+  dependencies:
+    events "3.3.0"
+    fast-text-encoding "^1.0.6"
+    react-native-url-polyfill "^2.0.0"
+
 "@walletconnect/relay-api@^1.0.9":
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/@walletconnect/relay-api/-/relay-api-1.0.9.tgz#f8c2c3993dddaa9f33ed42197fc9bfebd790ecaf"
@@ -2949,36 +2958,35 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/core-react-native@1.0.0-alpha.13":
-  version "1.0.0-alpha.13"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.0.0-alpha.13.tgz#b2fc77c7a11fc683d790129de3d6ca3947714fad"
-  integrity sha512-atq4nezAvVzUAS6JPSpCf0i9sGqwY4Ioi9IV3arhYVb/MmWBc7RNpDaQcM56mm7uHhLpjBVSXS9oYISlJTplTA==
+"@web3modal/core-react-native@1.0.0-beta.2":
+  version "1.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.0.0-beta.2.tgz#05ed90e565dcf69e32668d8c9e033dac69c110e4"
+  integrity sha512-St1JQUw02ywu+1qK/gbbp2kDyBq05B+s9AG+EvAxgw+YvkEveNVt1ZW5lZhmQ9qNQ/OrMniDviQsCvEO/QPp3A==
   dependencies:
-    valtio "1.11.2"
+    valtio "1.10.5"
 
-"@web3modal/scaffold-react-native@1.0.0-alpha.13":
-  version "1.0.0-alpha.13"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.0.0-alpha.13.tgz#3f241ba3fdab37a03baef82330db04b411e31823"
-  integrity sha512-Gch90vQtBbUFxu/9RZJbMlh2aPR7MM7Rm41PPDaGXxQotZIFhvV0YQ3YSwPx+Duc3qXkpiGh63rg3JMoWJ+VnQ==
+"@web3modal/scaffold-react-native@1.0.0-beta.2":
+  version "1.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.0.0-beta.2.tgz#796d92602f5edcfa73e91ef5196838cf2952070e"
+  integrity sha512-P4l2F4BmQ4P7/WkA5E5PnwfWv02NIv9c5AZYp+N9piXvIOrqXZEt1iFrc7p5SxZ29TAIMqT7YKB1byvduvF9Uw==
   dependencies:
-    "@web3modal/core-react-native" "1.0.0-alpha.13"
-    "@web3modal/ui-react-native" "1.0.0-alpha.13"
-    valtio "1.11.2"
+    "@web3modal/core-react-native" "1.0.0-beta.2"
+    "@web3modal/ui-react-native" "1.0.0-beta.2"
 
-"@web3modal/ui-react-native@1.0.0-alpha.13":
-  version "1.0.0-alpha.13"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.0.0-alpha.13.tgz#5cfbc5b3be0352f8353a5c6db83146d4ac2cdc33"
-  integrity sha512-NEwSN1GQ2cBB9mXJ6IgwmUyYh2TqtxKj7Ek0GDrdh15znh+Jdeonql4q5BNSQGzdk/b/w0v6id9XpBI1KjxFgg==
+"@web3modal/ui-react-native@1.0.0-beta.2":
+  version "1.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.0.0-beta.2.tgz#90384d9c51ab4b57e3cb094caa90c6033107ff31"
+  integrity sha512-BEUxxpO2hhHd81k+P72ZQQQaQ3Q/QZ59613ytzA857QV9BiN2dRUwAoHzGXBrdY+hcnlChb129HlR+STz22eGQ==
   dependencies:
     qrcode "1.5.3"
 
-"@web3modal/wagmi-react-native@1.0.0-alpha.13":
-  version "1.0.0-alpha.13"
-  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.0.0-alpha.13.tgz#a3fa32cb243cc7b843aaff066e076b15e0314ccb"
-  integrity sha512-jvDAqfP/xSFUqOf9fUXt0NlywZdGQiaBloc0UpGuB5pkQ9gjB0XLAD0iP6K2rSbpT4moRBXErNc91nJTwGOG6Q==
+"@web3modal/wagmi-react-native@1.0.0-beta.2":
+  version "1.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.0.0-beta.2.tgz#83c79c8053b6334172d2f1d78c2885d737fc2156"
+  integrity sha512-WE1o8FN7ChjtlZdWlBYDHG3kP7yZ6O249LPAMm25Xz0VwVAA/KZkzzr0YV9i4FdJurAk/u+ti2Trbvyru/saXQ==
   dependencies:
     "@walletconnect/react-native-compat" "2.10.1"
-    "@web3modal/scaffold-react-native" "1.0.0-alpha.13"
+    "@web3modal/scaffold-react-native" "1.0.0-beta.2"
 
 JSONStream@^1.3.5:
   version "1.3.5"
@@ -8188,6 +8196,14 @@ v8-to-istanbul@^9.0.1:
     "@jridgewell/trace-mapping" "^0.3.12"
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^2.0.0"
+
+valtio@1.10.5:
+  version "1.10.5"
+  resolved "https://registry.yarnpkg.com/valtio/-/valtio-1.10.5.tgz#7852125e3b774b522827d96bd9c76d285c518678"
+  integrity sha512-jTp0k63VXf4r5hPoaC6a6LCG4POkVSh629WLi1+d5PlajLsbynTMd7qAgEiOSPxzoX5iNvbN7iZ/k/g29wrNiQ==
+  dependencies:
+    proxy-compare "2.5.1"
+    use-sync-external-store "1.2.0"
 
 valtio@1.11.2:
   version "1.11.2"
