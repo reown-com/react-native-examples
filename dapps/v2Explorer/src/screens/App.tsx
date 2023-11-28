@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import '@walletconnect/react-native-compat';
-import {createWalletClient, createPublicClient, http, custom} from 'viem';
+import {createWalletClient, createPublicClient, custom} from 'viem';
 import {goerli} from 'viem/chains';
 
 import {
