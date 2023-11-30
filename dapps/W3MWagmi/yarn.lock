@@ -7,6 +7,11 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
+"@adraffy/ens-normalize@1.10.0":
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.10.0.tgz#d2a39395c587e092d77cbbc80acf956a54f38bf7"
+  integrity sha512-nA9XHtlAkYfJxY7bce8DcN7eKxWWCWkU+1GR9d+U6MbNpfwQp8TI7vqOsBsMcHoT4mBu2kypKoSKnghEzOOq5Q==
+
 "@adraffy/ens-normalize@1.9.4":
   version "1.9.4"
   resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.9.4.tgz#aae21cb858bbb0411949d5b7b3051f4209043f62"
@@ -2563,10 +2568,10 @@
     "@typescript-eslint/types" "5.62.0"
     eslint-visitor-keys "^3.3.0"
 
-"@wagmi/connectors@3.1.3":
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-3.1.3.tgz#112aad63a8042ce4a5a3dc4db9eaa4da0fbcf0fc"
-  integrity sha512-UgwsQKQDFObJVJMf9pDfFoXTv710o4zrTHyhIWKBTMMkLpCMsMxN5+ZaDhBYt/BgoRinfRYQo8uwuwLhxE6Log==
+"@wagmi/connectors@3.1.5":
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-3.1.5.tgz#88a6beaa0339004958b02caf694305c82a6432cc"
+  integrity sha512-aE4rWZbivqWa9HqjiLDPtwROH2b1Az+lBVMeZ3o/aFxGNGNEkdrSAMOUG15/UFy3VnN6HqGOtTobOBZ10JhfNQ==
   dependencies:
     "@coinbase/wallet-sdk" "^3.6.6"
     "@ledgerhq/connect-kit-loader" "^1.1.0"
@@ -2579,12 +2584,12 @@
     abitype "0.8.7"
     eventemitter3 "^4.0.7"
 
-"@wagmi/core@1.4.5":
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-1.4.5.tgz#bab215bfc1e028bc720b772d8d69dd12ae0c0ebf"
-  integrity sha512-N9luRb1Uk4tBN9kaYcQSWKE9AsRt/rvZaFt5IZech4JPzNN2sQlfhKd9GEjOXYRDqEPHdDvos7qyBKiDNTz4GA==
+"@wagmi/core@1.4.7":
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-1.4.7.tgz#ac6b2a69929654a5e09480884c9fb6150968e866"
+  integrity sha512-PiOIGni8ArQoPmuDylHX38zMt2nPnTYRIluIqiduKyGCM61X/tf10a0rafUMOOphDPudZu1TacNDhCSeoh/LEA==
   dependencies:
-    "@wagmi/connectors" "3.1.3"
+    "@wagmi/connectors" "3.1.5"
     abitype "0.8.7"
     eventemitter3 "^4.0.7"
     zustand "^4.3.1"
@@ -2829,19 +2834,10 @@
     randombytes "^2.1.0"
     tslib "1.14.1"
 
-"@walletconnect/react-native-compat@2.10.1":
-  version "2.10.1"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.10.1.tgz#39b6f1912c44bf1b0e9ce02ba63e4a30b92d6044"
-  integrity sha512-KZLj7wBcmnrzkqATZdW+OgrPvoceua54cgG460cpo3Yh81af+T51j3YFfpe7naCPW+EFX6SU5dpmMIe8jNfVjQ==
-  dependencies:
-    events "3.3.0"
-    fast-text-encoding "^1.0.6"
-    react-native-url-polyfill "^2.0.0"
-
-"@walletconnect/react-native-compat@2.10.4":
-  version "2.10.4"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.10.4.tgz#2d28b61e63ab69b6d364d3946bdb13753bdecf30"
-  integrity sha512-U19UHlVfxBWO1Vslmx1W8mU5xbyejzDKeXOsK61nlByzc1SzPZUz5s6o4TTBox5ILBNOoZUitUY2d+vgfnKg8g==
+"@walletconnect/react-native-compat@2.10.5":
+  version "2.10.5"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.10.5.tgz#5e7c36fdcdd3222db751e56ac07d0b0d99f39d7c"
+  integrity sha512-vyHIUFqknwsTSFNRdHnQTe8kAePKXNyxOvqWNsKSM1NhGFqvtwg+2sPtJGIyLuWy23iQumu/fW/FA5ff9bFUJA==
   dependencies:
     events "3.3.0"
     fast-text-encoding "^1.0.6"
@@ -2958,35 +2954,34 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/core-react-native@1.0.0-beta.2":
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.0.0-beta.2.tgz#05ed90e565dcf69e32668d8c9e033dac69c110e4"
-  integrity sha512-St1JQUw02ywu+1qK/gbbp2kDyBq05B+s9AG+EvAxgw+YvkEveNVt1ZW5lZhmQ9qNQ/OrMniDviQsCvEO/QPp3A==
+"@web3modal/core-react-native@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.0.1.tgz#1bbb6877f0f4e1117d5534232cec994338c861e2"
+  integrity sha512-PsOSu1EaikTlPfs4UbDG/WgNGBbLpHHXiLymgXITojQNoqmj71JXWvQJtlCH9/nbonV5YEitwVMZyh21RZznFA==
   dependencies:
     valtio "1.10.5"
 
-"@web3modal/scaffold-react-native@1.0.0-beta.2":
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.0.0-beta.2.tgz#796d92602f5edcfa73e91ef5196838cf2952070e"
-  integrity sha512-P4l2F4BmQ4P7/WkA5E5PnwfWv02NIv9c5AZYp+N9piXvIOrqXZEt1iFrc7p5SxZ29TAIMqT7YKB1byvduvF9Uw==
+"@web3modal/scaffold-react-native@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.0.1.tgz#b2994f43c6ebd3f031f785ca45f81d9f9dfec824"
+  integrity sha512-7+u3uCwsp1UsRajabWTaEzLiPB1vQXGO5bqGhRK+cn0wY+8w4TQD9Tq6nzdZ8XSWA61U51ocdpfFGVxXxFj1sA==
   dependencies:
-    "@web3modal/core-react-native" "1.0.0-beta.2"
-    "@web3modal/ui-react-native" "1.0.0-beta.2"
+    "@web3modal/core-react-native" "1.0.1"
+    "@web3modal/ui-react-native" "1.0.1"
 
-"@web3modal/ui-react-native@1.0.0-beta.2":
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.0.0-beta.2.tgz#90384d9c51ab4b57e3cb094caa90c6033107ff31"
-  integrity sha512-BEUxxpO2hhHd81k+P72ZQQQaQ3Q/QZ59613ytzA857QV9BiN2dRUwAoHzGXBrdY+hcnlChb129HlR+STz22eGQ==
+"@web3modal/ui-react-native@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.0.1.tgz#67bf54a96ba05b1463ab98c99ceca94376a17ca4"
+  integrity sha512-LFNa2vhr1CKAGysRv2kgXshr1FbZs7ltbU5KQv1lMV0iah/OVassFk+jUW4qfEEBlzETO14Fam5LXK4/m+0y/w==
   dependencies:
     qrcode "1.5.3"
 
-"@web3modal/wagmi-react-native@1.0.0-beta.2":
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.0.0-beta.2.tgz#83c79c8053b6334172d2f1d78c2885d737fc2156"
-  integrity sha512-WE1o8FN7ChjtlZdWlBYDHG3kP7yZ6O249LPAMm25Xz0VwVAA/KZkzzr0YV9i4FdJurAk/u+ti2Trbvyru/saXQ==
+"@web3modal/wagmi-react-native@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.0.1.tgz#86e7990de018b20fe942fd11e3294ba20050da8c"
+  integrity sha512-wrY4oHMwkKohiB7p5daCFng+3b0yfh+y6MrVdo8pS0ZkZJty34XpNu1lTq8F/l3Hxwh8HjrVC/SMVEDEh4r4Uw==
   dependencies:
-    "@walletconnect/react-native-compat" "2.10.1"
-    "@web3modal/scaffold-react-native" "1.0.0-beta.2"
+    "@web3modal/scaffold-react-native" "1.0.1"
 
 JSONStream@^1.3.5:
   version "1.3.5"
@@ -8218,12 +8213,12 @@ vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-viem@1.16.6:
-  version "1.16.6"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-1.16.6.tgz#78118c9269506a59e2bc4deab13f1646e113d3fc"
-  integrity sha512-jcWcFQ+xzIfDwexwPJRvCuCRJKEkK9iHTStG7mpU5MmuSBpACs4nATBDyXNFtUiyYTFzLlVEwWkt68K0nCSImg==
+viem@1.19.11:
+  version "1.19.11"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-1.19.11.tgz#de4ee7537ee036894bd818aa316a8faecaf017e9"
+  integrity sha512-dbsXEWDBZkByuzJXAs/e01j7dpUJ5ICF5WcyntFwf8Y97n5vnC/91lAleSa6DA5V4WJvYZbhDpYeTctsMAQnhA==
   dependencies:
-    "@adraffy/ens-normalize" "1.9.4"
+    "@adraffy/ens-normalize" "1.10.0"
     "@noble/curves" "1.2.0"
     "@noble/hashes" "1.3.2"
     "@scure/bip32" "1.3.2"
@@ -8251,15 +8246,15 @@ vlq@^1.0.0:
   resolved "https://registry.yarnpkg.com/vlq/-/vlq-1.0.1.tgz#c003f6e7c0b4c1edd623fd6ee50bbc0d6a1de468"
   integrity sha512-gQpnTgkubC6hQgdIcRdYGDSDc+SaujOdyesZQMv6JlfQee/9Mp0Qhnys6WxDWvQnL5WZdT7o2Ul187aSt0Rq+w==
 
-wagmi@1.4.5:
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.4.5.tgz#65ccf763e17892871196b6e5b188e29f0b08d3df"
-  integrity sha512-Ph62E6cO5n2Z8Z5LTyZrkaNprxTsbC4w0qZJT4OJdXrEELziI8z/b4FO6amVFXdu2rDp/wpvF56e4mhKC8/Kdw==
+wagmi@1.4.7:
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.4.7.tgz#4236007e3d01359c4281cce34b7884ddcae3fa02"
+  integrity sha512-/k8gA9S6RnwU6Qroxs630jAFvRIx+DSKpCP1owgAEGWc7D2bAJHljwRSCRTGENz48HyJ4V3R7KYV1yImxPvM3A==
   dependencies:
     "@tanstack/query-sync-storage-persister" "^4.27.1"
     "@tanstack/react-query" "^4.28.0"
     "@tanstack/react-query-persist-client" "^4.28.0"
-    "@wagmi/core" "1.4.5"
+    "@wagmi/core" "1.4.7"
     abitype "0.8.7"
     use-sync-external-store "^1.2.0"
 
