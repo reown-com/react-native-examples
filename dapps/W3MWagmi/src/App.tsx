@@ -1,6 +1,7 @@
 import '@walletconnect/react-native-compat';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
+  Linking,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -12,29 +13,19 @@ import {
   Web3Modal,
   W3mButton,
 } from '@web3modal/wagmi-react-native';
+
+import {CoinbaseWagmiConnector} from '@web3modal/coinbase-react-native';
 import {FlexView, Text} from '@web3modal/ui-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as Sentry from '@sentry/react-native';
 
 import {WagmiConfig} from 'wagmi';
-import {
-  arbitrum,
-  mainnet,
-  polygon,
-  avalanche,
-  bsc,
-  optimism,
-  gnosis,
-  zkSync,
-  zora,
-  base,
-  celo,
-  aurora,
-} from 'wagmi/chains';
+import {mainnet, polygon} from 'wagmi/chains';
 import {ENV_PROJECT_ID, ENV_SENTRY_DSN} from '@env';
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
+import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 
 if (!__DEV__ && ENV_SENTRY_DSN) {
   Sentry.init({
@@ -62,22 +53,21 @@ const clipboardClient = {
   },
 };
 
-const chains = [
-  mainnet,
-  polygon,
-  avalanche,
-  arbitrum,
-  bsc,
-  optimism,
-  gnosis,
-  zkSync,
-  zora,
-  base,
-  celo,
-  aurora,
-];
+const chains = [mainnet, polygon];
 
-const wagmiConfig = defaultWagmiConfig({chains, projectId, metadata});
+const coinbaseConnector = new CoinbaseWagmiConnector({
+  chains,
+  options: {
+    redirect: metadata?.redirect?.native || '',
+  },
+});
+
+const wagmiConfig = defaultWagmiConfig({
+  chains,
+  projectId,
+  metadata,
+  extraConnectors: [coinbaseConnector],
+});
 
 // 3. Create modal
 createWeb3Modal({
@@ -89,6 +79,18 @@ createWeb3Modal({
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+
+  // 4. Handle deeplinks for Coinbase SDK
+  useEffect(() => {
+    const sub = Linking.addEventListener('url', ({url}) => {
+      const handledBySdk = handleResponse(new URL(url));
+      if (!handledBySdk) {
+        // Handle other deeplinks
+      }
+    });
+
+    return () => sub.remove();
+  }, []);
 
   return (
     <WagmiConfig config={wagmiConfig}>
