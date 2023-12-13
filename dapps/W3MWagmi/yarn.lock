@@ -1780,10 +1780,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@coinbase/wallet-mobile-sdk@1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@coinbase/wallet-mobile-sdk/-/wallet-mobile-sdk-1.0.7.tgz#7fa0797abf62a383d09481d6d138266fd082774c"
-  integrity sha512-Gr60ig9l2GSKnELPBI0tWNdihV7CIe1lMSzHA0ayzTE5ZbWISWBMJ56ke94yfsxWfKmfCg9QmAd3/KEmeEdAEw==
+"@coinbase/wallet-mobile-sdk@1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@coinbase/wallet-mobile-sdk/-/wallet-mobile-sdk-1.0.8.tgz#503eb4486b1b31c45dfc9af58f8513dedff33520"
+  integrity sha512-CUYexAN/It3QPY/IgQe0U4YAkbG5mADlJfyqMHdu7kmjtjS7MCNPpzKRkbEVrI/XOiI/9bFPxWh1zuuAAY+mNw==
   dependencies:
     "@coinbase/wallet-sdk" "^3.5.1"
     "@metamask/safe-event-emitter" "2.0.0"
