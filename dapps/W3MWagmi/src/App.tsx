@@ -26,6 +26,7 @@ import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
+import {WriteContract} from './views/WriteContract';
 
 if (!__DEV__ && ENV_SENTRY_DSN) {
   Sentry.init({
@@ -104,6 +105,7 @@ function App(): JSX.Element {
           <SignMessage />
           <SendTransaction />
           <ReadContract />
+          <WriteContract />
         </FlexView>
         <Web3Modal />
       </SafeAreaView>

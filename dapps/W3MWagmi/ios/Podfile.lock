@@ -4,7 +4,7 @@ PODS:
   - CoinbaseWalletSDK/Client (1.0.4)
   - CoinbaseWalletSDK/CrossPlatform (1.0.4):
     - CoinbaseWalletSDK/Client
-  - CoinbaseWalletSDKExpo (1.0.8):
+  - CoinbaseWalletSDKExpo (1.0.10):
     - CoinbaseWalletSDK/CrossPlatform (= 1.0.4)
     - ExpoModulesCore
   - DoubleConversion (1.1.6)
@@ -759,7 +759,7 @@ SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CoinbaseWalletSDK: ea1f37512bbc69ebe07416e3b29bf840f5cc3152
-  CoinbaseWalletSDKExpo: 799d46016500c08191aba2ce1ef37262450ae8b8
+  CoinbaseWalletSDKExpo: c79420eb009f482f768c23b6768fc5b2d7c98777
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EXApplication: 042aa2e3f05258a16962ea1a9914bf288db9c9a1
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
