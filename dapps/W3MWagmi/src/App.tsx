@@ -20,7 +20,20 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import * as Sentry from '@sentry/react-native';
 
 import {WagmiConfig} from 'wagmi';
-import {mainnet, polygon} from 'wagmi/chains';
+import {
+  arbitrum,
+  mainnet,
+  polygon,
+  avalanche,
+  bsc,
+  optimism,
+  gnosis,
+  zkSync,
+  zora,
+  base,
+  celo,
+  aurora,
+} from 'wagmi/chains';
 import {ENV_PROJECT_ID, ENV_SENTRY_DSN} from '@env';
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
@@ -54,7 +67,20 @@ const clipboardClient = {
   },
 };
 
-const chains = [mainnet, polygon];
+const chains = [
+  mainnet,
+  polygon,
+  arbitrum,
+  avalanche,
+  bsc,
+  optimism,
+  gnosis,
+  zkSync,
+  zora,
+  base,
+  celo,
+  aurora,
+];
 
 const coinbaseConnector = new CoinbaseWagmiConnector({
   chains,
