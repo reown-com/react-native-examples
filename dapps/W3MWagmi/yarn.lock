@@ -4054,47 +4054,47 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/coinbase-react-native@1.0.2-canary.7":
-  version "1.0.2-canary.7"
-  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-react-native/-/coinbase-react-native-1.0.2-canary.7.tgz#c00f7a61be5cb90ff22e5ebd1ae850a4c25d26bd"
-  integrity sha512-zJlTQiKU0VWfA7Cpk+qlRLtbIYSbXmoh2eHzgN23nYMNUINpETTMpUVTjNhGQLDiLPN1cffJANqLM/LTUz4Ftg==
+"@web3modal/coinbase-react-native@1.1.0-canary.0":
+  version "1.1.0-canary.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-react-native/-/coinbase-react-native-1.1.0-canary.0.tgz#2305bf97b863ecbe531ad630b250755aeb644712"
+  integrity sha512-vU5sSztJepJGHroo48hxj1ljCQ3gqVMpDtI255EKt0h/8yz6Q02NWKxSgLZ70a65/8Wz1+ho0nA9viFSIgEQ4Q==
 
-"@web3modal/core-react-native@1.0.2-canary.7":
-  version "1.0.2-canary.7"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.0.2-canary.7.tgz#ff83cd04494f966e6e9400ab918d0110322a4d1e"
-  integrity sha512-KXlICZD8vS7R1sMEhJmfMFaxxdZ755An4iTy/casfaABjChobQJ0l2JHngBRM0JuhzXWsdslj/PiN4RcKtt5Cg==
+"@web3modal/core-react-native@1.1.0-canary.0":
+  version "1.1.0-canary.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.1.0-canary.0.tgz#3398d4cbb935e6ce9967e27090c89a5776f75974"
+  integrity sha512-ISEwOWwk/xZffxOpXun5Sanf9j7348r39PHtE5ODEKgVtwrMvFd05OAo98GEuCUuy6FZMBZXsTIH6Op+kCpWgw==
   dependencies:
     valtio "1.10.5"
 
-"@web3modal/scaffold-react-native@1.0.2-canary.7":
-  version "1.0.2-canary.7"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.0.2-canary.7.tgz#8aa5139f6fd7abd18abd78762dfd7cd4d8cbccea"
-  integrity sha512-92viyAsYRKJINcr3IxNxRp3VGJSNrwWoT375ifUO+TyeNcptyE8YqqHV0mFr1BEFmjqcX+ZDRlDuKiqrTvOz9A==
+"@web3modal/scaffold-react-native@1.1.0-canary.0":
+  version "1.1.0-canary.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.1.0-canary.0.tgz#6c8596621267bfac7dfdc5e4a2643d7ed2173bb4"
+  integrity sha512-VTxTBcjj+V1ofxU9IkBBT4b1sZ1nabfMAj5d4qwW44OVtmWhWjqMn8Y/ggDwuMFkMZv92Z/YTQ5MkrxafyL5IA==
   dependencies:
-    "@web3modal/core-react-native" "1.0.2-canary.7"
-    "@web3modal/ui-react-native" "1.0.2-canary.7"
+    "@web3modal/core-react-native" "1.1.0-canary.0"
+    "@web3modal/ui-react-native" "1.1.0-canary.0"
 
-"@web3modal/scaffold-utils-react-native@1.0.2-canary.7":
-  version "1.0.2-canary.7"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.0.2-canary.7.tgz#56d96e41fefbb1bc1b6b177086560c09698986f3"
-  integrity sha512-41aazet5Dvw8X6wm2iOlMp+yeVQiyjn6iPTPKO4difsri2abF+MixzXDni5Na6kNsj+JkzPIqUJCHL91YDhP4A==
+"@web3modal/scaffold-utils-react-native@1.1.0-canary.0":
+  version "1.1.0-canary.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.1.0-canary.0.tgz#652fdd59db72bfc5c7096bb3e06054bdff8231c6"
+  integrity sha512-gw0EIRI7XtSV/7RUagxrf92aDIFhPhFGysVZ11BQEjAWuqM1ZaM5VkV88E8IeNuDyUAfm1djgGoeYHsf+SG/XA==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.0.2-canary.7"
+    "@web3modal/scaffold-react-native" "1.1.0-canary.0"
 
-"@web3modal/ui-react-native@1.0.2-canary.7":
-  version "1.0.2-canary.7"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.0.2-canary.7.tgz#7bdcfced6c8971f91414628e4133f2a2246a162b"
-  integrity sha512-uB0FaYgVnoAsNFd0U/uPfV+hBx595LmAvyPfs5ZuLPogP4pbZ6gOtLDUvm0t43hXEygXMoVAL9zySAjOkl9RbQ==
+"@web3modal/ui-react-native@1.1.0-canary.0":
+  version "1.1.0-canary.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.1.0-canary.0.tgz#aca3bdde9db37787c872e286f32a406a589595a4"
+  integrity sha512-GNK9iqWDcXb0OVqGEoRU65ob3ojycSZMP/Oprfk2SNm6+lMXT23PBGdJP5odXF8R5Mq8499/VOfhscj8wBNZ4Q==
   dependencies:
     qrcode "1.5.3"
 
-"@web3modal/wagmi-react-native@1.0.2-canary.7":
-  version "1.0.2-canary.7"
-  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.0.2-canary.7.tgz#6bd6060e9bc507be8d02ea384e6a0ab1c1383948"
-  integrity sha512-dIYnAonyKLslHzwN7TqAHfeEwA3QgGm/C841gh2HLS+WLV73gIPpUQjtUL5wwVn21vztOT7qlfJAyMTzvEe/qw==
+"@web3modal/wagmi-react-native@1.1.0-canary.0":
+  version "1.1.0-canary.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.1.0-canary.0.tgz#6c7f09daf4f596c57d54dbc932cd342f77b490f0"
+  integrity sha512-a2+RkLV3BjopzsI2S3XuQCPUFMLV8L0ZXv/iAsYZmAcZktODfiCTX3Vq1rTOHca48CK80O/w5FS97mQI5S12OA==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.0.2-canary.7"
-    "@web3modal/scaffold-utils-react-native" "1.0.2-canary.7"
+    "@web3modal/scaffold-react-native" "1.1.0-canary.0"
+    "@web3modal/scaffold-utils-react-native" "1.1.0-canary.0"
 
 "@xmldom/xmldom@^0.8.8":
   version "0.8.10"
