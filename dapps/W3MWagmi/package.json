@@ -26,12 +26,8 @@
     "react-native-mmkv": "^2.11.0",
     "react-native-modal": "13.0.1",
     "react-native-svg": "13.14.0",
-    "viem": "1.20.3",
-    "wagmi": "1.4.12"
-  },
-  "resolutions": {
-    "@walletconnect/utils": "2.11.0-rc-338bee1",
-    "@walletconnect/ethereum-provider": "2.11.0-rc-338bee1"
+    "viem": "1.21.4",
+    "wagmi": "1.4.13"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
