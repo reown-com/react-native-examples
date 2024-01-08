@@ -45,6 +45,7 @@
       <package android:name="com.ripio.android"/>
       <package android:name="kh.com.sabay.sabaywallet"/>
       <package android:name="com.tokoin.wallet"/>
+      <package android:name="org.toshi" />
     </queries>
 
     <application

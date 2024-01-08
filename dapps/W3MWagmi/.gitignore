@@ -70,3 +70,8 @@ sentry.properties
 
 # Others
 .env
+
+# Expo
+.expo
+dist/
+web-build/

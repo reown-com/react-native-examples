@@ -64,6 +64,7 @@
 		<string>haha</string>
 		<string>modularwallet</string>
 		<string>coinomi</string>
+		<string>cbwallet</string>
 	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
