@@ -22,7 +22,9 @@ export function WriteContract() {
       writeAsync({
         args: [address, 100000],
       });
-    } catch {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return isConnected ? (
