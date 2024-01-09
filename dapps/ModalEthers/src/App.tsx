@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 
+import '@walletconnect/react-native-compat';
 import {
   useWalletConnectModal,
   WalletConnectModal,
@@ -87,6 +88,7 @@ function App(): JSX.Element {
       to: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // vitalik.eth
       value: amount,
       chainId,
+      data: '0x',
     };
 
     // Send the transaction using the signer
