@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {Dimensions, StyleSheet, TextInput, View} from 'react-native';
 import Dialog from 'react-native-dialog';
 import {ConnectButton} from './ConnectButton';
@@ -6,25 +6,21 @@ import {ConnectButton} from './ConnectButton';
 interface copyURIDialogProps {
   setVisible: () => void;
   visible: boolean;
-  pair: (uri:string) => void;
+  pair: (uri: string) => void;
 }
-export function CopyURIDialog({
-  visible,
-  setVisible,
-  pair,
-}: copyURIDialogProps) {
+export function CopyURIDialog({visible, setVisible, pair}: copyURIDialogProps) {
   const windowWidth = Dimensions.get('window').width;
   const [uri, setUri] = useState<string>('');
 
   const onClose = () => {
     setVisible();
     setUri('');
-  }
+  };
 
   const onPair = () => {
     pair(uri);
     onClose();
-  }
+  };
 
   return (
     <Dialog.Container
@@ -46,11 +42,15 @@ export function CopyURIDialog({
             placeholder="wc://a13aef..."
             clearButtonMode="always"
             enablesReturnKeyAutomatically
-            autoCapitalize='none'
+            autoCapitalize="none"
           />
         </View>
 
-        <ConnectButton onPress={onPair} disabled={!uri} style={styles.connectButton} />
+        <ConnectButton
+          onPress={onPair}
+          disabled={!uri}
+          style={styles.connectButton}
+        />
         <View style={styles.cancelContainer}>
           <Dialog.Button
             style={styles.cancelText}
@@ -99,9 +99,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     letterSpacing: 0.38,
     lineHeight: 24,
-    textTransform: 'capitalize'
+    textTransform: 'capitalize',
   },
   connectButton: {
-    marginVertical: 4
-  }
+    marginVertical: 4,
+  },
 });

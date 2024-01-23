@@ -14,8 +14,7 @@ const IndividualSession = ({name, icons, url}: IndividualSessionProps) => {
     <View style={styles.sessionContainer}>
       <View style={styles.flexRow}>
         {icon ? (
-          <Image source={{uri: icon}} style={styles.iconContainer}
-          />
+          <Image source={{uri: icon}} style={styles.iconContainer} />
         ) : null}
         <View style={styles.textContainer}>
           <Text style={styles.mainText}>{name ? name : 'No Name'}</Text>

@@ -1,34 +1,25 @@
 import React from 'react';
-import {Text, StatusBar, useColorScheme, View, StyleSheet} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {Text, View, StyleSheet} from 'react-native';
 
-import {currentETHAddress} from '../utils/Web3WalletClient';
-
-import {eip155Wallets} from '../utils/EIP155Wallet';
+import {eip155Wallets} from '../utils/EIP155WalletUtil';
+import {useSnapshot} from 'valtio';
+import SettingsStore from '../store/SettingsStore';
 
 const SettingsScreen = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const backgroundStyle = {
-    flex: 1,
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const {eip155Address} = useSnapshot(SettingsStore.state);
 
   return (
     <View>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
       <View style={styles.textContainer}>
         <View style={styles.smallMarginTop}>
           <Text style={styles.normalText}>ETH Address:</Text>
-          <Text style={styles.greyText}>{currentETHAddress}</Text>
+          <Text style={styles.greyText}>{eip155Address}</Text>
         </View>
 
         <View style={styles.smallMarginTop}>
           <Text style={styles.normalText}>ETH Seed Phrase:</Text>
           <Text style={styles.greyText}>
-            {eip155Wallets[currentETHAddress].getMnemonic()}
+            {eip155Wallets[eip155Address].getMnemonic()}
           </Text>
         </View>
       </View>

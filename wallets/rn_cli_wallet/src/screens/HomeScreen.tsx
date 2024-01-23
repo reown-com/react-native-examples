@@ -1,255 +1,74 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
   SafeAreaView,
-  StatusBar,
-  useColorScheme,
   View,
   StyleSheet,
   TouchableOpacity,
   Image,
+  Linking,
 } from 'react-native';
 
-import {SignClientTypes} from '@walletconnect/types';
-import {SessionTypes} from '@walletconnect/types';
-import {getSdkError} from '@walletconnect/utils';
-import {currentETHAddress, web3wallet, _pair} from '../utils/Web3WalletClient';
+import {web3wallet} from '../utils/WalletConnectUtil';
 
-import {PairModal} from '../components/Modals/PairModal';
-
-import {SignModal} from '../components/Modals/SignModal';
 import Sessions from '../components/HomeScreen/Sessions';
 import ActionButtons from '../components/HomeScreen/ActionButtons';
 import {useNavigation} from '@react-navigation/native';
-import {EIP155_SIGNING_METHODS} from '../data/EIP155';
-import {SignTypedDataModal} from '../components/Modals/SignTypedDataModal';
-import {SendTransactionModal} from '../components/Modals/SendTransactionModal';
-import {W3WText} from '../components/W3WText';
+
+import Text from '../components/Text';
 import {TextContent} from '../utils/Text';
 import {CopyURIDialog} from '../components/CopyURIDialog';
-import {handleDeepLinkRedirect} from '../utils/LinkingUtils';
+import Modal from '../components/Modal';
+import {useInitialURL} from '../hooks/useInitialUrl';
 
-/**
-  @notice: HomeScreen for Web3Wallet Example
-  @dev: Placed the async functions on this page for simplicity
-
-  Async Functions:
-  1) handleAccept(): To handle the initial connection proposal accept event
-  2) handleCancel(): For the CopyWCURIModal Cancel.
-  3) pair(): To handle the initial connection reject event
-  4) onSessionProposal: To handle the initial pairing proposal event
-  5) onSessionRequest: To handle the session request event (i.e. eth_sign, eth_signTypedData, eth_sendTransaction)
-
-**/
-const HomeScreen = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+export default function HomeScreen() {
   const navigation = useNavigation();
-
-  // Modal Visible State
-  const [approvalModal, setApprovalModal] = useState(false);
-  const [signModal, setSignModal] = useState(false);
-  const [signTypedDataModal, setSignTypedDataModal] = useState(false);
-  const [sendTransactionModal, setSendTransactionModal] = useState(false);
+  const {url: initialUrl, processing} = useInitialURL();
   const [copyDialog, setCopyDialog] = useState(false);
-  const [successPair, setSuccessPair] = useState(false);
-
-  // Pairing State
-  const [pairedProposal, setPairedProposal] =
-    useState<SignClientTypes.EventArguments['session_proposal']>();
-
-  const [requestEventData, setRequestEventData] = useState();
-  const [requestSession, setRequestSession] = useState();
-
-  // To Revist on Dark Mode Sprint
-  const backgroundStyle = {
-    flex: 1,
-    padding: 16,
-    backgroundColor: isDarkMode ? '#141414' : '#FFFFFF',
-  };
-
-  async function handleDecline() {
-    setApprovalModal(false);
-
-    if (!pairedProposal) {
-      return;
-    }
-
-    web3wallet.rejectSession({
-      id: pairedProposal.id,
-      reason: getSdkError('USER_REJECTED_METHODS'),
-    });
-  }
-
-  async function handleAccept() {
-    const {id, params} = pairedProposal;
-    const {requiredNamespaces, relays} = params;
-
-    if (pairedProposal) {
-      const namespaces: SessionTypes.Namespaces = {};
-      Object.keys(requiredNamespaces).forEach(key => {
-        const accounts: string[] = [];
-        requiredNamespaces[key].chains.map(chain => {
-          [currentETHAddress].map(acc => accounts.push(`${chain}:${acc}`));
-        });
-
-        namespaces[key] = {
-          accounts,
-          methods: requiredNamespaces[key].methods,
-          events: requiredNamespaces[key].events,
-        };
-      });
-
-      const session = await web3wallet.approveSession({
-        id,
-        relayProtocol: relays[0].protocol,
-        namespaces,
-      });
-
-      setApprovalModal(false);
-      setSuccessPair(true);
-
-      const sessionMetadata = session?.peer?.metadata;
-      handleDeepLinkRedirect(sessionMetadata?.redirect);
-    }
-  }
 
   const handleCancel = () => {
     setCopyDialog(false);
   };
 
   async function pair(uri: string) {
-    const pairing = await _pair({uri});
+    await web3wallet.pair({uri});
     setCopyDialog(false);
-
-    // @notice iOS has an issue with modals, so we need to delay the approval modal
-    setTimeout(() => {
-      setApprovalModal(true);
-    }, 1200);
-    return pairing;
   }
 
-  // ToDo / Consider: How best to move onSessionProposal() + onSessionRequest() + the if statement Listeners.
-  // Know there is an events config we did in web-examples app
-  const onSessionProposal = useCallback(
-    (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-      setPairedProposal(proposal);
-    },
-    [],
-  );
+  const deeplinkCallback = useCallback((event: any) => {
+    const {url} = event;
+    const uri = url.split('wc?uri=')[1];
 
-  const onSessionRequest = useCallback(
-    async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-      const {topic, params} = requestEvent;
-      const {request} = params;
-      const requestSessionData =
-        web3wallet.engine.signClient.session.get(topic);
+    if (uri) {
+      pair(uri);
+    }
+  }, []);
 
-      switch (request.method) {
-        case EIP155_SIGNING_METHODS.ETH_SIGN:
-        case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-          setRequestSession(requestSessionData);
-          setRequestEventData(requestEvent);
-          setSignModal(true);
-          return;
-
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
-          setRequestSession(requestSessionData);
-          setRequestEventData(requestEvent);
-          setSignTypedDataModal(true);
-          return;
-        case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
-          setRequestSession(requestSessionData);
-          setRequestEventData(requestEvent);
-          setSendTransactionModal(true);
-          return;
+  // Handle deep link if app was closed
+  useEffect(() => {
+    if (initialUrl && !processing) {
+      const uri = initialUrl.split('wc?uri=')[1];
+      if (uri) {
+        pair(uri);
       }
-    },
-    [],
-  );
+    }
+  }, [initialUrl, processing]);
 
   useEffect(() => {
-    if (
-      copyDialog ||
-      approvalModal ||
-      signTypedDataModal ||
-      signModal ||
-      sendTransactionModal
-    ) {
-      web3wallet.on('session_proposal', onSessionProposal);
-      web3wallet.on('session_request', onSessionRequest);
-    }
-  }, [
-    approvalModal,
-    copyDialog,
-    signModal,
-    signTypedDataModal,
-    sendTransactionModal,
-    requestEventData,
-    requestSession,
-    onSessionProposal,
-    onSessionRequest,
-    successPair,
-  ]);
+    // Handle deep link if app was in background
+    Linking.addEventListener('url', deeplinkCallback);
+  }, [deeplinkCallback]);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-
-      <PairModal
-        proposal={pairedProposal}
-        open={setApprovalModal}
-        visible={approvalModal}
-        handleAccept={handleAccept}
-        handleDecline={handleDecline}
-      />
-
+    <SafeAreaView style={styles.backgroundStyle}>
       <CopyURIDialog
         pair={pair}
         setVisible={handleCancel}
         visible={copyDialog}
       />
 
-      {requestEventData && requestSession && signModal && (
-        <SignModal
-          visible={signModal}
-          setVisible={setSignModal}
-          requestEvent={requestEventData}
-          requestSession={requestSession}
-          setRequestEventData={setRequestEventData}
-          setRequestSession={setRequestSession}
-        />
-      )}
-
-      {requestEventData && requestSession && sendTransactionModal && (
-        <SendTransactionModal
-          visible={sendTransactionModal}
-          setVisible={setSendTransactionModal}
-          requestEvent={requestEventData}
-          requestSession={requestSession}
-          setRequestEventData={setRequestEventData}
-          setRequestSession={setRequestSession}
-        />
-      )}
-
-      {requestEventData && requestSession && signTypedDataModal && (
-        <SignTypedDataModal
-          visible={signTypedDataModal}
-          setVisible={setSignTypedDataModal}
-          requestEvent={requestEventData}
-          requestSession={requestSession}
-          setRequestEventData={setRequestEventData}
-          setRequestSession={setRequestSession}
-        />
-      )}
-
       <View style={styles.mainScreenContainer}>
         <View style={styles.flexRow}>
-          <W3WText value={TextContent.AppsTitle} />
+          <Text>{TextContent.AppsTitle}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
             <Image
               source={require('../assets/SettingsIcon.png')}
@@ -260,17 +79,20 @@ const HomeScreen = () => {
         <Sessions />
         <ActionButtons setCopyDialog={setCopyDialog} />
       </View>
+      <Modal />
     </SafeAreaView>
   );
-};
-
-export default HomeScreen;
+}
 
 const styles = StyleSheet.create({
+  backgroundStyle: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: 'white',
+  },
   mainScreenContainer: {
     padding: 20,
     flex: 1,
-    // backgroundColor:'white'
   },
   imageContainer: {
     height: 24,

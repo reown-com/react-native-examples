@@ -1,4 +1,4 @@
-import {EIP155_CHAINS, TEIP155Chain} from '../data/EIP155';
+import {EIP155_CHAINS, TEIP155Chain} from '../data/EIP155Data';
 import {utils} from 'ethers';
 
 /**

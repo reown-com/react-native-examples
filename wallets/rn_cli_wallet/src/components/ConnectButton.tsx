@@ -1,11 +1,17 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet, Text, StyleProp, ViewStyle} from 'react-native';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface IConnectButtonProps {
   onPress: () => void;
   disabled?: boolean;
-  style?: StyleProp<ViewStyle>
+  style?: StyleProp<ViewStyle>;
 }
 
 //ToDo: QOL - Replace Text with W3WText Component
@@ -13,7 +19,7 @@ export function ConnectButton({onPress, disabled, style}: IConnectButtonProps) {
   return (
     <TouchableOpacity onPress={onPress} disabled={disabled} style={style}>
       <LinearGradient
-        colors={disabled ? ['#9EA9A9', '#798686'] :['#3396FF', '#0D7DF2']}
+        colors={disabled ? ['#9EA9A9', '#798686'] : ['#3396FF', '#0D7DF2']}
         style={styles.blueButtonContainer}>
         <Text style={styles.mainText}>Connect</Text>
       </LinearGradient>

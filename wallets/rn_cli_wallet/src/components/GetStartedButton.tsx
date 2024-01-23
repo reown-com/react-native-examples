@@ -2,7 +2,7 @@ import React from 'react';
 import {TouchableOpacity, StyleSheet, Text} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {useNavigation} from '@react-navigation/native';
-import {web3wallet} from '../utils/Web3WalletClient';
+import {web3wallet} from '../utils/WalletConnectUtil';
 
 export function GetStartedButton() {
   const navigation = useNavigation();
