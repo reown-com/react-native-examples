@@ -42,3 +42,12 @@ export type ThemeKeys =
   | 'gray-glass-060'
   | 'gray-glass-080'
   | 'gray-glass-090';
+
+// Navigation
+
+export type RootStackParamList = {
+  Onboarding: undefined;
+  Home: undefined;
+  Settings: undefined;
+  SessionDetail: {topic: string};
+};

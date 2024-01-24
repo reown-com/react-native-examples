@@ -37,8 +37,7 @@ const OnboardingScreen = () => {
         resizeMode="contain"
         style={styles.backgroundImage}>
         <View style={styles.textContainer}>
-          <Text>Web3Wallet</Text>
-          <Text>React Native</Text>
+          <Text>RN-Web3Wallet</Text>
         </View>
         <GetStartedButton />
       </ImageBackground>
@@ -59,7 +58,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textContainer: {
-    marginTop: 16,
+    marginTop: 64,
     paddingHorizontal: 16,
     alignItems: 'center',
   },
