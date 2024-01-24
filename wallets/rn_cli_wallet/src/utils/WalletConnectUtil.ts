@@ -77,7 +77,7 @@ export async function updateSignClientChainId(
       topic: session.topic,
       event: {
         name: 'chainChanged',
-        data: parseInt(chainId.split(':')[1]),
+        data: parseInt(chainId.split(':')[1], 10),
       },
       chainId: chainId,
     };
