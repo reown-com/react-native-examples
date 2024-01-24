@@ -19,7 +19,7 @@ export function ModalHeader({metadata, intention}: ModalHeaderProps) {
       />
 
       <Text style={styles.title}>{metadata?.name || 'Unknown'}</Text>
-      <Text style={styles.desc}>{intention || 'wants to connect'}</Text>
+      {intention && <Text style={styles.desc}>{intention}</Text>}
       <Text style={[styles.url, {color: Theme['fg-200']}]}>
         {metadata?.url || 'unknown domain'}
       </Text>

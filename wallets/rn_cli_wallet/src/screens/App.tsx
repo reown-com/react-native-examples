@@ -7,6 +7,7 @@ import * as Sentry from '@sentry/react-native';
 import OnboardingScreen from './OnboardingScreen';
 import HomeScreen from './HomeScreen';
 import SettingsScreen from './Settings';
+import SessionDetail from './SessionDetail';
 
 Sentry.init({
   dsn: ENV_SENTRY_DSN,
@@ -26,7 +27,12 @@ const App = () => {
         <Stack.Screen
           name="Settings"
           component={SettingsScreen}
-          options={{headerShown: true, headerTitle: ''}}
+          options={{headerShown: true}}
+        />
+        <Stack.Screen
+          name="SessionDetail"
+          component={SessionDetail}
+          options={{headerShown: true, headerTitle: 'Session Details'}}
         />
       </Stack.Navigator>
     </NavigationContainer>

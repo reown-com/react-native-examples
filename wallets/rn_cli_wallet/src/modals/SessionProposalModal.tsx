@@ -171,6 +171,7 @@ export default function SessionProposalModal() {
 
   return (
     <RequestModal
+      intention="wants to connect"
       metadata={requestMetadata}
       onApprove={onApprove}
       onReject={onReject}

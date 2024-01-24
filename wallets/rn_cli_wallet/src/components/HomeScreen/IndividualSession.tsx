@@ -1,17 +1,32 @@
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
-import {View, Image, Text, StyleSheet} from 'react-native';
+import {View, Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import SvgChevronRight from '../../assets/ChevronRight';
+import {useTheme} from '../../hooks/useTheme';
 
 interface IndividualSessionProps {
   name: string | undefined;
   icons: string;
   url: string;
+  topic: string;
 }
 
-//ToDo: Change to TouchableOpacity and navigate to Session on next Sprint
-const IndividualSession = ({name, icons, url}: IndividualSessionProps) => {
+const IndividualSession = ({
+  name,
+  icons,
+  url,
+  topic,
+}: IndividualSessionProps) => {
   const icon = icons ? icons : null;
+  const navigator = useNavigation();
+  const Theme = useTheme();
+
+  const onPress = () => {
+    navigator.navigate('SessionDetail', {topic: topic});
+  };
+
   return (
-    <View style={styles.sessionContainer}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.flexRow}>
         {icon ? (
           <Image source={{uri: icon}} style={styles.iconContainer} />
@@ -21,15 +36,15 @@ const IndividualSession = ({name, icons, url}: IndividualSessionProps) => {
           <Text style={styles.greyText}>{url.slice(8)} </Text>
         </View>
       </View>
-      {/* // ToDo: Add in Chevron  */}
-    </View>
+      <SvgChevronRight fill={Theme['fg-250']} height={16} width={16} />
+    </TouchableOpacity>
   );
 };
 
 export default IndividualSession;
 
 const styles = StyleSheet.create({
-  sessionContainer: {
+  container: {
     height: 80,
     paddingVertical: 10,
     flexDirection: 'row',

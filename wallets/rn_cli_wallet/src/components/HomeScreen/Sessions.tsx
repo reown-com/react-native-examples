@@ -33,6 +33,7 @@ function Sessions() {
             icons={icons.toString()}
             name={name}
             url={url}
+            topic={session.topic}
           />
         );
       })}

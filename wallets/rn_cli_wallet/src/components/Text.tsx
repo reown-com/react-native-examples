@@ -1,8 +1,9 @@
 import React from 'react';
+import {TextProps} from 'react-native';
 import {StyleSheet, Text} from 'react-native';
 
 interface IW3WTextProps {
-  children: string;
+  children: TextProps['children'];
   weight?: 'medium' | 'thin';
   type?: string;
   color?: string;

@@ -4,6 +4,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  StyleProp,
+  ViewStyle,
 } from 'react-native';
 import {useTheme} from '../hooks/useTheme';
 
@@ -13,6 +15,7 @@ export interface ActionButtonProps {
   secondary?: boolean;
   loading?: boolean;
   disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function ActionButton({
@@ -21,6 +24,7 @@ export function ActionButton({
   secondary = false,
   loading,
   disabled,
+  style,
 }: ActionButtonProps) {
   const Theme = useTheme();
   const backgroundColor = secondary ? Theme['bg-200'] : Theme['accent-100'];
@@ -30,7 +34,7 @@ export function ActionButton({
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled || loading}
-      style={[styles.container, {backgroundColor}]}>
+      style={[styles.container, {backgroundColor}, style]}>
       {loading ? (
         <ActivityIndicator color={loaderColor} />
       ) : (

@@ -1,18 +1,26 @@
 import React from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  ScrollView,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {Tag} from '../Tag';
 import {useTheme} from '../../hooks/useTheme';
 
 interface IEventProps {
   events?: string[];
+  style?: StyleProp<ViewStyle>;
 }
 
-export function Events({events}: IEventProps) {
+export function Events({events, style}: IEventProps) {
   const Theme = useTheme();
   return (
     <ScrollView
       bounces={false}
-      style={[styles.container, {backgroundColor: Theme['bg-150']}]}
+      style={[styles.container, {backgroundColor: Theme['bg-150']}, style]}
       contentContainerStyle={styles.content}>
       <Text style={[styles.title, {color: Theme['fg-150']}]}>Events</Text>
       <View style={styles.row}>
