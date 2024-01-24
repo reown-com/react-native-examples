@@ -20,6 +20,7 @@ const IndividualSession = ({
   const icon = icons ? icons : null;
   const navigator = useNavigation();
   const Theme = useTheme();
+  const textColor = Theme['fg-100'];
 
   const onPress = () => {
     navigator.navigate('SessionDetail', {topic: topic});
@@ -32,7 +33,9 @@ const IndividualSession = ({
           <Image source={{uri: icon}} style={styles.iconContainer} />
         ) : null}
         <View style={styles.textContainer}>
-          <Text style={styles.mainText}>{name ? name : 'No Name'}</Text>
+          <Text style={[styles.mainText, {color: textColor}]}>
+            {name ? name : 'No Name'}
+          </Text>
           <Text style={styles.greyText}>{url.slice(8)} </Text>
         </View>
       </View>

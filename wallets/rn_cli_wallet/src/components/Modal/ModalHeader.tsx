@@ -10,6 +10,7 @@ interface ModalHeaderProps {
 
 export function ModalHeader({metadata, intention}: ModalHeaderProps) {
   const Theme = useTheme();
+  const color = Theme['fg-100'];
   // TODO: add domain verif
   return (
     <View style={styles.container}>
@@ -18,8 +19,8 @@ export function ModalHeader({metadata, intention}: ModalHeaderProps) {
         style={[styles.logo, {borderColor: Theme['gray-glass-010']}]}
       />
 
-      <Text style={styles.title}>{metadata?.name || 'Unknown'}</Text>
-      {intention && <Text style={styles.desc}>{intention}</Text>}
+      <Text style={[styles.title, {color}]}>{metadata?.name || 'Unknown'}</Text>
+      {intention && <Text style={[styles.desc, {color}]}>{intention}</Text>}
       <Text style={[styles.url, {color: Theme['fg-200']}]}>
         {metadata?.url || 'unknown domain'}
       </Text>
