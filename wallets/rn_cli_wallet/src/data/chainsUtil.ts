@@ -10,6 +10,7 @@ export function getChainData(chainId?: string) {
   }
   const [namespace, reference] = chainId.toString().split(':');
   return Object.values(ALL_CHAINS).find(
-    chain => chain.chainId == reference && chain.namespace === namespace,
+    chain =>
+      chain.chainId.toString() === reference && chain.namespace === namespace,
   );
 }

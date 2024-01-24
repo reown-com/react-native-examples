@@ -1,11 +1,8 @@
 import React, {useCallback, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
-import {Tag} from '../components/Tag';
 import {Methods} from '../components/Modal/Methods';
 import {Message} from '../components/Modal/Message';
-import {AcceptRejectButton} from '../components/AcceptRejectButton';
-import {ModalHeader} from '../components/Modal/ModalHeader';
 import {
   approveEIP155Request,
   rejectEIP155Request,
@@ -14,6 +11,9 @@ import {web3wallet} from '../utils/WalletConnectUtil';
 import {handleDeepLinkRedirect} from '../utils/LinkingUtils';
 import ModalStore from '../store/ModalStore';
 import {useSnapshot} from 'valtio';
+import {RequestModal} from './RequestModal';
+import {getChainData} from '../data/chainsUtil';
+import {Chains} from '../components/Modal/Chains';
 
 export default function SessionSendTransactionModal() {
   const {data} = useSnapshot(ModalStore.state);
@@ -27,15 +27,13 @@ export default function SessionSendTransactionModal() {
   const topic = requestEvent?.topic;
   const params = requestEvent?.params;
   const chainId = params?.chainId;
+  const chain = getChainData(chainId);
   const request = params?.request;
   const transaction = request?.params[0];
   const method = requestEvent?.params?.request?.method;
 
-  const requestName = requestSession?.peer?.metadata?.name;
-  const requestIcon = requestSession?.peer?.metadata?.icons[0];
-  const requestURL = requestSession?.peer?.metadata?.url;
-  const requestMetadata: SignClientTypes.Metadata =
-    requestSession?.peer?.metadata;
+  const requestMetadata = requestSession?.peer
+    ?.metadata as SignClientTypes.Metadata;
 
   // Handle approve action
   const onApprove = useCallback(async () => {
@@ -79,72 +77,25 @@ export default function SessionSendTransactionModal() {
   }, [requestEvent, topic]);
 
   return (
-    <View style={styles.modalContainer}>
-      <ModalHeader name={requestName} url={requestURL} icon={requestIcon} />
-
-      <View style={styles.divider} />
-
-      <View style={styles.chainContainer}>
-        <View style={styles.flexRowWrapped}>
-          <Tag value={chainId} grey={true} />
-        </View>
+    <RequestModal
+      intention="sign a transaction"
+      metadata={requestMetadata}
+      onApprove={onApprove}
+      onReject={onReject}
+      approveLoader={isLoadingApprove}
+      rejectLoader={isLoadingReject}>
+      <View style={styles.container}>
+        <Chains chains={[chain]} />
         <Methods methods={[method]} />
         <Message message={JSON.stringify(transaction, null, 2)} />
       </View>
-
-      <View style={styles.flexRow}>
-        <AcceptRejectButton accept={false} onPress={onReject} />
-        <AcceptRejectButton accept={true} onPress={onApprove} />
-      </View>
-    </View>
+    </RequestModal>
   );
 }
 
 const styles = StyleSheet.create({
-  chainContainer: {
-    width: '90%',
-    padding: 10,
-    borderRadius: 25,
-    backgroundColor: 'rgba(80, 80, 89, 0.1)',
-  },
-  flexRow: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  flexRowWrapped: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 34,
-    paddingTop: 30,
-    backgroundColor: 'rgba(242, 242, 247, 0.9)',
+  container: {
     width: '100%',
-    position: 'absolute',
-    bottom: 44,
-  },
-  rejectButton: {
-    color: 'red',
-  },
-  dappTitle: {
-    fontSize: 22,
-    lineHeight: 28,
-    fontWeight: '700',
-  },
-  imageContainer: {
-    width: 48,
-    height: 48,
-  },
-  divider: {
-    height: 1,
-    width: '100%',
-    backgroundColor: 'rgba(60, 60, 67, 0.36)',
-    marginVertical: 16,
+    marginTop: 8,
   },
 });

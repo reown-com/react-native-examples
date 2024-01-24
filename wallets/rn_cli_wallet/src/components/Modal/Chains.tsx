@@ -1,25 +1,29 @@
 import React from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {Tag} from '../Tag';
+import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useTheme} from '../../hooks/useTheme';
 
-interface IMethodsProps {
-  methods?: string[];
+interface IChainProps {
+  chains: {logo: string}[];
 }
 
-export function Methods({methods}: IMethodsProps) {
+export function Chains({chains}: IChainProps) {
   const Theme = useTheme();
   return (
     <ScrollView
       bounces={false}
       style={[styles.container, {backgroundColor: Theme['bg-150']}]}
       contentContainerStyle={styles.content}>
-      <Text style={[styles.title, {color: Theme['fg-150']}]}>Methods</Text>
+      <Text style={[styles.title, {color: Theme['fg-150']}]}>
+        Blockchain(s)
+      </Text>
       <View style={styles.row}>
-        {methods?.length &&
-          methods?.map((method: string, index: number) => (
-            <Tag key={index} value={method} />
-          ))}
+        {chains?.map((chain, index: number) => (
+          <Image
+            key={index}
+            source={{uri: chain?.logo}}
+            style={styles.chainLogo}
+          />
+        ))}
       </View>
     </ScrollView>
   );
@@ -27,8 +31,8 @@ export function Methods({methods}: IMethodsProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 4,
     borderRadius: 20,
+    padding: 8,
     marginBottom: 8,
     maxHeight: 120,
     width: '100%',
@@ -36,7 +40,11 @@ const styles = StyleSheet.create({
   content: {
     alignItems: 'flex-start',
     flexWrap: 'wrap',
-    padding: 8,
+  },
+  chainLogo: {
+    height: 25,
+    width: 25,
+    borderRadius: 100,
   },
   title: {
     fontSize: 12,
@@ -45,10 +53,12 @@ const styles = StyleSheet.create({
     margin: 4,
   },
   row: {
-    display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    columnGap: 8,
+    rowGap: 8,
+    paddingHorizontal: 4,
   },
 });

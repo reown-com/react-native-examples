@@ -1,13 +1,10 @@
 import React, {useCallback, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
-
+import {useSnapshot} from 'valtio';
 import {SignClientTypes} from '@walletconnect/types';
-import {Tag} from '../components/Tag';
 import {Methods} from '../components/Modal/Methods';
 import {Message} from '../components/Modal/Message';
 import {getSignParamsMessage} from '../utils/HelperUtil';
-import {AcceptRejectButton} from '../components/AcceptRejectButton';
-import {ModalHeader} from '../components/Modal/ModalHeader';
 import {
   approveEIP155Request,
   rejectEIP155Request,
@@ -15,10 +12,12 @@ import {
 import {web3wallet} from '../utils/WalletConnectUtil';
 import {handleDeepLinkRedirect} from '../utils/LinkingUtils';
 import ModalStore from '../store/ModalStore';
-import {useSnapshot} from 'valtio';
 import Text from '../components/Text';
+import {RequestModal} from './RequestModal';
+import {Chains} from '../components/Modal/Chains';
+import {getChainData} from '../data/chainsUtil';
 
-export default function SessionSignTypedDataModal() {
+export default function SessionSignModal() {
   // Get request and wallet data from store
   const {data} = useSnapshot(ModalStore.state);
   const requestEvent = data?.requestEvent;
@@ -29,15 +28,12 @@ export default function SessionSignTypedDataModal() {
   // Get required request data
   const {topic, params} = requestEvent;
   const {request, chainId} = params;
+  const chain = getChainData(chainId);
+  const requestMetadata = requestSession?.peer
+    ?.metadata as SignClientTypes.Metadata;
 
-  const method = request?.method;
-  const message = getSignParamsMessage(request?.params);
-
-  const requestName = requestSession?.peer?.metadata?.name;
-  const requestIcon = requestSession?.peer?.metadata?.icons[0];
-  const requestURL = requestSession?.peer?.metadata?.url;
-  const requestMetadata: SignClientTypes.Metadata =
-    requestSession?.peer?.metadata;
+  // Get message, convert it to UTF8 string if it is valid hex
+  const message = getSignParamsMessage(request.params);
 
   // Handle approve action (logic varies based on request method)
   const onApprove = useCallback(async () => {
@@ -80,78 +76,33 @@ export default function SessionSignTypedDataModal() {
     }
   }, [requestEvent, topic]);
 
+  const method = requestEvent?.params?.request?.method;
+
   // Ensure request and wallet are defined
   if (!requestEvent || !requestSession) {
     return <Text>Missing request data</Text>;
   }
 
   return (
-    <View style={styles.modalContainer}>
-      <ModalHeader name={requestName} url={requestURL} icon={requestIcon} />
-
-      <View style={styles.divider} />
-
-      <View style={styles.chainContainer}>
-        <View style={styles.flexRowWrapped}>
-          <Tag value={chainId} grey={true} />
-        </View>
+    <RequestModal
+      intention="wants to request a signature"
+      metadata={requestMetadata}
+      onApprove={onApprove}
+      onReject={onReject}
+      approveLoader={isLoadingApprove}
+      rejectLoader={isLoadingReject}>
+      <View style={styles.container}>
+        <Chains chains={[chain]} />
         <Methods methods={[method]} />
-        <Message message={JSON.stringify(message, null, 2)} />
+        <Message message={message} />
       </View>
-
-      <View style={styles.flexRow}>
-        <AcceptRejectButton accept={false} onPress={onReject} />
-        <AcceptRejectButton accept={true} onPress={onApprove} />
-      </View>
-    </View>
+    </RequestModal>
   );
 }
 
 const styles = StyleSheet.create({
-  chainContainer: {
-    width: '90%',
-    padding: 10,
-    borderRadius: 25,
-    backgroundColor: 'rgba(80, 80, 89, 0.1)',
-  },
-  flexRow: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  flexRowWrapped: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 34,
-    paddingTop: 30,
-    backgroundColor: 'rgba(242, 242, 247, 0.9)',
+  container: {
     width: '100%',
-    position: 'absolute',
-    bottom: 44,
-  },
-  rejectButton: {
-    color: 'red',
-  },
-  dappTitle: {
-    fontSize: 22,
-    lineHeight: 28,
-    fontWeight: '700',
-  },
-  imageContainer: {
-    width: 48,
-    height: 48,
-  },
-  divider: {
-    height: 1,
-    width: '100%',
-    backgroundColor: 'rgba(60, 60, 67, 0.36)',
-    marginVertical: 16,
+    marginTop: 8,
   },
 });

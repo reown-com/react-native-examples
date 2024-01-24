@@ -1,43 +1,48 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Tag} from '../Tag';
+import {useTheme} from '../../hooks/useTheme';
 
 interface IEventProps {
-  events: [];
+  events?: string[];
 }
 
 export function Events({events}: IEventProps) {
+  const Theme = useTheme();
   return (
-    <View style={styles.methodsContainer}>
-      <Text style={styles.methodEventsTitle}>Events</Text>
-      <View style={styles.flexRowWrapped}>
-        {events?.map((method: string, index: number) => (
-          <Tag key={index} value={method} />
+    <ScrollView
+      bounces={false}
+      style={[styles.container, {backgroundColor: Theme['bg-150']}]}
+      contentContainerStyle={styles.content}>
+      <Text style={[styles.title, {color: Theme['fg-150']}]}>Events</Text>
+      <View style={styles.row}>
+        {events?.map((event: string, index: number) => (
+          <Tag key={index} value={event} />
         ))}
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  methodsContainer: {
-    backgroundColor: 'white',
+  container: {
     borderRadius: 20,
     padding: 8,
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'flex-start',
     marginBottom: 8,
+    maxHeight: 120,
+    width: '100%',
   },
-  methodEventsTitle: {
-    color: 'rgba(121, 134, 134, 1)',
-    fontSize: 13,
+  content: {
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+  },
+  title: {
+    fontSize: 12,
     lineHeight: 18,
     fontWeight: '600',
-    paddingLeft: 6,
-    paddingVertical: 4,
+    margin: 4,
   },
-  flexRowWrapped: {
+  row: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',

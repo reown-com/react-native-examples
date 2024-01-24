@@ -2,10 +2,10 @@ import React, {useCallback, useMemo} from 'react';
 import RNModal from 'react-native-modal';
 import {useSnapshot} from 'valtio';
 import ModalStore from '../store/ModalStore';
-import SessionProposalModal from '../composites/SessionProposalModal';
-import SessionSignModal from '../composites/SessionSignModal';
-import SessionSendTransactionModal from '../composites/SessionSendTransactionModal';
-import SessionSignTypedDataModal from '../composites/SessionSignTypedDataModal';
+import SessionProposalModal from '../modals/SessionProposalModal';
+import SessionSignModal from '../modals/SessionSignModal';
+import SessionSendTransactionModal from '../modals/SessionSendTransactionModal';
+import SessionSignTypedDataModal from '../modals/SessionSignTypedDataModal';
 import {View} from 'react-native';
 
 export default function Modal() {

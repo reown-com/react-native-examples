@@ -1,10 +1,9 @@
 import React, {useCallback, useMemo, useState} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
-import {AcceptRejectButton} from '../components/AcceptRejectButton';
+import {View, StyleSheet} from 'react-native';
+
 import {Events} from '../components/Modal/Events';
 import {Methods} from '../components/Modal/Methods';
-import {ModalHeader} from '../components/Modal/ModalHeader';
-import {Tag} from '../components/Tag';
+
 import {useSnapshot} from 'valtio';
 import ModalStore from '../store/ModalStore';
 import {SignClientTypes} from '@walletconnect/types';
@@ -15,8 +14,12 @@ import {web3wallet} from '../utils/WalletConnectUtil';
 import SettingsStore from '../store/SettingsStore';
 import {getChainData} from '../data/chainsUtil';
 import {handleDeepLinkRedirect} from '../utils/LinkingUtils';
+import {RequestModal} from './RequestModal';
+import {useTheme} from '../hooks/useTheme';
+import {Chains} from '../components/Modal/Chains';
 
 export default function SessionProposalModal() {
+  const Theme = useTheme();
   // Get proposal data and wallet address from store
   const data = useSnapshot(ModalStore.state);
   const proposal = data?.data
@@ -24,14 +27,12 @@ export default function SessionProposalModal() {
 
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
-  console.log('proposal', data.data?.proposal);
 
-  const name = proposal?.params?.proposer?.metadata?.name;
-  const url = proposal?.params?.proposer?.metadata.url;
   const methods = proposal?.params?.optionalNamespaces?.eip155?.methods;
   const events = proposal?.params?.optionalNamespaces?.eip155?.events;
-  // const chains = proposal?.params?.optionalNamespaces?.eip155?.chains;
-  const icon = proposal?.params.proposer.metadata.icons[0];
+
+  const requestMetadata: SignClientTypes.Metadata =
+    proposal?.params.proposer.metadata;
 
   const supportedNamespaces = useMemo(() => {
     // eip155
@@ -60,7 +61,9 @@ export default function SessionProposalModal() {
       proposal.params.requiredNamespaces,
     )) {
       const chains = key.includes(':') ? key : values.chains;
-      required.push(chains);
+      if (chains) {
+        required.push(chains);
+      }
     }
 
     const optional = [];
@@ -68,7 +71,9 @@ export default function SessionProposalModal() {
       proposal.params.optionalNamespaces,
     )) {
       const chains = key.includes(':') ? key : values.chains;
-      optional.push(chains);
+      if (chains) {
+        optional.push(chains);
+      }
     }
     console.log('requestedChains', [
       ...new Set([...required.flat(), ...optional.flat()]),
@@ -77,10 +82,12 @@ export default function SessionProposalModal() {
   }, [proposal]);
 
   // the chains that are supported by the wallet from the proposal
-  const supportedChains = useMemo(
-    () => requestedChains.map(chain => getChainData(chain!)),
-    [requestedChains],
-  );
+  const supportedChains = useMemo(() => {
+    const chains = requestedChains
+      .map(chain => getChainData(chain))
+      .filter(chain => chain !== undefined);
+    return chains;
+  }, [requestedChains]);
 
   // get required chains that are not supported by the wallet
   const notSupportedChains = useMemo(() => {
@@ -108,16 +115,6 @@ export default function SessionProposalModal() {
   }, [proposal, supportedChains]);
 
   console.log('notSupportedChains', notSupportedChains);
-
-  const getAddress = useCallback((namespace?: string) => {
-    if (!namespace) {
-      return 'N/A';
-    }
-    switch (namespace) {
-      case 'eip155':
-        return eip155Addresses[0];
-    }
-  }, []);
 
   // Hanlde approve action, construct session namespace
   const onApprove = useCallback(async () => {
@@ -171,86 +168,24 @@ export default function SessionProposalModal() {
   }, [proposal]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.modalContainer}>
-        <ModalHeader name={name} url={url} icon={icon} />
-
-        <View style={styles.divider} />
-        <Text style={styles.permissionsText}>REQUESTED PERMISSIONS:</Text>
-
-        <View style={styles.chainContainer}>
-          <View style={styles.flexRowWrapped}>
-            {supportedChains?.map((chain, index: number) => {
-              return (
-                <Tag
-                  key={index}
-                  value={chain?.name.toUpperCase() || ''}
-                  grey={true}
-                />
-              );
-            })}
-          </View>
-
-          <Methods methods={methods} />
-          <Events events={events} />
-        </View>
-
-        <View style={styles.flexRow}>
-          <AcceptRejectButton accept={false} onPress={onReject} />
-          <AcceptRejectButton accept={true} onPress={onApprove} />
-        </View>
-      </View>
-    </View>
+    <RequestModal
+      metadata={requestMetadata}
+      onApprove={onApprove}
+      onReject={onReject}
+      approveLoader={isLoadingApprove}
+      rejectLoader={isLoadingReject}>
+      <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
+      <Chains chains={supportedChains} />
+      <Methods methods={methods} />
+      <Events events={events} />
+    </RequestModal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  flexRow: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  flexRowWrapped: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 34,
-    backgroundColor: 'rgba(242, 242, 247, 0.8)',
-    width: '100%',
-    paddingTop: 30,
-    minHeight: '70%',
-    position: 'absolute',
-    bottom: 44,
-  },
-  permissionsText: {
-    color: 'rgba(60, 60, 67, 0.6)',
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: '400',
-    paddingBottom: 8,
-  },
-  chainContainer: {
-    width: '90%',
-    padding: 10,
-    borderRadius: 25,
-    backgroundColor: 'rgba(80, 80, 89, 0.1)',
-  },
   divider: {
     height: 1,
     width: '100%',
-    backgroundColor: 'rgba(60, 60, 67, 0.36)',
     marginVertical: 16,
   },
 });
