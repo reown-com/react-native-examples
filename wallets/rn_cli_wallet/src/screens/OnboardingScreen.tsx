@@ -37,7 +37,7 @@ const OnboardingScreen = () => {
         resizeMode="contain"
         style={styles.backgroundImage}>
         <View style={styles.textContainer}>
-          <Text>RN-Web3Wallet</Text>
+          <Text>RN Wallet</Text>
         </View>
         <GetStartedButton />
       </ImageBackground>
