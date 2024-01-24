@@ -11,10 +11,17 @@ export function GetStartedButton() {
   const disabled = !web3wallet;
   const backgroundColor = disabled ? Theme['bg-250'] : Theme['accent-100'];
 
+  const onPress = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Home'}],
+    });
+  };
+
   return (
     <TouchableOpacity
       hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
-      onPress={() => navigation.navigate('Home')}
+      onPress={onPress}
       style={[styles.container, {backgroundColor}]}
       disabled={disabled}>
       <Text style={!web3wallet ? styles.disabledText : styles.mainText}>

@@ -38,7 +38,7 @@ export default function HomeScreen() {
     const uri = url.split('wc?uri=')[1];
 
     if (uri) {
-      pair(uri);
+      pair(decodeURIComponent(uri));
     }
   }, []);
 
@@ -47,7 +47,7 @@ export default function HomeScreen() {
     if (initialUrl && !processing) {
       const uri = initialUrl.split('wc?uri=')[1];
       if (uri) {
-        pair(uri);
+        pair(decodeURIComponent(uri));
       }
     }
   }, [initialUrl, processing]);
