@@ -39,5 +39,6 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: 24,
     height: 24,
+    tintColor: 'white',
   },
 });

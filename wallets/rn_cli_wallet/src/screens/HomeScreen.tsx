@@ -67,7 +67,7 @@ export default function HomeScreen() {
 
       <View style={styles.mainScreenContainer}>
         <View style={styles.flexRow}>
-          <Text>Apps</Text>
+          <Text>Connections</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
             <Image
               source={require('../assets/SettingsIcon.png')}

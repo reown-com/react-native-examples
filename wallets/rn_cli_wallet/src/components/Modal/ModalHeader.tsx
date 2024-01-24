@@ -1,6 +1,7 @@
 import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
+import {useTheme} from '../../hooks/useTheme';
 
 interface ModalHeaderProps {
   metadata?: SignClientTypes.Metadata;
@@ -8,19 +9,20 @@ interface ModalHeaderProps {
 }
 
 export function ModalHeader({metadata, intention}: ModalHeaderProps) {
+  const Theme = useTheme();
   // TODO: add domain verif
   return (
     <View style={styles.container}>
       <Image
-        source={{
-          uri: metadata?.icons[0] ?? '',
-        }}
-        style={styles.logo}
+        source={{uri: metadata?.icons[0] ?? ''}}
+        style={[styles.logo, {borderColor: Theme['gray-glass-010']}]}
       />
 
       <Text style={styles.title}>{metadata?.name || 'Unknown'}</Text>
       <Text style={styles.desc}>{intention || 'wants to connect'}</Text>
-      <Text style={styles.url}>{metadata?.url || 'unknown domain'}</Text>
+      <Text style={[styles.url, {color: Theme['fg-200']}]}>
+        {metadata?.url || 'unknown domain'}
+      </Text>
     </View>
   );
 }
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   title: {
     fontSize: 22,
@@ -47,7 +48,6 @@ const styles = StyleSheet.create({
   },
   url: {
     marginTop: 6,
-    color: 'rgba(60, 60, 67, 0.6)',
     fontSize: 12,
     fontWeight: '500',
   },

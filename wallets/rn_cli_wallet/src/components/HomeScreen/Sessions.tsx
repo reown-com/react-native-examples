@@ -15,8 +15,8 @@ function Sessions() {
       <View style={styles.container}>
         <Image source={TickImage} style={styles.imageContainer} />
         <Text style={styles.greyText}>
-          Apps you connect with will appear here. To connect scan or paste the
-          code that is displayed in the app.
+          Apps you connect with will appear here. To connect paste the code that
+          is displayed in the app.
         </Text>
       </View>
     );
@@ -64,20 +64,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   greyText: {
-    fontSize: 15,
-    lineHeight: 21,
+    fontSize: 14,
     color: '#798686',
-    width: '80%',
     textAlign: 'center',
   },
   imageContainer: {
     height: 30,
     width: 35,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   container: {
     flex: 1,
-    height: '100%',
+    paddingHorizontal: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },

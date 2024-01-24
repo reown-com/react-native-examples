@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
     color: '#141414',
     letterSpacing: 0.374,
   },
-
   greyMainText: {
     paddingVertical: 20,
     textAlign: 'center',
