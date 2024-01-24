@@ -15,7 +15,6 @@ import ActionButtons from '../components/HomeScreen/ActionButtons';
 import {useNavigation} from '@react-navigation/native';
 
 import Text from '../components/Text';
-import {TextContent} from '../utils/Text';
 import {CopyURIDialog} from '../components/CopyURIDialog';
 import Modal from '../components/Modal';
 import {useInitialURL} from '../hooks/useInitialUrl';
@@ -68,7 +67,7 @@ export default function HomeScreen() {
 
       <View style={styles.mainScreenContainer}>
         <View style={styles.flexRow}>
-          <Text>{TextContent.AppsTitle}</Text>
+          <Text>Apps</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
             <Image
               source={require('../assets/SettingsIcon.png')}
@@ -99,7 +98,6 @@ const styles = StyleSheet.create({
     width: 24,
   },
   flexRow: {
-    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

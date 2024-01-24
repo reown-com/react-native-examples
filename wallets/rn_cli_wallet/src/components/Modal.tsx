@@ -42,6 +42,7 @@ export default function Modal() {
     <RNModal
       backdropOpacity={0.6}
       hideModalContentWhileAnimating
+      onBackdropPress={onClose}
       onModalHide={onClose}
       isVisible={open}>
       {componentView}

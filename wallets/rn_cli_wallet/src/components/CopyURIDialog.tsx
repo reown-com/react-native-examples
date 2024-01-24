@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
   },
   cancelContainer: {
     height: 46,
-    display: 'flex',
   },
   flexRow: {
     flex: 1,

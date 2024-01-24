@@ -1,9 +1,9 @@
 import React from 'react';
 import {TouchableOpacity, StyleSheet, Image} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 
 import clipboardImage from '../assets/Copy.png';
 import QRCodeImage from '../assets/QRCode.png';
+import {useTheme} from '../hooks/useTheme';
 
 interface CircleActionButtonProps {
   copyImage: boolean;
@@ -14,24 +14,22 @@ export function CircleActionButton({
   copyImage,
   handlePress,
 }: CircleActionButtonProps) {
+  const Theme = useTheme();
   return (
-    <TouchableOpacity onPress={handlePress}>
-      <LinearGradient
-        colors={['#3396FF', '#0D7DF2']}
-        style={[styles.blueButtonContainer, styles.shadow]}>
-        <Image
-          source={copyImage ? clipboardImage : QRCodeImage}
-          style={styles.imageContainer}
-        />
-      </LinearGradient>
+    <TouchableOpacity
+      onPress={handlePress}
+      style={[styles.container, {backgroundColor: Theme['accent-100']}]}>
+      <Image
+        source={copyImage ? clipboardImage : QRCodeImage}
+        style={styles.imageContainer}
+      />
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  blueButtonContainer: {
+  container: {
     marginRight: 20,
-    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 28,
@@ -41,16 +39,5 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: 24,
     height: 24,
-  },
-  shadow: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.34,
-    shadowRadius: 6.27,
-
-    elevation: 10,
   },
 });

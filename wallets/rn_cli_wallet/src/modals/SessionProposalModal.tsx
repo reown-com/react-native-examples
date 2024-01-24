@@ -25,6 +25,8 @@ export default function SessionProposalModal() {
   const proposal = data?.data
     ?.proposal as SignClientTypes.EventArguments['session_proposal'];
 
+  console.log('proposal', proposal);
+
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 

@@ -4,7 +4,6 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {GetStartedButton} from '../components/GetStartedButton';
 import Text from '../components/Text';
-import {TextContent} from '../utils/Text';
 import useInitialization from '../hooks/useInitialization';
 import backgroundImageSrc from '../assets/ethCalculatorBG.png';
 import useWalletConnectEventsManager from '../hooks/useWalletConnectEventsManager';
@@ -38,10 +37,8 @@ const OnboardingScreen = () => {
         resizeMode="contain"
         style={styles.backgroundImage}>
         <View style={styles.textContainer}>
-          <Text>'Welcome'</Text>
-          <Text color="grey" type="body">
-            {TextContent.welcomeDescription}
-          </Text>
+          <Text>Web3Wallet</Text>
+          <Text>React Native</Text>
         </View>
         <GetStartedButton />
       </ImageBackground>

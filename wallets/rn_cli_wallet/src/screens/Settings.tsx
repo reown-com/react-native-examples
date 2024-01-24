@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     padding: 16,
-    display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
@@ -76,7 +75,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 50,
     right: 0,
-    display: 'flex',
     flexDirection: 'row',
   },
 });

@@ -1,32 +1,33 @@
 import React from 'react';
 import {TouchableOpacity, StyleSheet, Text} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import {useNavigation} from '@react-navigation/native';
+
 import {web3wallet} from '../utils/WalletConnectUtil';
+import {useTheme} from '../hooks/useTheme';
+import {useNavigation} from '@react-navigation/native';
 
 export function GetStartedButton() {
   const navigation = useNavigation();
+  const Theme = useTheme();
+  const disabled = !web3wallet;
+  const backgroundColor = disabled ? Theme['bg-250'] : Theme['accent-100'];
 
   return (
     <TouchableOpacity
       hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
       onPress={() => navigation.navigate('Home')}
-      disabled={!web3wallet}>
-      <LinearGradient
-        colors={!web3wallet ? ['#E5E5E5', '#E1EAEE'] : ['#3396FF', '#0D7DF2']}
-        style={styles.blueButtonContainer}>
-        <Text style={!web3wallet ? styles.disabledText : styles.mainText}>
-          {!web3wallet ? 'Initializing...' : 'Get Started'}
-        </Text>
-      </LinearGradient>
+      style={[styles.container, {backgroundColor}]}
+      disabled={disabled}>
+      <Text style={!web3wallet ? styles.disabledText : styles.mainText}>
+        {!web3wallet ? 'Initializing...' : 'Get Started'}
+      </Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  blueButtonContainer: {
+  container: {
     marginBottom: 48,
-    display: 'flex',
+
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,

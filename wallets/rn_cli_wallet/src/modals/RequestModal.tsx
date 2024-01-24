@@ -41,7 +41,6 @@ export function RequestModal({
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
     alignItems: 'center',
     borderRadius: 34,
     width: '100%',

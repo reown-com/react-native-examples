@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
   sessionContainer: {
     height: 80,
     paddingVertical: 10,
-    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -60,7 +59,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   flexRow: {
-    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

@@ -44,7 +44,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   row: {
-    display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',

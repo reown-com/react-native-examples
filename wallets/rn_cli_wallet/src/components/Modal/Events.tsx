@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
     margin: 4,
   },
   row: {
-    display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
