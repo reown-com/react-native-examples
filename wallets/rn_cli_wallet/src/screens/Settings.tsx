@@ -1,91 +1,80 @@
-import React from 'react';
-import {Text, StatusBar, useColorScheme, View, StyleSheet} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import React, {useEffect} from 'react';
+import {Text, View, StyleSheet, Alert, ScrollView} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Clipboard from '@react-native-clipboard/clipboard';
+import {useSnapshot} from 'valtio';
 
-import {currentETHAddress} from '../utils/Web3WalletClient';
+import {eip155Wallets} from '../utils/EIP155WalletUtil';
+import SettingsStore from '../store/SettingsStore';
+import {Card} from '../components/Card';
+import {useTheme} from '../hooks/useTheme';
 
-import {eip155Wallets} from '../utils/EIP155Wallet';
+function SettingsScreen() {
+  const Theme = useTheme();
+  const {eip155Address} = useSnapshot(SettingsStore.state);
+  const [clientId, setClientId] = React.useState('');
 
-const SettingsScreen = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const backgroundStyle = {
-    flex: 1,
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  useEffect(() => {
+    async function getClientId() {
+      const _clientId = await AsyncStorage.getItem('WALLETCONNECT_CLIENT_ID');
+      if (_clientId) {
+        setClientId(_clientId);
+      }
+    }
+    getClientId();
+  }, []);
+
+  const copyToClipboard = (value: string) => {
+    Clipboard.setString(value);
+    Alert.alert('Value copied to clipboard');
   };
 
   return (
-    <View>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <View style={styles.textContainer}>
-        <View style={styles.smallMarginTop}>
-          <Text style={styles.normalText}>ETH Address:</Text>
-          <Text style={styles.greyText}>{currentETHAddress}</Text>
-        </View>
-
-        <View style={styles.smallMarginTop}>
-          <Text style={styles.normalText}>ETH Seed Phrase:</Text>
-          <Text style={styles.greyText}>
-            {eip155Wallets[currentETHAddress].getMnemonic()}
-          </Text>
-        </View>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Account</Text>
+      <View style={styles.sectionContainer}>
+        <Card
+          title="ETH Address"
+          value={eip155Address}
+          onPress={() => copyToClipboard(eip155Address)}
+        />
+        <Card
+          title="Seed Phrase"
+          onPress={() =>
+            copyToClipboard(eip155Wallets[eip155Address].getMnemonic())
+          }
+          value={eip155Wallets[eip155Address].getMnemonic()}
+        />
       </View>
-    </View>
+      <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Device</Text>
+      <Card
+        title="Client ID"
+        value={clientId}
+        onPress={() => copyToClipboard(clientId)}
+      />
+    </ScrollView>
   );
-};
+}
 
 export default SettingsScreen;
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    padding: 16,
+  container: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  content: {
+    paddingHorizontal: 16,
   },
   smallMarginTop: {
     marginTop: 16,
   },
-  textContainer: {
-    padding: 16,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+  subtitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 16,
   },
-  welcomeHeading: {
-    fontSize: 34,
-    lineHeight: 41,
-    fontWeight: '700',
-    marginBottom: 10,
-  },
-  normalText: {
-    fontSize: 15,
-    lineHeight: 21,
-  },
-  greyText: {
-    fontSize: 15,
-    lineHeight: 21,
-    color: '#798686',
-  },
-  container: {
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textInput: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-    width: '80%',
-  },
-  flexRow: {
-    position: 'absolute',
-    bottom: 50,
-    right: 0,
-    display: 'flex',
-    flexDirection: 'row',
+  sectionContainer: {
+    rowGap: 8,
   },
 });

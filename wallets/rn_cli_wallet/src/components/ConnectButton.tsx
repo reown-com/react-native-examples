@@ -1,29 +1,34 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet, Text, StyleProp, ViewStyle} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
+import {useTheme} from '../hooks/useTheme';
 
 interface IConnectButtonProps {
   onPress: () => void;
   disabled?: boolean;
-  style?: StyleProp<ViewStyle>
+  style?: StyleProp<ViewStyle>;
 }
 
-//ToDo: QOL - Replace Text with W3WText Component
 export function ConnectButton({onPress, disabled, style}: IConnectButtonProps) {
+  const Theme = useTheme();
+  const backgroundColor = disabled ? Theme['fg-300'] : Theme['accent-100'];
   return (
-    <TouchableOpacity onPress={onPress} disabled={disabled} style={style}>
-      <LinearGradient
-        colors={disabled ? ['#9EA9A9', '#798686'] :['#3396FF', '#0D7DF2']}
-        style={styles.blueButtonContainer}>
-        <Text style={styles.mainText}>Connect</Text>
-      </LinearGradient>
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={disabled}
+      style={[styles.container, {backgroundColor}, style]}>
+      <Text style={styles.mainText}>Connect</Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  blueButtonContainer: {
-    display: 'flex',
+  container: {
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
@@ -35,9 +40,5 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontWeight: '600',
     color: 'white',
-  },
-  imageContainer: {
-    width: 24,
-    height: 24,
   },
 });

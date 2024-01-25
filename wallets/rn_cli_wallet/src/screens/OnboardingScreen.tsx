@@ -1,50 +1,43 @@
 import React, {useEffect} from 'react';
-import {
-  StatusBar,
-  useColorScheme,
-  View,
-  StyleSheet,
-  ImageBackground,
-} from 'react-native';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {View, StyleSheet, ImageBackground} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {GetStartedButton} from '../components/GetStartedButton';
-import {W3WText} from '../components/W3WText';
-import {TextContent} from '../utils/Text';
+import Text from '../components/Text';
 import useInitialization from '../hooks/useInitialization';
 import backgroundImageSrc from '../assets/ethCalculatorBG.png';
+import useWalletConnectEventsManager from '../hooks/useWalletConnectEventsManager';
+import {web3wallet} from '../utils/WalletConnectUtil';
+import {RELAYER_EVENTS} from '@walletconnect/core';
 
 const OnboardingScreen = () => {
+  // Step 1 - Initialize wallets and wallet connect client
   const initialized = useInitialization();
 
+  // Step 2 - Once initialized, set up wallet connect event manager
+  useWalletConnectEventsManager(initialized);
   useEffect(() => {
-    console.log('Web3WalletSDK initialized:', initialized);
-  }, [initialized]);
+    if (!initialized) {
+      return;
+    }
 
-  const isDarkMode = useColorScheme() === 'dark';
-  const backgroundStyle = {
-    flex: 1,
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+    web3wallet.core.relayer.on(RELAYER_EVENTS.connect, () => {
+      console.log('Network connection is restored!');
+    });
+
+    web3wallet.core.relayer.on(RELAYER_EVENTS.disconnect, () => {
+      console.log('Network connection lost.');
+    });
+  }, [initialized]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
       <ImageBackground
         source={backgroundImageSrc}
         resizeMode="contain"
         style={styles.backgroundImage}>
         <View style={styles.textContainer}>
-          <W3WText value={'Welcome'} />
-          <W3WText
-            value={TextContent.welcomeDescription}
-            color={'grey'}
-            type={'body'}
-          />
+          <Text>RN Wallet</Text>
         </View>
         <GetStartedButton />
       </ImageBackground>
@@ -65,7 +58,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textContainer: {
-    marginTop: 16,
+    marginTop: 64,
     paddingHorizontal: 16,
     alignItems: 'center',
   },

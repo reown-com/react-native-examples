@@ -1,12 +1,13 @@
 import React from 'react';
 import {View, Image, Text, StyleSheet, ScrollView} from 'react-native';
 import IndividualSession from './IndividualSession';
-import {web3wallet} from '../../utils/Web3WalletClient';
+import {useSnapshot} from 'valtio';
+import SettingsStore from '../../store/SettingsStore';
 
 const TickImage = require('../../assets/Tick.png');
 
-const Sessions = () => {
-  const sessions = Object.values(web3wallet.getActiveSessions());
+function Sessions() {
+  const {sessions} = useSnapshot(SettingsStore.state);
 
   // @notice: Empty State with no Session
   if (!sessions || sessions.length === 0) {
@@ -14,8 +15,8 @@ const Sessions = () => {
       <View style={styles.container}>
         <Image source={TickImage} style={styles.imageContainer} />
         <Text style={styles.greyText}>
-          Apps you connect with will appear here. To connect scan or paste the
-          code that is displayed in the app.
+          Apps you connect with will appear here. To connect paste the code that
+          is displayed in the app.
         </Text>
       </View>
     );
@@ -32,12 +33,13 @@ const Sessions = () => {
             icons={icons.toString()}
             name={name}
             url={url}
+            topic={session.topic}
           />
         );
       })}
     </ScrollView>
   );
-};
+}
 
 export default Sessions;
 
@@ -48,7 +50,6 @@ const styles = StyleSheet.create({
   sessionContainer: {
     height: 80,
     paddingVertical: 10,
-    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -59,26 +60,23 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   flexRow: {
-    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
   greyText: {
-    fontSize: 15,
-    lineHeight: 21,
+    fontSize: 14,
     color: '#798686',
-    width: '80%',
     textAlign: 'center',
   },
   imageContainer: {
     height: 30,
     width: 35,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   container: {
     flex: 1,
-    height: '100%',
+    paddingHorizontal: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },

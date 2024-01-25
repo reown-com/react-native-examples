@@ -1,18 +1,22 @@
 import React from 'react';
 import {ENV_SENTRY_DSN} from '@env';
 import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import * as Sentry from '@sentry/react-native';
 
 import OnboardingScreen from './OnboardingScreen';
 import HomeScreen from './HomeScreen';
 import SettingsScreen from './Settings';
+import SessionDetail from './SessionDetail';
+import {RootStackParamList} from '../utils/TypesUtil';
 
-Sentry.init({
-  dsn: ENV_SENTRY_DSN,
-});
+if (!__DEV__) {
+  Sentry.init({
+    dsn: ENV_SENTRY_DSN,
+  });
+}
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
   return (
@@ -26,11 +30,16 @@ const App = () => {
         <Stack.Screen
           name="Settings"
           component={SettingsScreen}
-          options={{headerShown: true, headerTitle: ''}}
+          options={{headerShown: true}}
+        />
+        <Stack.Screen
+          name="SessionDetail"
+          component={SessionDetail}
+          options={{headerShown: true, headerTitle: 'Session Details'}}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
-export default Sentry.wrap(App);
+export default App;

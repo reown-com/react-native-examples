@@ -69,3 +69,6 @@ yarn-error.log
 
 # Sentry
 sentry.properties
+
+# ASDF
+.tool-versions

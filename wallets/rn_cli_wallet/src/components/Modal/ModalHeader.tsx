@@ -1,99 +1,55 @@
 import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
+import {SignClientTypes} from '@walletconnect/types';
+import {useTheme} from '../../hooks/useTheme';
 
-interface IModalHeaderProps {
-  name: string;
-  url: string;
-  icon: string;
+interface ModalHeaderProps {
+  metadata?: SignClientTypes.Metadata;
+  intention?: string;
 }
 
-//ToDo: QoL: Add in the Emoji scroll animation
-export function ModalHeader({name, url, icon}: IModalHeaderProps) {
+export function ModalHeader({metadata, intention}: ModalHeaderProps) {
+  const Theme = useTheme();
+  const color = Theme['fg-100'];
+  // TODO: add domain verif
   return (
-    <View style={styles.modalHeaderContainer}>
-      <View style={styles.imageRowContainer}>
-        <Image
-          source={{
-            uri: icon,
-          }}
-          style={styles.WCLogoLeft}
-        />
-        <Image
-          style={styles.emojiContainer}
-          source={require('../../assets/Emojications.png')}
-        />
-        <Image
-          source={require('../../assets/WalletConnect.png')}
-          style={styles.WCLogoRight}
-        />
-      </View>
+    <View style={styles.container}>
+      <Image
+        source={{uri: metadata?.icons[0] ?? ''}}
+        style={[styles.logo, {borderColor: Theme['gray-glass-010']}]}
+      />
 
-      <Text style={styles.dappTitle}>{name}</Text>
-      <Text style={styles.wouldLikeToConnectText}>would like to connect</Text>
-      <Text style={styles.urlText}>{url?.slice(8)}</Text>
+      <Text style={[styles.title, {color}]}>{metadata?.name || 'Unknown'}</Text>
+      {intention && <Text style={[styles.desc, {color}]}>{intention}</Text>}
+      <Text style={[styles.url, {color: Theme['fg-200']}]}>
+        {metadata?.url || 'unknown domain'}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  modalHeaderContainer: {
-    display: 'flex',
-    flexDirection: 'column',
+  container: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  imageRowContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  WCLogoLeft: {
+  logo: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    right: -30,
-    top: -8,
-    zIndex: 1,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  WCLogoRight: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    left: -30,
-    top: -8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  emojiContainer: {
-    opacity: 0.8,
-    width: 290,
-    height: 44,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  dappTitle: {
+  title: {
     fontSize: 22,
-    lineHeight: 28,
     fontWeight: '700',
   },
-  wouldLikeToConnectText: {
-    fontSize: 22,
-    lineHeight: 28,
-    fontWeight: '400',
-    opacity: 0.6,
+  desc: {
+    fontSize: 16,
+    fontWeight: '600',
   },
-  urlText: {
-    paddingTop: 8,
-    color: 'rgba(60, 60, 67, 0.6)',
-    fontSize: 13,
-    lineHeight: 18,
+  url: {
+    marginTop: 6,
+    fontSize: 12,
     fontWeight: '500',
-  },
-  divider: {
-    height: 1,
-    width: '100%',
-    backgroundColor: 'rgba(60, 60, 67, 0.36)',
-    marginVertical: 16,
   },
 });

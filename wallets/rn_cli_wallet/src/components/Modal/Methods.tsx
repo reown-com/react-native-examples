@@ -1,46 +1,58 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {
+  ScrollView,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {Tag} from '../Tag';
+import {useTheme} from '../../hooks/useTheme';
 
 interface IMethodsProps {
-  methods: [] | [string] | undefined;
+  methods?: string[];
+  style?: StyleProp<ViewStyle>;
 }
 
-export function Methods({methods}: IMethodsProps) {
+export function Methods({methods, style}: IMethodsProps) {
+  const Theme = useTheme();
   return (
-    <View style={styles.methodsContainer}>
-      <Text style={styles.methodEventsTitle}>Methods</Text>
-      <View style={styles.flexRowWrapped}>
+    <ScrollView
+      bounces={false}
+      style={[styles.container, {backgroundColor: Theme['bg-150']}, style]}
+      contentContainerStyle={styles.content}>
+      <Text style={[styles.title, {color: Theme['fg-150']}]}>Methods</Text>
+      <View style={styles.row}>
         {methods?.length &&
           methods?.map((method: string, index: number) => (
             <Tag key={index} value={method} />
           ))}
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  methodsContainer: {
+  container: {
     marginTop: 4,
-    backgroundColor: 'white',
     borderRadius: 20,
-    padding: 8,
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'flex-start',
     marginBottom: 8,
+    maxHeight: 120,
+    width: '100%',
   },
-  methodEventsTitle: {
-    color: 'rgba(121, 134, 134, 1)',
-    fontSize: 13,
+  content: {
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    padding: 8,
+  },
+  title: {
+    fontSize: 12,
     lineHeight: 18,
     fontWeight: '600',
-    paddingLeft: 6,
-    paddingVertical: 4,
+    margin: 4,
   },
-  flexRowWrapped: {
-    display: 'flex',
+  row: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',

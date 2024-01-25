@@ -1,55 +1,55 @@
 {
   "images" : [
     {
-      "filename" : "iOS App Icon_20pt@2x.png",
+      "filename" : "AppIcon-20@2x.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "20x20"
     },
     {
-      "filename" : "iOS App Icon_20pt@3x.png",
+      "filename" : "AppIcon-20@3x.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "20x20"
     },
     {
-      "filename" : "iOS App Icon_29pt@2x.png",
+      "filename" : "AppIcon-29@2x.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "29x29"
     },
     {
-      "filename" : "iOS App Icon_29pt@3x.png",
+      "filename" : "AppIcon-29@3x.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "29x29"
     },
     {
-      "filename" : "iOS App Icon_40pt@2x.png",
+      "filename" : "AppIcon-40@2x.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "40x40"
     },
     {
-      "filename" : "iOS App Icon_40pt@3x.png",
+      "filename" : "AppIcon-40@3x.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "40x40"
     },
     {
-      "filename" : "iOS App Icon_60pt@2x.png",
+      "filename" : "AppIcon-60@2x~car.png",
       "idiom" : "iphone",
       "scale" : "2x",
       "size" : "60x60"
     },
     {
-      "filename" : "iOS App Icon_60pt@3x.png",
+      "filename" : "AppIcon-60@3x~car.png",
       "idiom" : "iphone",
       "scale" : "3x",
       "size" : "60x60"
     },
     {
-      "filename" : "iOS App Icon_1024pt@1x.png",
+      "filename" : "AppIcon~ios-marketing.png",
       "idiom" : "ios-marketing",
       "scale" : "1x",
       "size" : "1024x1024"
