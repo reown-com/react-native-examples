@@ -15,6 +15,7 @@ PODS:
     - hermes-engine/Pre-built (= 0.73.2)
   - hermes-engine/Pre-built (0.73.2)
   - libevent (2.1.12)
+  - OpenSSL-Universal (1.1.2200)
   - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
@@ -894,6 +895,13 @@ PODS:
     - React-Core
   - react-native-netinfo (11.1.0):
     - React-Core
+  - react-native-quick-base64 (2.0.8):
+    - React-Core
+  - react-native-quick-crypto (0.6.1):
+    - OpenSSL-Universal
+    - React
+    - React-callinvoker
+    - React-Core
   - react-native-safe-area-context (4.8.2):
     - React-Core
   - React-nativeconfig (0.73.2)
@@ -1122,6 +1130,8 @@ DEPENDENCIES:
   - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-quick-base64 (from `../node_modules/react-native-quick-base64`)
+  - react-native-quick-crypto (from `../node_modules/react-native-quick-crypto`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -1155,6 +1165,7 @@ SPEC REPOS:
   trunk:
     - fmt
     - libevent
+    - OpenSSL-Universal
     - Sentry
     - SentryPrivate
     - SocketRocket
@@ -1221,6 +1232,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-quick-base64:
+    :path: "../node_modules/react-native-quick-base64"
+  react-native-quick-crypto:
+    :path: "../node_modules/react-native-quick-crypto"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   React-nativeconfig:
@@ -1287,6 +1302,7 @@ SPEC CHECKSUMS:
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: b361c9ef5ef3cda53f66e195599b47e1f84ffa35
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  OpenSSL-Universal: 6e1ae0555546e604dbc632a2b9a24a9c46c41ef6
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: 9b1e7e262745fb671e33c51c1078d093bd30e322
   RCTTypeSafety: a759e3b086eccf3e2cbf2493d22f28e082f958e6
@@ -1311,6 +1327,8 @@ SPEC CHECKSUMS:
   react-native-compat: ad00864870eceb6550aad4868d67eb80b9e2c207
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
+  react-native-quick-base64: 777057ea4286f806b00259ede65dc79c7c706320
+  react-native-quick-crypto: 455c1b411db006dba1026a30681ececb19180187
   react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
   React-nativeconfig: d753fbbc8cecc8ae413d615599ac378bbf6999bb
   React-NativeModulesApple: 964f4eeab1b4325e8b6a799cf4444c3fd4eb0a9c
