@@ -8210,14 +8210,14 @@ react-native-modal@13.0.1:
     prop-types "^15.6.2"
     react-native-animatable "1.3.3"
 
-react-native-quick-base64@^2.0.5, react-native-quick-base64@^2.0.8:
+react-native-quick-base64@2.0.8, react-native-quick-base64@^2.0.5:
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/react-native-quick-base64/-/react-native-quick-base64-2.0.8.tgz#7a75ea8bd85ca3c5bb38a814c1d63e0688e19531"
   integrity sha512-2kMlnLSy0qz4NA0KXMGugd3qNB5EAizxZ6ghEVNGIxAOlc9CGvC8miv35wgpFbSKeiaBRfcPfkdTM/5Erb/6SQ==
   dependencies:
     base64-js "^1.5.1"
 
-react-native-quick-crypto@^0.6.1:
+react-native-quick-crypto@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/react-native-quick-crypto/-/react-native-quick-crypto-0.6.1.tgz#7b89c67c4a5d3669c4491fe7884621c1c74d01bc"
   integrity sha512-s6uFo7tcI3syo8/y5j+t6Rf+KVSuRKDp6tH04A0vjaHptJC6Iu7DVgkNYO7aqtfrYn8ZUgQ/Kqaq+m4i9TxgIQ==

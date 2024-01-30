@@ -78,7 +78,7 @@ android {
         applicationId "com.walletconnect.web3wallet.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
+        versionCode 6
         versionName "1.0"
     }
     signingConfigs {
@@ -100,6 +100,10 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
+    }
+    packagingOptions {
+       // Should prevent clashes with other libraries that use OpenSSL
+        pickFirst '**/libcrypto.so'
     }
 }
 
