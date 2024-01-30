@@ -14,7 +14,7 @@ import {
   W3mButton,
 } from '@web3modal/wagmi-react-native';
 
-import {CoinbaseWagmiConnector} from '@web3modal/coinbase-react-native';
+import {CoinbaseConnector} from '@web3modal/coinbase-wagmi-react-native';
 import {FlexView, Text} from '@web3modal/ui-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as Sentry from '@sentry/react-native';
@@ -82,7 +82,7 @@ const chains = [
   aurora,
 ];
 
-const coinbaseConnector = new CoinbaseWagmiConnector({
+const coinbaseConnector = new CoinbaseConnector({
   chains,
   options: {
     redirect: metadata?.redirect?.native || '',
@@ -96,12 +96,23 @@ const wagmiConfig = defaultWagmiConfig({
   extraConnectors: [coinbaseConnector],
 });
 
+const customWallets = [
+  {
+    id: 'rn-wallet',
+    name: 'RN Wallet',
+    image_url:
+      'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
+    mobile_link: 'rn-web3wallet://',
+  },
+];
+
 // 3. Create modal
 createWeb3Modal({
   projectId,
   chains,
   wagmiConfig,
   clipboardClient,
+  customWallets,
 });
 
 function App(): JSX.Element {
