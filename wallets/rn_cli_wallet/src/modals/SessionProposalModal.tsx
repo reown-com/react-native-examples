@@ -140,7 +140,6 @@ export default function SessionProposalModal() {
         const sessionMetadata = session?.peer?.metadata;
         handleDeepLinkRedirect(sessionMetadata?.redirect);
       } catch (e) {
-        setIsLoadingApprove(false);
         console.log((e as Error).message, 'error');
         return;
       }
@@ -160,7 +159,6 @@ export default function SessionProposalModal() {
           reason: getSdkError('USER_REJECTED_METHODS'),
         });
       } catch (e) {
-        setIsLoadingReject(false);
         console.log((e as Error).message, 'error');
         return;
       }

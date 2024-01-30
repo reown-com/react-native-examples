@@ -47,7 +47,6 @@ export default function SessionSendTransactionModal() {
         });
         handleDeepLinkRedirect(requestMetadata?.redirect);
       } catch (e) {
-        setIsLoadingApprove(false);
         console.log((e as Error).message, 'error');
         return;
       }
@@ -67,7 +66,6 @@ export default function SessionSendTransactionModal() {
           response,
         });
       } catch (e) {
-        setIsLoadingReject(false);
         console.log((e as Error).message, 'error');
         return;
       }

@@ -47,7 +47,6 @@ export default function SessionSignModal() {
         });
         handleDeepLinkRedirect(requestMetadata?.redirect);
       } catch (e) {
-        setIsLoadingApprove(false);
         console.log((e as Error).message, 'error');
         return;
       }
