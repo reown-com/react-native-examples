@@ -1,25 +1,25 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {CircleActionButton} from '../CircleActionButton';
+import QRCodeSvg from '../../assets/QRCode';
+import CopySvg from '../../assets/Copy';
 
 interface IndividualSessionProps {
-  setCopyDialog: (arg0: boolean) => void;
+  setCopyDialog: (visible: boolean) => void;
 }
 
-/* // ToDo: Add in QR Modal Module */
 const ActionButtons = ({setCopyDialog}: IndividualSessionProps) => {
   return (
     <View style={styles.absoluteFlexRow}>
       <CircleActionButton
-        copyImage={true}
-        handlePress={() => {
+        onPress={() => {
           setCopyDialog(true);
-        }}
-      />
-      {/* <CircleActionButton
-        copyImage={false}
-        handlePress={() => setApprovalModal(true)}
-      /> */}
+        }}>
+        <CopySvg />
+      </CircleActionButton>
+      <CircleActionButton onPress={() => {}}>
+        <QRCodeSvg />
+      </CircleActionButton>
     </View>
   );
 };
@@ -29,8 +29,9 @@ export default ActionButtons;
 const styles = StyleSheet.create({
   absoluteFlexRow: {
     position: 'absolute',
-    bottom: 50,
-    right: 0,
+    bottom: 10,
+    right: 10,
     flexDirection: 'row',
+    gap: 20,
   },
 });

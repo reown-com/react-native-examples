@@ -10,11 +10,11 @@ import {Methods} from '../components/Modal/Methods';
 import {Events} from '../components/Modal/Events';
 import SettingsStore from '../store/SettingsStore';
 
-export interface SessionDetailProps {
+export interface SessionDetailViewProps {
   topic: string;
 }
 
-export default function SessionDetail({route}) {
+export default function SessionDetailView({route}: {route: any}) {
   const Theme = useTheme();
   const topic = route.params.topic;
   const nativagor = useNavigation();
@@ -116,7 +116,10 @@ export default function SessionDetail({route}) {
           return (
             <View key={chain}>
               <Text
-                style={styles.reviewText}>{`Review ${chain} permissions`}</Text>
+                style={[
+                  styles.reviewText,
+                  {color: Theme['fg-100']},
+                ]}>{`Review ${chain} permissions`}</Text>
               <Methods
                 methods={namespaces[chain].methods}
                 style={styles.permissions}
@@ -144,13 +147,8 @@ export default function SessionDetail({route}) {
           {updated.toDateString()} - {updated.toLocaleTimeString()}
         </Text>
       </View>
+      <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
       <View style={styles.actionsContainer}>
-        <ActionButton
-          style={styles.action}
-          onPress={onDeleteSession}
-          loading={deleteLoading}>
-          <Text>Delete</Text>
-        </ActionButton>
         <ActionButton
           style={styles.action}
           onPress={onSessionPing}
@@ -168,6 +166,12 @@ export default function SessionDetail({route}) {
           onPress={onSessionUpdate}
           loading={updateLoading}>
           <Text>Update</Text>
+        </ActionButton>
+        <ActionButton
+          style={[styles.action, {backgroundColor: Theme['error-100']}]}
+          onPress={onDeleteSession}
+          loading={deleteLoading}>
+          <Text>Delete</Text>
         </ActionButton>
       </View>
     </ScrollView>
@@ -200,7 +204,6 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   actionsContainer: {
-    marginTop: 16,
     rowGap: 16,
     alignItems: 'center',
     width: '100%',
@@ -211,4 +214,5 @@ const styles = StyleSheet.create({
   permissions: {
     maxHeight: '100%',
   },
+  deleteButton: {},
 });

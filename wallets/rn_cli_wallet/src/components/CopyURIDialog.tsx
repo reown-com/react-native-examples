@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Dimensions, StyleSheet, TextInput, View} from 'react-native';
 import Dialog from 'react-native-dialog';
 import {ConnectButton} from './ConnectButton';
+import {useTheme} from '../hooks/useTheme';
 
 interface copyURIDialogProps {
   setVisible: () => void;
@@ -9,6 +10,7 @@ interface copyURIDialogProps {
   pair: (uri: string) => void;
 }
 export function CopyURIDialog({visible, setVisible, pair}: copyURIDialogProps) {
+  const Theme = useTheme();
   const windowWidth = Dimensions.get('window').width;
   const [uri, setUri] = useState<string>('');
 
@@ -26,10 +28,16 @@ export function CopyURIDialog({visible, setVisible, pair}: copyURIDialogProps) {
     <Dialog.Container
       visible={visible}
       useNativeDriver
-      contentStyle={[styles.mainContainer, {maxWidth: windowWidth * 0.9}]}>
+      contentStyle={[
+        styles.mainContainer,
+        {maxWidth: windowWidth * 0.9, backgroundColor: Theme['bg-175']},
+      ]}>
       <View>
-        <Dialog.Title>Enter a WalletConnect URI</Dialog.Title>
-        <Dialog.Description style={styles.descriptionText}>
+        <Dialog.Title style={[styles.titleText, {color: Theme['fg-100']}]}>
+          Enter a WalletConnect URI
+        </Dialog.Title>
+        <Dialog.Description
+          style={[styles.descriptionText, {color: Theme['fg-150']}]}>
           To get the URI press the copy to clipboard button from your dapp's
           WalletConnect interface.
         </Dialog.Description>
@@ -37,7 +45,10 @@ export function CopyURIDialog({visible, setVisible, pair}: copyURIDialogProps) {
         <View style={styles.flexRow}>
           <TextInput
             autoFocus
-            style={[styles.textInput, {width: windowWidth * 0.8}]}
+            style={[
+              styles.textInput,
+              {width: windowWidth * 0.8, backgroundColor: Theme['bg-100']},
+            ]}
             onChangeText={setUri}
             placeholder="wc://a13aef..."
             clearButtonMode="always"
@@ -53,7 +64,7 @@ export function CopyURIDialog({visible, setVisible, pair}: copyURIDialogProps) {
         />
         <View style={styles.cancelContainer}>
           <Dialog.Button
-            style={styles.cancelText}
+            style={[styles.cancelText, {color: Theme['accent-100']}]}
             label="Cancel"
             onPress={onClose}
           />
@@ -67,7 +78,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     justifyContent: 'center',
     alignItems: 'stretch',
-    height: 300,
+    height: 320,
     padding: 20,
     width: '90%',
     borderRadius: 34,
@@ -77,11 +88,16 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 10,
     marginTop: 16,
-    backgroundColor: 'white',
+  },
+  titleText: {
+    fontFamily: 'SFProRounded-Medium',
+    fontSize: 24,
+    textAlign: 'center',
   },
   descriptionText: {
+    fontFamily: 'SFProRounded-Medium',
+    textAlign: 'center',
     paddingVertical: 4,
-    color: '#798686',
     fontSize: 15,
     lineHeight: 18,
   },
@@ -93,7 +109,6 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
   },
   cancelText: {
-    color: '#3396FF',
     fontWeight: '600',
     fontSize: 20,
     letterSpacing: 0.38,
