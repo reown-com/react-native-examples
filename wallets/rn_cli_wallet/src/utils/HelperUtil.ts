@@ -65,13 +65,11 @@ export function getSignTypedDataParamsData(params: string[]) {
 export function getWalletAddressFromParams(addresses: string[], params: any) {
   const paramsString = JSON.stringify(params);
   let address = '';
-
   addresses.forEach(addr => {
-    if (paramsString.includes(addr.toLowerCase())) {
+    if (paramsString.toLowerCase().includes(addr.toLowerCase())) {
       address = addr;
     }
   });
-
   return address;
 }
 
@@ -100,10 +98,5 @@ export function isSolanaChain(chain: string) {
  * Formats chainId to its name
  */
 export function formatChainName(chainId: string) {
-  return (
-    EIP155_CHAINS[chainId as TEIP155Chain]?.name ??
-    COSMOS_MAINNET_CHAINS[chainId as TCosmosChain]?.name ??
-    SOLANA_CHAINS[chainId as TSolanaChain]?.name ??
-    chainId
-  );
+  return EIP155_CHAINS[chainId as TEIP155Chain]?.name ?? chainId;
 }
