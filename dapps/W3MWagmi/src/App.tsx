@@ -2,6 +2,7 @@ import '@walletconnect/react-native-compat';
 import React, {useEffect} from 'react';
 import {
   Linking,
+  Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -40,6 +41,7 @@ import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {WriteContract} from './views/WriteContract';
+import {getCustomWallets} from './utils/misc';
 
 if (!__DEV__ && ENV_SENTRY_DSN) {
   Sentry.init({
@@ -96,15 +98,7 @@ const wagmiConfig = defaultWagmiConfig({
   extraConnectors: [coinbaseConnector],
 });
 
-const customWallets = [
-  {
-    id: 'rn-wallet',
-    name: 'RN Wallet',
-    image_url:
-      'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
-    mobile_link: 'rn-web3wallet://',
-  },
-];
+const customWallets = getCustomWallets();
 
 // 3. Create modal
 createWeb3Modal({
