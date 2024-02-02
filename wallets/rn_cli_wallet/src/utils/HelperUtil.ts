@@ -65,13 +65,11 @@ export function getSignTypedDataParamsData(params: string[]) {
 export function getWalletAddressFromParams(addresses: string[], params: any) {
   const paramsString = JSON.stringify(params);
   let address = '';
-
   addresses.forEach(addr => {
-    if (paramsString.includes(addr.toLowerCase())) {
+    if (paramsString.toLowerCase().includes(addr.toLowerCase())) {
       address = addr;
     }
   });
-
   return address;
 }
 
