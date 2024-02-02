@@ -98,10 +98,5 @@ export function isSolanaChain(chain: string) {
  * Formats chainId to its name
  */
 export function formatChainName(chainId: string) {
-  return (
-    EIP155_CHAINS[chainId as TEIP155Chain]?.name ??
-    COSMOS_MAINNET_CHAINS[chainId as TCosmosChain]?.name ??
-    SOLANA_CHAINS[chainId as TSolanaChain]?.name ??
-    chainId
-  );
+  return EIP155_CHAINS[chainId as TEIP155Chain]?.name ?? chainId;
 }
