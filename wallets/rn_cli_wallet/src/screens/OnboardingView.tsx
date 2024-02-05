@@ -10,7 +10,7 @@ import useWalletConnectEventsManager from '../hooks/useWalletConnectEventsManage
 import {web3wallet} from '../utils/WalletConnectUtil';
 import {RELAYER_EVENTS} from '@walletconnect/core';
 
-const OnboardingScreen = () => {
+const OnboardingView = () => {
   // Step 1 - Initialize wallets and wallet connect client
   const initialized = useInitialization();
 
@@ -45,7 +45,7 @@ const OnboardingScreen = () => {
   );
 };
 
-export default OnboardingScreen;
+export default OnboardingView;
 
 const styles = StyleSheet.create({
   container: {

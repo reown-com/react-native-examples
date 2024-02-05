@@ -1,35 +1,30 @@
-import React from 'react';
-import {TouchableOpacity, StyleSheet, Image} from 'react-native';
+import React, {ReactNode} from 'react';
+import {TouchableOpacity, StyleSheet} from 'react-native';
 
-import clipboardImage from '../assets/Copy.png';
-import QRCodeImage from '../assets/QRCode.png';
 import {useTheme} from '../hooks/useTheme';
 
 interface CircleActionButtonProps {
-  copyImage: boolean;
-  handlePress: () => void;
+  children: ReactNode;
+  onPress: () => void;
 }
 
 export function CircleActionButton({
-  copyImage,
-  handlePress,
+  children,
+  onPress,
 }: CircleActionButtonProps) {
   const Theme = useTheme();
   return (
     <TouchableOpacity
-      onPress={handlePress}
+      onPress={onPress}
+      activeOpacity={0.7}
       style={[styles.container, {backgroundColor: Theme['accent-100']}]}>
-      <Image
-        source={copyImage ? clipboardImage : QRCodeImage}
-        style={styles.imageContainer}
-      />
+      {children}
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginRight: 20,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 28,

@@ -8,12 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* Web3ModalEthers5Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* Web3ModalEthers5Tests.m */; };
-		06D41806D86BFB7523E51572 /* libPods-Web3ModalEthers5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BE6C8C099C5EA8770DF3AF1 /* libPods-Web3ModalEthers5.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		431FE640D6C358348D57251A /* libPods-Web3ModalEthers5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6A8643153AFA19DD631808C /* libPods-Web3ModalEthers5.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		B8C1EE14CE47BF75575B351B /* libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04C0F3FCF7E266E1BBB6B818 /* libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a */; };
+		CB5381DD48148F0AED9B5427 /* libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7CA83582760074C06CCB46A /* libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,19 +30,19 @@
 		00E356EE1AD99517003FC87E /* Web3ModalEthers5Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Web3ModalEthers5Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* Web3ModalEthers5Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Web3ModalEthers5Tests.m; sourceTree = "<group>"; };
-		04C0F3FCF7E266E1BBB6B818 /* libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* Web3ModalEthers5.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Web3ModalEthers5.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Web3ModalEthers5/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Web3ModalEthers5/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Web3ModalEthers5/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Web3ModalEthers5/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Web3ModalEthers5/main.m; sourceTree = "<group>"; };
-		27B1F6FE0F80C6620EC75377 /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Web3ModalEthers5-Web3ModalEthers5Tests.debug.xcconfig"; path = "Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests.debug.xcconfig"; sourceTree = "<group>"; };
-		2BE6C8C099C5EA8770DF3AF1 /* libPods-Web3ModalEthers5.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Web3ModalEthers5.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		57ECF5FC0F0DFCAE8E588E3B /* Pods-Web3ModalEthers5.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Web3ModalEthers5.release.xcconfig"; path = "Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5.release.xcconfig"; sourceTree = "<group>"; };
+		44891C28258757D8E6B83149 /* Pods-Web3ModalEthers5.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Web3ModalEthers5.debug.xcconfig"; path = "Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5.debug.xcconfig"; sourceTree = "<group>"; };
+		5BE5B47EF39A5816B4B56B2C /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Web3ModalEthers5-Web3ModalEthers5Tests.release.xcconfig"; path = "Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Web3ModalEthers5/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		92FAEBEFC18B22FD0292C65C /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Web3ModalEthers5-Web3ModalEthers5Tests.release.xcconfig"; path = "Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests.release.xcconfig"; sourceTree = "<group>"; };
-		D62501879598074256398030 /* Pods-Web3ModalEthers5.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Web3ModalEthers5.debug.xcconfig"; path = "Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5.debug.xcconfig"; sourceTree = "<group>"; };
+		81BEEEC4F5E9C7A1FF429CED /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Web3ModalEthers5-Web3ModalEthers5Tests.debug.xcconfig"; path = "Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		A6A8643153AFA19DD631808C /* libPods-Web3ModalEthers5.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Web3ModalEthers5.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7CA83582760074C06CCB46A /* libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C17996E637A7888F00E8DC10 /* Pods-Web3ModalEthers5.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Web3ModalEthers5.release.xcconfig"; path = "Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -51,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B8C1EE14CE47BF75575B351B /* libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a in Frameworks */,
+				CB5381DD48148F0AED9B5427 /* libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,7 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06D41806D86BFB7523E51572 /* libPods-Web3ModalEthers5.a in Frameworks */,
+				431FE640D6C358348D57251A /* libPods-Web3ModalEthers5.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,8 +100,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				2BE6C8C099C5EA8770DF3AF1 /* libPods-Web3ModalEthers5.a */,
-				04C0F3FCF7E266E1BBB6B818 /* libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a */,
+				A6A8643153AFA19DD631808C /* libPods-Web3ModalEthers5.a */,
+				B7CA83582760074C06CCB46A /* libPods-Web3ModalEthers5-Web3ModalEthers5Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -140,10 +140,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				D62501879598074256398030 /* Pods-Web3ModalEthers5.debug.xcconfig */,
-				57ECF5FC0F0DFCAE8E588E3B /* Pods-Web3ModalEthers5.release.xcconfig */,
-				27B1F6FE0F80C6620EC75377 /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.debug.xcconfig */,
-				92FAEBEFC18B22FD0292C65C /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.release.xcconfig */,
+				44891C28258757D8E6B83149 /* Pods-Web3ModalEthers5.debug.xcconfig */,
+				C17996E637A7888F00E8DC10 /* Pods-Web3ModalEthers5.release.xcconfig */,
+				81BEEEC4F5E9C7A1FF429CED /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.debug.xcconfig */,
+				5BE5B47EF39A5816B4B56B2C /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -155,12 +155,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "Web3ModalEthers5Tests" */;
 			buildPhases = (
-				D00A385E01509BEE779CBF96 /* [CP] Check Pods Manifest.lock */,
+				7FED14C3959664F983C5BB8B /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				2ABE81D038AF2F7F4272D386 /* [CP] Embed Pods Frameworks */,
-				7E484709A5637ABB9C82691C /* [CP] Copy Pods Resources */,
+				3809BF13BEA6BD166A093FBB /* [CP] Embed Pods Frameworks */,
+				6C21FBCB2F324E76E6E5272E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -176,13 +176,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Web3ModalEthers5" */;
 			buildPhases = (
-				E6CC376DA35A63254E685722 /* [CP] Check Pods Manifest.lock */,
+				041961A6FCABCA54E9F61406 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				9E22D650AD53BEAA41BD845A /* [CP] Embed Pods Frameworks */,
-				39D3EA2D9AA66C0E3D45CE08 /* [CP] Copy Pods Resources */,
+				4B9DDC9AD9F74CE712055B56 /* [CP] Embed Pods Frameworks */,
+				E5D55ADB88DC22756E58DA3A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -265,7 +265,29 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		2ABE81D038AF2F7F4272D386 /* [CP] Embed Pods Frameworks */ = {
+		041961A6FCABCA54E9F61406 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Web3ModalEthers5-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3809BF13BEA6BD166A093FBB /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -282,41 +304,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		39D3EA2D9AA66C0E3D45CE08 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7E484709A5637ABB9C82691C /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9E22D650AD53BEAA41BD845A /* [CP] Embed Pods Frameworks */ = {
+		4B9DDC9AD9F74CE712055B56 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -333,7 +321,24 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D00A385E01509BEE779CBF96 /* [CP] Check Pods Manifest.lock */ = {
+		6C21FBCB2F324E76E6E5272E /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5-Web3ModalEthers5Tests/Pods-Web3ModalEthers5-Web3ModalEthers5Tests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7FED14C3959664F983C5BB8B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -355,26 +360,21 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E6CC376DA35A63254E685722 /* [CP] Check Pods Manifest.lock */ = {
+		E5D55ADB88DC22756E58DA3A /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Web3ModalEthers5-checkManifestLockResult.txt",
+				"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Web3ModalEthers5/Pods-Web3ModalEthers5-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -410,7 +410,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 27B1F6FE0F80C6620EC75377 /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.debug.xcconfig */;
+			baseConfigurationReference = 81BEEEC4F5E9C7A1FF429CED /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -437,7 +437,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 92FAEBEFC18B22FD0292C65C /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.release.xcconfig */;
+			baseConfigurationReference = 5BE5B47EF39A5816B4B56B2C /* Pods-Web3ModalEthers5-Web3ModalEthers5Tests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -461,7 +461,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D62501879598074256398030 /* Pods-Web3ModalEthers5.debug.xcconfig */;
+			baseConfigurationReference = 44891C28258757D8E6B83149 /* Pods-Web3ModalEthers5.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -489,7 +489,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 57ECF5FC0F0DFCAE8E588E3B /* Pods-Web3ModalEthers5.release.xcconfig */;
+			baseConfigurationReference = C17996E637A7888F00E8DC10 /* Pods-Web3ModalEthers5.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

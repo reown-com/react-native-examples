@@ -1,5 +1,5 @@
 import React from 'react';
-import {TextProps} from 'react-native';
+import {TextProps, ViewProps} from 'react-native';
 import {StyleSheet, Text} from 'react-native';
 
 interface IW3WTextProps {
@@ -7,13 +7,14 @@ interface IW3WTextProps {
   weight?: 'medium' | 'thin';
   type?: string;
   color?: string;
+  style?: ViewProps['style'];
 }
 
 /*
   3WText Component (Unfinished / not swapped out for all TEXT components)
 */
 
-export default function W3WText({children, type, color}: IW3WTextProps) {
+export default function W3WText({children, type, color, style}: IW3WTextProps) {
   let textStyle;
 
   // ToDo: QOL : Swap out for Cases returns
@@ -23,7 +24,7 @@ export default function W3WText({children, type, color}: IW3WTextProps) {
     textStyle = [styles.headingText];
   }
 
-  return <Text style={textStyle}>{children}</Text>;
+  return <Text style={[textStyle, style]}>{children}</Text>;
 }
 
 const styles = StyleSheet.create({
