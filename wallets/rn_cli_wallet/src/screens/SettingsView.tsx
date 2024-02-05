@@ -3,25 +3,27 @@ import {Text, View, StyleSheet, Alert, ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {useSnapshot} from 'valtio';
+import {getVersion, getBuildNumber} from 'react-native-device-info';
 
 import {eip155Wallets} from '../utils/EIP155WalletUtil';
 import SettingsStore from '../store/SettingsStore';
 import {Card} from '../components/Card';
 import {useTheme} from '../hooks/useTheme';
+import CustomText from '../components/Text';
 
-function SettingsScreen() {
+function SettingsView() {
   const Theme = useTheme();
   const {eip155Address} = useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = React.useState('');
 
   useEffect(() => {
-    async function getClientId() {
+    async function getAsyncData() {
       const _clientId = await AsyncStorage.getItem('WALLETCONNECT_CLIENT_ID');
       if (_clientId) {
         setClientId(_clientId);
       }
     }
-    getClientId();
+    getAsyncData();
   }, []);
 
   const copyToClipboard = (value: string) => {
@@ -31,6 +33,7 @@ function SettingsScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <CustomText>Settings</CustomText>
       <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Account</Text>
       <View style={styles.sectionContainer}>
         <Card
@@ -47,16 +50,22 @@ function SettingsScreen() {
         />
       </View>
       <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Device</Text>
-      <Card
-        title="Client ID"
-        value={clientId}
-        onPress={() => copyToClipboard(clientId)}
-      />
+      <View style={styles.sectionContainer}>
+        <Card
+          title="Client ID"
+          value={clientId}
+          onPress={() => copyToClipboard(clientId)}
+        />
+        <Card
+          title="App version"
+          value={`${getVersion()} (${getBuildNumber()})`}
+        />
+      </View>
     </ScrollView>
   );
 }
 
-export default SettingsScreen;
+export default SettingsView;
 
 const styles = StyleSheet.create({
   container: {
@@ -64,7 +73,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   content: {
-    paddingHorizontal: 16,
+    padding: 16,
   },
   smallMarginTop: {
     marginTop: 16,

@@ -1075,9 +1075,13 @@ PODS:
     - React-Core
   - RNCClipboard (1.13.2):
     - React-Core
+  - RNDeviceInfo (10.12.0):
+    - React-Core
   - RNGestureHandler (2.14.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
+    - React-Core
+  - RNPermissions (4.1.1):
     - React-Core
   - RNScreens (3.29.0):
     - glog
@@ -1094,6 +1098,10 @@ PODS:
     - SentryPrivate (= 8.17.1)
   - SentryPrivate (8.17.1)
   - SocketRocket (0.6.1)
+  - VisionCamera (3.8.2):
+    - React
+    - React-callinvoker
+    - React-Core
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -1155,10 +1163,13 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
+  - VisionCamera (from `../node_modules/react-native-vision-camera`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1282,14 +1293,20 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
     :path: "../node_modules/@react-native-clipboard/clipboard"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSentry:
     :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../node_modules/react-native-svg"
+  VisionCamera:
+    :path: "../node_modules/react-native-vision-camera"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1352,15 +1369,18 @@ SPEC CHECKSUMS:
   ReactCommon: 45b5d4f784e869c44a6f5a8fad5b114ca8f78c53
   RNCAsyncStorage: 618d03a5f52fbccb3d7010076bc54712844c18ef
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
+  RNDeviceInfo: db5c64a060e66e5db3102d041ebe3ef307a85120
   RNGestureHandler: 25b969a1ffc806b9f9ad2e170d4a3b049c6af85e
+  RNPermissions: b366b43ff08314585f3ee61f51f00b4b182c33f7
   RNScreens: b582cb834dc4133307562e930e8fa914b8c04ef2
   RNSentry: ed42b1443bef1fec1fc9273b5193a79b0cab1a01
   RNSVG: 03e4d258ca355d7836a0a5dd4d4dc63c1eb49cbb
   Sentry: d9f99f9cc13777c5d938650c1e1c85047bb4f0d1
   SentryPrivate: 839b1e58addf58624087a80b2628e543193fa8ef
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
+  VisionCamera: 4b98b273902ac18491bb68481b6601f1f0da0f2d
   Yoga: 13c8ef87792450193e117976337b8527b49e8c03
 
-PODFILE CHECKSUM: 7b0ba83c703594052ccfe4efda2edd3263612edf
+PODFILE CHECKSUM: d3b142e7515cf891412faf39f8d7d387ff12bee2
 
 COCOAPODS: 1.14.3

@@ -1,3 +1,10 @@
+import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
+import {
+  CompositeScreenProps,
+  NavigatorScreenParams,
+} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
+
 export type ThemeKeys =
   | 'accent-100'
   | 'accent-090'
@@ -45,9 +52,29 @@ export type ThemeKeys =
 
 // Navigation
 
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
+
 export type RootStackParamList = {
   Onboarding: undefined;
-  Home: undefined;
-  Settings: undefined;
+  Home: NavigatorScreenParams<HomeTabParamList>;
   SessionDetail: {topic: string};
+  Scan: undefined;
 };
+
+export type HomeTabParamList = {
+  Connections: {uri?: string};
+  Settings: undefined;
+};
+
+export type RootStackScreenProps<T extends keyof RootStackParamList> =
+  StackScreenProps<RootStackParamList, T>;
+
+export type HomeTabScreenProps<T extends keyof HomeTabParamList> =
+  CompositeScreenProps<
+    BottomTabScreenProps<HomeTabParamList, T>,
+    RootStackScreenProps<keyof RootStackParamList>
+  >;

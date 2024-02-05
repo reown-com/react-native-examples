@@ -1,10 +1,9 @@
 import React from 'react';
-import {View, Image, Text, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import IndividualSession from './IndividualSession';
 import {useSnapshot} from 'valtio';
 import SettingsStore from '../../store/SettingsStore';
-
-const TickImage = require('../../assets/Tick.png');
+import ConnectTemplateSvg from '../../assets/ConnectTemplate';
 
 function Sessions() {
   const {sessions} = useSnapshot(SettingsStore.state);
@@ -13,7 +12,7 @@ function Sessions() {
   if (!sessions || sessions.length === 0) {
     return (
       <View style={styles.container}>
-        <Image source={TickImage} style={styles.imageContainer} />
+        <ConnectTemplateSvg height={40} width={40} />
         <Text style={styles.greyText}>
           Apps you connect with will appear here. To connect paste the code that
           is displayed in the app.
@@ -53,11 +52,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  iconContainer: {
-    height: 60,
-    width: 60,
-    borderRadius: 30,
   },
   flexRow: {
     flexDirection: 'row',

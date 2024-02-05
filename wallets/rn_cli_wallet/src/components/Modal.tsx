@@ -6,6 +6,7 @@ import SessionProposalModal from '../modals/SessionProposalModal';
 import SessionSignModal from '../modals/SessionSignModal';
 import SessionSendTransactionModal from '../modals/SessionSendTransactionModal';
 import SessionSignTypedDataModal from '../modals/SessionSignTypedDataModal';
+import {LoadingModal} from '../modals/LoadingModal';
 import {View} from 'react-native';
 
 export default function Modal() {
@@ -31,8 +32,8 @@ export default function Modal() {
       //   return <SessionUnsuportedMethodModal />;
       // case 'AuthRequestModal':
       //   return <AuthRequestModal />;
-      // case 'LoadingModal':
-      //   return <LoadingModal />;
+      case 'LoadingModal':
+        return <LoadingModal />;
       default:
         return <View />;
     }
