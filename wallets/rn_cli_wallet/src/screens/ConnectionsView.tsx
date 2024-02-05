@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {SafeAreaView, View, StyleSheet, Linking} from 'react-native';
+import {View, StyleSheet, Linking} from 'react-native';
 
 import {web3wallet} from '../utils/WalletConnectUtil';
 
@@ -10,8 +10,11 @@ import CustomText from '../components/Text';
 import {CopyURIDialog} from '../components/CopyURIDialog';
 import Modal from '../components/Modal';
 import {useInitialURL} from '../hooks/useInitialUrl';
+import {HomeTabScreenProps} from '../utils/TypesUtil';
 
-export default function ConnectionsView() {
+type Props = HomeTabScreenProps<'Connections'>;
+
+export default function ConnectionsView({route}: Props) {
   const {url: initialUrl, processing} = useInitialURL();
   const [copyDialog, setCopyDialog] = useState(false);
 
@@ -48,8 +51,15 @@ export default function ConnectionsView() {
     Linking.addEventListener('url', deeplinkCallback);
   }, [deeplinkCallback]);
 
+  React.useEffect(() => {
+    // Uri received from QR code scanner
+    if (route.params?.uri) {
+      pair(route.params.uri);
+    }
+  }, [route.params?.uri]);
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <CopyURIDialog
         pair={pair}
         setVisible={handleCancel}
@@ -61,7 +71,7 @@ export default function ConnectionsView() {
         <ActionButtons setCopyDialog={setCopyDialog} />
       </View>
       <Modal />
-    </SafeAreaView>
+    </View>
   );
 }
 

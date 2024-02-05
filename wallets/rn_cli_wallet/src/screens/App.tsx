@@ -4,6 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 
 import {RootStackNavigator} from '../navigators/RootStackNavigator';
+import {StatusBar} from 'react-native';
 
 if (!__DEV__) {
   Sentry.init({
@@ -14,6 +15,7 @@ if (!__DEV__) {
 const App = () => {
   return (
     <NavigationContainer>
+      <StatusBar barStyle={'dark-content'} />
       <RootStackNavigator />
     </NavigationContainer>
   );

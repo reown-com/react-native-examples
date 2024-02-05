@@ -3,12 +3,14 @@ import {View, StyleSheet} from 'react-native';
 import {CircleActionButton} from '../CircleActionButton';
 import QRCodeSvg from '../../assets/QRCode';
 import CopySvg from '../../assets/Copy';
+import {useNavigation} from '@react-navigation/native';
 
 interface IndividualSessionProps {
   setCopyDialog: (visible: boolean) => void;
 }
 
 const ActionButtons = ({setCopyDialog}: IndividualSessionProps) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.absoluteFlexRow}>
       <CircleActionButton
@@ -17,7 +19,10 @@ const ActionButtons = ({setCopyDialog}: IndividualSessionProps) => {
         }}>
         <CopySvg />
       </CircleActionButton>
-      <CircleActionButton onPress={() => {}}>
+      <CircleActionButton
+        onPress={() => {
+          navigation.navigate('Scan');
+        }}>
         <QRCodeSvg />
       </CircleActionButton>
     </View>
