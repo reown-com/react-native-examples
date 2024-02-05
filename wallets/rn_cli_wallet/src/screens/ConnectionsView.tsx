@@ -11,6 +11,7 @@ import {CopyURIDialog} from '../components/CopyURIDialog';
 import Modal from '../components/Modal';
 import {useInitialURL} from '../hooks/useInitialUrl';
 import {HomeTabScreenProps} from '../utils/TypesUtil';
+import ModalStore from '../store/ModalStore';
 
 type Props = HomeTabScreenProps<'Connections'>;
 
@@ -23,6 +24,7 @@ export default function ConnectionsView({route}: Props) {
   };
 
   async function pair(uri: string) {
+    ModalStore.open('LoadingModal', {});
     await web3wallet.pair({uri});
     setCopyDialog(false);
   }
