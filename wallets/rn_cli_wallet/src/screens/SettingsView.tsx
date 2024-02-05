@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, View, StyleSheet, Alert, ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -10,11 +10,13 @@ import SettingsStore from '../store/SettingsStore';
 import {Card} from '../components/Card';
 import {useTheme} from '../hooks/useTheme';
 import CustomText from '../components/Text';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 function SettingsView() {
   const Theme = useTheme();
   const {eip155Address} = useSnapshot(SettingsStore.state);
-  const [clientId, setClientId] = React.useState('');
+  const [clientId, setClientId] = useState('');
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     async function getAsyncData() {
@@ -32,7 +34,9 @@ function SettingsView() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={[styles.container]}
+      contentContainerStyle={[styles.content, {paddingTop: insets.top}]}>
       <CustomText>Settings</CustomText>
       <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Account</Text>
       <View style={styles.sectionContainer}>
