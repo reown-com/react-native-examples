@@ -17,16 +17,23 @@ type Props = HomeTabScreenProps<'Connections'>;
 
 export default function ConnectionsView({route}: Props) {
   const {url: initialUrl, processing} = useInitialURL();
-  const [copyDialog, setCopyDialog] = useState(false);
+  const [copyDialogVisible, setCopyDialogVisible] = useState(false);
 
-  const handleCancel = () => {
-    setCopyDialog(false);
+  const onDialogConnect = (uri: string) => {
+    setCopyDialogVisible(false);
+    setTimeout(() => {
+      pair(uri);
+    }, 1000);
+  };
+
+  const onDialogCancel = () => {
+    setCopyDialogVisible(false);
   };
 
   async function pair(uri: string) {
     ModalStore.open('LoadingModal', {});
     await web3wallet.pair({uri});
-    setCopyDialog(false);
+    setCopyDialogVisible(false);
   }
 
   const deeplinkCallback = useCallback((event: any) => {
@@ -63,14 +70,14 @@ export default function ConnectionsView({route}: Props) {
   return (
     <View style={styles.container}>
       <CopyURIDialog
-        pair={pair}
-        setVisible={handleCancel}
-        visible={copyDialog}
+        onConnect={onDialogConnect}
+        onCancel={onDialogCancel}
+        visible={copyDialogVisible}
       />
       <CustomText>Connections</CustomText>
       <View style={styles.mainScreenContainer}>
         <Sessions />
-        <ActionButtons setCopyDialog={setCopyDialog} />
+        <ActionButtons setCopyDialog={setCopyDialogVisible} />
       </View>
       <Modal />
     </View>

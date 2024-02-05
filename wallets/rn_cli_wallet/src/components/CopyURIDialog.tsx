@@ -5,28 +5,38 @@ import {ConnectButton} from './ConnectButton';
 import {useTheme} from '../hooks/useTheme';
 
 interface copyURIDialogProps {
-  setVisible: () => void;
   visible: boolean;
-  pair: (uri: string) => void;
+  onConnect: (uri: string) => void;
+  onCancel: () => void;
 }
-export function CopyURIDialog({visible, setVisible, pair}: copyURIDialogProps) {
+export function CopyURIDialog({
+  visible,
+  onConnect,
+  onCancel,
+}: copyURIDialogProps) {
   const Theme = useTheme();
   const windowWidth = Dimensions.get('window').width;
   const [uri, setUri] = useState<string>('');
 
-  const onClose = () => {
-    setVisible();
+  const clear = () => {
     setUri('');
   };
 
-  const onPair = () => {
-    pair(uri);
-    onClose();
+  const handleConnect = () => {
+    onConnect(uri);
+    clear();
+  };
+
+  const handleCancel = () => {
+    onCancel();
+    clear();
   };
 
   return (
     <Dialog.Container
       visible={visible}
+      onRequestClose={handleCancel}
+      onBackdropPress={handleCancel}
       useNativeDriver
       contentStyle={[
         styles.mainContainer,
@@ -58,7 +68,7 @@ export function CopyURIDialog({visible, setVisible, pair}: copyURIDialogProps) {
         </View>
 
         <ConnectButton
-          onPress={onPair}
+          onPress={handleConnect}
           disabled={!uri}
           style={styles.connectButton}
         />
@@ -66,7 +76,7 @@ export function CopyURIDialog({visible, setVisible, pair}: copyURIDialogProps) {
           <Dialog.Button
             style={[styles.cancelText, {color: Theme['accent-100']}]}
             label="Cancel"
-            onPress={onClose}
+            onPress={handleCancel}
           />
         </View>
       </View>
