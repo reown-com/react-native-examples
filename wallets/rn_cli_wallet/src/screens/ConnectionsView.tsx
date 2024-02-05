@@ -12,12 +12,14 @@ import Modal from '../components/Modal';
 import {useInitialURL} from '../hooks/useInitialUrl';
 import {HomeTabScreenProps} from '../utils/TypesUtil';
 import ModalStore from '../store/ModalStore';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 type Props = HomeTabScreenProps<'Connections'>;
 
 export default function ConnectionsView({route}: Props) {
   const {url: initialUrl, processing} = useInitialURL();
   const [copyDialogVisible, setCopyDialogVisible] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const onDialogConnect = (uri: string) => {
     setCopyDialogVisible(false);
@@ -68,7 +70,7 @@ export default function ConnectionsView({route}: Props) {
   }, [route.params?.uri]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {paddingTop: insets.top}]}>
       <CopyURIDialog
         onConnect={onDialogConnect}
         onCancel={onDialogCancel}

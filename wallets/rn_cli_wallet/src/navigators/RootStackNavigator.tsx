@@ -19,7 +19,11 @@ export function RootStackNavigator() {
       <StackNavigator.Screen
         name="SessionDetail"
         component={SessionDetailView}
-        options={{headerShown: true, headerTitle: 'Session Details'}}
+        options={{
+          headerShown: true,
+          headerTitle: 'Session Details',
+          headerBackTitleVisible: false,
+        }}
       />
       <StackNavigator.Screen
         name="Scan"

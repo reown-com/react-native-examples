@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {Platform, StatusBar, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  Platform,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+} from 'react-native';
 
 import {
   Camera,
@@ -53,10 +60,6 @@ export function ScanView() {
     });
   }, []);
 
-  if (device == null) {
-    return null;
-  }
-
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
       <StatusBar barStyle={'light-content'} translucent={false} />
@@ -69,14 +72,18 @@ export function ScanView() {
         />
       </TouchableOpacity>
 
-      {showCamera ? (
+      {showCamera && device ? (
         <Camera
           style={StyleSheet.absoluteFill}
           device={device}
           isActive={isActive}
           codeScanner={codeScanner}
         />
-      ) : null}
+      ) : (
+        <View style={styles.errorContainer}>
+          <Text>Camera not available</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -84,11 +91,22 @@ export function ScanView() {
 const styles = StyleSheet.create({
   backButton: {
     zIndex: 1,
+    backgroundColor: 'black',
+    opacity: 0.7,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 24,
+    height: 36,
+    width: 36,
+    marginTop: 16,
+    marginLeft: 16,
   },
   backIcon: {
     transform: [{rotate: '180deg'}],
-    position: 'absolute',
-    left: 16,
-    top: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
