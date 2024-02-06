@@ -1,7 +1,7 @@
 import {useContext} from 'react';
 import NotifyClientContext from '../context/NotifyClientContext';
 
-const useNotifyClient = () => {
+const useNotifyClientContext = () => {
   const notifyClient = useContext(NotifyClientContext);
 
   if (!notifyClient) {
@@ -13,4 +13,4 @@ const useNotifyClient = () => {
   return notifyClient;
 };
 
-export default useNotifyClient;
+export default useNotifyClientContext;

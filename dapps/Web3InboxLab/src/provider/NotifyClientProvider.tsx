@@ -1,20 +1,31 @@
 import React, {useState} from 'react';
 
-import NotifyClientContext from '../context/NotifyClientContext';
+import NotifyClientContext, {
+  NotificationsState,
+  NotifyNotification,
+} from '../context/NotifyClientContext';
 import {NotifyClient} from '@walletconnect/notify-client';
 import {useAccount} from 'wagmi';
 import {Alert} from 'react-native';
+import {ENV_PROJECT_ID} from '@env';
+import cloneDeep from 'lodash.clonedeep';
 
 export const NotifyClientProvider: React.FC<{
   children: React.ReactNode;
 }> = ({children}) => {
   const {address} = useAccount();
 
+  const [initializing, setInitializing] = React.useState(false);
   const [notifyClient, setNotifyClient] = React.useState<
     NotifyClient | undefined
   >(undefined);
   const [account, setAccount] = React.useState<string | undefined>(undefined);
   const [subscriptions, setSubscriptions] = React.useState<any>([]);
+  const [notifications, setNotifications] = React.useState<NotificationsState>(
+    {},
+  );
+
+  const initialized = !!notifyClient;
 
   React.useEffect(() => {
     if (address) {
@@ -28,64 +39,63 @@ export const NotifyClientProvider: React.FC<{
       return;
     }
 
-    console.log('started listening events');
-    // Handle response to a `notifyClient.subscribe(...)` call
-    notifyClient.on('notify_subscription', async ({params}) => {
+    notifyClient.on('notify_subscription', async ({params, topic}) => {
       const {error} = params;
 
       if (error) {
-        // Setting up the subscription failed.
-        // Inform the user of the error and/or clean up app state.
         console.error('Setting up subscription failed: ', error);
       } else {
+        // console.log('>>> notify_subscription', params);
         const allSubscriptions = params.allSubscriptions;
         const newSubscription = params.subscription;
 
-        console.log('>>> subscribed, updating list', allSubscriptions?.length);
+        // console.log('>>> subscribed, updating list', params);
         if (!allSubscriptions) return;
 
         setSubscriptions(allSubscriptions);
         // New subscription was successfully created.
         // Inform the user and/or update app state to reflect the new subscription.
-        // console.log(`Subscribed successfully.`, params);
+        console.log(`Subscribed successfully.`);
       }
     });
 
-    // Handle an incoming notification
-    notifyClient.on('notify_message', ({params}) => {
+    notifyClient.on('notify_message', ({params, topic}) => {
       const {message} = params;
       console.log('Received notification: ', message);
-      // e.g. build a notification using the metadata from `message` and show to the user.
+      const findSubsWithName = subscriptions.find(sub => sub?.topic === topic);
+      console.log('Found subs: ', findSubsWithName);
+      if (findSubsWithName) {
+        console.log('Updating state');
+        handleSetNotifications(findSubsWithName.topic, [message]);
+      }
     });
 
-    // Handle response to a `notifyClient.update(...)` call
     notifyClient.on('notify_update', ({params}) => {
       const {error} = params;
 
       if (error) {
-        // Updating the subscription's scope failed.
-        // Inform the user of the error and/or clean up app state.
         console.error('Setting up subscription failed: ', error);
       } else {
-        // Subscription's scope was updated successfully.
-        // Inform the user and/or update app state to reflect the updated subscription.
         console.log(`Successfully updated subscription scope.`);
       }
     });
 
-    // Handle a change in the existing subscriptions (e.g after a subscribe or update)
     notifyClient.on('notify_subscriptions_changed', ({params}) => {
       const {subscriptions} = params;
-      // `subscriptions` will contain any *changed* subscriptions since the last time this event was emitted.
-      // To get a full list of subscriptions for a given account you can use `notifyClient.getActiveSubscriptions({ account: 'eip155:1:0x63Be...' })`
+      setSubscriptions(subscriptions);
     });
   }, [notifyClient]);
 
-  async function getActiveSubscriptions(_account: string) {
+  async function getActiveSubscriptions() {
     if (!notifyClient) return;
 
+    if (!account) {
+      Alert.alert('Account not initialized yet');
+      return;
+    }
+
     const accountSubscriptions = notifyClient.getActiveSubscriptions({
-      account: _account,
+      account,
     });
 
     const subs = Object.values(accountSubscriptions || {});
@@ -95,21 +105,77 @@ export const NotifyClientProvider: React.FC<{
     setSubscriptions(subs);
   }
 
+  async function handleInitializeNotifyClient() {
+    setInitializing(true);
+
+    try {
+      const notifyClient = await NotifyClient.init({
+        projectId: ENV_PROJECT_ID,
+      });
+      setNotifyClient(notifyClient);
+      setInitializing(false);
+    } catch (error) {
+      console.log('>>> error initializing notify client', error);
+      setInitializing(false);
+    }
+  }
+
+  async function handleSetNotifications(
+    topicId: string,
+    incomingNotifications: NotifyNotification[],
+  ) {
+    if (!topicId) return;
+
+    let notifsToReturn = {};
+    setNotifications(prevNotifications => {
+      const currentNotifications = prevNotifications[topicId] || [];
+      const cloned = cloneDeep(currentNotifications);
+      const newNotifications = incomingNotifications.filter(notification => {
+        const isSeen = cloned.find(
+          currentNotification => currentNotification.id === notification.id,
+        );
+
+        return !isSeen;
+      });
+      const updatedNotifications = [...cloned, ...newNotifications];
+
+      const updated = {
+        ...notifications,
+        [topicId]: updatedNotifications,
+      };
+      notifsToReturn = updated;
+      return updated;
+    });
+
+    return notifsToReturn;
+  }
+
   React.useEffect(() => {
     if (!notifyClient || !account) {
       return;
     }
 
-    getActiveSubscriptions(account);
+    getActiveSubscriptions();
   }, [notifyClient]);
+
+  React.useEffect(() => {
+    if (account && !initialized) {
+      handleInitializeNotifyClient();
+    }
+    // throw 'Missing dependency: initialized';
+  }, [account, initialized]);
 
   return (
     <NotifyClientContext.Provider
       value={{
         account,
+        initializing,
         notifyClient,
         subscriptions,
+        notifications,
         fetchSubscriptions: getActiveSubscriptions,
+        setNotifications: handleSetNotifications,
+        setInitializing,
         setSubscriptions,
         setNotifyClient,
       }}>

@@ -3,6 +3,7 @@ import React, {useEffect} from 'react';
 import {
   Alert,
   Linking,
+  PlatformColor,
   Pressable,
   StatusBar,
   StyleSheet,
@@ -14,11 +15,15 @@ import {
   defaultWagmiConfig,
   Web3Modal,
   W3mButton,
+  W3mAccountButton,
 } from '@web3modal/wagmi-react-native';
 
 import {CoinbaseWagmiConnector} from '@web3modal/coinbase-react-native';
 import {FlexView, Text} from '@web3modal/ui-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
+import WalletIcon from './icons/wallet';
+import CompassIcon from './icons/compass';
+import BellIcon from './icons/bell';
 import * as Sentry from '@sentry/react-native';
 
 import {WagmiConfig} from 'wagmi';
@@ -49,16 +54,15 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-
-import {createStackNavigator} from '@react-navigation/stack';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NotifyClientProvider} from './provider/NotifyClientProvider';
-import useNotifyClient from './hooks/useNotifyClient';
 import SubscriptionSettingsScreen from './screens/SubscriptionSettingsScreen';
 import SubscriptionsScreen from './screens/SubscriptionsScreen';
 import DiscoverScreen from './screens/DiscoverScreen';
 import SubscriptionDetailsScreen from './screens/SubscriptionDetailsScreen';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import messaging from '@react-native-firebase/messaging';
+import NotificationsScreen from './components/NotificationsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -153,21 +157,12 @@ function ConnectScreen() {
   );
 }
 
-function ConnectionStack() {
-  return (
-    <Stack.Navigator screenOptions={{}}>
-      <Stack.Screen
-        name="ConnectScreen"
-        options={{headerTitle: 'Connect', headerLargeTitle: true}}
-        component={ConnectScreen}
-      />
-    </Stack.Navigator>
-  );
-}
-
 function DiscoverStack() {
   return (
-    <Stack.Navigator screenOptions={{}}>
+    <Stack.Navigator
+      screenOptions={{
+        contentStyle: {backgroundColor: 'white'},
+      }}>
       <Stack.Screen
         name="DiscoverScreen"
         options={{headerTitle: 'Discover', headerLargeTitle: true}}
@@ -177,13 +172,32 @@ function DiscoverStack() {
   );
 }
 
+function NotificationsStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        contentStyle: {backgroundColor: 'white'},
+        headerRight: () => <W3mAccountButton />,
+      }}>
+      <Stack.Screen
+        name="NotificationsScreen"
+        options={{headerTitle: 'Notifications', headerLargeTitle: true}}
+        component={NotificationsScreen}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function SubscriptionsStack() {
   const {navigate} = useNavigation();
 
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        contentStyle: {backgroundColor: 'white'},
+      }}>
       <Stack.Screen
-        name="Subscriptions"
+        name="SubscriptionsScreen"
         options={{
           headerTitle: 'Subscriptions',
           headerLargeTitle: true,
@@ -203,12 +217,25 @@ function SubscriptionsStack() {
                   name: route.params?.name,
                 });
               }}>
-              <Text>Settings</Text>
+              <Text
+                style={{
+                  fontSize: 18,
+                  letterSpacing: 0.2,
+                  fontWeight: 400,
+                  color: PlatformColor('linkColor'),
+                }}>
+                Settings
+              </Text>
             </Pressable>
           ),
         })}
       />
       <Stack.Screen
+        options={{
+          headerTitle: 'Settings',
+          headerLargeTitle: true,
+          headerBackTitle: 'Back',
+        }}
         name="SubscriptionSettingsScreen"
         component={SubscriptionSettingsScreen}
       />
@@ -243,18 +270,54 @@ function App(): JSX.Element {
             />
             <Tab.Navigator screenOptions={{headerShown: false}}>
               <Tab.Screen
-                name="Connect"
-                options={{tabBarLabel: 'Connect'}}
-                component={ConnectionStack}
+                name="NotificationsStack"
+                options={{
+                  tabBarLabel: 'Notifications',
+                  tabBarIcon: ({focused}) => (
+                    <BellIcon
+                      style={[
+                        {width: 15, height: 15},
+                        focused
+                          ? {fill: PlatformColor('systemBlue')}
+                          : {fill: PlatformColor('systemGray')},
+                      ]}
+                    />
+                  ),
+                }}
+                component={NotificationsStack}
               />
               <Tab.Screen
                 name="DiscoverStack"
-                options={{tabBarLabel: 'Discover'}}
+                options={{
+                  tabBarLabel: 'Discover',
+                  tabBarIcon: ({focused}) => (
+                    <CompassIcon
+                      style={[
+                        {width: 15, height: 15},
+                        focused
+                          ? {fill: PlatformColor('systemBlue')}
+                          : {fill: PlatformColor('systemGray')},
+                      ]}
+                    />
+                  ),
+                }}
                 component={DiscoverStack}
               />
               <Tab.Screen
                 name="SubscriptionsStack"
-                options={{tabBarLabel: 'Subscriptions'}}
+                options={{
+                  tabBarLabel: 'Subscriptions',
+                  tabBarIcon: ({focused}) => (
+                    <BellIcon
+                      style={[
+                        {width: 15, height: 15},
+                        focused
+                          ? {fill: PlatformColor('systemBlue')}
+                          : {fill: PlatformColor('systemGray')},
+                      ]}
+                    />
+                  ),
+                }}
                 component={SubscriptionsStack}
               />
             </Tab.Navigator>

@@ -6,30 +6,15 @@ import {NotifyClient} from '@walletconnect/notify-client';
 import {Button} from '@web3modal/ui-react-native';
 import {ENV_PROJECT_ID} from '@env';
 import {useAccount, useSignMessage} from 'wagmi';
-import {useWeb3Modal} from '@web3modal/wagmi-react-native';
-import useNotifyClient from '../hooks/useNotifyClient';
+import useNotifyClientContext from '../hooks/useNotifyClientContext';
 
 interface Props {}
 
 export function InitializeNotifyClientButton({}: Props) {
-  const {address} = useAccount();
-  const {account, setNotifyClient, notifyClient} = useNotifyClient();
+  const {account, initializing, notifyClient} = useNotifyClientContext();
+  const initialized = !!notifyClient;
 
-  const [initializing, setInitializing] = React.useState(false);
   const {signMessageAsync} = useSignMessage();
-
-  async function handleInitializeNotifyClient() {
-    setInitializing(true);
-
-    console.log('proj', ENV_PROJECT_ID);
-
-    const notifyClient = await NotifyClient.init({
-      projectId: ENV_PROJECT_ID,
-    });
-
-    setNotifyClient(notifyClient);
-    setInitializing(false);
-  }
 
   async function registerAccount() {
     if (!notifyClient) {
@@ -55,35 +40,17 @@ export function InitializeNotifyClientButton({}: Props) {
     });
   }
 
-  async function subscribeToDapp() {
-    if (!notifyClient) {
-      Alert.alert('Notify client not initialized');
-      return;
-    }
-
-    if (!account) {
-      Alert.alert('Account not initialized');
-      return;
-    }
-
-    const appDomain = 'w3m-dapp.vercel.app';
-
-    await notifyClient.subscribe({
-      account,
-      appDomain,
-    });
-  }
+  if (!account) return;
 
   return (
     <View style={{display: 'flex', flexDirection: 'column', gap: 4}}>
       <Text>
-        {notifyClient
+        {initializing
+          ? 'Initializing Notify Client...'
+          : initialized
           ? 'Notify Client Initialized'
           : 'Notify Client Not Initialized'}
       </Text>
-      <Button disabled={initializing} onPress={handleInitializeNotifyClient}>
-        {initializing ? 'Initializing...' : 'Initialize Notify Client'}
-      </Button>
       <Button onPress={registerAccount}>Register Account</Button>
     </View>
   );

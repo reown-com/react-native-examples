@@ -11,7 +11,7 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({children}) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
     display: 'flex',
     flexDirection: 'column',
     gap: 8,

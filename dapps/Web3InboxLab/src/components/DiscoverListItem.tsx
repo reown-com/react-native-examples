@@ -1,9 +1,18 @@
 import * as React from 'react';
-import {Alert, Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import useNotifyClient from '../hooks/useNotifyClient';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import useNotifyClientContext from '../hooks/useNotifyClientContext';
 
 import projectsData from '../constants/projects-resposne.json';
 import {colors} from '../utils/theme';
+import {useNavigation} from '@react-navigation/native';
 
 type ProjectItem = (typeof projectsData)[0];
 
@@ -12,13 +21,15 @@ type DiscoverListItemProps = {
 };
 
 export default function DiscoverListItem({item}: DiscoverListItemProps) {
-  const {account, subscriptions, notifyClient} = useNotifyClient();
+  const {account, subscriptions, notifyClient} = useNotifyClientContext();
+  const {navigate} = useNavigation();
+
+  const [subscribing, setSubscribing] = React.useState(false);
+  const domain = new URL(item.dapp_url).host;
 
   const isSubscribed = subscriptions.some(s =>
     item.dapp_url.includes(s.metadata.appDomain),
   );
-
-  const [subscribing, setSubscribing] = React.useState(false);
 
   async function handleSubscribeToDapp() {
     if (!notifyClient) {
@@ -32,77 +43,59 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
     }
     setSubscribing(true);
 
-    const appDomain = 'w3m-dapp.vercel.app';
-
-    await notifyClient.subscribe({
-      account,
-      appDomain,
-    });
-
-    setSubscribing(false);
+    await notifyClient
+      .subscribe({
+        account,
+        appDomain: domain,
+      })
+      .then(res => {
+        if (res) {
+          setSubscribing(false);
+        }
+      })
+      .catch(e => {
+        setSubscribing(false);
+        Alert.alert('Error subscribing to dapp', e.message);
+      });
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        <View
-          style={{
-            width: 64,
-            height: 64,
-            borderRadius: 32,
-            position: 'relative',
-          }}>
-          <View
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              borderRadius: 32,
-              borderWidth: 1.25,
-              borderColor: 'rgba(150,150,150,1)',
-              zIndex: 999,
-              opacity: 0.15,
-            }}
-          />
-          <Image
-            source={{uri: item.image_url.md}}
-            style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: 32,
-            }}
-          />
+      <View style={styles.header}>
+        <View style={styles.imageContainer}>
+          <View style={styles.imageBorder} />
+          <Image source={{uri: item.image_url.md}} style={styles.image} />
         </View>
         <Pressable
           onPress={handleSubscribeToDapp}
           style={[
             isSubscribed
-              ? {backgroundColor: colors.backgroundActive}
-              : {
-                  backgroundColor: colors.primary,
-                },
+              ? {
+                  backgroundColor: 'transparent',
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }
+              : {backgroundColor: colors.primary},
             styles.button,
           ]}>
-          <Text
-            style={[
-              isSubscribed
-                ? {color: colors.primary}
-                : {
-                    color: 'white',
-                  },
-              styles.buttonText,
-            ]}>
-            {isSubscribed
-              ? 'Subscribed'
-              : subscribing
-              ? 'Subscribing..'
-              : 'Subscribe'}
-          </Text>
+          {subscribing ? (
+            <ActivityIndicator />
+          ) : (
+            <Text
+              style={[
+                isSubscribed ? {color: colors.secondary} : {color: 'white'},
+                styles.buttonText,
+              ]}>
+              {isSubscribed ? 'Subscribed' : 'Subscribe'}
+            </Text>
+          )}
         </Pressable>
       </View>
-      <Text style={styles.title}>{item.name}</Text>
-      <Text style={styles.domain}>{item.dapp_url}</Text>
-      <Text style={styles.subtitle}>{item.description}</Text>
+      <View style={styles.content}>
+        <Text style={styles.title}>{item.name}</Text>
+        <Text style={styles.domain}>{domain}</Text>
+        <Text style={styles.subtitle}>{item.description}</Text>
+      </View>
     </View>
   );
 }
@@ -118,7 +111,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.backgroundActive,
+    borderColor: colors.border,
   },
   title: {
     width: '100%',
@@ -139,12 +132,18 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: colors.secondary,
   },
-  imageContainer: {
+  header: {
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  content: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   button: {
     paddingTop: 8,
@@ -160,5 +159,26 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 14,
     fontWeight: '400',
+  },
+  imageContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 32,
+    position: 'relative',
+  },
+  imageBorder: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    borderRadius: 32,
+    borderWidth: 1.25,
+    borderColor: 'rgba(150,150,150,1)',
+    zIndex: 999,
+    opacity: 0.15,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 32,
   },
 });

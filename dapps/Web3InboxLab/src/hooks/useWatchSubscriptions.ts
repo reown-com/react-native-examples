@@ -2,10 +2,10 @@
 
 // import type {NotifyClientTypes} from '@walletconnect/notify-client';
 // import {noop} from 'rxjs';
-// import useNotifyClient from './useNotifyClient';
+// import useNotifyClientContext from './useNotifyClientContext';
 
 // export const useWatchSubscriptions = () => {
-//   const {account, notifyClient} = useNotifyClient();
+//   const {account, notifyClient} = useNotifyClientContext();
 
 //   const [activeSubscriptions, setActiveSubscriptions] = useState<
 //     NotifyClientTypes.NotifySubscription[]
