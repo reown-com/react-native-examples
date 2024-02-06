@@ -3,6 +3,7 @@ import '@ethersproject/shims';
 
 import React from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 import {
   createWeb3Modal,
@@ -15,7 +16,8 @@ import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
 import {WriteContract} from './views/WriteContract';
-import Clipboard from '@react-native-clipboard/clipboard';
+import {SignTypedDataV4} from './views/SignTypedDataV4';
+import {SignTypedData} from './views/SignTypedData';
 
 // 1. Get projectId at https://cloud.walletconnect.com
 const projectId = '90369b5c91c6f7fffe308df2b30f3ace';
@@ -87,6 +89,8 @@ function App(): React.JSX.Element {
         <W3mButton balance="show" />
         <SignMessage />
         <SendTransaction />
+        <SignTypedData />
+        <SignTypedDataV4 />
         <ReadContract />
         <WriteContract />
       </FlexView>
@@ -103,7 +107,7 @@ const styles = StyleSheet.create({
     rowGap: 16,
   },
   buttonContainer: {
-    gap: 4,
+    gap: 8,
   },
   title: {
     marginBottom: 40,

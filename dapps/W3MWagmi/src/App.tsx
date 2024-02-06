@@ -2,7 +2,6 @@ import '@walletconnect/react-native-compat';
 import React, {useEffect} from 'react';
 import {
   Linking,
-  Platform,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -42,6 +41,7 @@ import {ReadContract} from './views/ReadContract';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {WriteContract} from './views/WriteContract';
 import {getCustomWallets} from './utils/misc';
+import {SignTypedDataV4} from './views/SignTypedDataV4';
 
 if (!__DEV__ && ENV_SENTRY_DSN) {
   Sentry.init({
@@ -135,6 +135,7 @@ function App(): JSX.Element {
           <W3mButton balance="show" />
           <SignMessage />
           <SendTransaction />
+          <SignTypedDataV4 />
           <ReadContract />
           <WriteContract />
         </FlexView>
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   buttonContainer: {
-    gap: 4,
+    gap: 8,
   },
   dark: {
     backgroundColor: '#141414',

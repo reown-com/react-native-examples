@@ -3,14 +3,14 @@ import {View} from 'react-native';
 import {Button} from '@web3modal/ui-react-native';
 
 import {RequestModal} from '../components/RequestModal';
-import {BrowserProvider} from 'ethers';
 import {
   useWeb3ModalAccount,
   useWeb3ModalProvider,
 } from '@web3modal/ethers5-react-native';
 import {eip712} from '../utils/eip712';
+import {ethers} from 'ethers';
 
-export function SignTypedDataV4() {
+export function SignTypedData() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<string | undefined>();
@@ -29,13 +29,18 @@ export function SignTypedDataV4() {
     setRequetsModalVisible(true);
 
     try {
-      const ethersProvider = new BrowserProvider(walletProvider);
-      const signer = await ethersProvider.getSigner();
+      const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
+      const signer = ethersProvider.getSigner();
       const message = JSON.stringify(eip712.example);
+      const address = await signer.getAddress();
 
+      // eth_signTypedData params
+      const params = [address, message];
+
+      // send message
       const signature = await walletProvider.request({
-        method: 'eth_signTypedData_v4',
-        params: [signer.address, message],
+        method: 'eth_signTypedData',
+        params: params,
       });
 
       setData(signature?.toString());
@@ -49,7 +54,7 @@ export function SignTypedDataV4() {
   return isConnected ? (
     <View>
       <Button disabled={requestModalVisible} onPress={onPress}>
-        Sign typed data (v4)
+        Sign typed data
       </Button>
 
       <RequestModal
