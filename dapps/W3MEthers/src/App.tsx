@@ -1,7 +1,7 @@
 import '@walletconnect/react-native-compat';
 
-import React from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
+import React, {useEffect} from 'react';
+import {Linking, SafeAreaView, StyleSheet} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import {
@@ -11,6 +11,10 @@ import {
   Web3Modal,
 } from '@web3modal/ethers-react-native';
 import {FlexView, Text} from '@web3modal/ui-react-native';
+import {handleResponse} from '@coinbase/wallet-mobile-sdk';
+import {CoinbaseProvider} from '@web3modal/coinbase-ethers-react-native';
+import {ENV_PROJECT_ID} from '@env';
+
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
@@ -19,22 +23,9 @@ import {SignTypedDataV4} from './views/SignTypedDataV4';
 import {SignTypedData} from './views/SignTypedData';
 
 // 1. Get projectId at https://cloud.walletconnect.com
-const projectId = '90369b5c91c6f7fffe308df2b30f3ace';
+const projectId = ENV_PROJECT_ID;
 
-// 2. Create config
-const metadata = {
-  name: 'W3M ethers',
-  description: 'Web3Modal with Ethers',
-  url: 'https://web3modal.com',
-  icons: ['https://avatars.githubusercontent.com/u/37784886'],
-  redirect: {
-    native: 'rn-w3m-ethers-sample://',
-  },
-};
-
-const config = defaultConfig({metadata});
-
-// 3. Define your chains
+// 2. Define your chains
 const mainnet = {
   chainId: 1,
   name: 'Ethereum',
@@ -52,6 +43,27 @@ const polygon = {
 };
 
 const chains = [mainnet, polygon];
+
+// 3. Create config
+const metadata = {
+  name: 'W3M ethers',
+  description: 'Web3Modal with Ethers',
+  url: 'https://web3modal.com',
+  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  redirect: {
+    native: 'rn-w3m-ethers-sample://',
+  },
+};
+
+const coinbaseProvider = new CoinbaseProvider({
+  redirect: 'rn-w3m-ethers-sample://',
+  rpcUrl: mainnet.rpcUrl,
+});
+
+const config = defaultConfig({
+  metadata,
+  coinbase: coinbaseProvider,
+});
 
 const clipboardClient = {
   setString: async (value: string) => {
@@ -79,6 +91,18 @@ createWeb3Modal({
 });
 
 function App(): React.JSX.Element {
+  // Coinbase sdk setup
+  useEffect(() => {
+    const sub = Linking.addEventListener('url', ({url}) => {
+      const handledBySdk = handleResponse(new URL(url));
+      if (!handledBySdk) {
+        // Handle other deeplinks
+      }
+    });
+
+    return () => sub.remove();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title} variant="large-600">

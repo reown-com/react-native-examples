@@ -12,6 +12,8 @@ import {
   Web3Modal,
 } from '@web3modal/ethers5-react-native';
 import {FlexView, Text} from '@web3modal/ui-react-native';
+import {ENV_PROJECT_ID} from '@env';
+
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
@@ -20,7 +22,7 @@ import {SignTypedDataV4} from './views/SignTypedDataV4';
 import {SignTypedData} from './views/SignTypedData';
 
 // 1. Get projectId at https://cloud.walletconnect.com
-const projectId = '90369b5c91c6f7fffe308df2b30f3ace';
+const projectId = ENV_PROJECT_ID;
 
 // 2. Create config
 const metadata = {
