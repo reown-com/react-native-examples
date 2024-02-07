@@ -7,7 +7,7 @@ import {RequestModal} from '../components/RequestModal';
 import {
   useWeb3ModalAccount,
   useWeb3ModalProvider,
-} from '@web3modal/ethers5-react-native';
+} from '@web3modal/ethers-react-native';
 import {BrowserProvider, parseEther} from 'ethers';
 
 export function SendTransaction() {

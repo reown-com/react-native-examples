@@ -9,7 +9,7 @@ import {
   defaultConfig,
   W3mButton,
   Web3Modal,
-} from '@web3modal/ethers5-react-native';
+} from '@web3modal/ethers-react-native';
 import {FlexView, Text} from '@web3modal/ui-react-native';
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';

@@ -7,7 +7,7 @@ import {BrowserProvider} from 'ethers';
 import {
   useWeb3ModalAccount,
   useWeb3ModalProvider,
-} from '@web3modal/ethers5-react-native';
+} from '@web3modal/ethers-react-native';
 import {eip712} from '../utils/eip712';
 
 export function SignTypedDataV4() {

@@ -6,7 +6,7 @@ import {RequestModal} from '../components/RequestModal';
 import {
   useWeb3ModalAccount,
   useWeb3ModalProvider,
-} from '@web3modal/ethers5-react-native';
+} from '@web3modal/ethers-react-native';
 import {BrowserProvider, Contract} from 'ethers';
 import wagmigotchiABI from '../utils/wagmigotchiABI';
 

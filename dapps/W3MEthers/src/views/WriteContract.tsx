@@ -7,7 +7,7 @@ import usdtAbi from '../utils/usdtAbi';
 import {
   useWeb3ModalAccount,
   useWeb3ModalProvider,
-} from '@web3modal/ethers5-react-native';
+} from '@web3modal/ethers-react-native';
 import {BrowserProvider, Contract} from 'ethers';
 
 export function WriteContract() {
