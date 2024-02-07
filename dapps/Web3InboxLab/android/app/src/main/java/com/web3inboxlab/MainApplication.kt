@@ -1,4 +1,4 @@
-package com.web3inboxlab
+package com.walletconnect.web3inbox.lab
 
 import android.app.Application
 import com.facebook.react.PackageList

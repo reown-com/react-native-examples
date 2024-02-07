@@ -1,4 +1,4 @@
-package com.web3inboxlab
+package com.walletconnect.web3inbox.lab
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

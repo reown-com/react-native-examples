@@ -3567,7 +3567,7 @@
     "@ethersproject/transactions" "^5.7.0"
     isomorphic-unfetch "^3.1.0"
 
-"@walletconnect/core@2.11.0", "@walletconnect/core@^2.10.1", "@walletconnect/core@^2.11.0-canary.0":
+"@walletconnect/core@2.11.0", "@walletconnect/core@^2.10.1", "@walletconnect/core@^2.11.0-canary.0", "@walletconnect/core@^2.9.1":
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.11.0.tgz#3a4e301077b2f858fd916b7a20b5b984d1afce63"
   integrity sha512-2Tjp5BCevI7dbmqo/OrCjX4tqgMqwJNQLlQAlphqPfvwlF9+tIu6pGcVbSN3U9zyXzWIZCeleqEaWUeSeET4Ew==
@@ -3871,6 +3871,14 @@
     "@walletconnect/time" "1.0.2"
     "@walletconnect/utils" "^2.11.0"
     axios "^1.4.0"
+    jwt-decode "^3.1.2"
+
+"@walletconnect/notify-message-decrypter@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@walletconnect/notify-message-decrypter/-/notify-message-decrypter-0.1.0.tgz#5c15a324955ccd3413a2c2ea9540a6aaebecd695"
+  integrity sha512-v55+uiDH6kzCWvqGk9wIgdR/I3pze7eZvpleAd0tX2rmj05QBofEn0vlgYRYn+gRspTLm/hKfeI/SNwjMMt9Og==
+  dependencies:
+    "@walletconnect/core" "^2.9.1"
     jwt-decode "^3.1.2"
 
 "@walletconnect/randombytes@^1.0.3":
@@ -10421,10 +10429,10 @@ react-native-mmkv@2.4.3:
   resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.4.3.tgz#6bb4c2d5e328513da11faab1371d056a189adbd0"
   integrity sha512-0hYNOTbsjJ5j5cpX+qjwReGIxuYE9MWRsyPQ72fTOvzmEjYXCF4Wr2VQoqx8R6W1/Uinekvln7dGvJ4RExmHhQ==
 
-react-native-mmkv@^2.11.0:
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.11.0.tgz#51b9985f6a5c09fe9c16d8c1861cc2901856ace1"
-  integrity sha512-28PdUHjZJmAw3q+8zJDAAdohnZMpDC7WgRUJxACOMkcmJeqS3u5cKS/lSq2bhf1CvaeIiHYHUWiyatUjMRCDQQ==
+react-native-mmkv@2.6.3:
+  version "2.6.3"
+  resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.6.3.tgz#6bfd1b3dd4b264c86e68adbaa9692f3388af2b5d"
+  integrity sha512-CkLAU5EX18eDw0Q+h6qEXPvynb+NVDu54cOY3h4h9VUhaaflfAmGWBJRQCBQz5M0VdnS8utjgJNryTAWKUTqpw==
 
 react-native-modal@13.0.1:
   version "13.0.1"
@@ -10837,6 +10845,11 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^3.0.0"
     inherits "^2.0.1"
+
+rn-flipper-async-storage-advanced@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/rn-flipper-async-storage-advanced/-/rn-flipper-async-storage-advanced-1.0.5.tgz#908467faf55ed64b6d2eceb95a15e030d99ecd4e"
+  integrity sha512-IW2qXGyf+wgZKNV01li02e7c/DR/NQGIdQZ5CKynhVtl0Od8tO4AS/mZtRjmPbRtqSSGTdOUBSJ4d2JsCVZUPw==
 
 rpc-websockets@^7.5.1:
   version "7.9.0"

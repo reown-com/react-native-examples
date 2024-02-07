@@ -1,12 +1,10 @@
 import React from 'react';
-import {Alert, Text, View} from 'react-native';
-
-import {NotifyClient} from '@walletconnect/notify-client';
+import {Alert, PermissionsAndroid, Text, View} from 'react-native';
 
 import {Button} from '@web3modal/ui-react-native';
-import {ENV_PROJECT_ID} from '@env';
-import {useAccount, useSignMessage} from 'wagmi';
+import {useSignMessage} from 'wagmi';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
+import notifee from '@notifee/react-native';
 
 interface Props {}
 
@@ -40,6 +38,31 @@ export function InitializeNotifyClientButton({}: Props) {
     });
   }
 
+  async function onDisplayNotification() {
+    // Request permissions (required for iOS)
+    await notifee.requestPermission();
+
+    // Create a channel (required for Android)
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+
+    // Display a notification
+    await notifee.displayNotification({
+      title: 'Notification Title',
+      body: 'Main body content of the notification',
+      android: {
+        channelId,
+        smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
+        // pressAction is needed if you want the notification to open the app when pressed
+        pressAction: {
+          id: 'default',
+        },
+      },
+    });
+  }
+
   if (!account) return;
 
   return (
@@ -52,6 +75,15 @@ export function InitializeNotifyClientButton({}: Props) {
           : 'Notify Client Not Initialized'}
       </Text>
       <Button onPress={registerAccount}>Register Account</Button>
+      <Button
+        onPress={async () => {
+          await notifee.requestPermission();
+        }}>
+        Request Permissions
+      </Button>
+      <Button onPress={onDisplayNotification}>
+        Example Notifee Notification
+      </Button>
     </View>
   );
 }

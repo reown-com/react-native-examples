@@ -50,8 +50,6 @@ function NotificationItemSkeleton() {
   );
 }
 
-const Skeletons = Array(3).fill(<NotificationItemSkeleton />);
-
 export default function SubscriptionDetailsScreen() {
   const {params} = useRoute();
   const {notifications, setNotifications} = useNotifyClientContext();
@@ -100,18 +98,37 @@ export default function SubscriptionDetailsScreen() {
   if (!topic) return null;
 
   return (
-    <ScreenContainer>
+    <React.Fragment>
       <FlatList
         contentContainerStyle={{
-          flex: 1,
-          paddingTop: 15,
+          padding: 16,
         }}
         data={sortedByDate}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.sentAt.toString()}
         onEndReached={() => {
           if (hasMore && lastItem) {
             getNotificationHistory(lastItem);
           }
+        }}
+        ListFooterComponent={() => {
+          if (isLoading) {
+            return (
+              <View
+                style={{
+                  marginTop: 8,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                }}>
+                {Array(3)
+                  .fill(null)
+                  .map((item, index) => {
+                    return <NotificationItemSkeleton key={index} />;
+                  })}
+              </View>
+            );
+          }
+          return null;
         }}
         ItemSeparatorComponent={() => <View style={{height: 12}} />}
         renderItem={({item}) => (
@@ -125,8 +142,6 @@ export default function SubscriptionDetailsScreen() {
           />
         )}
       />
-      {isLoading ? Skeletons : null}
-      {isLoading ? <ActivityIndicator /> : null}
-    </ScreenContainer>
+    </React.Fragment>
   );
 }

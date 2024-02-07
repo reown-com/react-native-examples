@@ -61,7 +61,6 @@ export const NotifyClientProvider: React.FC<{
 
     notifyClient.on('notify_message', ({params, topic}) => {
       const {message} = params;
-      console.log('Received notification: ', message);
       const findSubsWithName = subscriptions.find(sub => sub?.topic === topic);
       console.log('Found subs: ', findSubsWithName);
       if (findSubsWithName) {
@@ -144,6 +143,7 @@ export const NotifyClientProvider: React.FC<{
         [topicId]: updatedNotifications,
       };
       notifsToReturn = updated;
+
       return updated;
     });
 
