@@ -3219,10 +3219,10 @@
   dependencies:
     valtio "1.10.5"
 
-"@web3modal/ethers-react-native@1.2.0-alpha.0":
-  version "1.2.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/ethers-react-native/-/ethers-react-native-1.2.0-alpha.0.tgz#fdce0fedd7fada561e0c1a1b0ccf0c53bdd78feb"
-  integrity sha512-vf0BX/81SF4zGq1oscwogBzOSPtVbE/prUcHQQ5jKeD/V3gasccKG1FR/ES2Mseq/4SPiviVx4AbVVzE1pV4Ag==
+"@web3modal/ethers-react-native@^1.2.0-alpha.1":
+  version "1.2.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/ethers-react-native/-/ethers-react-native-1.2.0-alpha.1.tgz#857731295250cad6784e0af0b2cf8e378065bbbc"
+  integrity sha512-isw7rjDkdXtWZ57b74Mhissf8soFmvnRgldFjXQSYh1CaX69FQK/d9+tmXIDhfEVm5+KLdL500rECgnGHCG9ww==
   dependencies:
     "@walletconnect/ethereum-provider" "2.11.1"
     "@web3modal/scaffold-react-native" "1.2.0"
