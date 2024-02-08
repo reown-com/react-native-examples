@@ -1,18 +1,31 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {colors} from '../utils/theme';
+import useColors from '../utils/theme';
+
+interface ISubscriptionItem {
+  title: string;
+  description: string;
+  imageURL: string;
+  onPress: () => void;
+}
 
 export default function SubscriptionItem({
   title,
   description,
   imageURL,
   onPress,
-}) {
+}: ISubscriptionItem) {
+  const colors = useColors();
+
   return (
     <Pressable
       onPress={onPress}
       style={({pressed}) => [
         {
-          backgroundColor: pressed ? colors.background : 'transparent',
+          backgroundColor: pressed
+            ? colors.backgroundActive
+            : colors.background,
+          borderColor: colors.border,
+          borderRadius: 16,
         },
         styles.container,
       ]}>
@@ -21,8 +34,10 @@ export default function SubscriptionItem({
         <Image source={{uri: imageURL}} style={styles.image} />
       </View>
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+        <Text style={[styles.title, {color: colors.primary}]}>{title}</Text>
+        <Text style={[styles.description, {color: colors.secondary}]}>
+          {description}
+        </Text>
       </View>
     </Pressable>
   );
@@ -36,8 +51,7 @@ const styles = StyleSheet.create({
     gap: 8,
     width: '100%',
     padding: 12,
-    borderBottomWidth: 1,
-    borderColor: colors.backgroundActive,
+    borderWidth: 0.5,
   },
   contentContainer: {
     flex: 1,
@@ -48,12 +62,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     fontWeight: '600',
-    color: colors.primary,
   },
   description: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '400',
-    color: colors.secondary,
   },
   imageContainer: {
     width: 48,

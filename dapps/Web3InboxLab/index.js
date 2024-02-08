@@ -1,7 +1,3 @@
-/**
- * @format
- */
-
 import 'react-native-gesture-handler';
 
 import {AppRegistry} from 'react-native';
@@ -15,9 +11,7 @@ import notifee, {
   AndroidVisibility,
   EventType,
 } from '@notifee/react-native';
-// import {NotifyClient} from '@walletconnect/notify-client';
-// import {Core} from '@walletconnect/core';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import {NotifyClient} from '@walletconnect/notify-client';
 import AppNull from './src/AppNull';
 
 const polyfillDigest = async (algorithm, data) => {
@@ -42,50 +36,43 @@ notifee.createChannel({
   visibility: AndroidVisibility.PUBLIC,
 });
 
-// let notifyClient;
+let notifyClient;
 
-// const projectId = process.env.ENV_PROJECT_ID;
+const projectId = process.env.ENV_PROJECT_ID;
 
-// #region wait
 async function registerAppWithFCM() {
   // This is expected to be automatically handled on iOS. See https://rnfirebase.io/reference/messaging#registerDeviceForRemoteMessages
-  // if (Platform.OS === 'android') {
-  // await messaging().registerDeviceForRemoteMessages();
-  //   console.log('>>>> registerDeviceForRemoteMessages');
-  // }
+  if (Platform.OS === 'android') {
+    await messaging().registerDeviceForRemoteMessages();
+    console.log('>>>> registerDeviceForRemoteMessages');
+  }
 }
 
-// Register device
 registerAppWithFCM();
 
-// // Register client to Echo server
-// async function registerClient(deviceToken, clientId) {
-//   console.log(
-//     `>>>> register client: deviceToken:${deviceToken} clientId:${clientId} projectId:${projectId}`,
-//   );
-//   const body = JSON.stringify({
-//     client_id: clientId,
-//     token: deviceToken,
-//     type: 'fcm',
-//     always_raw: true,
-//   });
+async function registerClient(deviceToken, clientId) {
+  const body = JSON.stringify({
+    client_id: clientId,
+    token: deviceToken,
+    type: 'fcm',
+    always_raw: true,
+  });
 
-//   const requestOptions = {
-//     method: 'POST',
-//     headers: {'Content-Type': 'application/json'},
-//     body,
-//   };
+  const requestOptions = {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body,
+  };
 
-//   return fetch(
-//     `https://echo.walletconnect.com/${projectId}/clients`,
-//     requestOptions,
-//   )
-//     .then(response => response.json())
-//     .then(result => console.log('>>> registered client', result))
-//     .catch(error => console.log('>>> error while registering client', error));
-// }
+  return fetch(
+    `https://echo.walletconnect.com/${projectId}/clients`,
+    requestOptions,
+  )
+    .then(response => response.json())
+    .then(result => console.log('>>> registered client', result))
+    .catch(error => console.log('>>> error while registering client', error));
+}
 
-// // Handle token and refresh
 async function handleGetToken(token) {
   const status = await messaging().requestPermission();
   const enabled =
@@ -94,38 +81,35 @@ async function handleGetToken(token) {
 
   if (enabled) {
     console.log('>>> handleGetToken: enabled: ', token);
-    // notifyClient = await NotifyClient.init({projectId});
-    // const clientId = await notifyClient.core.crypto.getClientId();
-    // return registerClient(token, clientId);
+    notifyClient = await NotifyClient.init({projectId});
+    const clientId = await notifyClient.core.crypto.getClientId();
+    return registerClient(token, clientId);
   }
 }
-// #endregion
 
 messaging().getToken().then(handleGetToken);
 messaging().onTokenRefresh(handleGetToken);
 
 async function onMessageReceived(remoteMessage) {
-  console.log('>>> onMessageReceived', remoteMessage);
+  if (!remoteMessage.data?.blob || !remoteMessage.data?.topic) {
+    console.log('Missing blob or topic on notification message.');
+    return;
+  }
 
-  // if (!remoteMessage.data?.blob || !remoteMessage.data?.topic) {
-  //   console.log('Missing blob or topic on notification message.');
-  //   return;
-  // }
-
-  // const decryptedMessage = await decryptMessage({
-  //   topic: remoteMessage.data?.topic,
-  //   encryptedMessage: remoteMessage.data?.blob,
-  // });
+  const decryptedMessage = await decryptMessage({
+    topic: remoteMessage.data?.topic,
+    encryptedMessage: remoteMessage.data?.blob,
+  });
 
   return notifee.displayNotification({
-    title: remoteMessage.data.title + ' override',
-    body: remoteMessage.data.body,
+    title: decryptedMessage.title,
+    body: decryptedMessage.body,
     id: 'default',
     android: {
       channelId: 'default',
       importance: AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC,
-      smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
+      smallIcon: 'ic_launcher',
       pressAction: {
         id: 'default',
       },
@@ -137,8 +121,6 @@ messaging().onMessage(onMessageReceived);
 messaging().setBackgroundMessageHandler(onMessageReceived);
 
 notifee.onBackgroundEvent(async ({type, detail}) => {
-  console.log('>>> Notifee background event!', type, detail);
-
   const {notification, pressAction} = detail;
 
   // Check if the user pressed the "Mark as read" action
@@ -150,7 +132,6 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
 
 function HeadlessCheck({isHeadless}) {
   if (isHeadless) {
-    console.log('>>> The app is headless now');
     // App has been launched in the background by iOS, ignore
     return <AppNull />;
   }

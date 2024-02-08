@@ -1,5 +1,5 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {colors} from '../utils/theme';
+import useColors from '../utils/theme';
 import {DateUtil} from '../utils/date';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
 
@@ -20,6 +20,8 @@ export default function NotificationItemWithSubscription({
   subscription,
   onPress,
 }: NotificationItemProps) {
+  const colors = useColors();
+
   return (
     <Pressable
       onPress={onPress}
@@ -27,6 +29,7 @@ export default function NotificationItemWithSubscription({
         {
           backgroundColor:
             pressed && url ? colors.backgroundActive : colors.background,
+          borderColor: colors.border,
         },
         styles.container,
       ]}>
@@ -40,9 +43,23 @@ export default function NotificationItemWithSubscription({
         />
       </View>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
+        <Text
+          style={[
+            styles.title,
+            {
+              color: colors.primary,
+            },
+          ]}>
+          {title}
+        </Text>
         {sentAt ? (
-          <Text style={styles.description}>
+          <Text
+            style={[
+              styles.description,
+              {
+                color: colors.secondary,
+              },
+            ]}>
             {DateUtil.getRelativeDateFromNow(sentAt)}
           </Text>
         ) : null}
@@ -61,7 +78,6 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border,
   },
   subscriptionImageContainer: {
     position: 'absolute',
@@ -70,14 +86,6 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 1,
-    // },
-    // shadowOpacity: 0.18,
-    // shadowRadius: 1.0,
-    // elevation: 1,
   },
   subscriptionImageBorder: {
     position: 'absolute',
@@ -104,16 +112,13 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '600',
-    color: colors.primary,
   },
   description: {
     fontSize: 12,
     fontWeight: '400',
-    color: colors.secondary,
   },
   sentAt: {
     fontSize: 11,
     fontWeight: '400',
-    color: colors.secondary,
   },
 });

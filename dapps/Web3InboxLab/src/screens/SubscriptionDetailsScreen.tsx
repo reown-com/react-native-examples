@@ -3,8 +3,7 @@ import {useRoute} from '@react-navigation/native';
 import {ActivityIndicator, Alert, FlatList, Text, View} from 'react-native';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import NotificationItem from '../components/NotificationItem';
-import ScreenContainer from '../components/ScreenContainer';
-import {colors} from '../utils/theme';
+import useColors from '../utils/theme';
 
 interface NotifyNotification {
   title: string;
@@ -16,6 +15,8 @@ interface NotifyNotification {
 }
 
 function NotificationItemSkeleton() {
+  const colors = useColors();
+
   return (
     <View
       style={{
@@ -26,15 +27,14 @@ function NotificationItemSkeleton() {
         justifyContent: 'center',
         gap: 8,
         padding: 12,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: colors.backgroundActive,
+        borderBottomWidth: 1,
+        borderColor: colors.border,
       }}>
       <View
         style={{
           width: '50%',
           height: 16,
-          backgroundColor: colors.backgroundActive,
+          backgroundColor: colors.background,
           borderRadius: 4,
         }}
       />
@@ -42,7 +42,7 @@ function NotificationItemSkeleton() {
         style={{
           width: '70%',
           height: 12,
-          backgroundColor: colors.backgroundActive,
+          backgroundColor: colors.background,
           borderRadius: 4,
         }}
       />
@@ -98,50 +98,45 @@ export default function SubscriptionDetailsScreen() {
   if (!topic) return null;
 
   return (
-    <React.Fragment>
-      <FlatList
-        contentContainerStyle={{
-          padding: 16,
-        }}
-        data={sortedByDate}
-        keyExtractor={item => item.sentAt.toString()}
-        onEndReached={() => {
-          if (hasMore && lastItem) {
-            getNotificationHistory(lastItem);
-          }
-        }}
-        ListFooterComponent={() => {
-          if (isLoading) {
-            return (
-              <View
-                style={{
-                  marginTop: 8,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 8,
-                }}>
-                {Array(3)
-                  .fill(null)
-                  .map((item, index) => {
-                    return <NotificationItemSkeleton key={index} />;
-                  })}
-              </View>
-            );
-          }
-          return null;
-        }}
-        ItemSeparatorComponent={() => <View style={{height: 12}} />}
-        renderItem={({item}) => (
-          <NotificationItem
-            key={item.id}
-            title={item.title}
-            description={item.body}
-            url={item.url}
-            onPress={() => {}}
-            sentAt={item.sentAt}
-          />
-        )}
-      />
-    </React.Fragment>
+    <FlatList
+      contentContainerStyle={{}}
+      data={sortedByDate}
+      keyExtractor={item => item.sentAt.toString()}
+      onEndReached={() => {
+        if (hasMore && lastItem) {
+          getNotificationHistory(lastItem);
+        }
+      }}
+      ListFooterComponent={() => {
+        if (isLoading) {
+          return (
+            <View
+              style={{
+                marginTop: 8,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}>
+              {Array(3)
+                .fill(null)
+                .map((item, index) => {
+                  return <NotificationItemSkeleton key={index} />;
+                })}
+            </View>
+          );
+        }
+        return null;
+      }}
+      renderItem={({item}) => (
+        <NotificationItem
+          key={item.id}
+          title={item.title}
+          description={item.body}
+          url={item.url}
+          onPress={() => {}}
+          sentAt={item.sentAt}
+        />
+      )}
+    />
   );
 }

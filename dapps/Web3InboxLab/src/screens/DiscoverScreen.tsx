@@ -12,7 +12,6 @@ export default function DiscoverScreen() {
       contentContainerStyle={{
         padding: 16,
         gap: 16,
-        backgroundColor: 'white',
       }}>
       {projectsData.map(item => (
         <DiscoverListItem key={item.dapp_url} item={item} />

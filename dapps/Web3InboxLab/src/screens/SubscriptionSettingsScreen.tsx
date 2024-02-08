@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
-import {colors} from '../utils/theme';
+import useColors from '../utils/theme';
 import {Controller, useForm} from 'react-hook-form';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
@@ -25,6 +25,7 @@ export default function SubscriptionSettingsScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const topic = params?.topic;
   const {navigate} = useNavigation();
+  const colors = useColors();
   const {subscriptions, notifyClient} = useNotifyClientContext();
   const [unsubscribing, setUnsubscribing] = React.useState(false);
 
@@ -88,39 +89,50 @@ export default function SubscriptionSettingsScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{
-        flex: 1,
         paddingHorizontal: 16,
-        backgroundColor: 'white',
       }}>
-      {notificationTypes.map((item, index) => (
-        <View
-          key={item.id}
-          style={[
-            styles.scopeContainer,
-            index === notificationTypes.length - 1 ? {borderWidth: 0} : null,
-            index === 0 ? {paddingTop: 8} : null,
-          ]}>
-          <View style={styles.scopeContentContainer}>
-            <Text style={styles.scopeTitle}>{item.name}</Text>
-            <Text style={styles.scopeDescription}>{item.description}</Text>
+      <View
+        style={{
+          width: '100%',
+          marginTop: 16,
+          borderRadius: 8,
+          backgroundColor: colors.background,
+        }}>
+        {notificationTypes.map((item, index) => (
+          <View
+            key={item.id}
+            style={[
+              styles.scopeContainer,
+              index === notificationTypes.length - 1 ? {borderWidth: 0} : null,
+              {borderColor: colors.backgroundSecondary},
+            ]}>
+            <View style={styles.scopeContentContainer}>
+              <Text style={[styles.scopeTitle, {color: colors.primary}]}>
+                {item.name}
+              </Text>
+              <Text
+                style={[styles.scopeDescription, {color: colors.secondary}]}>
+                {item.description}
+              </Text>
+            </View>
+            <View>
+              <Controller
+                name={item.id}
+                control={control}
+                render={({field: {onChange, value}}) => (
+                  <Switch
+                    value={value}
+                    onValueChange={e => {
+                      onChange(e);
+                      handleSaveNotificationSettings();
+                    }}
+                  />
+                )}
+              />
+            </View>
           </View>
-          <View>
-            <Controller
-              name={item.id}
-              control={control}
-              render={({field: {onChange, value}}) => (
-                <Switch
-                  value={value}
-                  onValueChange={e => {
-                    onChange(e);
-                    handleSaveNotificationSettings();
-                  }}
-                />
-              )}
-            />
-          </View>
-        </View>
-      ))}
+        ))}
+      </View>
       <Pressable
         onPress={handleUnsubscribe}
         style={[
@@ -130,7 +142,7 @@ export default function SubscriptionSettingsScreen() {
           styles.destructiveButton,
         ]}>
         {unsubscribing ? (
-          <ActivityIndicator />
+          <ActivityIndicator color={colors.secondary} />
         ) : (
           <Text style={styles.destructiveButtonText}>Unsubscribe</Text>
         )}
@@ -154,20 +166,20 @@ const styles = StyleSheet.create({
   scopeContainer: {
     display: 'flex',
     flexDirection: 'row',
-    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderColor: colors.background,
+    width: '100%',
+    borderBottomWidth: 0.5,
+    paddingHorizontal: 16,
   },
   scopeContentContainer: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 4,
+    paddingVertical: 16,
   },
   buttonContainer: {
     gap: 4,
@@ -179,13 +191,11 @@ const styles = StyleSheet.create({
     width: '100%',
     fontSize: 18,
     fontWeight: '500',
-    color: colors.primary,
   },
   scopeDescription: {
     width: '100%',
     fontSize: 12,
     fontWeight: '400',
     marginBottom: 8,
-    color: colors.secondary,
   },
 });

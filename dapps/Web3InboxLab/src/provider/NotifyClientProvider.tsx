@@ -29,7 +29,13 @@ export const NotifyClientProvider: React.FC<{
 
   React.useEffect(() => {
     if (address) {
-      setAccount(`eip155:1:${address}`);
+      setAccount(prevAccount => {
+        if (!prevAccount && address) {
+          getActiveSubscriptions();
+        }
+
+        return `eip155:1:${address}`;
+      });
     }
   }, [address]);
 

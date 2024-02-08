@@ -3,6 +3,7 @@ import {useNavigation} from '@react-navigation/native';
 import {RefreshControl, ScrollView, Text, View} from 'react-native';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import SubscriptionItem from '../components/SubscriptionItem';
+import SubscriptionsConnectOverlay from '../components/SubscriptionsConnectOverlay';
 
 export default function SubscriptionsScreen() {
   const {subscriptions, fetchSubscriptions} = useNotifyClientContext();
@@ -19,12 +20,13 @@ export default function SubscriptionsScreen() {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{
-        backgroundColor: 'white',
-        paddingBottom: 16,
+        padding: 16,
+        gap: 8,
       }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }>
+      <SubscriptionsConnectOverlay />
       {subscriptions.map(item => (
         <SubscriptionItem
           key={item?.topic}

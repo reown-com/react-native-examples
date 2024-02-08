@@ -1,5 +1,5 @@
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {colors} from '../utils/theme';
+import useColors from '../utils/theme';
 import {DateUtil} from '../utils/date';
 
 type NotificationItemProps = {
@@ -17,6 +17,8 @@ export default function NotificationItem({
   url,
   onPress,
 }: NotificationItemProps) {
+  const colors = useColors();
+
   return (
     <Pressable
       onPress={onPress}
@@ -24,18 +26,21 @@ export default function NotificationItem({
         {
           backgroundColor:
             pressed && url ? colors.backgroundActive : colors.background,
+          borderColor: colors.border,
         },
         styles.container,
       ]}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, {color: colors.primary}]}>{title}</Text>
         {sentAt ? (
-          <Text style={styles.description}>
+          <Text style={[styles.sentAt, {color: colors.secondary}]}>
             {DateUtil.getRelativeDateFromNow(sentAt)}
           </Text>
         ) : null}
       </View>
-      <Text style={styles.description}>{description}</Text>
+      <Text style={[styles.description, {color: colors.secondary}]}>
+        {description}
+      </Text>
     </Pressable>
   );
 }
@@ -46,10 +51,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 4,
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderBottomWidth: 0.5,
   },
   titleContainer: {
     display: 'flex',
@@ -59,18 +63,15 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.primary,
   },
   description: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '400',
-    color: colors.secondary,
   },
   sentAt: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '400',
-    color: colors.secondary,
   },
 });

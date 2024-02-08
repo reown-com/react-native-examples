@@ -11,8 +11,7 @@ import {
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
 
 import projectsData from '../constants/projects-resposne.json';
-import {colors} from '../utils/theme';
-import {useNavigation} from '@react-navigation/native';
+import useColors from '../utils/theme';
 
 type ProjectItem = (typeof projectsData)[0];
 
@@ -22,7 +21,7 @@ type DiscoverListItemProps = {
 
 export default function DiscoverListItem({item}: DiscoverListItemProps) {
   const {account, subscriptions, notifyClient} = useNotifyClientContext();
-  const {navigate} = useNavigation();
+  const colors = useColors();
 
   const [subscribing, setSubscribing] = React.useState(false);
   const domain = new URL(item.dapp_url).host;
@@ -60,7 +59,14 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
   }
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.background,
+          borderColor: colors.border,
+        },
+      ]}>
       <View style={styles.header}>
         <View style={styles.imageContainer}>
           <View style={styles.imageBorder} />
@@ -75,16 +81,18 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
                   borderWidth: 1,
                   borderColor: colors.border,
                 }
-              : {backgroundColor: colors.primary},
+              : {backgroundColor: colors.secondary},
             styles.button,
           ]}>
           {subscribing ? (
-            <ActivityIndicator />
+            <ActivityIndicator color={colors.background} />
           ) : (
             <Text
               style={[
-                isSubscribed ? {color: colors.secondary} : {color: 'white'},
                 styles.buttonText,
+                isSubscribed
+                  ? {color: colors.secondary}
+                  : {color: colors.background},
               ]}>
               {isSubscribed ? 'Subscribed' : 'Subscribe'}
             </Text>
@@ -92,9 +100,11 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
         </Pressable>
       </View>
       <View style={styles.content}>
-        <Text style={styles.title}>{item.name}</Text>
-        <Text style={styles.domain}>{domain}</Text>
-        <Text style={styles.subtitle}>{item.description}</Text>
+        <Text style={[styles.title, {color: colors.primary}]}>{item.name}</Text>
+        <Text style={[styles.domain, {color: colors.secondary}]}>{domain}</Text>
+        <Text style={[styles.subtitle, {color: colors.secondary}]}>
+          {item.description}
+        </Text>
       </View>
     </View>
   );
@@ -105,32 +115,27 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
-    backgroundColor: colors.background,
     gap: 8,
     width: '100%',
-    padding: 12,
+    padding: 16,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderWidth: 0.5,
   },
   title: {
     width: '100%',
     fontSize: 18,
     fontWeight: '500',
-    color: colors.primary,
   },
   domain: {
     width: '100%',
     fontSize: 12,
     fontWeight: '400',
     marginBottom: 8,
-    color: colors.secondary,
   },
   subtitle: {
     width: '100%',
     fontSize: 14,
     fontWeight: '400',
-    color: colors.secondary,
   },
   header: {
     width: '100%',
@@ -158,7 +163,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 14,
-    fontWeight: '400',
+    fontWeight: '500',
   },
   imageContainer: {
     width: 48,
