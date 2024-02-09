@@ -59,11 +59,6 @@ export default function SubscriptionSettingsScreen() {
       topic,
       scope: enabledScopes,
     });
-    if (updated) {
-      console.log('>>> updated scopes');
-    } else {
-      console.log('>>> failed to update scopes');
-    }
   }
 
   async function handleUnsubscribe() {

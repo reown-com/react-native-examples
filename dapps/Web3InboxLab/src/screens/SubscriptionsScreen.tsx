@@ -4,10 +4,12 @@ import {RefreshControl, ScrollView, Text, View} from 'react-native';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import SubscriptionItem from '../components/SubscriptionItem';
 import SubscriptionsConnectOverlay from '../components/SubscriptionsConnectOverlay';
+import {useAccount} from 'wagmi';
 
 export default function SubscriptionsScreen() {
   const {subscriptions, fetchSubscriptions} = useNotifyClientContext();
   const [refreshing, setRefreshing] = React.useState(false);
+  const {address} = useAccount();
   const {navigate} = useNavigation();
 
   async function handleRefresh() {
@@ -27,20 +29,21 @@ export default function SubscriptionsScreen() {
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }>
       <SubscriptionsConnectOverlay />
-      {subscriptions.map(item => (
-        <SubscriptionItem
-          key={item?.topic}
-          title={item?.metadata?.name}
-          imageURL={item?.metadata?.icons[0]}
-          description={item?.metadata?.appDomain}
-          onPress={() => {
-            navigate('SubscriptionDetailsScreen', {
-              topic: item?.topic,
-              name: item?.metadata?.name,
-            });
-          }}
-        />
-      ))}
+      {address &&
+        subscriptions.map(item => (
+          <SubscriptionItem
+            key={item?.topic}
+            title={item?.metadata?.name}
+            imageURL={item?.metadata?.icons[0]}
+            description={item?.metadata?.appDomain}
+            onPress={() => {
+              navigate('SubscriptionDetailsScreen', {
+                topic: item?.topic,
+                name: item?.metadata?.name,
+              });
+            }}
+          />
+        ))}
     </ScrollView>
   );
 }

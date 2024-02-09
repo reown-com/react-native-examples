@@ -51,26 +51,19 @@ export const NotifyClientProvider: React.FC<{
       if (error) {
         console.error('Setting up subscription failed: ', error);
       } else {
-        // console.log('>>> notify_subscription', params);
         const allSubscriptions = params.allSubscriptions;
         const newSubscription = params.subscription;
 
-        // console.log('>>> subscribed, updating list', params);
         if (!allSubscriptions) return;
 
         setSubscriptions(allSubscriptions);
-        // New subscription was successfully created.
-        // Inform the user and/or update app state to reflect the new subscription.
-        console.log(`Subscribed successfully.`);
       }
     });
 
     notifyClient.on('notify_message', ({params, topic}) => {
       const {message} = params;
       const findSubsWithName = subscriptions.find(sub => sub?.topic === topic);
-      console.log('Found subs: ', findSubsWithName);
       if (findSubsWithName) {
-        console.log('Updating state');
         handleSetNotifications(findSubsWithName.topic, [message]);
       }
     });
@@ -120,7 +113,6 @@ export const NotifyClientProvider: React.FC<{
       setNotifyClient(notifyClient);
       setInitializing(false);
     } catch (error) {
-      console.log('>>> error initializing notify client', error);
       setInitializing(false);
     }
   }

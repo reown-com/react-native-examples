@@ -14,14 +14,6 @@ export default function SubscriptionsConnectOverlay() {
   const {account, notifyClient} = useNotifyClientContext();
   const {signMessageAsync} = useSignMessage();
 
-  console.log({
-    account,
-    x: notifyClient?.isRegistered({
-      account,
-      domain: 'w3i-lab-mobile.vercel.app',
-      allApps: true,
-    }),
-  });
   const isRegistered = account
     ? notifyClient?.isRegistered({
         account,
