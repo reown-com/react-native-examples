@@ -57,6 +57,10 @@ end
 target 'RNWeb3Wallet' do
   config = use_native_modules!
 
+   # https://rnfirebase.io/
+   use_frameworks! :linkage => :static
+   $RNFirebaseAsStaticFramework = true
+  
   use_react_native!(
     :path => config[:reactNativePath],
     # Enables Flipper.
