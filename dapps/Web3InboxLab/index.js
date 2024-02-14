@@ -1,7 +1,6 @@
 import 'react-native-gesture-handler';
 
 import {AppRegistry} from 'react-native';
-import App from './src/App';
 import {name as appName} from './app.json';
 import crypto from 'react-native-quick-crypto';
 
@@ -12,7 +11,9 @@ import notifee, {
   EventType,
 } from '@notifee/react-native';
 import {NotifyClient} from '@walletconnect/notify-client';
-import AppNull from './src/AppNull';
+import {decryptMessage} from '@walletconnect/notify-message-decrypter';
+
+import App from './src/App';
 
 const polyfillDigest = async (algorithm, data) => {
   const algo = algorithm.replace('-', '').toLowerCase();
@@ -44,7 +45,6 @@ async function registerAppWithFCM() {
   // This is expected to be automatically handled on iOS. See https://rnfirebase.io/reference/messaging#registerDeviceForRemoteMessages
   if (Platform.OS === 'android') {
     await messaging().registerDeviceForRemoteMessages();
-    console.log('>>>> registerDeviceForRemoteMessages');
   }
 }
 
@@ -80,7 +80,6 @@ async function handleGetToken(token) {
     status === messaging.AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
-    console.log('>>> handleGetToken: enabled: ', token);
     notifyClient = await NotifyClient.init({projectId});
     const clientId = await notifyClient.core.crypto.getClientId();
     return registerClient(token, clientId);
@@ -133,7 +132,7 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
 function HeadlessCheck({isHeadless}) {
   if (isHeadless) {
     // App has been launched in the background by iOS, ignore
-    return <AppNull />;
+    return null;
   }
 
   // Render the app component on foreground launch
