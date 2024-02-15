@@ -8,6 +8,7 @@ import {HomeTabParamList} from '../utils/TypesUtil';
 import SubscriptionsStack from '@/navigators/SubscriptionsStack';
 import SettingsStack from '@/navigators/SettingsStack';
 import ConnectionsStack from '@/navigators/ConnectionsStack';
+import SvgBellIcon from '../../src/assets/BellIcon';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
@@ -17,6 +18,10 @@ const SettingsIcon = ({color}: {color: string}) => (
 
 const ConnectionsIcon = ({color}: {color: string}) => (
   <SvgConnectionsTab height={26} width={26} fill={color} />
+);
+
+const BellIcon = ({color}: {color: string}) => (
+  <SvgBellIcon height={26} width={26} stroke={color} />
 );
 
 export function HomeTabNavigator() {
@@ -42,8 +47,8 @@ export function HomeTabNavigator() {
         name="SubscriptionsStack"
         component={SubscriptionsStack}
         options={{
-          tabBarLabel: 'Inbox',
-          tabBarIcon: ConnectionsIcon,
+          tabBarLabel: 'Notifications',
+          tabBarIcon: BellIcon,
         }}
       />
       <TabNav.Screen

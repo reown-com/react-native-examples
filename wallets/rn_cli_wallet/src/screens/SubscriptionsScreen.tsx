@@ -1,43 +1,80 @@
 import * as React from 'react';
-import {useNavigation} from '@react-navigation/native';
-import {RefreshControl, ScrollView} from 'react-native';
-import useNotifyClientContext from '@/hooks/useNotifyClientContext';
-import SubscriptionItem from '@/components/components/SubscriptionItem';
-import {useSnapshot} from 'valtio';
-import SettingsStore from '@/store/SettingsStore';
+
+import PagerView from 'react-native-pager-view';
+import {useHeaderHeight} from '@react-navigation/elements';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useTheme} from '@/hooks/useTheme';
+import {Pressable, Text, View} from 'react-native';
+import SubscriptionList from '@/components/SubscriptionList';
+import DiscoverList from '@/components/DiscoverList';
 
 export default function SubscriptionsScreen() {
-  const {subscriptions, fetchSubscriptions} = useNotifyClientContext();
-  const [refreshing, setRefreshing] = React.useState(false);
-  const {eip155Address: address} = useSnapshot(SettingsStore.state);
-  const {navigate} = useNavigation();
+  const viewPager = React.createRef<PagerView>();
+  const headerHeight = useHeaderHeight();
+  const {top} = useSafeAreaInsets();
+  const Theme = useTheme();
+  const [page, setPage] = React.useState(0);
 
-  async function handleRefresh() {
-    setRefreshing(true);
-    await fetchSubscriptions();
-    setRefreshing(false);
+  function handleSetPage(index: number) {
+    viewPager.current?.setPage(index);
+    setPage(index);
   }
 
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-      }>
-      {address &&
-        subscriptions.map(item => (
-          <SubscriptionItem
-            key={item?.topic}
-            title={item?.metadata?.name}
-            imageURL={item?.metadata?.icons[0]}
-            description={item?.metadata?.appDomain}
-            onPress={() => {
-              navigate('SubscriptionDetailsScreen', {
-                topic: item?.topic,
-                name: item?.metadata?.name,
-              });
-            }}
-          />
-        ))}
-    </ScrollView>
+    <View
+      style={{
+        paddingTop: headerHeight + top - 8,
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+      <View
+        style={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'row',
+          backgroundColor: Theme['accent-glass-005'],
+          borderBottomWidth: 0.5,
+          borderColor: Theme['gray-glass-010'],
+        }}>
+        <Pressable
+          style={{paddingHorizontal: 16, paddingVertical: 8}}
+          onPress={() => {
+            handleSetPage(0);
+          }}>
+          <Text
+            style={{
+              color: page === 0 ? Theme['accent-100'] : Theme['gray-glass-030'],
+            }}>
+            Subscriptions
+          </Text>
+        </Pressable>
+        <Pressable
+          style={{paddingHorizontal: 16, paddingVertical: 8}}
+          onPress={() => {
+            handleSetPage(1);
+          }}>
+          <Text
+            style={{
+              color: page === 1 ? Theme['accent-100'] : Theme['gray-glass-030'],
+            }}>
+            Discover
+          </Text>
+        </Pressable>
+      </View>
+      <PagerView
+        ref={viewPager}
+        style={{
+          flex: 1,
+        }}
+        initialPage={0}>
+        <View key="0">
+          <SubscriptionList />
+        </View>
+        <View key="1">
+          <DiscoverList />
+        </View>
+      </PagerView>
+    </View>
   );
 }

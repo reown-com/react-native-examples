@@ -1,9 +1,7 @@
-import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
-import {
-  CompositeScreenProps,
-  NavigatorScreenParams,
-} from '@react-navigation/native';
+import {NavigatorScreenParams} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
+import {CompositeScreenProps} from '@react-navigation/native';
+import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 
 export type ThemeKeys =
   | 'accent-100'
@@ -60,26 +58,32 @@ declare global {
 
 export type RootStackParamList = {
   Onboarding: undefined;
-  Home: NavigatorScreenParams<HomeTabParamList>;
-  TabNavigator: undefined;
-  Settings: undefined;
+  Home: NavigatorScreenParams<HomeTabParamList>; // Nested Navigator
   SessionDetail: {topic: string};
   Scan: undefined;
 };
 
 export type HomeTabParamList = {
-  ConnectionsStack: {uri?: string};
+  ConnectionsStack: NavigatorScreenParams<ConnectionsStackParamList>;
   SubscriptionsStack: NavigatorScreenParams<SubscriptionsStackParamList>;
-  DiscoverStack: undefined;
-  SettingsStack: undefined;
+  SettingsStack: NavigatorScreenParams<SettingsStackParamList>;
+};
+
+export type ConnectionsStackParamList = {
+  ConnectionsScreen: undefined;
 };
 
 export type SubscriptionsStackParamList = {
   SubscriptionsScreen: {topic?: string};
-  SubscriptionDetailsScreen: {topic?: string};
-  SubscriptionSettingsScreen: {topic?: string};
+  SubscriptionDetailsScreen: {topic: string};
+  SubscriptionSettingsScreen: {topic: string};
 };
 
+export type SettingsStackParamList = {
+  SettingsScreen: undefined;
+};
+
+// Define screen props types
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
   StackScreenProps<RootStackParamList, T>;
 
@@ -87,4 +91,24 @@ export type HomeTabScreenProps<T extends keyof HomeTabParamList> =
   CompositeScreenProps<
     BottomTabScreenProps<HomeTabParamList, T>,
     RootStackScreenProps<keyof RootStackParamList>
+  >;
+
+export type ConnectionsStackScreenProps<
+  T extends keyof ConnectionsStackParamList,
+> = CompositeScreenProps<
+  StackScreenProps<ConnectionsStackParamList, T>,
+  HomeTabScreenProps<keyof HomeTabParamList>
+>;
+
+export type SubscriptionsStackScreenProps<
+  T extends keyof SubscriptionsStackParamList,
+> = CompositeScreenProps<
+  StackScreenProps<SubscriptionsStackParamList, T>,
+  HomeTabScreenProps<keyof HomeTabParamList>
+>;
+
+export type SettingsStackScreenProps<T extends keyof SettingsStackParamList> =
+  CompositeScreenProps<
+    StackScreenProps<SettingsStackParamList, T>,
+    HomeTabScreenProps<keyof HomeTabParamList>
   >;

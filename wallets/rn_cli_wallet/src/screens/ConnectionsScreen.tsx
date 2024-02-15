@@ -14,9 +14,9 @@ import ModalStore from '../store/ModalStore';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useInitialURL} from '@/hooks/useInitialUrl';
 
-type Props = HomeTabScreenProps<'Connections'>;
+type Props = HomeTabScreenProps<'ConnectionsStack'>;
 
-export default function ConnectionsView({route}: Props) {
+export default function ConnectionsScreen({route}: Props) {
   const {url: initialUrl, processing} = useInitialURL();
   const [copyDialogVisible, setCopyDialogVisible] = useState(false);
   const insets = useSafeAreaInsets();
