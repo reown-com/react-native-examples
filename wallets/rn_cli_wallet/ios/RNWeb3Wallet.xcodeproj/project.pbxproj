@@ -15,6 +15,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		97CB01031021BF23ED95ED34 /* Pods_RNWeb3Wallet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3613F4F462A21ACC5C8EF3E5 /* Pods_RNWeb3Wallet.framework */; };
 		BC55FDB92B7D243600340DDB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
+		BCD0CCF42B7ECBB200DF23F8 /* main.jsbundle.map in Resources */ = {isa = PBXBuildFile; fileRef = BCD0CCF32B7ECBB200DF23F8 /* main.jsbundle.map */; };
 		BCE3541D175A46E38B138F21 /* SFProRounded-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 91CBA0F64BFB4C1794CA7DE0 /* SFProRounded-Thin.otf */; };
 		F463DD35882F996DE9EA1FE5 /* Pods_RNWeb3Wallet_RNWeb3WalletTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C10DDB2F0D5CEA1FB947B99 /* Pods_RNWeb3Wallet_RNWeb3WalletTests.framework */; };
 /* End PBXBuildFile section */
@@ -51,6 +52,7 @@
 		BC0E53642B7E95F80075EFC3 /* RNWeb3Wallet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNWeb3Wallet.entitlements; path = RNWeb3Wallet/RNWeb3Wallet.entitlements; sourceTree = "<group>"; };
 		BC0E53652B7EAFF70075EFC3 /* RNWeb3WalletDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNWeb3WalletDebug.entitlements; path = RNWeb3Wallet/RNWeb3WalletDebug.entitlements; sourceTree = "<group>"; };
 		BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BCD0CCF32B7ECBB200DF23F8 /* main.jsbundle.map */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = main.jsbundle.map; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -126,6 +128,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				BCD0CCF32B7ECBB200DF23F8 /* main.jsbundle.map */,
 				BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* RNWeb3Wallet */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -266,6 +269,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BCD0CCF42B7ECBB200DF23F8 /* main.jsbundle.map in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				BC55FDB92B7D243600340DDB /* GoogleService-Info.plist in Resources */,
@@ -291,7 +295,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "export EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nset -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\nSENTRY_XCODE=\"../node_modules/@sentry/react-native/scripts/sentry-xcode.sh\"\nBUNDLE_REACT_NATIVE=\"/bin/sh $SENTRY_XCODE $REACT_NATIVE_XCODE\"\n\n# RN 0.69+\n/bin/sh -c \"$WITH_ENVIRONMENT \\\"$BUNDLE_REACT_NATIVE\\\"\"\n";
+			shellScript = "export EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nset -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\nSENTRY_XCODE=\"../node_modules/@sentry/react-native/scripts/sentry-xcode.sh\"\nBUNDLE_REACT_NATIVE=\"/bin/sh $SENTRY_XCODE $REACT_NATIVE_XCODE\"\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n\n# RN 0.69+\n/bin/sh -c \"$WITH_ENVIRONMENT \\\"$BUNDLE_REACT_NATIVE\\\"\"\n";
 		};
 		16010E03109EEF822BDB0B48 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;

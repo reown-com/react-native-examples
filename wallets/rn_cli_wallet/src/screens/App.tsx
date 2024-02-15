@@ -1,11 +1,12 @@
 import React from 'react';
+import {StatusBar} from 'react-native';
+
 import {ENV_SENTRY_DSN} from '@env';
 import {NavigationContainer} from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 
 import {RootStackNavigator} from '../navigators/RootStackNavigator';
-import {StatusBar} from 'react-native';
-import {NotifyClientProvider} from '@/provider/NotifyClientProvider';
+import {NotifyClientProvider} from '../provider/NotifyClientProvider';
 
 if (!__DEV__) {
   Sentry.init({
