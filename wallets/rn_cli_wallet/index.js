@@ -2,9 +2,9 @@
  * @format
  */
 
-import './polyfills';
-import {AppRegistry, PermissionsAndroid, Platform} from 'react-native';
-import App from './src/screens/App';
+import 'react-native-gesture-handler';
+
+import {AppRegistry, Platform} from 'react-native';
 import {name as appName} from './app.json';
 
 import messaging from '@react-native-firebase/messaging';
@@ -17,6 +17,8 @@ import {NotifyClient} from '@walletconnect/notify-client';
 import {decryptMessage} from '@walletconnect/notify-message-decrypter';
 import crypto from 'react-native-quick-crypto';
 import {request, PERMISSIONS} from 'react-native-permissions';
+
+import App from './src/screens/App';
 
 const polyfillDigest = async (algorithm, data) => {
   const algo = algorithm.replace('-', '').toLowerCase();

@@ -1,3 +1,5 @@
+import '@walletconnect/react-native-compat';
+
 import React from 'react';
 import {StatusBar} from 'react-native';
 
