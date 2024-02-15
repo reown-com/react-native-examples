@@ -1,9 +1,7 @@
 import React from 'react';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
-import {W3mAccountButton} from '@web3modal/wagmi-react-native';
-import NotificationsScreen from '../components/NotificationsScreen';
+import NotificationsScreen from '@/components/components/NotificationsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -12,7 +10,6 @@ export default function NotificationsStack() {
     <Stack.Navigator
       screenOptions={{
         contentStyle: {backgroundColor: 'white'},
-        headerRight: () => <W3mAccountButton />,
       }}>
       <Stack.Screen
         name="NotificationsScreen"

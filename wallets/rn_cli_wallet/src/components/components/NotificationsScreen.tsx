@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {ScrollView, View} from 'react-native';
-import useNotifyClientContext from '../hooks/useNotifyClientContext';
+import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import NotificationItemWithSubscription from './NotificationItemWithSubscription';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
 import {InitializeNotifyClientButton} from './InitializeNotifyClientButton';

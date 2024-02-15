@@ -8,14 +8,14 @@ import {useSnapshot} from 'valtio';
 import ModalStore from '../store/ModalStore';
 import {SignClientTypes} from '@walletconnect/types';
 import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '../data/EIP155Data';
-import {eip155Addresses} from '../utils/EIP155WalletUtil';
+import {eip155Addresses} from '@/utils/EIP155WalletUtil';
 import {buildApprovedNamespaces, getSdkError} from '@walletconnect/utils';
-import {web3wallet} from '../utils/WalletConnectUtil';
+import {web3wallet} from '@/utils/WalletConnectUtil';
 import SettingsStore from '../store/SettingsStore';
 import {getChainData} from '../data/chainsUtil';
-import {handleDeepLinkRedirect} from '../utils/LinkingUtils';
+import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
 import {RequestModal} from './RequestModal';
-import {useTheme} from '../hooks/useTheme';
+import {useTheme} from '@/hooks/useTheme';
 import {Chains} from '../components/Modal/Chains';
 
 export default function SessionProposalModal() {

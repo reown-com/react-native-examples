@@ -1,8 +1,8 @@
 import React from 'react';
 import {TouchableOpacity, StyleSheet, Text} from 'react-native';
 
-import {web3wallet} from '../utils/WalletConnectUtil';
-import {useTheme} from '../hooks/useTheme';
+import {web3wallet} from '@/utils/WalletConnectUtil';
+import {useTheme} from '@/hooks/useTheme';
 import {useNavigation} from '@react-navigation/native';
 
 export function GetStartedButton() {
@@ -14,7 +14,7 @@ export function GetStartedButton() {
   const onPress = () => {
     navigation.reset({
       index: 0,
-      routes: [{name: 'Home'}],
+      routes: [{name: 'TabNavigator'}],
     });
   };
 

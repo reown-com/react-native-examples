@@ -5,7 +5,8 @@ import BellIcon from '../icons/bell';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import DiscoverStack from './DiscoverStack';
 import SubscriptionsStack from './SubscriptionsStack';
-import useColors from '../utils/theme';
+import useColors from '@/utils/theme';
+import HomeScreen from '@/screens/HomeScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -21,6 +22,26 @@ export default function TabNavigator() {
           borderTopColor: colors.border,
         },
       }}>
+      <Tab.Screen
+        name="Home"
+        options={{
+          tabBarLabel: 'Connections',
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: colors.secondary,
+          tabBarIcon: ({focused}) => (
+            <BellIcon
+              style={[
+                {
+                  width: 15,
+                  height: 15,
+                  fill: focused ? colors.primary : colors.secondary,
+                },
+              ]}
+            />
+          ),
+        }}
+        component={HomeScreen}
+      />
       <Tab.Screen
         name="SubscriptionsStack"
         options={{

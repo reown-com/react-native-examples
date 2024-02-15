@@ -1,5 +1,5 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import useColors from '../utils/theme';
+import useColors from '@/utils/theme';
 
 interface ISubscriptionItem {
   title: string;

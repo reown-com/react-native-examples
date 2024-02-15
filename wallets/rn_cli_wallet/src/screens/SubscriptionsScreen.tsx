@@ -1,15 +1,17 @@
 import * as React from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {RefreshControl, ScrollView, Text, View} from 'react-native';
-import useNotifyClientContext from '../hooks/useNotifyClientContext';
-import SubscriptionItem from '../components/SubscriptionItem';
-import SubscriptionsConnectOverlay from '../components/SubscriptionsConnectOverlay';
-import {useAccount} from 'wagmi';
+import {RefreshControl, ScrollView} from 'react-native';
+import useNotifyClientContext from '@/hooks/useNotifyClientContext';
+import SubscriptionItem from '@/components/components/SubscriptionItem';
+import SubscriptionsConnectOverlay from '@/components/components/SubscriptionsConnectOverlay';
+import {useSnapshot} from 'valtio';
+import SettingsStore from '@/store/SettingsStore';
+// import {useAccount} from 'wagmi';
 
 export default function SubscriptionsScreen() {
   const {subscriptions, fetchSubscriptions} = useNotifyClientContext();
   const [refreshing, setRefreshing] = React.useState(false);
-  const {address} = useAccount();
+  const {eip155Address: address} = useSnapshot(SettingsStore.state);
   const {navigate} = useNavigation();
 
   async function handleRefresh() {

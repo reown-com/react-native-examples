@@ -5,6 +5,7 @@ import * as Sentry from '@sentry/react-native';
 
 import {RootStackNavigator} from '../navigators/RootStackNavigator';
 import {StatusBar} from 'react-native';
+import {NotifyClientProvider} from '@/provider/NotifyClientProvider';
 
 if (!__DEV__) {
   Sentry.init({
@@ -15,8 +16,10 @@ if (!__DEV__) {
 const App = () => {
   return (
     <NavigationContainer>
-      <StatusBar barStyle={'dark-content'} />
-      <RootStackNavigator />
+      <NotifyClientProvider>
+        <StatusBar barStyle={'dark-content'} />
+        <RootStackNavigator />
+      </NotifyClientProvider>
     </NavigationContainer>
   );
 };

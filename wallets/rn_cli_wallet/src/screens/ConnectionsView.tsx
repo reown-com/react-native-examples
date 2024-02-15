@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {View, StyleSheet, Linking} from 'react-native';
 
-import {web3wallet} from '../utils/WalletConnectUtil';
+import {web3wallet} from '@/utils/WalletConnectUtil';
 
 import Sessions from '../components/HomeScreen/Sessions';
 import ActionButtons from '../components/HomeScreen/ActionButtons';
@@ -9,10 +9,10 @@ import ActionButtons from '../components/HomeScreen/ActionButtons';
 import CustomText from '../components/Text';
 import {CopyURIDialog} from '../components/CopyURIDialog';
 import Modal from '../components/Modal';
-import {useInitialURL} from '../hooks/useInitialUrl';
 import {HomeTabScreenProps} from '../utils/TypesUtil';
 import ModalStore from '../store/ModalStore';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useInitialURL} from '@/hooks/useInitialUrl';
 
 type Props = HomeTabScreenProps<'Connections'>;
 

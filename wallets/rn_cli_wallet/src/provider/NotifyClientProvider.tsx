@@ -5,15 +5,16 @@ import NotifyClientContext, {
   NotifyNotification,
 } from '../context/NotifyClientContext';
 import {NotifyClient} from '@walletconnect/notify-client';
-import {useAccount} from 'wagmi';
 import {Alert} from 'react-native';
 import {ENV_PROJECT_ID} from '@env';
 import cloneDeep from 'lodash.clonedeep';
+import {useSnapshot} from 'valtio';
+import SettingsStore from '@/store/SettingsStore';
 
 export const NotifyClientProvider: React.FC<{
   children: React.ReactNode;
 }> = ({children}) => {
-  const {address} = useAccount();
+  const {eip155Address: address} = useSnapshot(SettingsStore.state);
 
   const [initializing, setInitializing] = React.useState(false);
   const [notifyClient, setNotifyClient] = React.useState<
@@ -104,6 +105,7 @@ export const NotifyClientProvider: React.FC<{
   }
 
   async function handleInitializeNotifyClient() {
+    console.log('>>>initialize notify client', ENV_PROJECT_ID);
     setInitializing(true);
 
     try {

@@ -8,10 +8,10 @@ import {
   Text,
   View,
 } from 'react-native';
-import useNotifyClientContext from '../hooks/useNotifyClientContext';
+import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 
-import projectsData from '../constants/projects-resposne.json';
-import useColors from '../utils/theme';
+import projectsData from '@/constants/projects-resposne.json';
+import useColors from '@/utils/theme';
 
 type ProjectItem = (typeof projectsData)[0];
 

@@ -5,12 +5,12 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import {useSnapshot} from 'valtio';
 import {getVersion, getBuildNumber} from 'react-native-device-info';
 
-import {eip155Wallets} from '../utils/EIP155WalletUtil';
+import {eip155Wallets} from '@/utils/EIP155WalletUtil';
 import SettingsStore from '../store/SettingsStore';
 import {Card} from '../components/Card';
-import {useTheme} from '../hooks/useTheme';
 import CustomText from '../components/Text';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useTheme} from '@/hooks/useTheme';
 
 function SettingsView() {
   const Theme = useTheme();

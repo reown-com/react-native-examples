@@ -1,18 +1,18 @@
 import {Alert, Pressable, Text, View} from 'react-native';
 import SubscriptionItemSkeleton from './SubscriptionItemSkeleton';
 
-import useColors from '../utils/theme';
-import {useWeb3Modal} from '@web3modal/wagmi-react-native';
-import WalletIcon from '../icons/wallet';
-import {useAccount, useSignMessage} from 'wagmi';
-import useNotifyClientContext from '../hooks/useNotifyClientContext';
+import useColors from '@/utils/theme';
+import WalletIcon from '@/icons/wallet';
+// import {useAccount, useSignMessage} from 'wagmi';
+import useNotifyClientContext from '@/hooks/useNotifyClientContext';
+import {useSnapshot} from 'valtio';
+import SettingsStore from '@/store/SettingsStore';
 
 export default function SubscriptionsConnectOverlay() {
   const colors = useColors();
-  const {address} = useAccount();
-  const {open} = useWeb3Modal();
+  const {eip155Address: address} = useSnapshot(SettingsStore.state);
   const {account, notifyClient} = useNotifyClientContext();
-  const {signMessageAsync} = useSignMessage();
+  // const {signMessageAsync} = useSignMessage();
 
   const isRegistered = account
     ? notifyClient?.isRegistered({
@@ -38,12 +38,12 @@ export default function SubscriptionsConnectOverlay() {
       domain: 'w3i-lab-mobile.vercel.app',
       allApps: true,
     });
-    const signature = await signMessageAsync({message: message});
+    // const signature = await signMessageAsync({message: message});
 
-    await notifyClient.register({
-      registerParams,
-      signature,
-    });
+    // await notifyClient.register({
+    //   registerParams,
+    //   signature,
+    // });
   }
 
   if (address && isRegistered) return null;
@@ -176,7 +176,7 @@ export default function SubscriptionsConnectOverlay() {
               shadowRadius: 3.84,
               elevation: 5,
             })}
-            onPress={() => open()}>
+            onPress={() => {}}>
             <WalletIcon width={18} height={18} fill={colors.primary} />
             <Text
               style={{

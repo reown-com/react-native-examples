@@ -1,18 +1,15 @@
 import React from 'react';
-import {Alert, PermissionsAndroid, Text, View} from 'react-native';
+import {Alert, Pressable, Text, View} from 'react-native';
 
-import {Button} from '@web3modal/ui-react-native';
-import {useSignMessage} from 'wagmi';
-import useNotifyClientContext from '../hooks/useNotifyClientContext';
+// import {useSignMessage} from 'wagmi';
+import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import notifee from '@notifee/react-native';
 
-interface Props {}
-
-export function InitializeNotifyClientButton({}: Props) {
+export function InitializeNotifyClientButton() {
   const {account, initializing, notifyClient} = useNotifyClientContext();
   const initialized = !!notifyClient;
 
-  const {signMessageAsync} = useSignMessage();
+  // const {signMessageAsync} = useSignMessage();
 
   async function registerAccount() {
     if (!notifyClient) {
@@ -25,17 +22,17 @@ export function InitializeNotifyClientButton({}: Props) {
       return;
     }
 
-    const {message, registerParams} = await notifyClient.prepareRegistration({
-      account,
-      domain: 'w3m-dapp.vercel.app', // pass your app's bundle identifier.
-      allApps: true,
-    });
-    const signature = await signMessageAsync({message: message});
+    // const {message, registerParams} = await notifyClient.prepareRegistration({
+    //   account,
+    //   domain: 'w3m-dapp.vercel.app', // pass your app's bundle identifier.
+    //   allApps: true,
+    // });
+    // // const signature = await signMessageAsync({message: message});
 
-    await notifyClient.register({
-      registerParams,
-      signature,
-    });
+    // await notifyClient.register({
+    //   registerParams,
+    //   signature,
+    // });
   }
 
   async function onDisplayNotification() {
@@ -74,16 +71,16 @@ export function InitializeNotifyClientButton({}: Props) {
           ? 'Notify Client Initialized'
           : 'Notify Client Not Initialized'}
       </Text>
-      <Button onPress={registerAccount}>Register Account</Button>
-      <Button
+      <Pressable onPress={registerAccount}>Register Account</Pressable>
+      <Pressable
         onPress={async () => {
           await notifee.requestPermission();
         }}>
         Request Permissions
-      </Button>
-      <Button onPress={onDisplayNotification}>
+      </Pressable>
+      <Pressable onPress={onDisplayNotification}>
         Example Notifee Notification
-      </Button>
+      </Pressable>
     </View>
   );
 }

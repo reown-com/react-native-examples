@@ -1,35 +1,5 @@
 [
   {
-    "id": "1fc2dfbb28a7107f5cc61a7beba9300366a4b7b95b79aa1d5a3a959652ca58d9",
-    "name": "Enes Test dApp",
-    "homepage": "https://w3m-dapp.vercel.app",
-    "image_id": "edd74559-e86b-4bde-8fd9-ce42d671a500",
-    "description": "This dApp was created for testing purposes.",
-    "dapp_url": "https://w3m-dapp.vercel.app/",
-    "is_featured": null,
-    "order": null,
-    "image_url": {
-      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/edd74559-e86b-4bde-8fd9-ce42d671a500?projectId=7cb67f700b96a290fb5bb73d9001d489",
-      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/edd74559-e86b-4bde-8fd9-ce42d671a500?projectId=7cb67f700b96a290fb5bb73d9001d489",
-      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/edd74559-e86b-4bde-8fd9-ce42d671a500?projectId=7cb67f700b96a290fb5bb73d9001d489"
-    },
-    "notificationTypes": [
-      {
-        "id": "32373d19-1fce-4ef6-b918-b147f0f28d3d",
-        "name": "Welcome",
-        "image_id": null,
-        "description": "Welcome notifications"
-      },
-      {
-        "id": "ab137d9e-2836-48a5-aa83-a00afcd67a73",
-        "name": "Updates",
-        "image_id": null,
-        "description": "Get the latest news about Enes."
-      }
-    ],
-    "isVerified": false
-  },
-  {
     "id": "8b5da5446028a466eef1d6a6c4e1df50d2d9dcf747437d6086c94ed0dc52fce5",
     "name": "Web3Inbox",
     "homepage": "https://www.web3inbox.com",

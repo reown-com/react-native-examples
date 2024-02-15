@@ -1,9 +1,9 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {getSdkError} from '@walletconnect/utils';
-import {web3wallet} from '../utils/WalletConnectUtil';
+import {web3wallet} from '@/utils/WalletConnectUtil';
 import {ModalHeader} from '../components/Modal/ModalHeader';
-import {useTheme} from '../hooks/useTheme';
+import {useTheme} from '@/hooks/useTheme';
 import {ActionButton} from '../components/ActionButton';
 import {useNavigation} from '@react-navigation/native';
 import {Methods} from '../components/Modal/Methods';

@@ -1,6 +1,6 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import useColors from '../utils/theme';
-import {DateUtil} from '../utils/date';
+import useColors from '@/utils/theme';
+import {DateUtil} from '@/utils/date';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
 
 type NotificationItemProps = {

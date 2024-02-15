@@ -1,6 +1,6 @@
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import useColors from '../utils/theme';
-import {DateUtil} from '../utils/date';
+import useColors from '@/utils/theme';
+import {DateUtil} from '@/utils/date';
 
 type NotificationItemProps = {
   title: string;

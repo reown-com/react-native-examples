@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {useTheme} from '../hooks/useTheme';
+import {useTheme} from '@/hooks/useTheme';
 
 export interface CardProps {
   title: string;

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {useRoute} from '@react-navigation/native';
-import {ActivityIndicator, Alert, FlatList, Text, View} from 'react-native';
-import useNotifyClientContext from '../hooks/useNotifyClientContext';
-import NotificationItem from '../components/NotificationItem';
-import useColors from '../utils/theme';
+import {Alert, FlatList, View} from 'react-native';
+import useNotifyClientContext from '@/hooks/useNotifyClientContext';
+import useColors from '@/utils/theme';
+import NotificationItem from '@/components/components/NotificationItem';
 
 interface NotifyNotification {
   title: string;

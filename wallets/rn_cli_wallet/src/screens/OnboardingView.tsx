@@ -4,10 +4,10 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {GetStartedButton} from '../components/GetStartedButton';
 import Text from '../components/Text';
-import useInitialization from '../hooks/useInitialization';
+import useInitialization from '@/hooks/useInitialization';
 import backgroundImageSrc from '../assets/ethCalculatorBG.png';
-import useWalletConnectEventsManager from '../hooks/useWalletConnectEventsManager';
-import {web3wallet} from '../utils/WalletConnectUtil';
+import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
+import {web3wallet} from '@/utils/WalletConnectUtil';
 import {RELAYER_EVENTS} from '@walletconnect/core';
 
 const OnboardingView = () => {

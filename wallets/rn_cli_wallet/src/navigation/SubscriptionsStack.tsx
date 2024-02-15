@@ -4,11 +4,10 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {useNavigation} from '@react-navigation/native';
 import {Pressable, Text} from 'react-native';
-import SubscriptionSettingsScreen from '../screens/SubscriptionSettingsScreen';
-import SubscriptionsScreen from '../screens/SubscriptionsScreen';
-import SubscriptionDetailsScreen from '../screens/SubscriptionDetailsScreen';
-import useColors from '../utils/theme';
-import AccountButton from '../components/AccountButton';
+import SubscriptionSettingsScreen from '@/screens/SubscriptionSettingsScreen';
+import SubscriptionsScreen from '@/screens/SubscriptionsScreen';
+import SubscriptionDetailsScreen from '@/screens/SubscriptionDetailsScreen';
+import useColors from '@/utils/theme';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,7 +29,6 @@ export default function SubscriptionsStack() {
         options={{
           headerTitle: 'Subscriptions',
           headerLargeTitle: true,
-          headerRight: () => <AccountButton width={24} height={24} />,
         }}
         component={SubscriptionsScreen}
       />
