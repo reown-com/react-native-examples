@@ -949,6 +949,10 @@ PODS:
     - React-Core
   - react-native-netinfo (11.1.0):
     - React-Core
+  - react-native-pager-view (6.2.3):
+    - glog
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
   - react-native-quick-base64 (2.0.8):
     - React-Core
   - react-native-quick-crypto (0.6.1):
@@ -1129,6 +1133,8 @@ PODS:
     - React-Core
   - RNCClipboard (1.13.2):
     - React-Core
+  - RNDeviceInfo (10.12.0):
+    - React-Core
   - RNFBApp (18.8.0):
     - Firebase/CoreOnly (= 10.20.0)
     - React-Core
@@ -1145,6 +1151,8 @@ PODS:
     - React-Core
     - RNNotifee/NotifeeCore (= 7.8.2)
   - RNNotifee/NotifeeCore (7.8.2):
+    - React-Core
+  - RNPermissions (4.1.1):
     - React-Core
   - RNScreens (3.29.0):
     - glog
@@ -1201,6 +1209,7 @@ DEPENDENCIES:
   - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-quick-base64 (from `../node_modules/react-native-quick-base64`)
   - react-native-quick-crypto (from `../node_modules/react-native-quick-crypto`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -1226,10 +1235,12 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -1317,6 +1328,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-pager-view:
+    :path: "../node_modules/react-native-pager-view"
   react-native-quick-base64:
     :path: "../node_modules/react-native-quick-base64"
   react-native-quick-crypto:
@@ -1367,6 +1380,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
     :path: "../node_modules/@react-native-clipboard/clipboard"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBMessaging:
@@ -1375,6 +1390,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNNotifee:
     :path: "../node_modules/@notifee/react-native"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSentry:
@@ -1430,6 +1447,7 @@ SPEC CHECKSUMS:
   react-native-compat: 87ef69da9c7379f493a89bd9089ddc7d17c358e6
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
+  react-native-pager-view: 33c56e3b547d2f29d224255d82e796942e0918b8
   react-native-quick-base64: 777057ea4286f806b00259ede65dc79c7c706320
   react-native-quick-crypto: 455c1b411db006dba1026a30681ececb19180187
   react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
@@ -1455,10 +1473,12 @@ SPEC CHECKSUMS:
   ReactCommon: d4860bcbe85d89bb261ba28948f027325bb577dc
   RNCAsyncStorage: 618d03a5f52fbccb3d7010076bc54712844c18ef
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
+  RNDeviceInfo: db5c64a060e66e5db3102d041ebe3ef307a85120
   RNFBApp: a4f5b074984cf612e4c97d68b42be690c59e2638
   RNFBMessaging: 1e7415390ae579c5949505a0709686a2de8a47e5
   RNGestureHandler: 28bdf9a766c081e603120f79e925b72817c751c6
   RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
+  RNPermissions: b366b43ff08314585f3ee61f51f00b4b182c33f7
   RNScreens: 2b73f5eb2ac5d94fbd61fa4be0bfebd345716825
   RNSentry: ed42b1443bef1fec1fc9273b5193a79b0cab1a01
   RNSVG: 03e4d258ca355d7836a0a5dd4d4dc63c1eb49cbb
@@ -1468,6 +1488,6 @@ SPEC CHECKSUMS:
   VisionCamera: 4b98b273902ac18491bb68481b6601f1f0da0f2d
   Yoga: 13c8ef87792450193e117976337b8527b49e8c03
 
-PODFILE CHECKSUM: b7037b105330e73ee176f5f11d18c667fc7d2f76
+PODFILE CHECKSUM: 8c904ea0375d860c394a9a742cfba19c4361b135
 
 COCOAPODS: 1.14.3

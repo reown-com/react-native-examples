@@ -9,6 +9,7 @@
       "@/data/*": ["./src/data/*"],
       "@/hooks/*": ["./src/hooks/*"],
       "@/navigation/*": ["./src/navigation/*"],
+      "@/navigators/*": ["./src/navigators/*"],
       "@/icons/*": ["./src/icons/*"],
       "@/screens/*": ["./src/screens/*"],
       "@/modals/*": ["./src/modals/*"],

@@ -1,18 +1,18 @@
 import {Alert, Pressable, Text, View} from 'react-native';
 import SubscriptionItemSkeleton from './SubscriptionItemSkeleton';
 
-import useColors from '@/utils/theme';
 import WalletIcon from '@/icons/wallet';
-// import {useAccount, useSignMessage} from 'wagmi';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import {useSnapshot} from 'valtio';
 import SettingsStore from '@/store/SettingsStore';
+import {createOrRestoreEIP155Wallet} from '@/utils/EIP155WalletUtil';
+import {useTheme} from '@/hooks/useTheme';
 
 export default function SubscriptionsConnectOverlay() {
-  const colors = useColors();
+  const Theme = useTheme();
+
   const {eip155Address: address} = useSnapshot(SettingsStore.state);
   const {account, notifyClient} = useNotifyClientContext();
-  // const {signMessageAsync} = useSignMessage();
 
   const isRegistered = account
     ? notifyClient?.isRegistered({
@@ -38,12 +38,15 @@ export default function SubscriptionsConnectOverlay() {
       domain: 'w3i-lab-mobile.vercel.app',
       allApps: true,
     });
-    // const signature = await signMessageAsync({message: message});
 
-    // await notifyClient.register({
-    //   registerParams,
-    //   signature,
-    // });
+    const {eip155Wallets} = await createOrRestoreEIP155Wallet();
+
+    const signature = await eip155Wallets[address].signMessage(message);
+
+    await notifyClient.register({
+      registerParams,
+      signature,
+    });
   }
 
   if (address && isRegistered) return null;
@@ -73,7 +76,7 @@ export default function SubscriptionsConnectOverlay() {
           }}>
           <Text
             style={{
-              color: colors.primary,
+              color: Theme['accent-100'],
               fontSize: 24,
               fontWeight: '600',
               textAlign: 'center',
@@ -82,7 +85,7 @@ export default function SubscriptionsConnectOverlay() {
           </Text>
           <Text
             style={{
-              color: colors.secondary,
+              color: Theme['fg-200'],
               fontSize: 18,
               textAlign: 'center',
             }}>
@@ -93,8 +96,8 @@ export default function SubscriptionsConnectOverlay() {
               width: 'auto',
               height: 48,
               backgroundColor: pressed
-                ? colors.backgroundActive
-                : colors.background,
+                ? Theme['accent-090']
+                : Theme['accent-100'],
               paddingHorizontal: 24,
               paddingVertical: 12,
               borderRadius: 16,
@@ -103,8 +106,8 @@ export default function SubscriptionsConnectOverlay() {
               alignItems: 'center',
               gap: 8,
               borderWidth: 1,
-              borderColor: colors.border,
-              shadowColor: colors.background,
+              borderColor: Theme['gray-glass-020'],
+              shadowColor: Theme['accent-100'],
               shadowOffset: {
                 width: 2,
                 height: 4,
@@ -116,7 +119,7 @@ export default function SubscriptionsConnectOverlay() {
             onPress={registerAccount}>
             <Text
               style={{
-                color: colors.primary,
+                color: Theme['inverse-100'],
                 fontSize: 18,
               }}>
               Sign Message
@@ -136,7 +139,7 @@ export default function SubscriptionsConnectOverlay() {
           }}>
           <Text
             style={{
-              color: colors.primary,
+              color: Theme['accent-100'],
               fontSize: 24,
               fontWeight: '600',
               textAlign: 'center',
@@ -145,7 +148,7 @@ export default function SubscriptionsConnectOverlay() {
           </Text>
           <Text
             style={{
-              color: colors.secondary,
+              color: Theme['fg-200'],
               fontSize: 18,
               textAlign: 'center',
             }}>
@@ -156,8 +159,8 @@ export default function SubscriptionsConnectOverlay() {
               width: 'auto',
               height: 48,
               backgroundColor: pressed
-                ? colors.backgroundActive
-                : colors.background,
+                ? Theme['accent-090']
+                : Theme['accent-100'],
               paddingHorizontal: 24,
               paddingVertical: 12,
               borderRadius: 16,
@@ -166,8 +169,8 @@ export default function SubscriptionsConnectOverlay() {
               alignItems: 'center',
               gap: 8,
               borderWidth: 1,
-              borderColor: colors.border,
-              shadowColor: colors.background,
+              borderColor: Theme['gray-glass-020'],
+              shadowColor: Theme['accent-100'],
               shadowOffset: {
                 width: 2,
                 height: 4,
@@ -177,10 +180,10 @@ export default function SubscriptionsConnectOverlay() {
               elevation: 5,
             })}
             onPress={() => {}}>
-            <WalletIcon width={18} height={18} fill={colors.primary} />
+            <WalletIcon width={18} height={18} fill={Theme['accent-100']} />
             <Text
               style={{
-                color: colors.primary,
+                color: Theme['inverse-100'],
                 fontSize: 18,
               }}>
               Connect Wallet

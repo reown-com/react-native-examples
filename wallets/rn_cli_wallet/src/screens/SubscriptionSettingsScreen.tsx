@@ -12,10 +12,11 @@ import {
   View,
 } from 'react-native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
-import useColors from '@/utils/theme';
+
 import {Controller, useForm} from 'react-hook-form';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {useTheme} from '@/hooks/useTheme';
 
 type BooleanMap = {[key: string]: boolean};
 
@@ -25,7 +26,8 @@ export default function SubscriptionSettingsScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const topic = params?.topic;
   const {navigate} = useNavigation();
-  const colors = useColors();
+
+  const Theme = useTheme();
   const {subscriptions, notifyClient} = useNotifyClientContext();
   const [unsubscribing, setUnsubscribing] = React.useState(false);
 
@@ -91,22 +93,21 @@ export default function SubscriptionSettingsScreen() {
           width: '100%',
           marginTop: 16,
           borderRadius: 8,
-          backgroundColor: colors.background,
+          backgroundColor: Theme['gray-glass-005'],
         }}>
         {notificationTypes.map((item, index) => (
           <View
             key={item.id}
             style={[
               styles.scopeContainer,
+              {borderColor: Theme['gray-glass-010']},
               index === notificationTypes.length - 1 ? {borderWidth: 0} : null,
-              {borderColor: colors.backgroundSecondary},
             ]}>
             <View style={styles.scopeContentContainer}>
-              <Text style={[styles.scopeTitle, {color: colors.primary}]}>
+              <Text style={[styles.scopeTitle, {color: Theme['fg-100']}]}>
                 {item.name}
               </Text>
-              <Text
-                style={[styles.scopeDescription, {color: colors.secondary}]}>
+              <Text style={[styles.scopeDescription, {color: Theme['fg-200']}]}>
                 {item.description}
               </Text>
             </View>
@@ -137,7 +138,7 @@ export default function SubscriptionSettingsScreen() {
           styles.destructiveButton,
         ]}>
         {unsubscribing ? (
-          <ActivityIndicator color={colors.secondary} />
+          <ActivityIndicator color={Theme['fg-200']} />
         ) : (
           <Text style={styles.destructiveButtonText}>Unsubscribe</Text>
         )}

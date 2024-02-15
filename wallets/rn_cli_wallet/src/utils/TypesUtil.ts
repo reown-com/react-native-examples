@@ -68,8 +68,16 @@ export type RootStackParamList = {
 };
 
 export type HomeTabParamList = {
-  Connections: {uri?: string};
-  Settings: undefined;
+  ConnectionsStack: {uri?: string};
+  SubscriptionsStack: NavigatorScreenParams<SubscriptionsStackParamList>;
+  DiscoverStack: undefined;
+  SettingsStack: undefined;
+};
+
+export type SubscriptionsStackParamList = {
+  SubscriptionsScreen: {topic?: string};
+  SubscriptionDetailsScreen: {topic?: string};
+  SubscriptionSettingsScreen: {topic?: string};
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

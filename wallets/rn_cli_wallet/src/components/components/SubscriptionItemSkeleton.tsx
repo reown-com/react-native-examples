@@ -1,8 +1,9 @@
 import {View} from 'react-native';
-import useColors from '@/utils/theme';
+
+import {useTheme} from '@/hooks/useTheme';
 
 export default function SubscriptionItemSkeleton({style}) {
-  const colors = useColors();
+  const Theme = useTheme();
 
   return (
     <View
@@ -16,10 +17,6 @@ export default function SubscriptionItemSkeleton({style}) {
           opacity: 0.8,
           gap: 8,
           padding: 12,
-          borderRadius: 12,
-          borderWidth: 0.5,
-          borderColor: colors.border,
-          backgroundColor: colors.background,
         },
         style,
       ]}>
@@ -27,7 +24,7 @@ export default function SubscriptionItemSkeleton({style}) {
         style={{
           width: '50%',
           height: 16,
-          backgroundColor: colors.backgroundSecondary,
+          backgroundColor: Theme['gray-glass-010'],
           borderRadius: 4,
         }}
       />
@@ -35,7 +32,7 @@ export default function SubscriptionItemSkeleton({style}) {
         style={{
           width: '70%',
           height: 12,
-          backgroundColor: colors.backgroundSecondary,
+          backgroundColor: Theme['gray-glass-010'],
           borderRadius: 4,
         }}
       />

@@ -5,9 +5,10 @@ import {ScrollView} from 'react-native';
 import projectsData from '../constants/projects-resposne.json';
 import DiscoverListItem from '../components/components/DiscoverListItem';
 
-export default function DiscoverScreen() {
+export default function InboxScreen() {
   return (
     <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{
         padding: 16,
         gap: 16,

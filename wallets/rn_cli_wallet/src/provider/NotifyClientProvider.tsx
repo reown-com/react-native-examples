@@ -105,12 +105,12 @@ export const NotifyClientProvider: React.FC<{
   }
 
   async function handleInitializeNotifyClient() {
-    console.log('>>>initialize notify client', ENV_PROJECT_ID);
+    console.log('>>>initialize notify client');
     setInitializing(true);
 
     try {
       const notifyClient = await NotifyClient.init({
-        projectId: ENV_PROJECT_ID,
+        projectId: 'c7317dac10184c6e2a5fcd5461cf21f9',
       });
       setNotifyClient(notifyClient);
       setInitializing(false);
@@ -158,12 +158,12 @@ export const NotifyClientProvider: React.FC<{
     getActiveSubscriptions();
   }, [notifyClient]);
 
-  React.useEffect(() => {
-    if (account && !initialized) {
-      handleInitializeNotifyClient();
-    }
-    // throw 'Missing dependency: initialized';
-  }, [account, initialized]);
+  // React.useEffect(() => {
+  //   if (account && !initialized) {
+  //     handleInitializeNotifyClient();
+  //   }
+  //   // throw 'Missing dependency: initialized';
+  // }, [account, initialized]);
 
   return (
     <NotifyClientContext.Provider
@@ -173,6 +173,7 @@ export const NotifyClientProvider: React.FC<{
         notifyClient,
         subscriptions,
         notifications,
+        initializeNotifyClient: handleInitializeNotifyClient,
         fetchSubscriptions: getActiveSubscriptions,
         setNotifications: handleSetNotifications,
         setInitializing,

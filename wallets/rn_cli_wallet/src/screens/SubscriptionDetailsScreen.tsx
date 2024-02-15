@@ -2,8 +2,9 @@ import * as React from 'react';
 import {useRoute} from '@react-navigation/native';
 import {Alert, FlatList, View} from 'react-native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
-import useColors from '@/utils/theme';
+
 import NotificationItem from '@/components/components/NotificationItem';
+import {useTheme} from '@/hooks/useTheme';
 
 interface NotifyNotification {
   title: string;
@@ -15,7 +16,7 @@ interface NotifyNotification {
 }
 
 function NotificationItemSkeleton() {
-  const colors = useColors();
+  const Theme = useTheme();
 
   return (
     <View
@@ -28,13 +29,13 @@ function NotificationItemSkeleton() {
         gap: 8,
         padding: 12,
         borderBottomWidth: 1,
-        borderColor: colors.border,
+        borderColor: Theme['gray-glass-010'],
       }}>
       <View
         style={{
           width: '50%',
           height: 16,
-          backgroundColor: colors.background,
+          backgroundColor: Theme['gray-glass-010'],
           borderRadius: 4,
         }}
       />
@@ -42,7 +43,7 @@ function NotificationItemSkeleton() {
         style={{
           width: '70%',
           height: 12,
-          backgroundColor: colors.background,
+          backgroundColor: Theme['gray-glass-010'],
           borderRadius: 4,
         }}
       />

@@ -1,7 +1,8 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import useColors from '@/utils/theme';
+
 import {DateUtil} from '@/utils/date';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
+import {useTheme} from '@/hooks/useTheme';
 
 type NotificationItemProps = {
   title: string;
@@ -20,7 +21,7 @@ export default function NotificationItemWithSubscription({
   subscription,
   onPress,
 }: NotificationItemProps) {
-  const colors = useColors();
+  const Theme = useTheme();
 
   return (
     <Pressable
@@ -28,8 +29,8 @@ export default function NotificationItemWithSubscription({
       style={({pressed}) => [
         {
           backgroundColor:
-            pressed && url ? colors.backgroundActive : colors.background,
-          borderColor: colors.border,
+            pressed && url ? Theme['accent-090'] : Theme['accent-100'],
+          borderColor: Theme['gray-glass-020'],
         },
         styles.container,
       ]}>
@@ -47,7 +48,7 @@ export default function NotificationItemWithSubscription({
           style={[
             styles.title,
             {
-              color: colors.primary,
+              color: Theme['accent-100'],
             },
           ]}>
           {title}
@@ -57,7 +58,7 @@ export default function NotificationItemWithSubscription({
             style={[
               styles.description,
               {
-                color: colors.secondary,
+                color: Theme['fg-200'],
               },
             ]}>
             {DateUtil.getRelativeDateFromNow(sentAt)}

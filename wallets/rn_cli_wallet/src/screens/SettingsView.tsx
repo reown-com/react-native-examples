@@ -36,8 +36,8 @@ function SettingsView() {
   return (
     <ScrollView
       style={[styles.container]}
-      contentContainerStyle={[styles.content, {paddingTop: insets.top}]}>
-      <CustomText>Settings</CustomText>
+      contentContainerStyle={[styles.content]}
+      contentInsetAdjustmentBehavior="automatic">
       <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Account</Text>
       <View style={styles.sectionContainer}>
         <Card
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   content: {
-    padding: 16,
+    paddingHorizontal: 16,
   },
   smallMarginTop: {
     marginTop: 16,

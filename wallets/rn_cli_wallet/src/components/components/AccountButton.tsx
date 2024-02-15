@@ -57,7 +57,7 @@
 
 // export default function AccountButton({width, height}: AvatarProps) {
 //   const {address} = useAccount();
-//   const colors = useColors();
+//
 
 //   const addressOrEnsDomain = address as `0x${string}` | undefined;
 //   const {data: ensName} = useEnsName({address: addressOrEnsDomain});
@@ -71,7 +71,7 @@
 //         position: 'relative',
 //         borderRadius: 100,
 //         overflow: 'hidden',
-//         borderColor: colors.secondary,
+//         borderColor: Theme["fg-200"],
 //       }}
 //       onPress={() => {
 //         // modal.open();

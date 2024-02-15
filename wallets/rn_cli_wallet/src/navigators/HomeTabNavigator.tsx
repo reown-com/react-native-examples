@@ -2,11 +2,12 @@ import React from 'react';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {useTheme} from '../hooks/useTheme';
-import ConnectionsView from '../screens/ConnectionsView';
 import SvgConnectionsTab from '../assets/ConnectionsTab';
-import SettingsView from '../screens/SettingsView';
 import SvgSettingsTab from '../assets/SettingsTab';
 import {HomeTabParamList} from '../utils/TypesUtil';
+import SubscriptionsStack from '@/navigators/SubscriptionsStack';
+import SettingsStack from '@/navigators/SettingsStack';
+import ConnectionsStack from '@/navigators/ConnectionsStack';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
@@ -20,6 +21,7 @@ const ConnectionsIcon = ({color}: {color: string}) => (
 
 export function HomeTabNavigator() {
   const Theme = useTheme();
+
   return (
     <TabNav.Navigator
       screenOptions={{
@@ -29,16 +31,26 @@ export function HomeTabNavigator() {
         tabBarInactiveTintColor: Theme['fg-300'],
       }}>
       <TabNav.Screen
-        name="Connections"
-        component={ConnectionsView}
+        name="ConnectionsStack"
+        component={ConnectionsStack}
         options={{
+          tabBarLabel: 'Connections',
           tabBarIcon: ConnectionsIcon,
         }}
       />
       <TabNav.Screen
-        name="Settings"
-        component={SettingsView}
+        name="SubscriptionsStack"
+        component={SubscriptionsStack}
         options={{
+          tabBarLabel: 'Inbox',
+          tabBarIcon: ConnectionsIcon,
+        }}
+      />
+      <TabNav.Screen
+        name="SettingsStack"
+        component={SettingsStack}
+        options={{
+          tabBarLabel: 'Settings',
           tabBarIcon: SettingsIcon,
         }}
       />

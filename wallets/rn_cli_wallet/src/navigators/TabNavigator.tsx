@@ -5,36 +5,37 @@ import BellIcon from '../icons/bell';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import DiscoverStack from './DiscoverStack';
 import SubscriptionsStack from './SubscriptionsStack';
-import useColors from '@/utils/theme';
+
 import HomeScreen from '@/screens/HomeScreen';
+import {useTheme} from '@/hooks/useTheme';
 
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
-  const colors = useColors();
+  const Theme = useTheme();
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colors.background,
-          borderTopColor: colors.border,
+          backgroundColor: Theme['accent-100'],
+          borderTopColor: Theme['gray-glass-020'],
         },
       }}>
       <Tab.Screen
         name="Home"
         options={{
           tabBarLabel: 'Connections',
-          tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.secondary,
+          tabBarActiveTintColor: Theme['accent-100'],
+          tabBarInactiveTintColor: Theme['fg-200'],
           tabBarIcon: ({focused}) => (
             <BellIcon
               style={[
                 {
                   width: 15,
                   height: 15,
-                  fill: focused ? colors.primary : colors.secondary,
+                  fill: focused ? Theme['accent-100'] : Theme['fg-200'],
                 },
               ]}
             />
@@ -46,15 +47,15 @@ export default function TabNavigator() {
         name="SubscriptionsStack"
         options={{
           tabBarLabel: 'Subscriptions',
-          tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.secondary,
+          tabBarActiveTintColor: Theme['accent-100'],
+          tabBarInactiveTintColor: Theme['fg-200'],
           tabBarIcon: ({focused}) => (
             <BellIcon
               style={[
                 {
                   width: 15,
                   height: 15,
-                  fill: focused ? colors.primary : colors.secondary,
+                  fill: focused ? Theme['accent-100'] : Theme['fg-200'],
                 },
               ]}
             />
@@ -66,15 +67,15 @@ export default function TabNavigator() {
         name="DiscoverStack"
         options={{
           tabBarLabel: 'Discover',
-          tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.secondary,
+          tabBarActiveTintColor: Theme['accent-100'],
+          tabBarInactiveTintColor: Theme['fg-200'],
           tabBarIcon: ({focused}) => (
             <CompassIcon
               style={[
                 {
                   width: 15,
                   height: 15,
-                  fill: focused ? colors.primary : colors.secondary,
+                  fill: focused ? Theme['accent-100'] : Theme['fg-200'],
                 },
               ]}
             />

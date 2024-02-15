@@ -3,10 +3,8 @@ import {useNavigation} from '@react-navigation/native';
 import {RefreshControl, ScrollView} from 'react-native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import SubscriptionItem from '@/components/components/SubscriptionItem';
-import SubscriptionsConnectOverlay from '@/components/components/SubscriptionsConnectOverlay';
 import {useSnapshot} from 'valtio';
 import SettingsStore from '@/store/SettingsStore';
-// import {useAccount} from 'wagmi';
 
 export default function SubscriptionsScreen() {
   const {subscriptions, fetchSubscriptions} = useNotifyClientContext();
@@ -22,15 +20,9 @@ export default function SubscriptionsScreen() {
 
   return (
     <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{
-        padding: 16,
-        gap: 8,
-      }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }>
-      <SubscriptionsConnectOverlay />
       {address &&
         subscriptions.map(item => (
           <SubscriptionItem

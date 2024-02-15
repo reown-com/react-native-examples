@@ -3,20 +3,21 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import DiscoverScreen from '@/screens/DiscoverScreen';
-import useColors from '@/utils/theme';
+
+import {useTheme} from '@/hooks/useTheme';
 
 const Stack = createNativeStackNavigator();
 
 export default function DiscoverStack() {
-  const colors = useColors();
+  const Theme = useTheme();
 
   return (
     <Stack.Navigator
       screenOptions={{
-        contentStyle: {backgroundColor: colors.backgroundSecondary},
-        headerStyle: {backgroundColor: colors.background},
+        contentStyle: {backgroundColor: Theme['accent-090']},
+        headerStyle: {backgroundColor: Theme['accent-100']},
         headerTitleStyle: {
-          color: colors.primary,
+          color: Theme['accent-100'],
         },
       }}>
       <Stack.Screen

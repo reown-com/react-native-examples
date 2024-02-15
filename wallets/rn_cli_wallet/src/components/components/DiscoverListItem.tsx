@@ -11,7 +11,8 @@ import {
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 
 import projectsData from '@/constants/projects-resposne.json';
-import useColors from '@/utils/theme';
+
+import {useTheme} from '@/hooks/useTheme';
 
 type ProjectItem = (typeof projectsData)[0];
 
@@ -21,7 +22,7 @@ type DiscoverListItemProps = {
 
 export default function DiscoverListItem({item}: DiscoverListItemProps) {
   const {account, subscriptions, notifyClient} = useNotifyClientContext();
-  const colors = useColors();
+  const Theme = useTheme();
 
   const [subscribing, setSubscribing] = React.useState(false);
   const domain = new URL(item.dapp_url).host;
@@ -63,8 +64,8 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
       style={[
         styles.container,
         {
-          backgroundColor: colors.background,
-          borderColor: colors.border,
+          backgroundColor: Theme['accent-glass-005'],
+          borderColor: Theme['accent-glass-020'],
         },
       ]}>
       <View style={styles.header}>
@@ -79,20 +80,20 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
               ? {
                   backgroundColor: 'transparent',
                   borderWidth: 1,
-                  borderColor: colors.border,
+                  borderColor: Theme['gray-glass-010'],
                 }
-              : {backgroundColor: colors.secondary},
+              : {backgroundColor: Theme['accent-100']},
             styles.button,
           ]}>
           {subscribing ? (
-            <ActivityIndicator color={colors.background} />
+            <ActivityIndicator color={Theme['bg-100']} />
           ) : (
             <Text
               style={[
                 styles.buttonText,
                 isSubscribed
-                  ? {color: colors.secondary}
-                  : {color: colors.background},
+                  ? {color: Theme['fg-200']}
+                  : {color: Theme['bg-100']},
               ]}>
               {isSubscribed ? 'Subscribed' : 'Subscribe'}
             </Text>
@@ -100,9 +101,11 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
         </Pressable>
       </View>
       <View style={styles.content}>
-        <Text style={[styles.title, {color: colors.primary}]}>{item.name}</Text>
-        <Text style={[styles.domain, {color: colors.secondary}]}>{domain}</Text>
-        <Text style={[styles.subtitle, {color: colors.secondary}]}>
+        <Text style={[styles.title, {color: Theme['accent-100']}]}>
+          {item.name}
+        </Text>
+        <Text style={[styles.domain, {color: Theme['fg-250']}]}>{domain}</Text>
+        <Text style={[styles.subtitle, {color: Theme['fg-200']}]}>
           {item.description}
         </Text>
       </View>
