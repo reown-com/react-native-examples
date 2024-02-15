@@ -134,6 +134,7 @@ export default function SubscriptionSettingsScreen() {
         style={[
           {
             marginBottom: tabBarHeight + bottom + 16,
+            backgroundColor: Theme['error-100'],
           },
           styles.destructiveButton,
         ]}>
@@ -149,7 +150,6 @@ export default function SubscriptionSettingsScreen() {
 
 const styles = StyleSheet.create({
   destructiveButton: {
-    backgroundColor: PlatformColor('systemRed'),
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',

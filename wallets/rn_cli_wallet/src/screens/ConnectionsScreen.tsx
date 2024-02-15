@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, StyleSheet, Linking} from 'react-native';
+import {View, StyleSheet, ScrollView, Linking} from 'react-native';
 
 import {web3wallet} from '@/utils/WalletConnectUtil';
 
@@ -70,26 +70,27 @@ export default function ConnectionsScreen({route}: Props) {
   }, [route.params?.uri]);
 
   return (
-    <View style={[styles.container, {paddingTop: insets.top}]}>
-      <CopyURIDialog
-        onConnect={onDialogConnect}
-        onCancel={onDialogCancel}
-        visible={copyDialogVisible}
-      />
-      <CustomText>Connections</CustomText>
-      <View style={styles.mainScreenContainer}>
+    <React.Fragment>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={[styles.container]}>
+        <CopyURIDialog
+          onConnect={onDialogConnect}
+          onCancel={onDialogCancel}
+          visible={copyDialogVisible}
+        />
         <Sessions />
-        <ActionButtons setCopyDialog={setCopyDialogVisible} />
-      </View>
+      </ScrollView>
       <Modal />
-    </View>
+      <ActionButtons setCopyDialog={setCopyDialogVisible} />
+    </React.Fragment>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
     backgroundColor: 'white',
   },
   mainScreenContainer: {

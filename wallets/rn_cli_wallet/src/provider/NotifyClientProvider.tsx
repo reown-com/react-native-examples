@@ -109,9 +109,7 @@ export const NotifyClientProvider: React.FC<{
     setInitializing(true);
 
     try {
-      const notifyClient = await NotifyClient.init({
-        projectId: 'c7317dac10184c6e2a5fcd5461cf21f9',
-      });
+      const notifyClient = await NotifyClient.init({projectId: ENV_PROJECT_ID});
       setNotifyClient(notifyClient);
       setInitializing(false);
     } catch (error) {

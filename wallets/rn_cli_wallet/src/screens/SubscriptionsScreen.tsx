@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {Platform} from 'react-native';
 
 import PagerView from 'react-native-pager-view';
 import {useHeaderHeight} from '@react-navigation/elements';
@@ -23,7 +24,7 @@ export default function SubscriptionsScreen() {
   return (
     <View
       style={{
-        paddingTop: headerHeight + top - 8,
+        paddingTop: Platform.OS === 'ios' ? headerHeight + top - 8 : top - 8,
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
