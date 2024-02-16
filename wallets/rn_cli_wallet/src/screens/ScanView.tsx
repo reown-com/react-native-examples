@@ -33,9 +33,8 @@ export function ScanView() {
 
   const onCodeScanned = (codes: Code[]) => {
     const uri = codes[0].value;
-    navigation.navigate('Home', {
-      screen: 'Connections',
-      params: {uri},
+    navigation.navigate('ConnectionsScreen', {
+      uri,
     });
   };
 

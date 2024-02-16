@@ -6,12 +6,10 @@ import {web3wallet} from '@/utils/WalletConnectUtil';
 import Sessions from '../components/HomeScreen/Sessions';
 import ActionButtons from '../components/HomeScreen/ActionButtons';
 
-import CustomText from '../components/Text';
 import {CopyURIDialog} from '../components/CopyURIDialog';
 import Modal from '../components/Modal';
 import {HomeTabScreenProps} from '../utils/TypesUtil';
 import ModalStore from '../store/ModalStore';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useInitialURL} from '@/hooks/useInitialUrl';
 
 type Props = HomeTabScreenProps<'ConnectionsStack'>;
@@ -19,7 +17,6 @@ type Props = HomeTabScreenProps<'ConnectionsStack'>;
 export default function ConnectionsScreen({route}: Props) {
   const {url: initialUrl, processing} = useInitialURL();
   const [copyDialogVisible, setCopyDialogVisible] = useState(false);
-  const insets = useSafeAreaInsets();
 
   const onDialogConnect = (uri: string) => {
     setCopyDialogVisible(false);
