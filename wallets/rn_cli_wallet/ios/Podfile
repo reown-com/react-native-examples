@@ -14,7 +14,6 @@ node_require('react-native-permissions/scripts/setup.rb')
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-# ⬇️ uncomment wanted permissions
 setup_permissions([
   'Camera',
   'Notifications',

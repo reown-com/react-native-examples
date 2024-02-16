@@ -32,15 +32,34 @@ globalThis.crypto.subtle = {
   digest: polyfillDigest,
 };
 
-// Create notification channel (Android only feature)
-notifee.createChannel({
-  id: 'default',
-  name: 'Default Channel',
-  lights: false,
-  vibration: true,
-  importance: AndroidImportance.HIGH,
-  visibility: AndroidVisibility.PUBLIC,
-});
+async function onMessageReceived(remoteMessage) {
+  if (!remoteMessage.data?.blob || !remoteMessage.data?.topic) {
+    console.log('Missing blob or topic on notification message.');
+    return;
+  }
+
+  const decryptedMessage = await decryptMessage({
+    topic: remoteMessage.data?.topic,
+    encryptedMessage: remoteMessage.data?.blob,
+  });
+
+  return notifee.displayNotification({
+    title: decryptedMessage.title,
+    body: decryptedMessage.body,
+    id: 'default',
+    android: {
+      channelId: 'default',
+      importance: AndroidImportance.HIGH,
+      visibility: AndroidVisibility.PUBLIC,
+      smallIcon: 'ic_launcher',
+      pressAction: {
+        id: 'default',
+      },
+    },
+  });
+}
+messaging().onMessage(onMessageReceived);
+messaging().setBackgroundMessageHandler(onMessageReceived);
 
 let notifyClient;
 
@@ -89,7 +108,7 @@ async function handleGetToken(token) {
   const enabled =
     status === messaging.AuthorizationStatus.AUTHORIZED ||
     status === messaging.AuthorizationStatus.PROVISIONAL;
-  console.log('>>> get token, permissionstatus', token, status, enabled);
+  console.log('>>> get token, permission status', token, status, enabled);
 
   if (enabled) {
     notifyClient = await NotifyClient.init({projectId});
@@ -101,36 +120,15 @@ async function handleGetToken(token) {
 messaging().getToken().then(handleGetToken);
 messaging().onTokenRefresh(handleGetToken);
 
-async function onMessageReceived(remoteMessage) {
-  if (!remoteMessage.data?.blob || !remoteMessage.data?.topic) {
-    console.log('Missing blob or topic on notification message.');
-    return;
-  }
-
-  const decryptedMessage = await decryptMessage({
-    topic: remoteMessage.data?.topic,
-    encryptedMessage: remoteMessage.data?.blob,
-  });
-
-  return notifee.displayNotification({
-    title: decryptedMessage.title,
-    body: decryptedMessage.body,
-    id: 'default',
-    android: {
-      channelId: 'default',
-      importance: AndroidImportance.HIGH,
-      visibility: AndroidVisibility.PUBLIC,
-      smallIcon: 'ic_launcher',
-      pressAction: {
-        id: 'default',
-      },
-    },
-  });
-}
-
-messaging().onMessage(onMessageReceived);
-messaging().setBackgroundMessageHandler(onMessageReceived);
-
+// Create notification channel (Android only feature)
+notifee.createChannel({
+  id: 'default',
+  name: 'Default Channel',
+  lights: false,
+  vibration: true,
+  importance: AndroidImportance.HIGH,
+  visibility: AndroidVisibility.PUBLIC,
+});
 notifee.onBackgroundEvent(async ({type, detail}) => {
   const {notification, pressAction} = detail;
 
