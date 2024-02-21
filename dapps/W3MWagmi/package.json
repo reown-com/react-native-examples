@@ -19,7 +19,7 @@
     "@walletconnect/react-native-compat": "2.11.0",
     "@web3modal/coinbase-wagmi-react-native": "1.2.0",
     "@web3modal/wagmi-react-native": "1.2.0",
-    "expo": "50",
+    "expo": "^50.0.0",
     "react": "18.2.0",
     "react-native": "0.73.4",
     "react-native-get-random-values": "~1.8.0",
@@ -46,6 +46,9 @@
     "react-native-dotenv": "^3.4.9",
     "react-test-renderer": "18.2.0",
     "typescript": "5.0.4"
+  },
+  "resolutions": {
+    "zustand": "4.5.1"
   },
   "engines": {
     "node": ">=18"
