@@ -26,8 +26,6 @@ export const NotifyClientProvider: React.FC<{
     {},
   );
 
-  const initialized = !!notifyClient;
-
   React.useEffect(() => {
     if (address) {
       setAccount(prevAccount => {
@@ -53,7 +51,6 @@ export const NotifyClientProvider: React.FC<{
         console.error('Setting up subscription failed: ', error);
       } else {
         const allSubscriptions = params.allSubscriptions;
-        const newSubscription = params.subscription;
 
         if (!allSubscriptions) return;
 

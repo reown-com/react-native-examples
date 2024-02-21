@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {View, StyleSheet, ImageBackground} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
-import {GetStartedButton} from '../components/GetStartedButton';
+import {GetStartedButton} from '@/components/GetStartedButton';
 import Text from '../components/Text';
 import useInitialization from '@/hooks/useInitialization';
 import backgroundImageSrc from '../assets/ethCalculatorBG.png';

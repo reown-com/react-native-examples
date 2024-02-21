@@ -3,7 +3,6 @@ import {ScrollView, View} from 'react-native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import NotificationItemWithSubscription from './NotificationItemWithSubscription';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
-import {InitializeNotifyClientButton} from './InitializeNotifyClientButton';
 
 interface NotifyNotification {
   title: string;
@@ -40,7 +39,6 @@ export default function NotificationsScreen() {
         gap: 16,
         backgroundColor: 'white',
       }}>
-      <InitializeNotifyClientButton />
       {sortedByDate.map(item => (
         <NotificationItemWithSubscription
           key={item.id}

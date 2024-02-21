@@ -20,7 +20,7 @@ export function GetStartedButton() {
   const isRegistered = account
     ? notifyClient?.isRegistered({
         account,
-        domain: 'w3i-lab-mobile.vercel.app',
+        domain: '',
         allApps: true,
       })
     : false;
@@ -38,20 +38,26 @@ export function GetStartedButton() {
       return;
     }
 
-    console.log('>>> signing and registering account');
-    const {message, registerParams} = await notifyClient.prepareRegistration({
-      account,
-      domain: 'w3i-lab-mobile.vercel.app',
-      allApps: true,
-    });
+    try {
+      const {message, registerParams} = await notifyClient.prepareRegistration({
+        account,
+        domain: '',
+        allApps: true,
+      });
 
-    const {eip155Wallets} = await createOrRestoreEIP155Wallet();
-    const signature = await eip155Wallets[address].signMessage(message);
+      const {eip155Wallets} = await createOrRestoreEIP155Wallet();
+      const signature = await eip155Wallets[address].signMessage(message);
 
-    await notifyClient.register({
-      registerParams,
-      signature,
-    });
+      await notifyClient.register({
+        registerParams,
+        signature,
+      });
+    } catch (error) {
+      if (error?.message?.includes('user has an existing stale identity.')) {
+        await notifyClient.unregister({account});
+        registerAccount();
+      }
+    }
   }
 
   React.useEffect(() => {

@@ -32,47 +32,16 @@ globalThis.crypto.subtle = {
   digest: polyfillDigest,
 };
 
-async function onMessageReceived(remoteMessage) {
-  if (!remoteMessage.data?.blob || !remoteMessage.data?.topic) {
-    console.log('Missing blob or topic on notification message.');
-    return;
-  }
-
-  const decryptedMessage = await decryptMessage({
-    topic: remoteMessage.data?.topic,
-    encryptedMessage: remoteMessage.data?.blob,
-  });
-
-  return notifee.displayNotification({
-    title: decryptedMessage.title,
-    body: decryptedMessage.body,
-    id: 'default',
-    android: {
-      channelId: 'default',
-      importance: AndroidImportance.HIGH,
-      visibility: AndroidVisibility.PUBLIC,
-      smallIcon: 'ic_launcher',
-      pressAction: {
-        id: 'default',
-      },
-    },
-  });
+async function registerAppWithFCM() {
+  // This is expected to be automatically handled on iOS. See https://rnfirebase.io/reference/messaging#registerDeviceForRemoteMessages
+  await messaging().registerDeviceForRemoteMessages();
 }
-messaging().onMessage(onMessageReceived);
-messaging().setBackgroundMessageHandler(onMessageReceived);
+
+registerAppWithFCM();
 
 let notifyClient;
 
 const projectId = process.env.ENV_PROJECT_ID;
-
-async function registerAppWithFCM() {
-  // This is expected to be automatically handled on iOS. See https://rnfirebase.io/reference/messaging#registerDeviceForRemoteMessages
-  if (Platform.OS === 'android') {
-    await messaging().registerDeviceForRemoteMessages();
-  }
-}
-
-registerAppWithFCM();
 
 async function registerClient(deviceToken, clientId) {
   const body = JSON.stringify({
@@ -138,6 +107,39 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
     await notifee.cancelNotification(notification.id);
   }
 });
+
+async function onMessageReceived(remoteMessage) {
+  if (!remoteMessage.data?.blob || !remoteMessage.data?.topic) {
+    console.log('Missing blob or topic on notification message.');
+    return;
+  }
+
+  const decryptedMessage = await decryptMessage({
+    topic: remoteMessage.data?.topic,
+    encryptedMessage: remoteMessage.data?.blob,
+  });
+
+  return notifee.displayNotification({
+    title: remoteMessage?.data?.title || 'title',
+    body: remoteMessage?.data?.body || 'body',
+    id: 'default',
+    ios: {
+      badgeCount: 100,
+    },
+    android: {
+      channelId: 'default',
+      importance: AndroidImportance.HIGH,
+      visibility: AndroidVisibility.PUBLIC,
+      smallIcon: 'ic_launcher',
+      pressAction: {
+        id: 'default',
+      },
+    },
+  });
+}
+
+messaging().onMessage(onMessageReceived);
+messaging().setBackgroundMessageHandler(onMessageReceived);
 
 function HeadlessCheck({isHeadless}) {
   if (isHeadless) {
