@@ -32,7 +32,6 @@ local.properties
 *.hprof
 .cxx/
 *.keystore
-!debug.keystore
 
 # node.js
 #
@@ -75,3 +74,6 @@ sentry.properties
 .expo
 dist/
 web-build/
+
+# Secrets
+secrets.properties
