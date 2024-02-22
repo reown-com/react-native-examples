@@ -79,6 +79,7 @@ createWeb3Modal({
   config,
   customWallets,
   clipboardClient,
+  enableAnalytics: true,
 });
 
 function App(): React.JSX.Element {
