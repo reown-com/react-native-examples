@@ -107,6 +107,7 @@ createWeb3Modal({
   wagmiConfig,
   clipboardClient,
   customWallets,
+  enableAnalytics: true,
 });
 
 function App(): JSX.Element {
