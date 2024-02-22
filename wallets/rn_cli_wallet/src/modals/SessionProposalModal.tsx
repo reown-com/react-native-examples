@@ -52,7 +52,6 @@ export default function SessionProposalModal() {
       },
     };
   }, []);
-  console.log('supportedNamespaces', supportedNamespaces, eip155Addresses);
 
   const requestedChains = useMemo(() => {
     if (!proposal) {
@@ -115,8 +114,6 @@ export default function SessionProposalModal() {
             .includes(chain!),
       );
   }, [proposal, supportedChains]);
-
-  console.log('notSupportedChains', notSupportedChains);
 
   // Hanlde approve action, construct session namespace
   const onApprove = useCallback(async () => {

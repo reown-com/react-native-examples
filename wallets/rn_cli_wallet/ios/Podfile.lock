@@ -1135,10 +1135,10 @@ PODS:
     - React-Core
   - RNDeviceInfo (10.12.0):
     - React-Core
-  - RNFBApp (18.8.0):
+  - RNFBApp (18.9.0):
     - Firebase/CoreOnly (= 10.20.0)
     - React-Core
-  - RNFBMessaging (18.8.0):
+  - RNFBMessaging (18.9.0):
     - Firebase/Messaging (= 10.20.0)
     - FirebaseCoreExtension (= 10.20.0)
     - React-Core
@@ -1474,8 +1474,8 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 618d03a5f52fbccb3d7010076bc54712844c18ef
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNDeviceInfo: db5c64a060e66e5db3102d041ebe3ef307a85120
-  RNFBApp: a4f5b074984cf612e4c97d68b42be690c59e2638
-  RNFBMessaging: 1e7415390ae579c5949505a0709686a2de8a47e5
+  RNFBApp: 9b25191f7a5e72c185b7e43fffb0d906869c4659
+  RNFBMessaging: 99621af036e0aa85506390f77d79c9e6353aacca
   RNGestureHandler: 28bdf9a766c081e603120f79e925b72817c751c6
   RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
   RNPermissions: b7988ae79582536c5f9bcc684f69a99f96e958da

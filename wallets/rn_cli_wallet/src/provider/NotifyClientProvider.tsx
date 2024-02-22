@@ -4,12 +4,14 @@ import NotifyClientContext, {
   NotificationsState,
   NotifyNotification,
 } from '../context/NotifyClientContext';
-import {NotifyClient} from '@walletconnect/notify-client';
+import {NotifyClient, NotifyClientTypes} from '@walletconnect/notify-client';
 import {Alert} from 'react-native';
 import {ENV_PROJECT_ID} from '@env';
 import cloneDeep from 'lodash.clonedeep';
 import {useSnapshot} from 'valtio';
 import SettingsStore from '@/store/SettingsStore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SYM_KEY_PREFIX} from '@/constants/Storage';
 
 export const NotifyClientProvider: React.FC<{
   children: React.ReactNode;
@@ -25,6 +27,20 @@ export const NotifyClientProvider: React.FC<{
   const [notifications, setNotifications] = React.useState<NotificationsState>(
     {},
   );
+
+  function handleUpdateSymkeys(
+    _subscriptions: NotifyClientTypes.NotifySubscription[],
+  ) {
+    _subscriptions.map(async ({topic, symKey}) => {
+      const symkey = `${SYM_KEY_PREFIX}${topic}`;
+      const existingSymKey = await AsyncStorage.getItem(symkey);
+      console.log('>>> write symkey');
+
+      if (!existingSymKey) {
+        await AsyncStorage.setItem(symkey, symKey);
+      }
+    });
+  }
 
   React.useEffect(() => {
     if (address) {
@@ -44,7 +60,10 @@ export const NotifyClientProvider: React.FC<{
       return;
     }
 
+    handleUpdateSymkeys(notifyClient.subscriptions.getAll());
+
     notifyClient.on('notify_subscription', async ({params, topic}) => {
+      console.log('>>> notify_subscription');
       const {error} = params;
 
       if (error) {
@@ -52,9 +71,9 @@ export const NotifyClientProvider: React.FC<{
       } else {
         const allSubscriptions = params.allSubscriptions;
 
-        if (!allSubscriptions) return;
-
-        setSubscriptions(allSubscriptions);
+        if (allSubscriptions) {
+          setSubscriptions(allSubscriptions);
+        }
       }
     });
 
@@ -77,8 +96,10 @@ export const NotifyClientProvider: React.FC<{
     });
 
     notifyClient.on('notify_subscriptions_changed', ({params}) => {
+      console.log('>>> notify_subscriptions_changed');
       const {subscriptions} = params;
       setSubscriptions(subscriptions);
+      handleUpdateSymkeys(subscriptions);
     });
   }, [notifyClient]);
 
@@ -93,7 +114,6 @@ export const NotifyClientProvider: React.FC<{
     const accountSubscriptions = notifyClient.getActiveSubscriptions({
       account,
     });
-
     const subs = Object.values(accountSubscriptions || {});
 
     if (subs.length === 0) return;
