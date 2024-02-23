@@ -4,7 +4,7 @@ import SubscriptionList from '@/components/SubscriptionList';
 import DiscoverList from '@/components/DiscoverList';
 
 export default function SubscriptionsScreen() {
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = React.useState(0);
 
   return (
     <>

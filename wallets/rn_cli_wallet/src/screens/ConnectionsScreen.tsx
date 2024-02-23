@@ -7,7 +7,6 @@ import Sessions from '../components/HomeScreen/Sessions';
 import ActionButtons from '../components/HomeScreen/ActionButtons';
 
 import {CopyURIDialog} from '../components/CopyURIDialog';
-import Modal from '../components/Modal';
 import {HomeTabScreenProps} from '../utils/TypesUtil';
 import ModalStore from '../store/ModalStore';
 import {useInitialURL} from '@/hooks/useInitialUrl';

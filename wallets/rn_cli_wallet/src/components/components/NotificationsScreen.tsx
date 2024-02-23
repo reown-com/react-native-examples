@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {FlatList} from 'react-native';
+import {FlatList, StyleSheet} from 'react-native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import NotificationItemWithSubscription from './NotificationItemWithSubscription';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
@@ -35,11 +35,7 @@ export default function NotificationsScreen() {
     <FlatList
       data={sortedByDate}
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{
-        padding: 16,
-        gap: 16,
-        backgroundColor: 'white',
-      }}
+      contentContainerStyle={styles.contentContainer}
       renderItem={({item}) => (
         <NotificationItemWithSubscription
           key={item.id}
@@ -54,3 +50,11 @@ export default function NotificationsScreen() {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    padding: 16,
+    gap: 16,
+    backgroundColor: 'white',
+  },
+});

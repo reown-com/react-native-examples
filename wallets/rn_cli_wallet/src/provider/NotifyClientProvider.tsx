@@ -173,13 +173,6 @@ export const NotifyClientProvider: React.FC<{
     getActiveSubscriptions();
   }, [notifyClient]);
 
-  // React.useEffect(() => {
-  //   if (account && !initialized) {
-  //     handleInitializeNotifyClient();
-  //   }
-  //   // throw 'Missing dependency: initialized';
-  // }, [account, initialized]);
-
   return (
     <NotifyClientContext.Provider
       value={{
