@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import {FlatList} from 'react-native';
 
-import projectsData from '../constants/projects-resposne.json';
+import projectsData from '../constants/projects-response.json';
 import DiscoverListItem from '../components/components/DiscoverListItem';
 import SubscriptionListTabHeader from '@/components/SubscriptionListTabHeader';
 

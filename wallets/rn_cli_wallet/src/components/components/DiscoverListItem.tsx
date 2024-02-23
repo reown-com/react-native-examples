@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 
-import projectsData from '@/constants/projects-resposne.json';
+import projectsData from '@/constants/projects-response.json';
 
 import {useTheme} from '@/hooks/useTheme';
 
