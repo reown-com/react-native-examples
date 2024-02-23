@@ -31,7 +31,17 @@ export function HomeTabNavigator() {
     <TabNav.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarLabelStyle: {fontWeight: '500', fontSize: 12},
+        headerStyle: {
+          backgroundColor: Theme['bg-100'],
+        },
+        tabBarStyle: {
+          backgroundColor: Theme['bg-100'],
+          borderColor: Theme['bg-300'],
+        },
+        tabBarLabelStyle: {
+          fontWeight: '500',
+          fontSize: 12,
+        },
         tabBarActiveTintColor: Theme['fg-100'],
         tabBarInactiveTintColor: Theme['fg-300'],
       }}>
@@ -41,6 +51,9 @@ export function HomeTabNavigator() {
         options={{
           tabBarLabel: 'Connections',
           tabBarIcon: ConnectionsIcon,
+          headerStyle: {
+            backgroundColor: Theme['bg-100'],
+          },
         }}
       />
       <TabNav.Screen

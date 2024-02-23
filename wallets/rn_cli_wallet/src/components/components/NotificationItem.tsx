@@ -26,7 +26,7 @@ export default function NotificationItem({
       style={({pressed}) => [
         {
           backgroundColor:
-            pressed && url ? Theme['accent-glass-010'] : Theme['inverse-100'],
+            pressed && url ? Theme['accent-glass-010'] : Theme['bg-100'],
           borderColor: Theme['gray-glass-020'],
         },
         styles.container,

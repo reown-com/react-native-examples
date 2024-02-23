@@ -14,15 +14,7 @@ export default function SubscriptionDetailsSettingsButton({route}) {
           name: route.params?.name,
         });
       }}>
-      <Text
-        style={[
-          style.buttonText,
-          {
-            color: Theme['accent-100'],
-          },
-        ]}>
-        Settings
-      </Text>
+      <Text style={[style.buttonText, {color: Theme['fg-100']}]}>Settings</Text>
     </Pressable>
   );
 }

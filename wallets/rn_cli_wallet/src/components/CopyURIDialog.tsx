@@ -57,8 +57,13 @@ export function CopyURIDialog({
             autoFocus
             style={[
               styles.textInput,
-              {width: windowWidth * 0.8, backgroundColor: Theme['bg-100']},
+              {
+                width: windowWidth * 0.8,
+                backgroundColor: Theme['bg-100'],
+                color: Theme['fg-100'],
+              },
             ]}
+            placeholderTextColor={Theme['fg-300']}
             onChangeText={setUri}
             placeholder="wc://a13aef..."
             clearButtonMode="always"

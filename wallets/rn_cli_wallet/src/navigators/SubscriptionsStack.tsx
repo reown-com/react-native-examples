@@ -13,14 +13,13 @@ import SubscriptionDetailsSettingsButton from '@/components/SubscriptionDetailsS
 const Stack = createNativeStackNavigator<SubscriptionsStackParamList>();
 
 export default function SubscriptionsStack() {
-  const navigation = useNavigation();
   const Theme = useTheme();
 
   return (
     <Stack.Navigator
       screenOptions={{
-        contentStyle: {backgroundColor: Theme['inverse-100']},
-        headerStyle: {backgroundColor: Theme['inverse-100']},
+        contentStyle: {backgroundColor: Theme['bg-100']},
+        headerStyle: {backgroundColor: Theme['bg-100']},
         headerTitleStyle: {
           color: Theme['fg-100'],
         },
@@ -38,7 +37,7 @@ export default function SubscriptionsStack() {
         component={SubscriptionDetailsScreen}
         options={({route}) => ({
           title: route?.params?.name,
-          headerTintColor: Theme['accent-100'],
+          headerTintColor: Theme['fg-100'],
           headerRight: () => (
             <SubscriptionDetailsSettingsButton route={route} />
           ),
@@ -48,6 +47,7 @@ export default function SubscriptionsStack() {
         options={{
           headerTitle: 'Settings',
           headerLargeTitle: true,
+          headerTintColor: Theme['fg-100'],
           headerBackTitle: 'Back',
         }}
         name="SubscriptionSettingsScreen"

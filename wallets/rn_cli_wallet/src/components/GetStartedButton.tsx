@@ -72,7 +72,7 @@ export function GetStartedButton() {
 
   const initializing = !web3wallet || !notifyClient || !isRegistered;
   const backgroundColor =
-    disabled || initializing ? Theme['bg-250'] : Theme['accent-100'];
+    disabled || initializing ? '#e2e2e2' : Theme['accent-100'];
 
   return (
     <TouchableOpacity
@@ -90,7 +90,6 @@ export function GetStartedButton() {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 48,
-
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,

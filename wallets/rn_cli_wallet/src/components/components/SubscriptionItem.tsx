@@ -24,7 +24,7 @@ export default function SubscriptionItem({
         {
           backgroundColor: pressed
             ? Theme['accent-glass-010']
-            : Theme['inverse-100'],
+            : Theme['bg-100'],
         },
         styles.container,
       ]}>

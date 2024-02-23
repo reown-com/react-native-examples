@@ -9,8 +9,11 @@ import backgroundImageSrc from '../assets/ethCalculatorBG.png';
 import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import {RELAYER_EVENTS} from '@walletconnect/core';
+import {useTheme} from '@/hooks/useTheme';
 
 const OnboardingView = () => {
+  const Theme = useTheme();
+
   // Step 1 - Initialize wallets and wallet connect client
   const initialized = useInitialization();
 
@@ -31,7 +34,7 @@ const OnboardingView = () => {
   }, [initialized]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container]}>
       <ImageBackground
         source={backgroundImageSrc}
         resizeMode="contain"
@@ -50,7 +53,7 @@ export default OnboardingView;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: 'whit',
   },
   backgroundImage: {
     flex: 1,

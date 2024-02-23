@@ -74,7 +74,6 @@ export default SettingsView;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   content: {
     paddingHorizontal: 16,

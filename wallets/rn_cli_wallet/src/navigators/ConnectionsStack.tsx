@@ -14,8 +14,8 @@ export default function ConnectionsStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        contentStyle: {backgroundColor: Theme['inverse-100']},
-        headerStyle: {backgroundColor: Theme['inverse-100']},
+        contentStyle: {backgroundColor: Theme['bg-100']},
+        headerStyle: {backgroundColor: Theme['bg-100']},
         headerTitleStyle: {
           color: Theme['fg-100'],
         },

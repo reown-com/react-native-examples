@@ -172,9 +172,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     gap: 4,
   },
-  dark: {
-    backgroundColor: '#141414',
-  },
   scopeTitle: {
     width: '100%',
     fontSize: 18,
