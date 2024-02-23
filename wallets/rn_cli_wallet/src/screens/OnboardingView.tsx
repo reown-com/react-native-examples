@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {View, StyleSheet, ImageBackground} from 'react-native';
+import {View, StyleSheet, ImageBackground, StatusBar} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {GetStartedButton} from '@/components/GetStartedButton';
@@ -35,6 +35,7 @@ const OnboardingView = () => {
 
   return (
     <SafeAreaView style={[styles.container]}>
+      <StatusBar barStyle={'dark-content'} />
       <ImageBackground
         source={backgroundImageSrc}
         resizeMode="contain"
@@ -53,7 +54,7 @@ export default OnboardingView;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'whit',
+    backgroundColor: 'white',
   },
   backgroundImage: {
     flex: 1,

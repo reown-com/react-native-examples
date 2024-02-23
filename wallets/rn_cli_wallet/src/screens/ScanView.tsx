@@ -61,7 +61,6 @@ export function ScanView() {
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
-      <StatusBar barStyle={'light-content'} translucent={false} />
       <TouchableOpacity onPress={goBack} style={styles.backButton} hitSlop={40}>
         <SvgChevronRight
           fill="white"

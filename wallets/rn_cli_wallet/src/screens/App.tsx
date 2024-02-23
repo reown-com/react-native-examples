@@ -1,7 +1,7 @@
 import '@walletconnect/react-native-compat';
 
 import React from 'react';
-import {StatusBar} from 'react-native';
+import {StatusBar, useColorScheme} from 'react-native';
 
 import {ENV_SENTRY_DSN} from '@env';
 import {NavigationContainer} from '@react-navigation/native';
@@ -17,10 +17,14 @@ if (!__DEV__) {
 }
 
 const App = () => {
+  const scheme = useColorScheme();
+
   return (
     <NavigationContainer>
       <NotifyClientProvider>
-        <StatusBar barStyle={'dark-content'} />
+        <StatusBar
+          barStyle={scheme === 'light' ? 'dark-content' : 'light-content'}
+        />
         <RootStackNavigator />
       </NotifyClientProvider>
     </NavigationContainer>
