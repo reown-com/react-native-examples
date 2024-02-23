@@ -3,6 +3,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
   PlatformColor,
   Pressable,
   ScrollView,
@@ -81,68 +82,62 @@ export default function SubscriptionSettingsScreen() {
   }
 
   return (
-    <ScrollView
+    <FlatList
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{
         paddingHorizontal: 16,
-      }}>
-      <View
-        style={{
-          width: '100%',
-          marginTop: 16,
-          borderRadius: 8,
-          backgroundColor: colors.background,
-        }}>
-        {notificationTypes.map((item, index) => (
-          <View
-            key={item.id}
-            style={[
-              styles.scopeContainer,
-              index === notificationTypes.length - 1 ? {borderWidth: 0} : null,
-              {borderColor: colors.backgroundSecondary},
-            ]}>
-            <View style={styles.scopeContentContainer}>
-              <Text style={[styles.scopeTitle, {color: colors.primary}]}>
-                {item.name}
-              </Text>
-              <Text
-                style={[styles.scopeDescription, {color: colors.secondary}]}>
-                {item.description}
-              </Text>
-            </View>
-            <View>
-              <Controller
-                name={item.id}
-                control={control}
-                render={({field: {onChange, value}}) => (
-                  <Switch
-                    value={value}
-                    onValueChange={e => {
-                      onChange(e);
-                      handleSaveNotificationSettings();
-                    }}
-                  />
-                )}
-              />
-            </View>
+      }}
+      data={[]}
+      renderItem={({item}) => (
+        <View
+          key={item.id}
+          style={[
+            styles.scopeContainer,
+            index === notificationTypes.length - 1 ? {borderWidth: 0} : null,
+            {borderColor: colors.backgroundSecondary},
+          ]}>
+          <View style={styles.scopeContentContainer}>
+            <Text style={[styles.scopeTitle, {color: colors.primary}]}>
+              {item.name}
+            </Text>
+            <Text style={[styles.scopeDescription, {color: colors.secondary}]}>
+              {item.description}
+            </Text>
           </View>
-        ))}
-      </View>
-      <Pressable
-        onPress={handleUnsubscribe}
-        style={[
-          {
-            marginBottom: tabBarHeight + bottom + 16,
-          },
-          styles.destructiveButton,
-        ]}>
-        {unsubscribing ? (
-          <ActivityIndicator color={colors.secondary} />
-        ) : (
-          <Text style={styles.destructiveButtonText}>Unsubscribe</Text>
-        )}
-      </Pressable>
-    </ScrollView>
+          <View>
+            <Controller
+              name={item.id}
+              control={control}
+              render={({field: {onChange, value}}) => (
+                <Switch
+                  value={value}
+                  onValueChange={e => {
+                    onChange(e);
+                    handleSaveNotificationSettings();
+                  }}
+                />
+              )}
+            />
+          </View>
+        </View>
+      )}
+      ListFooterComponent={() => (
+        <Pressable
+          onPress={handleUnsubscribe}
+          style={[
+            {
+              marginBottom: tabBarHeight + bottom + 16,
+            },
+            styles.destructiveButton,
+          ]}>
+          {unsubscribing ? (
+            <ActivityIndicator color={colors.secondary} />
+          ) : (
+            <Text style={styles.destructiveButtonText}>Unsubscribe</Text>
+          )}
+        </Pressable>
+      )}
+    />
   );
 }
 

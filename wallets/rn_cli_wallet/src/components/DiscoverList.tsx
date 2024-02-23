@@ -1,20 +1,28 @@
 import * as React from 'react';
 
-import {ScrollView} from 'react-native';
+import {FlatList} from 'react-native';
 
 import projectsData from '../constants/projects-resposne.json';
 import DiscoverListItem from '../components/components/DiscoverListItem';
+import SubscriptionListTabHeader from '@/components/SubscriptionListTabHeader';
 
-export default function DiscoverList() {
+type DiscoverListProps = {
+  page: number;
+  setPage: (index: number) => void;
+};
+
+export default function DiscoverList({page, setPage}: DiscoverListProps) {
   return (
-    <ScrollView
+    <FlatList
+      contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{
-        padding: 16,
         gap: 16,
-      }}>
-      {projectsData.map(item => (
-        <DiscoverListItem key={item.dapp_url} item={item} />
-      ))}
-    </ScrollView>
+      }}
+      ListHeaderComponent={() => (
+        <SubscriptionListTabHeader page={page} setPage={setPage} />
+      )}
+      data={projectsData}
+      renderItem={({item}) => <DiscoverListItem item={item} />}
+    />
   );
 }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {ScrollView, View} from 'react-native';
+import {FlatList} from 'react-native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import NotificationItemWithSubscription from './NotificationItemWithSubscription';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
@@ -32,14 +32,15 @@ export default function NotificationsScreen() {
   );
 
   return (
-    <ScrollView
+    <FlatList
+      data={sortedByDate}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{
         padding: 16,
         gap: 16,
         backgroundColor: 'white',
-      }}>
-      {sortedByDate.map(item => (
+      }}
+      renderItem={({item}) => (
         <NotificationItemWithSubscription
           key={item.id}
           title={item.title}
@@ -49,7 +50,7 @@ export default function NotificationsScreen() {
           onPress={() => {}}
           sentAt={item.sentAt}
         />
-      ))}
-    </ScrollView>
+      )}
+    />
   );
 }

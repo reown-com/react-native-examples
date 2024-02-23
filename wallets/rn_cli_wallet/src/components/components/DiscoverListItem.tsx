@@ -119,10 +119,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-end',
     gap: 8,
-    width: '100%',
     padding: 16,
     borderRadius: 12,
     borderWidth: 0.5,
+    marginHorizontal: 16,
   },
   title: {
     width: '100%',

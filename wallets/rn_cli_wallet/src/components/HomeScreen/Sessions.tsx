@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, FlatList} from 'react-native';
 import IndividualSession from './IndividualSession';
 import {useSnapshot} from 'valtio';
 import SettingsStore from '../../store/SettingsStore';
@@ -8,35 +8,32 @@ import ConnectTemplateSvg from '../../assets/ConnectTemplate';
 function Sessions() {
   const {sessions} = useSnapshot(SettingsStore.state);
 
-  // @notice: Empty State with no Session
-  if (!sessions || sessions.length === 0) {
-    return (
-      <View style={styles.container}>
-        <ConnectTemplateSvg height={40} width={40} />
-        <Text style={styles.greyText}>
-          Apps you connect with will appear here. To connect paste the code that
-          is displayed in the app.
-        </Text>
-      </View>
-    );
-  }
-
-  // @notice: Main Rendering of Sessions
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-      {sessions.map((session, index) => {
-        const {name, icons, url} = session?.peer.metadata;
+    <FlatList
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={styles.scrollViewContainer}
+      ListEmptyComponent={() => (
+        <View style={styles.container}>
+          <ConnectTemplateSvg height={40} width={40} />
+          <Text style={styles.greyText}>
+            Apps you connect with will appear here. To connect paste the code
+            that is displayed in the app.
+          </Text>
+        </View>
+      )}
+      data={sessions || []}
+      renderItem={({item}) => {
+        const {name, icons, url} = item?.peer.metadata;
         return (
           <IndividualSession
-            key={index}
             icons={icons.toString()}
             name={name}
             url={url}
-            topic={session.topic}
+            topic={item.topic}
           />
         );
-      })}
-    </ScrollView>
+      }}
+    />
   );
 }
 
@@ -44,7 +41,8 @@ export default Sessions;
 
 const styles = StyleSheet.create({
   scrollViewContainer: {
-    marginTop: 16,
+    marginTop: 8,
+    paddingHorizontal: 16,
   },
   sessionContainer: {
     height: 80,

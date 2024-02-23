@@ -3,6 +3,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
   PlatformColor,
   Pressable,
   ScrollView,
@@ -83,19 +84,11 @@ export default function SubscriptionSettingsScreen() {
   }
 
   return (
-    <ScrollView
-      contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{
-        paddingHorizontal: 16,
-      }}>
-      <View
-        style={{
-          width: '100%',
-          marginTop: 16,
-          borderRadius: 8,
-          backgroundColor: Theme['gray-glass-005'],
-        }}>
-        {notificationTypes.map((item, index) => (
+    <>
+      <FlatList
+        contentInsetAdjustmentBehavior="automatic"
+        data={notificationTypes}
+        renderItem={({item, index}) => (
           <View
             key={item.id}
             style={[
@@ -127,24 +120,27 @@ export default function SubscriptionSettingsScreen() {
               />
             </View>
           </View>
-        ))}
-      </View>
-      <Pressable
-        onPress={handleUnsubscribe}
-        style={[
-          {
-            marginBottom: tabBarHeight + bottom + 16,
-            backgroundColor: Theme['error-100'],
-          },
-          styles.destructiveButton,
-        ]}>
-        {unsubscribing ? (
-          <ActivityIndicator color={Theme['fg-200']} />
-        ) : (
-          <Text style={styles.destructiveButtonText}>Unsubscribe</Text>
         )}
-      </Pressable>
-    </ScrollView>
+        ListFooterComponent={() => (
+          <Pressable
+            onPress={handleUnsubscribe}
+            style={[
+              {
+                marginHorizontal: 16,
+                marginBottom: tabBarHeight + bottom + 16,
+                backgroundColor: Theme['error-100'],
+              },
+              styles.destructiveButton,
+            ]}>
+            {unsubscribing ? (
+              <ActivityIndicator color={Theme['fg-200']} />
+            ) : (
+              <Text style={styles.destructiveButtonText}>Unsubscribe</Text>
+            )}
+          </Pressable>
+        )}
+      />
+    </>
   );
 }
 

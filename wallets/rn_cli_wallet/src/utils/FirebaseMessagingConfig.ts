@@ -41,21 +41,14 @@ async function handleGetToken(token: string) {
   if (Platform.OS === 'android') {
     await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS).then(result => {});
   } else if (Platform.OS === 'ios') {
-    await request(PERMISSIONS.IOS.NOTIFICATIONS).then(result => {});
+    await messaging().requestPermission();
   }
 
-  const status = await messaging().requestPermission({
-    sound: true,
-    announcement: true,
-    badge: true,
-    provisional: true,
-  });
+  const status = await messaging().requestPermission();
 
   const enabled =
     status === messaging.AuthorizationStatus.AUTHORIZED ||
     status === messaging.AuthorizationStatus.PROVISIONAL;
-
-  console.log('>>> status', token);
 
   if (enabled) {
     notifyClient = await NotifyClient.init({projectId});
