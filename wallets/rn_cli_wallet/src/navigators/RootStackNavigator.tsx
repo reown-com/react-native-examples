@@ -40,6 +40,7 @@ export function RootStackNavigator() {
             headerShown: true,
             headerTitle: 'Session Details',
             headerBackTitleVisible: false,
+            headerTintColor: Theme['fg-100'],
           }}
         />
         <StackNavigator.Screen
