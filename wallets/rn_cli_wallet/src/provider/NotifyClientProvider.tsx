@@ -52,6 +52,7 @@ export const NotifyClientProvider: React.FC<{
         return `eip155:1:${address}`;
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
 
   React.useEffect(() => {
@@ -62,7 +63,7 @@ export const NotifyClientProvider: React.FC<{
 
     handleUpdateSymkeys(notifyClient.subscriptions.getAll());
 
-    notifyClient.on('notify_subscription', async ({params, topic}) => {
+    notifyClient.on('notify_subscription', async ({params}) => {
       console.log('>>> notify_subscription');
       const {error} = params;
 
@@ -101,6 +102,7 @@ export const NotifyClientProvider: React.FC<{
       setSubscriptions(subscriptions);
       handleUpdateSymkeys(subscriptions);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notifyClient]);
 
   async function getActiveSubscriptions() {
@@ -171,7 +173,8 @@ export const NotifyClientProvider: React.FC<{
     }
 
     getActiveSubscriptions();
-  }, [notifyClient]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notifyClient, account]);
 
   return (
     <NotifyClientContext.Provider

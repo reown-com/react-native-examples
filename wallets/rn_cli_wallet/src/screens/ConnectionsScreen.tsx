@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {StyleSheet, Linking} from 'react-native';
+import {Linking} from 'react-native';
 
 import {web3wallet} from '@/utils/WalletConnectUtil';
 
@@ -77,15 +77,3 @@ export default function ConnectionsScreen({route}: Props) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-    backgroundColor: 'white',
-  },
-  mainScreenContainer: {
-    paddingHorizontal: 16,
-    flex: 1,
-  },
-});

@@ -56,7 +56,7 @@ export default function SubscriptionSettingsScreen() {
       return;
     }
 
-    const updated = await notifyClient.update({
+    await notifyClient.update({
       topic,
       scope: enabledScopes,
     });
@@ -91,7 +91,9 @@ export default function SubscriptionSettingsScreen() {
           style={[
             styles.scopeContainer,
             {borderColor: Theme['gray-glass-010']},
-            index === notificationTypes.length - 1 ? {borderWidth: 0} : null,
+            index === notificationTypes.length - 1
+              ? styles.scopeContainerNoBorder
+              : null,
           ]}>
           <View style={styles.scopeContentContainer}>
             <Text style={[styles.scopeTitle, {color: Theme['fg-100']}]}>
@@ -159,6 +161,9 @@ const styles = StyleSheet.create({
     width: '100%',
     borderBottomWidth: 0.5,
     paddingHorizontal: 16,
+  },
+  scopeContainerNoBorder: {
+    borderBottomWidth: 0,
   },
   scopeContentContainer: {
     flex: 1,

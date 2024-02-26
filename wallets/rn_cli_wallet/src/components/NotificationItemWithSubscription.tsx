@@ -27,12 +27,12 @@ export default function NotificationItemWithSubscription({
     <Pressable
       onPress={onPress}
       style={({pressed}) => [
+        styles.container,
         {
           backgroundColor:
             pressed && url ? Theme['accent-090'] : Theme['accent-100'],
           borderColor: Theme['gray-glass-020'],
         },
-        styles.container,
       ]}>
       <View style={styles.subscriptionImageContainer}>
         <View style={styles.subscriptionImageBorder} />
@@ -44,23 +44,11 @@ export default function NotificationItemWithSubscription({
         />
       </View>
       <View style={styles.titleContainer}>
-        <Text
-          style={[
-            styles.title,
-            {
-              color: Theme['accent-100'],
-            },
-          ]}>
+        <Text style={[styles.title, {color: Theme['accent-100']}]}>
           {title}
         </Text>
         {sentAt ? (
-          <Text
-            style={[
-              styles.description,
-              {
-                color: Theme['fg-200'],
-              },
-            ]}>
+          <Text style={[styles.description, {color: Theme['fg-200']}]}>
             {DateUtil.getRelativeDateFromNow(sentAt)}
           </Text>
         ) : null}

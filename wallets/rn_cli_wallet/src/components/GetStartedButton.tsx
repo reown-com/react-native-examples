@@ -64,10 +64,12 @@ export function GetStartedButton() {
     if (notifyClient && account && !isRegistered) {
       registerAccount();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notifyClient, account, isRegistered]);
 
   React.useEffect(() => {
     initializeNotifyClient();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const initializing = !web3wallet || !notifyClient || !isRegistered;

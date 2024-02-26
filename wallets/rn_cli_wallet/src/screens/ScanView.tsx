@@ -1,12 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Platform,
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Text,
-} from 'react-native';
+import {Platform, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
 
 import {
   Camera,

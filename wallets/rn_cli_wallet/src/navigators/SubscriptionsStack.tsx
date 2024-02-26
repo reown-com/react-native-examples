@@ -1,6 +1,5 @@
 import React from 'react';
 
-import {useNavigation} from '@react-navigation/native';
 import SubscriptionSettingsScreen from '@/screens/SubscriptionSettingsScreen';
 import SubscriptionDetailsScreen from '@/screens/SubscriptionDetailsScreen';
 

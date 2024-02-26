@@ -8,15 +8,12 @@ import {getVersion, getBuildNumber} from 'react-native-device-info';
 import {eip155Wallets} from '@/utils/EIP155WalletUtil';
 import SettingsStore from '../store/SettingsStore';
 import {Card} from '../components/Card';
-import CustomText from '../components/Text';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useTheme} from '@/hooks/useTheme';
 
 function SettingsView() {
   const Theme = useTheme();
   const {eip155Address} = useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
-  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     async function getAsyncData() {

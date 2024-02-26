@@ -90,31 +90,6 @@ export default function SessionProposalModal() {
     return chains;
   }, [requestedChains]);
 
-  // get required chains that are not supported by the wallet
-  const notSupportedChains = useMemo(() => {
-    if (!proposal) {
-      return [];
-    }
-    const required = [];
-    for (const [key, values] of Object.entries(
-      proposal.params.requiredNamespaces,
-    )) {
-      const chains = key.includes(':') ? key : values.chains;
-      required.push(chains);
-    }
-    return required
-      .flat()
-      .filter(
-        chain =>
-          !supportedChains
-            .map(
-              supportedChain =>
-                `${supportedChain?.namespace}:${supportedChain?.chainId}`,
-            )
-            .includes(chain!),
-      );
-  }, [proposal, supportedChains]);
-
   // Hanlde approve action, construct session namespace
   const onApprove = useCallback(async () => {
     if (proposal) {

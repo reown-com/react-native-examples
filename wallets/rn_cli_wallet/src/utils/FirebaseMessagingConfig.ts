@@ -39,7 +39,7 @@ async function registerClient(deviceToken: string, clientId: string) {
 
 async function handleGetToken(token: string) {
   if (Platform.OS === 'android') {
-    await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS).then(result => {});
+    await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
   } else if (Platform.OS === 'ios') {
     await messaging().requestPermission();
   }
@@ -69,14 +69,7 @@ notifee.createChannel({
   importance: AndroidImportance.HIGH,
   visibility: AndroidVisibility.PUBLIC,
 });
-notifee.onBackgroundEvent(async ({type, detail}) => {
-  // const {notification, pressAction} = detail;
-  // Check if the user pressed the "Mark as read" action
-  // if (type === EventType.ACTION_PRESS && pressAction.id === 'mark-as-read') {
-  //   // Remove the notification
-  //   await notifee.cancelNotification(notification.id);
-  // }
-});
+notifee.onBackgroundEvent(async () => {});
 
 async function onMessageReceived(remoteMessage: any) {
   if (!remoteMessage.data?.message || !remoteMessage.data?.topic) {

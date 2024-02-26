@@ -24,12 +24,12 @@ export default function NotificationItem({
     <Pressable
       onPress={onPress}
       style={({pressed}) => [
+        styles.container,
         {
           backgroundColor:
             pressed && url ? Theme['accent-glass-010'] : Theme['bg-100'],
           borderColor: Theme['gray-glass-020'],
         },
-        styles.container,
       ]}>
       <View style={styles.titleContainer}>
         <Text style={[styles.title, {color: Theme['fg-100']}]}>{title}</Text>

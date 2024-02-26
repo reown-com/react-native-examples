@@ -9,11 +9,8 @@ import backgroundImageSrc from '../assets/ethCalculatorBG.png';
 import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import {RELAYER_EVENTS} from '@walletconnect/core';
-import {useTheme} from '@/hooks/useTheme';
 
 const OnboardingView = () => {
-  const Theme = useTheme();
-
   // Step 1 - Initialize wallets and wallet connect client
   const initialized = useInitialization();
 

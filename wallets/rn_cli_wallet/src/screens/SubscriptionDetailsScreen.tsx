@@ -3,7 +3,7 @@ import {useRoute} from '@react-navigation/native';
 import {Alert, FlatList, View} from 'react-native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 
-import NotificationItem from '@/components/components/NotificationItem';
+import NotificationItem from '@/components/NotificationItem';
 import {useTheme} from '@/hooks/useTheme';
 
 interface NotifyNotification {
@@ -94,9 +94,12 @@ export default function SubscriptionDetailsScreen() {
 
   React.useEffect(() => {
     getNotificationHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic]);
 
-  if (!topic) return null;
+  if (!topic) {
+    return null;
+  }
 
   return (
     <FlatList

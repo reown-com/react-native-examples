@@ -1,8 +1,6 @@
 import React, {ReactNode} from 'react';
 import {TouchableOpacity, StyleSheet} from 'react-native';
 
-import clipboardImage from '../assets/Copy.png';
-import QRCodeImage from '../assets/QRCode.png';
 import {useTheme} from '@/hooks/useTheme';
 
 interface CircleActionButtonProps {

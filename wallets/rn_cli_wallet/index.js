@@ -16,7 +16,9 @@ const polyfillDigest = async (algorithm, data) => {
   return hash.digest();
 };
 
+// eslint-disable-next-line no-undef
 globalThis.crypto = crypto;
+// eslint-disable-next-line no-undef
 globalThis.crypto.subtle = {
   digest: polyfillDigest,
 };
