@@ -2,7 +2,15 @@ import {useTheme} from '@/hooks/useTheme';
 import {useNavigation} from '@react-navigation/native';
 import {Pressable, StyleSheet, Text} from 'react-native';
 
-export default function SubscriptionDetailsSettingsButton({route}) {
+type SubscriptionDetailsSettingsButtonProps = {
+  topic: string;
+  name: string;
+};
+
+export default function SubscriptionDetailsSettingsButton({
+  topic,
+  name,
+}: SubscriptionDetailsSettingsButtonProps) {
   const navigation = useNavigation();
   const Theme = useTheme();
 
@@ -10,8 +18,8 @@ export default function SubscriptionDetailsSettingsButton({route}) {
     <Pressable
       onPress={() => {
         navigation.navigate('SubscriptionSettingsScreen', {
-          topic: route?.params.topic,
-          name: route.params?.name,
+          topic,
+          name,
         });
       }}>
       <Text style={[style.buttonText, {color: Theme['fg-100']}]}>Settings</Text>

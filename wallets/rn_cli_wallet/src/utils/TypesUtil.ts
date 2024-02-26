@@ -75,8 +75,8 @@ export type ConnectionsStackParamList = {
 
 export type SubscriptionsStackParamList = {
   SubscriptionsScreen: {topic?: string};
-  SubscriptionDetailsScreen: {topic: string};
-  SubscriptionSettingsScreen: {topic: string};
+  SubscriptionDetailsScreen: {topic: string; name: string};
+  SubscriptionSettingsScreen: {topic: string; name: string};
 };
 
 export type SettingsStackParamList = {

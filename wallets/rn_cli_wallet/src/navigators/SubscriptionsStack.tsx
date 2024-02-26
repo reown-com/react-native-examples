@@ -38,7 +38,10 @@ export default function SubscriptionsStack() {
           title: route?.params?.name,
           headerTintColor: Theme['fg-100'],
           headerRight: () => (
-            <SubscriptionDetailsSettingsButton route={route} />
+            <SubscriptionDetailsSettingsButton
+              topic={route.params.topic}
+              name={route.params?.name}
+            />
           ),
         })}
       />

@@ -81,7 +81,7 @@ export function GetStartedButton() {
       hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
       onPress={onPress}
       style={[styles.container, {backgroundColor}]}
-      disabled={disabled && initializing}>
+      disabled={disabled || initializing}>
       <Text style={initializing ? styles.disabledText : styles.mainText}>
         {initializing ? 'Initializing...' : 'Get Started'}
       </Text>

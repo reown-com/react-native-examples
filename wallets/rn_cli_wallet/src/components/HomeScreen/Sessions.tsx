@@ -12,7 +12,7 @@ function Sessions() {
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.scrollViewContainer}
-      ListEmptyComponent={() => (
+      ListEmptyComponent={
         <View style={styles.container}>
           <ConnectTemplateSvg height={40} width={40} />
           <Text style={styles.greyText}>
@@ -20,7 +20,7 @@ function Sessions() {
             that is displayed in the app.
           </Text>
         </View>
-      )}
+      }
       data={sessions || []}
       renderItem={({item}) => {
         const {name, icons, url} = item?.peer.metadata;

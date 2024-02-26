@@ -35,9 +35,9 @@ export default function SubscriptionList({
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
-      ListHeaderComponent={() => (
+      ListHeaderComponent={
         <SubscriptionListTabHeader page={page} setPage={setPage} />
-      )}
+      }
       data={address ? subscriptions : []}
       renderItem={({item}) => (
         <SubscriptionItem

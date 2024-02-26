@@ -19,9 +19,9 @@ export default function DiscoverList({data, page, setPage}: DiscoverListProps) {
       contentContainerStyle={{
         gap: 16,
       }}
-      ListHeaderComponent={() => (
+      ListHeaderComponent={
         <SubscriptionListTabHeader page={page} setPage={setPage} />
-      )}
+      }
       data={data}
       renderItem={({item}) => <DiscoverListItem item={item} />}
     />
