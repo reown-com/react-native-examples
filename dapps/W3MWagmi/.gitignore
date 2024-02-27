@@ -68,7 +68,9 @@ yarn-error.log
 sentry.properties
 
 # Others
-.env
+.env.*
+*.env
+!.env.example
 
 # Expo
 .expo
