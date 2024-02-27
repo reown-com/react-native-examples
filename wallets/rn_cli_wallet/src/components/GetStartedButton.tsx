@@ -74,7 +74,7 @@ export function GetStartedButton() {
 
   const initializing = !web3wallet || !notifyClient || !isRegistered;
   const backgroundColor =
-    disabled || initializing ? '#e2e2e2' : Theme['accent-100'];
+    disabled || initializing ? Theme['bg-300'] : Theme['accent-100'];
 
   return (
     <TouchableOpacity

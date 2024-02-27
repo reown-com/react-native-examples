@@ -2,22 +2,39 @@ import {StyleSheet, View, ViewStyle} from 'react-native';
 
 import {useTheme} from '@/hooks/useTheme';
 
-type SubscriptionItemSkeletonProps = {
+type NotificationItemSkeletonProps = {
   style?: ViewStyle;
 };
 
-export default function SubscriptionItemSkeleton({
+export default function NotificationItemSkeleton({
   style,
-}: SubscriptionItemSkeletonProps) {
+}: NotificationItemSkeletonProps) {
   const Theme = useTheme();
 
   return (
-    <View style={[styles.container, style]}>
+    <View
+      style={[
+        styles.container,
+        {
+          borderColor: Theme['gray-glass-010'],
+        },
+        style,
+      ]}>
       <View
-        style={[styles.firstView, {backgroundColor: Theme['gray-glass-010']}]}
+        style={[
+          styles.firstView,
+          {
+            backgroundColor: Theme['gray-glass-010'],
+          },
+        ]}
       />
       <View
-        style={[styles.secondView, {backgroundColor: Theme['gray-glass-010']}]}
+        style={[
+          styles.secondView,
+          {
+            backgroundColor: Theme['gray-glass-010'],
+          },
+        ]}
       />
     </View>
   );
@@ -33,6 +50,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     gap: 8,
     padding: 12,
+    borderBottomWidth: 1,
   },
   firstView: {
     width: '50%',

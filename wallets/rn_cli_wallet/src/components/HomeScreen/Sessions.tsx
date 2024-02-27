@@ -26,6 +26,7 @@ function Sessions() {
         const {name, icons, url} = item?.peer.metadata;
         return (
           <IndividualSession
+            key={item.topic}
             icons={icons.toString()}
             name={name}
             url={url}

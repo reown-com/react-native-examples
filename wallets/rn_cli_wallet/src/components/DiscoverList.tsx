@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {FlatList} from 'react-native';
+import {FlatList, StyleSheet} from 'react-native';
 
 import DiscoverListItem from './DiscoverListItem';
 import SubscriptionListTabHeader from '@/components/SubscriptionListTabHeader';
@@ -16,9 +16,7 @@ export default function DiscoverList({data, page, setPage}: DiscoverListProps) {
   return (
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{
-        gap: 16,
-      }}
+      contentContainerStyle={styles.contentContainer}
       ListHeaderComponent={
         <SubscriptionListTabHeader page={page} setPage={setPage} />
       }
@@ -27,3 +25,9 @@ export default function DiscoverList({data, page, setPage}: DiscoverListProps) {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    gap: 16,
+  },
+});

@@ -4,7 +4,7 @@ import {Alert, FlatList, View} from 'react-native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 
 import NotificationItem from '@/components/NotificationItem';
-import {useTheme} from '@/hooks/useTheme';
+import NotificationItemSkeleton from '@/components/NotificationItemSkeleton';
 
 interface NotifyNotification {
   title: string;
@@ -13,42 +13,6 @@ interface NotifyNotification {
   id: string;
   url: string | null;
   type: string;
-}
-
-function NotificationItemSkeleton() {
-  const Theme = useTheme();
-
-  return (
-    <View
-      style={{
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        gap: 8,
-        padding: 12,
-        borderBottomWidth: 1,
-        borderColor: Theme['gray-glass-010'],
-      }}>
-      <View
-        style={{
-          width: '50%',
-          height: 16,
-          backgroundColor: Theme['gray-glass-010'],
-          borderRadius: 4,
-        }}
-      />
-      <View
-        style={{
-          width: '70%',
-          height: 12,
-          backgroundColor: Theme['gray-glass-010'],
-          borderRadius: 4,
-        }}
-      />
-    </View>
-  );
 }
 
 export default function SubscriptionDetailsScreen() {
@@ -103,7 +67,6 @@ export default function SubscriptionDetailsScreen() {
 
   return (
     <FlatList
-      contentContainerStyle={{}}
       data={sortedByDate}
       keyExtractor={item => item.sentAt.toString()}
       onEndReached={() => {
@@ -123,7 +86,7 @@ export default function SubscriptionDetailsScreen() {
               }}>
               {Array(3)
                 .fill(null)
-                .map((item, index) => {
+                .map((_, index) => {
                   return <NotificationItemSkeleton key={index} />;
                 })}
             </View>
