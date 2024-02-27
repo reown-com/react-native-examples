@@ -1,5 +1,3 @@
-import {useColorScheme} from 'react-native';
-
 const theme = {
   light: {
     primary: '#262626',
@@ -18,13 +16,3 @@ const theme = {
     border: '#404040',
   },
 };
-
-export default function useColors() {
-  const scheme = useColorScheme();
-
-  if (scheme === 'dark') {
-    return theme['dark'];
-  }
-
-  return theme['light'];
-}

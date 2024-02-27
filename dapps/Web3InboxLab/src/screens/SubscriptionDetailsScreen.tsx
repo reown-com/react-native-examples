@@ -3,7 +3,7 @@ import {useRoute} from '@react-navigation/native';
 import {ActivityIndicator, Alert, FlatList, Text, View} from 'react-native';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import NotificationItem from '../components/NotificationItem';
-import useColors from '../utils/theme';
+import useColors from '@/hooks/useColors';
 
 interface NotifyNotification {
   title: string;

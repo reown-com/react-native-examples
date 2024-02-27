@@ -1,21 +1,38 @@
-import * as React from 'react';
+import {useEffect, useState} from 'react';
 
-import {ScrollView} from 'react-native';
+import {FlatList, StyleSheet} from 'react-native';
 import DiscoverListItem from '../components/DiscoverListItem';
 
-import projectsData from '../constants/projects-resposne.json';
+import {ProjectItem} from '@/constants/Explorer';
+import {fetchFeaturedProjects} from '@/utils/NotifyClient';
 
 export default function DiscoverScreen() {
+  const [discoverList, setDiscoverList] = useState<ProjectItem[]>([]);
+
+  async function handleGetDiscoverList() {
+    const {data} = await fetchFeaturedProjects();
+    setDiscoverList(data as ProjectItem[]);
+  }
+
+  useEffect(() => {
+    handleGetDiscoverList();
+  }, []);
+
   return (
-    <ScrollView
+    <FlatList
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{
-        padding: 16,
-        gap: 16,
-      }}>
-      {projectsData.map(item => (
+      contentContainerStyle={styles.contentContainer}
+      data={discoverList}
+      renderItem={({item}) => (
         <DiscoverListItem key={item.dapp_url} item={item} />
-      ))}
-    </ScrollView>
+      )}
+    />
   );
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    gap: 8,
+    padding: 16,
+  },
+});

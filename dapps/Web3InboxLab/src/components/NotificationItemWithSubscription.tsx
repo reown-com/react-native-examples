@@ -1,5 +1,5 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import useColors from '../utils/theme';
+import useColors from '@/hooks/useColors';
 import {DateUtil} from '../utils/date';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
 

@@ -1,16 +1,18 @@
 import * as React from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {RefreshControl, ScrollView, Text, View} from 'react-native';
+import {FlatList, RefreshControl, View} from 'react-native';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import SubscriptionItem from '../components/SubscriptionItem';
 import SubscriptionsConnectOverlay from '../components/SubscriptionsConnectOverlay';
 import {useAccount} from 'wagmi';
+import useColors from '@/hooks/useColors';
 
 export default function SubscriptionsScreen() {
   const {subscriptions, fetchSubscriptions} = useNotifyClientContext();
   const [refreshing, setRefreshing] = React.useState(false);
   const {address} = useAccount();
   const {navigate} = useNavigation();
+  const colors = useColors();
 
   async function handleRefresh() {
     setRefreshing(true);
@@ -18,32 +20,40 @@ export default function SubscriptionsScreen() {
     setRefreshing(false);
   }
 
+  if (!address) {
+    return <SubscriptionsConnectOverlay />;
+  }
+
   return (
-    <ScrollView
+    <FlatList
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{
-        padding: 16,
-        gap: 8,
-      }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-      }>
-      <SubscriptionsConnectOverlay />
-      {address &&
-        subscriptions.map(item => (
-          <SubscriptionItem
-            key={item?.topic}
-            title={item?.metadata?.name}
-            imageURL={item?.metadata?.icons[0]}
-            description={item?.metadata?.appDomain}
-            onPress={() => {
-              navigate('SubscriptionDetailsScreen', {
-                topic: item?.topic,
-                name: item?.metadata?.name,
-              });
-            }}
-          />
-        ))}
-    </ScrollView>
+      }
+      data={address ? subscriptions : []}
+      ItemSeparatorComponent={() => (
+        <View
+          style={{
+            height: 1,
+            width: '100%',
+            backgroundColor: colors.border,
+          }}
+        />
+      )}
+      renderItem={({item}) => (
+        <SubscriptionItem
+          key={item?.topic}
+          title={item?.metadata?.name}
+          imageURL={item?.metadata?.icons[0]}
+          description={item?.metadata?.appDomain}
+          onPress={() => {
+            navigate('SubscriptionDetailsScreen', {
+              topic: item?.topic,
+              name: item?.metadata?.name,
+            });
+          }}
+        />
+      )}
+    />
   );
 }

@@ -1,13 +1,21 @@
 import React from 'react';
-import CompassIcon from '../icons/compass';
-import BellIcon from '../icons/bell';
+import CompassIconSVG from '../icons/compass';
+import BellIconSVG from '../icons/bell';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import DiscoverStack from './DiscoverStack';
 import SubscriptionsStack from './SubscriptionsStack';
-import useColors from '../utils/theme';
+import useColors from '@/hooks/useColors';
 
 const Tab = createBottomTabNavigator();
+
+const BellIcon = ({color}: {color: string}) => (
+  <BellIconSVG height={15} width={15} fill={color} />
+);
+
+const CompassIcon = ({color}: {color: string}) => (
+  <CompassIconSVG height={15} width={26} fill={color} />
+);
 
 export default function TabNavigator() {
   const colors = useColors();
@@ -27,17 +35,7 @@ export default function TabNavigator() {
           tabBarLabel: 'Subscriptions',
           tabBarActiveTintColor: colors.primary,
           tabBarInactiveTintColor: colors.secondary,
-          tabBarIcon: ({focused}) => (
-            <BellIcon
-              style={[
-                {
-                  width: 15,
-                  height: 15,
-                  fill: focused ? colors.primary : colors.secondary,
-                },
-              ]}
-            />
-          ),
+          tabBarIcon: BellIcon,
         }}
         component={SubscriptionsStack}
       />
@@ -47,17 +45,7 @@ export default function TabNavigator() {
           tabBarLabel: 'Discover',
           tabBarActiveTintColor: colors.primary,
           tabBarInactiveTintColor: colors.secondary,
-          tabBarIcon: ({focused}) => (
-            <CompassIcon
-              style={[
-                {
-                  width: 15,
-                  height: 15,
-                  fill: focused ? colors.primary : colors.secondary,
-                },
-              ]}
-            />
-          ),
+          tabBarIcon: CompassIcon,
         }}
         component={DiscoverStack}
       />

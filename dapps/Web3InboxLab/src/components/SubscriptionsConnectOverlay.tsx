@@ -1,11 +1,54 @@
-import {Alert, Pressable, Text, View} from 'react-native';
+import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
 import SubscriptionItemSkeleton from './SubscriptionItemSkeleton';
 
-import useColors from '../utils/theme';
+import useColors from '@/hooks/useColors';
 import {useWeb3Modal} from '@web3modal/wagmi-react-native';
-import WalletIcon from '../icons/wallet';
 import {useAccount, useSignMessage} from 'wagmi';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
+import {useHeaderHeight} from '@react-navigation/elements';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
+type OverlayContentProps = {
+  title: string;
+  description: string;
+  onPress: () => void;
+};
+
+function OverlayContent({title, description, onPress}: OverlayContentProps) {
+  const colors = useColors();
+
+  return (
+    <View style={styles.overlayContentContainer}>
+      <Text style={[styles.overlayContentTitle, {color: colors.primary}]}>
+        {title}
+      </Text>
+      <Text
+        style={[styles.overlayContentDescription, {color: colors.secondary}]}>
+        {description}
+      </Text>
+      <Pressable
+        style={({pressed}) => [
+          styles.overlayContentButton,
+          {
+            backgroundColor: pressed
+              ? colors.backgroundActive
+              : colors.background,
+            borderColor: colors.border,
+            shadowColor: colors.background,
+          },
+        ]}
+        onPress={onPress}>
+        <Text
+          style={{
+            color: colors.primary,
+            fontSize: 18,
+          }}>
+          Sign Message
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
 
 export default function SubscriptionsConnectOverlay() {
   const colors = useColors();
@@ -13,11 +56,13 @@ export default function SubscriptionsConnectOverlay() {
   const {open} = useWeb3Modal();
   const {account, notifyClient} = useNotifyClientContext();
   const {signMessageAsync} = useSignMessage();
+  const headerHeight = useHeaderHeight();
+  const {top} = useSafeAreaInsets();
 
   const isRegistered = account
     ? notifyClient?.isRegistered({
         account,
-        domain: 'w3i-lab-mobile.vercel.app',
+        domain: '',
         allApps: true,
       })
     : false;
@@ -35,7 +80,7 @@ export default function SubscriptionsConnectOverlay() {
 
     const {message, registerParams} = await notifyClient.prepareRegistration({
       account,
-      domain: 'w3i-lab-mobile.vercel.app',
+      domain: '',
       allApps: true,
     });
     const signature = await signMessageAsync({message: message});
@@ -49,145 +94,73 @@ export default function SubscriptionsConnectOverlay() {
   if (address && isRegistered) return null;
 
   return (
-    <View
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 8,
-      }}>
-      <SubscriptionItemSkeleton style={{opacity: 1}} />
-      <SubscriptionItemSkeleton style={{opacity: 0.7}} />
-      <SubscriptionItemSkeleton style={{opacity: 0.5}} />
-      <SubscriptionItemSkeleton style={{opacity: 0.3}} />
-      <SubscriptionItemSkeleton style={{opacity: 0.1}} />
+    <View style={[styles.container, {paddingTop: headerHeight + top}]}>
+      {Array(5)
+        .fill(null)
+        .map((_, index) => (
+          <SubscriptionItemSkeleton style={{opacity: 1 - index * 0.2}} />
+        ))}
       {address && !isRegistered ? (
-        <View
-          style={{
-            position: 'absolute',
-            top: 150,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 8,
-          }}>
-          <Text
-            style={{
-              color: colors.primary,
-              fontSize: 24,
-              fontWeight: '600',
-              textAlign: 'center',
-            }}>
-            Sign Message
-          </Text>
-          <Text
-            style={{
-              color: colors.secondary,
-              fontSize: 18,
-              textAlign: 'center',
-            }}>
-            Sign message to be able to continue using Web3Inbox
-          </Text>
-          <Pressable
-            style={({pressed}) => ({
-              width: 'auto',
-              height: 48,
-              backgroundColor: pressed
-                ? colors.backgroundActive
-                : colors.background,
-              paddingHorizontal: 24,
-              paddingVertical: 12,
-              borderRadius: 16,
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-              borderWidth: 1,
-              borderColor: colors.border,
-              shadowColor: colors.background,
-              shadowOffset: {
-                width: 2,
-                height: 4,
-              },
-              shadowOpacity: 0.5,
-              shadowRadius: 3.84,
-              elevation: 5,
-            })}
-            onPress={registerAccount}>
-            <Text
-              style={{
-                color: colors.primary,
-                fontSize: 18,
-              }}>
-              Sign Message
-            </Text>
-          </Pressable>
-        </View>
+        <OverlayContent
+          title="Connect"
+          description="Connect your account to subscribe to dApps."
+          onPress={registerAccount}
+        />
       ) : null}
       {address ? null : (
-        <View
-          style={{
-            position: 'absolute',
-            top: 150,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 8,
-          }}>
-          <Text
-            style={{
-              color: colors.primary,
-              fontSize: 24,
-              fontWeight: '600',
-              textAlign: 'center',
-            }}>
-            Connect
-          </Text>
-          <Text
-            style={{
-              color: colors.secondary,
-              fontSize: 18,
-              textAlign: 'center',
-            }}>
-            Connect your account to subscribe to dApps.
-          </Text>
-          <Pressable
-            style={({pressed}) => ({
-              width: 'auto',
-              height: 48,
-              backgroundColor: pressed
-                ? colors.backgroundActive
-                : colors.background,
-              paddingHorizontal: 24,
-              paddingVertical: 12,
-              borderRadius: 16,
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-              borderWidth: 1,
-              borderColor: colors.border,
-              shadowColor: colors.background,
-              shadowOffset: {
-                width: 2,
-                height: 4,
-              },
-              shadowOpacity: 0.5,
-              shadowRadius: 3.84,
-              elevation: 5,
-            })}
-            onPress={() => open()}>
-            <WalletIcon width={18} height={18} fill={colors.primary} />
-            <Text
-              style={{
-                color: colors.primary,
-                fontSize: 18,
-              }}>
-              Connect Wallet
-            </Text>
-          </Pressable>
-        </View>
+        <OverlayContent
+          title="Connect"
+          description="Connect your account to subscribe to dApps."
+          onPress={open}
+        />
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    height: '100%',
+    paddingHorizontal: 8,
+    gap: 8,
+  },
+  overlayContentContainer: {
+    position: 'absolute',
+    top: '50%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 8,
+  },
+  overlayContentTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  overlayContentDescription: {
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  overlayContentButton: {
+    width: 'auto',
+    height: 48,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 16,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    borderWidth: 1,
+    shadowOffset: {
+      width: 2,
+      height: 4,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+});

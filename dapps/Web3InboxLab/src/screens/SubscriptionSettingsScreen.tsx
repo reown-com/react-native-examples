@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
-import useColors from '../utils/theme';
+import useColors from '@/hooks/useColors';
 import {Controller, useForm} from 'react-hook-form';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';

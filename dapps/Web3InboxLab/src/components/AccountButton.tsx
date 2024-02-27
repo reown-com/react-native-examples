@@ -3,58 +3,15 @@ import React from 'react';
 import {useWeb3Modal} from '@web3modal/wagmi-react-native';
 import {useAccount, useEnsAvatar, useEnsName} from 'wagmi';
 import {Image, Pressable, View} from 'react-native';
-import useColors from '../utils/theme';
 
-import {
-  Canvas,
-  Rect,
-  RadialGradient,
-  Skia,
-  Shader,
-  vec,
-} from '@shopify/react-native-skia';
+import {Canvas, Rect, RadialGradient, vec} from '@shopify/react-native-skia';
+import {generateAvatarColor} from '@/utils/ColorGenerator';
+import useColors from '@/hooks/useColors';
 
 interface AvatarProps {
   width: number;
   height: number;
 }
-
-const hexToRgb = (hex: string): [number, number, number] => {
-  const bigint = parseInt(hex, 16);
-
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-
-  return [r, g, b];
-};
-
-const tintColor = (
-  rgb: [number, number, number],
-  tint: number,
-): [number, number, number] => {
-  const [r, g, b] = rgb;
-  const tintedR = Math.round(r + (255 - r) * tint);
-  const tintedG = Math.round(g + (255 - g) * tint);
-  const tintedB = Math.round(b + (255 - b) * tint);
-
-  return [tintedR, tintedG, tintedB];
-};
-
-export const generateAvatarColor = (address: string) => {
-  const hash = address.toLowerCase().replace(/^0x/iu, '');
-  const baseColor = hash.substring(0, 6);
-  const rgbColor = hexToRgb(baseColor);
-
-  const colors: string[] = [];
-
-  for (let i = 0; i < 5; i += 1) {
-    const tintedColor = tintColor(rgbColor, 0.15 * i);
-    colors.push(`rgb(${tintedColor[0]}, ${tintedColor[1]}, ${tintedColor[2]})`);
-  }
-
-  return colors;
-};
 
 export default function AccountButton({width, height}: AvatarProps) {
   const {address} = useAccount();
@@ -64,6 +21,10 @@ export default function AccountButton({width, height}: AvatarProps) {
   const addressOrEnsDomain = address as `0x${string}` | undefined;
   const {data: ensName} = useEnsName({address: addressOrEnsDomain});
   const {data: ensAvatar} = useEnsAvatar({name: ensName});
+
+  if (!address) {
+    return null;
+  }
 
   return (
     <Pressable

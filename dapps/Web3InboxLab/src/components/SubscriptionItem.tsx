@@ -1,5 +1,5 @@
+import useColors from '@/hooks/useColors';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import useColors from '../utils/theme';
 
 interface ISubscriptionItem {
   title: string;
@@ -20,14 +20,13 @@ export default function SubscriptionItem({
     <Pressable
       onPress={onPress}
       style={({pressed}) => [
+        styles.container,
         {
           backgroundColor: pressed
             ? colors.backgroundActive
             : colors.background,
           borderColor: colors.border,
-          borderRadius: 16,
         },
-        styles.container,
       ]}>
       <View style={styles.imageContainer}>
         <View style={styles.imageBorder} />
@@ -51,13 +50,12 @@ const styles = StyleSheet.create({
     gap: 8,
     width: '100%',
     padding: 12,
-    borderWidth: 0.5,
   },
   contentContainer: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: 8,
+    gap: 4,
   },
   title: {
     fontSize: 15,

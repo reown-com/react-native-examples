@@ -10,10 +10,8 @@ import {
 } from 'react-native';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
 
-import projectsData from '../constants/projects-resposne.json';
-import useColors from '../utils/theme';
-
-type ProjectItem = (typeof projectsData)[0];
+import useColors from '@/hooks/useColors';
+import {ProjectItem} from '@/constants/Explorer';
 
 type DiscoverListItemProps = {
   item: ProjectItem;

@@ -7,7 +7,7 @@ import {Pressable, Text} from 'react-native';
 import SubscriptionSettingsScreen from '../screens/SubscriptionSettingsScreen';
 import SubscriptionsScreen from '../screens/SubscriptionsScreen';
 import SubscriptionDetailsScreen from '../screens/SubscriptionDetailsScreen';
-import useColors from '../utils/theme';
+import useColors from '@/hooks/useColors';
 import AccountButton from '../components/AccountButton';
 
 const Stack = createNativeStackNavigator();

@@ -1,5 +1,5 @@
 import {View} from 'react-native';
-import useColors from '../utils/theme';
+import useColors from '@/hooks/useColors';
 
 export default function SubscriptionItemSkeleton({style}) {
   const colors = useColors();
