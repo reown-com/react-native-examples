@@ -5,25 +5,12 @@ import {web3wallet} from '@/utils/WalletConnectUtil';
 import {useTheme} from '@/hooks/useTheme';
 import {useNavigation} from '@react-navigation/native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
-import {createOrRestoreEIP155Wallet} from '@/utils/EIP155WalletUtil';
-import {useSnapshot} from 'valtio';
-import SettingsStore from '@/store/SettingsStore';
 
 export function GetStartedButton() {
   const navigation = useNavigation();
   const Theme = useTheme();
   const disabled = !web3wallet;
-  const {eip155Address: address} = useSnapshot(SettingsStore.state);
-  const {account, initializeNotifyClient, notifyClient} =
-    useNotifyClientContext();
-
-  const isRegistered = account
-    ? notifyClient?.isRegistered({
-        account,
-        domain: '',
-        allApps: true,
-      })
-    : false;
+  const {isRegistered, notifyClient} = useNotifyClientContext();
 
   const onPress = () => {
     navigation.reset({
@@ -31,46 +18,6 @@ export function GetStartedButton() {
       routes: [{name: 'Home'}],
     });
   };
-
-  async function registerAccount() {
-    if (!notifyClient || !account) {
-      console.warn('notify client or account not available');
-      return;
-    }
-
-    try {
-      const {message, registerParams} = await notifyClient.prepareRegistration({
-        account,
-        domain: '',
-        allApps: true,
-      });
-
-      const {eip155Wallets} = await createOrRestoreEIP155Wallet();
-      const signature = await eip155Wallets[address].signMessage(message);
-
-      await notifyClient.register({
-        registerParams,
-        signature,
-      });
-    } catch (error) {
-      if (error?.message?.includes('user has an existing stale identity.')) {
-        await notifyClient.unregister({account});
-        registerAccount();
-      }
-    }
-  }
-
-  React.useEffect(() => {
-    if (notifyClient && account && !isRegistered) {
-      registerAccount();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [notifyClient, account, isRegistered]);
-
-  React.useEffect(() => {
-    initializeNotifyClient();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const initializing = !web3wallet || !notifyClient || !isRegistered;
   const backgroundColor =

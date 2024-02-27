@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import NotifyClientContext, {
   NotificationsState,
@@ -18,6 +18,7 @@ export const NotifyClientProvider: React.FC<{
 }> = ({children}) => {
   const {eip155Address: address} = useSnapshot(SettingsStore.state);
 
+  const [isRegistered, setIsRegistered] = React.useState(false);
   const [initializing, setInitializing] = React.useState(false);
   const [notifyClient, setNotifyClient] = React.useState<
     NotifyClient | undefined
@@ -163,12 +164,27 @@ export const NotifyClientProvider: React.FC<{
     return notifsToReturn;
   }
 
+  async function handleGetRegisterStatus() {
+    if (!notifyClient || !account) {
+      return;
+    }
+
+    const isRegistered = notifyClient?.isRegistered({
+      account,
+      domain: '',
+      allApps: true,
+    });
+
+    setIsRegistered(isRegistered);
+  }
+
   React.useEffect(() => {
     if (!notifyClient || !account) {
       return;
     }
 
     getActiveSubscriptions();
+    handleGetRegisterStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notifyClient, account]);
 
@@ -177,6 +193,7 @@ export const NotifyClientProvider: React.FC<{
       value={{
         account,
         initializing,
+        isRegistered,
         notifyClient,
         subscriptions,
         notifications,

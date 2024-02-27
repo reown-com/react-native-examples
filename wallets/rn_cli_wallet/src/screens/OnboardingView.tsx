@@ -4,18 +4,23 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {GetStartedButton} from '@/components/GetStartedButton';
 import Text from '../components/Text';
-import useInitialization from '@/hooks/useInitialization';
+import useInitializeWeb3Wallet from '@/hooks/useInitializeWeb3Wallet';
 import backgroundImageSrc from '../assets/ethCalculatorBG.png';
 import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import {RELAYER_EVENTS} from '@walletconnect/core';
+import {useInitializeNotifyClient} from '@/hooks/useInitializeNotifyClient';
 
 const OnboardingView = () => {
   // Step 1 - Initialize wallets and wallet connect client
-  const initialized = useInitialization();
+  const initialized = useInitializeWeb3Wallet();
 
-  // Step 2 - Once initialized, set up wallet connect event manager
+  // Step 2 - Initialize Notify Client
+  useInitializeNotifyClient();
+
+  // Step 3 - Once initialized, set up wallet connect event manager
   useWalletConnectEventsManager(initialized);
+
   useEffect(() => {
     if (!initialized) {
       return;
