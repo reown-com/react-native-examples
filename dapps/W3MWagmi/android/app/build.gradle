@@ -80,7 +80,6 @@ android {
 
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-    flavorDimensions.add("version")
 
     namespace "com.w3mwagmi"
     defaultConfig {
@@ -114,31 +113,22 @@ android {
             keyPassword secretsProperties['WC_KEY_PASSWORD_UPLOAD']
         }
     }
-    productFlavors {
-        dev {
-            dimension "version"
-            applicationIdSuffix ".dev"
-            versionNameSuffix "-dev"
-            signingConfig signingConfigs.debug // Use the debug signing config for dev builds
-        }
+    buildTypes {
         internal {
-            dimension "version"
             applicationIdSuffix ".internal"
             versionNameSuffix "-internal"
             signingConfig signingConfigs.internal
+            matchingFallbacks = ['release']
         }
-        upload {
-            dimension "version"
-            signingConfig signingConfigs.upload
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            signingConfig signingConfigs.debug
         }
-    }
-    buildTypes {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-        }
-        debug {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.upload
         }
     }
 }
