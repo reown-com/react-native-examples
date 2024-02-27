@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {useRoute} from '@react-navigation/native';
-import {ActivityIndicator, Alert, FlatList, Text, View} from 'react-native';
+import {Alert, FlatList, View} from 'react-native';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import NotificationItem from '../components/NotificationItem';
-import useColors from '@/hooks/useColors';
+import NotificationItemSkeleton from '@/components/NotificationItemSkeleton';
 
 interface NotifyNotification {
   title: string;
@@ -12,42 +12,6 @@ interface NotifyNotification {
   id: string;
   url: string | null;
   type: string;
-}
-
-function NotificationItemSkeleton() {
-  const colors = useColors();
-
-  return (
-    <View
-      style={{
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        gap: 8,
-        padding: 12,
-        borderBottomWidth: 1,
-        borderColor: colors.border,
-      }}>
-      <View
-        style={{
-          width: '50%',
-          height: 16,
-          backgroundColor: colors.background,
-          borderRadius: 4,
-        }}
-      />
-      <View
-        style={{
-          width: '70%',
-          height: 12,
-          backgroundColor: colors.background,
-          borderRadius: 4,
-        }}
-      />
-    </View>
-  );
 }
 
 export default function SubscriptionDetailsScreen() {

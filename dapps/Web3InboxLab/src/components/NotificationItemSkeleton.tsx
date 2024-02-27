@@ -1,7 +1,7 @@
 import {StyleSheet, View} from 'react-native';
 import useColors from '@/hooks/useColors';
 
-export default function SubscriptionItemSkeleton() {
+export default function NotificationItemSkeleton() {
   const colors = useColors();
 
   return (
@@ -10,14 +10,13 @@ export default function SubscriptionItemSkeleton() {
         styles.container,
         {
           borderColor: colors.border,
-          backgroundColor: colors.background,
         },
       ]}>
       <View
         style={[
           styles.title,
           {
-            backgroundColor: colors.backgroundSecondary,
+            backgroundColor: colors.background,
           },
         ]}
       />
@@ -25,7 +24,7 @@ export default function SubscriptionItemSkeleton() {
         style={[
           styles.description,
           {
-            backgroundColor: colors.backgroundSecondary,
+            backgroundColor: colors.background,
           },
         ]}
       />
@@ -40,11 +39,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    opacity: 0.8,
     gap: 8,
     padding: 12,
-    borderRadius: 12,
-    borderWidth: 0.5,
+    borderBottomWidth: 1,
   },
   title: {
     width: '50%',
