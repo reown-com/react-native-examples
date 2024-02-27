@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 
 import NotifyClientContext, {
   NotificationsState,
@@ -18,16 +18,14 @@ export const NotifyClientProvider: React.FC<{
 }> = ({children}) => {
   const {eip155Address: address} = useSnapshot(SettingsStore.state);
 
-  const [isRegistered, setIsRegistered] = React.useState(false);
-  const [initializing, setInitializing] = React.useState(false);
-  const [notifyClient, setNotifyClient] = React.useState<
-    NotifyClient | undefined
-  >(undefined);
-  const [account, setAccount] = React.useState<string | undefined>(undefined);
-  const [subscriptions, setSubscriptions] = React.useState<any>([]);
-  const [notifications, setNotifications] = React.useState<NotificationsState>(
-    {},
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [initializing, setInitializing] = useState(false);
+  const [notifyClient, setNotifyClient] = useState<NotifyClient | undefined>(
+    undefined,
   );
+  const [account, setAccount] = useState<string | undefined>(undefined);
+  const [subscriptions, setSubscriptions] = useState<any>([]);
+  const [notifications, setNotifications] = useState<NotificationsState>({});
 
   function handleUpdateSymkeys(
     _subscriptions: NotifyClientTypes.NotifySubscription[],
@@ -42,7 +40,7 @@ export const NotifyClientProvider: React.FC<{
     });
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (address) {
       setAccount(prevAccount => {
         if (!prevAccount && address) {
@@ -55,7 +53,7 @@ export const NotifyClientProvider: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!notifyClient) {
       console.log('notify client not initialized');
       return;
@@ -178,7 +176,7 @@ export const NotifyClientProvider: React.FC<{
     setIsRegistered(isRegistered);
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!notifyClient || !account) {
       return;
     }

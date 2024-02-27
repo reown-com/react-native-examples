@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {useEffect, useState} from 'react';
 import {useRoute} from '@react-navigation/native';
 import {Alert, FlatList, View} from 'react-native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
@@ -18,8 +18,8 @@ interface NotifyNotification {
 export default function SubscriptionDetailsScreen() {
   const {params} = useRoute();
   const {notifications, setNotifications} = useNotifyClientContext();
-  const [hasMore, setHasMore] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const topic = params?.topic;
 
@@ -56,7 +56,7 @@ export default function SubscriptionDetailsScreen() {
     return accountSubscriptions;
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     getNotificationHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic]);

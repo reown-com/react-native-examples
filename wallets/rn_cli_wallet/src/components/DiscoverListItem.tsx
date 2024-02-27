@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -21,7 +21,7 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
   const {account, subscriptions, notifyClient} = useNotifyClientContext();
   const Theme = useTheme();
 
-  const [subscribing, setSubscribing] = React.useState(false);
+  const [subscribing, setSubscribing] = useState(false);
   const domain = new URL(item.dapp_url).host;
 
   const isSubscribed = subscriptions.some(s =>

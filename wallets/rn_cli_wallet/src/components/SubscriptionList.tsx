@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {useState, Dispatch, SetStateAction} from 'react';
 import {FlatList, RefreshControl} from 'react-native';
 
 import {useSnapshot} from 'valtio';
@@ -11,7 +11,7 @@ import SubscriptionListTabHeader from '@/components/SubscriptionListTabHeader';
 
 type SubscriptionListProps = {
   page: number;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
+  setPage: Dispatch<SetStateAction<number>>;
 };
 
 export default function SubscriptionList({
@@ -19,7 +19,7 @@ export default function SubscriptionList({
   setPage,
 }: SubscriptionListProps) {
   const {subscriptions, fetchSubscriptions} = useNotifyClientContext();
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const {eip155Address: address} = useSnapshot(SettingsStore.state);
   const {navigate} = useNavigation();
 
