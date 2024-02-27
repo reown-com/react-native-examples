@@ -3,7 +3,7 @@ import {StyleSheet, View} from 'react-native';
 import {CoreTypes} from '@walletconnect/types';
 import {ModalHeader} from '../components/Modal/ModalHeader';
 import {ModalFooter} from '../components/Modal/ModalFooter';
-import {useTheme} from '../hooks/useTheme';
+import {useTheme} from '@/hooks/useTheme';
 
 export interface RequestModalProps {
   children: ReactNode;

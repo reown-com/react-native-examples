@@ -34,8 +34,8 @@ export default ActionButtons;
 const styles = StyleSheet.create({
   absoluteFlexRow: {
     position: 'absolute',
-    bottom: 10,
-    right: 10,
+    bottom: 24,
+    right: 24,
     flexDirection: 'row',
     gap: 20,
   },

@@ -1,7 +1,7 @@
 import React, {ReactNode} from 'react';
 import {TouchableOpacity, StyleSheet} from 'react-native';
 
-import {useTheme} from '../hooks/useTheme';
+import {useTheme} from '@/hooks/useTheme';
 
 interface CircleActionButtonProps {
   children: ReactNode;
