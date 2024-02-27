@@ -949,10 +949,6 @@ PODS:
     - React-Core
   - react-native-netinfo (11.1.0):
     - React-Core
-  - react-native-pager-view (6.2.3):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
-    - React-Core
   - react-native-quick-base64 (2.0.8):
     - React-Core
   - react-native-quick-crypto (0.6.1):
@@ -1209,7 +1205,6 @@ DEPENDENCIES:
   - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
-  - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-quick-base64 (from `../node_modules/react-native-quick-base64`)
   - react-native-quick-crypto (from `../node_modules/react-native-quick-crypto`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -1328,8 +1323,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
-  react-native-pager-view:
-    :path: "../node_modules/react-native-pager-view"
   react-native-quick-base64:
     :path: "../node_modules/react-native-quick-base64"
   react-native-quick-crypto:
@@ -1447,7 +1440,6 @@ SPEC CHECKSUMS:
   react-native-compat: 87ef69da9c7379f493a89bd9089ddc7d17c358e6
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
   react-native-netinfo: 3aa5637c18834966e0c932de8ae1ae56fea20a97
-  react-native-pager-view: 33c56e3b547d2f29d224255d82e796942e0918b8
   react-native-quick-base64: 777057ea4286f806b00259ede65dc79c7c706320
   react-native-quick-crypto: 455c1b411db006dba1026a30681ececb19180187
   react-native-safe-area-context: 0ee144a6170530ccc37a0fd9388e28d06f516a89
