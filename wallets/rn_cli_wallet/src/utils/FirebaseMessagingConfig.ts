@@ -3,7 +3,6 @@ import notifee, {
   AndroidImportance,
   AndroidVisibility,
 } from '@notifee/react-native';
-import {request, PERMISSIONS} from 'react-native-permissions';
 
 import {NotifyClient} from '@walletconnect/notify-client';
 import {decryptMessage} from '@walletconnect/notify-message-decrypter';
@@ -38,13 +37,7 @@ async function registerClient(deviceToken: string, clientId: string) {
 }
 
 async function handleGetToken(token: string) {
-  if (Platform.OS === 'android') {
-    await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
-  } else if (Platform.OS === 'ios') {
-    await messaging().requestPermission();
-  }
-
-  const status = await messaging().requestPermission();
+  let status = await messaging().requestPermission();
 
   const enabled =
     status === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -103,9 +96,9 @@ async function onMessageReceived(remoteMessage: any) {
     return notifee.displayNotification({
       title: decryptedMessage.title,
       body: decryptedMessage.body,
-      id: 'default',
       ios: {
         sound: 'default',
+        categoryId: remoteMessage.data?.topic,
       },
       android: {
         channelId: 'default',

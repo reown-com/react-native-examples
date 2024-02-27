@@ -9,11 +9,7 @@ export function useInitializeNotifyClient() {
   const {wallet} = useSnapshot(SettingsStore.state);
 
   async function registerAccount() {
-    if (!wallet) {
-      return;
-    }
-
-    if (!notifyClient || !account) {
+    if (!wallet || !notifyClient || !account) {
       return;
     }
 

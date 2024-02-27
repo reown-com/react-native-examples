@@ -18,7 +18,7 @@ export default function useInitializeWeb3Wallet() {
         await createOrRestoreEIP155Wallet();
 
       SettingsStore.setEIP155Address(eip155Addresses[0]);
-      SettingsStore.setWallet(eip155Wallets[0]);
+      SettingsStore.setWallet(eip155Wallets[eip155Addresses[0]]);
       await createWeb3Wallet(relayerRegionURL);
       setInitialized(true);
     } catch (err: unknown) {
