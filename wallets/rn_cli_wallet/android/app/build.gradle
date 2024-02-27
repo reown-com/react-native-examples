@@ -82,6 +82,10 @@ android {
         versionCode 15
         versionName "1.0"
     }
+
+    def secretsProperties = new Properties()
+    secretsProperties.load(new FileInputStream(rootProject.file("secrets.properties")))
+    
     signingConfigs {
         debug {
             storeFile file(secretsProperties['WC_FILENAME_DEBUG'])
