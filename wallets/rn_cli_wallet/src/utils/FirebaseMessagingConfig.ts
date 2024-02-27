@@ -78,6 +78,20 @@ async function onMessageReceived(remoteMessage: any) {
   }
 
   try {
+    if (Platform.OS === 'ios') {
+      const categories = await notifee.getNotificationCategories();
+      if (
+        !categories.find(category => category.id === remoteMessage.data?.topic)
+      ) {
+        await notifee.setNotificationCategories([
+          ...categories,
+          {id: remoteMessage.data?.topic},
+        ]);
+      }
+    }
+  } catch (error) {}
+
+  try {
     const symkey = await getSymKey(remoteMessage.data?.topic);
 
     const decryptedMessage = await decryptMessage({
@@ -92,10 +106,10 @@ async function onMessageReceived(remoteMessage: any) {
       id: 'default',
       ios: {
         sound: 'default',
-        critical: true,
       },
       android: {
         channelId: 'default',
+        groupId: remoteMessage.data?.topic,
         importance: AndroidImportance.HIGH,
         visibility: AndroidVisibility.PUBLIC,
         smallIcon: 'ic_launcher',
