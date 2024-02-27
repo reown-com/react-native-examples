@@ -5,10 +5,10 @@ import {web3wallet} from '@/utils/WalletConnectUtil';
 import {useTheme} from '@/hooks/useTheme';
 import {useNavigation} from '@react-navigation/native';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
+import {LightTheme} from '@/utils/ThemeUtil';
 
 export function GetStartedButton() {
   const navigation = useNavigation();
-  const Theme = useTheme();
   const disabled = !web3wallet;
   const {isRegistered, notifyClient} = useNotifyClientContext();
 
@@ -21,7 +21,7 @@ export function GetStartedButton() {
 
   const initializing = !web3wallet || !notifyClient || !isRegistered;
   const backgroundColor =
-    disabled || initializing ? Theme['bg-300'] : Theme['accent-100'];
+    disabled || initializing ? LightTheme['bg-300'] : LightTheme['accent-100'];
 
   return (
     <TouchableOpacity
