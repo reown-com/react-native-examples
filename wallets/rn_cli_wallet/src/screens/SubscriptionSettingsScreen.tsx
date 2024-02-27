@@ -120,7 +120,7 @@ export default function SubscriptionSettingsScreen() {
           </View>
         </View>
       )}
-      ListFooterComponent={() => (
+      ListFooterComponent={
         <Pressable
           onPress={handleUnsubscribe}
           style={[
@@ -137,7 +137,7 @@ export default function SubscriptionSettingsScreen() {
             <Text style={styles.destructiveButtonText}>Unsubscribe</Text>
           )}
         </Pressable>
-      )}
+      }
     />
   );
 }

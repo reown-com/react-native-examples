@@ -55,7 +55,6 @@ export const NotifyClientProvider: React.FC<{
 
   useEffect(() => {
     if (!notifyClient) {
-      console.log('notify client not initialized');
       return;
     }
 
@@ -78,6 +77,7 @@ export const NotifyClientProvider: React.FC<{
     notifyClient.on('notify_message', ({params, topic}) => {
       const {message} = params;
       const findSubsWithName = subscriptions.find(sub => sub?.topic === topic);
+
       if (findSubsWithName) {
         handleSetNotifications(findSubsWithName.topic, [message]);
       }
@@ -95,6 +95,7 @@ export const NotifyClientProvider: React.FC<{
 
     notifyClient.on('notify_subscriptions_changed', ({params}) => {
       const {subscriptions} = params;
+
       setSubscriptions(subscriptions);
       handleUpdateSymkeys(subscriptions);
     });
@@ -105,7 +106,6 @@ export const NotifyClientProvider: React.FC<{
     if (!notifyClient) return;
 
     if (!account) {
-      Alert.alert('Account not initialized yet');
       return;
     }
 
@@ -124,6 +124,7 @@ export const NotifyClientProvider: React.FC<{
 
     try {
       const notifyClient = await NotifyClient.init({projectId: ENV_PROJECT_ID});
+
       setNotifyClient(notifyClient);
       setInitializing(false);
     } catch (error) {
@@ -137,7 +138,8 @@ export const NotifyClientProvider: React.FC<{
   ) {
     if (!topicId) return;
 
-    let notifsToReturn = {};
+    let newNotificationMap = {};
+
     setNotifications(prevNotifications => {
       const currentNotifications = prevNotifications[topicId] || [];
       const cloned = cloneDeep(currentNotifications);
@@ -154,12 +156,12 @@ export const NotifyClientProvider: React.FC<{
         ...notifications,
         [topicId]: updatedNotifications,
       };
-      notifsToReturn = updated;
+      newNotificationMap = updated;
 
       return updated;
     });
 
-    return notifsToReturn;
+    return newNotificationMap;
   }
 
   async function handleGetRegisterStatus() {

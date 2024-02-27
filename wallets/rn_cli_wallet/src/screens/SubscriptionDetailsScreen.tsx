@@ -74,26 +74,23 @@ export default function SubscriptionDetailsScreen() {
           getNotificationHistory(lastItem);
         }
       }}
-      ListFooterComponent={() => {
-        if (isLoading) {
-          return (
-            <View
-              style={{
-                marginTop: 8,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8,
-              }}>
-              {Array(3)
-                .fill(null)
-                .map((_, index) => {
-                  return <NotificationItemSkeleton key={index} />;
-                })}
-            </View>
-          );
-        }
-        return null;
-      }}
+      ListFooterComponent={
+        isLoading ? (
+          <View
+            style={{
+              marginTop: 8,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+            }}>
+            {Array(3)
+              .fill(null)
+              .map((_, index) => {
+                return <NotificationItemSkeleton key={index} />;
+              })}
+          </View>
+        ) : null
+      }
       renderItem={({item}) => (
         <NotificationItem
           key={item.id}
