@@ -1,0 +1,224 @@
+[
+  {
+    "id": "1fc2dfbb28a7107f5cc61a7beba9300366a4b7b95b79aa1d5a3a959652ca58d9",
+    "name": "Enes Test dApp",
+    "homepage": "https://w3m-dapp.vercel.app",
+    "image_id": "edd74559-e86b-4bde-8fd9-ce42d671a500",
+    "description": "This dApp was created for testing purposes.",
+    "dapp_url": "https://w3m-dapp.vercel.app/",
+    "is_featured": null,
+    "order": null,
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/edd74559-e86b-4bde-8fd9-ce42d671a500?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/edd74559-e86b-4bde-8fd9-ce42d671a500?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/edd74559-e86b-4bde-8fd9-ce42d671a500?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "notificationTypes": [
+      {
+        "id": "32373d19-1fce-4ef6-b918-b147f0f28d3d",
+        "name": "Welcome",
+        "image_id": null,
+        "description": "Welcome notifications"
+      },
+      {
+        "id": "ab137d9e-2836-48a5-aa83-a00afcd67a73",
+        "name": "Updates",
+        "image_id": null,
+        "description": "Get the latest news about Enes."
+      }
+    ],
+    "isVerified": false
+  },
+  {
+    "id": "8b5da5446028a466eef1d6a6c4e1df50d2d9dcf747437d6086c94ed0dc52fce5",
+    "name": "Web3Inbox",
+    "homepage": "https://www.web3inbox.com",
+    "image_id": "43c65584-75be-4f56-2bed-4fd26e060900",
+    "description": "Get notified when new subscriptions are available in-app and be first to hear about upcoming features.",
+    "dapp_url": "https://app.web3inbox.com",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/43c65584-75be-4f56-2bed-4fd26e060900?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/43c65584-75be-4f56-2bed-4fd26e060900?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/43c65584-75be-4f56-2bed-4fd26e060900?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 10
+  },
+  {
+    "id": "15b8521b1744afdca76e84668691f7207ee1d578b49feb7bc1d66382974a1678",
+    "name": "GM Dapp",
+    "homepage": "https://gm.walletconnect.com",
+    "image_id": "ed73e2f2-7837-463b-4026-c62007b1c000",
+    "description": "Get a gm every day",
+    "dapp_url": "https://gm.walletconnect.com",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/ed73e2f2-7837-463b-4026-c62007b1c000?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/ed73e2f2-7837-463b-4026-c62007b1c000?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/ed73e2f2-7837-463b-4026-c62007b1c000?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 30
+  },
+  {
+    "id": "8b8776db997fa129d594cef57c37cb8d96fb12843a685780d6754c3ac0845605",
+    "name": "PancakeSwap",
+    "homepage": "https://pancakeswap.finance",
+    "image_id": "a88292d3-272c-4d72-70e8-e8efdddf2400",
+    "description": "Trade, earn, and own crypto on the all-in-one multichain DEX",
+    "dapp_url": "https://pancakeswap.finance",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/a88292d3-272c-4d72-70e8-e8efdddf2400?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/a88292d3-272c-4d72-70e8-e8efdddf2400?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/a88292d3-272c-4d72-70e8-e8efdddf2400?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 100
+  },
+  {
+    "id": "0d3caec3975ee06f11cefa230da0c5ead806031070391658228580d51d7b20b0",
+    "name": "guild.xyz",
+    "homepage": "https://guild.xyz",
+    "image_id": "1eb18026-866c-4a02-9821-31b8fc209700",
+    "description": "Automated membership management for the platforms your community already uses.",
+    "dapp_url": "https://guild.xyz",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/1eb18026-866c-4a02-9821-31b8fc209700?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/1eb18026-866c-4a02-9821-31b8fc209700?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/1eb18026-866c-4a02-9821-31b8fc209700?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 200
+  },
+  {
+    "id": "dd6126c9c64bebccc3c2270a774ad4e8ebe6a3da9735d091c4a261055d1cc15b",
+    "name": "Snapshot",
+    "homepage": "https://snapshot.org",
+    "image_id": "832d07bc-92c5-415a-fb33-cc2792879400",
+    "description": "Where decisions get made.",
+    "dapp_url": "https://snapshot.org",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/832d07bc-92c5-415a-fb33-cc2792879400?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/832d07bc-92c5-415a-fb33-cc2792879400?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/832d07bc-92c5-415a-fb33-cc2792879400?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 300
+  },
+  {
+    "id": "cee5e117757da503b8e0c9df76178ffd1d7c615245fe25dc18fa48a2cd6e8756",
+    "name": "Robots.Farm",
+    "homepage": "https://robots.farm/",
+    "image_id": "3922cb02-2c21-4b5e-04c8-aa83451b2000",
+    "description": "Robots.Farm is a DEX with sustainable liquidity farming infused with P2E NFT experience.",
+    "dapp_url": "https://robots.farm",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/3922cb02-2c21-4b5e-04c8-aa83451b2000?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/3922cb02-2c21-4b5e-04c8-aa83451b2000?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/3922cb02-2c21-4b5e-04c8-aa83451b2000?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 400
+  },
+  {
+    "id": "f1e1802f9611a0aa7df75cb92f1dcb2e3254d91e14437b9352d7b5baff00445f",
+    "name": "REAL Portal by Sovereign Nature Initiative",
+    "homepage": "https://real.sovereignnature.com/",
+    "image_id": "43e622b7-75ed-4208-b0be-8fc6e9ea7700",
+    "description": "Connecting your NFT to the real world.",
+    "dapp_url": "https://real.sovereignnature.com",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/43e622b7-75ed-4208-b0be-8fc6e9ea7700?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/43e622b7-75ed-4208-b0be-8fc6e9ea7700?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/43e622b7-75ed-4208-b0be-8fc6e9ea7700?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 500
+  },
+  {
+    "id": "60c70295447ae4a6089bd82e14f6f6d6db725fe0e74b8d77fe05b5c2c7cf1ee4",
+    "name": "Peanut Protocol",
+    "homepage": "https://peanut.to",
+    "image_id": "f2c8269f-2d63-4ad9-87b8-a82d2a0fcd00",
+    "description": "Send crypto with a link",
+    "dapp_url": "https://peanut.to",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/f2c8269f-2d63-4ad9-87b8-a82d2a0fcd00?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/f2c8269f-2d63-4ad9-87b8-a82d2a0fcd00?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/f2c8269f-2d63-4ad9-87b8-a82d2a0fcd00?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 600
+  },
+  {
+    "id": "ae96fcff453348bf34de16c9685cec1ed11423af49757985dcbb468a05ea6368",
+    "name": "SPACE ID",
+    "homepage": "https://space.id",
+    "image_id": "34fdfbb8-f024-44ac-c924-77fc509a4200",
+    "description": "One Place for Digital Identities",
+    "dapp_url": "https://space.id",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/34fdfbb8-f024-44ac-c924-77fc509a4200?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/34fdfbb8-f024-44ac-c924-77fc509a4200?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/34fdfbb8-f024-44ac-c924-77fc509a4200?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 700
+  },
+  {
+    "id": "9ce63513d6734dc68f221ffe35d836540d01c8168f1e6c529ce3c699fec1e9ed",
+    "name": "Avive",
+    "homepage": "https://www.avive.world/",
+    "image_id": "123550b3-3197-4d93-99c8-eb1c3d49a400",
+    "description": "Your Metaverse For Sovereign Social Networking",
+    "dapp_url": "https://avive.world/",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/123550b3-3197-4d93-99c8-eb1c3d49a400?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/123550b3-3197-4d93-99c8-eb1c3d49a400?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/123550b3-3197-4d93-99c8-eb1c3d49a400?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 750
+  },
+  {
+    "id": "7c2e36c74e00aecd46431a1fa596ca45191561f1b1c3ff6829b9fbdf608f9d4b",
+    "name": "TrustGO",
+    "homepage": "https://trustgo.trustalabs.ai",
+    "image_id": "2884c12e-3eb2-457c-9a24-a04d78cd7300",
+    "description": "Know Your Account. Track Your Web3 Journey",
+    "dapp_url": "https://trustgo.trustalabs.ai",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/2884c12e-3eb2-457c-9a24-a04d78cd7300?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/2884c12e-3eb2-457c-9a24-a04d78cd7300?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/2884c12e-3eb2-457c-9a24-a04d78cd7300?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 810
+  },
+  {
+    "id": "4eaf3c059f994b12ce885d08264d804054e582a48f2656f4b2438fa2a2c23c00",
+    "name": "Moso",
+    "homepage": "https://moso.xyz/",
+    "image_id": "88b0e1f7-e0f5-4ad6-8c09-76de8338f800",
+    "description": "Shop with Moso and earn crypto back from over 2000 stores.",
+    "dapp_url": "https://moso.xyz/",
+    "image_url": {
+      "sm": "https://explorer-api.walletconnect.com/w3i/v1/logo/sm/88b0e1f7-e0f5-4ad6-8c09-76de8338f800?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "md": "https://explorer-api.walletconnect.com/w3i/v1/logo/md/88b0e1f7-e0f5-4ad6-8c09-76de8338f800?projectId=7cb67f700b96a290fb5bb73d9001d489",
+      "lg": "https://explorer-api.walletconnect.com/w3i/v1/logo/lg/88b0e1f7-e0f5-4ad6-8c09-76de8338f800?projectId=7cb67f700b96a290fb5bb73d9001d489"
+    },
+    "is_verified": true,
+    "is_featured": true,
+    "order": 910
+  }
+]
