@@ -34,7 +34,6 @@ export const NotifyClientProvider: React.FC<{
     _subscriptions.map(async ({topic, symKey}) => {
       const symkey = `${SYM_KEY_PREFIX}${topic}`;
       const existingSymKey = await AsyncStorage.getItem(symkey);
-      console.log('>>> write symkey');
 
       if (!existingSymKey) {
         await AsyncStorage.setItem(symkey, symKey);
@@ -64,7 +63,6 @@ export const NotifyClientProvider: React.FC<{
     handleUpdateSymkeys(notifyClient.subscriptions.getAll());
 
     notifyClient.on('notify_subscription', async ({params}) => {
-      console.log('>>> notify_subscription');
       const {error} = params;
 
       if (error) {
@@ -97,7 +95,6 @@ export const NotifyClientProvider: React.FC<{
     });
 
     notifyClient.on('notify_subscriptions_changed', ({params}) => {
-      console.log('>>> notify_subscriptions_changed');
       const {subscriptions} = params;
       setSubscriptions(subscriptions);
       handleUpdateSymkeys(subscriptions);
@@ -124,7 +121,6 @@ export const NotifyClientProvider: React.FC<{
   }
 
   async function handleInitializeNotifyClient() {
-    console.log('>>>initialize notify client');
     setInitializing(true);
 
     try {
