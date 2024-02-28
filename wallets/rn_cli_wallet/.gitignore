@@ -74,3 +74,6 @@ sentry.properties
 
 # ASDF
 .tool-versions
+
+# Secrets
+secrets.properties
