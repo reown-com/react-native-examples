@@ -63,9 +63,6 @@ PODS:
     - hermes-engine/Pre-built (= 0.73.3)
   - hermes-engine/Pre-built (0.73.3)
   - libevent (2.1.12)
-  - MMKV (1.3.3):
-    - MMKVCore (~> 1.3.3)
-  - MMKVCore (1.3.3)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
     - nanopb/encode (= 2.30909.1)
@@ -950,9 +947,6 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.9.0):
     - React-Core
-  - react-native-mmkv (2.6.3):
-    - MMKV (>= 1.2.13)
-    - React-Core
   - react-native-netinfo (9.4.1):
     - React-Core
   - react-native-quick-base64 (2.0.8):
@@ -1137,6 +1131,8 @@ PODS:
     - React-jsi (= 0.73.3)
     - React-logger (= 0.73.3)
     - React-perflogger (= 0.73.3)
+  - RNBootSplash (5.4.1):
+    - React-Core
   - RNCAsyncStorage (1.19.3):
     - React-Core
   - RNCClipboard (1.12.1):
@@ -1208,7 +1204,6 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
-  - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-quick-base64 (from `../node_modules/react-native-quick-base64`)
   - react-native-quick-crypto (from `../node_modules/react-native-quick-crypto`)
@@ -1234,6 +1229,7 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
@@ -1258,8 +1254,6 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleUtilities
     - libevent
-    - MMKV
-    - MMKVCore
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
@@ -1327,8 +1321,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@walletconnect/react-native-compat"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
-  react-native-mmkv:
-    :path: "../node_modules/react-native-mmkv"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-quick-base64:
@@ -1379,6 +1371,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNBootSplash:
+    :path: "../node_modules/react-native-bootsplash"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCClipboard:
@@ -1419,8 +1413,6 @@ SPEC CHECKSUMS:
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
   hermes-engine: 5420539d016f368cd27e008f65f777abd6098c56
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  MMKV: f902fb6719da13c2ab0965233d8963a59416f911
-  MMKVCore: d26e4d3edd5cb8588c2569222cbd8be4231374e9
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   OpenSSL-Universal: 6e1ae0555546e604dbc632a2b9a24a9c46c41ef6
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
@@ -1447,7 +1439,6 @@ SPEC CHECKSUMS:
   React-Mapbuffer: ac7eff7bcdb1716d18eb7b305ee8c43a9a1ed7c8
   react-native-compat: 87ef69da9c7379f493a89bd9089ddc7d17c358e6
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
-  react-native-mmkv: 2e5bf67513cc8deed86fcffe87e12b8cc250dfab
   react-native-netinfo: fefd4e98d75cbdd6e85fc530f7111a8afdf2b0c5
   react-native-quick-base64: 777057ea4286f806b00259ede65dc79c7c706320
   react-native-quick-crypto: 455c1b411db006dba1026a30681ececb19180187
@@ -1473,6 +1464,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 06b3f2e3b3b6e9deb1fc63b543c7fd34177dbb07
   React-utils: 2d25ca0a6e635c095bc5e67ac1202c7939ec4af3
   ReactCommon: 8564d71cf76b1715740cb8bdc5b382d1ddd12dd1
+  RNBootSplash: eff8239c4f795ce42a0604873aef3733aac0dedd
   RNCAsyncStorage: c913ede1fa163a71cea118ed4670bbaaa4b511bb
   RNCClipboard: d77213bfa269013bf4b857b7a9ca37ee062d8ef1
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
@@ -1490,4 +1482,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 256e5fbc2cc4b7588e424d10210e83148ca3369d
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3
