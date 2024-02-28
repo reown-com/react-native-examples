@@ -8,7 +8,8 @@ import {useAccount} from 'wagmi';
 import useColors from '@/hooks/useColors';
 
 export default function SubscriptionsScreen() {
-  const {subscriptions, fetchSubscriptions} = useNotifyClientContext();
+  const {subscriptions, isRegistered, fetchSubscriptions} =
+    useNotifyClientContext();
   const [refreshing, setRefreshing] = React.useState(false);
   const {address} = useAccount();
   const {navigate} = useNavigation();
@@ -20,7 +21,7 @@ export default function SubscriptionsScreen() {
     setRefreshing(false);
   }
 
-  if (!address) {
+  if (!address || !isRegistered) {
     return <SubscriptionsConnectOverlay />;
   }
 
@@ -30,7 +31,7 @@ export default function SubscriptionsScreen() {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
-      data={address ? subscriptions : []}
+      data={subscriptions}
       ItemSeparatorComponent={() => (
         <View
           style={{

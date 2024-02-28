@@ -58,6 +58,7 @@ export type NotificationsState = {
 interface NotifyClientContextValue {
   account: string | undefined;
   initializing: boolean;
+  isRegistered: boolean;
   notifyClient: NotifyClient | undefined;
   subscriptions: Array<NotifySubscription>;
   notifications: NotificationsState;
@@ -75,9 +76,10 @@ interface NotifyClientContextValue {
 const NotifyClientContext = createContext<NotifyClientContextValue>({
   account: undefined,
   initializing: false,
+  isRegistered: false,
   notifyClient: undefined,
   subscriptions: [],
-  notifications: [],
+  notifications: {},
   setInitializing: () => {},
   fetchSubscriptions: async () => {},
   setNotifications: () => {},

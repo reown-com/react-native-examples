@@ -15,6 +15,7 @@ export const NotifyClientProvider: React.FC<{
 }> = ({children}) => {
   const {address} = useAccount();
 
+  const [isRegistered, setIsRegistered] = useState(false);
   const [initializing, setInitializing] = React.useState(false);
   const [notifyClient, setNotifyClient] = React.useState<
     NotifyClient | undefined
@@ -148,12 +149,27 @@ export const NotifyClientProvider: React.FC<{
     return notifsToReturn;
   }
 
+  async function handleGetRegisterStatus() {
+    if (!notifyClient || !account) {
+      return;
+    }
+
+    const isRegistered = notifyClient?.isRegistered({
+      account,
+      domain: '',
+      allApps: true,
+    });
+
+    setIsRegistered(isRegistered);
+  }
+
   React.useEffect(() => {
     if (!notifyClient || !account) {
       return;
     }
 
     getActiveSubscriptions();
+    handleGetRegisterStatus();
   }, [notifyClient]);
 
   React.useEffect(() => {
@@ -168,6 +184,7 @@ export const NotifyClientProvider: React.FC<{
       value={{
         account,
         initializing,
+        isRegistered,
         notifyClient,
         subscriptions,
         notifications,
