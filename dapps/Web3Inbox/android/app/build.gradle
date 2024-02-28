@@ -85,7 +85,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.walletconnect.web3inbox"
+    namespace "com.walletconnect.web3inbox.lab"
     defaultConfig {
         applicationId "com.walletconnect.web3inbox"
         minSdkVersion rootProject.ext.minSdkVersion
