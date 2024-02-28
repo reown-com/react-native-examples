@@ -1,6 +1,5 @@
 import '@walletconnect/react-native-compat';
-import React, {useEffect} from 'react';
-import {Linking, StatusBar, useColorScheme} from 'react-native';
+import {StatusBar, useColorScheme} from 'react-native';
 import {
   createWeb3Modal,
   defaultWagmiConfig,
@@ -26,11 +25,9 @@ import {
   aurora,
 } from 'wagmi/chains';
 import {ENV_PROJECT_ID, ENV_SENTRY_DSN} from '@env';
-import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {NavigationContainer} from '@react-navigation/native';
 import {NotifyClientProvider} from './provider/NotifyClientProvider';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import messaging from '@react-native-firebase/messaging';
 
 import TabNavigator from './navigation/TabNavigator';
 
@@ -40,10 +37,8 @@ if (!__DEV__ && ENV_SENTRY_DSN) {
   });
 }
 
-// 1. Get projectId
 const projectId = ENV_PROJECT_ID;
 
-// 2. Create config
 const metadata = {
   name: 'Web3Inbox',
   description: 'Web3Inbox mobile app with React Native',
@@ -81,28 +76,18 @@ const wagmiConfig = defaultWagmiConfig({
   metadata,
 });
 
-// 3. Create modal
 createWeb3Modal({
   projectId,
   chains,
   wagmiConfig,
   clipboardClient,
+  excludeWalletIds: [
+    'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa', // Hide coinbase until their SDK is implemented
+  ],
 });
 
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-
-  // 4. Handle deeplinks for Coinbase SDK
-  useEffect(() => {
-    const sub = Linking.addEventListener('url', ({url}) => {
-      const handledBySdk = handleResponse(new URL(url));
-      if (!handledBySdk) {
-        // Handle other deeplinks
-      }
-    });
-
-    return () => sub.remove();
-  }, []);
 
   return (
     <NavigationContainer>

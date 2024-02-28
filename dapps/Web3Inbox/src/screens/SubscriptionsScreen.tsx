@@ -1,16 +1,17 @@
-import * as React from 'react';
+import {useEffect, useState} from 'react';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {FlatList, RefreshControl, View} from 'react-native';
+import BootSplash from 'react-native-bootsplash';
+import {useAccount} from 'wagmi';
 import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import SubscriptionItem from '../components/SubscriptionItem';
 import SubscriptionsConnectOverlay from '../components/SubscriptionsConnectOverlay';
-import {useAccount} from 'wagmi';
 import useColors from '@/hooks/useColors';
 
 export default function SubscriptionsScreen() {
   const {subscriptions, isRegistered, fetchSubscriptions} =
     useNotifyClientContext();
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const {address} = useAccount();
   const {navigate} = useNavigation();
   const colors = useColors();
@@ -21,9 +22,18 @@ export default function SubscriptionsScreen() {
     setRefreshing(false);
   }
 
+  useEffect(() => {
+    // hide after init
+    BootSplash.hide({fade: true});
+  }, []);
+
   if (!address || !isRegistered) {
     return <SubscriptionsConnectOverlay />;
   }
+
+  const renderDivider = () => (
+    <View style={[styles.divider, {backgroundColor: colors.border}]} />
+  );
 
   return (
     <FlatList
@@ -32,15 +42,7 @@ export default function SubscriptionsScreen() {
         <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
       }
       data={subscriptions}
-      ItemSeparatorComponent={() => (
-        <View
-          style={{
-            height: 1,
-            width: '100%',
-            backgroundColor: colors.border,
-          }}
-        />
-      )}
+      ItemSeparatorComponent={renderDivider}
       renderItem={({item}) => (
         <SubscriptionItem
           key={item?.topic}
@@ -58,3 +60,10 @@ export default function SubscriptionsScreen() {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  divider: {
+    height: 1,
+    width: '100%',
+  },
+});
