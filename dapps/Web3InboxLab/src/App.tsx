@@ -45,7 +45,7 @@ const projectId = ENV_PROJECT_ID;
 
 // 2. Create config
 const metadata = {
-  name: 'Web3Inbox Lab',
+  name: 'Web3Inbox',
   description: 'Web3Inbox mobile app with React Native',
   url: 'https://lab.web3inbox.com',
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
