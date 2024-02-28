@@ -50,7 +50,7 @@ const metadata = {
   url: 'https://lab.web3inbox.com',
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
   redirect: {
-    native: 'web3inboxLab://',
+    native: 'web3inbox://',
   },
 };
 
