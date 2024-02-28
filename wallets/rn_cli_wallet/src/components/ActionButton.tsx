@@ -7,7 +7,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import {useTheme} from '../hooks/useTheme';
+import {useTheme} from '@/hooks/useTheme';
 
 export interface ActionButtonProps {
   onPress: () => void;

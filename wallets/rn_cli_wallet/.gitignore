@@ -21,6 +21,7 @@ DerivedData
 *.ipa
 *.xcuserstate
 ios/.xcode.env.local
+ios/GoogleService-Info.plist
 
 # Android/IntelliJ
 #
@@ -33,6 +34,7 @@ local.properties
 .cxx/
 *.keystore
 !debug.keystore
+android/app/google-services.json
 
 # node.js
 #
@@ -72,3 +74,6 @@ sentry.properties
 
 # ASDF
 .tool-versions
+
+# Secrets
+secrets.properties

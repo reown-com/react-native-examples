@@ -4,13 +4,13 @@ import {View, StyleSheet} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
 import {Methods} from '../components/Modal/Methods';
 import {Message} from '../components/Modal/Message';
-import {getSignParamsMessage} from '../utils/HelperUtil';
+import {getSignParamsMessage} from '@/utils/HelperUtil';
 import {
   approveEIP155Request,
   rejectEIP155Request,
-} from '../utils/EIP155RequestHandlerUtil';
-import {web3wallet} from '../utils/WalletConnectUtil';
-import {handleDeepLinkRedirect} from '../utils/LinkingUtils';
+} from '@/utils/EIP155RequestHandlerUtil';
+import {web3wallet} from '@/utils/WalletConnectUtil';
+import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
 import ModalStore from '../store/ModalStore';
 import {useSnapshot} from 'valtio';
 import Text from '../components/Text';

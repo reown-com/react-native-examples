@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Verify, SessionTypes} from '@walletconnect/types';
 import {proxy} from 'valtio';
 
+import EIP155Lib from '../lib/EIP155Lib';
+
 /**
  * Types
  */
@@ -13,6 +15,7 @@ interface State {
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
   sessions: SessionTypes.Struct[];
+  wallet: EIP155Lib | null;
 }
 
 /**
@@ -25,6 +28,7 @@ const state = proxy<State>({
   eip155Address: '',
   relayerRegionURL: '',
   sessions: [],
+  wallet: null,
 });
 
 /**
@@ -41,6 +45,10 @@ const SettingsStore = {
     state.eip155Address = eip155Address;
   },
 
+  setWallet(wallet: EIP155Lib) {
+    state.wallet = wallet;
+  },
+
   setActiveChainId(value: string) {
     state.activeChainId = value;
   },
@@ -48,6 +56,7 @@ const SettingsStore = {
   setCurrentRequestVerifyContext(context: Verify.Context) {
     state.currentRequestVerifyContext = context;
   },
+
   setSessions(sessions: SessionTypes.Struct[]) {
     state.sessions = sessions;
   },

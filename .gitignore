@@ -2,5 +2,5 @@
 .DS_Store
 wallets/.DS_Store
 **/node_modules
-
-vendor
+vendor/
+secrets.properties

@@ -1,15 +1,16 @@
 import React from 'react';
 import {TouchableOpacity, StyleSheet, Text} from 'react-native';
 
-import {web3wallet} from '../utils/WalletConnectUtil';
-import {useTheme} from '../hooks/useTheme';
+import {web3wallet} from '@/utils/WalletConnectUtil';
+import {useTheme} from '@/hooks/useTheme';
 import {useNavigation} from '@react-navigation/native';
+import useNotifyClientContext from '@/hooks/useNotifyClientContext';
+import {LightTheme} from '@/utils/ThemeUtil';
 
 export function GetStartedButton() {
   const navigation = useNavigation();
-  const Theme = useTheme();
   const disabled = !web3wallet;
-  const backgroundColor = disabled ? Theme['bg-250'] : Theme['accent-100'];
+  const {isRegistered, notifyClient} = useNotifyClientContext();
 
   const onPress = () => {
     navigation.reset({
@@ -18,14 +19,18 @@ export function GetStartedButton() {
     });
   };
 
+  const initializing = !web3wallet || !notifyClient || !isRegistered;
+  const backgroundColor =
+    disabled || initializing ? LightTheme['bg-300'] : LightTheme['accent-100'];
+
   return (
     <TouchableOpacity
       hitSlop={{top: 30, bottom: 30, left: 30, right: 30}}
       onPress={onPress}
       style={[styles.container, {backgroundColor}]}
-      disabled={disabled}>
-      <Text style={!web3wallet ? styles.disabledText : styles.mainText}>
-        {!web3wallet ? 'Initializing...' : 'Get Started'}
+      disabled={disabled || initializing}>
+      <Text style={initializing ? styles.disabledText : styles.mainText}>
+        {initializing ? 'Initializing...' : 'Get Started'}
       </Text>
     </TouchableOpacity>
   );
@@ -34,7 +39,6 @@ export function GetStartedButton() {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 48,
-
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,

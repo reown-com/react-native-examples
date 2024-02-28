@@ -8,14 +8,14 @@ import {useSnapshot} from 'valtio';
 import ModalStore from '../store/ModalStore';
 import {SignClientTypes} from '@walletconnect/types';
 import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '../data/EIP155Data';
-import {eip155Addresses} from '../utils/EIP155WalletUtil';
+import {eip155Addresses} from '@/utils/EIP155WalletUtil';
 import {buildApprovedNamespaces, getSdkError} from '@walletconnect/utils';
-import {web3wallet} from '../utils/WalletConnectUtil';
+import {web3wallet} from '@/utils/WalletConnectUtil';
 import SettingsStore from '../store/SettingsStore';
 import {getChainData} from '../data/chainsUtil';
-import {handleDeepLinkRedirect} from '../utils/LinkingUtils';
+import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
 import {RequestModal} from './RequestModal';
-import {useTheme} from '../hooks/useTheme';
+import {useTheme} from '@/hooks/useTheme';
 import {Chains} from '../components/Modal/Chains';
 
 export default function SessionProposalModal() {
@@ -52,7 +52,6 @@ export default function SessionProposalModal() {
       },
     };
   }, []);
-  console.log('supportedNamespaces', supportedNamespaces, eip155Addresses);
 
   const requestedChains = useMemo(() => {
     if (!proposal) {
@@ -90,33 +89,6 @@ export default function SessionProposalModal() {
       .filter(chain => chain !== undefined);
     return chains;
   }, [requestedChains]);
-
-  // get required chains that are not supported by the wallet
-  const notSupportedChains = useMemo(() => {
-    if (!proposal) {
-      return [];
-    }
-    const required = [];
-    for (const [key, values] of Object.entries(
-      proposal.params.requiredNamespaces,
-    )) {
-      const chains = key.includes(':') ? key : values.chains;
-      required.push(chains);
-    }
-    return required
-      .flat()
-      .filter(
-        chain =>
-          !supportedChains
-            .map(
-              supportedChain =>
-                `${supportedChain?.namespace}:${supportedChain?.chainId}`,
-            )
-            .includes(chain!),
-      );
-  }, [proposal, supportedChains]);
-
-  console.log('notSupportedChains', notSupportedChains);
 
   // Hanlde approve action, construct session namespace
   const onApprove = useCallback(async () => {

@@ -1,9 +1,9 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {getSdkError} from '@walletconnect/utils';
-import {web3wallet} from '../utils/WalletConnectUtil';
+import {web3wallet} from '@/utils/WalletConnectUtil';
 import {ModalHeader} from '../components/Modal/ModalHeader';
-import {useTheme} from '../hooks/useTheme';
+import {useTheme} from '@/hooks/useTheme';
 import {ActionButton} from '../components/ActionButton';
 import {useNavigation} from '@react-navigation/native';
 import {Methods} from '../components/Modal/Methods';
@@ -106,11 +106,10 @@ export default function SessionDetailView({route}: {route: any}) {
   return (
     <ScrollView
       bounces={false}
-      style={styles.container}
+      style={[styles.container, {backgroundColor: Theme['bg-100']}]}
       contentContainerStyle={styles.contentContainer}>
       <ModalHeader metadata={session?.peer.metadata} />
       <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
-
       {namespaces &&
         Object.keys(namespaces).map(chain => {
           return (
@@ -134,15 +133,16 @@ export default function SessionDetailView({route}: {route: any}) {
             </View>
           );
         })}
-
       <View style={styles.datesContainer}>
-        <Text style={styles.dateText}>Expiry</Text>
+        <Text style={[styles.dateText, {color: Theme['fg-100']}]}>Expiry</Text>
         <Text style={{color: Theme['fg-175']}}>
           {expiryDate.toDateString()} - {expiryDate.toLocaleTimeString()}
         </Text>
       </View>
       <View style={styles.datesContainer}>
-        <Text style={styles.dateText}>Last updated</Text>
+        <Text style={[styles.dateText, {color: Theme['fg-100']}]}>
+          Last updated
+        </Text>
         <Text style={{color: Theme['fg-175']}}>
           {updated.toDateString()} - {updated.toLocaleTimeString()}
         </Text>
@@ -181,7 +181,6 @@ export default function SessionDetailView({route}: {route: any}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
   },
   contentContainer: {
     padding: 16,

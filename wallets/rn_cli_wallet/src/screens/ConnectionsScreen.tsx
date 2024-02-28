@@ -1,25 +1,21 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {View, StyleSheet, Linking} from 'react-native';
+import {Linking} from 'react-native';
 
-import {web3wallet} from '../utils/WalletConnectUtil';
+import {web3wallet} from '@/utils/WalletConnectUtil';
 
 import Sessions from '../components/HomeScreen/Sessions';
 import ActionButtons from '../components/HomeScreen/ActionButtons';
 
-import CustomText from '../components/Text';
 import {CopyURIDialog} from '../components/CopyURIDialog';
-import Modal from '../components/Modal';
-import {useInitialURL} from '../hooks/useInitialUrl';
 import {HomeTabScreenProps} from '../utils/TypesUtil';
 import ModalStore from '../store/ModalStore';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useInitialURL} from '@/hooks/useInitialUrl';
 
-type Props = HomeTabScreenProps<'Connections'>;
+type Props = HomeTabScreenProps<'ConnectionsStack'>;
 
-export default function ConnectionsView({route}: Props) {
+export default function ConnectionsScreen({route}: Props) {
   const {url: initialUrl, processing} = useInitialURL();
   const [copyDialogVisible, setCopyDialogVisible] = useState(false);
-  const insets = useSafeAreaInsets();
 
   const onDialogConnect = (uri: string) => {
     setCopyDialogVisible(false);
@@ -70,30 +66,14 @@ export default function ConnectionsView({route}: Props) {
   }, [route.params?.uri]);
 
   return (
-    <View style={[styles.container, {paddingTop: insets.top}]}>
+    <>
+      <Sessions />
       <CopyURIDialog
         onConnect={onDialogConnect}
         onCancel={onDialogCancel}
         visible={copyDialogVisible}
       />
-      <CustomText>Connections</CustomText>
-      <View style={styles.mainScreenContainer}>
-        <Sessions />
-        <ActionButtons setCopyDialog={setCopyDialogVisible} />
-      </View>
-      <Modal />
-    </View>
+      <ActionButtons setCopyDialog={setCopyDialogVisible} />
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: 'white',
-  },
-  mainScreenContainer: {
-    paddingHorizontal: 16,
-    flex: 1,
-  },
-});

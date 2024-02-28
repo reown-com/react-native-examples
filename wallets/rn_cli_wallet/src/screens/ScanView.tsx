@@ -1,12 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Platform,
-  StatusBar,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Text,
-} from 'react-native';
+import {Platform, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
 
 import {
   Camera,
@@ -33,9 +26,8 @@ export function ScanView() {
 
   const onCodeScanned = (codes: Code[]) => {
     const uri = codes[0].value;
-    navigation.navigate('Home', {
-      screen: 'Connections',
-      params: {uri},
+    navigation.navigate('ConnectionsScreen', {
+      uri,
     });
   };
 
@@ -62,7 +54,6 @@ export function ScanView() {
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
-      <StatusBar barStyle={'light-content'} translucent={false} />
       <TouchableOpacity onPress={goBack} style={styles.backButton} hitSlop={40}>
         <SvgChevronRight
           fill="white"

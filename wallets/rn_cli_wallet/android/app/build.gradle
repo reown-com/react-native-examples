@@ -2,6 +2,7 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
+apply plugin: "com.google.gms.google-services"
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -78,27 +79,49 @@ android {
         applicationId "com.walletconnect.web3wallet.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
+        versionCode 15
         versionName "1.0"
     }
+
+    def secretsProperties = new Properties()
+    secretsProperties.load(new FileInputStream(rootProject.file("secrets.properties")))
+    
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file(secretsProperties['WC_FILENAME_DEBUG'])
+            storePassword secretsProperties['WC_STORE_PASSWORD_DEBUG']
+            keyAlias secretsProperties['WC_KEYSTORE_ALIAS_DEBUG']
+            keyPassword secretsProperties['WC_KEY_PASSWORD_DEBUG']
+        }
+        internal {
+            storeFile file(secretsProperties['WC_FILENAME_INTERNAL'])
+            storePassword secretsProperties['WC_STORE_PASSWORD_INTERNAL']
+            keyAlias secretsProperties['WC_KEYSTORE_ALIAS']
+            keyPassword secretsProperties['WC_KEY_PASSWORD_INTERNAL']
+        }
+        upload {
+            storeFile file(secretsProperties['WC_FILENAME_UPLOAD'])
+            storePassword secretsProperties['WC_STORE_PASSWORD_UPLOAD']
+            keyAlias secretsProperties['WC_KEYSTORE_ALIAS']
+            keyPassword secretsProperties['WC_KEY_PASSWORD_UPLOAD']
         }
     }
     buildTypes {
+        internal {
+            applicationIdSuffix ".internal"
+            versionNameSuffix "-internal"
+            signingConfig signingConfigs.internal
+            matchingFallbacks = ['release']
+        }
         debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.upload
         }
     }
     packagingOptions {
@@ -111,6 +134,9 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation("com.facebook.react:flipper-integration")
+
+    // Import the Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:32.7.1')
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

@@ -6,7 +6,7 @@ import {createWeb3Wallet, web3wallet} from '../utils/WalletConnectUtil';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useSnapshot} from 'valtio';
 
-export default function useInitialization() {
+export default function useInitializeWeb3Wallet() {
   const [initialized, setInitialized] = useState(false);
   const prevRelayerURLValue = useRef<string>('');
 
@@ -14,9 +14,11 @@ export default function useInitialization() {
 
   const onInitialize = useCallback(async () => {
     try {
-      const {eip155Addresses} = await createOrRestoreEIP155Wallet();
+      const {eip155Addresses, eip155Wallets} =
+        await createOrRestoreEIP155Wallet();
 
       SettingsStore.setEIP155Address(eip155Addresses[0]);
+      SettingsStore.setWallet(eip155Wallets[eip155Addresses[0]]);
       await createWeb3Wallet(relayerRegionURL);
       setInitialized(true);
     } catch (err: unknown) {

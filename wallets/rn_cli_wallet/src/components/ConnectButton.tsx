@@ -6,7 +6,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import {useTheme} from '../hooks/useTheme';
+import {useTheme} from '@/hooks/useTheme';
 
 interface IConnectButtonProps {
   onPress: () => void;
