@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface Web3InboxLabTests : XCTestCase
+@interface Web3InboxTests : XCTestCase
 
 @end
 
-@implementation Web3InboxLabTests
+@implementation Web3InboxTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {

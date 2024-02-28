@@ -26,7 +26,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'Web3InboxLab' do
+target 'Web3Inbox' do
   config = use_native_modules!
 
   # https://rnfirebase.io/
@@ -44,7 +44,7 @@ target 'Web3InboxLab' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'Web3InboxLabTests' do
+  target 'Web3InboxTests' do
     inherit! :complete
     # Pods for testing
   end

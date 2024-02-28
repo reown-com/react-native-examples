@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "Web3InboxLab.app"
-               BlueprintName = "Web3InboxLab"
-               ReferencedContainer = "container:Web3InboxLab.xcodeproj">
+               BuildableName = "Web3Inbox.app"
+               BlueprintName = "Web3Inbox"
+               ReferencedContainer = "container:Web3Inbox.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "Web3InboxLabTests.xctest"
-               BlueprintName = "Web3InboxLabTests"
-               ReferencedContainer = "container:Web3InboxLab.xcodeproj">
+               BuildableName = "Web3InboxTests.xctest"
+               BlueprintName = "Web3InboxTests"
+               ReferencedContainer = "container:Web3Inbox.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "Web3InboxLab.app"
-            BlueprintName = "Web3InboxLab"
-            ReferencedContainer = "container:Web3InboxLab.xcodeproj">
+            BuildableName = "Web3Inbox.app"
+            BlueprintName = "Web3Inbox"
+            ReferencedContainer = "container:Web3Inbox.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "Web3InboxLab.app"
-            BlueprintName = "Web3InboxLab"
-            ReferencedContainer = "container:Web3InboxLab.xcodeproj">
+            BuildableName = "Web3Inbox.app"
+            BlueprintName = "Web3Inbox"
+            ReferencedContainer = "container:Web3Inbox.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
