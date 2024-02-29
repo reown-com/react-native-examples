@@ -32,7 +32,6 @@ local.properties
 *.hprof
 .cxx/
 *.keystore
-!debug.keystore
 
 # node.js
 #
@@ -69,7 +68,9 @@ yarn-error.log
 sentry.properties
 
 # Others
-.env
+.env*
+!.env.example
+secrets.properties
 
 # Expo
 .expo
