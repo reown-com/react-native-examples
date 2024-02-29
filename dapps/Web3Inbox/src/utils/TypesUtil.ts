@@ -1,7 +1,11 @@
+import {NavigatorScreenParams} from '@react-navigation/native';
+
 export type ThemeKeys =
   | 'accent-100'
+  | 'accent-010'
   | 'accent-glass-090'
   | 'accent-glass-080'
+  | 'accent-glass-050'
   | 'accent-glass-020'
   | 'accent-glass-015'
   | 'accent-glass-010'
@@ -39,3 +43,82 @@ export type ThemeKeys =
   | 'gray-glass-060'
   | 'gray-glass-080'
   | 'gray-glass-090';
+
+export type SpacingType =
+  | '0'
+  | '4xs'
+  | '3xs'
+  | '2xs'
+  | 'xs'
+  | 's'
+  | 'm'
+  | 'l'
+  | 'xl'
+  | '2xl'
+  | '3xl'
+  | '4xl';
+
+export type TextType =
+  | 'medium-title-400'
+  | 'medium-title-500'
+  | 'medium-title-600'
+  | 'small-title-400'
+  | 'small-title-500'
+  | 'small-title-600'
+  | 'large-400'
+  | 'large-500'
+  | 'large-600'
+  | 'medium-400'
+  | 'medium-500'
+  | 'medium-600'
+  | 'paragraph-400'
+  | 'paragraph-500'
+  | 'paragraph-600'
+  | 'small-400'
+  | 'small-500'
+  | 'small-600'
+  | 'tiny-400'
+  | 'tiny-500'
+  | 'tiny-600'
+  | 'micro-600'
+  | 'micro-700';
+
+export type ColorType =
+  | 'accent-100'
+  | 'error-100'
+  | 'fg-100'
+  | 'fg-150'
+  | 'fg-200'
+  | 'fg-250'
+  | 'fg-275'
+  | 'fg-300'
+  | 'inverse-000'
+  | 'inverse-100'
+  | 'success-100';
+
+// Navigation
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
+
+export type RootStackParamList = {
+  Connect: undefined;
+  Home: NavigatorScreenParams<HomeTabParamList>; // Nested Navigator
+};
+
+export type HomeTabParamList = {
+  SubscriptionsStack: NavigatorScreenParams<SubscriptionsStackParamList>;
+  DiscoverStack: NavigatorScreenParams<DiscoverStackParamList>;
+};
+
+export type DiscoverStackParamList = {
+  DiscoverScreen: undefined;
+};
+
+export type SubscriptionsStackParamList = {
+  SubscriptionsScreen: {topic?: string};
+  SubscriptionDetailsScreen: {topic: string; name: string};
+  SubscriptionSettingsScreen: {topic: string; name: string};
+};

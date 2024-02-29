@@ -1,29 +1,11 @@
-import {ThemeKeys} from './TypesUtil';
-
-// Current theming values. These should be could be replaced with the ones below.
-export const Themes = {
-  light: {
-    primary: '#262626',
-    secondary: '#525252',
-    background: '#f5f5f5',
-    backgroundSecondary: '#d4d4d4',
-    backgroundActive: '#e5e5e5',
-    border: '#e5e5e5',
-  },
-  dark: {
-    primary: '#fafafa',
-    secondary: '#a3a3a3',
-    background: '#171717',
-    backgroundSecondary: '#262626',
-    backgroundActive: '#0f0f0f',
-    border: '#404040',
-  },
-};
+import {SpacingType, ThemeKeys} from './TypesUtil';
 
 export const LightTheme: {[key in ThemeKeys]: string} = {
   'accent-100': '#089C96',
+  'accent-010': '#E5F5F4',
   'accent-glass-090': 'rgba(8, 156, 150, 0.9)',
   'accent-glass-080': 'rgba(8, 156, 150, 0.8)',
+  'accent-glass-050': 'rgba(8, 156, 150, 0.5)',
   'accent-glass-020': 'rgba(8, 156, 150, 0.2)',
   'accent-glass-015': 'rgba(8, 156, 150, 0.15)',
   'accent-glass-010': 'rgba(8, 156, 150, 0.1)',
@@ -71,8 +53,10 @@ export const LightTheme: {[key in ThemeKeys]: string} = {
 // TODO: Add dark colors
 export const DarkTheme: {[key in ThemeKeys]: string} = {
   'accent-100': '#089C96',
+  'accent-010': '#E5F5F4',
   'accent-glass-090': 'rgba(8, 156, 150, 0.9)',
   'accent-glass-080': 'rgba(8, 156, 150, 0.8)',
+  'accent-glass-050': 'rgba(8, 156, 150, 0.5)',
   'accent-glass-020': 'rgba(8, 156, 150, 0.2)',
   'accent-glass-015': 'rgba(8, 156, 150, 0.15)',
   'accent-glass-010': 'rgba(8, 156, 150, 0.1)',
@@ -115,4 +99,31 @@ export const DarkTheme: {[key in ThemeKeys]: string} = {
   'gray-glass-060': 'rgba(0, 0, 0, 0.6)',
   'gray-glass-080': 'rgba(0, 0, 0, 0.8)',
   'gray-glass-090': 'rgba(0, 0, 0, 0.9)',
+};
+
+export const BorderRadius = {
+  '5xs': 4,
+  '4xs': 6,
+  '3xs': 8,
+  xxs: 12,
+  xs: 16,
+  s: 20,
+  m: 28,
+  l: 36,
+  '3xl': 80,
+};
+
+export const Spacing: {[K in SpacingType]: number} = {
+  '0': 0,
+  '4xs': 2,
+  '3xs': 4,
+  '2xs': 6,
+  xs: 8,
+  s: 12,
+  m: 14,
+  l: 16,
+  xl: 20,
+  '2xl': 24,
+  '3xl': 32,
+  '4xl': 40,
 };

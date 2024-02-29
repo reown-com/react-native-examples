@@ -6,8 +6,9 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import DiscoverStack from './DiscoverStack';
 import SubscriptionsStack from './SubscriptionsStack';
 import useColors from '@/hooks/useColors';
+import {HomeTabParamList} from '@/utils/TypesUtil';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<HomeTabParamList>();
 
 const BellIcon = ({color}: {color: string}) => (
   <BellIconSVG height={15} width={15} fill={color} />
@@ -18,23 +19,23 @@ const CompassIcon = ({color}: {color: string}) => (
 );
 
 export default function TabNavigator() {
-  const colors = useColors();
+  const Theme = useColors();
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colors.background,
-          borderTopColor: colors.border,
+          backgroundColor: Theme['bg-100'],
+          borderTopColor: Theme['bg-125'],
         },
       }}>
       <Tab.Screen
         name="SubscriptionsStack"
         options={{
           tabBarLabel: 'Subscriptions',
-          tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.secondary,
+          tabBarActiveTintColor: Theme['inverse-000'],
+          tabBarInactiveTintColor: Theme['bg-200'],
           tabBarIcon: BellIcon,
         }}
         component={SubscriptionsStack}
@@ -43,8 +44,8 @@ export default function TabNavigator() {
         name="DiscoverStack"
         options={{
           tabBarLabel: 'Discover',
-          tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: colors.secondary,
+          tabBarActiveTintColor: Theme['inverse-000'],
+          tabBarInactiveTintColor: Theme['bg-200'],
           tabBarIcon: CompassIcon,
         }}
         component={DiscoverStack}

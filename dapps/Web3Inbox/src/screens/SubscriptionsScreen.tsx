@@ -7,7 +7,7 @@ import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import SubscriptionItem from '../components/SubscriptionItem';
 import SubscriptionsConnectOverlay from '../components/SubscriptionsConnectOverlay';
 import useColors from '@/hooks/useColors';
-import ConnectOverlay from '@/components/ConnectOverlay';
+import WelcomeScreen from '@/screens/WelcomeScreen';
 
 export default function SubscriptionsScreen() {
   const {subscriptions, isRegistered, fetchSubscriptions} =
@@ -29,7 +29,7 @@ export default function SubscriptionsScreen() {
   }, []);
 
   if (!address) {
-    return <ConnectOverlay />;
+    return <WelcomeScreen />;
   }
 
   if (!isRegistered) {

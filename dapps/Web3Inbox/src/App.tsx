@@ -16,7 +16,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {NotifyClientProvider} from './provider/NotifyClientProvider';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
-import TabNavigator from './navigation/TabNavigator';
+import RootStackNavigator from './navigation/RootStack';
 
 if (!__DEV__ && ENV_SENTRY_DSN) {
   Sentry.init({
@@ -71,7 +71,7 @@ function App(): JSX.Element {
             <StatusBar
               barStyle={isDarkMode ? 'light-content' : 'dark-content'}
             />
-            <TabNavigator />
+            <RootStackNavigator />
             <Web3Modal />
           </NotifyClientProvider>
         </WagmiConfig>

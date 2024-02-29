@@ -8,9 +8,13 @@ import SubscriptionSettingsScreen from '../screens/SubscriptionSettingsScreen';
 import SubscriptionsScreen from '../screens/SubscriptionsScreen';
 import SubscriptionDetailsScreen from '../screens/SubscriptionDetailsScreen';
 import useColors from '@/hooks/useColors';
-import AccountButton from '../components/AccountButton';
+import {W3mAccountButton} from '@web3modal/wagmi-react-native';
 
 const Stack = createNativeStackNavigator();
+
+function AccountButton() {
+  return <W3mAccountButton />;
+}
 
 export default function SubscriptionsStack() {
   const {navigate} = useNavigation();
@@ -30,7 +34,7 @@ export default function SubscriptionsStack() {
         options={{
           headerTitle: 'Subscriptions',
           headerLargeTitle: true,
-          headerRight: () => <AccountButton width={24} height={24} />,
+          headerRight: AccountButton,
         }}
         component={SubscriptionsScreen}
       />
