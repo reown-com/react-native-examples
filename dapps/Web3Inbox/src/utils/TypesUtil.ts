@@ -1,7 +1,5 @@
 export type ThemeKeys =
   | 'accent-100'
-  | 'accent-090'
-  | 'accent-020'
   | 'accent-glass-090'
   | 'accent-glass-080'
   | 'accent-glass-020'
@@ -29,7 +27,6 @@ export type ThemeKeys =
   | 'bg-300'
   | 'inverse-100'
   | 'inverse-000'
-  | 'success-100'
   | 'error-100'
   | 'gray-glass-001'
   | 'gray-glass-002'

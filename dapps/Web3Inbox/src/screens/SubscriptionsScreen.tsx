@@ -7,6 +7,7 @@ import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import SubscriptionItem from '../components/SubscriptionItem';
 import SubscriptionsConnectOverlay from '../components/SubscriptionsConnectOverlay';
 import useColors from '@/hooks/useColors';
+import ConnectOverlay from '@/components/ConnectOverlay';
 
 export default function SubscriptionsScreen() {
   const {subscriptions, isRegistered, fetchSubscriptions} =
@@ -27,7 +28,11 @@ export default function SubscriptionsScreen() {
     BootSplash.hide({fade: true});
   }, []);
 
-  if (!address || !isRegistered) {
+  if (!address) {
+    return <ConnectOverlay />;
+  }
+
+  if (!isRegistered) {
     return <SubscriptionsConnectOverlay />;
   }
 

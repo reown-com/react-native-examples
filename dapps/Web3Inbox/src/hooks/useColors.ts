@@ -1,12 +1,9 @@
-import {Themes} from '@/utils/ThemeUtil';
+import {DarkTheme, LightTheme} from '@/utils/ThemeUtil';
 import {useColorScheme} from 'react-native';
 
 export default function useColors() {
   const scheme = useColorScheme();
+  const Theme = scheme === 'dark' ? DarkTheme : LightTheme;
 
-  if (scheme === 'dark') {
-    return Themes['dark'];
-  }
-
-  return Themes['light'];
+  return Theme;
 }

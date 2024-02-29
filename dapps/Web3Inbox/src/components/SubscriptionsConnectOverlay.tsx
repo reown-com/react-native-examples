@@ -91,7 +91,9 @@ export default function SubscriptionsConnectOverlay() {
     });
   }
 
-  if (address && isRegistered) return null;
+  if (address && isRegistered) {
+    return null;
+  }
 
   return (
     <View style={[styles.container, {paddingTop: headerHeight + top}]}>
