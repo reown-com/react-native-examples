@@ -64,18 +64,9 @@ yarn-error.log
 # testing
 /coverage
 
-# Sentry
-sentry.properties
-
-# Others
-.env.*
-*.env
-!.env.example
-
 # Expo
 .expo
 dist/
 web-build/
 
-# Secrets
-secrets.properties
+
