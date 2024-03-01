@@ -111,6 +111,7 @@ export type RootStackParamList = {
 export type HomeTabParamList = {
   SubscriptionsStack: NavigatorScreenParams<SubscriptionsStackParamList>;
   DiscoverStack: NavigatorScreenParams<DiscoverStackParamList>;
+  SettingsScreen: undefined;
 };
 
 export type DiscoverStackParamList = {

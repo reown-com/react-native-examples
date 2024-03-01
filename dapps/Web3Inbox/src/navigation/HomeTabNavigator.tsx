@@ -1,21 +1,31 @@
 import React from 'react';
-import CompassIconSVG from '../icons/compass';
-import BellIconSVG from '../icons/bell';
+import InboxSvg from '@/icons/inbox-tab';
+import DiscoverSvg from '@/icons/discover-tab';
+import SettingsSvg from '@/icons/settings-tab';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import DiscoverStack from './DiscoverStack';
 import SubscriptionsStack from './SubscriptionsStack';
 import useColors from '@/hooks/useColors';
 import {HomeTabParamList} from '@/utils/TypesUtil';
+import {SettingsScreen} from '@/screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
 
-const BellIcon = ({color}: {color: string}) => (
-  <BellIconSVG height={15} width={15} fill={color} />
+const NotificationIcon = ({
+  color,
+  focused,
+}: {
+  color: string;
+  focused: boolean;
+}) => <InboxSvg height={24} width={24} fill={color} focused={focused} />;
+
+const DiscoverTab = ({color, focused}: {color: string; focused: boolean}) => (
+  <DiscoverSvg height={24} width={24} fill={color} focused={focused} />
 );
 
-const CompassIcon = ({color}: {color: string}) => (
-  <CompassIconSVG height={15} width={26} fill={color} />
+const SettingsTab = ({color, focused}: {color: string; focused: boolean}) => (
+  <SettingsSvg height={24} width={24} fill={color} focused={focused} />
 );
 
 export default function TabNavigator() {
@@ -25,6 +35,9 @@ export default function TabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: Theme['inverse-000'],
+        tabBarInactiveTintColor: Theme['fg-200'],
         tabBarStyle: {
           backgroundColor: Theme['bg-100'],
           borderTopColor: Theme['bg-125'],
@@ -32,23 +45,18 @@ export default function TabNavigator() {
       }}>
       <Tab.Screen
         name="SubscriptionsStack"
-        options={{
-          tabBarLabel: 'Subscriptions',
-          tabBarActiveTintColor: Theme['inverse-000'],
-          tabBarInactiveTintColor: Theme['bg-200'],
-          tabBarIcon: BellIcon,
-        }}
+        options={{tabBarIcon: NotificationIcon}}
         component={SubscriptionsStack}
       />
       <Tab.Screen
         name="DiscoverStack"
-        options={{
-          tabBarLabel: 'Discover',
-          tabBarActiveTintColor: Theme['inverse-000'],
-          tabBarInactiveTintColor: Theme['bg-200'],
-          tabBarIcon: CompassIcon,
-        }}
+        options={{tabBarIcon: DiscoverTab}}
         component={DiscoverStack}
+      />
+      <Tab.Screen
+        name="SettingsScreen"
+        options={{tabBarIcon: SettingsTab}}
+        component={SettingsScreen}
       />
     </Tab.Navigator>
   );
