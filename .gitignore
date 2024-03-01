@@ -3,4 +3,15 @@
 wallets/.DS_Store
 **/node_modules
 vendor/
+
+# Android
+*.keystore
 secrets.properties
+
+# Env files
+.env.*
+*.env
+!.env.example
+
+# Sentry
+sentry.properties

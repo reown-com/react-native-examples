@@ -34,7 +34,7 @@ import {
   celo,
   aurora,
 } from 'wagmi/chains';
-import {ENV_PROJECT_ID, ENV_SENTRY_DSN} from '@env';
+import Config from 'react-native-config';
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
@@ -43,14 +43,15 @@ import {WriteContract} from './views/WriteContract';
 import {getCustomWallets} from './utils/misc';
 import {SignTypedDataV4} from './views/SignTypedDataV4';
 
-if (!__DEV__ && ENV_SENTRY_DSN) {
+if (!__DEV__ && Config.ENV_SENTRY_DSN) {
   Sentry.init({
-    dsn: ENV_SENTRY_DSN,
+    dsn: Config.ENV_SENTRY_DSN,
+    environment: Config.ENV_SENTRY_TAG,
   });
 }
 
 // 1. Get projectId
-const projectId = ENV_PROJECT_ID;
+const projectId = Config.ENV_PROJECT_ID;
 
 // 2. Create config
 const metadata = {

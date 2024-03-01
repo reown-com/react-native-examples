@@ -32,7 +32,6 @@ local.properties
 *.hprof
 .cxx/
 *.keystore
-!debug.keystore
 
 # node.js
 #
@@ -65,13 +64,9 @@ yarn-error.log
 # testing
 /coverage
 
-# Sentry
-sentry.properties
-
-# Others
-.env
-
 # Expo
 .expo
 dist/
 web-build/
+
+
