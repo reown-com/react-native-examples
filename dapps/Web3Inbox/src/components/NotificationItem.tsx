@@ -31,9 +31,7 @@ export default function NotificationItem({
         styles.container,
       ]}>
       <View style={styles.titleContainer}>
-        <Text style={[styles.title, {color: Theme['inverse-000']}]}>
-          {title}
-        </Text>
+        <Text style={[styles.title, {color: Theme['fg-100']}]}>{title}</Text>
         {sentAt ? (
           <Text style={[styles.sentAt, {color: Theme['fg-100']}]}>
             {DateUtil.getRelativeDateFromNow(sentAt)}

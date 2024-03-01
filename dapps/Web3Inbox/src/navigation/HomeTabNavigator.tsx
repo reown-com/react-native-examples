@@ -4,11 +4,11 @@ import DiscoverSvg from '@/icons/discover-tab';
 import SettingsSvg from '@/icons/settings-tab';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import DiscoverStack from './DiscoverStack';
-import SubscriptionsStack from './SubscriptionsStack';
 import useColors from '@/hooks/useColors';
 import {HomeTabParamList} from '@/utils/TypesUtil';
 import {SettingsScreen} from '@/screens/SettingsScreen';
+import SubscriptionsScreen from '@/screens/SubscriptionsScreen';
+import DiscoverScreen from '@/screens/DiscoverScreen';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
 
@@ -33,10 +33,12 @@ export default function TabNavigator() {
 
   return (
     <Tab.Navigator
+      backBehavior="none"
+      sceneContainerStyle={{backgroundColor: Theme['bg-100']}}
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: Theme['inverse-000'],
+        tabBarActiveTintColor: Theme['fg-100'],
         tabBarInactiveTintColor: Theme['fg-200'],
         tabBarStyle: {
           backgroundColor: Theme['bg-100'],
@@ -44,14 +46,14 @@ export default function TabNavigator() {
         },
       }}>
       <Tab.Screen
-        name="SubscriptionsStack"
+        name="SubscriptionsScreen"
         options={{tabBarIcon: NotificationIcon}}
-        component={SubscriptionsStack}
+        component={SubscriptionsScreen}
       />
       <Tab.Screen
-        name="DiscoverStack"
+        name="DiscoverScreen"
         options={{tabBarIcon: DiscoverTab}}
-        component={DiscoverStack}
+        component={DiscoverScreen}
       />
       <Tab.Screen
         name="SettingsScreen"

@@ -96,7 +96,7 @@ export default function SubscriptionSettingsScreen() {
             {borderColor: Theme['fg-125']},
           ]}>
           <View style={styles.scopeContentContainer}>
-            <Text style={[styles.scopeTitle, {color: Theme['inverse-000']}]}>
+            <Text style={[styles.scopeTitle, {color: Theme['fg-100']}]}>
               {item.name}
             </Text>
             <Text style={[styles.scopeDescription, {color: Theme['fg-100']}]}>

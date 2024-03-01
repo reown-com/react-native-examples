@@ -105,21 +105,13 @@ declare global {
 
 export type RootStackParamList = {
   Connect: undefined;
-  Home: NavigatorScreenParams<HomeTabParamList>; // Nested Navigator
+  Home: NavigatorScreenParams<HomeTabParamList>;
+  SubscriptionDetailsScreen: {topic: string; name: string};
+  SubscriptionSettingsScreen: {topic: string; name: string};
 };
 
 export type HomeTabParamList = {
-  SubscriptionsStack: NavigatorScreenParams<SubscriptionsStackParamList>;
-  DiscoverStack: NavigatorScreenParams<DiscoverStackParamList>;
-  SettingsScreen: undefined;
-};
-
-export type DiscoverStackParamList = {
-  DiscoverScreen: undefined;
-};
-
-export type SubscriptionsStackParamList = {
   SubscriptionsScreen: undefined;
-  SubscriptionDetailsScreen: {topic: string; name: string};
-  SubscriptionSettingsScreen: {topic: string; name: string};
+  DiscoverScreen: undefined;
+  SettingsScreen: undefined;
 };

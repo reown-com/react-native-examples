@@ -31,9 +31,7 @@ export default function SubscriptionItem({
         <Image source={{uri: imageURL}} style={styles.image} />
       </View>
       <View style={styles.contentContainer}>
-        <Text style={[styles.title, {color: Theme['inverse-000']}]}>
-          {title}
-        </Text>
+        <Text style={[styles.title, {color: Theme['fg-100']}]}>{title}</Text>
         <Text style={[styles.description, {color: Theme['fg-100']}]}>
           {description}
         </Text>

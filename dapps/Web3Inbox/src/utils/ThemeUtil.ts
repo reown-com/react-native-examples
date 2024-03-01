@@ -14,7 +14,7 @@ export const LightTheme: {[key in ThemeKeys]: string} = {
 
   'fg-100': '#141414',
   'fg-125': '#2d3131',
-  'fg-150': '#474d4d',
+  'fg-150': '#474D4D',
   'fg-175': '#636d6d',
   'fg-200': '#798686',
   'fg-225': '#828f8f',
@@ -65,7 +65,7 @@ export const DarkTheme: {[key in ThemeKeys]: string} = {
 
   'fg-100': '#141414',
   'fg-125': '#2d3131',
-  'fg-150': '#474d4d',
+  'fg-150': '#474D4D',
   'fg-175': '#636d6d',
   'fg-200': '#798686',
   'fg-225': '#828f8f',

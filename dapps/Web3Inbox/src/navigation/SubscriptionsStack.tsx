@@ -26,7 +26,7 @@ export default function SubscriptionsStack() {
         contentStyle: {backgroundColor: Theme['bg-125']},
         headerStyle: {backgroundColor: Theme['bg-100']},
         headerTitleStyle: {
-          color: Theme['inverse-000'],
+          color: Theme['fg-100'],
         },
       }}>
       <Stack.Screen
@@ -43,7 +43,7 @@ export default function SubscriptionsStack() {
         component={SubscriptionDetailsScreen}
         options={({route}) => ({
           title: route?.params?.name,
-          headerTintColor: Theme['inverse-000'],
+          headerTintColor: Theme['fg-100'],
           headerRight: ({}) => (
             <Pressable
               onPress={() => {
@@ -57,7 +57,7 @@ export default function SubscriptionsStack() {
                   fontSize: 17,
                   letterSpacing: 0.2,
                   fontWeight: 400,
-                  color: Theme['inverse-000'],
+                  color: Theme['fg-100'],
                 }}>
                 Settings
               </Text>
