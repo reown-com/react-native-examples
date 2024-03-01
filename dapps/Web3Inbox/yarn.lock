@@ -3463,23 +3463,7 @@
     "@walletconnect/modal-core" "2.6.2"
     "@walletconnect/modal-ui" "2.6.2"
 
-"@walletconnect/notify-client@0.16.5":
-  version "0.16.5"
-  resolved "https://registry.yarnpkg.com/@walletconnect/notify-client/-/notify-client-0.16.5.tgz#17605e6ff44a5d59e7a2cc2b515309af51a736d0"
-  integrity sha512-u0oJYlRmBHW6KiFLyAvpzyKq3ZDwkeK5tuYSy9HQOG+bFYxAyIJ7O0HUpCbojhq+aRFzPAP5FeNUXkhKxvPGPA==
-  dependencies:
-    "@noble/ed25519" "^1.7.3"
-    "@walletconnect/cacao" "1.0.2"
-    "@walletconnect/core" "^2.11.0-canary.0"
-    "@walletconnect/did-jwt" "2.0.1"
-    "@walletconnect/identity-keys" "^1.0.1"
-    "@walletconnect/jsonrpc-utils" "1.0.7"
-    "@walletconnect/time" "1.0.2"
-    "@walletconnect/utils" "^2.11.0"
-    axios "^1.4.0"
-    jwt-decode "^3.1.2"
-
-"@walletconnect/notify-client@^1.0.0":
+"@walletconnect/notify-client@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@walletconnect/notify-client/-/notify-client-1.0.0.tgz#531e573749d94f9dcc7c3595bf8e0a4ff09e1ee6"
   integrity sha512-UIvWHmEwEBCV4Pxu9YPZoF4fygjLKGUFkErixGyytPX+7LsLfKc3/EoSm7bn2D2EWSIgO215NXQsUjVx32k/5Q==
@@ -3632,22 +3616,6 @@
   dependencies:
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
-
-"@web3inbox/core@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@web3inbox/core/-/core-1.0.0.tgz#89011e6771658aa6689817e07884900f221fd56d"
-  integrity sha512-2KuR1o7xa6Xwl5Hh5ZejnofHBc2bAKaW4A1abt15NSMfH7OldmHgRbq/a1sy7gTpAk8t7QUkalzP5itlex+UIw==
-  dependencies:
-    "@walletconnect/core" "2.11.0"
-    "@walletconnect/notify-client" "^1.0.0"
-    valtio "^1.11.2"
-
-"@web3inbox/react@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@web3inbox/react/-/react-1.0.0.tgz#65dee7e74d08180d3cafd5581071643bf228a3a0"
-  integrity sha512-Hdm3Xt8kn2QalnBV6ET/89s07sB0r6LOYkoRnztY6z/il1Wv0egnHYLbBURIhWmoWcgc0vRVv4R/dfviZVfJzQ==
-  dependencies:
-    react "^18.2.0"
 
 "@web3modal/core-react-native@1.3.0-alpha.1":
   version "1.3.0-alpha.1"
@@ -5022,11 +4990,6 @@ deprecated-react-native-prop-types@^5.0.0:
     "@react-native/normalize-colors" "^0.73.0"
     invariant "^2.2.4"
     prop-types "^15.8.1"
-
-derive-valtio@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/derive-valtio/-/derive-valtio-0.1.0.tgz#4b9fb393dfefccfef15fcbbddd745dd22d5d63d7"
-  integrity sha512-OCg2UsLbXK7GmmpzMXhYkdO64vhJ1ROUUGaTFyHjVwEdMEcTTRj7W1TxLbSBxdY8QLBPCcp66MTyaSy0RpO17A==
 
 des.js@^1.0.0:
   version "1.1.0"
@@ -9289,7 +9252,7 @@ react-test-renderer@18.2.0:
     react-shallow-renderer "^16.15.0"
     scheduler "^0.23.0"
 
-react@18.2.0, react@^18.2.0:
+react@18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
@@ -10567,15 +10530,6 @@ valtio@1.11.2:
   resolved "https://registry.yarnpkg.com/valtio/-/valtio-1.11.2.tgz#b8049c02dfe65620635d23ebae9121a741bb6530"
   integrity sha512-1XfIxnUXzyswPAPXo1P3Pdx2mq/pIqZICkWN60Hby0d9Iqb+MEIpqgYVlbflvHdrp2YR/q3jyKWRPJJ100yxaw==
   dependencies:
-    proxy-compare "2.5.1"
-    use-sync-external-store "1.2.0"
-
-valtio@^1.11.2:
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/valtio/-/valtio-1.13.0.tgz#6ee62629b658bc88a72703817e4eb1827b3d8754"
-  integrity sha512-s2VkxxFyaJwjpIheJonRa/34HWS1EpsEjw9OW9l3j8G4cbIw7lruspOjyv+z2o4BrGx351BH+VWb8sZHkrlyYA==
-  dependencies:
-    derive-valtio "0.1.0"
     proxy-compare "2.5.1"
     use-sync-external-store "1.2.0"
 

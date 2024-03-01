@@ -118,7 +118,7 @@ export type DiscoverStackParamList = {
 };
 
 export type SubscriptionsStackParamList = {
-  SubscriptionsScreen: {topic?: string};
+  SubscriptionsScreen: undefined;
   SubscriptionDetailsScreen: {topic: string; name: string};
   SubscriptionSettingsScreen: {topic: string; name: string};
 };

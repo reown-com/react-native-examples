@@ -28,8 +28,8 @@ const projectId = ENV_PROJECT_ID;
 
 const metadata = {
   name: 'Web3Inbox',
-  description: 'Web3Inbox mobile app with React Native',
-  url: 'https://lab.web3inbox.com',
+  description: 'Web3Inbox',
+  url: 'https://web3inbox.com',
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
   redirect: {
     native: 'web3inbox://',

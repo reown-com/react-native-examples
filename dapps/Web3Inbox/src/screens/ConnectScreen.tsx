@@ -23,12 +23,10 @@ export default function ConnectScreen() {
   const [isSignModalVisible, setSignModalVisible] = useState(false);
   const {open} = useWeb3Modal();
   const {isConnected, isConnecting} = useAccount();
-  const {account, notifyClient, isRegistered} = useNotifyClientContext();
+  const {account, notifyClient} = useNotifyClientContext();
   const {signMessageAsync} = useSignMessage();
-  const {isLoading: isDisconnecting} = useDisconnect();
-  const navigation = useNavigation();
-
-  console.log('isRegistered', isRegistered, account);
+  const {disconnect, isLoading: isDisconnecting} = useDisconnect();
+  const {navigate} = useNavigation();
 
   const onLinkPress = () => {
     Linking.openURL('https://web3inbox.com');
@@ -51,36 +49,44 @@ export default function ConnectScreen() {
       allApps: true,
     });
     const signature = await signMessageAsync({message: message});
-    console.log('SIGNED');
 
     await notifyClient.register({
       registerParams,
       signature,
     });
     setSignModalVisible(false);
-    navigation.navigate('Home');
+    navigate('Home');
   }
 
   const onModalDismiss = async () => {
     if (isConnected) {
-      console.log('dismiss');
-      // disconnect();
+      disconnect();
       setSignModalVisible(false);
     }
   };
 
   useEffect(() => {
-    if (isConnected) {
-      setTimeout(() => {
-        setSignModalVisible(true);
-      }, 500);
+    // Wait until wagmi inits and then hide the splash screen
+    if (!isConnected && !isConnecting) {
+      BootSplash.hide({fade: true});
     }
-  }, [isConnected]);
 
-  useEffect(() => {
-    // hide after init
-    BootSplash.hide({fade: true});
-  }, []);
+    if (isConnected && notifyClient && account) {
+      const isRegistered = notifyClient?.isRegistered({
+        account,
+        domain: '',
+        allApps: true,
+      });
+
+      if (isRegistered) {
+        navigate('Home');
+      } else {
+        setSignModalVisible(true);
+      }
+
+      BootSplash.hide({fade: true});
+    }
+  }, [isConnected, isConnecting, notifyClient, account, navigate]);
 
   return (
     <ImageBackground style={styles.container} source={Background}>
