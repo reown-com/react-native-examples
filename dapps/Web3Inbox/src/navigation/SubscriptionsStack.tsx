@@ -18,15 +18,15 @@ function AccountButton() {
 
 export default function SubscriptionsStack() {
   const {navigate} = useNavigation();
-  const colors = useColors();
+  const Theme = useColors();
 
   return (
     <Stack.Navigator
       screenOptions={{
-        contentStyle: {backgroundColor: colors.backgroundSecondary},
-        headerStyle: {backgroundColor: colors.background},
+        contentStyle: {backgroundColor: Theme['bg-125']},
+        headerStyle: {backgroundColor: Theme['bg-100']},
         headerTitleStyle: {
-          color: colors.primary,
+          color: Theme['inverse-000'],
         },
       }}>
       <Stack.Screen
@@ -43,7 +43,7 @@ export default function SubscriptionsStack() {
         component={SubscriptionDetailsScreen}
         options={({route}) => ({
           title: route?.params?.name,
-          headerTintColor: colors.primary,
+          headerTintColor: Theme['inverse-000'],
           headerRight: ({}) => (
             <Pressable
               onPress={() => {
@@ -57,7 +57,7 @@ export default function SubscriptionsStack() {
                   fontSize: 17,
                   letterSpacing: 0.2,
                   fontWeight: 400,
-                  color: colors.primary,
+                  color: Theme['inverse-000'],
                 }}>
                 Settings
               </Text>

@@ -15,32 +15,30 @@ type OverlayContentProps = {
 };
 
 function OverlayContent({title, description, onPress}: OverlayContentProps) {
-  const colors = useColors();
+  const Theme = useColors();
 
   return (
     <View style={styles.overlayContentContainer}>
-      <Text style={[styles.overlayContentTitle, {color: colors.primary}]}>
+      <Text style={[styles.overlayContentTitle, {color: Theme['inverse-000']}]}>
         {title}
       </Text>
       <Text
-        style={[styles.overlayContentDescription, {color: colors.secondary}]}>
+        style={[styles.overlayContentDescription, {color: Theme['fg-100']}]}>
         {description}
       </Text>
       <Pressable
         style={({pressed}) => [
           styles.overlayContentButton,
           {
-            backgroundColor: pressed
-              ? colors.backgroundActive
-              : colors.background,
-            borderColor: colors.border,
-            shadowColor: colors.background,
+            backgroundColor: pressed ? Theme['accent-010'] : Theme['bg-100'],
+            borderColor: Theme['fg-150'],
+            shadowColor: Theme['bg-100'],
           },
         ]}
         onPress={onPress}>
         <Text
           style={{
-            color: colors.primary,
+            color: Theme['inverse-000'],
             fontSize: 18,
           }}>
           Sign Message
@@ -51,7 +49,6 @@ function OverlayContent({title, description, onPress}: OverlayContentProps) {
 }
 
 export default function SubscriptionsConnectOverlay() {
-  const colors = useColors();
   const {address} = useAccount();
   const {open} = useWeb3Modal();
   const {account, notifyClient} = useNotifyClientContext();

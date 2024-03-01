@@ -1,6 +1,6 @@
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import useColors from '@/hooks/useColors';
-import {DateUtil} from '../utils/date';
+import {DateUtil} from '@/utils/DateUtil';
 
 type NotificationItemProps = {
   title: string;
@@ -17,7 +17,7 @@ export default function NotificationItem({
   url,
   onPress,
 }: NotificationItemProps) {
-  const colors = useColors();
+  const Theme = useColors();
 
   return (
     <Pressable
@@ -25,20 +25,22 @@ export default function NotificationItem({
       style={({pressed}) => [
         {
           backgroundColor:
-            pressed && url ? colors.backgroundActive : colors.background,
-          borderColor: colors.border,
+            pressed && url ? Theme['accent-010'] : Theme['bg-100'],
+          borderColor: Theme['fg-150'],
         },
         styles.container,
       ]}>
       <View style={styles.titleContainer}>
-        <Text style={[styles.title, {color: colors.primary}]}>{title}</Text>
+        <Text style={[styles.title, {color: Theme['inverse-000']}]}>
+          {title}
+        </Text>
         {sentAt ? (
-          <Text style={[styles.sentAt, {color: colors.secondary}]}>
+          <Text style={[styles.sentAt, {color: Theme['fg-100']}]}>
             {DateUtil.getRelativeDateFromNow(sentAt)}
           </Text>
         ) : null}
       </View>
-      <Text style={[styles.description, {color: colors.secondary}]}>
+      <Text style={[styles.description, {color: Theme['fg-100']}]}>
         {description}
       </Text>
     </Pressable>

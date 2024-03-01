@@ -2,21 +2,21 @@ import {StyleSheet, View} from 'react-native';
 import useColors from '@/hooks/useColors';
 
 export default function NotificationItemSkeleton() {
-  const colors = useColors();
+  const Theme = useColors();
 
   return (
     <View
       style={[
         styles.container,
         {
-          borderColor: colors.border,
+          borderColor: Theme['fg-150'],
         },
       ]}>
       <View
         style={[
           styles.title,
           {
-            backgroundColor: colors.background,
+            backgroundColor: Theme['bg-100'],
           },
         ]}
       />
@@ -24,7 +24,7 @@ export default function NotificationItemSkeleton() {
         style={[
           styles.description,
           {
-            backgroundColor: colors.background,
+            backgroundColor: Theme['bg-100'],
           },
         ]}
       />

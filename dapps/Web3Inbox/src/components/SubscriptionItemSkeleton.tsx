@@ -2,22 +2,22 @@ import {StyleSheet, View} from 'react-native';
 import useColors from '@/hooks/useColors';
 
 export default function SubscriptionItemSkeleton() {
-  const colors = useColors();
+  const Theme = useColors();
 
   return (
     <View
       style={[
         styles.container,
         {
-          borderColor: colors.border,
-          backgroundColor: colors.background,
+          borderColor: Theme['fg-150'],
+          backgroundColor: Theme['bg-100'],
         },
       ]}>
       <View
         style={[
           styles.title,
           {
-            backgroundColor: colors.backgroundSecondary,
+            backgroundColor: Theme['accent-010'],
           },
         ]}
       />
@@ -25,7 +25,7 @@ export default function SubscriptionItemSkeleton() {
         style={[
           styles.description,
           {
-            backgroundColor: colors.backgroundSecondary,
+            backgroundColor: Theme['accent-010'],
           },
         ]}
       />

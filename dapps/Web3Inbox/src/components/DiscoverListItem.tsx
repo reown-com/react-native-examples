@@ -19,7 +19,7 @@ type DiscoverListItemProps = {
 
 export default function DiscoverListItem({item}: DiscoverListItemProps) {
   const {account, subscriptions, notifyClient} = useNotifyClientContext();
-  const colors = useColors();
+  const Theme = useColors();
 
   const [subscribing, setSubscribing] = React.useState(false);
   const domain = new URL(item.dapp_url).host;
@@ -61,8 +61,8 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
       style={[
         styles.container,
         {
-          backgroundColor: colors.background,
-          borderColor: colors.border,
+          backgroundColor: Theme['bg-100'],
+          borderColor: Theme['fg-200'],
         },
       ]}>
       <View style={styles.header}>
@@ -77,20 +77,20 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
               ? {
                   backgroundColor: 'transparent',
                   borderWidth: 1,
-                  borderColor: colors.border,
+                  borderColor: Theme['fg-100'],
                 }
-              : {backgroundColor: colors.secondary},
+              : {backgroundColor: Theme['fg-100']},
             styles.button,
           ]}>
           {subscribing ? (
-            <ActivityIndicator color={colors.background} />
+            <ActivityIndicator color={Theme['bg-100']} />
           ) : (
             <Text
               style={[
                 styles.buttonText,
                 isSubscribed
-                  ? {color: colors.secondary}
-                  : {color: colors.background},
+                  ? {color: Theme['fg-100']}
+                  : {color: Theme['bg-100']},
               ]}>
               {isSubscribed ? 'Subscribed' : 'Subscribe'}
             </Text>
@@ -98,9 +98,11 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
         </Pressable>
       </View>
       <View style={styles.content}>
-        <Text style={[styles.title, {color: colors.primary}]}>{item.name}</Text>
-        <Text style={[styles.domain, {color: colors.secondary}]}>{domain}</Text>
-        <Text style={[styles.subtitle, {color: colors.secondary}]}>
+        <Text style={[styles.title, {color: Theme['inverse-000']}]}>
+          {item.name}
+        </Text>
+        <Text style={[styles.domain, {color: Theme['fg-100']}]}>{domain}</Text>
+        <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>
           {item.description}
         </Text>
       </View>

@@ -14,7 +14,7 @@ export default function SubscriptionItem({
   imageURL,
   onPress,
 }: ISubscriptionItem) {
-  const colors = useColors();
+  const Theme = useColors();
 
   return (
     <Pressable
@@ -22,10 +22,8 @@ export default function SubscriptionItem({
       style={({pressed}) => [
         styles.container,
         {
-          backgroundColor: pressed
-            ? colors.backgroundActive
-            : colors.background,
-          borderColor: colors.border,
+          backgroundColor: pressed ? Theme['accent-010'] : Theme['bg-100'],
+          borderColor: Theme['fg-150'],
         },
       ]}>
       <View style={styles.imageContainer}>
@@ -33,8 +31,10 @@ export default function SubscriptionItem({
         <Image source={{uri: imageURL}} style={styles.image} />
       </View>
       <View style={styles.contentContainer}>
-        <Text style={[styles.title, {color: colors.primary}]}>{title}</Text>
-        <Text style={[styles.description, {color: colors.secondary}]}>
+        <Text style={[styles.title, {color: Theme['inverse-000']}]}>
+          {title}
+        </Text>
+        <Text style={[styles.description, {color: Theme['fg-100']}]}>
           {description}
         </Text>
       </View>

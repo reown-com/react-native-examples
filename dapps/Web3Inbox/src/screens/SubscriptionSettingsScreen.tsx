@@ -6,7 +6,6 @@ import {
   FlatList,
   PlatformColor,
   Pressable,
-  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -26,7 +25,7 @@ export default function SubscriptionSettingsScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const topic = params?.topic;
   const {navigate} = useNavigation();
-  const colors = useColors();
+  const Theme = useColors();
   const {subscriptions, notifyClient} = useNotifyClientContext();
   const [unsubscribing, setUnsubscribing] = React.useState(false);
 
@@ -94,13 +93,13 @@ export default function SubscriptionSettingsScreen() {
           style={[
             styles.scopeContainer,
             index === notificationTypes.length - 1 ? {borderWidth: 0} : null,
-            {borderColor: colors.backgroundSecondary},
+            {borderColor: Theme['fg-125']},
           ]}>
           <View style={styles.scopeContentContainer}>
-            <Text style={[styles.scopeTitle, {color: colors.primary}]}>
+            <Text style={[styles.scopeTitle, {color: Theme['inverse-000']}]}>
               {item.name}
             </Text>
-            <Text style={[styles.scopeDescription, {color: colors.secondary}]}>
+            <Text style={[styles.scopeDescription, {color: Theme['fg-100']}]}>
               {item.description}
             </Text>
           </View>
@@ -131,7 +130,7 @@ export default function SubscriptionSettingsScreen() {
             styles.destructiveButton,
           ]}>
           {unsubscribing ? (
-            <ActivityIndicator color={colors.secondary} />
+            <ActivityIndicator color={Theme['fg-100']} />
           ) : (
             <Text style={styles.destructiveButtonText}>Unsubscribe</Text>
           )}
