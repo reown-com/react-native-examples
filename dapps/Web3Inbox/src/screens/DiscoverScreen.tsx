@@ -8,6 +8,8 @@ import {fetchFeaturedProjects} from '@/utils/NotifyClient';
 import {Text} from '@/components/Text';
 import Background from '@/icons/gradient-background.png';
 import {Spacing} from '@/utils/ThemeUtil';
+import DiscoverListItemSkeleton from '@/components/DiscoverListItemSkeleton';
+import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 
 function ListHeader() {
   return (
@@ -23,13 +25,50 @@ function ListHeader() {
   );
 }
 
-export default function DiscoverScreen() {
-  const [discoverList, setDiscoverList] = useState<ProjectItem[]>([]);
+function ListEmpty({isLoading}: {isLoading: boolean}) {
+  if (isLoading) {
+    return (
+      <>
+        <DiscoverListItemSkeleton />
+        <DiscoverListItemSkeleton />
+        <DiscoverListItemSkeleton />
+      </>
+    );
+  }
+  return null;
+}
 
-  async function handleGetDiscoverList() {
+export default function DiscoverScreen() {
+  const {subscriptions, notifyClient, account} = useNotifyClientContext();
+  const [discoverList, setDiscoverList] = useState<ProjectItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleGetDiscoverList = async () => {
+    setLoading(true);
     const {data} = await fetchFeaturedProjects();
     setDiscoverList(data as ProjectItem[]);
-  }
+    setLoading(false);
+  };
+
+  const handleSubscribe = async (domain: string) => {
+    if (!notifyClient || !account) {
+      return;
+    }
+
+    await notifyClient
+      .subscribe({
+        account,
+        appDomain: domain,
+      })
+      .then(res => {
+        if (res) {
+          console.log('Subscribed to', domain, res);
+        }
+      })
+      .catch(e => {
+        console.log('Error subscribing to dapp', e.message);
+      });
+  };
 
   useEffect(() => {
     handleGetDiscoverList();
@@ -42,10 +81,22 @@ export default function DiscoverScreen() {
         contentContainerStyle={styles.contentContainer}
         ListHeaderComponent={ListHeader}
         ListHeaderComponentStyle={styles.headerContainer}
+        fadingEdgeLength={20}
+        ListEmptyComponent={<ListEmpty isLoading={loading} />}
         data={discoverList}
-        renderItem={({item}) => (
-          <DiscoverListItem key={item.dapp_url} item={item} />
-        )}
+        renderItem={({item}) => {
+          const isSubscribed = subscriptions.some(s =>
+            item.dapp_url.includes(s.metadata.appDomain),
+          );
+          return (
+            <DiscoverListItem
+              key={item.dapp_url}
+              item={item}
+              isSubscribed={isSubscribed}
+              onSubscribe={handleSubscribe}
+            />
+          );
+        }}
       />
     </ImageBackground>
   );

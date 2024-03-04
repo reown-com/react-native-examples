@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {useAccount, useDisconnect, useSignMessage} from 'wagmi';
 import WelcomeWallet from '@/icons/welcome-wallet';
-import Background from '@/icons/welcome-background.png';
+import Background from '@/icons/gradient-background.png';
 import SignatureModal from '@/modals/SignatureModal';
 import {useEffect, useState} from 'react';
 import Button from '@/components/Button';
