@@ -11,6 +11,9 @@ import {ENV_PROJECT_ID} from '@env';
 import cloneDeep from 'lodash.clonedeep';
 import {init} from '@sentry/browser';
 import {useNavigation} from '@react-navigation/native';
+import {NotifyController} from '../controllers/NotifyController';
+import {AccountController} from '../controllers/AccountController';
+import {CaipAddress} from '@/utils/TypesUtil';
 
 export const NotifyClientProvider: FC<{
   children: ReactNode;
@@ -20,7 +23,11 @@ export const NotifyClientProvider: FC<{
 
   useAccount({
     onConnect: ({address}) => {
-      setAccount(`eip155:1:${address}`);
+      const _account: CaipAddress = `eip155:1:${address}`;
+      setAccount(_account);
+      initializeNotifyClient(_account);
+      AccountController.setIsConnected(true);
+      AccountController.setAddress(_account);
     },
     onDisconnect: () => {
       // Clear everything
@@ -29,15 +36,15 @@ export const NotifyClientProvider: FC<{
     },
   });
 
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [initializing, setInitializing] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+  // const [isRegistered, setIsRegistered] = useState(false);
+  // const [initializing, setInitializing] = useState(false);
   const [notifyClient, setNotifyClient] = useState<NotifyClient>();
   const [subscriptions, setSubscriptions] = useState<any>([]);
   const [notifications, setNotifications] = useState<NotificationsState>({});
 
   // const initialized = !!notifyClient;
 
+  // set listeners
   // useEffect(() => {
   //   if (!notifyClient) {
   //     console.log('notify client not initialized');
@@ -46,17 +53,15 @@ export const NotifyClientProvider: FC<{
 
   //   notifyClient.on('notify_subscription', async ({params, topic}) => {
   //     const {error} = params;
+  //     console.log('notify_subscription', params, topic);
 
   //     if (error) {
   //       console.error('Setting up subscription failed: ', error);
   //     } else {
-  //       const allSubscriptions = params.allSubscriptions;
-
-  //       if (!allSubscriptions) {
-  //         return;
+  //       if (account) {
+  //         const _subs = notifyClient.getActiveSubscriptions({account});
+  //         setSubscriptions(Object.values(_subs));
   //       }
-
-  //       setSubscriptions(allSubscriptions);
   //     }
   //   });
 
@@ -84,18 +89,16 @@ export const NotifyClientProvider: FC<{
   //   });
   // }, [notifyClient]);
 
-  // const getActiveSubscriptions = useCallback(() => {
-  //   if (!notifyClient) {
+  // const getActiveSubscriptions = (
+  //   _notifyClient: NotifyClient,
+  //   _account: string,
+  // ) => {
+  //   if (!_notifyClient || !_account) {
   //     return;
   //   }
 
-  //   if (!account) {
-  //     Alert.alert('Account not initialized yet');
-  //     return;
-  //   }
-
-  //   const accountSubscriptions = notifyClient.getActiveSubscriptions({
-  //     account,
+  //   const accountSubscriptions = _notifyClient.getActiveSubscriptions({
+  //     account: _account,
   //   });
 
   //   const subs = Object.values(accountSubscriptions || {});
@@ -104,23 +107,9 @@ export const NotifyClientProvider: FC<{
   //     return;
   //   }
 
+  //   console.log('accountSubscriptions', subs);
   //   setSubscriptions(subs);
-  // }, [notifyClient, account]);
-
-  // async function handleInitializeNotifyClient() {
-  //   setInitializing(true);
-
-  //   try {
-  //     const _notifyClient = await NotifyClient.init({
-  //       projectId: ENV_PROJECT_ID,
-  //     });
-  //     setNotifyClient(_notifyClient);
-  //     setInitializing(false);
-  //     setIsInitialized(true);
-  //   } catch (error) {
-  //     setInitializing(false);
-  //   }
-  // }
+  // };
 
   // async function handleSetNotifications(
   //   topicId: string,
@@ -178,45 +167,46 @@ export const NotifyClientProvider: FC<{
   //   handleGetRegisterStatus();
   // }, [notifyClient, getActiveSubscriptions, account, handleGetRegisterStatus]);
 
-  // useEffect(() => {
-  //   if (address) {
-  //     setAccount(prevAccount => {
-  //       if (!prevAccount && address) {
-  //         getActiveSubscriptions();
-  //       }
-
-  //       return `eip155:1:${address}`;
-  //     });
-  //   }
-  // }, [address, getActiveSubscriptions]);
-
-  const initializeNotifyClient = useCallback(async () => {
+  const initializeNotifyClient = async (_account: string) => {
     const _notifyClient = await NotifyClient.init({
       projectId: ENV_PROJECT_ID,
     });
 
-    setNotifyClient(_notifyClient);
-  }, []);
+    _notifyClient.on('notify_subscription', async ({params, topic}) => {
+      console.log('notify_subscription', params, topic);
+      AccountController.refreshSubscriptions();
+    });
 
-  useEffect(() => {
-    // init notify
-    if (!notifyClient) {
-      initializeNotifyClient();
-    }
-  }, [notifyClient, initializeNotifyClient]);
+    _notifyClient.on('notify_message', ({params, topic}) => {
+      console.log('notify_message', params, topic);
+    });
+
+    _notifyClient.on('notify_update', ({params}) => {
+      console.log('notify_update', params);
+    });
+
+    _notifyClient.on('notify_subscriptions_changed', ({params}) => {
+      console.log('notify_subscriptions_changed', params);
+    });
+
+    // setNotifyClient(_notifyClient);
+    NotifyController.setClient(_notifyClient);
+    AccountController.refreshSubscriptions();
+    // getActiveSubscriptions(_notifyClient, _account);
+  };
 
   return (
     <NotifyClientContext.Provider
       value={{
         account,
-        initializing,
-        isRegistered,
-        notifyClient,
+        // initializing,
+        // isRegistered,
+        // notifyClient,
         subscriptions,
         notifications,
         // fetchSubscriptions: getActiveSubscriptions,
         // setNotifications: handleSetNotifications,
-        setInitializing,
+        // setInitializing,
         setSubscriptions,
         setNotifyClient,
       }}>

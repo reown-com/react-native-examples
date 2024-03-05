@@ -1,3 +1,6 @@
+import {useEffect, useState} from 'react';
+import BootSplash from 'react-native-bootsplash';
+import {useNavigation} from '@react-navigation/native';
 import {useWeb3Modal} from '@web3modal/wagmi-react-native';
 import {
   StyleSheet,
@@ -7,23 +10,23 @@ import {
   Linking,
   Alert,
 } from 'react-native';
+import {useSnapshot} from 'valtio';
 import {useAccount, useDisconnect, useSignMessage} from 'wagmi';
 import WelcomeWallet from '@/icons/welcome-wallet';
 import Background from '@/icons/gradient-background.png';
 import SignatureModal from '@/modals/SignatureModal';
-import {useEffect, useState} from 'react';
 import Button from '@/components/Button';
 import {Spacing} from '@/utils/ThemeUtil';
 import {Text} from '@/components/Text';
-import useNotifyClientContext from '@/hooks/useNotifyClientContext';
-import BootSplash from 'react-native-bootsplash';
-import {useNavigation} from '@react-navigation/native';
+import {AccountController} from '@/controllers/AccountController';
+import {NotifyController} from '@/controllers/NotifyController';
 
 export default function ConnectScreen() {
   const [isSignModalVisible, setSignModalVisible] = useState(false);
   const {open} = useWeb3Modal();
   const {isConnected, isConnecting} = useAccount();
-  const {account, notifyClient} = useNotifyClientContext();
+  const {initialized} = useSnapshot(NotifyController.state);
+  const {address} = useSnapshot(AccountController.state);
   const {signMessageAsync} = useSignMessage();
   const {disconnect, isLoading: isDisconnecting} = useDisconnect();
   const {navigate} = useNavigation();
@@ -33,18 +36,19 @@ export default function ConnectScreen() {
   };
 
   async function onRegisterAccount() {
+    const notifyClient = NotifyController.getClient();
     if (!notifyClient) {
       Alert.alert('Notify client not initialized');
       return;
     }
 
-    if (!account) {
+    if (!address) {
       Alert.alert('Account not initialized');
       return;
     }
 
     const {message, registerParams} = await notifyClient.prepareRegistration({
-      account,
+      account: address,
       domain: '',
       allApps: true,
     });
@@ -66,14 +70,15 @@ export default function ConnectScreen() {
   };
 
   useEffect(() => {
+    const notifyClient = NotifyController.getClient();
     // Wait until wagmi inits and then hide the splash screen
     if (!isConnected && !isConnecting) {
       BootSplash.hide({fade: true});
     }
 
-    if (isConnected && notifyClient && account) {
+    if (isConnected && notifyClient && address && initialized) {
       const isRegistered = notifyClient?.isRegistered({
-        account,
+        account: address,
         domain: '',
         allApps: true,
       });
@@ -86,7 +91,7 @@ export default function ConnectScreen() {
 
       BootSplash.hide({fade: true});
     }
-  }, [isConnected, isConnecting, notifyClient, account, navigate]);
+  }, [isConnected, isConnecting, navigate, address, initialized]);
 
   return (
     <ImageBackground style={styles.container} source={Background}>

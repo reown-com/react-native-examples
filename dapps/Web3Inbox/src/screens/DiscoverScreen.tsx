@@ -1,5 +1,5 @@
+import {useSnapshot} from 'valtio';
 import {useEffect, useState} from 'react';
-
 import {FlatList, ImageBackground, StyleSheet} from 'react-native';
 import {ProjectItem} from '@/constants/Explorer';
 import DiscoverListItem from '@/components/DiscoverListItem';
@@ -9,7 +9,10 @@ import {Text} from '@/components/Text';
 import Background from '@/icons/gradient-background.png';
 import {Spacing} from '@/utils/ThemeUtil';
 import DiscoverListItemSkeleton from '@/components/DiscoverListItemSkeleton';
-import useNotifyClientContext from '@/hooks/useNotifyClientContext';
+import {AccountController} from '@/controllers/AccountController';
+import {NotifyController} from '@/controllers/NotifyController';
+import {useNavigation} from '@react-navigation/native';
+import {NotifyClientTypes} from '@walletconnect/notify-client';
 
 function ListHeader() {
   return (
@@ -39,9 +42,10 @@ function ListEmpty({isLoading}: {isLoading: boolean}) {
 }
 
 export default function DiscoverScreen() {
-  const {subscriptions, notifyClient, account} = useNotifyClientContext();
+  const {subscriptions, address} = useSnapshot(AccountController.state);
   const [discoverList, setDiscoverList] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const {navigate} = useNavigation();
 
   const handleGetDiscoverList = async () => {
     setLoading(true);
@@ -51,13 +55,15 @@ export default function DiscoverScreen() {
   };
 
   const handleSubscribe = async (domain: string) => {
-    if (!notifyClient || !account) {
+    const client = NotifyController.getClient();
+    if (!client || !address) {
+      console.log('Notify client not initialized');
       return;
     }
 
-    await notifyClient
+    await client
       .subscribe({
-        account,
+        account: address,
         appDomain: domain,
       })
       .then(res => {
@@ -68,6 +74,15 @@ export default function DiscoverScreen() {
       .catch(e => {
         console.log('Error subscribing to dapp', e.message);
       });
+  };
+
+  const handlePress = (item: NotifyClientTypes.NotifySubscription) => {
+    console.log('Pressed', item);
+    navigate('SubscriptionDetailsScreen', {
+      topic: item?.topic,
+      name: item.metadata.name,
+      metadata: item.metadata,
+    });
   };
 
   useEffect(() => {
@@ -85,15 +100,16 @@ export default function DiscoverScreen() {
         ListEmptyComponent={<ListEmpty isLoading={loading} />}
         data={discoverList}
         renderItem={({item}) => {
-          const isSubscribed = subscriptions.some(s =>
+          const subscription = subscriptions.find(s =>
             item.dapp_url.includes(s.metadata.appDomain),
           );
           return (
             <DiscoverListItem
               key={item.dapp_url}
               item={item}
-              isSubscribed={isSubscribed}
+              isSubscribed={!!subscription}
               onSubscribe={handleSubscribe}
+              onPress={() => handlePress(subscription)}
             />
           );
         }}

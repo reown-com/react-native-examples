@@ -1,4 +1,7 @@
 import {NavigatorScreenParams} from '@react-navigation/native';
+import {NotifyClientTypes} from '@walletconnect/notify-client';
+
+export type CaipAddress = `${string}:${string}:${string}`;
 
 export type ThemeKeys =
   | 'accent-100'
@@ -106,8 +109,11 @@ declare global {
 export type RootStackParamList = {
   Connect: undefined;
   Home: NavigatorScreenParams<HomeTabParamList>;
-  SubscriptionDetailsScreen: {topic: string; name: string};
-  SubscriptionSettingsScreen: {topic: string; name: string};
+  SubscriptionDetailsScreen: {
+    topic: string;
+    metadata: NotifyClientTypes.Metadata;
+  };
+  SubscriptionSettingsScreen: {topic: string};
 };
 
 export type HomeTabParamList = {

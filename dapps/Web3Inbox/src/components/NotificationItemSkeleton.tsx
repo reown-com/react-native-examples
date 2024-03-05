@@ -1,5 +1,7 @@
 import {StyleSheet, View} from 'react-native';
 import useColors from '@/hooks/useColors';
+import {Shimmer} from '@/components/Shimmer';
+import {Spacing} from '@/utils/ThemeUtil';
 
 export default function NotificationItemSkeleton() {
   const Theme = useColors();
@@ -9,49 +11,40 @@ export default function NotificationItemSkeleton() {
       style={[
         styles.container,
         {
-          borderColor: Theme['fg-150'],
+          backgroundColor: Theme['bg-100'],
+          borderColor: Theme['gray-glass-010'],
         },
       ]}>
-      <View
-        style={[
-          styles.title,
-          {
-            backgroundColor: Theme['bg-100'],
-          },
-        ]}
-      />
-      <View
-        style={[
-          styles.description,
-          {
-            backgroundColor: Theme['bg-100'],
-          },
-        ]}
-      />
+      <Shimmer width={48} height={48} borderRadius={10} />
+      <View style={styles.bodyContainer}>
+        <View style={styles.title}>
+          <Shimmer width={100} height={18} borderRadius={4} />
+          <Shimmer width={40} height={18} borderRadius={4} />
+        </View>
+        <Shimmer width={240} height={10} borderRadius={3} />
+        <Shimmer width={220} height={10} borderRadius={3} />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    gap: 8,
-    padding: 12,
-    borderBottomWidth: 1,
+    rowGap: Spacing.s,
+    padding: Spacing.l,
+    flexDirection: 'row',
   },
   title: {
-    width: '50%',
-    height: 16,
-    borderRadius: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  description: {
-    width: '70%',
-    height: 12,
-
-    borderRadius: 4,
+  nameLoader: {
+    marginBottom: Spacing.xs,
+  },
+  bodyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    rowGap: Spacing['3xs'],
+    marginLeft: Spacing.s,
   },
 });

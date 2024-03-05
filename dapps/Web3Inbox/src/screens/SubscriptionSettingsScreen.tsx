@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   ActivityIndicator,
@@ -15,19 +14,19 @@ import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import useColors from '@/hooks/useColors';
 import {Controller, useForm} from 'react-hook-form';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {useEffect, useState} from 'react';
 
 type BooleanMap = {[key: string]: boolean};
 
-export default function SubscriptionSettingsScreen() {
-  const {params} = useRoute();
+export default function SubscriptionSettingsScreen({route, navigation}) {
   const {bottom} = useSafeAreaInsets();
-  const tabBarHeight = useBottomTabBarHeight();
-  const topic = params?.topic;
+
+  const {topic, name} = route.params;
+  console.log('topic', topic);
   const {navigate} = useNavigation();
   const Theme = useColors();
   const {subscriptions, notifyClient} = useNotifyClientContext();
-  const [unsubscribing, setUnsubscribing] = React.useState(false);
+  const [unsubscribing, setUnsubscribing] = useState(false);
 
   const subscription = subscriptions.find(s => s.topic === topic);
   const scopes = subscription?.scope || {};
@@ -125,7 +124,7 @@ export default function SubscriptionSettingsScreen() {
           onPress={handleUnsubscribe}
           style={[
             {
-              marginBottom: tabBarHeight + bottom + 16,
+              marginBottom: bottom + 16,
             },
             styles.destructiveButton,
           ]}>
@@ -142,7 +141,7 @@ export default function SubscriptionSettingsScreen() {
 
 const styles = StyleSheet.create({
   destructiveButton: {
-    backgroundColor: PlatformColor('systemRed'),
+    backgroundColor: 'red',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',

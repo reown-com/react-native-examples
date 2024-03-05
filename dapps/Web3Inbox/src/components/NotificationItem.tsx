@@ -1,77 +1,115 @@
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {
+  Animated,
+  Image,
+  Linking,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 import useColors from '@/hooks/useColors';
 import {DateUtil} from '@/utils/DateUtil';
+import {Spacing} from '@/utils/ThemeUtil';
+import {Text} from '@/components/Text';
+import {useRef} from 'react';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type NotificationItemProps = {
   title: string;
   description: string;
   sentAt: number;
-  url: string | null;
-  onPress: () => void;
+  url?: string | null;
+  imageUrl?: string;
 };
 
+// TODO: add show more button
 export default function NotificationItem({
   title,
   description,
   sentAt,
   url,
-  onPress,
+  imageUrl,
 }: NotificationItemProps) {
   const Theme = useColors();
+  const colorAnimation = useRef(new Animated.Value(0));
+
+  const onPressIn = () => {
+    Animated.timing(colorAnimation.current, {
+      toValue: 1,
+      useNativeDriver: false,
+      duration: 200,
+    }).start();
+  };
+
+  const onPressOut = () => {
+    Animated.timing(colorAnimation.current, {
+      toValue: 0,
+      useNativeDriver: false,
+      duration: 200,
+    }).start();
+  };
+
+  const backgroundColor = colorAnimation.current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [Theme['bg-100'], Theme['accent-010']],
+  });
+
+  const borderColor = colorAnimation.current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [Theme['bg-100'], Theme['accent-100']],
+  });
+
+  const onPress = () => {
+    if (url) {
+      Linking.openURL(url);
+    }
+  };
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={({pressed}) => [
-        {
-          backgroundColor:
-            pressed && url ? Theme['accent-010'] : Theme['bg-100'],
-          borderColor: Theme['fg-150'],
-        },
-        styles.container,
-      ]}>
-      <View style={styles.titleContainer}>
-        <Text style={[styles.title, {color: Theme['fg-100']}]}>{title}</Text>
-        {sentAt ? (
-          <Text style={[styles.sentAt, {color: Theme['fg-100']}]}>
-            {DateUtil.getRelativeDateFromNow(sentAt)}
+    <AnimatedPressable
+      disabled={!url}
+      style={[styles.container, {backgroundColor, borderColor}]}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      onPress={onPress}>
+      <Image source={{uri: imageUrl}} style={styles.image} />
+      <View style={styles.textContainer}>
+        <View style={styles.titleContainer}>
+          <Text variant="paragraph-500" color="fg-100">
+            {title}
           </Text>
-        ) : null}
+          {sentAt ? (
+            <Text color="fg-250" variant="tiny-500">
+              {DateUtil.getRelativeDateFromNow(sentAt)}
+            </Text>
+          ) : null}
+        </View>
+        <Text numberOfLines={3} variant="small-400">
+          {description}
+        </Text>
       </View>
-      <Text style={[styles.description, {color: Theme['fg-100']}]}>
-        {description}
-      </Text>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     gap: 4,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderBottomWidth: 0.5,
+    paddingVertical: Spacing.m,
+    paddingHorizontal: Spacing.l,
+  },
+  textContainer: {
+    flex: 1,
   },
   titleContainer: {
-    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
-  title: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  description: {
-    fontSize: 14,
-    fontWeight: '400',
-  },
-  sentAt: {
-    fontSize: 12,
-    fontWeight: '400',
+  image: {
+    height: 48,
+    width: 48,
+    borderRadius: 10,
+    marginRight: Spacing.xs,
   },
 });

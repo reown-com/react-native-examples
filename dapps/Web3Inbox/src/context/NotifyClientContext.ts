@@ -62,7 +62,7 @@ interface NotifyClientContextValue {
   notifyClient: NotifyClient | undefined;
   subscriptions: Array<NotifySubscription>;
   notifications: NotificationsState;
-  fetchSubscriptions: () => Promise<void>;
+  fetchSubscriptions: () => void;
   setInitializing: (initializing: boolean) => void;
   setSubscriptions: (subscriptions: string[]) => void;
   setNotifications: (
@@ -81,7 +81,7 @@ const NotifyClientContext = createContext<NotifyClientContextValue>({
   subscriptions: [],
   notifications: {},
   setInitializing: () => {},
-  fetchSubscriptions: async () => {},
+  fetchSubscriptions: () => {},
   setNotifications: () => {},
   setSubscriptions: () => {},
   setNotifyClient: () => {},

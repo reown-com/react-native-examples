@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {
   ActivityIndicator,
   Image,
+  Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -16,12 +17,14 @@ type DiscoverListItemProps = {
   item: ProjectItem;
   isSubscribed?: boolean;
   onSubscribe?: (domain: string) => Promise<void>;
+  onPress?: () => void;
 };
 
 export default function DiscoverListItem({
   item,
   isSubscribed,
   onSubscribe,
+  onPress,
 }: DiscoverListItemProps) {
   const Theme = useColors();
   const [subscribing, setSubscribing] = useState(false);
@@ -34,7 +37,9 @@ export default function DiscoverListItem({
   }
 
   return (
-    <View
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress || !isSubscribed}
       style={[
         styles.container,
         {
@@ -81,7 +86,7 @@ export default function DiscoverListItem({
           {item.description}
         </Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
