@@ -6,7 +6,7 @@ import {NotifyClientTypes} from '@walletconnect/notify-client';
 // -- Types --------------------------------------------- //
 export interface AccountControllerState {
   isConnected: boolean;
-  isRegistered?: boolean; // check this
+  isRegistered: boolean;
   address?: CaipAddress;
   subscriptions: NotifyClientTypes.NotifySubscription[];
   notifications: {[topic: string]: any[]};
@@ -15,6 +15,7 @@ export interface AccountControllerState {
 // -- State --------------------------------------------- //
 const state = proxy<AccountControllerState>({
   isConnected: false,
+  isRegistered: false,
   address: undefined,
   subscriptions: [],
   notifications: {},
@@ -26,6 +27,10 @@ export const AccountController = {
 
   setIsConnected(isConnected: AccountControllerState['isConnected']) {
     state.isConnected = isConnected;
+  },
+
+  setIsRegistered(isRegistered: AccountControllerState['isRegistered']) {
+    state.isRegistered = isRegistered;
   },
 
   setAddress(address: AccountControllerState['address']) {
@@ -57,6 +62,7 @@ export const AccountController = {
 
   reset() {
     state.isConnected = false;
+    state.isRegistered = false;
     state.address = undefined;
     state.subscriptions = [];
     state.notifications = {};

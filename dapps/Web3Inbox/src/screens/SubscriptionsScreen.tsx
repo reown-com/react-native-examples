@@ -1,6 +1,5 @@
 import {useSnapshot} from 'valtio';
-import {FlatList} from 'react-native';
-import {useAccount} from 'wagmi';
+import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 
 import SubscriptionItem from '@/components/SubscriptionItem';
 import {
@@ -9,24 +8,64 @@ import {
 } from '@/controllers/AccountController';
 import {Divider} from '@/components/Divider';
 import {HomeTabScreenProps} from '@/utils/TypesUtil';
+import {Text} from '@/components/Text';
+import {Spacing} from '@/utils/ThemeUtil';
+import SubscriptionItemSkeleton from '@/components/SubscriptionItemSkeleton';
+
+function ListHeader(onPress: () => void, showSubscribed: boolean) {
+  return (
+    <>
+      <Text variant="tiny-600" color="fg-300" style={styles.mainText}>
+        Discover
+      </Text>
+      <TouchableOpacity onPress={onPress}>
+        <Text variant="small-500">Discover apps</Text>
+      </TouchableOpacity>
+      {showSubscribed && (
+        <Text variant="tiny-600" color="fg-300" style={styles.mainText}>
+          Subscribed
+        </Text>
+      )}
+    </>
+  );
+}
+
+function ListEmptyComponent(isLoading: boolean) {
+  if (isLoading) {
+    return (
+      <>
+        <SubscriptionItemSkeleton />
+        <SubscriptionItemSkeleton />
+        <SubscriptionItemSkeleton />
+      </>
+    );
+  }
+  return null;
+}
 
 type Props = HomeTabScreenProps<'Subscriptions'>;
 
 export default function SubscriptionsScreen({navigation}: Props) {
-  const {subscriptions, isRegistered} = useSnapshot(
+  const {subscriptions} = useSnapshot(
     AccountController.state,
   ) as AccountControllerState;
-  const {address} = useAccount();
 
-  if (!address || !isRegistered) {
-    return null;
-  }
+  const onDiscoverPress = () => {
+    navigation.navigate('Discover');
+  };
 
   return (
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
       data={subscriptions}
       ItemSeparatorComponent={Divider}
+      ListHeaderComponent={ListHeader.bind(
+        null,
+        onDiscoverPress,
+        subscriptions.length > 0,
+      )}
+      ListHeaderComponentStyle={styles.header}
+      ListEmptyComponent={ListEmptyComponent.bind(null, false)}
       renderItem={({item}) => (
         <SubscriptionItem
           key={item?.topic}
@@ -44,3 +83,13 @@ export default function SubscriptionsScreen({navigation}: Props) {
     />
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    rowGap: Spacing.s,
+    padding: Spacing.m,
+  },
+  mainText: {
+    textTransform: 'uppercase',
+  },
+});

@@ -50,7 +50,7 @@ export default function ConnectScreen({navigation}: Props) {
 
     const {message, registerParams} = await notifyClient.prepareRegistration({
       account: address,
-      domain: '',
+      domain: '', //TODO: add domain?
       allApps: true,
     });
     const signature = await signMessageAsync({message: message});
@@ -80,9 +80,10 @@ export default function ConnectScreen({navigation}: Props) {
     if (isConnected && notifyClient && address && initialized) {
       const isRegistered = notifyClient?.isRegistered({
         account: address,
-        domain: '',
+        domain: '', //TODO: add domain?
         allApps: true,
       });
+      AccountController.setIsRegistered(isRegistered);
 
       if (isRegistered) {
         navigation.navigate({name: 'Home', params: {screen: 'Subscriptions'}});
