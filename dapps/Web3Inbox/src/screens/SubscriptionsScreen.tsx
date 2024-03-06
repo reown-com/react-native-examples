@@ -1,43 +1,71 @@
-import {useState} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {useAccount} from 'wagmi';
-import useNotifyClientContext from '../hooks/useNotifyClientContext';
-import SubscriptionItem from '../components/SubscriptionItem';
-import useColors from '@/hooks/useColors';
+import {useSnapshot} from 'valtio';
+import {FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 
-export default function SubscriptionsScreen() {
-  const {subscriptions, isRegistered, fetchSubscriptions} =
-    useNotifyClientContext();
-  const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation();
+import SubscriptionItem from '@/components/SubscriptionItem';
+import {
+  AccountController,
+  AccountControllerState,
+} from '@/controllers/AccountController';
+import {Divider} from '@/components/Divider';
+import {HomeTabScreenProps} from '@/utils/TypesUtil';
+import {Text} from '@/components/Text';
+import {Spacing} from '@/utils/ThemeUtil';
+import SubscriptionItemSkeleton from '@/components/SubscriptionItemSkeleton';
 
-  const {address} = useAccount();
-
-  const Theme = useColors();
-
-  async function handleRefresh() {
-    setRefreshing(true);
-    await fetchSubscriptions();
-    setRefreshing(false);
-  }
-
-  if (!address || !isRegistered) {
-    return null;
-  }
-
-  const renderDivider = () => (
-    <View style={[styles.divider, {backgroundColor: Theme['fg-125']}]} />
+function ListHeader(onPress: () => void, showSubscribed: boolean) {
+  return (
+    <>
+      <Text variant="tiny-600" color="fg-300" style={styles.mainText}>
+        Discover
+      </Text>
+      <TouchableOpacity onPress={onPress}>
+        <Text variant="small-500">Discover apps</Text>
+      </TouchableOpacity>
+      {showSubscribed && (
+        <Text variant="tiny-600" color="fg-300" style={styles.mainText}>
+          Subscribed
+        </Text>
+      )}
+    </>
   );
+}
+
+function ListEmptyComponent(isLoading: boolean) {
+  if (isLoading) {
+    return (
+      <>
+        <SubscriptionItemSkeleton />
+        <SubscriptionItemSkeleton />
+        <SubscriptionItemSkeleton />
+      </>
+    );
+  }
+  return null;
+}
+
+type Props = HomeTabScreenProps<'Subscriptions'>;
+
+export default function SubscriptionsScreen({navigation}: Props) {
+  const {subscriptions} = useSnapshot(
+    AccountController.state,
+  ) as AccountControllerState;
+
+  const onDiscoverPress = () => {
+    navigation.navigate('Discover');
+  };
 
   return (
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-      }
       data={subscriptions}
-      ItemSeparatorComponent={renderDivider}
+      ItemSeparatorComponent={Divider}
+      ListHeaderComponent={ListHeader.bind(
+        null,
+        onDiscoverPress,
+        subscriptions.length > 0,
+      )}
+      ListHeaderComponentStyle={styles.header}
+      ListEmptyComponent={ListEmptyComponent.bind(null, false)}
       renderItem={({item}) => (
         <SubscriptionItem
           key={item?.topic}
@@ -45,9 +73,9 @@ export default function SubscriptionsScreen() {
           imageURL={item?.metadata?.icons[0]}
           description={item?.metadata?.appDomain}
           onPress={() => {
-            navigation.navigate('SubscriptionDetailsScreen', {
+            navigation.navigate('SubscriptionDetails', {
               topic: item?.topic,
-              name: item?.metadata?.name,
+              metadata: item?.metadata,
             });
           }}
         />
@@ -57,8 +85,11 @@ export default function SubscriptionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  divider: {
-    height: 1,
-    width: '100%',
+  header: {
+    rowGap: Spacing.s,
+    padding: Spacing.m,
+  },
+  mainText: {
+    textTransform: 'uppercase',
   },
 });

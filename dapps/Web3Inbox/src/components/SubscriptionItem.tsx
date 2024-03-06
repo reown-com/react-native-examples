@@ -1,5 +1,8 @@
+import {useRef} from 'react';
+import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
+import {Text} from '@/components/Text';
 import useColors from '@/hooks/useColors';
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {Spacing} from '@/utils/ThemeUtil';
 
 interface ISubscriptionItem {
   title: string;
@@ -8,6 +11,8 @@ interface ISubscriptionItem {
   onPress: () => void;
 }
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 export default function SubscriptionItem({
   title,
   description,
@@ -15,73 +20,64 @@ export default function SubscriptionItem({
   onPress,
 }: ISubscriptionItem) {
   const Theme = useColors();
+  const colorAnimation = useRef(new Animated.Value(0));
+
+  const onPressIn = () => {
+    Animated.timing(colorAnimation.current, {
+      toValue: 1,
+      useNativeDriver: false,
+      duration: 200,
+    }).start();
+  };
+
+  const onPressOut = () => {
+    Animated.timing(colorAnimation.current, {
+      toValue: 0,
+      useNativeDriver: false,
+      duration: 200,
+    }).start();
+  };
+
+  const backgroundColor = colorAnimation.current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [Theme['bg-100'], Theme['accent-010']],
+  });
+
+  const borderColor = colorAnimation.current.interpolate({
+    inputRange: [0, 1],
+    outputRange: [Theme['bg-100'], Theme['accent-100']],
+  });
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={({pressed}) => [
-        styles.container,
-        {
-          backgroundColor: pressed ? Theme['accent-010'] : Theme['bg-100'],
-          borderColor: Theme['fg-150'],
-        },
-      ]}>
-      <View style={styles.imageContainer}>
-        <View style={styles.imageBorder} />
-        <Image source={{uri: imageURL}} style={styles.image} />
-      </View>
+    <AnimatedPressable
+      style={[styles.container, {backgroundColor, borderColor}]}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      onPress={onPress}>
+      <Image source={{uri: imageURL}} style={styles.image} />
       <View style={styles.contentContainer}>
-        <Text style={[styles.title, {color: Theme['fg-100']}]}>{title}</Text>
-        <Text style={[styles.description, {color: Theme['fg-100']}]}>
+        <Text variant="small-500">{title}</Text>
+        <Text variant="small-500" color="fg-150">
           {description}
         </Text>
       </View>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    width: '100%',
-    padding: 12,
+    columnGap: 8,
+    padding: Spacing.s,
   },
   contentContainer: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 4,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  description: {
-    fontSize: 14,
-    fontWeight: '400',
-  },
-  imageContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 32,
-    position: 'relative',
-  },
-  imageBorder: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    borderRadius: 32,
-    borderWidth: 1.25,
-    borderColor: 'rgba(150,150,150,1)',
-    zIndex: 999,
-    opacity: 0.15,
+    justifyContent: 'center',
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: 48,
+    height: 48,
     borderRadius: 32,
   },
 });

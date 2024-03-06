@@ -1,13 +1,12 @@
-import * as React from 'react';
+import {useState} from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Image,
+  Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import useNotifyClientContext from '../hooks/useNotifyClientContext';
 
 import useColors from '@/hooks/useColors';
 import {ProjectItem} from '@/constants/Explorer';
@@ -16,49 +15,31 @@ import {Spacing} from '@/utils/ThemeUtil';
 
 type DiscoverListItemProps = {
   item: ProjectItem;
+  isSubscribed?: boolean;
+  onSubscribe?: (domain: string) => Promise<void>;
+  onPress?: () => void;
 };
 
-export default function DiscoverListItem({item}: DiscoverListItemProps) {
-  const {account, subscriptions, notifyClient} = useNotifyClientContext();
+export default function DiscoverListItem({
+  item,
+  isSubscribed,
+  onSubscribe,
+  onPress,
+}: DiscoverListItemProps) {
   const Theme = useColors();
-
-  const [subscribing, setSubscribing] = React.useState(false);
+  const [subscribing, setSubscribing] = useState(false);
   const domain = new URL(item.dapp_url).host;
 
-  const isSubscribed = subscriptions.some(s =>
-    item.dapp_url.includes(s.metadata.appDomain),
-  );
-
   async function handleSubscribeToDapp() {
-    if (!notifyClient) {
-      Alert.alert('Notify client not initialized');
-      return;
-    }
-
-    if (!account) {
-      Alert.alert('Account not initialized');
-      return;
-    }
     setSubscribing(true);
-
-    await notifyClient
-      .subscribe({
-        account,
-        appDomain: domain,
-      })
-      .then(res => {
-        if (res) {
-          setSubscribing(false);
-        }
-      })
-      .catch(e => {
-        setSubscribing(false);
-        Alert.alert('Error subscribing to dapp', e.message);
-      });
+    await onSubscribe?.(domain);
+    setSubscribing(false);
   }
 
   return (
-    <View
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress || !isSubscribed}
       style={[
         styles.container,
         {
@@ -97,11 +78,15 @@ export default function DiscoverListItem({item}: DiscoverListItemProps) {
         <Text color="fg-200" variant="tiny-500" style={styles.subtitle}>
           {domain}
         </Text>
-        <Text color="fg-150" variant="small-400" style={styles.description}>
+        <Text
+          color="fg-150"
+          variant="small-400"
+          style={styles.description}
+          numberOfLines={3}>
           {item.description}
         </Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

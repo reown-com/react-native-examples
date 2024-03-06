@@ -1,33 +1,49 @@
-import * as React from 'react';
-import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
-  PlatformColor,
   Pressable,
   StyleSheet,
   Switch,
-  Text,
   View,
 } from 'react-native';
-import useNotifyClientContext from '../hooks/useNotifyClientContext';
 import useColors from '@/hooks/useColors';
 import {Controller, useForm} from 'react-hook-form';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {useState} from 'react';
+import {useSnapshot} from 'valtio';
+import {AccountController} from '@/controllers/AccountController';
+import {NotifyController} from '@/controllers/NotifyController';
+import {Spacing} from '@/utils/ThemeUtil';
+import {Text} from '@/components/Text';
+import {Divider} from '@/components/Divider';
+import {RootStackScreenProps} from '@/utils/TypesUtil';
 
 type BooleanMap = {[key: string]: boolean};
 
-export default function SubscriptionSettingsScreen() {
-  const {params} = useRoute();
-  const {bottom} = useSafeAreaInsets();
-  const tabBarHeight = useBottomTabBarHeight();
-  const topic = params?.topic;
-  const {navigate} = useNavigation();
+function ListFooter(onPress: () => void, loading: boolean) {
   const Theme = useColors();
-  const {subscriptions, notifyClient} = useNotifyClientContext();
-  const [unsubscribing, setUnsubscribing] = React.useState(false);
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[styles.destructiveButton, {backgroundColor: Theme['error-100']}]}>
+      {loading ? (
+        <ActivityIndicator color={Theme['fg-100']} />
+      ) : (
+        <Text variant="small-500" color="inverse-100">
+          Unsubscribe
+        </Text>
+      )}
+    </Pressable>
+  );
+}
+
+type Props = RootStackScreenProps<'SubscriptionSettings'>;
+
+export default function SubscriptionSettingsScreen({route, navigation}: Props) {
+  const {topic} = route.params;
+  const {subscriptions} = useSnapshot(AccountController.state);
+  const [unsubscribing, setUnsubscribing] = useState(false);
 
   const subscription = subscriptions.find(s => s.topic === topic);
   const scopes = subscription?.scope || {};
@@ -36,15 +52,13 @@ export default function SubscriptionSettingsScreen() {
   Object.keys(scopes).map((key: string) => {
     scopesBooleanMap[key] = scopes[key].enabled;
   });
-  const notificationTypes = Object.keys(subscription?.scope || {}).map(
-    key => scopes[key],
-  );
 
   const {control, watch} = useForm({
     defaultValues: scopesBooleanMap,
   });
 
   async function handleSaveNotificationSettings() {
+    const notifyClient = NotifyController.getClient();
     const newScopes = watch();
     const enabledScopes = Object.keys(newScopes).filter(
       key => newScopes[key] === true,
@@ -55,13 +69,14 @@ export default function SubscriptionSettingsScreen() {
       return;
     }
 
-    const updated = await notifyClient.update({
+    await notifyClient.update({
       topic,
       scope: enabledScopes,
     });
   }
 
   async function handleUnsubscribe() {
+    const notifyClient = NotifyController.getClient();
     if (!notifyClient) {
       Alert.alert('Notify client not initialized');
       return;
@@ -72,7 +87,7 @@ export default function SubscriptionSettingsScreen() {
       .deleteSubscription({topic})
       .then(() => {
         setUnsubscribing(false);
-        navigate('SubscriptionsScreen');
+        navigation.navigate({name: 'Home', params: {screen: 'Subscriptions'}});
       })
       .catch(e => {
         Alert.alert('Failed to unsubscribe', e);
@@ -83,23 +98,14 @@ export default function SubscriptionSettingsScreen() {
   return (
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={{
-        paddingHorizontal: 16,
-      }}
-      data={[]}
+      contentContainerStyle={styles.contentContainer}
+      data={Object.values(scopes)}
+      ItemSeparatorComponent={Divider}
       renderItem={({item}) => (
-        <View
-          key={item.id}
-          style={[
-            styles.scopeContainer,
-            index === notificationTypes.length - 1 ? {borderWidth: 0} : null,
-            {borderColor: Theme['fg-125']},
-          ]}>
+        <View key={item.id} style={styles.scopeContainer}>
           <View style={styles.scopeContentContainer}>
-            <Text style={[styles.scopeTitle, {color: Theme['fg-100']}]}>
-              {item.name}
-            </Text>
-            <Text style={[styles.scopeDescription, {color: Theme['fg-100']}]}>
+            <Text variant="paragraph-600">{item.name} Notifications</Text>
+            <Text variant="small-500" color="fg-200">
               {item.description}
             </Text>
           </View>
@@ -120,71 +126,36 @@ export default function SubscriptionSettingsScreen() {
           </View>
         </View>
       )}
-      ListFooterComponent={() => (
-        <Pressable
-          onPress={handleUnsubscribe}
-          style={[
-            {
-              marginBottom: tabBarHeight + bottom + 16,
-            },
-            styles.destructiveButton,
-          ]}>
-          {unsubscribing ? (
-            <ActivityIndicator color={Theme['fg-100']} />
-          ) : (
-            <Text style={styles.destructiveButtonText}>Unsubscribe</Text>
-          )}
-        </Pressable>
+      ListFooterComponent={ListFooter.bind(
+        null,
+        handleUnsubscribe,
+        unsubscribing,
       )}
     />
   );
 }
 
 const styles = StyleSheet.create({
+  contentContainer: {
+    paddingHorizontal: Spacing.l,
+  },
   destructiveButton: {
-    backgroundColor: PlatformColor('systemRed'),
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 16,
-  },
-  destructiveButtonText: {
-    color: 'white',
-    fontWeight: '500',
+    marginVertical: Spacing.l,
   },
   scopeContainer: {
-    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    borderBottomWidth: 0.5,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.l,
   },
   scopeContentContainer: {
     flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    rowGap: 4,
     justifyContent: 'center',
-    gap: 4,
-    paddingVertical: 16,
-  },
-  buttonContainer: {
-    gap: 4,
-  },
-  dark: {
-    backgroundColor: '#141414',
-  },
-  scopeTitle: {
-    width: '100%',
-    fontSize: 18,
-    fontWeight: '500',
-  },
-  scopeDescription: {
-    width: '100%',
-    fontSize: 12,
-    fontWeight: '400',
-    marginBottom: 8,
+    paddingVertical: Spacing.l,
   },
 });

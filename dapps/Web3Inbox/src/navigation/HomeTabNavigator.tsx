@@ -9,6 +9,9 @@ import {HomeTabParamList} from '@/utils/TypesUtil';
 import {SettingsScreen} from '@/screens/SettingsScreen';
 import SubscriptionsScreen from '@/screens/SubscriptionsScreen';
 import DiscoverScreen from '@/screens/DiscoverScreen';
+import {TabHeader} from '@/components/TabHeader';
+import {useAccount, useEnsAvatar, useEnsName} from 'wagmi';
+import {useWeb3Modal} from '@web3modal/wagmi-react-native';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
 
@@ -30,13 +33,23 @@ const SettingsTab = ({color, focused}: {color: string; focused: boolean}) => (
 
 export default function TabNavigator() {
   const Theme = useColors();
+  const {address} = useAccount();
+  const {data: ensName} = useEnsName({address});
+  const {data: avatar} = useEnsAvatar({name: ensName});
+  const {open} = useWeb3Modal();
 
   return (
     <Tab.Navigator
       backBehavior="none"
       sceneContainerStyle={{backgroundColor: Theme['bg-100']}}
       screenOptions={{
-        headerShown: false,
+        header: props =>
+          TabHeader({
+            ...props,
+            address: ensName || address,
+            onAvatarPress: open,
+            avatar,
+          }),
         tabBarShowLabel: false,
         tabBarActiveTintColor: Theme['fg-100'],
         tabBarInactiveTintColor: Theme['fg-200'],
@@ -46,18 +59,18 @@ export default function TabNavigator() {
         },
       }}>
       <Tab.Screen
-        name="SubscriptionsScreen"
-        options={{tabBarIcon: NotificationIcon}}
+        name="Subscriptions"
+        options={{tabBarIcon: NotificationIcon, title: 'Notifications'}}
         component={SubscriptionsScreen}
       />
       <Tab.Screen
-        name="DiscoverScreen"
-        options={{tabBarIcon: DiscoverTab}}
+        name="Discover"
+        options={{tabBarIcon: DiscoverTab, title: 'Discover'}}
         component={DiscoverScreen}
       />
       <Tab.Screen
-        name="SettingsScreen"
-        options={{tabBarIcon: SettingsTab}}
+        name="Settings"
+        options={{tabBarIcon: SettingsTab, title: 'Settings'}}
         component={SettingsScreen}
       />
     </Tab.Navigator>

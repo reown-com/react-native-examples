@@ -1,5 +1,4 @@
 import '@walletconnect/react-native-compat';
-import {StatusBar, useColorScheme} from 'react-native';
 import {
   createWeb3Modal,
   defaultWagmiConfig,
@@ -13,7 +12,6 @@ import {WagmiConfig} from 'wagmi';
 import {arbitrum, mainnet, polygon, avalanche, bsc} from 'wagmi/chains';
 import {ENV_PROJECT_ID, ENV_SENTRY_DSN} from '@env';
 import {NavigationContainer} from '@react-navigation/native';
-import {NotifyClientProvider} from './provider/NotifyClientProvider';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import RootStackNavigator from './navigation/RootStack';
@@ -61,19 +59,12 @@ createWeb3Modal({
 });
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
   return (
     <NavigationContainer>
       <GestureHandlerRootView style={{flex: 1}}>
         <WagmiConfig config={wagmiConfig}>
-          <NotifyClientProvider>
-            <StatusBar
-              barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-            />
-            <RootStackNavigator />
-            <Web3Modal />
-          </NotifyClientProvider>
+          <RootStackNavigator />
+          <Web3Modal />
         </WagmiConfig>
       </GestureHandlerRootView>
     </NavigationContainer>
