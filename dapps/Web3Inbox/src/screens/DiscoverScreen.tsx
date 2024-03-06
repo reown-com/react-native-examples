@@ -11,7 +11,6 @@ import {Spacing} from '@/utils/ThemeUtil';
 import DiscoverListItemSkeleton from '@/components/DiscoverListItemSkeleton';
 import {AccountController} from '@/controllers/AccountController';
 import {NotifyController} from '@/controllers/NotifyController';
-import {useNavigation} from '@react-navigation/native';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
 
 function ListHeader() {
@@ -41,11 +40,10 @@ function ListEmpty({isLoading}: {isLoading: boolean}) {
   return null;
 }
 
-export default function DiscoverScreen() {
+export default function DiscoverScreen({navigation}) {
   const {subscriptions, address} = useSnapshot(AccountController.state);
   const [discoverList, setDiscoverList] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const {navigate} = useNavigation();
 
   const handleGetDiscoverList = async () => {
     setLoading(true);
@@ -77,8 +75,7 @@ export default function DiscoverScreen() {
   };
 
   const handlePress = (item: NotifyClientTypes.NotifySubscription) => {
-    console.log('Pressed', item);
-    navigate('SubscriptionDetailsScreen', {
+    navigation.navigate('SubscriptionDetailsScreen', {
       topic: item?.topic,
       name: item.metadata.name,
       metadata: item.metadata,

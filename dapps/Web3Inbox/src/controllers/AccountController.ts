@@ -1,13 +1,14 @@
 import {CaipAddress} from '@/utils/TypesUtil';
 import {proxy} from 'valtio';
 import {NotifyController} from './NotifyController';
+import {NotifyClientTypes} from '@walletconnect/notify-client';
 
 // -- Types --------------------------------------------- //
 export interface AccountControllerState {
   isConnected: boolean;
   isRegistered?: boolean; // check this
   address?: CaipAddress;
-  subscriptions: any[];
+  subscriptions: NotifyClientTypes.NotifySubscription[];
   notifications: {[topic: string]: any[]};
 }
 
@@ -31,12 +32,12 @@ export const AccountController = {
     state.address = address;
   },
 
-  setNotifications(topic: string, notifications: any[], concat = false) {
-    if (concat) {
+  setNotifications(topic: string, notifications: any[], override = true) {
+    if (override) {
+      state.notifications[topic] = notifications;
+    } else {
       state.notifications[topic] =
         state.notifications[topic].concat(notifications);
-    } else {
-      state.notifications[topic] = notifications;
     }
   },
 

@@ -10,7 +10,7 @@ import {Spacing} from '@/utils/ThemeUtil';
 import useColors from '@/hooks/useColors';
 import NotificationItemSkeleton from '@/components/NotificationItemSkeleton';
 import SettingsIcon from '@/icons/settings-tab';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {Divider} from '@/components/Divider';
 
 interface NotifyNotification {
   title: string;
@@ -21,26 +21,13 @@ interface NotifyNotification {
   type: string;
 }
 
-function HeaderButton() {
-  const Theme = useColors();
-  const {navigate} = useNavigation();
-  const {params} = useRoute();
+const HeaderButton = (color: string, onPress: () => void) => {
   return (
-    <Pressable
-      onPress={() =>
-        navigate('SubscriptionSettingsScreen', {
-          topic: params?.topic,
-        })
-      }>
-      <SettingsIcon
-        height={20}
-        width={20}
-        focused={false}
-        fill={Theme['fg-200']}
-      />
+    <Pressable onPress={onPress}>
+      <SettingsIcon height={20} width={20} focused={false} fill={color} />
     </Pressable>
   );
-}
+};
 
 function ListHeader({
   imageUrl,
@@ -84,15 +71,6 @@ function ListEmpty({isLoading}: {isLoading: boolean}) {
     );
   }
   return null;
-}
-
-function Divider() {
-  const Theme = useColors();
-  return (
-    <View
-      style={[styles.divider, {backgroundColor: Theme['gray-glass-020']}]}
-    />
-  );
 }
 
 export default function SubscriptionDetailsScreen({route, navigation}) {
@@ -142,7 +120,7 @@ export default function SubscriptionDetailsScreen({route, navigation}) {
       AccountController.setNotifications(
         topic,
         accountSubscriptions.notifications,
-        !!startingAfter,
+        !startingAfter,
       );
       setHasMore(accountSubscriptions.hasMore);
 
@@ -165,10 +143,15 @@ export default function SubscriptionDetailsScreen({route, navigation}) {
     if (metadata?.name) {
       navigation.setOptions({
         title: metadata.name,
-        headerRight: HeaderButton,
+        headerRight: HeaderButton.bind(null, Theme['fg-150'], () =>
+          navigation.navigate('SubscriptionSettingsScreen', {
+            topic,
+            metadata,
+          }),
+        ),
       });
     }
-  }, [metadata, navigation]);
+  }, [metadata, navigation, Theme, topic]);
 
   if (!topic) {
     return null;
@@ -176,7 +159,7 @@ export default function SubscriptionDetailsScreen({route, navigation}) {
 
   return (
     <FlatList
-      style={[styles.container, {backgroundColor: Theme['bg-100']}]}
+      style={styles.container}
       data={sortedByDate}
       keyExtractor={item => item.sentAt.toString()}
       ListHeaderComponent={
@@ -230,9 +213,5 @@ const styles = StyleSheet.create({
   },
   domain: {
     marginBottom: Spacing.l,
-  },
-  divider: {
-    height: StyleSheet.hairlineWidth,
-    width: '100%',
   },
 });

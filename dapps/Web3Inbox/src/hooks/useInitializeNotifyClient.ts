@@ -33,15 +33,28 @@ export function useInitializeNotifyClient() {
     });
 
     _notifyClient.on('notify_message', ({params, topic}) => {
-      console.log('notify_message', params, topic);
+      const isSubscribed = AccountController.state.subscriptions.find(
+        (sub: any) => sub.topic === topic,
+      );
+
+      if (isSubscribed) {
+        const {message} = params;
+        // @ts-ignore
+        const notif = {...message, sentAt: message.sent_at};
+        AccountController.setNotifications(topic, [notif], false);
+      }
     });
 
     _notifyClient.on('notify_update', ({params}) => {
       console.log('notify_update', params);
+      AccountController.refreshSubscriptions();
     });
 
     _notifyClient.on('notify_subscriptions_changed', ({params}) => {
       console.log('notify_subscriptions_changed', params);
+
+      // TODO: check if this logic is correct or i should take new subs from params
+      AccountController.refreshSubscriptions();
     });
 
     NotifyController.setClient(_notifyClient);

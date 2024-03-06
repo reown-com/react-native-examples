@@ -1,43 +1,24 @@
-import {useState} from 'react';
-import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useSnapshot} from 'valtio';
+import {FlatList} from 'react-native';
 import {useAccount} from 'wagmi';
-import useNotifyClientContext from '../hooks/useNotifyClientContext';
-import SubscriptionItem from '../components/SubscriptionItem';
-import useColors from '@/hooks/useColors';
 
-export default function SubscriptionsScreen() {
-  const {subscriptions, isRegistered, fetchSubscriptions} =
-    useNotifyClientContext();
-  const [refreshing, setRefreshing] = useState(false);
-  const navigation = useNavigation();
+import SubscriptionItem from '@/components/SubscriptionItem';
+import {AccountController} from '@/controllers/AccountController';
+import {Divider} from '@/components/Divider';
 
+export default function SubscriptionsScreen({navigation}) {
+  const {subscriptions, isRegistered} = useSnapshot(AccountController.state);
   const {address} = useAccount();
-
-  const Theme = useColors();
-
-  async function handleRefresh() {
-    setRefreshing(true);
-    await fetchSubscriptions();
-    setRefreshing(false);
-  }
 
   if (!address || !isRegistered) {
     return null;
   }
 
-  const renderDivider = () => (
-    <View style={[styles.divider, {backgroundColor: Theme['fg-125']}]} />
-  );
-
   return (
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-      }
       data={subscriptions}
-      ItemSeparatorComponent={renderDivider}
+      ItemSeparatorComponent={Divider}
       renderItem={({item}) => (
         <SubscriptionItem
           key={item?.topic}
@@ -47,7 +28,7 @@ export default function SubscriptionsScreen() {
           onPress={() => {
             navigation.navigate('SubscriptionDetailsScreen', {
               topic: item?.topic,
-              name: item?.metadata?.name,
+              metadata: item?.metadata?.name,
             });
           }}
         />
@@ -55,10 +36,3 @@ export default function SubscriptionsScreen() {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  divider: {
-    height: 1,
-    width: '100%',
-  },
-});

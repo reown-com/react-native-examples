@@ -5,13 +5,20 @@ import {RootStackParamList} from '@/utils/TypesUtil';
 import {useInitializeNotifyClient} from '@/hooks/useInitializeNotifyClient';
 import SubscriptionDetailsScreen from '@/screens/SubscriptionDetailsScreen';
 import SubscriptionSettingsScreen from '@/screens/SubscriptionSettingsScreen';
+import useColors from '@/hooks/useColors';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootStack() {
   useInitializeNotifyClient();
+  const Theme = useColors();
+
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        contentStyle: {backgroundColor: Theme['bg-100']},
+      }}>
       <Stack.Screen name="Connect" component={ConnectScreen} />
       <Stack.Screen name="Home" component={HomeTabNavigator} />
       <Stack.Screen
@@ -22,7 +29,7 @@ export default function RootStack() {
       <Stack.Screen
         name="SubscriptionSettingsScreen"
         component={SubscriptionSettingsScreen}
-        options={{headerShown: true, headerTitle: 'Settings'}}
+        options={{headerShown: true, headerTitle: 'Preferences'}}
       />
     </Stack.Navigator>
   );
