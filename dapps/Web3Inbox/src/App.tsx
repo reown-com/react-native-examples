@@ -1,5 +1,4 @@
 import '@walletconnect/react-native-compat';
-import {StatusBar, useColorScheme} from 'react-native';
 import {
   createWeb3Modal,
   defaultWagmiConfig,
@@ -60,13 +59,10 @@ createWeb3Modal({
 });
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
   return (
     <NavigationContainer>
       <GestureHandlerRootView style={{flex: 1}}>
         <WagmiConfig config={wagmiConfig}>
-          <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
           <RootStackNavigator />
           <Web3Modal />
         </WagmiConfig>

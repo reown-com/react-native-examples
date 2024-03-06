@@ -13,6 +13,8 @@ import {AccountController} from '@/controllers/AccountController';
 import {NotifyController} from '@/controllers/NotifyController';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
 
+import {HomeTabScreenProps} from '@/utils/TypesUtil';
+
 function ListHeader() {
   return (
     <>
@@ -40,7 +42,9 @@ function ListEmpty({isLoading}: {isLoading: boolean}) {
   return null;
 }
 
-export default function DiscoverScreen({navigation}) {
+type Props = HomeTabScreenProps<'Discover'>;
+
+export default function DiscoverScreen({navigation}: Props) {
   const {subscriptions, address} = useSnapshot(AccountController.state);
   const [discoverList, setDiscoverList] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,12 +78,13 @@ export default function DiscoverScreen({navigation}) {
       });
   };
 
-  const handlePress = (item: NotifyClientTypes.NotifySubscription) => {
-    navigation.navigate('SubscriptionDetailsScreen', {
-      topic: item?.topic,
-      name: item.metadata.name,
-      metadata: item.metadata,
-    });
+  const handlePress = (item?: NotifyClientTypes.NotifySubscription) => {
+    if (item) {
+      navigation.navigate('SubscriptionDetails', {
+        topic: item?.topic,
+        metadata: item.metadata,
+      });
+    }
   };
 
   useEffect(() => {
@@ -99,7 +104,7 @@ export default function DiscoverScreen({navigation}) {
         renderItem={({item}) => {
           const subscription = subscriptions.find(s =>
             item.dapp_url.includes(s.metadata.appDomain),
-          );
+          ) as NotifyClientTypes.NotifySubscription;
           return (
             <DiscoverListItem
               key={item.dapp_url}

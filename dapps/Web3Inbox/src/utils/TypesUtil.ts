@@ -1,4 +1,9 @@
-import {NavigatorScreenParams} from '@react-navigation/native';
+import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
+import {
+  CompositeScreenProps,
+  NavigatorScreenParams,
+} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
 import {NotifyClientTypes} from '@walletconnect/notify-client';
 
 export type CaipAddress = `${string}:${string}:${string}`;
@@ -109,15 +114,24 @@ declare global {
 export type RootStackParamList = {
   Connect: undefined;
   Home: NavigatorScreenParams<HomeTabParamList>;
-  SubscriptionDetailsScreen: {
+  SubscriptionDetails: {
     topic: string;
     metadata: NotifyClientTypes.Metadata;
   };
-  SubscriptionSettingsScreen: {topic: string};
+  SubscriptionSettings: {topic: string};
 };
 
+export type RootStackScreenProps<T extends keyof RootStackParamList> =
+  StackScreenProps<RootStackParamList, T>;
+
 export type HomeTabParamList = {
-  SubscriptionsScreen: undefined;
-  DiscoverScreen: undefined;
-  SettingsScreen: undefined;
+  Subscriptions: undefined;
+  Discover: undefined;
+  Settings: undefined;
 };
+
+export type HomeTabScreenProps<T extends keyof HomeTabParamList> =
+  CompositeScreenProps<
+    BottomTabScreenProps<HomeTabParamList, T>,
+    RootStackScreenProps<keyof RootStackParamList>
+  >;

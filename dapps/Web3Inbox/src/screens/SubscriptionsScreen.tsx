@@ -3,11 +3,19 @@ import {FlatList} from 'react-native';
 import {useAccount} from 'wagmi';
 
 import SubscriptionItem from '@/components/SubscriptionItem';
-import {AccountController} from '@/controllers/AccountController';
+import {
+  AccountController,
+  AccountControllerState,
+} from '@/controllers/AccountController';
 import {Divider} from '@/components/Divider';
+import {HomeTabScreenProps} from '@/utils/TypesUtil';
 
-export default function SubscriptionsScreen({navigation}) {
-  const {subscriptions, isRegistered} = useSnapshot(AccountController.state);
+type Props = HomeTabScreenProps<'Subscriptions'>;
+
+export default function SubscriptionsScreen({navigation}: Props) {
+  const {subscriptions, isRegistered} = useSnapshot(
+    AccountController.state,
+  ) as AccountControllerState;
   const {address} = useAccount();
 
   if (!address || !isRegistered) {
@@ -26,9 +34,9 @@ export default function SubscriptionsScreen({navigation}) {
           imageURL={item?.metadata?.icons[0]}
           description={item?.metadata?.appDomain}
           onPress={() => {
-            navigation.navigate('SubscriptionDetailsScreen', {
+            navigation.navigate('SubscriptionDetails', {
               topic: item?.topic,
-              metadata: item?.metadata?.name,
+              metadata: item?.metadata,
             });
           }}
         />

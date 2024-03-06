@@ -46,17 +46,17 @@ export default function TabNavigator() {
         },
       }}>
       <Tab.Screen
-        name="SubscriptionsScreen"
+        name="Subscriptions"
         options={{tabBarIcon: NotificationIcon}}
         component={SubscriptionsScreen}
       />
       <Tab.Screen
-        name="DiscoverScreen"
+        name="Discover"
         options={{tabBarIcon: DiscoverTab}}
         component={DiscoverScreen}
       />
       <Tab.Screen
-        name="SettingsScreen"
+        name="Settings"
         options={{tabBarIcon: SettingsTab}}
         component={SettingsScreen}
       />

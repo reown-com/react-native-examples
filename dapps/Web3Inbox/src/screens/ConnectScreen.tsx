@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react';
 import BootSplash from 'react-native-bootsplash';
-import {useNavigation} from '@react-navigation/native';
 import {useWeb3Modal} from '@web3modal/wagmi-react-native';
 import {
   StyleSheet,
@@ -20,8 +19,11 @@ import {Spacing} from '@/utils/ThemeUtil';
 import {Text} from '@/components/Text';
 import {AccountController} from '@/controllers/AccountController';
 import {NotifyController} from '@/controllers/NotifyController';
+import {RootStackScreenProps} from '@/utils/TypesUtil';
 
-export default function ConnectScreen() {
+type Props = RootStackScreenProps<'Connect'>;
+
+export default function ConnectScreen({navigation}: Props) {
   const [isSignModalVisible, setSignModalVisible] = useState(false);
   const {open} = useWeb3Modal();
   const {isConnected, isConnecting} = useAccount();
@@ -29,7 +31,6 @@ export default function ConnectScreen() {
   const {address} = useSnapshot(AccountController.state);
   const {signMessageAsync} = useSignMessage();
   const {disconnect, isLoading: isDisconnecting} = useDisconnect();
-  const {navigate} = useNavigation();
 
   const onLinkPress = () => {
     Linking.openURL('https://web3inbox.com');
@@ -59,7 +60,7 @@ export default function ConnectScreen() {
       signature,
     });
     setSignModalVisible(false);
-    navigate('Home');
+    navigation.navigate({name: 'Home', params: {screen: 'Subscriptions'}});
   }
 
   const onModalDismiss = async () => {
@@ -84,14 +85,14 @@ export default function ConnectScreen() {
       });
 
       if (isRegistered) {
-        navigate('Home');
+        navigation.navigate({name: 'Home', params: {screen: 'Subscriptions'}});
       } else {
         setSignModalVisible(true);
       }
 
       BootSplash.hide({fade: true});
     }
-  }, [isConnected, isConnecting, navigate, address, initialized]);
+  }, [isConnected, isConnecting, navigation, address, initialized]);
 
   return (
     <ImageBackground style={styles.container} source={Background}>

@@ -1,6 +1,6 @@
 import {useSnapshot} from 'valtio';
 import {useCallback, useEffect, useState} from 'react';
-import {FlatList, Image, Pressable, StyleSheet, View} from 'react-native';
+import {FlatList, Image, Pressable, StyleSheet} from 'react-native';
 import NotificationItem from '@/components/NotificationItem';
 import {AccountController} from '@/controllers/AccountController';
 import {NotifyController} from '@/controllers/NotifyController';
@@ -11,6 +11,7 @@ import useColors from '@/hooks/useColors';
 import NotificationItemSkeleton from '@/components/NotificationItemSkeleton';
 import SettingsIcon from '@/icons/settings-tab';
 import {Divider} from '@/components/Divider';
+import {RootStackScreenProps} from '@/utils/TypesUtil';
 
 interface NotifyNotification {
   title: string;
@@ -73,7 +74,9 @@ function ListEmpty({isLoading}: {isLoading: boolean}) {
   return null;
 }
 
-export default function SubscriptionDetailsScreen({route, navigation}) {
+type Props = RootStackScreenProps<'SubscriptionDetails'>;
+
+export default function SubscriptionDetailsScreen({route, navigation}: Props) {
   const {params} = route;
   const [hasMore, setHasMore] = useState(false);
   const {notifications, address} = useSnapshot(AccountController.state);
@@ -144,9 +147,8 @@ export default function SubscriptionDetailsScreen({route, navigation}) {
       navigation.setOptions({
         title: metadata.name,
         headerRight: HeaderButton.bind(null, Theme['fg-150'], () =>
-          navigation.navigate('SubscriptionSettingsScreen', {
+          navigation.navigate('SubscriptionSettings', {
             topic,
-            metadata,
           }),
         ),
       });

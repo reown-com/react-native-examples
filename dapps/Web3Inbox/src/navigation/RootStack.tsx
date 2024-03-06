@@ -22,12 +22,12 @@ export default function RootStack() {
       <Stack.Screen name="Connect" component={ConnectScreen} />
       <Stack.Screen name="Home" component={HomeTabNavigator} />
       <Stack.Screen
-        name="SubscriptionDetailsScreen"
+        name="SubscriptionDetails"
         component={SubscriptionDetailsScreen}
         options={{headerShown: true}}
       />
       <Stack.Screen
-        name="SubscriptionSettingsScreen"
+        name="SubscriptionSettings"
         component={SubscriptionSettingsScreen}
         options={{headerShown: true, headerTitle: 'Preferences'}}
       />

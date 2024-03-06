@@ -16,6 +16,7 @@ import {NotifyController} from '@/controllers/NotifyController';
 import {Spacing} from '@/utils/ThemeUtil';
 import {Text} from '@/components/Text';
 import {Divider} from '@/components/Divider';
+import {RootStackScreenProps} from '@/utils/TypesUtil';
 
 type BooleanMap = {[key: string]: boolean};
 
@@ -37,7 +38,9 @@ function ListFooter(onPress: () => void, loading: boolean) {
   );
 }
 
-export default function SubscriptionSettingsScreen({route, navigation}) {
+type Props = RootStackScreenProps<'SubscriptionSettings'>;
+
+export default function SubscriptionSettingsScreen({route, navigation}: Props) {
   const {topic} = route.params;
   const {subscriptions} = useSnapshot(AccountController.state);
   const [unsubscribing, setUnsubscribing] = useState(false);
@@ -84,7 +87,7 @@ export default function SubscriptionSettingsScreen({route, navigation}) {
       .deleteSubscription({topic})
       .then(() => {
         setUnsubscribing(false);
-        navigation.navigate('SubscriptionsScreen');
+        navigation.navigate({name: 'Home', params: {screen: 'Subscriptions'}});
       })
       .catch(e => {
         Alert.alert('Failed to unsubscribe', e);
