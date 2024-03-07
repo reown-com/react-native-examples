@@ -1,7 +1,7 @@
 import {useEffect, useRef, type ReactNode} from 'react';
 import {Animated, Easing, View} from 'react-native';
 import Svg, {Rect} from 'react-native-svg';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import {BorderRadius, Spacing} from '@/utils/ThemeUtil';
 import styles from './styles';
 
@@ -18,7 +18,7 @@ export function LoadingThumbnail({
   paused,
   borderRadius = BorderRadius.l,
 }: LoadingThumbnailProps) {
-  const Theme = useColors();
+  const Theme = useTheme();
   const spinValue = useRef(new Animated.Value(0));
   const strokeWidth = 4;
   const rectangleSize = 80 + Spacing.l;

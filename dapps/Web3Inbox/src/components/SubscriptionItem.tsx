@@ -1,7 +1,7 @@
 import {useRef} from 'react';
 import {Animated, Image, Pressable, StyleSheet, View} from 'react-native';
 import {Text} from '@/components/Text';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import {Spacing} from '@/utils/ThemeUtil';
 
 interface ISubscriptionItem {
@@ -19,7 +19,7 @@ export default function SubscriptionItem({
   imageURL,
   onPress,
 }: ISubscriptionItem) {
-  const Theme = useColors();
+  const Theme = useTheme();
   const colorAnimation = useRef(new Animated.Value(0));
 
   const onPressIn = () => {

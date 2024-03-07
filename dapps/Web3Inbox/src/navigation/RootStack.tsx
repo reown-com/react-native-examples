@@ -5,13 +5,13 @@ import {RootStackParamList} from '@/utils/TypesUtil';
 import {useInitializeNotifyClient} from '@/hooks/useInitializeNotifyClient';
 import SubscriptionDetailsScreen from '@/screens/SubscriptionDetailsScreen';
 import SubscriptionSettingsScreen from '@/screens/SubscriptionSettingsScreen';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootStack() {
   useInitializeNotifyClient();
-  const Theme = useColors();
+  const Theme = useTheme();
 
   return (
     <Stack.Navigator

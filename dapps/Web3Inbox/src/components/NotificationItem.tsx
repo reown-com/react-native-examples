@@ -6,7 +6,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import {DateUtil} from '@/utils/DateUtil';
 import {Spacing} from '@/utils/ThemeUtil';
 import {Text} from '@/components/Text';
@@ -30,7 +30,7 @@ export default function NotificationItem({
   url,
   imageUrl,
 }: NotificationItemProps) {
-  const Theme = useColors();
+  const Theme = useTheme();
   const colorAnimation = useRef(new Animated.Value(0));
 
   const onPressIn = () => {

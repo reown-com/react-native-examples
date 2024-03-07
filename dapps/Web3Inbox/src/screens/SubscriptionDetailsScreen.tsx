@@ -7,7 +7,7 @@ import {NotifyController} from '@/controllers/NotifyController';
 import {Text} from '@/components/Text';
 import type {NotifyClientTypes} from '@walletconnect/notify-client';
 import {Spacing} from '@/utils/ThemeUtil';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import NotificationItemSkeleton from '@/components/NotificationItemSkeleton';
 import SettingsIcon from '@/icons/settings-tab';
 import {Divider} from '@/components/Divider';
@@ -85,7 +85,7 @@ export default function SubscriptionDetailsScreen({route, navigation}: Props) {
 
   const topic = params?.topic;
   const metadata = params?.metadata as NotifyClientTypes.Metadata;
-  const Theme = useColors();
+  const Theme = useTheme();
 
   const topicNotifications = notifications[topic]
     ? [...notifications[topic]]

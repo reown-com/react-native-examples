@@ -1,6 +1,6 @@
 import {Svg, Rect} from 'react-native-svg';
 import {Animated, type StyleProp, type ViewStyle} from 'react-native';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
@@ -24,7 +24,7 @@ export const Shimmer = ({
   style,
 }: ShimmerProps) => {
   const animatedValue = new Animated.Value(0);
-  const Theme = useColors();
+  const Theme = useTheme();
 
   const animatedProps = {
     fill: animatedValue.interpolate({

@@ -1,4 +1,4 @@
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import {ReactNode} from 'react';
 import {
   ActivityIndicator,
@@ -26,7 +26,7 @@ function Button({
   loading,
   ...props
 }: Props) {
-  const Theme = useColors();
+  const Theme = useTheme();
 
   return (
     <TouchableOpacity

@@ -1,11 +1,11 @@
 import {StyleSheet, View} from 'react-native';
 
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import {Shimmer} from '@/components/Shimmer';
 import {Spacing} from '@/utils/ThemeUtil';
 
 export default function DiscoverListItemSkeleton() {
-  const Theme = useColors();
+  const Theme = useTheme();
 
   return (
     <View

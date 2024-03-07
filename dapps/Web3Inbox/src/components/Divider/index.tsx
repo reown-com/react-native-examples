@@ -1,12 +1,12 @@
 import {View, StyleSheet, StyleProp, ViewStyle} from 'react-native';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 
 export interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
 export function Divider({style}: Props) {
-  const Theme = useColors();
+  const Theme = useTheme();
   return (
     <View
       style={[

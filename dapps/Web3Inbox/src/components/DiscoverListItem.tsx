@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import {ProjectItem} from '@/constants/Explorer';
 import {Text} from '@/components/Text';
 import {Spacing} from '@/utils/ThemeUtil';
@@ -26,7 +26,7 @@ export default function DiscoverListItem({
   onSubscribe,
   onPress,
 }: DiscoverListItemProps) {
-  const Theme = useColors();
+  const Theme = useTheme();
   const [subscribing, setSubscribing] = useState(false);
   const domain = new URL(item.dapp_url).host;
 

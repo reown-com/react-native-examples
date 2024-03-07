@@ -7,7 +7,7 @@ import {
   Switch,
   View,
 } from 'react-native';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import {Controller, useForm} from 'react-hook-form';
 import {useState} from 'react';
 import {useSnapshot} from 'valtio';
@@ -21,7 +21,7 @@ import {RootStackScreenProps} from '@/utils/TypesUtil';
 type BooleanMap = {[key: string]: boolean};
 
 function ListFooter(onPress: () => void, loading: boolean) {
-  const Theme = useColors();
+  const Theme = useTheme();
 
   return (
     <Pressable

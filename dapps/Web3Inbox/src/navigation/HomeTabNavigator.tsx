@@ -4,7 +4,7 @@ import DiscoverSvg from '@/icons/discover-tab';
 import SettingsSvg from '@/icons/settings-tab';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import {HomeTabParamList} from '@/utils/TypesUtil';
 import {SettingsScreen} from '@/screens/SettingsScreen';
 import SubscriptionsScreen from '@/screens/SubscriptionsScreen';
@@ -32,7 +32,7 @@ const SettingsTab = ({color, focused}: {color: string; focused: boolean}) => (
 );
 
 export default function TabNavigator() {
-  const Theme = useColors();
+  const Theme = useTheme();
   const {address} = useAccount();
   const {data: ensName} = useEnsName({address});
   const {data: avatar} = useEnsAvatar({name: ensName});

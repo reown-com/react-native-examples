@@ -3,7 +3,7 @@ import {Image, StyleSheet, View} from 'react-native';
 import Modal from 'react-native-modal';
 import WalletIcon from '@/icons/wallet';
 import Logo from '@/icons/w3i-logo.png';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import {BorderRadius, Spacing} from '@/utils/ThemeUtil';
 import Button from '@/components/Button';
 import {Text} from '@/components/Text';
@@ -20,7 +20,7 @@ function SignatureModal({
   onDismiss,
   onSignPress,
 }: ModalProps) {
-  const Theme = useColors();
+  const Theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleModalHide = () => {
@@ -77,7 +77,7 @@ function SignatureModal({
 }
 
 function Header({isLoading}: {isLoading?: boolean}) {
-  const Theme = useColors();
+  const Theme = useTheme();
 
   if (isLoading) {
     return (

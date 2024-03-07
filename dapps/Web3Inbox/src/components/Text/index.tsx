@@ -1,5 +1,5 @@
 import {Text as NativeText, type TextProps as NativeProps} from 'react-native';
-import useColors from '@/hooks/useColors';
+import useTheme from '@/hooks/useTheme';
 import type {ColorType, TextType} from '@/utils/TypesUtil';
 import styles from './styles';
 
@@ -17,7 +17,7 @@ export function Text({
   variant = 'paragraph-500',
   ...rest
 }: TextProps) {
-  const Theme = useColors();
+  const Theme = useTheme();
 
   return (
     <NativeText
