@@ -11,6 +11,7 @@ import {HomeTabScreenProps} from '@/utils/TypesUtil';
 import {Text} from '@/components/Text';
 import {Spacing} from '@/utils/ThemeUtil';
 import SubscriptionItemSkeleton from '@/components/SubscriptionItemSkeleton';
+import DiscoverAppsIcon from '@/icons/all-apps';
 
 function ListHeader(onPress: () => void, showSubscribed: boolean) {
   return (
@@ -18,7 +19,8 @@ function ListHeader(onPress: () => void, showSubscribed: boolean) {
       <Text variant="tiny-600" color="fg-300" style={styles.mainText}>
         Discover
       </Text>
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity onPress={onPress} style={styles.discoverButton}>
+        <DiscoverAppsIcon width={24} height={24} />
         <Text variant="small-500">Discover apps</Text>
       </TouchableOpacity>
       {showSubscribed && (
@@ -91,5 +93,11 @@ const styles = StyleSheet.create({
   },
   mainText: {
     textTransform: 'uppercase',
+  },
+  discoverButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: Spacing.s,
+    marginVertical: Spacing.s,
   },
 });

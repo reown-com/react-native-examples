@@ -20,7 +20,7 @@ export function TabHeader({options, address, onAvatarPress, avatar}: Props) {
         <Avatar
           imageSrc={avatar ?? undefined}
           address={address}
-          size={20}
+          size={26}
           borderWidth={2}
         />
       </TouchableOpacity>
@@ -37,6 +37,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.l,
   },
   logo: {
-    width: 20,
+    width: 26,
   },
 });
