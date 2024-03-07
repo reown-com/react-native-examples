@@ -3,6 +3,14 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 apply from: new File(["node", "--print", "require.resolve('@sentry/react-native/package.json')"].execute().text.trim(), "../sentry.gradle")
 
+project.ext.envConfigFiles = [
+    debug: ".env.debug",
+    internal: ".env.internal",
+    release: ".env.production",
+]
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -86,27 +94,50 @@ android {
         applicationId "com.walletconnect.web3modal.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 25
+        versionCode 26
         versionName "1.1"
+        resValue "string", "build_config_package", "com.w3mwagmi"
     }
+
+    def secretsProperties = new Properties()
+    secretsProperties.load(new FileInputStream(rootProject.file("secrets.properties")))
+
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file(secretsProperties['WC_FILENAME_DEBUG'])
+            storePassword secretsProperties['WC_STORE_PASSWORD_DEBUG']
+            keyAlias secretsProperties['WC_KEYSTORE_ALIAS_DEBUG']
+            keyPassword secretsProperties['WC_KEY_PASSWORD_DEBUG']
+        }
+        internal {
+            storeFile file(secretsProperties['WC_FILENAME_INTERNAL'])
+            storePassword secretsProperties['WC_STORE_PASSWORD_INTERNAL']
+            keyAlias secretsProperties['WC_KEYSTORE_ALIAS']
+            keyPassword secretsProperties['WC_KEY_PASSWORD_INTERNAL']
+        }
+        upload {
+            storeFile file(secretsProperties['WC_FILENAME_UPLOAD'])
+            storePassword secretsProperties['WC_STORE_PASSWORD_UPLOAD']
+            keyAlias secretsProperties['WC_KEYSTORE_ALIAS']
+            keyPassword secretsProperties['WC_KEY_PASSWORD_UPLOAD']
         }
     }
     buildTypes {
+        internal {
+            applicationIdSuffix ".internal"
+            versionNameSuffix "-internal"
+            signingConfig signingConfigs.internal
+            matchingFallbacks = ['release']
+        }
         debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.upload
         }
     }
 }
