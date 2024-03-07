@@ -17,6 +17,7 @@ export default function RootStack() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
+        headerBackTitleVisible: false,
         contentStyle: {backgroundColor: Theme['bg-100']},
       }}>
       <Stack.Screen name="Connect" component={ConnectScreen} />

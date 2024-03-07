@@ -12,6 +12,7 @@ import DiscoverScreen from '@/screens/DiscoverScreen';
 import {TabHeader} from '@/components/TabHeader';
 import {useAccount, useEnsAvatar, useEnsName} from 'wagmi';
 import {useWeb3Modal} from '@web3modal/wagmi-react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator<HomeTabParamList>();
 
@@ -34,6 +35,7 @@ const SettingsTab = ({color, focused}: {color: string; focused: boolean}) => (
 export default function TabNavigator() {
   const Theme = useTheme();
   const {address} = useAccount();
+  const insets = useSafeAreaInsets();
   const {data: ensName} = useEnsName({address});
   const {data: avatar} = useEnsAvatar({name: ensName});
   const {open} = useWeb3Modal();
@@ -49,6 +51,7 @@ export default function TabNavigator() {
             address: ensName || address,
             onAvatarPress: open,
             avatar,
+            style: {marginTop: insets.top},
           }),
         tabBarShowLabel: false,
         tabBarActiveTintColor: Theme['fg-100'],

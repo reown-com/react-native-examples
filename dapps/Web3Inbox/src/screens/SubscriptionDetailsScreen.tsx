@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     alignItems: 'center',
-    paddingVertical: Spacing['2xl'],
+    padding: Spacing['2xl'],
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   image: {

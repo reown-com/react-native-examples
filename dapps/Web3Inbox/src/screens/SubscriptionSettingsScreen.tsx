@@ -157,5 +157,6 @@ const styles = StyleSheet.create({
     rowGap: 4,
     justifyContent: 'center',
     paddingVertical: Spacing.l,
+    marginRight: Spacing.s,
   },
 });

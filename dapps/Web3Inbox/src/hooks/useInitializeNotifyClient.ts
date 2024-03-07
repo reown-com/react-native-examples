@@ -17,6 +17,7 @@ export function useInitializeNotifyClient() {
       AccountController.setAddress(_account);
     },
     onDisconnect: () => {
+      console.log('onDisconnect');
       AccountController.reset();
       reset({index: 0, routes: [{name: 'Connect'}]});
     },
