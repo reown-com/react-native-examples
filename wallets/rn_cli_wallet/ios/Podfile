@@ -35,7 +35,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'RNWeb3Wallet' do
+abstract_target 'App' do
   config = use_native_modules!
 
    # https://rnfirebase.io/
@@ -53,7 +53,19 @@ target 'RNWeb3Wallet' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'RNWeb3WalletTests' do
+  target 'RNWallet' do
+    inherit! :complete
+  end
+
+  target 'RNWallet Internal' do
+    inherit! :complete
+  end
+
+  target 'RNWallet Debug' do
+    inherit! :complete
+  end
+
+  target 'RNWalletTests' do
     inherit! :complete
     # Pods for testing
   end
