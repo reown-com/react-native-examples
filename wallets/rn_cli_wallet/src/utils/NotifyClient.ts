@@ -1,9 +1,9 @@
 import {EXPLORER_API_BASE_URL, EXPLORER_ENDPOINTS} from '@/constants/Explorer';
 import {SYM_KEY_PREFIX} from '@/constants/Storage';
-import {ENV_PROJECT_ID} from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Config from 'react-native-config';
 
-const projectId = ENV_PROJECT_ID;
+const projectId = Config.ENV_PROJECT_ID;
 
 export async function getSymKey(topic: string) {
   const getSymKeyUsingTopic = await AsyncStorage.getItem(
