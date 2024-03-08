@@ -10,10 +10,16 @@ Inside this directory (`wallets/rn_cli_wallet`), install the React Native depend
 yarn
 ```
 
-Set up your own `.env` file from the example and **replace `ENV_PROJECT_ID` with your own ProjectId from https://cloud.walletconnect.com**
+Set up your own `.env.debug` file from the example and **replace `ENV_PROJECT_ID` with your own ProjectId from https://cloud.walletconnect.com**
 
 ```bash
-cp .env.example .env
+cp .env.example .env.debug
+```
+
+For dev purposes, setup mocked google-services files
+```bash
+cp android/app/google-services.mock.json android/app/google-services.json
+cp ios/GoogleService/GoogleService-Info.mock.plist ios/GoogleService/GoogleService-Debug-Info.plist
 ```
 
 ### Setup (iOS)

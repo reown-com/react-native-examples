@@ -22,6 +22,8 @@ DerivedData
 *.xcuserstate
 ios/.xcode.env.local
 ios/GoogleService-Info.plist
+ios/GoogleService/*
+!ios/GoogleService/GoogleService-Info.mock.plist
 
 # Android/IntelliJ
 #

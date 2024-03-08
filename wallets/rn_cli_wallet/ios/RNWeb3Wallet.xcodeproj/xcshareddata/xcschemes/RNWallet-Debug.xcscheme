@@ -9,8 +9,24 @@
          <ExecutionAction
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
-               title = "Run Script"
+               title = "Copy .env file"
                scriptText = "cp &quot;${PROJECT_DIR}/../.env.debug&quot; &quot;${PROJECT_DIR}/../.env&quot;&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "1FCDA28C2B9B8E6200E0BF0C"
+                     BuildableName = "RNWallet Debug.app"
+                     BlueprintName = "RNWallet Debug"
+                     ReferencedContainer = "container:RNWeb3Wallet.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Copy GoogleService file"
+               scriptText = "cp &quot;${PROJECT_DIR}/GoogleService/GoogleService-Debug-Info.plist&quot; &quot;${PROJECT_DIR}/GoogleService-Info.plist&quot;&#10;">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"
