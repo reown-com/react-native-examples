@@ -1,45 +1,46 @@
-## React Native CLI Wallet
+# Web3Wallet example
 
-This is a React Native Application that uses the `react-native` CLI client.
+## Getting Started
 
-### Installation
+>**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
-Inside this directory (`wallets/rn_cli_wallet`), install the React Native dependencies:
-
-```bash
-yarn
-```
-
-Set up your own `.env` file from the example and **replace `ENV_PROJECT_ID` with your own ProjectId from https://cloud.walletconnect.com**
+## Step 1: Install Dependencies
 
 ```bash
-cp .env.example .env
+yarn install
 ```
 
-### Setup (iOS)
-
-If CocoaPods is not installed on your system yet:
+## Step 2: Create a .env file and replace **ENV_PROJECT_ID with your [Cloud Project ID](https://cloud.walletconnect.com/)
 
 ```bash
-brew install cocoapods
+cp .env.example .env.debug
 ```
 
-Install iOS deps:
+## Step 3: Create mocked google-service files
+In order to build the app successfuly, you'll need some google-service files
 
 ```bash
-cd ios
-pod install
+cp android/app/google-services.mock.json android/app/google-services.json
+cp ios/GoogleService/GoogleService-Info.mock.plist ios/GoogleService/GoogleService-Debug-Info.plist
 ```
 
-To run:
+## Step 4: Start your Application
 
-- `npx react-native run-ios`
+Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
 
-### Setup (Android)
+### For Android
 
-1. Follow the [official Environment Setup guidance](https://reactnative.dev/docs/environment-setup) for Android (select `Android` for `Target OS`) to install Android Studio etc.
-2. Set up either a virtual or physical device as outlined in the _Preparing the Android device_ section of the guidance.
+```bash
+yarn android
+```
 
-To run:
+### For iOS
 
-- `npx react-native run-android`
+```bash
+yarn ios
+cd ios && pod install
+```
+
+If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+
+This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.

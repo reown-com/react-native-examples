@@ -1,14 +1,14 @@
 import {Web3Wallet, IWeb3Wallet} from '@walletconnect/web3wallet';
 import {Core} from '@walletconnect/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ENV_PROJECT_ID, ENV_RELAY_URL} from '@env';
+import Config from 'react-native-config';
 
 export let web3wallet: IWeb3Wallet;
 
 export async function createWeb3Wallet(relayerRegionURL: string) {
   const core = new Core({
-    projectId: ENV_PROJECT_ID,
-    relayUrl: relayerRegionURL ?? ENV_RELAY_URL,
+    projectId: Config.ENV_PROJECT_ID,
+    relayUrl: relayerRegionURL ?? Config.ENV_RELAY_URL,
   });
   web3wallet = await Web3Wallet.init({
     core,

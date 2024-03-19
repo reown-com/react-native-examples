@@ -1,3 +1,4 @@
+import Config from 'react-native-config';
 import {useEffect, useState} from 'react';
 
 import NotifyClientContext, {
@@ -5,8 +6,6 @@ import NotifyClientContext, {
   NotifyNotification,
 } from '../context/NotifyClientContext';
 import {NotifyClient, NotifyClientTypes} from '@walletconnect/notify-client';
-import {Alert} from 'react-native';
-import {ENV_PROJECT_ID} from '@env';
 import cloneDeep from 'lodash.clonedeep';
 import {useSnapshot} from 'valtio';
 import SettingsStore from '@/store/SettingsStore';
@@ -89,7 +88,7 @@ export const NotifyClientProvider: React.FC<{
       if (error) {
         console.error('Setting up subscription failed: ', error);
       } else {
-        console.log(`Successfully updated subscription scope.`);
+        console.log('Successfully updated subscription scope.');
       }
     });
 
@@ -103,7 +102,9 @@ export const NotifyClientProvider: React.FC<{
   }, [notifyClient]);
 
   async function getActiveSubscriptions() {
-    if (!notifyClient) return;
+    if (!notifyClient) {
+      return;
+    }
 
     if (!account) {
       return;
@@ -114,7 +115,9 @@ export const NotifyClientProvider: React.FC<{
     });
     const subs = Object.values(accountSubscriptions || {});
 
-    if (subs.length === 0) return;
+    if (subs.length === 0) {
+      return;
+    }
 
     setSubscriptions(subs);
   }
@@ -123,9 +126,11 @@ export const NotifyClientProvider: React.FC<{
     setInitializing(true);
 
     try {
-      const notifyClient = await NotifyClient.init({projectId: ENV_PROJECT_ID});
+      const _notifyClient = await NotifyClient.init({
+        projectId: Config.ENV_PROJECT_ID,
+      });
 
-      setNotifyClient(notifyClient);
+      setNotifyClient(_notifyClient);
       setInitializing(false);
     } catch (error) {
       setInitializing(false);
@@ -136,7 +141,9 @@ export const NotifyClientProvider: React.FC<{
     topicId: string,
     incomingNotifications: NotifyNotification[],
   ) {
-    if (!topicId) return;
+    if (!topicId) {
+      return;
+    }
 
     let newNotificationMap = {};
 

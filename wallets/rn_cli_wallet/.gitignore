@@ -22,6 +22,8 @@ DerivedData
 *.xcuserstate
 ios/.xcode.env.local
 ios/GoogleService-Info.plist
+ios/GoogleService/*
+!ios/GoogleService/GoogleService-Info.mock.plist
 
 # Android/IntelliJ
 #
@@ -33,7 +35,6 @@ local.properties
 *.hprof
 .cxx/
 *.keystore
-!debug.keystore
 android/app/google-services.json
 
 # node.js
@@ -41,8 +42,6 @@ android/app/google-services.json
 node_modules/
 npm-debug.log
 yarn-error.log
-.env.local
-.env
 
 # fastlane
 #

@@ -51,17 +51,14 @@ abstract_target 'App' do
 
   target 'W3MWagmi' do
     inherit! :complete
-    # Pods for testing
   end
 
   target 'W3MWagmi Internal' do
     inherit! :complete
-    # Pods for testing
   end
 
   target 'W3MWagmi Debug' do
     inherit! :complete
-    # Pods for testing
   end
 
   target 'W3MWagmiTests' do

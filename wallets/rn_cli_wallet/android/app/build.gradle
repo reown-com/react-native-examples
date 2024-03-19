@@ -4,6 +4,14 @@ apply plugin: "com.facebook.react"
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 apply plugin: "com.google.gms.google-services"
 
+project.ext.envConfigFiles = [
+    debug: ".env.debug",
+    internal: ".env.internal",
+    release: ".env.production",
+]
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -81,6 +89,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 15
         versionName "1.0"
+        resValue "string", "build_config_package", "com.walletconnect.web3wallet.rnsample"
     }
 
     def secretsProperties = new Properties()
