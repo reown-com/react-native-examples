@@ -25,7 +25,6 @@ export function SignMessage() {
     setData(undefined);
     setError(false);
     setIsLoading(true);
-    setRequetsModalVisible(true);
 
     try {
       const ethersProvider = new BrowserProvider(walletProvider);
@@ -37,14 +36,16 @@ export function SignMessage() {
     } catch (e) {
       console.log(e);
       setError(true);
+    } finally {
+      setIsLoading(false);
+      setRequetsModalVisible(true);
     }
-    setIsLoading(false);
   };
 
   return isConnected ? (
     <View>
-      <Button disabled={requestModalVisible} onPress={onPress}>
-        Sign message
+      <Button disabled={requestModalVisible || isLoading} onPress={onPress}>
+        {isLoading ? 'Loading...' : 'Sign message'}
       </Button>
 
       <RequestModal

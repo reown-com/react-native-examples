@@ -26,7 +26,6 @@ export function WriteContract() {
     setData(undefined);
     setError(false);
     setIsLoading(true);
-    setRequetsModalVisible(true);
 
     try {
       const ethersProvider = new BrowserProvider(walletProvider);
@@ -39,14 +38,16 @@ export function WriteContract() {
       setData(response.toString());
     } catch {
       setError(true);
+    } finally {
+      setIsLoading(false);
+      setRequetsModalVisible(true);
     }
-    setIsLoading(false);
   };
 
   return isConnected ? (
     <View>
-      <Button disabled={requestModalVisible} onPress={onPress}>
-        Write contract
+      <Button disabled={requestModalVisible || isLoading} onPress={onPress}>
+        {isLoading ? 'Loading...' : 'Write contract'}
       </Button>
 
       <RequestModal
