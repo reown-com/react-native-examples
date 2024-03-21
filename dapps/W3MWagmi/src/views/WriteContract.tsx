@@ -16,21 +16,22 @@ export function WriteContract() {
     functionName: 'approve',
   });
 
-  const onPress = () => {
-    setRequetsModalVisible(true);
+  const onPress = async () => {
     try {
-      writeAsync({
+      await writeAsync({
         args: [address, 100000],
       });
     } catch (error) {
       console.log(error);
+    } finally {
+      setRequetsModalVisible(true);
     }
   };
 
   return isConnected ? (
     <View>
       <Button disabled={isLoading} onPress={onPress}>
-        Write contract
+        {isLoading ? 'Loading...' : 'Write contract'}
       </Button>
 
       <RequestModal

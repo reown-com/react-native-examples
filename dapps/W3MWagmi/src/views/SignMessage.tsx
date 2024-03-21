@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {Button} from '@web3modal/ui-react-native';
 
@@ -15,13 +15,18 @@ export function SignMessage() {
 
   const onPress = () => {
     signMessage();
-    setRequetsModalVisible(true);
   };
+
+  useEffect(() => {
+    if (isSuccess || isError) {
+      setRequetsModalVisible(true);
+    }
+  }, [isSuccess, isError]);
 
   return isConnected ? (
     <View>
       <Button disabled={isLoading} onPress={onPress}>
-        Sign message
+        {isLoading ? 'Loading...' : 'Sign message'}
       </Button>
 
       <RequestModal

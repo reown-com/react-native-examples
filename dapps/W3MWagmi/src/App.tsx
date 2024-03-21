@@ -96,6 +96,7 @@ const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
+  enableEmail: true,
   extraConnectors: [coinbaseConnector],
 });
 
@@ -141,8 +142,8 @@ function App(): JSX.Element {
           <ReadContract />
           <WriteContract />
         </FlexView>
-        <Web3Modal />
       </SafeAreaView>
+      <Web3Modal />
     </WagmiConfig>
   );
 }

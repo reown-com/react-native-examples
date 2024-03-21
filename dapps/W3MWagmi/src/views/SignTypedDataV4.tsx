@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {Button} from '@web3modal/ui-react-native';
 
@@ -21,13 +21,18 @@ export function SignTypedDataV4() {
 
   const onPress = () => {
     signTypedData();
-    setRequetsModalVisible(true);
   };
+
+  useEffect(() => {
+    if (isSuccess || isError) {
+      setRequetsModalVisible(true);
+    }
+  }, [isSuccess, isError]);
 
   return isConnected ? (
     <View>
       <Button disabled={isLoading} onPress={onPress}>
-        eth_signTypedData_v4
+        {isLoading ? 'Loading...' : 'eth_signTypedData_v4'}
       </Button>
 
       <RequestModal

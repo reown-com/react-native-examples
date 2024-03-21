@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {Button} from '@web3modal/ui-react-native';
 
@@ -19,13 +19,18 @@ export function SendTransaction() {
 
   const onPress = () => {
     sendTransaction();
-    setRequetsModalVisible(true);
   };
+
+  useEffect(() => {
+    if (isSuccess || isError) {
+      setRequetsModalVisible(true);
+    }
+  }, [isSuccess, isError]);
 
   return isConnected ? (
     <View>
       <Button disabled={isLoading} onPress={onPress}>
-        Send transaction
+        {isLoading ? 'Loading...' : 'Send transaction'}
       </Button>
 
       <RequestModal
