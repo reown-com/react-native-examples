@@ -4275,47 +4275,47 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/coinbase-wagmi-react-native@1.3.0-alpha.0":
-  version "1.3.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-wagmi-react-native/-/coinbase-wagmi-react-native-1.3.0-alpha.0.tgz#370f6402426fd4b359aefe8bb07ba05362a74d38"
-  integrity sha512-J4jfW2E9pXlbKM9oZw457YrOpaYC6IHNEAN+wjb50V6q2tQcLjQuxyXcozxX9CtVMbify1uAjutm69h9X5247g==
+"@web3modal/coinbase-wagmi-react-native@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-wagmi-react-native/-/coinbase-wagmi-react-native-1.3.0.tgz#087b7f10e7b38d948a31292e6b63724dc2731959"
+  integrity sha512-a1z+5zOn0Q2omHBQ4u8d9GuWHn9fWpU3YzzK0LW/PXxo0ugv+u9kF2fcOyZuwEF53PkwL34en+JWZrFrAxRJiw==
 
-"@web3modal/core-react-native@1.3.0-alpha.1":
-  version "1.3.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.3.0-alpha.1.tgz#84257f0dbab9dc2ef7d15b61db4c6b61dbdec168"
-  integrity sha512-A6Jk6kRpWTfQijhTDoU7VYLdIVnOZMqIth+5hI2eaPAinDa2WYZjNfngMIp+LgwxKX3ieZzQja+TXcUjoZOpDw==
+"@web3modal/core-react-native@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.3.0.tgz#c4c1354cdc40879fe5975948d71ff064ae02fd7b"
+  integrity sha512-A2jSx67HkxrnSQ/vvjerWYm8nZEQdNzUWC9zaTwqtdt6clC6DjvY8VkMDNMgsLy9XCLVT90RItBm+hwAQ19dLA==
   dependencies:
     valtio "1.10.5"
 
-"@web3modal/scaffold-react-native@1.3.0-alpha.1":
-  version "1.3.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.3.0-alpha.1.tgz#6cd1fd7f71bd43b21bbd9500355262c42722e6b0"
-  integrity sha512-NW7LlmPyFWLOLAfJSOC40YhDNAfvFX5SLHi/S/VxrBLYpTT5wqeyccbQ0/WrcNpD/snhgbAkCu5uXGIOPxAy+A==
+"@web3modal/scaffold-react-native@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.3.0.tgz#15b0a3b75d25fe1015e989260d155bb1b11fea02"
+  integrity sha512-JbYbNTHHXHoO59i7RviF3CeuJGuk2hwymxM6JbaLRRxlDKFMFY1iMAtuwZAr8rS/72pVxPGRdp3O/Oci1rDCMg==
   dependencies:
-    "@web3modal/core-react-native" "1.3.0-alpha.1"
-    "@web3modal/ui-react-native" "1.3.0-alpha.0"
+    "@web3modal/core-react-native" "1.3.0"
+    "@web3modal/ui-react-native" "1.3.0"
 
-"@web3modal/scaffold-utils-react-native@1.3.0-alpha.1":
-  version "1.3.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.3.0-alpha.1.tgz#6c5299adfc2e65022b7e1cb817df16948d2d6368"
-  integrity sha512-t3KF8yHjV9zxt73k818p80OM6ntozq+7eh9fTVCe0iSGDvOw0fwaRykv33pGXekW8dD1BGO56nUcjssmCXAwow==
+"@web3modal/scaffold-utils-react-native@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.3.0.tgz#8c8de082f6c2d7dc6aa1c4b16f4160756fff4162"
+  integrity sha512-LsoxVKXZbRA3l3uFtPjpB7gWIrzbzFs3XJaqX4woi6wOZyg+wSv6phV0Un7LyCZzazSiiNad0g46kuPdJFLGEQ==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.3.0-alpha.1"
+    "@web3modal/scaffold-react-native" "1.3.0"
 
-"@web3modal/ui-react-native@1.3.0-alpha.0":
-  version "1.3.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.3.0-alpha.0.tgz#9ba752e81bdf46aa983860061b527664b6f008a1"
-  integrity sha512-yefKE+8xiUNlH01IWjjcwzhsW9K8knQ3ACPwz4Whj+NOQmkInrk6afyMbl4jJ1BWp/WZ2en0UJ2wP9DfmcLSzg==
+"@web3modal/ui-react-native@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.3.0.tgz#7dce377b621ee999ff61e80bdfb8e55747d16f6a"
+  integrity sha512-bHMYMcFpnM2UWY9ea5i+73hPYWhQmGlrgfnCoQGwE4SoVc4+8w7iTk+QYtQ+dFkf1zuJapUarCcplNxELRMteA==
   dependencies:
     qrcode "1.5.3"
 
-"@web3modal/wagmi-react-native@1.3.0-alpha.1":
-  version "1.3.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.3.0-alpha.1.tgz#e56bb8ad048d4b26a3d514c45c5677ff4ea0226d"
-  integrity sha512-/bgzeib/L+zUIRPUxEQigbEsAywQPFarrGvxrMZo8Zs+Ah3IX4HzPmaTrWX9PCSzypdIxIdRcTbmDPrQcjcb+Q==
+"@web3modal/wagmi-react-native@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.3.0.tgz#25517a799520de12e4122e50f16444e4d787ddf5"
+  integrity sha512-O0a1V3YLES2FNB0Ln5oeOcIQd9mYF4gX/mXNzk+h4UXM4lnApoZeGv+AxslzeLyYjq+ei1VebdwcPVFksrHCsw==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.3.0-alpha.1"
-    "@web3modal/scaffold-utils-react-native" "1.3.0-alpha.1"
+    "@web3modal/scaffold-react-native" "1.3.0"
+    "@web3modal/scaffold-utils-react-native" "1.3.0"
 
 "@xmldom/xmldom@^0.8.8":
   version "0.8.10"
