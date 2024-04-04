@@ -26,7 +26,6 @@ export function WriteContract() {
     setData(undefined);
     setError(false);
     setIsLoading(true);
-    setRequetsModalVisible(true);
 
     try {
       const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
@@ -43,8 +42,10 @@ export function WriteContract() {
       setData(response.toString());
     } catch {
       setError(true);
+    } finally {
+      setIsLoading(false);
+      setRequetsModalVisible(true);
     }
-    setIsLoading(false);
   };
 
   return isConnected ? (

@@ -42,8 +42,9 @@ export function ReadContract() {
       setData(balance.toString());
     } catch {
       setError(true);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return isConnected ? (

@@ -19,7 +19,6 @@ import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
 import {WriteContract} from './views/WriteContract';
 import {SignTypedDataV4} from './views/SignTypedDataV4';
-import {SignTypedData} from './views/SignTypedData';
 
 // 1. Get projectId at https://cloud.walletconnect.com
 const projectId = ENV_PROJECT_ID;
@@ -92,7 +91,6 @@ function App(): React.JSX.Element {
         <W3mButton balance="show" />
         <SignMessage />
         <SendTransaction />
-        <SignTypedData />
         <SignTypedDataV4 />
         <ReadContract />
         <WriteContract />

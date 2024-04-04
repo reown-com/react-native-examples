@@ -25,7 +25,6 @@ export function SignMessage() {
     setData(undefined);
     setError(false);
     setIsLoading(true);
-    setRequetsModalVisible(true);
 
     try {
       const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
@@ -37,8 +36,10 @@ export function SignMessage() {
     } catch (e) {
       console.log(e);
       setError(true);
+    } finally {
+      setIsLoading(false);
+      setRequetsModalVisible(true);
     }
-    setIsLoading(false);
   };
 
   return isConnected ? (
