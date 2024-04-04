@@ -2936,10 +2936,10 @@
     "@urql/core" ">=2.3.1"
     wonka "^4.0.14"
 
-"@walletconnect/core@2.11.3":
-  version "2.11.3"
-  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.11.3.tgz#c81855722cb9afd411f91f5345c7874f48bade0b"
-  integrity sha512-/9m4EqiggFUwkQDv5PDWbcTI+yCVnBd/iYW5iIHEkivg2/mnBr2bQz2r/vtPjp19r/ZK62Dx0+UN3U+BWP8ulQ==
+"@walletconnect/core@2.11.1":
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.11.1.tgz#da2be26b8b6514c74f06dc9a5ffb450bdec3456d"
+  integrity sha512-T57Vd7YdbHPsy3tthBuwrhaZNafN0+PqjISFRNeJy/bsKdXxpJg2hGSARuOTpCO7V6VcaatqlaSMuG3DrnG5rA==
   dependencies:
     "@walletconnect/heartbeat" "1.2.1"
     "@walletconnect/jsonrpc-provider" "1.0.13"
@@ -2952,8 +2952,8 @@
     "@walletconnect/relay-auth" "^1.0.4"
     "@walletconnect/safe-json" "^1.0.2"
     "@walletconnect/time" "^1.0.2"
-    "@walletconnect/types" "2.11.3"
-    "@walletconnect/utils" "2.11.3"
+    "@walletconnect/types" "2.11.1"
+    "@walletconnect/utils" "2.11.1"
     events "^3.3.0"
     isomorphic-unfetch "3.1.0"
     lodash.isequal "4.5.0"
@@ -2966,20 +2966,20 @@
   dependencies:
     tslib "1.14.1"
 
-"@walletconnect/ethereum-provider@2.11.3":
-  version "2.11.3"
-  resolved "https://registry.yarnpkg.com/@walletconnect/ethereum-provider/-/ethereum-provider-2.11.3.tgz#a9fd8b6a3ed65ab0331a1329bece9c0f47292262"
-  integrity sha512-lg+ZzjLfk1GZgLVwMBmCteSNQ6hVn0Fgo1xDnzU/Ak3IqyfWIeMcM79Z5NgPLQOwqBVGckoBnx5BU5wai+AjGg==
+"@walletconnect/ethereum-provider@2.11.1":
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/ethereum-provider/-/ethereum-provider-2.11.1.tgz#6e0174ec9026940eaadeedc53417e222eb45f5aa"
+  integrity sha512-UfQH0ho24aa2M1xYmanbJv2ggQPebKmQytp2j20QEvURJ2R0v7YKWZ+0PfwOs6o6cuGw6gGxy/0WQXQRZSAsfg==
   dependencies:
     "@walletconnect/jsonrpc-http-connection" "^1.0.7"
     "@walletconnect/jsonrpc-provider" "^1.0.13"
     "@walletconnect/jsonrpc-types" "^1.0.3"
     "@walletconnect/jsonrpc-utils" "^1.0.8"
     "@walletconnect/modal" "^2.6.2"
-    "@walletconnect/sign-client" "2.11.3"
-    "@walletconnect/types" "2.11.3"
-    "@walletconnect/universal-provider" "2.11.3"
-    "@walletconnect/utils" "2.11.3"
+    "@walletconnect/sign-client" "2.11.1"
+    "@walletconnect/types" "2.11.1"
+    "@walletconnect/universal-provider" "2.11.1"
+    "@walletconnect/utils" "2.11.1"
     events "^3.3.0"
 
 "@walletconnect/events@^1.0.1":
@@ -3123,19 +3123,19 @@
   dependencies:
     tslib "1.14.1"
 
-"@walletconnect/sign-client@2.11.3":
-  version "2.11.3"
-  resolved "https://registry.yarnpkg.com/@walletconnect/sign-client/-/sign-client-2.11.3.tgz#3ea7b3acf92ee31cc42b45d42e66c44b4720b28b"
-  integrity sha512-JVjLTxN/3NjMXv5zalSGKuSYLRyU2yX6AWEdq17cInlrwODpbWZr6PS1uxMWdH4r90DXBLhdtwDbEq/pfd0BPg==
+"@walletconnect/sign-client@2.11.1":
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/sign-client/-/sign-client-2.11.1.tgz#c073b8d2d594e792bb783d36c8b021bd37a9d4f6"
+  integrity sha512-s3oKSx6/F5X2WmkV1jfJImBFACf9Km5HpTb+n5q+mobJVpUQw/clvoVyIrNNppLhm1V1S/ylHXh0qCrDppDpCA==
   dependencies:
-    "@walletconnect/core" "2.11.3"
+    "@walletconnect/core" "2.11.1"
     "@walletconnect/events" "^1.0.1"
     "@walletconnect/heartbeat" "1.2.1"
     "@walletconnect/jsonrpc-utils" "1.0.8"
     "@walletconnect/logger" "^2.0.1"
     "@walletconnect/time" "^1.0.2"
-    "@walletconnect/types" "2.11.3"
-    "@walletconnect/utils" "2.11.3"
+    "@walletconnect/types" "2.11.1"
+    "@walletconnect/utils" "2.11.1"
     events "^3.3.0"
 
 "@walletconnect/time@^1.0.2":
@@ -3145,10 +3145,10 @@
   dependencies:
     tslib "1.14.1"
 
-"@walletconnect/types@2.11.3":
-  version "2.11.3"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.11.3.tgz#8ce43cb77e8fd9d5269847cdd73bcfa7cce7dd1a"
-  integrity sha512-JY4wA9MVosDW9dcJMTpnwliste0aJGJ1X6Q4ulLsQsgWRSEBRkLila0oUT01TDBW9Yq8uUp7uFOUTaKx6KWVAg==
+"@walletconnect/types@2.11.1":
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.11.1.tgz#4f705b43ddc286b69eb9bf91bb6e9496d20de0e3"
+  integrity sha512-UbdbX+d6MOK0AXKxt5imV3KvAcLVpZUHylaRDIP5ffwVylM/p4DHnKppil1Qq5N+IGDr3RsUwLGFkKjqsQYRKw==
   dependencies:
     "@walletconnect/events" "^1.0.1"
     "@walletconnect/heartbeat" "1.2.1"
@@ -3157,25 +3157,25 @@
     "@walletconnect/logger" "^2.0.1"
     events "^3.3.0"
 
-"@walletconnect/universal-provider@2.11.3":
-  version "2.11.3"
-  resolved "https://registry.yarnpkg.com/@walletconnect/universal-provider/-/universal-provider-2.11.3.tgz#63001737430904a8437c4220fe8cab7ec99c5d79"
-  integrity sha512-5iW7eAEuf4YV079wYoqU9mCRAxPU7Vhh+3n8DtUkUAET/5M0HCxmq0dGw26TxNJvXeIVrQmmmaj9QyeJsiVy3w==
+"@walletconnect/universal-provider@2.11.1":
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/universal-provider/-/universal-provider-2.11.1.tgz#988f2a78325eb52ef7481a220851a56efb209d64"
+  integrity sha512-BJvPYByIfbBYF4x8mqDV79ebQX0tD54pp8itsqrHWn0qKZeJyIH8sQ69yY0GnbJrzoFS3ZLULdC0yDxWDeuRGw==
   dependencies:
     "@walletconnect/jsonrpc-http-connection" "^1.0.7"
     "@walletconnect/jsonrpc-provider" "1.0.13"
     "@walletconnect/jsonrpc-types" "^1.0.2"
     "@walletconnect/jsonrpc-utils" "^1.0.7"
     "@walletconnect/logger" "^2.0.1"
-    "@walletconnect/sign-client" "2.11.3"
-    "@walletconnect/types" "2.11.3"
-    "@walletconnect/utils" "2.11.3"
+    "@walletconnect/sign-client" "2.11.1"
+    "@walletconnect/types" "2.11.1"
+    "@walletconnect/utils" "2.11.1"
     events "^3.3.0"
 
-"@walletconnect/utils@2.11.3":
-  version "2.11.3"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.11.3.tgz#3731809b54902655cf202e0bf0e8f268780e8b54"
-  integrity sha512-jsdNkrl/IcTkzWFn0S2d0urzBXg6RxVJtUYRsUx3qI3wzOGiABP9ui3yiZ3SgZOv9aRe62PaNp1qpbYZ+zPb8Q==
+"@walletconnect/utils@2.11.1":
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.11.1.tgz#56116d9c410c6f2ae8d562017cf6876cccb366f1"
+  integrity sha512-wRFDHN86dZ05mCET1H3912odIeQa8j7cZKxl1FlWRpV2YsILj9HCYSX6Uq2brwO02Kv2vryke44G1r8XI/LViA==
   dependencies:
     "@stablelib/chacha20poly1305" "1.0.1"
     "@stablelib/hkdf" "1.0.1"
@@ -3185,7 +3185,7 @@
     "@walletconnect/relay-api" "^1.0.9"
     "@walletconnect/safe-json" "^1.0.2"
     "@walletconnect/time" "^1.0.2"
-    "@walletconnect/types" "2.11.3"
+    "@walletconnect/types" "2.11.1"
     "@walletconnect/window-getters" "^1.0.1"
     "@walletconnect/window-metadata" "^1.0.1"
     detect-browser "5.3.0"
@@ -3207,54 +3207,54 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/coinbase-ethers-react-native@1.4.0-email-alpha.0":
-  version "1.4.0-email-alpha.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-ethers-react-native/-/coinbase-ethers-react-native-1.4.0-email-alpha.0.tgz#bc18aa0c95a529ad7ec117693d091026b4281203"
-  integrity sha512-MDiRPUZ3TIrVwsMEQzOK2Vit3dW1Mz1oaAOkNlw6EzPYFSn4D/2gcefcdMHRjkQ7RUIIUbekcckUNZmKbD3MaA==
+"@web3modal/coinbase-ethers-react-native@1.4.0-email-beta.1":
+  version "1.4.0-email-beta.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-ethers-react-native/-/coinbase-ethers-react-native-1.4.0-email-beta.1.tgz#02b32c3233082d8966649d1e3f21f38705074cea"
+  integrity sha512-NfnvlWJ6rN7A3cJlCw3j1XtYl7Hcr6TzyQkqBUYz93VbkI4hiQ0QpJlz+ZKGpvQ7lW8esdSeh3k82OAa2Qk7SQ==
 
-"@web3modal/core-react-native@1.4.0-email-alpha.0":
-  version "1.4.0-email-alpha.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.0-email-alpha.0.tgz#9ad836dd7c377919cb1527242f0bf1b647fef3c5"
-  integrity sha512-iv9rvSeRWFQRV+y78npPTmtyTTjMQJEexrf8FL2ZFdcSObAQIWIfcmT4L90ANeG0NnJo5g19XHQPFKmJ/F6iSQ==
+"@web3modal/core-react-native@1.4.0-email-beta.1":
+  version "1.4.0-email-beta.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.0-email-beta.1.tgz#8d3c515feca5f3c3b16149a631e811af04fe6928"
+  integrity sha512-5H/Je7hNnRxXyPt5EhsZQuVuVPB04pY9cV+G9mwHpz1T+VRbqiN6+Sio67B6RMcTju4zlhzkITSURVYexZNEfw==
   dependencies:
     valtio "1.10.5"
 
-"@web3modal/email-react-native@1.4.0-email-alpha.0":
-  version "1.4.0-email-alpha.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.0-email-alpha.0.tgz#c1a21c07762d2e1e76bae4b5b6f27c16691195ce"
-  integrity sha512-tGm66mxmkkmtUDarWFn1TwnBtlK4ff7HURibtc91CZyo90g5yI/SdRY1Wzf3Rg8VFv6awxw7VCQODRNjiDM3EQ==
+"@web3modal/email-react-native@1.4.0-email-beta.1":
+  version "1.4.0-email-beta.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.0-email-beta.1.tgz#15edf2821799b4f933d874f2a9a53c4095ca0bfc"
+  integrity sha512-ILjSNs+OBnIz5WMSsPNDMSAdMp65VQqPsqgV23UQJkU9UHPqEsR/8y7ga7dFSi1AySFxlGlgqVwNElB0DTnoXg==
   dependencies:
     zod "3.22.4"
 
-"@web3modal/ethers-react-native@1.4.0-email-alpha.0":
-  version "1.4.0-email-alpha.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/ethers-react-native/-/ethers-react-native-1.4.0-email-alpha.0.tgz#883af9047091d3856d4b8ff12646c84604cb1e5a"
-  integrity sha512-PRzrirMwOqy6Vj1gV1sOUoy2t60Gs0AYHRbF83fihnMYGBmUg9A4zGH8TxggUue2d2v4vMgprlzFHWfYJxuUNg==
+"@web3modal/ethers-react-native@1.4.0-email-beta.1":
+  version "1.4.0-email-beta.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/ethers-react-native/-/ethers-react-native-1.4.0-email-beta.1.tgz#d060459748fb0dff0598bd6f9f4c96b2177a5912"
+  integrity sha512-ZHprhIRGBGSjhg6ofQEOHAPNbBhPCpS0vzvVdH8DGKvpkRKqSJUYCV1VUgLNgZhJ5MtlAKStjhnrSpJfQQyL7w==
   dependencies:
-    "@walletconnect/ethereum-provider" "2.11.3"
-    "@web3modal/scaffold-react-native" "1.4.0-email-alpha.0"
-    "@web3modal/scaffold-utils-react-native" "1.4.0-email-alpha.0"
+    "@walletconnect/ethereum-provider" "2.11.1"
+    "@web3modal/scaffold-react-native" "1.4.0-email-beta.1"
+    "@web3modal/scaffold-utils-react-native" "1.4.0-email-beta.1"
 
-"@web3modal/scaffold-react-native@1.4.0-email-alpha.0":
-  version "1.4.0-email-alpha.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.0-email-alpha.0.tgz#93da0be6f01355efd67fcff224e17489ec1f9108"
-  integrity sha512-DBLTEIB3IweteQW/CstERzP7YPVc9fDnnfWAyeDpv6yFWdpOxjnp50ec1BqvUNOx4q9gE4VLy7Gw53kut2/FoA==
+"@web3modal/scaffold-react-native@1.4.0-email-beta.1":
+  version "1.4.0-email-beta.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.0-email-beta.1.tgz#1e054f609d7118b0f23fea4366ea9538c8722de1"
+  integrity sha512-xrlYp/N03foeqzXxOln3Onsvwj/7+CBGnMSAdXTPQui2inRqDWl+FET1tYY8G38okXqoI9/vXgWqG1K8cAV72g==
   dependencies:
-    "@web3modal/core-react-native" "1.4.0-email-alpha.0"
-    "@web3modal/email-react-native" "1.4.0-email-alpha.0"
-    "@web3modal/ui-react-native" "1.4.0-email-alpha.0"
+    "@web3modal/core-react-native" "1.4.0-email-beta.1"
+    "@web3modal/email-react-native" "1.4.0-email-beta.1"
+    "@web3modal/ui-react-native" "1.4.0-email-beta.1"
 
-"@web3modal/scaffold-utils-react-native@1.4.0-email-alpha.0":
-  version "1.4.0-email-alpha.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.0-email-alpha.0.tgz#f77db3e375060759c561e74f23aaefd30b9fb100"
-  integrity sha512-HzpoL9Pmi+/4S9GNSl/NrfA7E5bk/ANeNtOLc7ZoX/JjpJmd2+aMV12INZPG5951y2U4OFyRCZpU8hMGho09Bg==
+"@web3modal/scaffold-utils-react-native@1.4.0-email-beta.1":
+  version "1.4.0-email-beta.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.0-email-beta.1.tgz#79e506c0f4801b34187eb4607b8e7ca71255d8cb"
+  integrity sha512-R0KUlNFomPeviXUoXnZNdfSTXdegAwemK945gNNUKAzooCVagZ7fsG1ZCJDACtsdu8Uu6905HwDKnl4ziM4sFA==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.4.0-email-alpha.0"
+    "@web3modal/scaffold-react-native" "1.4.0-email-beta.1"
 
-"@web3modal/ui-react-native@1.4.0-email-alpha.0":
-  version "1.4.0-email-alpha.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.0-email-alpha.0.tgz#3a1e9a0666ccf7d9943e7a06a5b0b35c79d51870"
-  integrity sha512-oRz/IpGZQJKmqobWV9VKRe0Y5cxrNfA+6KhKJ0NMhAJpdI4JFtwCInTa2qyGBFT3q6w92GqTTWQoWi8AS0s4OQ==
+"@web3modal/ui-react-native@1.4.0-email-beta.1":
+  version "1.4.0-email-beta.1"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.0-email-beta.1.tgz#3fa8e7bc5b980d8c8c0f608f6700ff708970cc36"
+  integrity sha512-Y6X2YyIPZPh7gUD7bkHRvNOHZyU6sAA7FJiK7bCUXyodK7m9L3cjwAdZu72jr0LOucP47MTLg6nQ6LVkO36n2A==
   dependencies:
     qrcode "1.5.3"
 

@@ -34,7 +34,7 @@ const metadata = {
   },
 };
 
-const config = defaultConfig({metadata});
+const config = defaultConfig({metadata, enableEmail: true});
 
 // 3. Define your chains
 const mainnet = {
