@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
 import {Button} from '@web3modal/ui-react-native';
-
 import {useAccount, useContractRead} from 'wagmi';
-import {RequestModal} from '../components/RequestModal';
-import wagmigotchiABI from '../utils/wagmigotchiABI';
+import {RequestModal} from '@/components/RequestModal';
+import wagmigotchiABI from '@/utils/wagmigotchiABI';
 
 export function ReadContract() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);

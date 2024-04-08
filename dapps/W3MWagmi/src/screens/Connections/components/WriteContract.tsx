@@ -3,8 +3,8 @@ import {View} from 'react-native';
 import {Button} from '@web3modal/ui-react-native';
 
 import {useAccount, useContractWrite} from 'wagmi';
-import {RequestModal} from '../components/RequestModal';
-import usdtAbi from '../utils/usdtAbi';
+import {RequestModal} from '@/components/RequestModal';
+import usdtAbi from '@/utils/usdtAbi';
 
 export function WriteContract() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
