@@ -1,7 +1,13 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-apply from: new File(["node", "--print", "require.resolve('@sentry/react-native/package.json')"].execute().text.trim(), "../sentry.gradle")
+
+project.ext.sentryCli = [
+    logLevel: "debug",
+    flavorAware: false
+]
+
+apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 
 project.ext.envConfigFiles = [
     debug: ".env.debug",
@@ -94,7 +100,7 @@ android {
         applicationId "com.walletconnect.web3modal.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 28
+        versionCode 29
         versionName "1.1"
         resValue "string", "build_config_package", "com.w3mwagmi"
     }
