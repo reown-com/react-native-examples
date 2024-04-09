@@ -72,8 +72,7 @@ jobs:
       - run: touch ${{ inputs.path }}/.env.${{ inputs.release-type }} && echo "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dns }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.path }}/.env.${{ inputs.release-type }}
       - run: touch ${{ inputs.path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.path }}/android/sentry.properties
       - run: touch ${{ inputs.path }}/android/secrets.properties && echo "${{ secrets.secrets-file }}" >> ${{ inputs.path }}/android/secrets.properties
-      - run: touch keystore.b64 && echo "${{ secrets.keystore }}" >> keystore.b64
-      - run: base64 --decode -i keystore.b64 -o ${{ inputs.path }}/android/app/${{ secrets.keystore-name }}.keystore
+      - run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.path }}/android/app/${{ secrets.keystore-name }}.keystore
       
       - name: Build APK
         run: cd ${{ inputs.path }} && yarn install && yarn run android:build:internal
