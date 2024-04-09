@@ -3,9 +3,9 @@ on: workflow_dispatch
 
 jobs:
   release-internal:
-    name: Release Web3Modal Android Internal
     uses: ./.github/workflows/release-android.yaml
     with:
+      name: Release Web3Modal Android Internal
       path: 'dapps/W3MWagmi'
       type: 'internal'
       output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk'
