@@ -34,8 +34,6 @@ on:
         required: true
       secrets-file:
         required: true
-      keystore:
-        required: true
 
 jobs:
   build:
