@@ -15,3 +15,6 @@ jobs:
       sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
       secrets-file: ${{ secrets.W3M_WAGMI_ANDROID_SECRETS }}
       firebase-app-id: ${{ secrets.W3M_WAGMI_ANDROID_INTERNAL_FIREBASE_APP_ID }}
+      firebase-token: ${{ secrets.FIREBASE_TOKEN }}
+      keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
+      keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
