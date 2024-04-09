@@ -23,26 +23,19 @@ on:
       project-id:
         description: 'WalletConnect Cloud ID'
         required: true
-        type: string
       firebase-app-id:
         required: true
-        type: string
       firebase-token:
         required: true
-        type: string
       relay-url:
         description: 'WalletConnect Relay URL'
         required: false
-        type: string
       sentry-dns:
         required: true
-        type: string
       sentry-file:
         required: true
-        type: string
       secrets-file:
         required: true
-        type: string
 
 jobs:
   build:
