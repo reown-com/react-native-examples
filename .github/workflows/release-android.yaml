@@ -87,5 +87,5 @@ jobs:
         env:
           APP_ID: ${{ secrets.firebase-app-id }}
         run: |
-          firebase appdistribution:distribute ./android/app/build/outputs/apk/${{ inputs.output-path }} --app $APP_ID --release-notes "${{ inputs.name }} ${{ inputs.release-type }} release"
+          firebase appdistribution:distribute ${{ inputs.output-path }} --app $APP_ID --release-notes "${{ inputs.name }} ${{ inputs.release-type }} release"
         
