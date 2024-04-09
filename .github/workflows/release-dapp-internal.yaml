@@ -1,0 +1,17 @@
+name: Release Web3Modal Android Internal
+on: workflow_dispatch
+
+jobs:
+  release-internal:
+    uses: ./.github/workflows/release-android.yaml
+    with:
+      name: 'Web3Modal Android Internal'
+      path: 'dapps/W3MWagmi'
+      type: 'internal'
+      output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk'
+    secrets:
+      project-id: ${{ secrets.ENV_PROJECT_ID }}
+      sentry-dns: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
+      sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
+      firebase-token: ${{ secrets.FIREBASE_TOKEN }}
+      firebase-app-id: ${{ secrets.W3M_WAGMI_ANDROID_INTERNAL_FIREBASE_APP_ID }}
