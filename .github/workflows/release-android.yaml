@@ -25,7 +25,7 @@ on:
         required: true
       firebase-app-id:
         required: true
-      firebase-token:
+      gsa-key:
         required: true
       relay-url:
         description: 'WalletConnect Relay URL'
@@ -81,11 +81,11 @@ jobs:
         uses: w9jds/setup-firebase@main
         with:
           tools-version: 13.0.1
-          firebase_token: ${{ secrets.firebase-token }}
+          gcp_sa_key: ${{ secrets.gsa-key }}
       
       - name: Upload APK
         env:
           APP_ID: ${{ secrets.firebase-app-id }}
         run: |
-          firebase appdistribution:distribute ${{ inputs.output-path }} --app $APP_ID --release-notes "${{ inputs.name }} ${{ inputs.release-type }} release"
+          firebase appdistribution:distribute ${{ inputs.output-path }} --app $APP_ID --release-notes "${{ inputs.name }} ${{ inputs.release-type }} release" --groups "flutter-team, javascript-team, kotlin-team, unity"
         
