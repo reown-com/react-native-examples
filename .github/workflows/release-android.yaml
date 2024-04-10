@@ -1,4 +1,4 @@
-name: Release Android
+name: release-android-base
 
 on:
   workflow_call:
@@ -69,7 +69,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - run: touch ${{ inputs.path }}/.env.${{ inputs.release-type }} && echo "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dns }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.path }}/.env.${{ inputs.release-type }}
+      - run: touch ${{ inputs.path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dns }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.path }}/.env.${{ inputs.release-type }}
       - run: touch ${{ inputs.path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.path }}/android/sentry.properties
       - run: touch ${{ inputs.path }}/android/secrets.properties && echo "${{ secrets.secrets-file }}" >> ${{ inputs.path }}/android/secrets.properties
       - run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.path }}/android/app/${{ secrets.keystore-name }}.keystore

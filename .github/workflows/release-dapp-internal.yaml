@@ -1,4 +1,4 @@
-name: Release Web3Modal Android Internal
+name: release-android-web3modal-internal
 on: workflow_dispatch
 
 jobs:
