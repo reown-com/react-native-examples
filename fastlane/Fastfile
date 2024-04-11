@@ -47,7 +47,7 @@ platform :ios do
     # Install pods
     cocoapods(
       clean_install: true,
-      podfile: File.absolute_path("#{ENV['PROJECT_PATH']}/ios/Podfile")
+      podfile: ENV['PODFILE_PATH']
     )
 
     # Get latest build number
