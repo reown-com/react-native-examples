@@ -1,13 +1,13 @@
 name: CI Setup
 description: Setup Node.js and install dependencies
+inputs:
+  root-path:
+    description: 'Path of the project'
+    required: true
+    type: string
 
 runs:
   using: composite
-  inputs:
-    root-path:
-      description: 'Path of the project'
-      required: true
-      type: string
   steps:
     - name: Setup Node.js
       uses: actions/setup-node@v4
