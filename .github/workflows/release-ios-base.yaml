@@ -8,7 +8,7 @@ on:
         description: 'Name of the project'
         required: true
         type: string
-      path:
+      root-path:
         description: 'Path of the react-native project'
         required: true
         type: string
