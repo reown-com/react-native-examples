@@ -31,6 +31,10 @@ on:
         description: 'Bundle ID of the project'
         required: true
         type: string
+      apple-id:
+        description: 'App ID of the project'
+        required: true
+        type: string
     secrets:
       project-id:
         description: 'WalletConnect Cloud ID'
@@ -38,7 +42,7 @@ on:
       relay-url:
         description: 'WalletConnect Relay URL'
         required: false
-      sentry-dns:
+      sentry-dsn:
         required: true
       sentry-file:
         required: true
@@ -80,7 +84,7 @@ jobs:
         run: gem install cocoapods
 
       # Create env file
-      - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dns }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+      - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
 
       # Create sentry file
       - run: touch ${{ inputs.root-path }}/ios/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/ios/sentry.properties

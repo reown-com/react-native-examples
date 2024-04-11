@@ -12,7 +12,7 @@ jobs:
     secrets:
       project-id: ${{ secrets.ENV_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}
-      sentry-dns: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
+      sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
       firebase-app-id: ${{ secrets.W3M_WAGMI_ANDROID_INTERNAL_FIREBASE_APP_ID }}

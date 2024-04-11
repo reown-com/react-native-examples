@@ -30,7 +30,7 @@ on:
       relay-url:
         description: 'WalletConnect Relay URL'
         required: false
-      sentry-dns:
+      sentry-dsn:
         required: true
       sentry-file:
         required: true
@@ -69,7 +69,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dns }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+      - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
       - run: touch ${{ inputs.root-path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/android/sentry.properties
       - run: touch ${{ inputs.root-path }}/android/secrets.properties && echo "${{ secrets.secrets-file }}" >> ${{ inputs.root-path }}/android/secrets.properties
       - run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
