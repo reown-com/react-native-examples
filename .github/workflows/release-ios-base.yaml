@@ -108,7 +108,7 @@ jobs:
           APPLE_KEY_CONTENT: ${{ secrets.apple-key-content }}
           APPLE_ISSUER_ID: ${{ secrets.apple-issuer-id }}
           MATCH_USERNAME: ${{ secrets.match-username }}
-          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.match-keychain-password }}
+          MATCH_PASSWORD: ${{ secrets.match-keychain-password }}
           MATCH_GIT_URL: ${{ secrets.match-git-url }}
           BUNDLE_ID: ${{ inputs.bundle-id }}
           SCHEME: ${{ inputs.scheme-name }}
