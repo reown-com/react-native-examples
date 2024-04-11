@@ -64,7 +64,7 @@ platform :ios do
 
     # Update project team
     update_project_team(
-      path: xcodeproj,
+      path: ENV['XCODE_PROJECT_PATH'],
       teamid: ENV['APPLE_TEAM_ID']
     )
 
