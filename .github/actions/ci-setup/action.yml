@@ -3,6 +3,11 @@ description: Setup Node.js and install dependencies
 
 runs:
   using: composite
+  inputs:
+    root-path:
+      description: 'Path of the project'
+      required: true
+      type: string
   steps:
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -14,13 +19,14 @@ runs:
       uses: actions/cache@v3
       with:
         path: |
-          **/node_modules
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          ${{ inputs.root-path }}/node_modules
+        key: ${{ runner.os }}-yarn-${{ hashFiles('${{ inputs.root-path }}/yarn.lock') }}
         restore-keys: |
           ${{ runner.os }}-yarn-
 
     - name: Install dependencies
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: |
+        cd ${{ inputs.root-path }}
         yarn install --immutable
       shell: bash
