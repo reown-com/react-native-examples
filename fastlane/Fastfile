@@ -71,7 +71,7 @@ platform :ios do
     # Build app
     gym(
       configuration: "Release",
-      project: ENV['XCODE_PROJECT_PATH'],
+      workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
       export_method: "app-store",
     )
