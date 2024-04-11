@@ -35,7 +35,7 @@ platform :ios do
     match(
       readonly: false,
       type: "appstore",
-      app_identifier: ENV['MATCH_IDENTIFIERS'],
+      app_identifier: ENV['BUNDLE_ID'],
       git_url: github_match_url,
       git_basic_authorization: options[:token],
       api_key: api_key,
