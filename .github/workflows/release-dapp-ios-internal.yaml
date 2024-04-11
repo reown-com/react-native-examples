@@ -25,4 +25,5 @@ jobs:
       match-username: ${{ secrets.MATCH_USERNAME }}
       match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
       match-git-url: ${{ secrets.MATCH_GIT_URL }}
+      match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
 
