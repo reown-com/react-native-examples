@@ -63,10 +63,10 @@ platform :ios do
     )
 
     # Update project team
-    update_project_team(
-      path: ENV['XCODE_PROJECT_PATH'],
-      teamid: ENV['APPLE_TEAM_ID']
-    )
+    # update_project_team(
+    #   path: ENV['XCODE_PROJECT_PATH'],
+    #   teamid: ENV['APPLE_TEAM_ID']
+    # )
 
     # Build app
     gym(
