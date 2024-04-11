@@ -4,11 +4,11 @@ on:
   workflow_call:
     inputs:
       name:
-        description: 'Name of the project to be released'
+        description: 'Name of the project'
         required: true
         type: string
-      path:
-        description: 'Path of the project to be released'
+      root-path:
+        description: 'Path of the react-native project'
         required: true
         type: string
       release-type:
@@ -69,13 +69,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - run: touch ${{ inputs.path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dns }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.path }}/.env.${{ inputs.release-type }}
-      - run: touch ${{ inputs.path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.path }}/android/sentry.properties
-      - run: touch ${{ inputs.path }}/android/secrets.properties && echo "${{ secrets.secrets-file }}" >> ${{ inputs.path }}/android/secrets.properties
-      - run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.path }}/android/app/${{ secrets.keystore-name }}.keystore
+      - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dns }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+      - run: touch ${{ inputs.root-path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/android/sentry.properties
+      - run: touch ${{ inputs.root-path }}/android/secrets.properties && echo "${{ secrets.secrets-file }}" >> ${{ inputs.root-path }}/android/secrets.properties
+      - run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
       
       - name: Build APK
-        run: cd ${{ inputs.path }} && yarn install && yarn run android:build:internal
+        run: cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal
   
       - name: Setup Firebase
         uses: w9jds/setup-firebase@main

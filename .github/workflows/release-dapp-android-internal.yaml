@@ -6,7 +6,7 @@ jobs:
     uses: ./.github/workflows/release-android.yaml
     with:
       name: Web3Modal React Native
-      path: 'dapps/W3MWagmi'
+      root-path: 'dapps/W3MWagmi'
       release-type: 'internal'
       output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk'
     secrets:
@@ -14,7 +14,7 @@ jobs:
       relay-url: ${{ secrets.ENV_RELAY_URL }}
       sentry-dns: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
-      secrets-file: ${{ secrets.W3M_WAGMI_ANDROID_SECRETS }}
+      secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
       firebase-app-id: ${{ secrets.W3M_WAGMI_ANDROID_INTERNAL_FIREBASE_APP_ID }}
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
       keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
