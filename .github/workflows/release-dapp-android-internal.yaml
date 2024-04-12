@@ -3,7 +3,7 @@ on: workflow_dispatch
 
 jobs:
   release-internal:
-    uses: ./.github/workflows/release-android.yaml
+    uses: ./.github/workflows/release-android-base.yaml
     with:
       name: Web3Modal React Native
       root-path: 'dapps/W3MWagmi'
