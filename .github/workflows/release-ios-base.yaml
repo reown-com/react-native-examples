@@ -80,12 +80,16 @@ jobs:
         with:
           root-path: ${{ inputs.root-path }}
 
+      - name: Calculate podfile hash
+        id: podfile-hash
+        run: echo "::set-output name=podfile-hash::$(hashFiles('${{ inputs.root-path }}/ios/Podfile.lock'))"
+
       - name: Cache pods
         id: pods-cache
         uses: actions/cache@v3
         with:
           path: ${{ inputs.root-path }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('${{ inputs.root-path }}/ios/Podfile.lock') }}
+          key: ${{ runner.os }}-pods-${{ steps.hash.outputs.hash }}
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
