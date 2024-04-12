@@ -11,7 +11,7 @@ import {WriteContract} from './components/WriteContract';
 
 function ConnectionsScreen() {
   return (
-    <FlexView flexGrow={1} justifyContent="center">
+    <FlexView flexGrow={1} justifyContent="center" alignItems="center">
       <Text style={styles.title} center variant="large-600">
         Web3Modal + wagmi
       </Text>
@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   buttonContainer: {
-    marginHorizontal: 80,
     gap: 8,
   },
 });
