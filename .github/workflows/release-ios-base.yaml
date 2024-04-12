@@ -80,14 +80,13 @@ jobs:
         with:
           root-path: ${{ inputs.root-path }}
 
-      - name: Calculate podfile hash
+      - name: Set podfile path
         id: podfile-hash
         run: |
           echo "Root path: ${{ inputs.root-path }}"
-          echo "Full path: ${{ inputs.root-path }}/ios/Podfile.lock"
+          echo "Podfile path: ${{ inputs.root-path }}/ios/Podfile.lock"
           echo "File exists: $(test -f "${{ inputs.root-path }}/ios/Podfile.lock" && echo "yes" || echo "no")"
           echo "podfile_path=${{ inputs.root-path }}/ios/Podfile.lock" >> "$GITHUB_ENV"
-          echo "Podfile path: ${{ env.podfile_path }}"
 
       - name: Cache pods
         id: pods-cache
