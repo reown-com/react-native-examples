@@ -15,12 +15,12 @@ runs:
         node-version: 18
 
     - name: Set yarn.lock path
-        id: yarn-hash
-        run: |
-          echo "Root path: ${{ inputs.root-path }}"
-          echo "yarn.lock path: ${{ inputs.root-path }}/yarn.lock"
-          echo "File exists: $(test -f "${{ inputs.root-path }}/yarn.lock" && echo "yes" || echo "no")"
-          echo "yarnlock_path=${{ inputs.root-path }}/yarn.lock" >> "$GITHUB_ENV"
+      id: yarn-hash
+      run: |
+        echo "Root path: ${{ inputs.root-path }}"
+        echo "yarn.lock path: ${{ inputs.root-path }}/yarn.lock"
+        echo "File exists: $(test -f "${{ inputs.root-path }}/yarn.lock" && echo "yes" || echo "no")"
+        echo "yarnlock_path=${{ inputs.root-path }}/yarn.lock" >> "$GITHUB_ENV"
 
     - name: Cache dependencies
       id: yarn-cache
