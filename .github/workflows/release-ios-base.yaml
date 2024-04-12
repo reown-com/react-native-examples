@@ -80,6 +80,13 @@ jobs:
         with:
           root-path: ${{ inputs.root-path }}
 
+      - name: Cache dependencies
+        id: pods-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ inputs.root-path }}/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('${{ inputs.root-path }}/ios/Podfile.lock') }}
+
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
