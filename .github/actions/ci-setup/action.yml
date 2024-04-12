@@ -16,6 +16,7 @@ runs:
 
     - name: Set yarn lock path
       id: yarn-hash
+      shell: bash
       run: |
         echo "Root path: ${{ inputs.root-path }}"
         echo "yarn.lock path: ${{ inputs.root-path }}/yarn.lock"
@@ -31,8 +32,8 @@ runs:
         key: ${{ runner.os }}-yarn-${{ hashFiles(env.yarnlock_path) }}
 
     - name: Install dependencies
+      shell: bash
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: |
         cd ${{ inputs.root-path }}
         yarn install --immutable
-      shell: bash
