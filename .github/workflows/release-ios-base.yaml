@@ -86,15 +86,15 @@ jobs:
           echo "Root path: ${{ inputs.root-path }}"
           echo "Full path: ${{ inputs.root-path }}/ios/Podfile.lock"
           echo "File exists: $(test -f "${{ inputs.root-path }}/ios/Podfile.lock" && echo "yes" || echo "no")"
-          echo "podfile_hash=$(hashFiles(${{ inputs.root-path }}/ios/Podfile.lock))" >> "$GITHUB_ENV"
-          echo "Podfile hash: ${{ env.podfile_hash }}"
+          echo "podfile_path=${{ inputs.root-path }}/ios/Podfile.lock" >> "$GITHUB_ENV"
+          echo "Podfile path: ${{ env.podfile_path }}"
 
       - name: Cache pods
         id: pods-cache
         uses: actions/cache@v3
         with:
           path: ${{ inputs.root-path }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ env.podfile_hash }}
+          key: ${{ runner.os }}-pods-${{ hashFiles(env.podfile_path) }}
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
