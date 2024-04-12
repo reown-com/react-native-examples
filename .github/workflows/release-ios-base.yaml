@@ -80,12 +80,20 @@ jobs:
         with:
           root-path: ${{ inputs.root-path }}
 
-      - name: Cache dependencies
+      - name: Set podfile path
+        id: podfile-hash
+        run: |
+          echo "Root path: ${{ inputs.root-path }}"
+          echo "Podfile path: ${{ inputs.root-path }}/ios/Podfile.lock"
+          echo "File exists: $(test -f "${{ inputs.root-path }}/ios/Podfile.lock" && echo "yes" || echo "no")"
+          echo "podfile_path=${{ inputs.root-path }}/ios/Podfile.lock" >> "$GITHUB_ENV"
+
+      - name: Cache pods
         id: pods-cache
         uses: actions/cache@v3
         with:
           path: ${{ inputs.root-path }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('${{ inputs.root-path }}/ios/Podfile.lock') }}
+          key: ${{ runner.os }}-pods-${{ hashFiles(env.podfile_path) }}
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
@@ -93,10 +101,10 @@ jobs:
           ruby-version: 3.0.2
           bundler-cache: true
 
-      - name: Add Fastlane
+      - name: Install Fastlane
         run: gem install fastlane
 
-      - name: Add Cocoapods
+      - name: Install Cocoapods
         run: gem install cocoapods
 
       # Create env file

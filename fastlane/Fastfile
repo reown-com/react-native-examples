@@ -13,8 +13,6 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
-github_match_url = "https://github.com/WalletConnect/mobile-match.git"
-
 ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
 
 default_platform(:ios)
@@ -39,7 +37,7 @@ platform :ios do
       readonly: false,
       type: "appstore",
       app_identifier: ENV['BUNDLE_ID'],
-      git_url: github_match_url,
+      git_url: ENV['MATCH_GIT_URL'],
       git_basic_authorization: options[:token],
       api_key: api_key,
       include_all_certificates: true,
@@ -49,7 +47,8 @@ platform :ios do
 
     # Install pods
     cocoapods(
-      clean_install: true,
+      clean_install: false,
+      repo_update: false,
       podfile: ENV['PODFILE_PATH']
     )
 

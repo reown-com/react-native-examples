@@ -14,17 +14,26 @@ runs:
       with:
         node-version: 18
 
+    - name: Set yarn lock path
+      id: yarn-hash
+      shell: bash
+      run: |
+        echo "Root path: ${{ inputs.root-path }}"
+        echo "yarn.lock path: ${{ inputs.root-path }}/yarn.lock"
+        echo "File exists: $(test -f "${{ inputs.root-path }}/yarn.lock" && echo "yes" || echo "no")"
+        echo "yarnlock_path=${{ inputs.root-path }}/yarn.lock" >> "$GITHUB_ENV"
+
     - name: Cache dependencies
       id: yarn-cache
       uses: actions/cache@v3
       with:
         path: |
           ${{ inputs.root-path }}/node_modules
-        key: ${{ runner.os }}-yarn-${{ hashFiles('${{ inputs.root-path }}/yarn.lock') }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles(env.yarnlock_path) }}
 
     - name: Install dependencies
+      shell: bash
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: |
         cd ${{ inputs.root-path }}
         yarn install --immutable
-      shell: bash
