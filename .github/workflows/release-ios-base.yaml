@@ -82,14 +82,14 @@ jobs:
 
       - name: Calculate podfile hash
         id: podfile-hash
-        run: echo "::set-output name=podfile-hash::$(hashFiles('${{ inputs.root-path }}/ios/Podfile.lock'))"
+        run: echo "podfile_hash=$(hashFiles('${{ inputs.root-path }}/ios/Podfile.lock'))" >> "$GITHUB_ENV"
 
       - name: Cache pods
         id: pods-cache
         uses: actions/cache@v3
         with:
           path: ${{ inputs.root-path }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ steps.hash.outputs.hash }}
+          key: ${{ runner.os }}-pods-${{ podfile_hash }}
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
