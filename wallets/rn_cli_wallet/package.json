@@ -5,6 +5,7 @@
   "scripts": {
     "android": "react-native run-android --mode=debug",
     "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
+    "android:build:internal": "cd android && ./gradlew clean && ./gradlew assembleInternal",
     "ios": "react-native run-ios",
     "bundle:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "start": "react-native start",
