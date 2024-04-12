@@ -1,0 +1,126 @@
+
+name: release-ios-base
+
+on:
+  workflow_call:
+    inputs:
+      name:
+        description: 'Name of the project'
+        required: true
+        type: string
+      root-path:
+        description: 'Path of the react-native project'
+        required: true
+        type: string
+      xcode-project-path:
+        description: 'Path of the Xcode project'
+        required: true
+        type: string
+      xcode-workspace-path:
+        description: 'Path of the Xcode workspace'
+        required: true
+        type: string
+      release-type:
+        description: 'Release type of the project (debug/internal/production)'
+        type: string
+      scheme-name:
+        description: 'Scheme name of the project'
+        required: true
+        type: string
+      bundle-id:
+        description: 'Bundle ID of the project'
+        required: true
+        type: string
+      apple-id:
+        description: 'App ID of the project'
+        required: true
+        type: string
+    secrets:
+      project-id:
+        description: 'WalletConnect Cloud ID'
+        required: true
+      relay-url:
+        description: 'WalletConnect Relay URL'
+        required: false
+      sentry-dsn:
+        required: true
+      sentry-file:
+        required: true
+      apple-username:
+        required: true
+      apple-key-id:
+        required: true
+      apple-key-content:
+        required: true
+      apple-issuer-id:
+        required: true
+      match-username:
+        required: true
+      match-keychain-password:
+        required: true
+      match-git-url:
+        required: true
+      match-ssh-key:
+        required: true
+
+jobs:
+  build:
+    runs-on: macos-latest-xlarge
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: webfactory/ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.match-ssh-key }}
+
+      - name: Setup
+        uses: ./.github/actions/ci-setup
+        with:
+          root-path: ${{ inputs.root-path }}
+
+      - name: Cache dependencies
+        id: pods-cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ inputs.root-path }}/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('${{ inputs.root-path }}/ios/Podfile.lock') }}
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.2
+          bundler-cache: true
+
+      - name: Add Fastlane
+        run: gem install fastlane
+
+      - name: Add Cocoapods
+        run: gem install cocoapods
+
+      # Create env file
+      - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+
+      # Create sentry file
+      - run: touch ${{ inputs.root-path }}/ios/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/ios/sentry.properties
+
+      - name: Build and Upload to App Store
+        uses: maierj/fastlane-action@v3.0.0
+        with:
+          lane: 'release_testflight'
+          bundler-cache: true
+        env:
+          APPLE_ID: ${{ inputs.apple-id }}
+          APPLE_USERNAME: ${{ secrets.apple-username }}
+          APPLE_KEY_ID: ${{ secrets.apple-key-id }}
+          APPLE_KEY_CONTENT: ${{ secrets.apple-key-content }}
+          APPLE_ISSUER_ID: ${{ secrets.apple-issuer-id }}
+          MATCH_USERNAME: ${{ secrets.match-username }}
+          MATCH_PASSWORD: ${{ secrets.match-keychain-password }}
+          MATCH_GIT_URL: ${{ secrets.match-git-url }}
+          BUNDLE_ID: ${{ inputs.bundle-id }}
+          SCHEME: ${{ inputs.scheme-name }}
+          PODFILE_PATH: ${{ inputs.root-path }}/ios/Podfile
+          XCODE_PROJECT_PATH: ${{ inputs.xcode-project-path }}
+          XCWORKSPACE_PATH: ${{ inputs.xcode-workspace-path }}

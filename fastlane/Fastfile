@@ -1,0 +1,90 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+github_match_url = "https://github.com/WalletConnect/mobile-match.git"
+
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+
+default_platform(:ios)
+
+platform :ios do
+
+  lane :release_testflight do |options|
+    # Setup the keychain and match to work with CI
+    setup_ci()
+
+    # Get Apple API Key
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APPLE_KEY_ID"],
+      issuer_id: ENV["APPLE_ISSUER_ID"],
+      key_content: ENV["APPLE_KEY_CONTENT"],            
+      duration: 1200,            
+      in_house: false,
+    )
+
+    # Sync certificates
+    match(
+      readonly: false,
+      type: "appstore",
+      app_identifier: ENV['BUNDLE_ID'],
+      git_url: github_match_url,
+      git_basic_authorization: options[:token],
+      api_key: api_key,
+      include_all_certificates: true,
+      force_for_new_devices: true,
+      force_for_new_certificates: true
+    )
+
+    # Install pods
+    cocoapods(
+      clean_install: true,
+      podfile: ENV['PODFILE_PATH']
+    )
+
+    # Get latest build number
+    number = latest_testflight_build_number(
+      app_identifier: ENV["BUNDLE_ID"],
+      username: options[:username],
+    )
+
+    # Increment build number
+    increment_build_number(
+      build_number: number + 1,
+      xcodeproj: ENV['XCODE_PROJECT_PATH']
+    )
+
+    # Build app
+    gym(
+      configuration: "Release",
+      workspace: ENV['XCWORKSPACE_PATH'],
+      scheme: ENV['SCHEME'],
+      export_method: "app-store",
+    )
+
+    # Upload to TestFlight
+    upload_to_testflight(
+      apple_id: ENV["APPLE_ID"],
+      app_identifier: ENV["BUNDLE_ID"],
+      changelog: "#{ENV["SCHEME"]} build 🚀",
+      distribute_external: true,
+      notify_external_testers: true,
+      skip_waiting_for_build_processing: false,
+      groups: ["WalletConnect Users"]
+    )
+    clean_build_artifacts()
+  end
+
+
+end
