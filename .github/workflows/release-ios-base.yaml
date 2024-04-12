@@ -82,7 +82,7 @@ jobs:
 
       - name: Calculate podfile hash
         id: podfile-hash
-        run: echo "podfile_hash=$(hashFiles(${inputs.root-path}/ios/Podfile.lock))"
+        run: echo "podfile_hash=\$(hashFiles('\${{ inputs.root-path }}/ios/Podfile.lock'))" >> $GITHUB_ENV
 
       - name: Cache pods
         id: pods-cache
