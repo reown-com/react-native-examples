@@ -86,7 +86,7 @@ jobs:
         run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
 
       - name: Add Google Services file
-        if: ${{ secrets.google-services-file }}
+        if: ${{ secrets.google-services-file != '' }}
         run: touch ${{ inputs.root-path }}/android/app/google-services.json && echo ${{ secrets.google-services-file }} >> ${{ inputs.root-path }}/android/app/google-services.json
       
       - name: Build APK
