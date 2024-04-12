@@ -14,7 +14,7 @@ runs:
       with:
         node-version: 18
 
-    - name: Set yarn.lock path
+    - name: Set yarn lock path
       id: yarn-hash
       run: |
         echo "Root path: ${{ inputs.root-path }}"
