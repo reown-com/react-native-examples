@@ -80,7 +80,7 @@ jobs:
         with:
           root-path: ${{ inputs.root-path }}
 
-      - name: Cache dependencies
+      - name: Cache pods
         id: pods-cache
         uses: actions/cache@v3
         with:
@@ -93,10 +93,10 @@ jobs:
           ruby-version: 3.0.2
           bundler-cache: true
 
-      - name: Add Fastlane
+      - name: Install Fastlane
         run: gem install fastlane
 
-      - name: Add Cocoapods
+      - name: Install Cocoapods
         run: gem install cocoapods
 
       # Create env file
