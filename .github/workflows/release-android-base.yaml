@@ -87,8 +87,8 @@ jobs:
 
       - name: Add Google Services file
         env:
-          google-services-file: ${{ secrets.secrets.google-services-file }}
-        if: ${{ env.google-services-file }}
+          google-services-file: ${{ secrets.google-services-file }}
+        if: ${{ env.google-services-file != '' }}
         run: touch ${{ inputs.root-path }}/android/app/google-services.json && echo ${{ env.google-services-file }} >> ${{ inputs.root-path }}/android/app/google-services.json
       
       - name: Build APK
