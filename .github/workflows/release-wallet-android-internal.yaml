@@ -19,4 +19,4 @@ jobs:
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
       keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
       keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
-      google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_JSON }}
+      google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}

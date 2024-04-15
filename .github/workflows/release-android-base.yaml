@@ -89,7 +89,7 @@ jobs:
         env:
           google-services-file: ${{ secrets.google-services-file }}
         if: ${{ env.google-services-file != '' }}
-        run: touch ${{ inputs.root-path }}/android/app/google-services.json && echo ${{ env.google-services-file }} >> ${{ inputs.root-path }}/android/app/google-services.json
+        run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/android/app/google-services.json
       
       - name: Build APK
         run: cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal
