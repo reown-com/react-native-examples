@@ -18,7 +18,7 @@ export async function createWeb3Wallet(relayerRegionURL: string) {
       url: 'https://walletconnect.com/',
       icons: ['https://avatars.githubusercontent.com/u/37784886'],
       redirect: {
-        native: 'rn-web3walllet://',
+        native: 'rn-web3wallet://',
       },
     },
   });
