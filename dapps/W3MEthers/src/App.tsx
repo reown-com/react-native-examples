@@ -13,6 +13,7 @@ import {
 import {FlexView, Text} from '@web3modal/ui-react-native';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {CoinbaseProvider} from '@web3modal/coinbase-ethers-react-native';
+import {EmailProvider} from '@web3modal/email-ethers-react-native';
 import {ENV_PROJECT_ID} from '@env';
 
 import {SignMessage} from './views/SignMessage';
@@ -59,10 +60,11 @@ const coinbaseProvider = new CoinbaseProvider({
   rpcUrl: mainnet.rpcUrl,
 });
 
+const emailProvider = new EmailProvider({projectId, metadata});
+
 const config = defaultConfig({
   metadata,
-  coinbase: coinbaseProvider,
-  enableEmail: true,
+  extraConnectors: [coinbaseProvider, emailProvider],
 });
 
 const clipboardClient = {
