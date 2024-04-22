@@ -10,7 +10,7 @@ jobs:
       xcode-project-path: 'wallets/rn_cli_wallet/ios/RNWeb3Wallet.xcodeproj'
       xcode-workspace-path: 'wallets/rn_cli_wallet/ios/RNWeb3Wallet.xcworkspace'
       release-type: 'internal'
-      scheme-name: 'RNWallet Internal'
+      scheme-name: 'RNWallet-Internal'
       bundle-id: 'com.walletconnect.web3wallet.rnsample.internal'
       apple-id: '6499165794'
     secrets:
