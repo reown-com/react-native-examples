@@ -37,7 +37,7 @@ export default function SubscriptionsStack() {
         name="SubscriptionsScreen"
         options={{
           headerLargeTitle: true,
-          headerTitle: 'Notifications',
+          headerTitle: 'Inbox',
         }}
         component={SubscriptionsScreen}
       />

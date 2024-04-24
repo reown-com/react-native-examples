@@ -10,7 +10,7 @@ import BootSplash from 'react-native-bootsplash';
 import {RootStackNavigator} from '../navigators/RootStackNavigator';
 import {NotifyClientProvider} from '../provider/NotifyClientProvider';
 import useInitializeWeb3Wallet from '@/hooks/useInitializeWeb3Wallet';
-import {useInitializeNotifyClient} from '@/hooks/useInitializeNotifyClient';
+// import {useInitializeNotifyClient} from '@/hooks/useInitializeNotifyClient';
 import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import {RELAYER_EVENTS} from '@walletconnect/core';
@@ -29,7 +29,7 @@ const App = () => {
   const initialized = useInitializeWeb3Wallet();
 
   // Step 2 - Initialize Notify Client
-  useInitializeNotifyClient();
+  // useInitializeNotifyClient();
 
   // Step 3 - Once initialized, set up wallet connect event manager
   useWalletConnectEventsManager(initialized);

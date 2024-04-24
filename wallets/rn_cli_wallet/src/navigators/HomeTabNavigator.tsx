@@ -5,24 +5,24 @@ import {useTheme} from '../hooks/useTheme';
 import SvgConnectionsTab from '../assets/ConnectionsTab';
 import SvgSettingsTab from '../assets/SettingsTab';
 import {HomeTabParamList} from '../utils/TypesUtil';
-import SubscriptionsStack from '@/navigators/SubscriptionsStack';
+// import SubscriptionsStack from '@/navigators/SubscriptionsStack';
 import SettingsStack from '@/navigators/SettingsStack';
 import ConnectionsStack from '@/navigators/ConnectionsStack';
-import SvgBellIcon from '../../src/assets/BellIcon';
+// import SvgInboxTab from '../assets/InboxTab';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
 const SettingsIcon = ({color}: {color: string}) => (
-  <SvgSettingsTab height={26} width={26} fill={color} />
+  <SvgSettingsTab height={24} width={24} fill={color} />
 );
 
 const ConnectionsIcon = ({color}: {color: string}) => (
-  <SvgConnectionsTab height={26} width={26} fill={color} />
+  <SvgConnectionsTab height={24} width={24} fill={color} />
 );
 
-const BellIcon = ({color}: {color: string}) => (
-  <SvgBellIcon height={26} width={26} stroke={color} />
-);
+// const InboxIcon = ({color}: {color: string}) => (
+//   <SvgInboxTab height={24} width={24} fill={color} />
+// );
 
 export function HomeTabNavigator() {
   const Theme = useTheme();
@@ -39,8 +39,8 @@ export function HomeTabNavigator() {
           borderColor: Theme['bg-300'],
         },
         tabBarLabelStyle: {
-          fontWeight: '500',
-          fontSize: 12,
+          fontWeight: '600',
+          fontSize: 10,
         },
         tabBarActiveTintColor: Theme['fg-100'],
         tabBarInactiveTintColor: Theme['fg-300'],
@@ -56,14 +56,14 @@ export function HomeTabNavigator() {
           },
         }}
       />
-      <TabNav.Screen
+      {/* <TabNav.Screen
         name="SubscriptionsStack"
         component={SubscriptionsStack}
         options={{
-          tabBarLabel: 'Notifications',
-          tabBarIcon: BellIcon,
+          tabBarLabel: 'Inbox',
+          tabBarIcon: InboxIcon,
         }}
-      />
+      /> */}
       <TabNav.Screen
         name="SettingsStack"
         component={SettingsStack}

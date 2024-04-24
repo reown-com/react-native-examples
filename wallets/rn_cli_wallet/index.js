@@ -7,7 +7,7 @@ import crypto from 'react-native-quick-crypto';
 
 import App from './src/screens/App';
 
-import './src/utils/FirebaseMessagingConfig';
+// import './src/utils/FirebaseMessagingConfig';
 
 const polyfillDigest = async (algorithm, data) => {
   const algo = algorithm.replace('-', '').toLowerCase();
