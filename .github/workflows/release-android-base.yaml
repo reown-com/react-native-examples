@@ -40,6 +40,8 @@ on:
         required: true
       keystore:
         required: true
+      google-services-file:
+        required: false
 
 jobs:
   build:
@@ -71,10 +73,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
-      - run: touch ${{ inputs.root-path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/android/sentry.properties
-      - run: touch ${{ inputs.root-path }}/android/secrets.properties && echo "${{ secrets.secrets-file }}" >> ${{ inputs.root-path }}/android/secrets.properties
-      - run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
+      - name: Create env file
+        run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+      
+      - name: Add Sentry file
+        run: touch ${{ inputs.root-path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/android/sentry.properties
+
+      - name: Add Secrets file
+        run: touch ${{ inputs.root-path }}/android/secrets.properties && echo "${{ secrets.secrets-file }}" >> ${{ inputs.root-path }}/android/secrets.properties
+
+      - name: Add Keystore file
+        run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
+
+      - name: Add Google Services file
+        env:
+          google-services-file: ${{ secrets.google-services-file }}
+        if: ${{ env.google-services-file != '' }}
+        run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/android/app/google-services.json
       
       - name: Build APK
         run: cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal

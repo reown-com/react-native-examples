@@ -26,7 +26,7 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Copy GoogleService file"
-               scriptText = "cp &quot;${PROJECT_DIR}/GoogleService/GoogleService-Internal-Info.plist&quot; &quot;${PROJECT_DIR}/GoogleService-Info.plist&quot;&#10;">
+               scriptText = "#!/bin/bash&#10;&#10;# Define the source and destination file paths&#10;source_file=&quot;${PROJECT_DIR}/GoogleService/GoogleService-Internal-Info.plist&quot;&#10;destination_file=&quot;${PROJECT_DIR}/GoogleService-Info.plist&quot;&#10;&#10;# Check if the source file exists&#10;if [ -f &quot;$source_file&quot; ]; then&#10;    # If the source file exists, copy it to the destination&#10;    cp &quot;$source_file&quot; &quot;$destination_file&quot;&#10;    echo &quot;File copied successfully.&quot;&#10;fi&#10;">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"

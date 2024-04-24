@@ -62,6 +62,8 @@ on:
         required: true
       match-ssh-key:
         required: true
+      google-services-file:
+        required: false
 
 jobs:
   build:
@@ -112,6 +114,12 @@ jobs:
 
       # Create sentry file
       - run: touch ${{ inputs.root-path }}/ios/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/ios/sentry.properties
+
+      - name: Create Google Services file
+        env:
+          google-services-file: ${{ secrets.google-services-file }}
+        if: ${{ env.google-services-file != '' }}
+        run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/ios/GoogleService-Info.plist
 
       - name: Build and Upload to App Store
         uses: maierj/fastlane-action@v3.0.0
