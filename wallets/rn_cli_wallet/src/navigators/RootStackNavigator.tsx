@@ -2,7 +2,6 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {RootStackParamList} from '../utils/TypesUtil';
 import {HomeTabNavigator} from './HomeTabNavigator';
-import OnboardingView from '../screens/OnboardingView';
 import SessionDetailView from '../screens/SessionDetailView';
 import {ScanView} from '../screens/ScanView';
 import Modal from '@/components/Modal';
@@ -23,7 +22,6 @@ export function RootStackNavigator() {
             backgroundColor: Theme['bg-100'],
           },
         }}>
-        <StackNavigator.Screen name="Onboarding" component={OnboardingView} />
         <StackNavigator.Screen
           options={{
             headerStyle: {

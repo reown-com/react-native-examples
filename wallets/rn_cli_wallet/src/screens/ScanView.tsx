@@ -8,16 +8,18 @@ import {
   useCodeScanner,
 } from 'react-native-vision-camera';
 import {request, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import SvgChevronRight from '../assets/ChevronRight';
+import {RootStackScreenProps} from '@/utils/TypesUtil';
 
 export interface ScanViewProps {
   value: string;
 }
 
-export function ScanView() {
-  const navigation = useNavigation();
+type Props = RootStackScreenProps<'Scan'>;
+
+export function ScanView({navigation}: Props) {
   const device = useCameraDevice('back');
   const [showCamera, setShowCamera] = useState(false);
 
@@ -26,8 +28,9 @@ export function ScanView() {
 
   const onCodeScanned = (codes: Code[]) => {
     const uri = codes[0].value;
-    navigation.navigate('ConnectionsScreen', {
-      uri,
+    navigation.navigate('Home', {
+      screen: 'ConnectionsStack',
+      params: {screen: 'ConnectionsScreen', params: {uri: uri!}},
     });
   };
 

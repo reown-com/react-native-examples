@@ -14,14 +14,12 @@
 		186079223D76649118FCF0BB /* Pods_App_RNWallet_Internal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05E3FA1CF6BB5B538A7DB4C8 /* Pods_App_RNWallet_Internal.framework */; };
 		1FCDA2902B9B8E6200E0BF0C /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		1FCDA2912B9B8E6200E0BF0C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		1FCDA2952B9B8E6200E0BF0C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		1FCDA2962B9B8E6200E0BF0C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		1FCDA2972B9B8E6200E0BF0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
 		1FCDA2982B9B8E6200E0BF0C /* SFProRounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B0A6B6C12AC44C2EB0C4CC2A /* SFProRounded-Medium.otf */; };
 		1FCDA2992B9B8E6200E0BF0C /* SFProRounded-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 91CBA0F64BFB4C1794CA7DE0 /* SFProRounded-Thin.otf */; };
 		1FCDA2A82B9B8E6800E0BF0C /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		1FCDA2A92B9B8E6800E0BF0C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		1FCDA2AD2B9B8E6800E0BF0C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		1FCDA2AE2B9B8E6800E0BF0C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		1FCDA2AF2B9B8E6800E0BF0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
 		1FCDA2B02B9B8E6800E0BF0C /* SFProRounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B0A6B6C12AC44C2EB0C4CC2A /* SFProRounded-Medium.otf */; };
@@ -29,7 +27,7 @@
 		36B93536191AD36F3418E9FB /* Pods_App_RNWallet_Debug.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AB3B23EB1F21308FE8E6BD6 /* Pods_App_RNWallet_Debug.framework */; };
 		66299493FFE7466B8BB2D1FC /* SFProRounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B0A6B6C12AC44C2EB0C4CC2A /* SFProRounded-Medium.otf */; };
 		762DE54D932D96F2362E034E /* Pods_App_RNWallet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FFD967FD22635A19067E85 /* Pods_App_RNWallet.framework */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		97927E27E3F047C29FBF2FD7 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */; };
 		BC55FDB92B7D243600340DDB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
 		BCE3541D175A46E38B138F21 /* SFProRounded-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 91CBA0F64BFB4C1794CA7DE0 /* SFProRounded-Thin.otf */; };
 		C5BBA380E6445125324AD17A /* Pods_App_RNWalletTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 820168633DD8E15FD1D51478 /* Pods_App_RNWalletTests.framework */; };
@@ -63,9 +61,9 @@
 		1FCDA2BA2B9B8E6800E0BF0C /* RNWallet Internal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RNWallet Internal.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FCDA2BC2B9B8ED900E0BF0C /* Internal-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Internal-Info.plist"; path = "RNWeb3Wallet/Internal-Info.plist"; sourceTree = "<group>"; };
 		1FCDA2BD2B9B8ED900E0BF0C /* Debug-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Debug-Info.plist"; path = "RNWeb3Wallet/Debug-Info.plist"; sourceTree = "<group>"; };
+		2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = RNWeb3Wallet/BootSplash.storyboard; sourceTree = "<group>"; };
 		3D25CD03E79E82D00EFFDB35 /* Pods-App-RNWallet Internal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Internal.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal.debug.xcconfig"; sourceTree = "<group>"; };
 		78D1EDDB6B647F0C7F3076BF /* Pods-App-RNWalletTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWalletTests.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests.debug.xcconfig"; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = RNWeb3Wallet/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		820168633DD8E15FD1D51478 /* Pods_App_RNWalletTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App_RNWalletTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A8995F7D5041EABDE4E26E0 /* Pods-App-RNWallet Debug.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Debug.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug.debug.xcconfig"; sourceTree = "<group>"; };
 		91CBA0F64BFB4C1794CA7DE0 /* SFProRounded-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProRounded-Thin.otf"; path = "../src/assets/fonts/SFProRounded-Thin.otf"; sourceTree = "<group>"; };
@@ -145,8 +143,8 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */,
 			);
 			name = RNWeb3Wallet;
 			sourceTree = "<group>";
@@ -367,11 +365,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				BC55FDB92B7D243600340DDB /* GoogleService-Info.plist in Resources */,
 				66299493FFE7466B8BB2D1FC /* SFProRounded-Medium.otf in Resources */,
 				BCE3541D175A46E38B138F21 /* SFProRounded-Thin.otf in Resources */,
+				97927E27E3F047C29FBF2FD7 /* BootSplash.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,7 +377,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1FCDA2952B9B8E6200E0BF0C /* LaunchScreen.storyboard in Resources */,
 				1FCDA2962B9B8E6200E0BF0C /* Images.xcassets in Resources */,
 				1FCDA2972B9B8E6200E0BF0C /* GoogleService-Info.plist in Resources */,
 				1FCDA2982B9B8E6200E0BF0C /* SFProRounded-Medium.otf in Resources */,
@@ -391,7 +388,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1FCDA2AD2B9B8E6800E0BF0C /* LaunchScreen.storyboard in Resources */,
 				1FCDA2AE2B9B8E6800E0BF0C /* Images.xcassets in Resources */,
 				1FCDA2AF2B9B8E6800E0BF0C /* GoogleService-Info.plist in Resources */,
 				1FCDA2B02B9B8E6800E0BF0C /* SFProRounded-Medium.otf in Resources */,
@@ -1232,6 +1228,7 @@
 			baseConfigurationReference = 3D25CD03E79E82D00EFFDB35 /* Pods-App-RNWallet Internal.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Internal";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = RNWeb3Wallet/RNWeb3WalletDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -1323,6 +1320,7 @@
 			baseConfigurationReference = EB5AC522F28481F52BAA79ED /* Pods-App-RNWallet Internal.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Internal";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = RNWeb3Wallet/RNWeb3Wallet.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";

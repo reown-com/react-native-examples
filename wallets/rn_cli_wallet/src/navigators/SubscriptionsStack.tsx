@@ -11,6 +11,16 @@ import SubscriptionDetailsSettingsButton from '@/components/SubscriptionDetailsS
 
 const Stack = createNativeStackNavigator<SubscriptionsStackParamList>();
 
+function SubscriptionSettingsButton({
+  topic,
+  name,
+}: {
+  topic: string;
+  name: string;
+}) {
+  return <SubscriptionDetailsSettingsButton topic={topic} name={name} />;
+}
+
 export default function SubscriptionsStack() {
   const Theme = useTheme();
 
@@ -37,12 +47,10 @@ export default function SubscriptionsStack() {
         options={({route}) => ({
           title: route?.params?.name,
           headerTintColor: Theme['fg-100'],
-          headerRight: () => (
-            <SubscriptionDetailsSettingsButton
-              topic={route.params.topic}
-              name={route.params?.name}
-            />
-          ),
+          headerRight: SubscriptionSettingsButton.bind(null, {
+            topic: route.params.topic,
+            name: route.params.name,
+          }),
         })}
       />
       <Stack.Screen

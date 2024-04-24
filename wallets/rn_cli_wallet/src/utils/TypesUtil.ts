@@ -70,7 +70,7 @@ export type HomeTabParamList = {
 };
 
 export type ConnectionsStackParamList = {
-  ConnectionsScreen: undefined;
+  ConnectionsScreen: {uri: string} | undefined;
 };
 
 export type SubscriptionsStackParamList = {

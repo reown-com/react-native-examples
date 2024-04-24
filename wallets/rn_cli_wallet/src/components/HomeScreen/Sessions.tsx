@@ -8,20 +8,23 @@ import ConnectTemplateSvg from '../../assets/ConnectTemplate';
 function Sessions() {
   const {sessions} = useSnapshot(SettingsStore.state);
 
+  if (!sessions?.length) {
+    return (
+      <View style={styles.container}>
+        <ConnectTemplateSvg height={37} width={33} />
+        <Text style={styles.greyText}>
+          Apps you connect with will appear here. To connect scan or paste the
+          code that is displayed in the app.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.scrollViewContainer}
-      ListEmptyComponent={
-        <View style={styles.container}>
-          <ConnectTemplateSvg height={40} width={40} />
-          <Text style={styles.greyText}>
-            Apps you connect with will appear here. To connect paste the code
-            that is displayed in the app.
-          </Text>
-        </View>
-      }
-      data={sessions || []}
+      data={sessions}
       renderItem={({item}) => {
         const {name, icons, url} = item?.peer.metadata;
         return (
@@ -69,9 +72,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 8,
+    paddingTop: 16,
+    paddingHorizontal: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 32,
   },
 });
