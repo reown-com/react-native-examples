@@ -24,6 +24,8 @@
 		1FCDA2AF2B9B8E6800E0BF0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
 		1FCDA2B02B9B8E6800E0BF0C /* SFProRounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B0A6B6C12AC44C2EB0C4CC2A /* SFProRounded-Medium.otf */; };
 		1FCDA2B12B9B8E6800E0BF0C /* SFProRounded-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 91CBA0F64BFB4C1794CA7DE0 /* SFProRounded-Thin.otf */; };
+		1FEC46DE2BD9835300064EFF /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */; };
+		1FEC46DF2BD9835300064EFF /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */; };
 		36B93536191AD36F3418E9FB /* Pods_App_RNWallet_Debug.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AB3B23EB1F21308FE8E6BD6 /* Pods_App_RNWallet_Debug.framework */; };
 		66299493FFE7466B8BB2D1FC /* SFProRounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = B0A6B6C12AC44C2EB0C4CC2A /* SFProRounded-Medium.otf */; };
 		762DE54D932D96F2362E034E /* Pods_App_RNWallet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 10FFD967FD22635A19067E85 /* Pods_App_RNWallet.framework */; };
@@ -377,6 +379,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FEC46DE2BD9835300064EFF /* BootSplash.storyboard in Resources */,
 				1FCDA2962B9B8E6200E0BF0C /* Images.xcassets in Resources */,
 				1FCDA2972B9B8E6200E0BF0C /* GoogleService-Info.plist in Resources */,
 				1FCDA2982B9B8E6200E0BF0C /* SFProRounded-Medium.otf in Resources */,
@@ -388,6 +391,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FEC46DF2BD9835300064EFF /* BootSplash.storyboard in Resources */,
 				1FCDA2AE2B9B8E6800E0BF0C /* Images.xcassets in Resources */,
 				1FCDA2AF2B9B8E6800E0BF0C /* GoogleService-Info.plist in Resources */,
 				1FCDA2B02B9B8E6800E0BF0C /* SFProRounded-Medium.otf in Resources */,
@@ -1060,9 +1064,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = RNWeb3Wallet/RNWeb3WalletDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 5;
-				DEVELOPMENT_TEAM = W5R8AG9K22;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W5R8AG9K22;
 				ENABLE_BITCODE = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				HEADER_SEARCH_PATHS = (
@@ -1130,6 +1136,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.web3wallet.rnsample.debug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.walletconnect.web3wallet.rnsample.debug";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -1147,8 +1154,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Debug";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = RNWeb3Wallet/RNWeb3Wallet.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 15;
-				DEVELOPMENT_TEAM = W5R8AG9K22;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W5R8AG9K22;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1214,6 +1223,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.web3wallet.rnsample.debug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.walletconnect.web3wallet.rnsample.debug";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
