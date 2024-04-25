@@ -1,17 +1,15 @@
 import {useEffect} from 'react';
 import Config from 'react-native-config';
-
 import {StatusBar, useColorScheme} from 'react-native';
-
 import {NavigationContainer} from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
+import {RELAYER_EVENTS} from '@walletconnect/core';
 
-import {RootStackNavigator} from '../navigators/RootStackNavigator';
+import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import useInitializeWeb3Wallet from '@/hooks/useInitializeWeb3Wallet';
 import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
 import {web3wallet} from '@/utils/WalletConnectUtil';
-import {RELAYER_EVENTS} from '@walletconnect/core';
 import SettingsStore from '@/store/SettingsStore';
 
 if (!__DEV__ && Config.ENV_SENTRY_DSN) {

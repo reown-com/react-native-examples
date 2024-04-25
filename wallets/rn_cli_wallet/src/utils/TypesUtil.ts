@@ -69,17 +69,17 @@ export type HomeTabParamList = {
 };
 
 export type ConnectionsStackParamList = {
-  ConnectionsScreen?: {uri: string};
+  Connections?: {uri: string};
 };
 
 export type SubscriptionsStackParamList = {
   SubscriptionsScreen?: {topic: string};
-  SubscriptionDetailsScreen: {topic: string; name: string};
-  SubscriptionSettingsScreen: {topic: string; name: string};
+  SubscriptionDetail: {topic: string; name: string};
+  SubscriptionSettings: {topic: string; name: string};
 };
 
 export type SettingsStackParamList = {
-  SettingsScreen: undefined;
+  Settings: undefined;
 };
 
 // Define screen props types

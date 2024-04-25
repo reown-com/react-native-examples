@@ -5,7 +5,7 @@ import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import NotificationItem from '@/components/NotificationItem';
 import NotificationItemSkeleton from '@/components/NotificationItemSkeleton';
 import {SubscriptionsStackScreenProps} from '@/utils/TypesUtil';
-
+import styles from './styles';
 interface NotifyNotification {
   title: string;
   sentAt: number;
@@ -15,9 +15,9 @@ interface NotifyNotification {
   type: string;
 }
 
-type Props = SubscriptionsStackScreenProps<'SubscriptionDetailsScreen'>;
+type Props = SubscriptionsStackScreenProps<'SubscriptionDetail'>;
 
-export default function SubscriptionDetailsScreen({route}: Props) {
+export default function SubscriptionDetail({route}: Props) {
   const topic = route.params.topic;
   const {notifications, setNotifications} = useNotifyClientContext();
   const [hasMore, setHasMore] = useState(false);
@@ -76,13 +76,7 @@ export default function SubscriptionDetailsScreen({route}: Props) {
       }}
       ListFooterComponent={
         isLoading ? (
-          <View
-            style={{
-              marginTop: 8,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-            }}>
+          <View style={styles.loader}>
             {Array(3)
               .fill(null)
               .map((_, index) => {

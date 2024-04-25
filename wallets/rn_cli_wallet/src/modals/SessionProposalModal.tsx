@@ -1,5 +1,5 @@
 import {useSnapshot} from 'valtio';
-import React, {useCallback, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
 import {buildApprovedNamespaces, getSdkError} from '@walletconnect/utils';

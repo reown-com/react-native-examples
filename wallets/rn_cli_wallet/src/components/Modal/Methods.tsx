@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   ScrollView,
   StyleProp,
@@ -7,8 +6,9 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import {Tag} from '../Tag';
-import {useTheme} from '../../hooks/useTheme';
+
+import {useTheme} from '@/hooks/useTheme';
+import {Tag} from '@/components/Tag';
 
 interface IMethodsProps {
   methods?: string[];

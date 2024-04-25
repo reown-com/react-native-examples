@@ -17,7 +17,7 @@ export default function SubscriptionDetailsSettingsButton({
   return (
     <Pressable
       onPress={() => {
-        navigation.navigate('SubscriptionSettingsScreen', {
+        navigation.navigate('SubscriptionSettings', {
           topic,
           name,
         });

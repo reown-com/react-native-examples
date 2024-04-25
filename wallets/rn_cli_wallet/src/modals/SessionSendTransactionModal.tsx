@@ -1,18 +1,19 @@
-import React, {useCallback, useState} from 'react';
+import {useSnapshot} from 'valtio';
+import {useCallback, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
-import {Methods} from '../components/Modal/Methods';
-import {Message} from '../components/Modal/Message';
+
+import {Methods} from '@/components/Modal/Methods';
+import {Message} from '@/components/Modal/Message';
 import {
   approveEIP155Request,
   rejectEIP155Request,
 } from '@/utils/EIP155RequestHandlerUtil';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
-import ModalStore from '../store/ModalStore';
-import {useSnapshot} from 'valtio';
-import {RequestModal} from './RequestModal';
-import {Chains} from '../components/Modal/Chains';
+import ModalStore from '@/store/ModalStore';
+import {RequestModal} from '@/modals/RequestModal';
+import {Chains} from '@/components/Modal/Chains';
 import {PresetsUtil} from '@/utils/PresetsUtil';
 
 export default function SessionSendTransactionModal() {
@@ -30,7 +31,7 @@ export default function SessionSendTransactionModal() {
   const chain = PresetsUtil.getChainData(chainId?.split(':')[1] || '');
   const request = params?.request;
   const transaction = request?.params[0];
-  const method = requestEvent?.params?.request?.method;
+  const method = requestEvent?.params?.request?.method!;
 
   const requestMetadata = requestSession?.peer
     ?.metadata as SignClientTypes.Metadata;

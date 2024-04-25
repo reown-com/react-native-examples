@@ -1,9 +1,9 @@
-import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import {CircleActionButton} from '../CircleActionButton';
-import QRCodeSvg from '../../assets/QRCode';
-import CopySvg from '../../assets/Copy';
 import {useNavigation} from '@react-navigation/native';
+
+import {CircleActionButton} from '@/components/CircleActionButton';
+import QRCodeSvg from '@/assets/QRCode';
+import CopySvg from '@/assets/Copy';
 
 interface IndividualSessionProps {
   setCopyDialog: (visible: boolean) => void;

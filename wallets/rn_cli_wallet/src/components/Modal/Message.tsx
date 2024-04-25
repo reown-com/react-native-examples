@@ -1,6 +1,6 @@
-import React from 'react';
 import {ScrollView, StyleSheet, Text} from 'react-native';
-import {useTheme} from '../../hooks/useTheme';
+
+import {useTheme} from '@/hooks/useTheme';
 
 interface IMessageProps {
   message: string;

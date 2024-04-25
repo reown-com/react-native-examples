@@ -1,14 +1,13 @@
-import React from 'react';
-
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {useTheme} from '../hooks/useTheme';
-import SvgConnectionsTab from '../assets/ConnectionsTab';
-import SvgSettingsTab from '../assets/SettingsTab';
-import {HomeTabParamList} from '../utils/TypesUtil';
-// import SubscriptionsStack from '@/navigators/SubscriptionsStack';
+
+import {useTheme} from '@/hooks/useTheme';
+import SvgConnectionsTab from '@/assets/ConnectionsTab';
+import SvgSettingsTab from '@/assets/SettingsTab';
+import {HomeTabParamList} from '@/utils/TypesUtil';
 import SettingsStack from '@/navigators/SettingsStack';
 import ConnectionsStack from '@/navigators/ConnectionsStack';
-// import SvgInboxTab from '../assets/InboxTab';
+// import SubscriptionsStack from '@/navigators/SubscriptionsStack';
+// import SvgInboxTab from '@/assets/InboxTab';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 

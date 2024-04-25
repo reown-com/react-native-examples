@@ -5,7 +5,6 @@ import {
   Alert,
   FlatList,
   Pressable,
-  StyleSheet,
   Switch,
   Text,
   View,
@@ -17,12 +16,12 @@ import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import {useTheme} from '@/hooks/useTheme';
 import {SubscriptionsStackScreenProps} from '@/utils/TypesUtil';
+import styles from './styles';
 
 type BooleanMap = {[key: string]: boolean};
+type Props = SubscriptionsStackScreenProps<'SubscriptionSettings'>;
 
-type Props = SubscriptionsStackScreenProps<'SubscriptionSettingsScreen'>;
-
-export default function SubscriptionSettingsScreen({route}: Props) {
+export default function SubscriptionSettings({route}: Props) {
   const {bottom} = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
   const topic = route.params?.topic;
@@ -130,7 +129,6 @@ export default function SubscriptionSettingsScreen({route}: Props) {
           onPress={handleUnsubscribe}
           style={[
             {
-              marginHorizontal: 16,
               marginBottom: tabBarHeight + bottom + 16,
               backgroundColor: Theme['error-100'],
             },
@@ -146,51 +144,3 @@ export default function SubscriptionSettingsScreen({route}: Props) {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  destructiveButton: {
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  destructiveButtonText: {
-    color: 'white',
-    fontWeight: '500',
-  },
-  scopeContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    borderBottomWidth: 0.5,
-    paddingHorizontal: 16,
-  },
-  scopeContainerNoBorder: {
-    borderBottomWidth: 0,
-  },
-  scopeContentContainer: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    paddingVertical: 16,
-  },
-  buttonContainer: {
-    gap: 4,
-  },
-  scopeTitle: {
-    width: '100%',
-    fontSize: 18,
-    fontWeight: '500',
-  },
-  scopeDescription: {
-    width: '100%',
-    fontSize: 12,
-    fontWeight: '400',
-    marginBottom: 8,
-  },
-});

@@ -2,17 +2,17 @@ import {useCallback, useEffect, useState} from 'react';
 import {Linking} from 'react-native';
 
 import {web3wallet} from '@/utils/WalletConnectUtil';
-import Sessions from '@/components/HomeScreen/Sessions';
-import ActionButtons from '@/components/HomeScreen/ActionButtons';
+import Sessions from '@/screens/Connections/components/Sessions';
+import ActionButtons from '@/screens/Connections/components/ActionButtons';
 import {CopyURIDialog} from '@/components/CopyURIDialog';
 import {ConnectionsStackScreenProps} from '@/utils/TypesUtil';
 import ModalStore from '@/store/ModalStore';
 import {useInitialURL} from '@/hooks/useInitialUrl';
 import SettingsStore from '@/store/SettingsStore';
 
-type Props = ConnectionsStackScreenProps<'ConnectionsScreen'>;
+type Props = ConnectionsStackScreenProps<'Connections'>;
 
-export default function ConnectionsScreen({route}: Props) {
+export default function Connections({route}: Props) {
   const {url: initialUrl, processing} = useInitialURL();
   const [copyDialogVisible, setCopyDialogVisible] = useState(false);
 

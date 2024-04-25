@@ -1,6 +1,6 @@
 import {useSnapshot} from 'valtio';
 import {useEffect, useState} from 'react';
-import {Text, View, StyleSheet, Alert, ScrollView} from 'react-native';
+import {Text, View, Alert, ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {getVersion, getBuildNumber} from 'react-native-device-info';
@@ -9,8 +9,8 @@ import {eip155Wallets} from '@/utils/EIP155WalletUtil';
 import SettingsStore from '@/store/SettingsStore';
 import {Card} from '@/components/Card';
 import {useTheme} from '@/hooks/useTheme';
-
-function SettingsView() {
+import styles from './styles';
+export default function Settings() {
   const Theme = useTheme();
   const {eip155Address} = useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
@@ -65,25 +65,3 @@ function SettingsView() {
     </ScrollView>
   );
 }
-
-export default SettingsView;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: 16,
-  },
-  smallMarginTop: {
-    marginTop: 16,
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 16,
-  },
-  sectionContainer: {
-    rowGap: 8,
-  },
-});

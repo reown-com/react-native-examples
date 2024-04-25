@@ -46,7 +46,7 @@ export default function SubscriptionList({
           imageURL={item?.metadata?.icons[0]}
           description={item?.metadata?.appDomain}
           onPress={() => {
-            navigate('SubscriptionDetailsScreen', {
+            navigate('SubscriptionDetail', {
               topic: item?.topic,
               name: item?.metadata?.name,
             });
