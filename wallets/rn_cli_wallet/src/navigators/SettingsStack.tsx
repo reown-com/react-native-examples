@@ -1,6 +1,6 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import SettingsScreen from '@/screens/SettingsView';
+import Settings from '@/screens/Settings';
 import {useTheme} from '@/hooks/useTheme';
 
 const Stack = createNativeStackNavigator();
@@ -18,9 +18,9 @@ export default function SettingsStack() {
         },
       }}>
       <Stack.Screen
-        name="SettingsScreen"
+        name="Settings"
         options={{headerTitle: 'Settings', headerLargeTitle: true}}
-        component={SettingsScreen}
+        component={Settings}
       />
     </Stack.Navigator>
   );

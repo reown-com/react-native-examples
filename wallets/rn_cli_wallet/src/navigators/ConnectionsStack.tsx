@@ -19,7 +19,7 @@ export default function ConnectionsStack() {
         },
       }}>
       <Stack.Screen
-        name="ConnectionsScreen"
+        name="Connections"
         options={{headerTitle: 'Connections', headerLargeTitle: true}}
         component={Connections}
       />

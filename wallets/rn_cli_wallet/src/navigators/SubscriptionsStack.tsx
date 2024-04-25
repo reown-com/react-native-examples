@@ -1,10 +1,10 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import SubscriptionSettingsScreen from '@/screens/SubscriptionSettingsScreen';
-import SubscriptionDetailsScreen from '@/screens/SubscriptionDetailsScreen';
+import SubscriptionSettings from '@/screens/SubscriptionSettings';
+import SubscriptionDetail from '@/screens/SubscriptionDetail';
 import {useTheme} from '@/hooks/useTheme';
 import {SubscriptionsStackParamList} from '@/utils/TypesUtil';
-import SubscriptionsScreen from '@/screens/SubscriptionsScreen';
+import SubscriptionsScreen from '@/screens/Subscriptions';
 import SubscriptionDetailsSettingsButton from '@/components/SubscriptionDetailsSettingsButton';
 
 const Stack = createNativeStackNavigator<SubscriptionsStackParamList>();
@@ -40,8 +40,8 @@ export default function SubscriptionsStack() {
         component={SubscriptionsScreen}
       />
       <Stack.Screen
-        name="SubscriptionDetailsScreen"
-        component={SubscriptionDetailsScreen}
+        name="SubscriptionDetail"
+        component={SubscriptionDetail}
         options={({route}) => ({
           title: route?.params?.name,
           headerTintColor: Theme['fg-100'],
@@ -58,8 +58,8 @@ export default function SubscriptionsStack() {
           headerTintColor: Theme['fg-100'],
           headerBackTitle: 'Back',
         }}
-        name="SubscriptionSettingsScreen"
-        component={SubscriptionSettingsScreen}
+        name="SubscriptionSettings"
+        component={SubscriptionSettings}
       />
     </Stack.Navigator>
   );

@@ -10,9 +10,9 @@ import ModalStore from '@/store/ModalStore';
 import {useInitialURL} from '@/hooks/useInitialUrl';
 import SettingsStore from '@/store/SettingsStore';
 
-type Props = ConnectionsStackScreenProps<'ConnectionsScreen'>;
+type Props = ConnectionsStackScreenProps<'Connections'>;
 
-export default function ConnectionsScreen({route}: Props) {
+export default function Connections({route}: Props) {
   const {url: initialUrl, processing} = useInitialURL();
   const [copyDialogVisible, setCopyDialogVisible] = useState(false);
 

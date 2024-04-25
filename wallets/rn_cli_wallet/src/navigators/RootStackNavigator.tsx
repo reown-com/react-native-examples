@@ -2,8 +2,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import {RootStackParamList} from '@/utils/TypesUtil';
 import {HomeTabNavigator} from './HomeTabNavigator';
-import SessionDetailView from '@/screens/SessionDetailView';
-import {ScanView} from '@/screens/ScanView';
+import SessionDetail from '@/screens/SessionDetail';
+import Scan from '@/screens/Scan';
 import Modal from '@/components/Modal';
 import {useTheme} from '@/hooks/useTheme';
 
@@ -33,7 +33,7 @@ export function RootStackNavigator() {
         />
         <StackNavigator.Screen
           name="SessionDetail"
-          component={SessionDetailView}
+          component={SessionDetail}
           options={{
             headerShown: true,
             headerTitle: 'Session Details',
@@ -43,7 +43,7 @@ export function RootStackNavigator() {
         />
         <StackNavigator.Screen
           name="Scan"
-          component={ScanView}
+          component={Scan}
           options={{headerShown: false}}
         />
       </StackNavigator.Navigator>

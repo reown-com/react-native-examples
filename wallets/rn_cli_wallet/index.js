@@ -23,12 +23,4 @@ globalThis.crypto.subtle = {
   digest: polyfillDigest,
 };
 
-function HeadlessCheck({isHeadless}) {
-  if (isHeadless) {
-    return null;
-  }
-
-  return <App />;
-}
-
-AppRegistry.registerComponent(appName, () => HeadlessCheck);
+AppRegistry.registerComponent(appName, () => App);

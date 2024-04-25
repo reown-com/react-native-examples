@@ -1,4 +1,4 @@
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import {useEffect, useState} from 'react';
 
 import SubscriptionList from '@/components/SubscriptionList';
@@ -7,8 +7,9 @@ import {fetchFeaturedProjects} from '@/utils/NotifyClient';
 import {ProjectItem} from '@/constants/Explorer';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import {useTheme} from '@/hooks/useTheme';
+import styles from './styles';
 
-export default function SubscriptionsScreen() {
+export default function Subscriptions() {
   const [page, setPage] = useState(0);
   const [discoverList, setDiscoverList] = useState<ProjectItem[]>([]);
   const {isRegistered, notifyClient} = useNotifyClientContext();
@@ -40,11 +41,3 @@ export default function SubscriptionsScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  loaderContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

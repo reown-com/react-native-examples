@@ -13,10 +13,11 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 import SvgChevronRight from '@/assets/ChevronRight';
 import {RootStackScreenProps} from '@/utils/TypesUtil';
+import styles from './styles';
 
 type Props = RootStackScreenProps<'Scan'>;
 
-export function ScanView({navigation}: Props) {
+export default function Scan({navigation}: Props) {
   const device = useCameraDevice('back');
   const [showCamera, setShowCamera] = useState(false);
 
@@ -27,7 +28,7 @@ export function ScanView({navigation}: Props) {
     const uri = codes[0].value;
     navigation.navigate('Home', {
       screen: 'ConnectionsStack',
-      params: {screen: 'ConnectionsScreen', params: {uri: uri!}},
+      params: {screen: 'Connections', params: {uri: uri!}},
     });
   };
 
@@ -78,26 +79,3 @@ export function ScanView({navigation}: Props) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  backButton: {
-    zIndex: 1,
-    backgroundColor: 'black',
-    opacity: 0.7,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 24,
-    height: 36,
-    width: 36,
-    marginTop: 16,
-    marginLeft: 16,
-  },
-  backIcon: {
-    transform: [{rotate: '180deg'}],
-  },
-  errorContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

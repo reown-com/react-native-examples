@@ -1,5 +1,5 @@
 import {useCallback, useMemo, useState} from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
+import {View, Text, ScrollView} from 'react-native';
 import {getSdkError} from '@walletconnect/utils';
 import {useNavigation} from '@react-navigation/native';
 
@@ -11,14 +11,11 @@ import {Methods} from '@/components/Modal/Methods';
 import {Events} from '@/components/Modal/Events';
 import SettingsStore from '@/store/SettingsStore';
 import {RootStackScreenProps} from '@/utils/TypesUtil';
-
-export interface SessionDetailViewProps {
-  topic: string;
-}
+import styles from './styles';
 
 type Props = RootStackScreenProps<'SessionDetail'>;
 
-export default function SessionDetailView({route}: Props) {
+export default function SessionDetail({route}: Props) {
   const Theme = useTheme();
   const topic = route.params.topic;
   const nativagor = useNavigation();
@@ -181,41 +178,3 @@ export default function SessionDetailView({route}: Props) {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 16,
-  },
-  reviewText: {
-    fontWeight: '600',
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  datesContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  dateText: {
-    fontWeight: '600',
-  },
-  divider: {
-    height: 1,
-    width: '100%',
-    marginVertical: 16,
-  },
-  actionsContainer: {
-    rowGap: 16,
-    alignItems: 'center',
-    width: '100%',
-  },
-  action: {
-    width: '100%',
-  },
-  permissions: {
-    maxHeight: '100%',
-  },
-  deleteButton: {},
-});
