@@ -79,8 +79,7 @@ platform :ios do
       changelog: "#{ENV["SCHEME"]} build 🚀",
       distribute_external: true,
       notify_external_testers: true,
-      skip_waiting_for_build_processing: false,
-      groups: ["WalletConnect Users"]
+      skip_waiting_for_build_processing: false
     )
     clean_build_artifacts()
   end
