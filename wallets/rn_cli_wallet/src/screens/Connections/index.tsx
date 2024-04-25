@@ -2,8 +2,8 @@ import {useCallback, useEffect, useState} from 'react';
 import {Linking} from 'react-native';
 
 import {web3wallet} from '@/utils/WalletConnectUtil';
-import Sessions from '@/components/HomeScreen/Sessions';
-import ActionButtons from '@/components/HomeScreen/ActionButtons';
+import Sessions from '@/screens/Connections/components/Sessions';
+import ActionButtons from '@/screens/Connections/components/ActionButtons';
 import {CopyURIDialog} from '@/components/CopyURIDialog';
 import {ConnectionsStackScreenProps} from '@/utils/TypesUtil';
 import ModalStore from '@/store/ModalStore';

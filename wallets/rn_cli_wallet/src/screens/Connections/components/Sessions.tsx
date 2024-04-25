@@ -1,9 +1,9 @@
-import React from 'react';
 import {View, Text, StyleSheet, FlatList} from 'react-native';
-import IndividualSession from './IndividualSession';
 import {useSnapshot} from 'valtio';
-import SettingsStore from '../../store/SettingsStore';
-import ConnectTemplateSvg from '../../assets/ConnectTemplate';
+
+import SettingsStore from '@/store/SettingsStore';
+import ConnectTemplateSvg from '@/assets/ConnectTemplate';
+import IndividualSession from './IndividualSession';
 
 function Sessions() {
   const {sessions} = useSnapshot(SettingsStore.state);

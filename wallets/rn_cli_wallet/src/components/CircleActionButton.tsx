@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react';
+import {ReactNode} from 'react';
 import {TouchableOpacity, StyleSheet} from 'react-native';
 
 import {useTheme} from '@/hooks/useTheme';

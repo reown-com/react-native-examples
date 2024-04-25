@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react';
+import {ReactNode} from 'react';
 import {View, StyleSheet} from 'react-native';
 
 type ScreenContainerProps = {

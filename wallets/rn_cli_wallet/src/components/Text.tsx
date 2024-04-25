@@ -1,6 +1,4 @@
-import React from 'react';
-import {TextProps, ViewProps} from 'react-native';
-import {StyleSheet, Text} from 'react-native';
+import {TextProps, ViewProps, StyleSheet, Text} from 'react-native';
 
 interface IW3WTextProps {
   children: TextProps['children'];

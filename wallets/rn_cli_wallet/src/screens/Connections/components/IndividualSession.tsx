@@ -1,8 +1,8 @@
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
 import {View, Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import SvgChevronRight from '../../assets/ChevronRight';
-import {useTheme} from '../../hooks/useTheme';
+
+import SvgChevronRight from '@/assets/ChevronRight';
+import {useTheme} from '@/hooks/useTheme';
 
 interface IndividualSessionProps {
   name: string | undefined;

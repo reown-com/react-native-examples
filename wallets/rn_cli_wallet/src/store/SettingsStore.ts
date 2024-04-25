@@ -1,6 +1,6 @@
+import {proxy} from 'valtio';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Verify, SessionTypes} from '@walletconnect/types';
-import {proxy} from 'valtio';
 
 import EIP155Lib from '../lib/EIP155Lib';
 

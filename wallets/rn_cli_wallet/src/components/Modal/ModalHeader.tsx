@@ -1,7 +1,7 @@
-import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
-import {useTheme} from '../../hooks/useTheme';
+
+import {useTheme} from '@/hooks/useTheme';
 
 interface ModalHeaderProps {
   metadata?: SignClientTypes.Metadata;

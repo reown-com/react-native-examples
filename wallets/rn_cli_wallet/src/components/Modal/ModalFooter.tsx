@@ -1,6 +1,6 @@
-import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import {ActionButton} from '../ActionButton';
+
+import {ActionButton} from '@/components/ActionButton';
 
 export interface ModalFooterProps {
   onApprove: () => void;

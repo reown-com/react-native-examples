@@ -1,4 +1,3 @@
-import React from 'react';
 import Svg, {Path, type SvgProps} from 'react-native-svg';
 const SvgSettingsTab = ({fill, ...props}: SvgProps) => (
   <Svg viewBox="0 0 24 24" fill="none" {...props}>

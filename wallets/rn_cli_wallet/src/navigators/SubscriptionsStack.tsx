@@ -1,11 +1,9 @@
-import React from 'react';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import SubscriptionSettingsScreen from '@/screens/SubscriptionSettingsScreen';
 import SubscriptionDetailsScreen from '@/screens/SubscriptionDetailsScreen';
-
 import {useTheme} from '@/hooks/useTheme';
 import {SubscriptionsStackParamList} from '@/utils/TypesUtil';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SubscriptionsScreen from '@/screens/SubscriptionsScreen';
 import SubscriptionDetailsSettingsButton from '@/components/SubscriptionDetailsSettingsButton';
 

@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {Dimensions, StyleSheet, TextInput, View} from 'react-native';
 import Dialog from 'react-native-dialog';
+
+import {useTheme} from '@/hooks/useTheme';
 import {ConnectButton} from './ConnectButton';
-import {useTheme} from '../hooks/useTheme';
 
 interface copyURIDialogProps {
   visible: boolean;

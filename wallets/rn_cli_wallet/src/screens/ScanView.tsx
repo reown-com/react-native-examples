@@ -10,7 +10,8 @@ import {
 import {request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useIsFocused} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import SvgChevronRight from '../assets/ChevronRight';
+
+import SvgChevronRight from '@/assets/ChevronRight';
 import {RootStackScreenProps} from '@/utils/TypesUtil';
 
 type Props = RootStackScreenProps<'Scan'>;

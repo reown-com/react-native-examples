@@ -1,9 +1,9 @@
-import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {RootStackParamList} from '../utils/TypesUtil';
+
+import {RootStackParamList} from '@/utils/TypesUtil';
 import {HomeTabNavigator} from './HomeTabNavigator';
-import SessionDetailView from '../screens/SessionDetailView';
-import {ScanView} from '../screens/ScanView';
+import SessionDetailView from '@/screens/SessionDetailView';
+import {ScanView} from '@/screens/ScanView';
 import Modal from '@/components/Modal';
 import {useTheme} from '@/hooks/useTheme';
 

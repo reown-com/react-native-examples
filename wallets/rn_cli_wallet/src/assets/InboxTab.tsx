@@ -1,4 +1,3 @@
-import React from 'react';
 import Svg, {G, Path, type SvgProps} from 'react-native-svg';
 
 const SvgInboxTab = ({fill, ...props}: SvgProps) => (
