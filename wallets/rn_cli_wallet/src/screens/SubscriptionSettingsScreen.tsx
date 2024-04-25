@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {
   ActivityIndicator,
   Alert,
@@ -10,20 +10,22 @@ import {
   Text,
   View,
 } from 'react-native';
-import useNotifyClientContext from '@/hooks/useNotifyClientContext';
-
 import {Controller, useForm} from 'react-hook-form';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+
+import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import {useTheme} from '@/hooks/useTheme';
+import {SubscriptionsStackScreenProps} from '@/utils/TypesUtil';
 
 type BooleanMap = {[key: string]: boolean};
 
-export default function SubscriptionSettingsScreen() {
-  const {params} = useRoute();
+type Props = SubscriptionsStackScreenProps<'SubscriptionSettingsScreen'>;
+
+export default function SubscriptionSettingsScreen({route}: Props) {
   const {bottom} = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
-  const topic = params?.topic;
+  const topic = route.params?.topic;
   const {navigate} = useNavigation();
 
   const Theme = useTheme();
@@ -73,7 +75,10 @@ export default function SubscriptionSettingsScreen() {
       .deleteSubscription({topic})
       .then(() => {
         setUnsubscribing(false);
-        navigate('SubscriptionsScreen');
+        navigate('Home', {
+          screen: 'SubscriptionsStack',
+          params: {screen: 'SubscriptionsScreen'},
+        });
       })
       .catch(e => {
         Alert.alert('Failed to unsubscribe', e);

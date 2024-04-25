@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {useEffect, useState} from 'react';
 
 import SubscriptionList from '@/components/SubscriptionList';
 import DiscoverList from '@/components/DiscoverList';
 import {fetchFeaturedProjects} from '@/utils/NotifyClient';
 import {ProjectItem} from '@/constants/Explorer';
 import useNotifyClientContext from '@/hooks/useNotifyClientContext';
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {useTheme} from '@/hooks/useTheme';
 
 export default function SubscriptionsScreen() {

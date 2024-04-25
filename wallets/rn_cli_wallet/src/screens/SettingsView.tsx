@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import {useSnapshot} from 'valtio';
+import {useEffect, useState} from 'react';
 import {Text, View, StyleSheet, Alert, ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {useSnapshot} from 'valtio';
 import {getVersion, getBuildNumber} from 'react-native-device-info';
 
 import {eip155Wallets} from '@/utils/EIP155WalletUtil';
-import SettingsStore from '../store/SettingsStore';
-import {Card} from '../components/Card';
+import SettingsStore from '@/store/SettingsStore';
+import {Card} from '@/components/Card';
 import {useTheme} from '@/hooks/useTheme';
 
 function SettingsView() {

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {Linking} from 'react-native';
 
 import {web3wallet} from '@/utils/WalletConnectUtil';
@@ -56,7 +56,7 @@ export default function ConnectionsScreen({route}: Props) {
     Linking.addEventListener('url', deeplinkCallback);
   }, [deeplinkCallback]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Uri received from QR code scanner
     if (route.params?.uri) {
       pair(route.params.uri);

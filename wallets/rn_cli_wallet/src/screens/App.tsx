@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import {useEffect} from 'react';
 import Config from 'react-native-config';
 
 import {StatusBar, useColorScheme} from 'react-native';

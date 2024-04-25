@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Platform, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
 
 import {
@@ -12,10 +12,6 @@ import {useIsFocused} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import SvgChevronRight from '../assets/ChevronRight';
 import {RootStackScreenProps} from '@/utils/TypesUtil';
-
-export interface ScanViewProps {
-  value: string;
-}
 
 type Props = RootStackScreenProps<'Scan'>;
 

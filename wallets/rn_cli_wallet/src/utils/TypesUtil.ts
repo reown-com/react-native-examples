@@ -69,11 +69,11 @@ export type HomeTabParamList = {
 };
 
 export type ConnectionsStackParamList = {
-  ConnectionsScreen: {uri: string} | undefined;
+  ConnectionsScreen?: {uri: string};
 };
 
 export type SubscriptionsStackParamList = {
-  SubscriptionsScreen: {topic?: string};
+  SubscriptionsScreen?: {topic: string};
   SubscriptionDetailsScreen: {topic: string; name: string};
   SubscriptionSettingsScreen: {topic: string; name: string};
 };

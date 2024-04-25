@@ -1,20 +1,24 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import {getSdkError} from '@walletconnect/utils';
-import {web3wallet} from '@/utils/WalletConnectUtil';
-import {ModalHeader} from '../components/Modal/ModalHeader';
-import {useTheme} from '@/hooks/useTheme';
-import {ActionButton} from '../components/ActionButton';
 import {useNavigation} from '@react-navigation/native';
-import {Methods} from '../components/Modal/Methods';
-import {Events} from '../components/Modal/Events';
-import SettingsStore from '../store/SettingsStore';
+
+import {web3wallet} from '@/utils/WalletConnectUtil';
+import {ModalHeader} from '@/components/Modal/ModalHeader';
+import {useTheme} from '@/hooks/useTheme';
+import {ActionButton} from '@/components/ActionButton';
+import {Methods} from '@/components/Modal/Methods';
+import {Events} from '@/components/Modal/Events';
+import SettingsStore from '@/store/SettingsStore';
+import {RootStackScreenProps} from '@/utils/TypesUtil';
 
 export interface SessionDetailViewProps {
   topic: string;
 }
 
-export default function SessionDetailView({route}: {route: any}) {
+type Props = RootStackScreenProps<'SessionDetail'>;
+
+export default function SessionDetailView({route}: Props) {
   const Theme = useTheme();
   const topic = route.params.topic;
   const nativagor = useNavigation();
