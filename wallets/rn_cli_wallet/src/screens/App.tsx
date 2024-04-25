@@ -8,12 +8,13 @@ import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
 
 import {RootStackNavigator} from '../navigators/RootStackNavigator';
-import {NotifyClientProvider} from '../provider/NotifyClientProvider';
+// import {NotifyClientProvider} from '../provider/NotifyClientProvider';
 import useInitializeWeb3Wallet from '@/hooks/useInitializeWeb3Wallet';
 // import {useInitializeNotifyClient} from '@/hooks/useInitializeNotifyClient';
 import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import {RELAYER_EVENTS} from '@walletconnect/core';
+import SettingsStore from '@/store/SettingsStore';
 
 if (!__DEV__ && Config.ENV_SENTRY_DSN) {
   Sentry.init({
@@ -48,14 +49,22 @@ const App = () => {
     }
   }, [initialized]);
 
+  useEffect(() => {
+    /**
+     * Empty promise that resolves after web3wallet is initialized
+     * Usefull for cold starts
+     */
+    SettingsStore.setInitPromise();
+  }, []);
+
   return (
     <NavigationContainer>
-      <NotifyClientProvider>
-        <StatusBar
-          barStyle={scheme === 'light' ? 'dark-content' : 'light-content'}
-        />
-        <RootStackNavigator />
-      </NotifyClientProvider>
+      {/* <NotifyClientProvider> */}
+      <StatusBar
+        barStyle={scheme === 'light' ? 'dark-content' : 'light-content'}
+      />
+      <RootStackNavigator />
+      {/* </NotifyClientProvider> */}
     </NavigationContainer>
   );
 };

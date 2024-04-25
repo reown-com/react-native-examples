@@ -8,6 +8,7 @@ import {CopyURIDialog} from '@/components/CopyURIDialog';
 import {ConnectionsStackScreenProps} from '@/utils/TypesUtil';
 import ModalStore from '@/store/ModalStore';
 import {useInitialURL} from '@/hooks/useInitialUrl';
+import SettingsStore from '@/store/SettingsStore';
 
 type Props = ConnectionsStackScreenProps<'ConnectionsScreen'>;
 
@@ -28,6 +29,11 @@ export default function ConnectionsScreen({route}: Props) {
 
   async function pair(uri: string) {
     ModalStore.open('LoadingModal', {});
+
+    /**
+     * Wait for settings web3wallet to be initialized before calling pair
+     */
+    await SettingsStore.state.initPromise;
     await web3wallet.pair({uri});
     setCopyDialogVisible(false);
   }
