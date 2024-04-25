@@ -49,7 +49,6 @@ export type ThemeKeys =
   | 'gray-glass-090';
 
 // Navigation
-
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}
@@ -112,3 +111,12 @@ export type SettingsStackScreenProps<T extends keyof SettingsStackParamList> =
     StackScreenProps<SettingsStackParamList, T>,
     HomeTabScreenProps<keyof HomeTabParamList>
   >;
+
+export type Chain = {
+  id: number;
+  network: string;
+  name: string;
+  nativeCurrency: {name: string; symbol: string; decimals: number};
+  rpcUrl: string;
+  blockExplorer: string;
+};

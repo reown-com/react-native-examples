@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import Config from 'react-native-config';
-import '@walletconnect/react-native-compat';
+
 import {StatusBar, useColorScheme} from 'react-native';
 
 import {NavigationContainer} from '@react-navigation/native';

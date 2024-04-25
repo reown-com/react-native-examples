@@ -1,13 +1,17 @@
 import React from 'react';
 import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {useTheme} from '../../hooks/useTheme';
 
-interface IChainProps {
-  chains: {logo: string}[];
+import {useTheme} from '@/hooks/useTheme';
+import {Chain} from '@/utils/TypesUtil';
+import {PresetsUtil} from '@/utils/PresetsUtil';
+
+interface Props {
+  chains?: Chain[];
 }
 
-export function Chains({chains}: IChainProps) {
+export function Chains({chains}: Props) {
   const Theme = useTheme();
+
   return (
     <ScrollView
       bounces={false}
@@ -17,13 +21,20 @@ export function Chains({chains}: IChainProps) {
         Blockchain(s)
       </Text>
       <View style={styles.row}>
-        {chains?.map((chain, index: number) => (
-          <Image
-            key={index}
-            source={{uri: chain?.logo}}
-            style={styles.chainLogo}
-          />
-        ))}
+        {chains?.map(chain => {
+          const logo = PresetsUtil.getChainLogo(chain.id);
+          return (
+            <View
+              key={chain.name}
+              style={[styles.chain, {borderColor: Theme['fg-300']}]}>
+              <Image
+                source={logo}
+                style={[styles.chainLogo, {backgroundColor: Theme['bg-300']}]}
+              />
+              <Text>{chain.name}</Text>
+            </View>
+          );
+        })}
       </View>
     </ScrollView>
   );
@@ -32,12 +43,12 @@ export function Chains({chains}: IChainProps) {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
-    padding: 8,
     marginBottom: 8,
     maxHeight: 120,
     width: '100%',
   },
   content: {
+    padding: 8,
     alignItems: 'flex-start',
     flexWrap: 'wrap',
   },
@@ -57,8 +68,18 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    columnGap: 8,
+    columnGap: 12,
     rowGap: 8,
     paddingHorizontal: 4,
+  },
+  chain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1,
+    borderRadius: 100,
+    paddingVertical: 4,
+    paddingLeft: 4,
+    paddingRight: 10,
   },
 });

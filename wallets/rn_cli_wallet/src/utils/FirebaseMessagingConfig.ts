@@ -8,10 +8,11 @@ import {NotifyClient} from '@walletconnect/notify-client';
 import {decryptMessage} from '@walletconnect/notify-message-decrypter';
 import {getSymKey} from '@/utils/NotifyClient';
 import {Platform} from 'react-native';
+import Config from 'react-native-config';
 
 let notifyClient;
 
-const projectId = process.env.ENV_PROJECT_ID;
+const projectId = Config.ENV_PROJECT_ID;
 
 async function registerClient(deviceToken: string, clientId: string) {
   const body = JSON.stringify({
