@@ -16,7 +16,7 @@ import {useSnapshot} from 'valtio';
 import Text from '../components/Text';
 import {RequestModal} from './RequestModal';
 import {Chains} from '../components/Modal/Chains';
-import {getChainData} from '../data/chainsUtil';
+import {PresetsUtil} from '@/utils/PresetsUtil';
 
 export default function SessionSignTypedDataModal() {
   // Get request and wallet data from store
@@ -29,7 +29,7 @@ export default function SessionSignTypedDataModal() {
   // Get required request data
   const {topic, params} = requestEvent;
   const {request, chainId} = params;
-  const chain = getChainData(chainId);
+  const chain = PresetsUtil.getChainData(chainId.split(':')[1]);
 
   const method = request?.method;
   const message = getSignParamsMessage(request?.params);

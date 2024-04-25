@@ -12,8 +12,8 @@ import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
 import ModalStore from '../store/ModalStore';
 import {useSnapshot} from 'valtio';
 import {RequestModal} from './RequestModal';
-import {getChainData} from '../data/chainsUtil';
 import {Chains} from '../components/Modal/Chains';
+import {PresetsUtil} from '@/utils/PresetsUtil';
 
 export default function SessionSendTransactionModal() {
   const {data} = useSnapshot(ModalStore.state);
@@ -27,7 +27,7 @@ export default function SessionSendTransactionModal() {
   const topic = requestEvent?.topic;
   const params = requestEvent?.params;
   const chainId = params?.chainId;
-  const chain = getChainData(chainId);
+  const chain = PresetsUtil.getChainData(chainId?.split(':')[1] || '');
   const request = params?.request;
   const transaction = request?.params[0];
   const method = requestEvent?.params?.request?.method;

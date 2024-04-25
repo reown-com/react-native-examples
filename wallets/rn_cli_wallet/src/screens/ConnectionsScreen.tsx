@@ -1,17 +1,15 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {Linking} from 'react-native';
 
 import {web3wallet} from '@/utils/WalletConnectUtil';
-
-import Sessions from '../components/HomeScreen/Sessions';
-import ActionButtons from '../components/HomeScreen/ActionButtons';
-
-import {CopyURIDialog} from '../components/CopyURIDialog';
-import {HomeTabScreenProps} from '../utils/TypesUtil';
-import ModalStore from '../store/ModalStore';
+import Sessions from '@/components/HomeScreen/Sessions';
+import ActionButtons from '@/components/HomeScreen/ActionButtons';
+import {CopyURIDialog} from '@/components/CopyURIDialog';
+import {ConnectionsStackScreenProps} from '@/utils/TypesUtil';
+import ModalStore from '@/store/ModalStore';
 import {useInitialURL} from '@/hooks/useInitialUrl';
 
-type Props = HomeTabScreenProps<'ConnectionsStack'>;
+type Props = ConnectionsStackScreenProps<'ConnectionsScreen'>;
 
 export default function ConnectionsScreen({route}: Props) {
   const {url: initialUrl, processing} = useInitialURL();
@@ -58,7 +56,7 @@ export default function ConnectionsScreen({route}: Props) {
     Linking.addEventListener('url', deeplinkCallback);
   }, [deeplinkCallback]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Uri received from QR code scanner
     if (route.params?.uri) {
       pair(route.params.uri);

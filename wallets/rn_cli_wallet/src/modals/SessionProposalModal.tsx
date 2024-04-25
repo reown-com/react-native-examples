@@ -1,22 +1,24 @@
+import {useSnapshot} from 'valtio';
 import React, {useCallback, useMemo, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
-
-import {Events} from '../components/Modal/Events';
-import {Methods} from '../components/Modal/Methods';
-
-import {useSnapshot} from 'valtio';
-import ModalStore from '../store/ModalStore';
 import {SignClientTypes} from '@walletconnect/types';
-import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '../data/EIP155Data';
-import {eip155Addresses} from '@/utils/EIP155WalletUtil';
 import {buildApprovedNamespaces, getSdkError} from '@walletconnect/utils';
+
+import {Events} from '@/components/Modal/Events';
+import {Methods} from '@/components/Modal/Methods';
+import ModalStore from '@/store/ModalStore';
+import {eip155Addresses} from '@/utils/EIP155WalletUtil';
 import {web3wallet} from '@/utils/WalletConnectUtil';
-import SettingsStore from '../store/SettingsStore';
-import {getChainData} from '../data/chainsUtil';
+import SettingsStore from '@/store/SettingsStore';
 import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
-import {RequestModal} from './RequestModal';
 import {useTheme} from '@/hooks/useTheme';
-import {Chains} from '../components/Modal/Chains';
+import {Chains} from '@/components/Modal/Chains';
+import {
+  EIP155Chains,
+  EIP155_SIGNING_METHODS,
+  PresetsUtil,
+} from '@/utils/PresetsUtil';
+import {RequestModal} from './RequestModal';
 
 export default function SessionProposalModal() {
   const Theme = useTheme();
@@ -38,7 +40,10 @@ export default function SessionProposalModal() {
 
   const supportedNamespaces = useMemo(() => {
     // eip155
-    const eip155Chains = Object.keys(EIP155_CHAINS);
+    const eip155Chains = Object.keys(EIP155Chains).map(
+      chain => `eip155:${chain}`,
+    );
+
     const eip155Methods = Object.values(EIP155_SIGNING_METHODS);
 
     return {
@@ -85,12 +90,12 @@ export default function SessionProposalModal() {
   // the chains that are supported by the wallet from the proposal
   const supportedChains = useMemo(() => {
     const chains = requestedChains
-      .map(chain => getChainData(chain))
+      .map(chain => PresetsUtil.getChainData(chain.split(':')[1]))
       .filter(chain => chain !== undefined);
     return chains;
   }, [requestedChains]);
 
-  // Hanlde approve action, construct session namespace
+  // Handle approve action, construct session namespace
   const onApprove = useCallback(async () => {
     if (proposal) {
       setIsLoadingApprove(true);

@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react';
-import {useRoute} from '@react-navigation/native';
 import {Alert, FlatList, View} from 'react-native';
-import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 
+import useNotifyClientContext from '@/hooks/useNotifyClientContext';
 import NotificationItem from '@/components/NotificationItem';
 import NotificationItemSkeleton from '@/components/NotificationItemSkeleton';
+import {SubscriptionsStackScreenProps} from '@/utils/TypesUtil';
 
 interface NotifyNotification {
   title: string;
@@ -15,15 +15,15 @@ interface NotifyNotification {
   type: string;
 }
 
-export default function SubscriptionDetailsScreen() {
-  const {params} = useRoute();
+type Props = SubscriptionsStackScreenProps<'SubscriptionDetailsScreen'>;
+
+export default function SubscriptionDetailsScreen({route}: Props) {
+  const topic = route.params.topic;
   const {notifications, setNotifications} = useNotifyClientContext();
   const [hasMore, setHasMore] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const topic = params?.topic;
-
-  const topicNotifications = notifications[params?.topic];
+  const topicNotifications = notifications[topic];
   const sortedByDate = topicNotifications?.sort(
     (a: NotifyNotification, b: NotifyNotification) => b.sentAt - a.sentAt,
   );
