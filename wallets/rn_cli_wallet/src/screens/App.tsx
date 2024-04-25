@@ -8,9 +8,7 @@ import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
 
 import {RootStackNavigator} from '../navigators/RootStackNavigator';
-// import {NotifyClientProvider} from '../provider/NotifyClientProvider';
 import useInitializeWeb3Wallet from '@/hooks/useInitializeWeb3Wallet';
-// import {useInitializeNotifyClient} from '@/hooks/useInitializeNotifyClient';
 import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import {RELAYER_EVENTS} from '@walletconnect/core';
@@ -29,10 +27,7 @@ const App = () => {
   // Step 1 - Initialize wallets and wallet connect client
   const initialized = useInitializeWeb3Wallet();
 
-  // Step 2 - Initialize Notify Client
-  // useInitializeNotifyClient();
-
-  // Step 3 - Once initialized, set up wallet connect event manager
+  // Step 2 - Once initialized, set up wallet connect event manager
   useWalletConnectEventsManager(initialized);
 
   useEffect(() => {
@@ -59,12 +54,10 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      {/* <NotifyClientProvider> */}
       <StatusBar
         barStyle={scheme === 'light' ? 'dark-content' : 'light-content'}
       />
       <RootStackNavigator />
-      {/* </NotifyClientProvider> */}
     </NavigationContainer>
   );
 };
