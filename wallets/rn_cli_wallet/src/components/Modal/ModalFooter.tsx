@@ -25,10 +25,10 @@ export function ModalFooter({
   const isScam = verifyContext?.verified.isScam;
 
   const bgColor =
-    validation === 'VALID'
-      ? Theme['accent-100']
-      : validation === 'INVALID'
+    isScam || validation === 'INVALID'
       ? Theme['verify-invalid']
+      : validation === 'VALID'
+      ? Theme['accent-100']
       : Theme['verify-unknown'];
 
   return (
