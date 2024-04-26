@@ -23,7 +23,7 @@
 		1F1C00992B8E53EE00FC18DB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		1F1C009A2B8E53EE00FC18DB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		1F1C00A62B8E543C00FC18DB /* Internal-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F1C00A42B8E543300FC18DB /* Internal-Info.plist */; };
-		1F924FCD2BDC061800BD28AD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1F924FCC2BDC061800BD28AD /* PrivacyInfo.xcprivacy */; };
+		1F924FCD2BDC061800BD28AD /* PrivacyInfo-Prod.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1F924FCC2BDC061800BD28AD /* PrivacyInfo-Prod.xcprivacy */; };
 		1F924FCF2BDC062B00BD28AD /* PrivacyInfo-Internal.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1F924FCE2BDC062B00BD28AD /* PrivacyInfo-Internal.xcprivacy */; };
 		56F89C477BF24AABD3C56835 /* libPods-App-W3MWagmiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B29088CC5441E1F0EFDC82CF /* libPods-App-W3MWagmiTests.a */; };
 		5EFC5B51E34E236600D965D5 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01F9F2E77A287A42A071531 /* ExpoModulesProvider.swift */; };
@@ -63,7 +63,7 @@
 		1F1C008B2B8E539F00FC18DB /* Debug-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Debug-Info.plist"; path = "W3MWagmi/Debug-Info.plist"; sourceTree = "<group>"; };
 		1F1C00A22B8E53EE00FC18DB /* W3MWagmi Internal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "W3MWagmi Internal.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F1C00A42B8E543300FC18DB /* Internal-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Internal-Info.plist"; path = "W3MWagmi/Internal-Info.plist"; sourceTree = "<group>"; };
-		1F924FCC2BDC061800BD28AD /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		1F924FCC2BDC061800BD28AD /* PrivacyInfo-Prod.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "PrivacyInfo-Prod.xcprivacy"; sourceTree = "<group>"; };
 		1F924FCE2BDC062B00BD28AD /* PrivacyInfo-Internal.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "PrivacyInfo-Internal.xcprivacy"; sourceTree = "<group>"; };
 		1FEC28A52B3612B00093B31A /* W3MWagmi.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = W3MWagmi.entitlements; path = W3MWagmi/W3MWagmi.entitlements; sourceTree = "<group>"; };
 		31264034C5C849DAAA855CE4 /* Pods-App-W3MWagmi Internal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi Internal.release.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal.release.xcconfig"; sourceTree = "<group>"; };
@@ -148,7 +148,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				1F924FCC2BDC061800BD28AD /* PrivacyInfo.xcprivacy */,
+				1F924FCC2BDC061800BD28AD /* PrivacyInfo-Prod.xcprivacy */,
 				1F924FCE2BDC062B00BD28AD /* PrivacyInfo-Internal.xcprivacy */,
 			);
 			name = W3MWagmi;
@@ -406,7 +406,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F924FCD2BDC061800BD28AD /* PrivacyInfo.xcprivacy in Resources */,
+				1F924FCD2BDC061800BD28AD /* PrivacyInfo-Prod.xcprivacy in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
