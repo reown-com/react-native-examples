@@ -1,6 +1,6 @@
 import {ReactNode} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {CoreTypes} from '@walletconnect/types';
+import {CoreTypes, Verify} from '@walletconnect/types';
 
 import {ModalHeader} from '@/components/Modal/ModalHeader';
 import {ModalFooter} from '@/components/Modal/ModalFooter';
@@ -14,6 +14,7 @@ export interface RequestModalProps {
   approveLoader?: boolean;
   rejectLoader?: boolean;
   intention?: string;
+  verifyContext?: Verify.Context;
 }
 
 export function RequestModal({
@@ -24,17 +25,23 @@ export function RequestModal({
   approveLoader,
   rejectLoader,
   intention,
+  verifyContext,
 }: RequestModalProps) {
   const Theme = useTheme();
   return (
     <View style={[styles.container, {backgroundColor: Theme['bg-125']}]}>
-      <ModalHeader metadata={metadata} intention={intention} />
+      <ModalHeader
+        metadata={metadata}
+        intention={intention}
+        verifyContext={verifyContext}
+      />
       {children}
       <ModalFooter
         onApprove={onApprove}
         onReject={onReject}
         approveLoader={approveLoader}
         rejectLoader={rejectLoader}
+        verifyContext={verifyContext}
       />
     </View>
   );
@@ -43,8 +50,8 @@ export function RequestModal({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    borderRadius: 34,
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
     width: '100%',
-    padding: 16,
   },
 });

@@ -150,12 +150,15 @@ export default function SessionProposalModal() {
       metadata={requestMetadata}
       onApprove={onApprove}
       onReject={onReject}
+      verifyContext={proposal?.verifyContext}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}>
       <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
-      <Chains chains={supportedChains} />
-      <Methods methods={methods} />
-      <Events events={events} />
+      <View style={styles.container}>
+        <Chains chains={supportedChains} />
+        <Methods methods={methods} />
+        <Events events={events} />
+      </View>
     </RequestModal>
   );
 }
@@ -165,5 +168,10 @@ const styles = StyleSheet.create({
     height: 1,
     width: '100%',
     marginVertical: 16,
+  },
+  container: {
+    paddingHorizontal: 16,
+    marginBottom: 8,
+    rowGap: 8,
   },
 });

@@ -15,10 +15,10 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 34,
     width: '100%',
     height: '30%',
     padding: 16,
-    backgroundColor: 'red',
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
   },
 });

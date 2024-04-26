@@ -58,11 +58,6 @@
 	<string>Allow access to the camera to scan codes</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>SFProRounded-Medium.otf</string>
-		<string>SFProRounded-Thin.otf</string>
-	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
