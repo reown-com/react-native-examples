@@ -12,6 +12,8 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1F924FC92BDC053400BD28AD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1FE92C692BDAB75900172856 /* PrivacyInfo.xcprivacy */; };
+		1F924FCB2BDC055B00BD28AD /* PrivacyInfo-Internal.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1F924FCA2BDC055B00BD28AD /* PrivacyInfo-Internal.xcprivacy */; };
 		1FCDA2902B9B8E6200E0BF0C /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		1FCDA2912B9B8E6200E0BF0C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1FCDA2962B9B8E6200E0BF0C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -50,6 +52,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = RNWeb3Wallet/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNWeb3Wallet/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RNWeb3Wallet/main.m; sourceTree = "<group>"; };
+		1F924FCA2BDC055B00BD28AD /* PrivacyInfo-Internal.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "PrivacyInfo-Internal.xcprivacy"; sourceTree = "<group>"; };
 		1FCDA2A22B9B8E6200E0BF0C /* RNWallet Debug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RNWallet Debug.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FCDA2BA2B9B8E6800E0BF0C /* RNWallet Internal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RNWallet Internal.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FCDA2BC2B9B8ED900E0BF0C /* Internal-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Internal-Info.plist"; path = "RNWeb3Wallet/Internal-Info.plist"; sourceTree = "<group>"; };
@@ -130,6 +133,7 @@
 		13B07FAE1A68108700A75B9A /* RNWeb3Wallet */ = {
 			isa = PBXGroup;
 			children = (
+				1FE92C692BDAB75900172856 /* PrivacyInfo.xcprivacy */,
 				1FCDA2BD2B9B8ED900E0BF0C /* Debug-Info.plist */,
 				1FCDA2BC2B9B8ED900E0BF0C /* Internal-Info.plist */,
 				BC0E53652B7EAFF70075EFC3 /* RNWeb3WalletDebug.entitlements */,
@@ -140,6 +144,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */,
+				1F924FCA2BDC055B00BD28AD /* PrivacyInfo-Internal.xcprivacy */,
 			);
 			name = RNWeb3Wallet;
 			sourceTree = "<group>";
@@ -166,7 +171,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				1FE92C692BDAB75900172856 /* PrivacyInfo.xcprivacy */,
 				BCD0CCF32B7ECBB200DF23F8 /* main.jsbundle.map */,
 				BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* RNWeb3Wallet */,
@@ -361,6 +365,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				BC55FDB92B7D243600340DDB /* GoogleService-Info.plist in Resources */,
+				1F924FC92BDC053400BD28AD /* PrivacyInfo.xcprivacy in Resources */,
 				97927E27E3F047C29FBF2FD7 /* BootSplash.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -380,6 +385,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FEC46DF2BD9835300064EFF /* BootSplash.storyboard in Resources */,
+				1F924FCB2BDC055B00BD28AD /* PrivacyInfo-Internal.xcprivacy in Resources */,
 				1FCDA2AE2B9B8E6800E0BF0C /* Images.xcassets in Resources */,
 				1FCDA2AF2B9B8E6800E0BF0C /* GoogleService-Info.plist in Resources */,
 			);
