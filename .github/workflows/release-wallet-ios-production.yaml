@@ -2,7 +2,7 @@ name: release-ios-web3wallet-production
 on: workflow_dispatch
 
 jobs:
-  release-internal:
+  release-production:
     uses: ./.github/workflows/release-ios-base.yaml
     with:
       name: Web3Wallet React Native

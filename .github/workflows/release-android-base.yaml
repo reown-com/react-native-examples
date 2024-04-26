@@ -92,7 +92,12 @@ jobs:
         run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/android/app/google-services.json
       
       - name: Build APK
-        run: cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal
+        run: |
+          if [ "${{ inputs.release-type }}" = "internal" ]; then
+        cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal
+          else
+        cd ${{ inputs.root-path }} && yarn install && yarn run android:build
+          fi
   
       - name: Setup Firebase
         uses: w9jds/setup-firebase@main
