@@ -22,6 +22,7 @@ export default function SessionSignModal() {
   const {data} = useSnapshot(ModalStore.state);
   const requestEvent = data?.requestEvent;
   const requestSession = data?.requestSession;
+
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 

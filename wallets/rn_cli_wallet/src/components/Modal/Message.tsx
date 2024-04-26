@@ -8,6 +8,11 @@ interface IMessageProps {
 
 export function Message({message}: IMessageProps) {
   const Theme = useTheme();
+
+  if (!message) {
+    return null;
+  }
+
   return (
     <ScrollView
       bounces={false}
@@ -23,7 +28,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
     maxHeight: 120,
-    width: '100%',
   },
   content: {
     alignItems: 'flex-start',
