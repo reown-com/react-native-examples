@@ -19,7 +19,7 @@ export default function VerifyInfoBox({validation, isScam, style}: Props) {
   let Icon: (props: SvgProps) => React.JSX.Element;
   let textColor;
   let bgColor;
-  if (validation === 'VALID') {
+  if (!isScam && validation === 'VALID') {
     return;
   }
 

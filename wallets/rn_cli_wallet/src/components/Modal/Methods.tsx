@@ -17,6 +17,11 @@ interface IMethodsProps {
 
 export function Methods({methods, style}: IMethodsProps) {
   const Theme = useTheme();
+
+  if (!methods?.length) {
+    return null;
+  }
+
   return (
     <ScrollView
       bounces={false}
@@ -37,7 +42,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
     maxHeight: 120,
-    width: '100%',
   },
   content: {
     alignItems: 'flex-start',

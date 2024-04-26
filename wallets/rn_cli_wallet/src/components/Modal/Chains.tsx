@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
     maxHeight: 120,
-    width: '100%',
   },
   content: {
     padding: 8,

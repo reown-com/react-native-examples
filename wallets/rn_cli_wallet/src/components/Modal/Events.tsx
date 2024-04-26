@@ -17,6 +17,11 @@ interface IEventProps {
 
 export function Events({events, style}: IEventProps) {
   const Theme = useTheme();
+
+  if (!events?.length) {
+    return null;
+  }
+
   return (
     <ScrollView
       bounces={false}
@@ -37,7 +42,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 8,
     maxHeight: 120,
-    width: '100%',
   },
   content: {
     alignItems: 'flex-start',
