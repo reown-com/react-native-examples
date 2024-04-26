@@ -95,6 +95,8 @@ export default function SessionSendTransactionModal() {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginTop: 8,
+    marginVertical: 8,
+    paddingHorizontal: 16,
+    rowGap: 8,
   },
 });

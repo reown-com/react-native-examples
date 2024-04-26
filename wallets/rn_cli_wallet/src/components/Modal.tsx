@@ -1,6 +1,6 @@
 import {useSnapshot} from 'valtio';
 import {useCallback, useMemo} from 'react';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import RNModal from 'react-native-modal';
 
 import ModalStore from '@/store/ModalStore';
@@ -42,8 +42,16 @@ export default function Modal() {
       hideModalContentWhileAnimating
       onBackdropPress={onClose}
       onModalHide={onClose}
+      style={styles.modal}
       isVisible={open}>
       {componentView}
     </RNModal>
   );
 }
+
+const styles = StyleSheet.create({
+  modal: {
+    margin: 0,
+    justifyContent: 'flex-end',
+  },
+});

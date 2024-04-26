@@ -35,9 +35,7 @@ export function Methods({methods, style}: IMethodsProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 4,
     borderRadius: 20,
-    marginBottom: 8,
     maxHeight: 120,
     width: '100%',
   },

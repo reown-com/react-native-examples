@@ -25,12 +25,12 @@ export function Chains({chains}: Props) {
           return (
             <View
               key={chain.name}
-              style={[styles.chain, {borderColor: Theme['fg-300']}]}>
+              style={[styles.chain, {borderColor: Theme['bg-300']}]}>
               <Image
                 source={logo}
                 style={[styles.chainLogo, {backgroundColor: Theme['bg-300']}]}
               />
-              <Text>{chain.name}</Text>
+              <Text style={styles.chainName}>{chain.name}</Text>
             </View>
           );
         })}
@@ -42,7 +42,6 @@ export function Chains({chains}: Props) {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
-    marginBottom: 8,
     maxHeight: 120,
     width: '100%',
   },
@@ -52,9 +51,13 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   chainLogo: {
-    height: 25,
-    width: 25,
+    height: 18,
+    width: 18,
     borderRadius: 100,
+  },
+  chainName: {
+    fontWeight: '500',
+    fontSize: 12,
   },
   title: {
     fontSize: 12,

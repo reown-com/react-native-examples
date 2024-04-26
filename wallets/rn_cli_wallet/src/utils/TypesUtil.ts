@@ -46,7 +46,11 @@ export type ThemeKeys =
   | 'gray-glass-030'
   | 'gray-glass-060'
   | 'gray-glass-080'
-  | 'gray-glass-090';
+  | 'gray-glass-090'
+  | 'verify-unknown'
+  | 'verify-invalid'
+  | 'bg-verify-unknown'
+  | 'bg-verify-invalid';
 
 // Navigation
 declare global {
