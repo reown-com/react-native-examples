@@ -27,8 +27,6 @@ export default function SessionProposalModal() {
   const proposal = data?.data
     ?.proposal as SignClientTypes.EventArguments['session_proposal'];
 
-  console.log('proposal', proposal);
-
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 
@@ -150,7 +148,6 @@ export default function SessionProposalModal() {
       metadata={requestMetadata}
       onApprove={onApprove}
       onReject={onReject}
-      verifyContext={proposal?.verifyContext}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}>
       <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
