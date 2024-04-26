@@ -93,10 +93,10 @@ jobs:
       
       - name: Build APK
         run: |
-          if [ "${{ inputs.release-type }}" = "internal" ]; then
-        cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal
+          if [ ${{ inputs.release-type }} = 'internal' ]; then
+            cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal
           else
-        cd ${{ inputs.root-path }} && yarn install && yarn run android:build
+            cd ${{ inputs.root-path }} && yarn install && yarn run android:build
           fi
   
       - name: Setup Firebase
