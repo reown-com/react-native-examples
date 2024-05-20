@@ -3060,57 +3060,57 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/core-react-native@1.4.0-email-beta.4":
-  version "1.4.0-email-beta.4"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.0-email-beta.4.tgz#96518ae485800b3d5d07dc0dd51a897add1d7ac3"
-  integrity sha512-xZ6Qehpxyu+3FodOP7sRQ9UeLGEoSRZtyGq8EyuwcuBImQWj3wtfiZf3gohTNUSxAw+zPBb8xOPAP+d1+gQkZQ==
+"@web3modal/core-react-native@1.4.0-email-beta.5":
+  version "1.4.0-email-beta.5"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.0-email-beta.5.tgz#99b04f559ac293dc174523badd772c9eab943630"
+  integrity sha512-MOfCssLcykFLYbrjSLu5WsbJhuofYZquTFSGBqLst0Pi0rkDTT0J+xKs9IMKntwIuBsq0Y+DS99kTb1Ez5hgIg==
   dependencies:
     valtio "1.10.5"
 
-"@web3modal/email-ethers-react-native@1.4.0-email-beta.4":
-  version "1.4.0-email-beta.4"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-ethers-react-native/-/email-ethers-react-native-1.4.0-email-beta.4.tgz#5c46a59410c2372597957b93ca9356d6f89fa30d"
-  integrity sha512-W3/TUVxMUqHuCQQjX4uSMDy0gD6cY8yZ1E3HOf20QFprxebB4/0t8QY+cgvrhlonPJy6OVwGXmWvUYFVlAezLA==
+"@web3modal/email-ethers-react-native@1.4.0-email-beta.5":
+  version "1.4.0-email-beta.5"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-ethers-react-native/-/email-ethers-react-native-1.4.0-email-beta.5.tgz#053b71611c59fa9e917b094f901185c0d5a148cb"
+  integrity sha512-dmZfbunvA4aFGqOjVtcynUBc5KIGVQiWzBBv2Hqy5cibGGZYnBhQ2vc+lS28gpkIRbr6iSX1wwIXO+LbPPcAQA==
   dependencies:
-    "@web3modal/email-react-native" "1.4.0-email-beta.4"
+    "@web3modal/email-react-native" "1.4.0-email-beta.5"
 
-"@web3modal/email-react-native@1.4.0-email-beta.4":
-  version "1.4.0-email-beta.4"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.0-email-beta.4.tgz#7089c2fcc51633c46b94d26d8d0a2b735f09e020"
-  integrity sha512-6MckgIGhUWR8vWjW7SXaJ8sgyVwi84sP+fD/lFBey5UyQ/ZG5TEzSweyIwSKbkh5qJ5mX4Sg6h+fG6iYEDnFDg==
+"@web3modal/email-react-native@1.4.0-email-beta.5":
+  version "1.4.0-email-beta.5"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.0-email-beta.5.tgz#de75d1771820f1f276e2f48b67b18f058a5f9246"
+  integrity sha512-qpPqhcEc0OnMQgCDY6/HB0EA09im9KnfLD3HNENzn841Yk1wlDZBYDlHVyvIHpJiONIiLsMatZOkk+eKo/s7DQ==
   dependencies:
-    "@web3modal/core-react-native" "1.4.0-email-beta.4"
-    "@web3modal/ui-react-native" "1.4.0-email-beta.4"
+    "@web3modal/core-react-native" "1.4.0-email-beta.5"
+    "@web3modal/ui-react-native" "1.4.0-email-beta.5"
     zod "3.22.4"
 
-"@web3modal/ethers5-react-native@1.4.0-email-beta.4":
-  version "1.4.0-email-beta.4"
-  resolved "https://registry.yarnpkg.com/@web3modal/ethers5-react-native/-/ethers5-react-native-1.4.0-email-beta.4.tgz#0e78bdc778e5e1af36bfd48f4d0188588c482174"
-  integrity sha512-lFY1mLjWTQ1Kao7YhYqyK/OEUbEaQM/3hI/ZtILladFvDn7Yqby3wQpXuHBrEh11M4Njv3vLkmapWaFYMC0cgw==
+"@web3modal/ethers5-react-native@1.4.0-email-beta.5":
+  version "1.4.0-email-beta.5"
+  resolved "https://registry.yarnpkg.com/@web3modal/ethers5-react-native/-/ethers5-react-native-1.4.0-email-beta.5.tgz#e831cfdc06409a92f2b458d90c78ce182cbbc7fe"
+  integrity sha512-2MwcIU7w+9Z1+ZmNZDe4Xw0FmxTWE/YfyIcofgim2Ipe+MyaYijpD1vgKN54/XCQO+Sz8QDa6yEJ4v+nHtDotA==
   dependencies:
     "@walletconnect/ethereum-provider" "2.11.1"
-    "@web3modal/scaffold-react-native" "1.4.0-email-beta.4"
-    "@web3modal/scaffold-utils-react-native" "1.4.0-email-beta.4"
+    "@web3modal/scaffold-react-native" "1.4.0-email-beta.5"
+    "@web3modal/scaffold-utils-react-native" "1.4.0-email-beta.5"
 
-"@web3modal/scaffold-react-native@1.4.0-email-beta.4":
-  version "1.4.0-email-beta.4"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.0-email-beta.4.tgz#f1d48f1b2c1a6f544bc0142e0ab66030a5344855"
-  integrity sha512-04j0iK0OjoR+mdziHmxi8dBwuYIA8BuO9elZhAxFfjR6CtTROj8P73wA9RfpWRAO4McQfl2wdZO8oVjXyILg6Q==
+"@web3modal/scaffold-react-native@1.4.0-email-beta.5":
+  version "1.4.0-email-beta.5"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.0-email-beta.5.tgz#bab277b16874359f458f514ca8c9f42c5dd3903b"
+  integrity sha512-1N8CXxJyC/NsgCZpogfr067xASkw84UoH+nw6H7MQMQDeD4PO217aWrQ34PKakCcprA1KfxOEIipEj8c5zvBCg==
   dependencies:
-    "@web3modal/core-react-native" "1.4.0-email-beta.4"
-    "@web3modal/ui-react-native" "1.4.0-email-beta.4"
+    "@web3modal/core-react-native" "1.4.0-email-beta.5"
+    "@web3modal/ui-react-native" "1.4.0-email-beta.5"
 
-"@web3modal/scaffold-utils-react-native@1.4.0-email-beta.4":
-  version "1.4.0-email-beta.4"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.0-email-beta.4.tgz#1621583fde8e598368e6a3c37d514e0877cec541"
-  integrity sha512-PFPStWpc62DaSsQAjQRhZ7mg7TpwN1TlgJ3LQSNs3xwESij7J1AflXzBAIcSowkNX8jUkLHvW2MiskZTs03zSg==
+"@web3modal/scaffold-utils-react-native@1.4.0-email-beta.5":
+  version "1.4.0-email-beta.5"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.0-email-beta.5.tgz#f8b4301b49410336ca828a581bd710b8ea67ab67"
+  integrity sha512-uBpuEilntap6Kd3BBIsge9IZC7zIbV//4vlyrl09+dvojjvsiMmY5oszMvOC49dpYAFg/HeSt5CrQfHYFIs92g==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.4.0-email-beta.4"
+    "@web3modal/scaffold-react-native" "1.4.0-email-beta.5"
 
-"@web3modal/ui-react-native@1.4.0-email-beta.4":
-  version "1.4.0-email-beta.4"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.0-email-beta.4.tgz#773f17c2662817779f6337ad9cc832cc048fca64"
-  integrity sha512-d8hKpobDP/KmaKnP7ZgX+GilFOS5JokBi2sadjE3HdNeDB57CNRihqmFaZZYLQ6RLvVIs71QIacQVEHGZaoHVQ==
+"@web3modal/ui-react-native@1.4.0-email-beta.5":
+  version "1.4.0-email-beta.5"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.0-email-beta.5.tgz#f1555af06c4bd2cc0b177cb7c1f1dc0ec13b5fa0"
+  integrity sha512-bPz1phPEQuzs1NxmlxOdh596g0fD7IqVGxS/yb2xsFLtIgkdkBUhHuhOEUyGDPUbpgYFQtqiZmH5v7DAMNbRRw==
   dependencies:
     qrcode "1.5.3"
 
