@@ -22,7 +22,7 @@ function SettingsScreen() {
       } else {
         const provider = await connector?.getProvider();
         _clientId =
-          await provider?.signer.rpcProviders.eip155.client.core.crypto.getClientId();
+          await provider?.signer?.rpcProviders?.eip155?.client?.core?.crypto?.getClientId();
 
         if (_clientId) {
           AsyncStorage.setItem('WALLETCONNECT_CLIENT_ID', _clientId);
