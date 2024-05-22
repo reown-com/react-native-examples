@@ -79,7 +79,7 @@ platform :ios do
       changelog: "#{ENV["SCHEME"]} build 🚀",
       distribute_external: false,
       notify_external_testers: false,
-      skip_waiting_for_build_processing: false
+      skip_waiting_for_build_processing: true
     )
     clean_build_artifacts()
   end
