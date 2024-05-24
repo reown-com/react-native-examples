@@ -15,7 +15,6 @@ import {NavigationContainer} from '@react-navigation/native';
 
 import {CreateConfigParameters, WagmiProvider} from 'wagmi';
 import {
-  arbitrum,
   mainnet,
   polygon,
   avalanche,
@@ -33,7 +32,7 @@ import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {getCustomWallets} from './utils/misc';
 import {RootStackNavigator} from './navigators/RootStackNavigator';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-// import {EmailConnector} from '@web3modal/email-wagmi-react-native';
+import {emailConnector} from '@web3modal/email-wagmi-react-native';
 
 if (!__DEV__ && Config.ENV_SENTRY_DSN) {
   Sentry.init({
@@ -65,7 +64,6 @@ const clipboardClient = {
 const chains: CreateConfigParameters['chains'] = [
   mainnet,
   polygon,
-  arbitrum,
   avalanche,
   bsc,
   optimism,
@@ -81,16 +79,16 @@ const _coinbaseConnector = coinbaseConnector({
   redirect: metadata?.redirect?.native || '',
 });
 
-// const emailConnector = new EmailConnector({
-//   chains,
-//   options: {projectId, metadata},
-// });
+const _emailConnector = emailConnector({
+  projectId,
+  metadata,
+});
 
 const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
-  extraConnectors: [_coinbaseConnector],
+  extraConnectors: [_coinbaseConnector, _emailConnector],
 });
 
 const customWallets = getCustomWallets();

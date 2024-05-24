@@ -37,8 +37,8 @@
     "react-native-screens": "~3.29.0",
     "react-native-svg": "14.1.0",
     "react-native-webview": "13.8.2",
-    "viem": "2.11.1",
-    "wagmi": "2.9.3"
+    "viem": "2.12.1",
+    "wagmi": "2.9.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
