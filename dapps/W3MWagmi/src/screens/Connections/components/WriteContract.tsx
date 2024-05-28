@@ -3,8 +3,8 @@ import {View} from 'react-native';
 import {Button} from '@web3modal/ui-react-native';
 
 import {useAccount, useContractWrite} from 'wagmi';
-import {RequestModal} from '../components/RequestModal';
-import usdtAbi from '../utils/usdtAbi';
+import {RequestModal} from '@/components/RequestModal';
+import usdtAbi from '@/utils/usdtAbi';
 
 export function WriteContract() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
@@ -16,21 +16,22 @@ export function WriteContract() {
     functionName: 'approve',
   });
 
-  const onPress = () => {
-    setRequetsModalVisible(true);
+  const onPress = async () => {
     try {
-      writeAsync({
+      await writeAsync({
         args: [address, 100000],
       });
     } catch (error) {
       console.log(error);
+    } finally {
+      setRequetsModalVisible(true);
     }
   };
 
   return isConnected ? (
     <View>
       <Button disabled={isLoading} onPress={onPress}>
-        Write contract
+        {isLoading ? 'Loading...' : 'Write contract'}
       </Button>
 
       <RequestModal

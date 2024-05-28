@@ -26,7 +26,6 @@ export function SignTypedDataV4() {
     setData(undefined);
     setError(false);
     setIsLoading(true);
-    setRequetsModalVisible(true);
 
     try {
       const ethersProvider = new BrowserProvider(walletProvider);
@@ -42,14 +41,16 @@ export function SignTypedDataV4() {
     } catch (e) {
       console.log(e);
       setError(true);
+    } finally {
+      setIsLoading(false);
+      setRequetsModalVisible(true);
     }
-    setIsLoading(false);
   };
 
   return isConnected ? (
     <View>
-      <Button disabled={requestModalVisible} onPress={onPress}>
-        Sign typed data (v4)
+      <Button disabled={requestModalVisible || isLoading} onPress={onPress}>
+        {isLoading ? 'Loading...' : 'Sign typed data'}
       </Button>
 
       <RequestModal

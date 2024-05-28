@@ -70,3 +70,5 @@ dist/
 web-build/
 
 
+# asdf
+**/.tool-versions

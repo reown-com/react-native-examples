@@ -1,23 +1,17 @@
 import '@walletconnect/react-native-compat';
 import React, {useEffect} from 'react';
-import {
-  Linking,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  useColorScheme,
-} from 'react-native';
+import {Linking} from 'react-native';
 import {
   createWeb3Modal,
   defaultWagmiConfig,
   Web3Modal,
-  W3mButton,
 } from '@web3modal/wagmi-react-native';
 
 import {CoinbaseConnector} from '@web3modal/coinbase-wagmi-react-native';
-import {FlexView, Text} from '@web3modal/ui-react-native';
+
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as Sentry from '@sentry/react-native';
+import {NavigationContainer} from '@react-navigation/native';
 
 import {WagmiConfig} from 'wagmi';
 import {
@@ -35,13 +29,10 @@ import {
   aurora,
 } from 'wagmi/chains';
 import Config from 'react-native-config';
-import {SignMessage} from './views/SignMessage';
-import {SendTransaction} from './views/SendTransaction';
-import {ReadContract} from './views/ReadContract';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
-import {WriteContract} from './views/WriteContract';
 import {getCustomWallets} from './utils/misc';
-import {SignTypedDataV4} from './views/SignTypedDataV4';
+import {RootStackNavigator} from './navigators/RootStackNavigator';
+import {EmailConnector} from '@web3modal/email-wagmi-react-native';
 
 if (!__DEV__ && Config.ENV_SENTRY_DSN) {
   Sentry.init({
@@ -92,11 +83,16 @@ const coinbaseConnector = new CoinbaseConnector({
   },
 });
 
+const emailConnector = new EmailConnector({
+  chains,
+  options: {projectId, metadata},
+});
+
 const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
-  extraConnectors: [coinbaseConnector],
+  extraConnectors: [coinbaseConnector, emailConnector],
 });
 
 const customWallets = getCustomWallets();
@@ -112,8 +108,6 @@ createWeb3Modal({
 });
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
   // 4. Handle deeplinks for Coinbase SDK
   useEffect(() => {
     const sub = Linking.addEventListener('url', ({url}) => {
@@ -127,43 +121,13 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <SafeAreaView style={[styles.container, isDarkMode && styles.dark]}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <Text style={styles.title} variant="large-600">
-          Web3Modal + wagmi
-        </Text>
-        <FlexView style={styles.buttonContainer}>
-          <W3mButton balance="show" />
-          <SignMessage />
-          <SendTransaction />
-          <SignTypedDataV4 />
-          <ReadContract />
-          <WriteContract />
-        </FlexView>
+    <NavigationContainer>
+      <WagmiConfig config={wagmiConfig}>
+        <RootStackNavigator />
         <Web3Modal />
-      </SafeAreaView>
-    </WagmiConfig>
+      </WagmiConfig>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  buttonContainer: {
-    gap: 8,
-  },
-  dark: {
-    backgroundColor: '#141414',
-  },
-  title: {
-    marginBottom: 40,
-    fontSize: 30,
-  },
-});
 
 export default App;

@@ -3207,46 +3207,62 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/coinbase-ethers-react-native@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-ethers-react-native/-/coinbase-ethers-react-native-1.3.0.tgz#2c715f13fdcbac2bced01dce4def09e83ea9378f"
-  integrity sha512-y4VILQyaqV1mF9+/fzYphkXAznzMWSQXtqkMwbSPguuLHqV4ko69TkAMOXqI9cLKyRkZuDucpesTHU3Xlq7gSA==
+"@web3modal/coinbase-ethers-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-ethers-react-native/-/coinbase-ethers-react-native-1.4.0.tgz#359078aed62e9d1cf83c8d62886c9da675e1f33d"
+  integrity sha512-o8a/mXBpS7U58vaKSy08LI+O0mS098W68t7p4/Bxk9IvtsA22YhCzBFXoUZl4uYlDG1vJpRZau/VfNB7Jlx4mw==
 
-"@web3modal/core-react-native@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.3.0.tgz#c4c1354cdc40879fe5975948d71ff064ae02fd7b"
-  integrity sha512-A2jSx67HkxrnSQ/vvjerWYm8nZEQdNzUWC9zaTwqtdt6clC6DjvY8VkMDNMgsLy9XCLVT90RItBm+hwAQ19dLA==
+"@web3modal/core-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.0.tgz#4c1f24269e5b58b60d3dc1f738c592981876663d"
+  integrity sha512-LHK+10C6ImFx6YQGrOInz7REKDZPWjS8WMqfelulw+zhY/YGGa4MPsELvoOnRY9VVYN8Giqs4cmjFYs+HW7+nA==
   dependencies:
     valtio "1.10.5"
 
-"@web3modal/ethers-react-native@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/ethers-react-native/-/ethers-react-native-1.3.0.tgz#6f2461737067bbad27df3f6f0d334c7f93e957c8"
-  integrity sha512-dBrrNpd8Pu/u3lBbi1ZSdS7dKBG2petWtAgw1+HCmVTlXOFduTs8BE+8sNg0ULK2hbOJqau++P3IZMtngPLGnw==
+"@web3modal/email-ethers-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-ethers-react-native/-/email-ethers-react-native-1.4.0.tgz#d400fd6de76a850386f2aa466ac4f723af78b8f8"
+  integrity sha512-RET9fY+GBwnY0fiNRJc607LJbtQdaup3RPw6lkWMxsg1hfcAZMT3pDJcuwc21WO0hzUgTn+wGZUbUhaPVj0jUg==
+  dependencies:
+    "@web3modal/email-react-native" "1.4.0"
+
+"@web3modal/email-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.0.tgz#542d9d8abed85e895c08b2ae3d0b91493ce4f1b5"
+  integrity sha512-RqoVxoceePREEwHuY+lE/7JIh0Bp8z+V49CtF80qS6RsZi4MMWiup8muksWQNFOLuKTdtrnXObnWYsP1pwSVrw==
+  dependencies:
+    "@web3modal/core-react-native" "1.4.0"
+    "@web3modal/ui-react-native" "1.4.0"
+    zod "3.22.4"
+
+"@web3modal/ethers-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/ethers-react-native/-/ethers-react-native-1.4.0.tgz#1baef88ca380d7478200b9c03dd5ae77f4fc522a"
+  integrity sha512-EbVtb8HGcZ5I0aR5gCV3mWVmv2IW1BfkdtlkQsbu7qfEaJYpPlsnv7qgAXybQq+2QGr/GghyBfJ4mgac/eACXA==
   dependencies:
     "@walletconnect/ethereum-provider" "2.11.1"
-    "@web3modal/scaffold-react-native" "1.3.0"
-    "@web3modal/scaffold-utils-react-native" "1.3.0"
+    "@web3modal/scaffold-react-native" "1.4.0"
+    "@web3modal/scaffold-utils-react-native" "1.4.0"
 
-"@web3modal/scaffold-react-native@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.3.0.tgz#15b0a3b75d25fe1015e989260d155bb1b11fea02"
-  integrity sha512-JbYbNTHHXHoO59i7RviF3CeuJGuk2hwymxM6JbaLRRxlDKFMFY1iMAtuwZAr8rS/72pVxPGRdp3O/Oci1rDCMg==
+"@web3modal/scaffold-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.0.tgz#bca3a1e9e991bf24e059e444301cb2b8761bcf56"
+  integrity sha512-nR2LMUY+T6QdXICqNZ80EKCQ1ZvzGl96K33Q4e800CPhV2+zgfiUVWFKtfMSw8plpI7vbRl7IOyExl12889PHA==
   dependencies:
-    "@web3modal/core-react-native" "1.3.0"
-    "@web3modal/ui-react-native" "1.3.0"
+    "@web3modal/core-react-native" "1.4.0"
+    "@web3modal/ui-react-native" "1.4.0"
 
-"@web3modal/scaffold-utils-react-native@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.3.0.tgz#8c8de082f6c2d7dc6aa1c4b16f4160756fff4162"
-  integrity sha512-LsoxVKXZbRA3l3uFtPjpB7gWIrzbzFs3XJaqX4woi6wOZyg+wSv6phV0Un7LyCZzazSiiNad0g46kuPdJFLGEQ==
+"@web3modal/scaffold-utils-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.0.tgz#e993e32271552936075b768ef897be99ebe4cad5"
+  integrity sha512-lBWzJIfQWRXdtv6L9wIY8LHPvQWRTgRMMzSFAWKUNkb/5biEOqI6JIBHWTuAzJ5dq/su3YpMz1/ludqj1EHk9A==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.3.0"
+    "@web3modal/scaffold-react-native" "1.4.0"
 
-"@web3modal/ui-react-native@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.3.0.tgz#7dce377b621ee999ff61e80bdfb8e55747d16f6a"
-  integrity sha512-bHMYMcFpnM2UWY9ea5i+73hPYWhQmGlrgfnCoQGwE4SoVc4+8w7iTk+QYtQ+dFkf1zuJapUarCcplNxELRMteA==
+"@web3modal/ui-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.0.tgz#d17f2d7a5ebad94536036d48b031af48c2fdf248"
+  integrity sha512-1Hmk/RmpLb2K1auDcZrQcH92mpHkzOSIp6u4bWU02uD7PofOJUQTv9Mig/lj5WjyRvYmBcT5/oRrQQbymof35A==
   dependencies:
     qrcode "1.5.3"
 
@@ -4754,15 +4770,15 @@ escape-html@~1.0.3:
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
   integrity sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==
 
+escape-string-regexp@2.0.0, escape-string-regexp@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz#a30304e99daa32e23b2fd20f51babd07cffca344"
+  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
+
 escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==
-
-escape-string-regexp@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz#a30304e99daa32e23b2fd20f51babd07cffca344"
-  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
 
 escape-string-regexp@^4.0.0:
   version "4.0.0"
@@ -5844,7 +5860,7 @@ internal-slot@^1.0.5:
     hasown "^2.0.0"
     side-channel "^1.0.4"
 
-invariant@^2.2.4:
+invariant@2.2.4, invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -8382,6 +8398,14 @@ react-native-url-polyfill@^2.0.0:
   dependencies:
     whatwg-url-without-unicode "8.0.0-3"
 
+react-native-webview@13.8.2:
+  version "13.8.2"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.8.2.tgz#a9f82b0312b1f54a45a7ebe40222fff72e7aeab5"
+  integrity sha512-4qBb04XPiLdfAbpU0x7RsMX4iIrggIvBVfJq4yqQhQwY+uJARJaOAZw9+KfA0/kNYQGKHSKQakXLAqQulUrlvQ==
+  dependencies:
+    escape-string-regexp "2.0.0"
+    invariant "2.2.4"
+
 react-native@0.73.4:
   version "0.73.4"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.73.4.tgz#81e07d4e7b6308c4649d5fa24038c0e87b17f2e1"
@@ -10103,3 +10127,8 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zod@3.22.4:
+  version "3.22.4"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.22.4.tgz#f31c3a9386f61b1f228af56faa9255e845cf3fff"
+  integrity sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==

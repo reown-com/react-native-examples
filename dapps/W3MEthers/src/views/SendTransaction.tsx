@@ -26,7 +26,6 @@ export function SendTransaction() {
     setData(undefined);
     setError(false);
     setIsLoading(true);
-    setRequetsModalVisible(true);
 
     try {
       const ethersProvider = new BrowserProvider(walletProvider);
@@ -41,14 +40,16 @@ export function SendTransaction() {
       setData(txResponse.hash);
     } catch {
       setError(true);
+    } finally {
+      setIsLoading(false);
+      setRequetsModalVisible(true);
     }
-    setIsLoading(false);
   };
 
   return isConnected ? (
     <View>
-      <Button disabled={requestModalVisible} onPress={onPress}>
-        Send transaction
+      <Button disabled={requestModalVisible || isLoading} onPress={onPress}>
+        {isLoading ? 'Loading...' : 'Send transaction'}
       </Button>
 
       <RequestModal

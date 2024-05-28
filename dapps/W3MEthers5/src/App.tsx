@@ -19,7 +19,7 @@ import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
 import {WriteContract} from './views/WriteContract';
 import {SignTypedDataV4} from './views/SignTypedDataV4';
-import {SignTypedData} from './views/SignTypedData';
+import {EmailProvider} from '@web3modal/email-ethers-react-native';
 
 // 1. Get projectId at https://cloud.walletconnect.com
 const projectId = ENV_PROJECT_ID;
@@ -35,7 +35,12 @@ const metadata = {
   },
 };
 
-const config = defaultConfig({metadata});
+const emailProvider = new EmailProvider({projectId, metadata});
+
+const config = defaultConfig({
+  metadata,
+  extraConnectors: [emailProvider],
+});
 
 // 3. Define your chains
 const mainnet = {
@@ -92,7 +97,6 @@ function App(): React.JSX.Element {
         <W3mButton balance="show" />
         <SignMessage />
         <SendTransaction />
-        <SignTypedData />
         <SignTypedDataV4 />
         <ReadContract />
         <WriteContract />

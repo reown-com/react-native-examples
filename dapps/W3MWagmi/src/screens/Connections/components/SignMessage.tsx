@@ -1,33 +1,32 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {Button} from '@web3modal/ui-react-native';
 
-import {useAccount, useSignTypedData} from 'wagmi';
-import {RequestModal} from '../components/RequestModal';
-import {eip712} from '../utils/eip712';
+import {useAccount, useSignMessage} from 'wagmi';
+import {RequestModal} from '@/components/RequestModal';
 
-export function SignTypedDataV4() {
+export function SignMessage() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
   const {isConnected} = useAccount();
 
-  const {data, isError, isLoading, isSuccess, signTypedData} = useSignTypedData(
-    {
-      domain: eip712.domain,
-      message: eip712.message,
-      primaryType: 'Mail',
-      types: eip712.types,
-    },
-  );
+  const {data, isError, isLoading, isSuccess, signMessage} = useSignMessage({
+    message: 'hello web3modal + wagmi',
+  });
 
   const onPress = () => {
-    signTypedData();
-    setRequetsModalVisible(true);
+    signMessage();
   };
+
+  useEffect(() => {
+    if (isSuccess || isError) {
+      setRequetsModalVisible(true);
+    }
+  }, [isSuccess, isError]);
 
   return isConnected ? (
     <View>
       <Button disabled={isLoading} onPress={onPress}>
-        eth_signTypedData_v4
+        {isLoading ? 'Loading...' : 'Sign message'}
       </Button>
 
       <RequestModal

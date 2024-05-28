@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {Button} from '@web3modal/ui-react-native';
 
 import {useAccount, useSendTransaction} from 'wagmi';
-import {RequestModal} from '../components/RequestModal';
+import {RequestModal} from '@/components/RequestModal';
 import {parseEther} from 'viem/utils';
 
 export function SendTransaction() {
@@ -19,13 +19,18 @@ export function SendTransaction() {
 
   const onPress = () => {
     sendTransaction();
-    setRequetsModalVisible(true);
   };
+
+  useEffect(() => {
+    if (isSuccess || isError) {
+      setRequetsModalVisible(true);
+    }
+  }, [isSuccess, isError]);
 
   return isConnected ? (
     <View>
       <Button disabled={isLoading} onPress={onPress}>
-        Send transaction
+        {isLoading ? 'Loading...' : 'Send transaction'}
       </Button>
 
       <RequestModal

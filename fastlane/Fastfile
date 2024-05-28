@@ -48,7 +48,7 @@ platform :ios do
     # Install pods
     cocoapods(
       clean_install: false,
-      repo_update: false,
+      repo_update: true,
       podfile: ENV['PODFILE_PATH']
     )
 
