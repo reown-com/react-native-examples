@@ -4326,63 +4326,63 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/coinbase-wagmi-react-native@1.4.0-email-beta.6":
-  version "1.4.0-email-beta.6"
-  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-wagmi-react-native/-/coinbase-wagmi-react-native-1.4.0-email-beta.6.tgz#40753d3f1a5267f94be4499bd2f1f969e80bef7a"
-  integrity sha512-rHkX/vcwCbNetNuFXbnPnkZpj6c3lDroNOsXS0Sb0FsT56EsvQgQI2aefF+FfhJajWCzbrF6eugJvcPfgCQj4A==
+"@web3modal/coinbase-wagmi-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-wagmi-react-native/-/coinbase-wagmi-react-native-1.4.0.tgz#01a0caa3b752768c4f41b65734c268115df01f2d"
+  integrity sha512-ezSEiNHRVdWp4HRmySbaHx+6fONNMzQS1WAH+PV4Q/a/yFeNk5oz7fnAq4Wr4cvCB7HW6VZv5T17TdADDGJvbw==
 
-"@web3modal/core-react-native@1.4.0-email-beta.6":
-  version "1.4.0-email-beta.6"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.0-email-beta.6.tgz#b55a99956e5b82d6b2899f860bef5943b1e259a8"
-  integrity sha512-OmalKHrg1VCBuS6lFSAvXGzY/wPFsO8nKpo7rwyJz2yLyW7i2+MAN+KDrRl9Ayc/UJudSPBPfawAfbQpC0iGSQ==
+"@web3modal/core-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.0.tgz#4c1f24269e5b58b60d3dc1f738c592981876663d"
+  integrity sha512-LHK+10C6ImFx6YQGrOInz7REKDZPWjS8WMqfelulw+zhY/YGGa4MPsELvoOnRY9VVYN8Giqs4cmjFYs+HW7+nA==
   dependencies:
     valtio "1.10.5"
 
-"@web3modal/email-react-native@1.4.0-email-beta.6":
-  version "1.4.0-email-beta.6"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.0-email-beta.6.tgz#cd3012cadcd537daf55af004ef5167f9799523cc"
-  integrity sha512-HObOs3cNL5jDsZ0e7K5/vKjWZ1BPCWyAkrLATF1dPzd6djjE/56Y/AZEcgk2SBB256ODp+5Kue/0puFPw/DQBg==
+"@web3modal/email-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.0.tgz#542d9d8abed85e895c08b2ae3d0b91493ce4f1b5"
+  integrity sha512-RqoVxoceePREEwHuY+lE/7JIh0Bp8z+V49CtF80qS6RsZi4MMWiup8muksWQNFOLuKTdtrnXObnWYsP1pwSVrw==
   dependencies:
-    "@web3modal/core-react-native" "1.4.0-email-beta.6"
-    "@web3modal/ui-react-native" "1.4.0-email-beta.6"
+    "@web3modal/core-react-native" "1.4.0"
+    "@web3modal/ui-react-native" "1.4.0"
     zod "3.22.4"
 
-"@web3modal/email-wagmi-react-native@1.4.0-email-beta.6":
-  version "1.4.0-email-beta.6"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-wagmi-react-native/-/email-wagmi-react-native-1.4.0-email-beta.6.tgz#64d2b044aa864e60f8803b2ca683d3d4c83272b6"
-  integrity sha512-v4+uiXgGiGzwC+v6oPSxg3h7cw1DyhGrzkytjrL/6ERc+lvwj3Sl96LED7fbNAPqiSRdmEEAgdJxZqDqIGOxiw==
+"@web3modal/email-wagmi-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-wagmi-react-native/-/email-wagmi-react-native-1.4.0.tgz#2f50646a2a47e08f12d49e883245a24bbbb37ce2"
+  integrity sha512-lzWXWBX+yIoa9X6tbs0ioS67xXwTnBdJeQVtm29tLlZhmimfcbFuBSFJQXZgacValtgc6+iYIX7SzaYH9rCNtw==
   dependencies:
-    "@web3modal/email-react-native" "1.4.0-email-beta.6"
+    "@web3modal/email-react-native" "1.4.0"
 
-"@web3modal/scaffold-react-native@1.4.0-email-beta.6":
-  version "1.4.0-email-beta.6"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.0-email-beta.6.tgz#7843b0d04c6c6542ce64e5eeacf6e0e19d99c5c7"
-  integrity sha512-y27pZtk0gtMdnbrnXDUoAABE6YljSNiC+BkB5OGYGmaYRJ+n+KZzrapUY9YFfmBpaedIb92FS9Qb5F81sttIiA==
+"@web3modal/scaffold-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.0.tgz#bca3a1e9e991bf24e059e444301cb2b8761bcf56"
+  integrity sha512-nR2LMUY+T6QdXICqNZ80EKCQ1ZvzGl96K33Q4e800CPhV2+zgfiUVWFKtfMSw8plpI7vbRl7IOyExl12889PHA==
   dependencies:
-    "@web3modal/core-react-native" "1.4.0-email-beta.6"
-    "@web3modal/ui-react-native" "1.4.0-email-beta.6"
+    "@web3modal/core-react-native" "1.4.0"
+    "@web3modal/ui-react-native" "1.4.0"
 
-"@web3modal/scaffold-utils-react-native@1.4.0-email-beta.6":
-  version "1.4.0-email-beta.6"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.0-email-beta.6.tgz#94a80504855c80ba979f03e3baebf91be5ba8f64"
-  integrity sha512-MdGBIlrrraXX8E4cIIyh41tk+sDir9J5zepUKZr41SC2QIy4+HQ8/Ob6t8dtP/MFz0SPZpvAOCUIEZc9cz7Fsg==
+"@web3modal/scaffold-utils-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.0.tgz#e993e32271552936075b768ef897be99ebe4cad5"
+  integrity sha512-lBWzJIfQWRXdtv6L9wIY8LHPvQWRTgRMMzSFAWKUNkb/5biEOqI6JIBHWTuAzJ5dq/su3YpMz1/ludqj1EHk9A==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.4.0-email-beta.6"
+    "@web3modal/scaffold-react-native" "1.4.0"
 
-"@web3modal/ui-react-native@1.4.0-email-beta.6":
-  version "1.4.0-email-beta.6"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.0-email-beta.6.tgz#01b42e984c4d6d49e31e81a4e49b9aed075c7516"
-  integrity sha512-N3WYHFgBrmdU5liSRmeRDUi6gnGCDSAggto6rqZkzRYP6Vy+nbHembNRESJ735VnWjGvsb5mw/6tf/FOJIdOOA==
+"@web3modal/ui-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.0.tgz#d17f2d7a5ebad94536036d48b031af48c2fdf248"
+  integrity sha512-1Hmk/RmpLb2K1auDcZrQcH92mpHkzOSIp6u4bWU02uD7PofOJUQTv9Mig/lj5WjyRvYmBcT5/oRrQQbymof35A==
   dependencies:
     qrcode "1.5.3"
 
-"@web3modal/wagmi-react-native@1.4.0-email-beta.6":
-  version "1.4.0-email-beta.6"
-  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.4.0-email-beta.6.tgz#71cf2b15d71d76d234434a6c12a3e2abb2933ed8"
-  integrity sha512-UqDuWJ2eu4aTZKlrrrqnGHpw6GCDWCsGPTHBr7WRokynGhIY/oy6I9t0ZlWleLaTAGOQdxLIQTbetjjAI+X51w==
+"@web3modal/wagmi-react-native@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.4.0.tgz#268a374c6a38d967e08829a0b751835835692733"
+  integrity sha512-ThsQZnQdolu9CyfzahBwBnn7TLKMnCxM0CLx+fZh0Sb8ogb3xrMKxueSWZ2vXOqA6yh372o5CTSXcy8fGeMZ2Q==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.4.0-email-beta.6"
-    "@web3modal/scaffold-utils-react-native" "1.4.0-email-beta.6"
+    "@web3modal/scaffold-react-native" "1.4.0"
+    "@web3modal/scaffold-utils-react-native" "1.4.0"
 
 "@xmldom/xmldom@^0.8.8":
   version "0.8.10"
