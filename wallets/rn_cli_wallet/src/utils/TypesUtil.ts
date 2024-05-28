@@ -46,10 +46,13 @@ export type ThemeKeys =
   | 'gray-glass-030'
   | 'gray-glass-060'
   | 'gray-glass-080'
-  | 'gray-glass-090';
+  | 'gray-glass-090'
+  | 'verify-unknown'
+  | 'verify-invalid'
+  | 'bg-verify-unknown'
+  | 'bg-verify-invalid';
 
 // Navigation
-
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}
@@ -70,17 +73,17 @@ export type HomeTabParamList = {
 };
 
 export type ConnectionsStackParamList = {
-  ConnectionsScreen: undefined;
+  Connections?: {uri: string};
 };
 
 export type SubscriptionsStackParamList = {
-  SubscriptionsScreen: {topic?: string};
-  SubscriptionDetailsScreen: {topic: string; name: string};
-  SubscriptionSettingsScreen: {topic: string; name: string};
+  SubscriptionsScreen?: {topic: string};
+  SubscriptionDetail: {topic: string; name: string};
+  SubscriptionSettings: {topic: string; name: string};
 };
 
 export type SettingsStackParamList = {
-  SettingsScreen: undefined;
+  Settings: undefined;
 };
 
 // Define screen props types
@@ -112,3 +115,12 @@ export type SettingsStackScreenProps<T extends keyof SettingsStackParamList> =
     StackScreenProps<SettingsStackParamList, T>,
     HomeTabScreenProps<keyof HomeTabParamList>
   >;
+
+export type Chain = {
+  id: number;
+  network: string;
+  name: string;
+  nativeCurrency: {name: string; symbol: string; decimals: number};
+  rpcUrl: string;
+  blockExplorer: string;
+};

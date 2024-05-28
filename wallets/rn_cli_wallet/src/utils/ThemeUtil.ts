@@ -49,6 +49,11 @@ export const LightTheme: {[key in ThemeKeys]: string} = {
   'gray-glass-060': 'rgba(0, 0, 0, 0.6)',
   'gray-glass-080': 'rgba(0, 0, 0, 0.8)',
   'gray-glass-090': 'rgba(0, 0, 0, 0.9)',
+
+  'verify-unknown': '#FF800A',
+  'verify-invalid': '#ED4747',
+  'bg-verify-unknown': 'rgba(255, 128, 10, 0.10)',
+  'bg-verify-invalid': 'rgba(237, 71, 71, 0.10)',
 };
 
 export const DarkTheme: {[key in ThemeKeys]: string} = {
@@ -100,4 +105,9 @@ export const DarkTheme: {[key in ThemeKeys]: string} = {
   'gray-glass-060': 'rgba(255, 255, 255, 0.6)',
   'gray-glass-080': 'rgba(255, 255, 255, 0.8)',
   'gray-glass-090': 'rgba(255, 255, 255, 0.9)',
+
+  'verify-unknown': '#FF800A',
+  'verify-invalid': '#ED4747',
+  'bg-verify-unknown': 'rgba(255, 128, 10, 0.10)',
+  'bg-verify-invalid': 'rgba(237, 71, 71, 0.10)',
 };

@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   ScrollView,
   StyleProp,
@@ -7,8 +6,9 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import {Tag} from '../Tag';
-import {useTheme} from '../../hooks/useTheme';
+
+import {useTheme} from '@/hooks/useTheme';
+import {Tag} from '@/components/Tag';
 
 interface IMethodsProps {
   methods?: string[];
@@ -17,6 +17,11 @@ interface IMethodsProps {
 
 export function Methods({methods, style}: IMethodsProps) {
   const Theme = useTheme();
+
+  if (!methods?.length) {
+    return null;
+  }
+
   return (
     <ScrollView
       bounces={false}
@@ -35,11 +40,8 @@ export function Methods({methods, style}: IMethodsProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 4,
     borderRadius: 20,
-    marginBottom: 8,
     maxHeight: 120,
-    width: '100%',
   },
   content: {
     alignItems: 'flex-start',

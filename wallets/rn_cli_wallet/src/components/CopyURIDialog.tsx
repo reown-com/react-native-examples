@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import {Dimensions, StyleSheet, TextInput, View} from 'react-native';
 import Dialog from 'react-native-dialog';
+
+import {useTheme} from '@/hooks/useTheme';
 import {ConnectButton} from './ConnectButton';
-import {useTheme} from '../hooks/useTheme';
 
 interface copyURIDialogProps {
   visible: boolean;
@@ -105,15 +106,13 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   titleText: {
-    fontFamily: 'SFProRounded-Medium',
     fontSize: 24,
     textAlign: 'center',
   },
   descriptionText: {
-    fontFamily: 'SFProRounded-Medium',
     textAlign: 'center',
     paddingVertical: 4,
-    fontSize: 15,
+    fontSize: 14,
     lineHeight: 18,
   },
   cancelContainer: {

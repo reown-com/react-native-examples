@@ -1,9 +1,7 @@
-import React from 'react';
-
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {useTheme} from '@/hooks/useTheme';
-import ConnectionsScreen from '@/screens/ConnectionsScreen';
+import Connections from '@/screens/Connections';
 import {ConnectionsStackParamList} from '@/utils/TypesUtil';
 
 const Stack = createNativeStackNavigator<ConnectionsStackParamList>();
@@ -21,9 +19,9 @@ export default function ConnectionsStack() {
         },
       }}>
       <Stack.Screen
-        name="ConnectionsScreen"
+        name="Connections"
         options={{headerTitle: 'Connections', headerLargeTitle: true}}
-        component={ConnectionsScreen}
+        component={Connections}
       />
     </Stack.Navigator>
   );
