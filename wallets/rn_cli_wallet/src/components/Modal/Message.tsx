@@ -1,6 +1,6 @@
-import React from 'react';
 import {ScrollView, StyleSheet, Text} from 'react-native';
-import {useTheme} from '../../hooks/useTheme';
+
+import {useTheme} from '@/hooks/useTheme';
 
 interface IMessageProps {
   message: string;
@@ -8,6 +8,11 @@ interface IMessageProps {
 
 export function Message({message}: IMessageProps) {
   const Theme = useTheme();
+
+  if (!message) {
+    return null;
+  }
+
   return (
     <ScrollView
       bounces={false}
@@ -21,11 +26,8 @@ export function Message({message}: IMessageProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 4,
     borderRadius: 20,
-    marginBottom: 8,
     maxHeight: 120,
-    width: '100%',
   },
   content: {
     alignItems: 'flex-start',

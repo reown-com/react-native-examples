@@ -77,10 +77,9 @@ platform :ios do
       apple_id: ENV["APPLE_ID"],
       app_identifier: ENV["BUNDLE_ID"],
       changelog: "#{ENV["SCHEME"]} build 🚀",
-      distribute_external: true,
-      notify_external_testers: true,
-      skip_waiting_for_build_processing: false,
-      groups: ["WalletConnect Users"]
+      distribute_external: false,
+      notify_external_testers: false,
+      skip_waiting_for_build_processing: true
     )
     clean_build_artifacts()
   end

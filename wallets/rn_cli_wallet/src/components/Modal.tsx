@@ -1,13 +1,14 @@
-import React, {useCallback, useMemo} from 'react';
-import RNModal from 'react-native-modal';
 import {useSnapshot} from 'valtio';
-import ModalStore from '../store/ModalStore';
-import SessionProposalModal from '../modals/SessionProposalModal';
-import SessionSignModal from '../modals/SessionSignModal';
-import SessionSendTransactionModal from '../modals/SessionSendTransactionModal';
-import SessionSignTypedDataModal from '../modals/SessionSignTypedDataModal';
-import {LoadingModal} from '../modals/LoadingModal';
-import {View} from 'react-native';
+import {useCallback, useMemo} from 'react';
+import {StyleSheet, View} from 'react-native';
+import RNModal from 'react-native-modal';
+
+import ModalStore from '@/store/ModalStore';
+import SessionProposalModal from '@/modals/SessionProposalModal';
+import SessionSignModal from '@/modals/SessionSignModal';
+import SessionSendTransactionModal from '@/modals/SessionSendTransactionModal';
+import SessionSignTypedDataModal from '@/modals/SessionSignTypedDataModal';
+import {LoadingModal} from '@/modals/LoadingModal';
 
 export default function Modal() {
   const {open, view} = useSnapshot(ModalStore.state);
@@ -28,10 +29,6 @@ export default function Modal() {
         return <SessionSignTypedDataModal />;
       case 'SessionSendTransactionModal':
         return <SessionSendTransactionModal />;
-      // case 'SessionUnsuportedMethodModal':
-      //   return <SessionUnsuportedMethodModal />;
-      // case 'AuthRequestModal':
-      //   return <AuthRequestModal />;
       case 'LoadingModal':
         return <LoadingModal />;
       default:
@@ -45,8 +42,16 @@ export default function Modal() {
       hideModalContentWhileAnimating
       onBackdropPress={onClose}
       onModalHide={onClose}
+      style={styles.modal}
       isVisible={open}>
       {componentView}
     </RNModal>
   );
 }
+
+const styles = StyleSheet.create({
+  modal: {
+    margin: 0,
+    justifyContent: 'flex-end',
+  },
+});

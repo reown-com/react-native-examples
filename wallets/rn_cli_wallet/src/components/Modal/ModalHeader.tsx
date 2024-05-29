@@ -1,17 +1,26 @@
-import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
-import {SignClientTypes} from '@walletconnect/types';
-import {useTheme} from '../../hooks/useTheme';
+import {SignClientTypes, Verify} from '@walletconnect/types';
+
+import {useTheme} from '@/hooks/useTheme';
+import VerifiedDomain from '@/assets/VerifiedDomain.png';
+import VerifyTag from '@/components/VerifyTag';
 
 interface ModalHeaderProps {
   metadata?: SignClientTypes.Metadata;
   intention?: string;
+  verifyContext?: Verify.Context;
 }
 
-export function ModalHeader({metadata, intention}: ModalHeaderProps) {
+export function ModalHeader({
+  metadata,
+  intention,
+  verifyContext,
+}: ModalHeaderProps) {
   const Theme = useTheme();
   const color = Theme['fg-100'];
-  // TODO: add domain verif
+  const validation = verifyContext?.verified.validation;
+  const isScam = verifyContext?.verified.isScam;
+
   return (
     <View style={styles.container}>
       <Image
@@ -21,9 +30,15 @@ export function ModalHeader({metadata, intention}: ModalHeaderProps) {
 
       <Text style={[styles.title, {color}]}>{metadata?.name || 'Unknown'}</Text>
       {intention && <Text style={[styles.desc, {color}]}>{intention}</Text>}
-      <Text style={[styles.url, {color: Theme['fg-200']}]}>
-        {metadata?.url || 'unknown domain'}
-      </Text>
+      <View style={styles.domainContainer}>
+        {!isScam && validation === 'VALID' && (
+          <Image source={VerifiedDomain} style={styles.icon} />
+        )}
+        <Text style={[styles.domain, {color: Theme['fg-200']}]}>
+          {metadata?.url || 'unknown domain'}
+        </Text>
+      </View>
+      <VerifyTag validation={validation} isScam={isScam} style={styles.tag} />
     </View>
   );
 }
@@ -32,6 +47,8 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 16,
+    paddingTop: 16,
   },
   logo: {
     width: 60,
@@ -47,9 +64,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  url: {
+  domainContainer: {
     marginTop: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 4,
+  },
+  domain: {
     fontSize: 12,
     fontWeight: '500',
+  },
+  icon: {
+    height: 16,
+    width: 16,
+  },
+  tag: {
+    marginTop: 4,
   },
 });

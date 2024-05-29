@@ -1,9 +1,12 @@
-import React, {ReactNode} from 'react';
+import {ReactNode} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {CoreTypes} from '@walletconnect/types';
-import {ModalHeader} from '../components/Modal/ModalHeader';
-import {ModalFooter} from '../components/Modal/ModalFooter';
+
+import {ModalHeader} from '@/components/Modal/ModalHeader';
+import {ModalFooter} from '@/components/Modal/ModalFooter';
 import {useTheme} from '@/hooks/useTheme';
+import {useSnapshot} from 'valtio';
+import SettingsStore from '@/store/SettingsStore';
 
 export interface RequestModalProps {
   children: ReactNode;
@@ -25,15 +28,22 @@ export function RequestModal({
   intention,
 }: RequestModalProps) {
   const Theme = useTheme();
+  const {currentRequestVerifyContext} = useSnapshot(SettingsStore.state);
+
   return (
     <View style={[styles.container, {backgroundColor: Theme['bg-125']}]}>
-      <ModalHeader metadata={metadata} intention={intention} />
+      <ModalHeader
+        metadata={metadata}
+        intention={intention}
+        verifyContext={currentRequestVerifyContext}
+      />
       {children}
       <ModalFooter
         onApprove={onApprove}
         onReject={onReject}
         approveLoader={approveLoader}
         rejectLoader={rejectLoader}
+        verifyContext={currentRequestVerifyContext}
       />
     </View>
   );
@@ -42,8 +52,8 @@ export function RequestModal({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    borderRadius: 34,
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
     width: '100%',
-    padding: 16,
   },
 });

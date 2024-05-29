@@ -1,9 +1,10 @@
-import React, {useCallback, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
 import {useSnapshot} from 'valtio';
+import {useCallback, useState} from 'react';
+import {View, StyleSheet, Text} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
-import {Methods} from '../components/Modal/Methods';
-import {Message} from '../components/Modal/Message';
+
+import {Methods} from '@/components/Modal/Methods';
+import {Message} from '@/components/Modal/Message';
 import {getSignParamsMessage} from '@/utils/HelperUtil';
 import {
   approveEIP155Request,
@@ -11,24 +12,24 @@ import {
 } from '@/utils/EIP155RequestHandlerUtil';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
-import ModalStore from '../store/ModalStore';
-import Text from '../components/Text';
+import ModalStore from '@/store/ModalStore';
 import {RequestModal} from './RequestModal';
-import {Chains} from '../components/Modal/Chains';
-import {getChainData} from '../data/chainsUtil';
+import {Chains} from '@/components/Modal/Chains';
+import {PresetsUtil} from '@/utils/PresetsUtil';
 
 export default function SessionSignModal() {
   // Get request and wallet data from store
   const {data} = useSnapshot(ModalStore.state);
   const requestEvent = data?.requestEvent;
   const requestSession = data?.requestSession;
+
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 
   // Get required request data
-  const {topic, params} = requestEvent;
+  const {topic, params} = requestEvent!;
   const {request, chainId} = params;
-  const chain = getChainData(chainId);
+  const chain = PresetsUtil.getChainData(chainId.split(':')[1]);
   const requestMetadata = requestSession?.peer
     ?.metadata as SignClientTypes.Metadata;
 
@@ -75,7 +76,7 @@ export default function SessionSignModal() {
     }
   }, [requestEvent, topic]);
 
-  const method = requestEvent?.params?.request?.method;
+  const method = requestEvent?.params?.request?.method!;
 
   // Ensure request and wallet are defined
   if (!requestEvent || !requestSession) {
@@ -102,6 +103,8 @@ export default function SessionSignModal() {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginTop: 8,
+    marginVertical: 8,
+    paddingHorizontal: 16,
+    rowGap: 8,
   },
 });

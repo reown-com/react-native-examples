@@ -1,15 +1,15 @@
+import {useSnapshot} from 'valtio';
 import Config from 'react-native-config';
 import {useEffect, useState} from 'react';
+import {NotifyClient, NotifyClientTypes} from '@walletconnect/notify-client';
+import cloneDeep from 'lodash.clonedeep';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import NotifyClientContext, {
   NotificationsState,
   NotifyNotification,
-} from '../context/NotifyClientContext';
-import {NotifyClient, NotifyClientTypes} from '@walletconnect/notify-client';
-import cloneDeep from 'lodash.clonedeep';
-import {useSnapshot} from 'valtio';
+} from '@/context/NotifyClientContext';
 import SettingsStore from '@/store/SettingsStore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SYM_KEY_PREFIX} from '@/constants/Storage';
 
 export const NotifyClientProvider: React.FC<{

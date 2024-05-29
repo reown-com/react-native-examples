@@ -1,7 +1,6 @@
-import React from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 
-import {useTheme} from '../hooks/useTheme';
+import {useTheme} from '@/hooks/useTheme';
 
 export function LoadingModal() {
   const Theme = useTheme();
@@ -16,10 +15,10 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 34,
     width: '100%',
     height: '30%',
     padding: 16,
-    backgroundColor: 'red',
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
   },
 });

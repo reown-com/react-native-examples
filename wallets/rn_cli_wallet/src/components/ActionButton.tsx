@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Text,
   TouchableOpacity,
@@ -6,6 +5,7 @@ import {
   ActivityIndicator,
   StyleProp,
   ViewStyle,
+  TextStyle,
 } from 'react-native';
 import {useTheme} from '@/hooks/useTheme';
 
@@ -16,6 +16,7 @@ export interface ActionButtonProps {
   loading?: boolean;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 export function ActionButton({
@@ -25,6 +26,7 @@ export function ActionButton({
   loading,
   disabled,
   style,
+  textStyle,
 }: ActionButtonProps) {
   const Theme = useTheme();
   const backgroundColor = secondary ? Theme['bg-200'] : Theme['accent-100'];
@@ -38,7 +40,9 @@ export function ActionButton({
       {loading ? (
         <ActivityIndicator color={loaderColor} />
       ) : (
-        <Text style={[styles.text, {color: textColor}]}>{children}</Text>
+        <Text style={[styles.text, {color: textColor}, textStyle]}>
+          {children}
+        </Text>
       )}
     </TouchableOpacity>
   );

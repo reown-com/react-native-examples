@@ -1,10 +1,11 @@
-import {Web3WalletTypes} from '@walletconnect/web3wallet';
-import {EIP155_SIGNING_METHODS} from '../data/EIP155Data';
-import ModalStore from '../store/ModalStore';
-import SettingsStore from '../store/SettingsStore';
-import {web3wallet} from '../utils/WalletConnectUtil';
-import {SignClientTypes} from '@walletconnect/types';
 import {useCallback, useEffect} from 'react';
+import {Web3WalletTypes} from '@walletconnect/web3wallet';
+import {SignClientTypes} from '@walletconnect/types';
+
+import {EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
+import ModalStore from '@/store/ModalStore';
+import SettingsStore from '@/store/SettingsStore';
+import {web3wallet} from '@/utils/WalletConnectUtil';
 
 export default function useWalletConnectEventsManager(initialized: boolean) {
   /******************************************************************************

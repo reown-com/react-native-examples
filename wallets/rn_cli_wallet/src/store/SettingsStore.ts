@@ -1,6 +1,6 @@
+import {proxy} from 'valtio';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Verify, SessionTypes} from '@walletconnect/types';
-import {proxy} from 'valtio';
 
 import EIP155Lib from '../lib/EIP155Lib';
 
@@ -16,6 +16,11 @@ interface State {
   currentRequestVerifyContext?: Verify.Context;
   sessions: SessionTypes.Struct[];
   wallet: EIP155Lib | null;
+  initPromise?: Promise<void>;
+  initPromiseResolver?: {
+    resolve: (value: undefined) => void;
+    reject: (reason?: unknown) => void;
+  };
 }
 
 /**
@@ -59,6 +64,12 @@ const SettingsStore = {
 
   setSessions(sessions: SessionTypes.Struct[]) {
     state.sessions = sessions;
+  },
+
+  setInitPromise() {
+    state.initPromise = new Promise((resolve, reject) => {
+      state.initPromiseResolver = {resolve, reject};
+    });
   },
 
   toggleTestNets() {
