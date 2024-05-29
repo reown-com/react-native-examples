@@ -4385,7 +4385,7 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/coinbase-wagmi-react-native@2.0.0-alpha.2":
+"@web3modal/coinbase-wagmi-react-native@^2.0.0-alpha.2":
   version "2.0.0-alpha.2"
   resolved "https://registry.yarnpkg.com/@web3modal/coinbase-wagmi-react-native/-/coinbase-wagmi-react-native-2.0.0-alpha.2.tgz#c2975f2969f389ecb9b345c4da1b9c0e2a092bb2"
   integrity sha512-xWtXtU8NyRmPGzyep/Z7BEfB8I5s3jVxTytr7sV2KXwcla68Feft6j0FAIgujXCIgy2w3z8U3kQ/13X5+RuLBw==

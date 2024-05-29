@@ -12,8 +12,9 @@ import {coinbaseConnector} from '@web3modal/coinbase-wagmi-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as Sentry from '@sentry/react-native';
 import {NavigationContainer} from '@react-navigation/native';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import {CreateConfigParameters, WagmiProvider} from 'wagmi';
+import {WagmiProvider} from 'wagmi';
 import {
   mainnet,
   polygon,
@@ -31,7 +32,7 @@ import Config from 'react-native-config';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {getCustomWallets} from './utils/misc';
 import {RootStackNavigator} from './navigators/RootStackNavigator';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+
 import {emailConnector} from '@web3modal/email-wagmi-react-native';
 
 if (!__DEV__ && Config.ENV_SENTRY_DSN) {
@@ -61,7 +62,7 @@ const clipboardClient = {
   },
 };
 
-const chains: CreateConfigParameters['chains'] = [
+const chains = [
   mainnet,
   polygon,
   avalanche,
@@ -73,7 +74,7 @@ const chains: CreateConfigParameters['chains'] = [
   base,
   celo,
   aurora,
-];
+] as const;
 
 const _coinbaseConnector = coinbaseConnector({
   redirect: metadata?.redirect?.native || '',
