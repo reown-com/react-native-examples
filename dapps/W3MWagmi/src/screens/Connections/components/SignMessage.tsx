@@ -7,7 +7,7 @@ import {RequestModal} from '@/components/RequestModal';
 
 export function SignMessage() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
-  const {isConnected} = useAccount();
+  const {isConnected, status} = useAccount();
 
   const {data, isError, isPending, isSuccess, signMessage} = useSignMessage();
 
@@ -25,7 +25,9 @@ export function SignMessage() {
 
   return isConnected ? (
     <View>
-      <Button disabled={isPending} onPress={onPress}>
+      <Button
+        disabled={isPending || status === 'reconnecting'}
+        onPress={onPress}>
         {isPending ? 'Loading...' : 'Sign message'}
       </Button>
 

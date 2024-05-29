@@ -8,7 +8,7 @@ import usdtAbi from '@/utils/usdtAbi';
 
 export function WriteContract() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
-  const {isConnected, address} = useAccount();
+  const {isConnected, address, status} = useAccount();
 
   const {data, isPending, isSuccess, isError, writeContract} =
     useWriteContract();
@@ -34,7 +34,9 @@ export function WriteContract() {
 
   return isConnected ? (
     <View>
-      <Button disabled={isPending} onPress={onPress}>
+      <Button
+        disabled={isPending || status === 'reconnecting'}
+        onPress={onPress}>
         {isPending ? 'Loading...' : 'Write contract'}
       </Button>
 

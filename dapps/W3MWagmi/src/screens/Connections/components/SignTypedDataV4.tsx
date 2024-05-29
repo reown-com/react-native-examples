@@ -8,7 +8,7 @@ import {eip712} from '@/utils/eip712';
 
 export function SignTypedDataV4() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
-  const {isConnected} = useAccount();
+  const {isConnected, status} = useAccount();
 
   const {data, isError, isPending, isSuccess, signTypedData} =
     useSignTypedData();
@@ -30,7 +30,9 @@ export function SignTypedDataV4() {
 
   return isConnected ? (
     <View>
-      <Button disabled={isPending} onPress={onPress}>
+      <Button
+        disabled={isPending || status === 'reconnecting'}
+        onPress={onPress}>
         {isPending ? 'Loading...' : 'eth_signTypedData_v4'}
       </Button>
 

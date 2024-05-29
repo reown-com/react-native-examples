@@ -8,7 +8,7 @@ import {parseEther} from 'viem/utils';
 
 export function SendTransaction() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
-  const {isConnected} = useAccount();
+  const {isConnected, status} = useAccount();
 
   const {data, isPending, isSuccess, isError, sendTransaction} =
     useSendTransaction();
@@ -29,7 +29,9 @@ export function SendTransaction() {
 
   return isConnected ? (
     <View>
-      <Button disabled={isPending} onPress={onPress}>
+      <Button
+        disabled={isPending || status === 'reconnecting'}
+        onPress={onPress}>
         {isPending ? 'Loading...' : 'Send transaction'}
       </Button>
 
