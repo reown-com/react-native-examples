@@ -8,32 +8,20 @@ import {
 } from '@web3modal/wagmi-react-native';
 
 import {coinbaseConnector} from '@web3modal/coinbase-wagmi-react-native';
+import {emailConnector} from '@web3modal/email-wagmi-react-native';
+import {WagmiProvider} from 'wagmi';
+import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 
+import Config from 'react-native-config';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as Sentry from '@sentry/react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import {WagmiProvider} from 'wagmi';
-import {
-  mainnet,
-  polygon,
-  avalanche,
-  bsc,
-  optimism,
-  gnosis,
-  zkSync,
-  zora,
-  base,
-  celo,
-  aurora,
-} from '@wagmi/core/chains';
-import Config from 'react-native-config';
-import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {getCustomWallets} from './utils/misc';
 import {RootStackNavigator} from './navigators/RootStackNavigator';
-
-import {emailConnector} from '@web3modal/email-wagmi-react-native';
+import {siweConfig} from './utils/SiweUtils';
+import {chains} from './utils/WagmiUtils';
 
 if (!__DEV__ && Config.ENV_SENTRY_DSN) {
   Sentry.init({
@@ -62,20 +50,6 @@ const clipboardClient = {
   },
 };
 
-const chains = [
-  mainnet,
-  polygon,
-  avalanche,
-  bsc,
-  optimism,
-  gnosis,
-  zkSync,
-  zora,
-  base,
-  celo,
-  aurora,
-] as const;
-
 const _coinbaseConnector = coinbaseConnector({
   redirect: metadata?.redirect?.native || '',
 });
@@ -98,6 +72,8 @@ const customWallets = getCustomWallets();
 createWeb3Modal({
   projectId,
   wagmiConfig,
+  metadata,
+  siweConfig,
   clipboardClient,
   customWallets,
   enableAnalytics: true,
