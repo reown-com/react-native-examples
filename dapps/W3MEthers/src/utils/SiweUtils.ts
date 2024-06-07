@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import type {
   SIWEVerifyMessageArgs,
   SIWECreateMessageArgs,
@@ -5,7 +7,9 @@ import type {
 import {generateRandomBytes32} from '@walletconnect/utils';
 import {createSIWEConfig, formatMessage} from '@web3modal/siwe-react-native';
 import {mainnet, polygon} from './ChainUtils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const LOGGED_IN_KEY = '@w3mwagmi/logged_in';
 const chains = [mainnet, polygon];
 
 export const siweConfig = createSIWEConfig({
@@ -30,25 +34,39 @@ export const siweConfig = createSIWEConfig({
     return nonce;
   },
   getSession: async () => {
-    // This should point to your SIWE backend
+    // The backend session should store the associated address and chainId
+    // and return it via the `getSession` method.
 
-    return Promise.resolve({
-      address: '0x',
-      chainId: 1,
-    });
+    const logged = await AsyncStorage.getItem(LOGGED_IN_KEY);
+    if (logged === 'true') {
+      return {
+        address: '0x',
+        chainId: 1,
+      };
+    }
+    return null;
   },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  verifyMessage: async ({message, signature, cacao}: SIWEVerifyMessageArgs) => {
-    // This should point to your SIWE backend
+
+  verifyMessage: async ({
+    message,
+    signature,
+    cacao,
+  }: SIWEVerifyMessageArgs): Promise<boolean> => {
+    // This function ensures the message is valid,
+    // has not been tampered with, and has been appropriately
+    // signed by the wallet address.
+
+    // Call your sign-in backend function here and save the session
+    // api.signIn({ message, signature, cacao });
+
+    await AsyncStorage.setItem(LOGGED_IN_KEY, 'true');
 
     return true;
   },
-  signOut: async () => {
-    // This should point to your SIWE backend
-    try {
-      return await Promise.resolve(true);
-    } catch (error) {
-      return false;
-    }
+  signOut: async (): Promise<boolean> => {
+    // The users session must be destroyed when calling `signOut`.
+    await AsyncStorage.removeItem(LOGGED_IN_KEY);
+
+    return true;
   },
 });
