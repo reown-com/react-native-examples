@@ -21,11 +21,11 @@ body:
       label: Issue Environment
       description: In which example does the issue reproduces on?
       options:
-        - label: dapps/v2Explorer
+        - label: dapps/W3MEthers
+        - label: dapps/W3MEthers5
+        - label: dapps/W3MWagmi
         - label: wallets/rn_cli_wallet
         - label: wallets/rn_cli_wallet_068_5
-        - label: wallets/expo_wallet
-        - label: wallets/web3wallet_tutorial
         - label: In my own code
           required: true
     validations:
