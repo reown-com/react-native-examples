@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {
   createSIWEConfig,
   formatMessage,
@@ -8,6 +10,8 @@ import {
 } from '@web3modal/siwe-react-native';
 import {generateRandomBytes32} from '@walletconnect/utils';
 import {chains} from './WagmiUtils';
+
+const LOGGED_IN_KEY = '@w3mwagmi/logged_in';
 
 export const siweConfig = createSIWEConfig({
   signOutOnAccountChange: false,
@@ -42,10 +46,14 @@ export const siweConfig = createSIWEConfig({
     // The backend session should store the associated address and chainId
     // and return it via the `getSession` method.
 
-    return Promise.resolve({
-      address: '0x',
-      chainId: 1,
-    });
+    const logged = await AsyncStorage.getItem(LOGGED_IN_KEY);
+    if (logged === 'true') {
+      return {
+        address: '0x',
+        chainId: 1,
+      };
+    }
+    return null;
   },
 
   verifyMessage: async ({
@@ -57,15 +65,17 @@ export const siweConfig = createSIWEConfig({
     // has not been tampered with, and has been appropriately
     // signed by the wallet address.
 
+    // Call your sign-in backend function here and save the session
+    // api.signIn({ message, signature, cacao });
+
+    await AsyncStorage.setItem(LOGGED_IN_KEY, 'true');
+
     return true;
   },
   signOut: async (): Promise<boolean> => {
     // The users session must be destroyed when calling `signOut`.
+    await AsyncStorage.removeItem(LOGGED_IN_KEY);
 
-    try {
-      return Promise.resolve(true);
-    } catch (error) {
-      return false;
-    }
+    return true;
   },
 });
