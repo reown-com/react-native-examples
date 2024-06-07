@@ -1,12 +1,14 @@
-import {ScrollView, StyleSheet, Text} from 'react-native';
+import {ScrollView, StyleProp, StyleSheet, Text, ViewStyle} from 'react-native';
 
 import {useTheme} from '@/hooks/useTheme';
 
 interface IMessageProps {
   message: string;
+  style?: StyleProp<ViewStyle>;
+  showTitle?: boolean;
 }
 
-export function Message({message}: IMessageProps) {
+export function Message({message, style, showTitle = true}: IMessageProps) {
   const Theme = useTheme();
 
   if (!message) {
@@ -16,9 +18,11 @@ export function Message({message}: IMessageProps) {
   return (
     <ScrollView
       bounces={false}
-      style={[styles.container, {backgroundColor: Theme['bg-150']}]}
+      style={[styles.container, {backgroundColor: Theme['bg-150']}, style]}
       contentContainerStyle={styles.content}>
-      <Text style={[styles.title, {color: Theme['fg-150']}]}>Message</Text>
+      {showTitle && (
+        <Text style={[styles.title, {color: Theme['fg-150']}]}>Message</Text>
+      )}
       <Text style={[styles.message, {color: Theme['fg-175']}]}>{message}</Text>
     </ScrollView>
   );
