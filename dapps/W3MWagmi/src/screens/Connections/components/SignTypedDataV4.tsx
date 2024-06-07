@@ -8,19 +8,18 @@ import {eip712} from '@/utils/eip712';
 
 export function SignTypedDataV4() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
-  const {isConnected} = useAccount();
+  const {isConnected, status} = useAccount();
 
-  const {data, isError, isLoading, isSuccess, signTypedData} = useSignTypedData(
-    {
+  const {data, isError, isPending, isSuccess, signTypedData} =
+    useSignTypedData();
+
+  const onPress = () => {
+    signTypedData({
       domain: eip712.domain,
       message: eip712.message,
       primaryType: 'Mail',
       types: eip712.types,
-    },
-  );
-
-  const onPress = () => {
-    signTypedData();
+    });
   };
 
   useEffect(() => {
@@ -31,13 +30,15 @@ export function SignTypedDataV4() {
 
   return isConnected ? (
     <View>
-      <Button disabled={isLoading} onPress={onPress}>
-        {isLoading ? 'Loading...' : 'eth_signTypedData_v4'}
+      <Button
+        disabled={isPending || status === 'reconnecting'}
+        onPress={onPress}>
+        {isPending ? 'Loading...' : 'eth_signTypedData_v4'}
       </Button>
 
       <RequestModal
         isVisible={requestModalVisible}
-        isLoading={isLoading}
+        isLoading={isPending}
         rpcResponse={isSuccess ? data : undefined}
         rpcError={isError ? 'Error signing message' : undefined}
         onClose={() => setRequetsModalVisible(false)}

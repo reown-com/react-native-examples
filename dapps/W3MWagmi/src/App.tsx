@@ -7,15 +7,15 @@ import {
   Web3Modal,
 } from '@web3modal/wagmi-react-native';
 
-import {CoinbaseConnector} from '@web3modal/coinbase-wagmi-react-native';
+import {coinbaseConnector} from '@web3modal/coinbase-wagmi-react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as Sentry from '@sentry/react-native';
 import {NavigationContainer} from '@react-navigation/native';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import {WagmiConfig} from 'wagmi';
+import {WagmiProvider} from 'wagmi';
 import {
-  arbitrum,
   mainnet,
   polygon,
   avalanche,
@@ -27,12 +27,13 @@ import {
   base,
   celo,
   aurora,
-} from 'wagmi/chains';
+} from '@wagmi/core/chains';
 import Config from 'react-native-config';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {getCustomWallets} from './utils/misc';
 import {RootStackNavigator} from './navigators/RootStackNavigator';
-import {EmailConnector} from '@web3modal/email-wagmi-react-native';
+
+import {emailConnector} from '@web3modal/email-wagmi-react-native';
 
 if (!__DEV__ && Config.ENV_SENTRY_DSN) {
   Sentry.init({
@@ -64,7 +65,6 @@ const clipboardClient = {
 const chains = [
   mainnet,
   polygon,
-  arbitrum,
   avalanche,
   bsc,
   optimism,
@@ -74,25 +74,22 @@ const chains = [
   base,
   celo,
   aurora,
-];
+] as const;
 
-const coinbaseConnector = new CoinbaseConnector({
-  chains,
-  options: {
-    redirect: metadata?.redirect?.native || '',
-  },
+const _coinbaseConnector = coinbaseConnector({
+  redirect: metadata?.redirect?.native || '',
 });
 
-const emailConnector = new EmailConnector({
-  chains,
-  options: {projectId, metadata},
+const _emailConnector = emailConnector({
+  projectId,
+  metadata,
 });
 
 const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
-  extraConnectors: [coinbaseConnector, emailConnector],
+  extraConnectors: [_coinbaseConnector, _emailConnector],
 });
 
 const customWallets = getCustomWallets();
@@ -100,12 +97,13 @@ const customWallets = getCustomWallets();
 // 3. Create modal
 createWeb3Modal({
   projectId,
-  chains,
   wagmiConfig,
   clipboardClient,
   customWallets,
   enableAnalytics: true,
 });
+
+const queryClient = new QueryClient();
 
 function App(): JSX.Element {
   // 4. Handle deeplinks for Coinbase SDK
@@ -122,10 +120,12 @@ function App(): JSX.Element {
 
   return (
     <NavigationContainer>
-      <WagmiConfig config={wagmiConfig}>
-        <RootStackNavigator />
-        <Web3Modal />
-      </WagmiConfig>
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <RootStackNavigator />
+          <Web3Modal />
+        </QueryClientProvider>
+      </WagmiProvider>
     </NavigationContainer>
   );
 }

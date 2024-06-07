@@ -1,19 +1,21 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
 import {Button} from '@web3modal/ui-react-native';
-import {useAccount, useContractRead} from 'wagmi';
+import {useAccount, useReadContract} from 'wagmi';
 import {RequestModal} from '@/components/RequestModal';
 import wagmigotchiABI from '@/utils/wagmigotchiABI';
 
 export function ReadContract() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
-  const {isConnected} = useAccount();
+  const {isConnected, status} = useAccount();
 
-  const {data, isError, isLoading, isSuccess} = useContractRead({
+  const {data, isError, isLoading, isSuccess} = useReadContract({
     address: '0xecb504d39723b0be0e3a9aa33d646642d1051ee1',
     abi: wagmigotchiABI,
     functionName: 'getHunger',
-    enabled: requestModalVisible,
+    query: {
+      enabled: requestModalVisible,
+    },
   });
 
   const onPress = () => {
@@ -22,7 +24,7 @@ export function ReadContract() {
 
   return isConnected ? (
     <View>
-      <Button disabled={isLoading} onPress={onPress}>
+      <Button disabled={status === 'reconnecting'} onPress={onPress}>
         Read contract
       </Button>
 

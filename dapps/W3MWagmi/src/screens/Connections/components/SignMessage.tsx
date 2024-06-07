@@ -7,14 +7,14 @@ import {RequestModal} from '@/components/RequestModal';
 
 export function SignMessage() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
-  const {isConnected} = useAccount();
+  const {isConnected, status} = useAccount();
 
-  const {data, isError, isLoading, isSuccess, signMessage} = useSignMessage({
-    message: 'hello web3modal + wagmi',
-  });
+  const {data, isError, isPending, isSuccess, signMessage} = useSignMessage();
 
   const onPress = () => {
-    signMessage();
+    signMessage({
+      message: 'hello web3modal + wagmi',
+    });
   };
 
   useEffect(() => {
@@ -25,13 +25,15 @@ export function SignMessage() {
 
   return isConnected ? (
     <View>
-      <Button disabled={isLoading} onPress={onPress}>
-        {isLoading ? 'Loading...' : 'Sign message'}
+      <Button
+        disabled={isPending || status === 'reconnecting'}
+        onPress={onPress}>
+        {isPending ? 'Loading...' : 'Sign message'}
       </Button>
 
       <RequestModal
         isVisible={requestModalVisible}
-        isLoading={isLoading}
+        isLoading={isPending}
         rpcResponse={isSuccess ? data : undefined}
         rpcError={isError ? 'Error signing message' : undefined}
         onClose={() => setRequetsModalVisible(false)}
