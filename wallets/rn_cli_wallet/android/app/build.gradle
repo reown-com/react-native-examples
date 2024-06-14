@@ -144,9 +144,6 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation("com.facebook.react:flipper-integration")
 
-    // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:32.7.1')
-
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
