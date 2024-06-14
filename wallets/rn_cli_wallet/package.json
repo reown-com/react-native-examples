@@ -31,7 +31,7 @@
     "@react-navigation/stack": "6.3.29",
     "@sentry/react-native": "5.17.0",
     "@walletconnect/react-native-compat": "2.13.1",
-    "@walletconnect/web3wallet": "1.12.1",
+    "@walletconnect/web3wallet": "1.12.3",
     "dayjs": "1.11.10",
     "ethers": "5.7.2",
     "patch-package": "8.0.0",
@@ -76,7 +76,8 @@
     "typescript": "5.0.4"
   },
   "resolutions": {
-    "@walletconnect/utils": "2.13.1"
+    "@walletconnect/utils": "2.13.1",
+    "@walletconnect/core": "2.13.1"
   },
   "engines": {
     "node": ">=18"
