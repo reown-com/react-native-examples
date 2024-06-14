@@ -42,6 +42,8 @@ export default function SessionAuthenticateModal() {
   const [supportedMethods] = useState<string[]>(
     Object.values(EIP155_SIGNING_METHODS),
   );
+
+  // TODO: Add checkbox to change strategy
   const [signStrategy, setSignStrategy] = useState<'one' | 'all'>('one');
 
   const address = eip155Addresses[account];
@@ -70,7 +72,7 @@ export default function SessionAuthenticateModal() {
           );
           signedAuths.push(signedCacao);
         });
-        await web3wallet.engine.signClient.approveSessionAuthenticate({
+        await web3wallet.approveSessionAuthenticate({
           id: messages[0].id,
           auths: signedAuths,
         });
@@ -95,7 +97,7 @@ export default function SessionAuthenticateModal() {
     if (authRequest) {
       try {
         setIsLoadingReject(true);
-        await web3wallet.engine.signClient.rejectSessionAuthenticate({
+        await web3wallet.rejectSessionAuthenticate({
           id: authRequest.id,
           reason: getSdkError('USER_REJECTED'),
         });
@@ -118,7 +120,6 @@ export default function SessionAuthenticateModal() {
       const iss = `${authPayload.chains[0]}:${address}`;
 
       if (signStrategy === 'one') {
-        // Now you can use the authPayload to format the authentication message
         const message = web3wallet.formatAuthMessage({
           request: authPayload,
           iss,
