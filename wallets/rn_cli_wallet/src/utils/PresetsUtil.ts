@@ -21,7 +21,7 @@ import Aurora from '@/assets/chains/aurora.webp';
 import {ImageSourcePropType} from 'react-native';
 
 // Helpers
-export const EIP155Chains: Record<string, Chain> = {
+export const EIP155_CHAINS: Record<string, Chain> = {
   '1': {
     id: 1,
     network: 'homestead',
@@ -254,6 +254,6 @@ export const PresetsUtil = {
     return logo;
   },
   getChainData: (chainId: string | number) => {
-    return EIP155Chains[String(chainId)];
+    return EIP155_CHAINS[String(chainId)];
   },
 };

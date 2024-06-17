@@ -6,8 +6,6 @@ import SvgSettingsTab from '@/assets/SettingsTab';
 import {HomeTabParamList} from '@/utils/TypesUtil';
 import SettingsStack from '@/navigators/SettingsStack';
 import ConnectionsStack from '@/navigators/ConnectionsStack';
-// import SubscriptionsStack from '@/navigators/SubscriptionsStack';
-// import SvgInboxTab from '@/assets/InboxTab';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
@@ -18,10 +16,6 @@ const SettingsIcon = ({color}: {color: string}) => (
 const ConnectionsIcon = ({color}: {color: string}) => (
   <SvgConnectionsTab height={24} width={24} fill={color} />
 );
-
-// const InboxIcon = ({color}: {color: string}) => (
-//   <SvgInboxTab height={24} width={24} fill={color} />
-// );
 
 export function HomeTabNavigator() {
   const Theme = useTheme();
@@ -55,14 +49,6 @@ export function HomeTabNavigator() {
           },
         }}
       />
-      {/* <TabNav.Screen
-        name="SubscriptionsStack"
-        component={SubscriptionsStack}
-        options={{
-          tabBarLabel: 'Inbox',
-          tabBarIcon: InboxIcon,
-        }}
-      /> */}
       <TabNav.Screen
         name="SettingsStack"
         component={SettingsStack}
