@@ -21,27 +21,13 @@ import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
 import {WriteContract} from './views/WriteContract';
 import {SignTypedDataV4} from './views/SignTypedDataV4';
+import {mainnet, polygon} from './utils/ChainUtils';
+import {siweConfig} from './utils/SiweUtils';
 
 // 1. Get projectId at https://cloud.walletconnect.com
 const projectId = ENV_PROJECT_ID;
 
 // 2. Define your chains
-const mainnet = {
-  chainId: 1,
-  name: 'Ethereum',
-  currency: 'ETH',
-  explorerUrl: 'https://etherscan.io',
-  rpcUrl: 'https://cloudflare-eth.com',
-};
-
-const polygon = {
-  chainId: 137,
-  name: 'Polygon',
-  currency: 'MATIC',
-  explorerUrl: 'https://polygonscan.com',
-  rpcUrl: 'https://polygon-rpc.com',
-};
-
 const chains = [mainnet, polygon];
 
 // 3. Create config
@@ -88,6 +74,7 @@ createWeb3Modal({
   projectId,
   chains,
   config,
+  siweConfig,
   customWallets,
   clipboardClient,
   enableAnalytics: true,

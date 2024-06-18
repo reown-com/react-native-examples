@@ -14,7 +14,7 @@ import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
 import {useTheme} from '@/hooks/useTheme';
 import {Chains} from '@/components/Modal/Chains';
 import {
-  EIP155Chains,
+  EIP155_CHAINS,
   EIP155_SIGNING_METHODS,
   PresetsUtil,
 } from '@/utils/PresetsUtil';
@@ -38,7 +38,7 @@ export default function SessionProposalModal() {
 
   const supportedNamespaces = useMemo(() => {
     // eip155
-    const eip155Chains = Object.keys(EIP155Chains).map(
+    const eip155Chains = Object.keys(EIP155_CHAINS).map(
       chain => `eip155:${chain}`,
     );
 

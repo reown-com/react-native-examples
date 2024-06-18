@@ -12,6 +12,7 @@ import {
   Web3Modal,
 } from '@web3modal/ethers5-react-native';
 import {FlexView, Text} from '@web3modal/ui-react-native';
+import {EmailProvider} from '@web3modal/email-ethers-react-native';
 import {ENV_PROJECT_ID} from '@env';
 
 import {SignMessage} from './views/SignMessage';
@@ -19,7 +20,7 @@ import {SendTransaction} from './views/SendTransaction';
 import {ReadContract} from './views/ReadContract';
 import {WriteContract} from './views/WriteContract';
 import {SignTypedDataV4} from './views/SignTypedDataV4';
-import {EmailProvider} from '@web3modal/email-ethers-react-native';
+import {siweConfig} from './utils/SiweUtils';
 
 // 1. Get projectId at https://cloud.walletconnect.com
 const projectId = ENV_PROJECT_ID;
@@ -82,6 +83,7 @@ createWeb3Modal({
   projectId,
   chains,
   config,
+  siweConfig,
   customWallets,
   clipboardClient,
   enableAnalytics: true,

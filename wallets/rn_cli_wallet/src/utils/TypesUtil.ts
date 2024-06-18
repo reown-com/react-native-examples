@@ -68,18 +68,11 @@ export type RootStackParamList = {
 
 export type HomeTabParamList = {
   ConnectionsStack: NavigatorScreenParams<ConnectionsStackParamList>;
-  SubscriptionsStack: NavigatorScreenParams<SubscriptionsStackParamList>;
   SettingsStack: NavigatorScreenParams<SettingsStackParamList>;
 };
 
 export type ConnectionsStackParamList = {
   Connections?: {uri: string};
-};
-
-export type SubscriptionsStackParamList = {
-  SubscriptionsScreen?: {topic: string};
-  SubscriptionDetail: {topic: string; name: string};
-  SubscriptionSettings: {topic: string; name: string};
 };
 
 export type SettingsStackParamList = {
@@ -100,13 +93,6 @@ export type ConnectionsStackScreenProps<
   T extends keyof ConnectionsStackParamList,
 > = CompositeScreenProps<
   StackScreenProps<ConnectionsStackParamList, T>,
-  HomeTabScreenProps<keyof HomeTabParamList>
->;
-
-export type SubscriptionsStackScreenProps<
-  T extends keyof SubscriptionsStackParamList,
-> = CompositeScreenProps<
-  StackScreenProps<SubscriptionsStackParamList, T>,
   HomeTabScreenProps<keyof HomeTabParamList>
 >;
 
