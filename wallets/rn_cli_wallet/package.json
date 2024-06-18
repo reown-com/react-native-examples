@@ -7,6 +7,7 @@
     "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
     "android:build:internal": "cd android && ./gradlew clean && ./gradlew assembleInternal",
     "ios": "react-native run-ios --scheme 'RNWallet-Debug'",
+    "ios:internal": "react-native run-ios --scheme 'RNWallet-Internal'",
     "bundle:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "start": "react-native start",
     "test": "jest",
