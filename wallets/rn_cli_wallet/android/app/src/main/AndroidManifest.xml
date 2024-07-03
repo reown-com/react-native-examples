@@ -35,9 +35,11 @@
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
         </intent-filter>
-        <intent-filter>
-          <data android:scheme="https" android:host="lab.web3modal.com" android:pathPrefix="/walletkit_rn" />
-          <data android:scheme="https" android:host="dev.lab.web3modal.com" android:pathPrefix="/walletkit_rn" />
+        <intent-filter android:autoVerify="true">
+          <data android:scheme="https"/>
+          <data android:host="lab.web3modal.com"/>
+          <data android:host="dev.lab.web3modal.com"/>
+          <data android:pathPrefix="/walletkit_rn"/>
           <action android:name="android.intent.action.VIEW" />
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
