@@ -32,7 +32,6 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
 
   const onSessionRequest = useCallback(
     async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-      console.log('session_request', requestEvent);
       const {topic, params, verifyContext} = requestEvent;
       const {request} = params;
       const requestSession = web3wallet.engine.signClient.session.get(topic);

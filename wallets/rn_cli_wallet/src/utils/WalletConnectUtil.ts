@@ -19,6 +19,8 @@ export async function createWeb3Wallet(relayerRegionURL: string) {
       icons: ['https://avatars.githubusercontent.com/u/37784886'],
       redirect: {
         native: 'rn-web3wallet://',
+        universal: 'https://dev.lab.web3modal.com/walletkit_rn',
+        linkMode: true,
       },
     },
   });
@@ -40,7 +42,6 @@ export async function updateSignClientChainId(
   chainId: string,
   address: string,
 ) {
-  console.log('chainId', chainId, address);
   // get most recent session
   const sessions = web3wallet.getActiveSessions();
   if (!sessions) {

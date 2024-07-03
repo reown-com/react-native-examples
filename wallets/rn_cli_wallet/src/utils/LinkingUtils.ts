@@ -3,8 +3,13 @@ import {Linking} from 'react-native';
 export const handleDeepLinkRedirect = (redirect?: {
   native?: string;
   universal?: string;
+  linkMode?: boolean;
 }) => {
   try {
+    if (redirect?.linkMode) {
+      return;
+    }
+
     if (redirect?.native) {
       Linking.openURL(redirect.native).catch(() => {
         // Fallback to universal link
