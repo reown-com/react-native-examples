@@ -9,12 +9,14 @@ interface ModalHeaderProps {
   metadata?: SignClientTypes.Metadata;
   intention?: string;
   verifyContext?: Verify.Context;
+  isLinkMode?: boolean;
 }
 
 export function ModalHeader({
   metadata,
   intention,
   verifyContext,
+  isLinkMode,
 }: ModalHeaderProps) {
   const Theme = useTheme();
   const color = Theme['fg-100'];
@@ -23,6 +25,19 @@ export function ModalHeader({
 
   return (
     <View style={styles.container}>
+      {isLinkMode && (
+        <View
+          style={[
+            styles.linkModeContainer,
+            {
+              backgroundColor: Theme['success-100'],
+            },
+          ]}>
+          <Text style={[styles.linkMode, {color: Theme['inverse-000']}]}>
+            LINK MODE
+          </Text>
+        </View>
+      )}
       <Image
         source={{uri: metadata?.icons[0] ?? ''}}
         style={[styles.logo, {borderColor: Theme['gray-glass-010']}]}
@@ -80,5 +95,18 @@ const styles = StyleSheet.create({
   },
   tag: {
     marginTop: 4,
+  },
+  linkModeContainer: {
+    borderRadius: 20,
+    height: 25,
+    width: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 12,
+  },
+  linkMode: {
+    fontSize: 12,
+    fontWeight: '500',
   },
 });

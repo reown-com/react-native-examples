@@ -38,6 +38,7 @@
     "react-native-screens": "~3.29.0",
     "react-native-svg": "14.1.0",
     "react-native-webview": "13.8.2",
+    "valtio": "1.10.5",
     "viem": "2.16.3",
     "wagmi": "2.10.7"
   },

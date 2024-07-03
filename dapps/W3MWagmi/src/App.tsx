@@ -18,10 +18,11 @@ import * as Sentry from '@sentry/react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import {getCustomWallets} from './utils/misc';
-import {RootStackNavigator} from './navigators/RootStackNavigator';
-import {siweConfig} from './utils/SiweUtils';
-import {chains} from './utils/WagmiUtils';
+import {getCustomWallets} from '@/utils/misc';
+import {RootStackNavigator} from '@/navigators/RootStackNavigator';
+import {siweConfig} from '@/utils/SiweUtils';
+import {chains} from '@/utils/WagmiUtils';
+import SettingsStore from '@/stores/SettingsStore';
 
 if (!__DEV__ && Config.ENV_SENTRY_DSN) {
   Sentry.init({
@@ -90,6 +91,7 @@ function App(): JSX.Element {
       const handledBySdk = handleResponse(new URL(url));
       if (!handledBySdk) {
         // Handle other deeplinks
+        SettingsStore.setCurrentRequestLinkMode(url.includes('wc_ev'));
       }
     });
 

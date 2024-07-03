@@ -28,7 +28,9 @@ export function RequestModal({
   intention,
 }: RequestModalProps) {
   const Theme = useTheme();
-  const {currentRequestVerifyContext} = useSnapshot(SettingsStore.state);
+  const {currentRequestVerifyContext, isCurrentRequestLinkMode} = useSnapshot(
+    SettingsStore.state,
+  );
 
   return (
     <View style={[styles.container, {backgroundColor: Theme['bg-125']}]}>
@@ -36,6 +38,7 @@ export function RequestModal({
         metadata={metadata}
         intention={intention}
         verifyContext={currentRequestVerifyContext}
+        isLinkMode={isCurrentRequestLinkMode}
       />
       {children}
       <ModalFooter

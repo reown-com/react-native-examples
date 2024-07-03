@@ -13,6 +13,7 @@ module.exports = {
           '@/screens': './src/screens',
           '@/types': './src/types',
           '@/utils': './src/utils',
+          '@/stores': './src/stores',
         },
       },
     ],

@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import Config from 'react-native-config';
-import {StatusBar, useColorScheme} from 'react-native';
+import {Linking, StatusBar, useColorScheme} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
@@ -48,6 +48,14 @@ const App = () => {
      * Usefull for cold starts
      */
     SettingsStore.setInitPromise();
+  }, []);
+
+  useEffect(() => {
+    const sub = Linking.addEventListener('url', ({url}) => {
+      SettingsStore.setCurrentRequestLinkMode(url.includes('wc_ev'));
+    });
+
+    return () => sub.remove();
   }, []);
 
   return (
