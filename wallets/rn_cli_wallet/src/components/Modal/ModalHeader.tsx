@@ -30,10 +30,10 @@ export function ModalHeader({
           style={[
             styles.linkModeContainer,
             {
-              backgroundColor: Theme['success-100'],
+              backgroundColor: Theme['accent-100'],
             },
           ]}>
-          <Text style={[styles.linkMode, {color: Theme['inverse-000']}]}>
+          <Text style={[styles.linkMode, {color: Theme['inverse-100']}]}>
             LINK MODE
           </Text>
         </View>

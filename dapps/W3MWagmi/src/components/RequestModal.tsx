@@ -34,8 +34,6 @@ export function RequestModal({
     onClose();
   };
 
-  const isSuccess = !!rpcResponse && !rpcError;
-
   return (
     <Modal isVisible={isVisible} onBackdropPress={handleClose}>
       <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
@@ -78,12 +76,10 @@ export function RequestModal({
             style={[
               styles.linkModeContainer,
               {
-                backgroundColor: isSuccess
-                  ? Theme['success-100']
-                  : Theme['error-100'],
+                backgroundColor: Theme['accent-100'],
               },
             ]}>
-            <Text style={[styles.linkMode, {color: Theme['inverse-000']}]}>
+            <Text style={[styles.linkMode, {color: Theme['inverse-100']}]}>
               LINK MODE
             </Text>
           </View>
