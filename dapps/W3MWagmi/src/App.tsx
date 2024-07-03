@@ -98,6 +98,18 @@ function App(): JSX.Element {
     return () => sub.remove();
   }, []);
 
+  useEffect(() => {
+    // Check if app was opened from a link-mode response
+    async function checkInitialUrl() {
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        SettingsStore.setCurrentRequestLinkMode(initialUrl.includes('wc_ev'));
+      }
+    }
+
+    checkInitialUrl();
+  }, []);
+
   return (
     <NavigationContainer>
       <WagmiProvider config={wagmiConfig}>

@@ -172,6 +172,6 @@ const styles = StyleSheet.create({
     rowGap: 8,
   },
   messageContainer: {
-    maxHeight: 400,
+    maxHeight: 250,
   },
 });

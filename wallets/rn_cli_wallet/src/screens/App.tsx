@@ -50,11 +50,20 @@ const App = () => {
     SettingsStore.setInitPromise();
   }, []);
 
+  // Check if app was opened from a link-mode request
   useEffect(() => {
+    async function checkInitialUrl() {
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        SettingsStore.setCurrentRequestLinkMode(initialUrl.includes('wc_ev'));
+      }
+    }
+
     const sub = Linking.addEventListener('url', ({url}) => {
       SettingsStore.setCurrentRequestLinkMode(url.includes('wc_ev'));
     });
 
+    checkInitialUrl();
     return () => sub.remove();
   }, []);
 
