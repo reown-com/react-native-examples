@@ -7,7 +7,6 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:lab.web3modal.com</string>
-		<string>applinks:dev.lab.web3modal.com</string>
 	</array>
 </dict>
 </plist>
