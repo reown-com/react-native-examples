@@ -22,6 +22,7 @@ interface State {
     reject: (reason?: unknown) => void;
   };
   isCurrentRequestLinkMode?: boolean;
+  socketStatus: 'connected' | 'disconnected' | 'stalled' | 'unknown';
 }
 
 /**
@@ -36,6 +37,7 @@ const state = proxy<State>({
   sessions: [],
   wallet: null,
   isCurrentRequestLinkMode: false,
+  socketStatus: 'unknown',
 });
 
 /**
@@ -76,6 +78,10 @@ const SettingsStore = {
 
   setCurrentRequestLinkMode(value: boolean) {
     state.isCurrentRequestLinkMode = value;
+  },
+
+  setSocketStatus(value: State['socketStatus']) {
+    state.socketStatus = value;
   },
 
   toggleTestNets() {

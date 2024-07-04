@@ -4,6 +4,7 @@ import {Linking, StatusBar, useColorScheme} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
+import Toast from 'react-native-toast-message';
 import {RELAYER_EVENTS} from '@walletconnect/core';
 
 import {RootStackNavigator} from '@/navigators/RootStackNavigator';
@@ -33,11 +34,25 @@ const App = () => {
       BootSplash.hide({fade: true});
 
       web3wallet.core.relayer.on(RELAYER_EVENTS.connect, () => {
-        console.log('Network connection is restored!');
+        Toast.show({
+          type: 'success',
+          text1: 'Network connection is restored!',
+        });
+        SettingsStore.setSocketStatus('connected');
       });
-
       web3wallet.core.relayer.on(RELAYER_EVENTS.disconnect, () => {
-        console.log('Network connection lost.');
+        Toast.show({
+          type: 'error',
+          text1: 'Network connection lost.',
+        });
+        SettingsStore.setSocketStatus('disconnected');
+      });
+      web3wallet.core.relayer.on(RELAYER_EVENTS.connection_stalled, () => {
+        Toast.show({
+          type: 'error',
+          text1: 'Network connection stalled.',
+        });
+        SettingsStore.setSocketStatus('stalled');
       });
     }
   }, [initialized]);
@@ -73,6 +88,7 @@ const App = () => {
         barStyle={scheme === 'light' ? 'dark-content' : 'light-content'}
       />
       <RootStackNavigator />
+      <Toast />
     </NavigationContainer>
   );
 };

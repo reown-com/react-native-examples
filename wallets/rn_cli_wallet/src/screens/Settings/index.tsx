@@ -12,7 +12,7 @@ import {useTheme} from '@/hooks/useTheme';
 import styles from './styles';
 export default function Settings() {
   const Theme = useTheme();
-  const {eip155Address} = useSnapshot(SettingsStore.state);
+  const {eip155Address, socketStatus} = useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
 
   useEffect(() => {
@@ -61,6 +61,7 @@ export default function Settings() {
           title="App version"
           value={`${getVersion()} (${getBuildNumber()})`}
         />
+        <Card title="Socket status" value={socketStatus} />
       </View>
     </ScrollView>
   );

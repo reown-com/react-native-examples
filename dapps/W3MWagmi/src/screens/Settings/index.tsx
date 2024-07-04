@@ -4,7 +4,9 @@ import {useAccount} from 'wagmi';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {getVersion, getBuildNumber} from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSnapshot} from 'valtio';
 
+import SettingsStore from '@/stores/SettingsStore';
 import {Card} from '@/components/Card';
 import {useTheme} from '@/hooks/useTheme';
 import styles from './styles';
@@ -13,6 +15,7 @@ function SettingsScreen() {
   const Theme = useTheme();
   const {connector} = useAccount();
   const [clientId, setClientId] = useState('');
+  const {socketStatus} = useSnapshot(SettingsStore.state);
 
   useEffect(() => {
     async function getAsyncData() {
@@ -57,6 +60,7 @@ function SettingsScreen() {
             copyToClipboard(`${getVersion()} (${getBuildNumber()})`)
           }
         />
+        <Card title="Socket status" value={socketStatus} />
       </View>
     </ScrollView>
   );

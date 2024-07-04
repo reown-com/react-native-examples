@@ -5,6 +5,7 @@ import {proxy} from 'valtio';
  */
 interface State {
   isCurrentRequestLinkMode?: boolean;
+  socketStatus: 'connected' | 'disconnected' | 'stalled' | 'unknown';
 }
 
 /**
@@ -12,6 +13,7 @@ interface State {
  */
 const state = proxy<State>({
   isCurrentRequestLinkMode: false,
+  socketStatus: 'unknown',
 });
 
 /**
@@ -20,8 +22,12 @@ const state = proxy<State>({
 const SettingsStore = {
   state,
 
-  setCurrentRequestLinkMode(value: boolean) {
+  setCurrentRequestLinkMode(value: State['isCurrentRequestLinkMode']) {
     state.isCurrentRequestLinkMode = value;
+  },
+
+  setSocketStatus(value: State['socketStatus']) {
+    state.socketStatus = value;
   },
 };
 

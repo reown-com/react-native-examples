@@ -3105,10 +3105,10 @@
     events "^3.3.0"
     isomorphic-unfetch "^3.1.0"
 
-"@walletconnect/core@2.13.3-canary-c1f48b78a":
-  version "2.13.3-canary-c1f48b78a"
-  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.13.3-canary-c1f48b78a.tgz#58913ecb2db550cb2aacccf8c0a3d2002b715d9d"
-  integrity sha512-rqjA0mxukqfqp9ZV63brN4t0dumCT0bdac+ReaGMHNxXEd84YlQPTFlZTcmihVthByVZZ+i728+woh+YyYgObw==
+"@walletconnect/core@2.13.3-canary-19083bdd":
+  version "2.13.3-canary-19083bdd"
+  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.13.3-canary-19083bdd.tgz#7ad6eb10037ea408f2ce255445223b15076320fc"
+  integrity sha512-P1/E3eJ3+ytZDDK5JqYevcqAfNK9YD18/6uVqrTX29MTgg0fSEO9Jcv8C8oYh6NYYSbkUzrq7eLrxa/pu5NMjg==
   dependencies:
     "@walletconnect/heartbeat" "1.2.2"
     "@walletconnect/jsonrpc-provider" "1.0.14"
@@ -3121,8 +3121,8 @@
     "@walletconnect/relay-auth" "1.0.4"
     "@walletconnect/safe-json" "1.0.2"
     "@walletconnect/time" "1.0.2"
-    "@walletconnect/types" "2.13.3-canary-c1f48b78a"
-    "@walletconnect/utils" "2.13.3-canary-c1f48b78a"
+    "@walletconnect/types" "2.13.3-canary-19083bdd"
+    "@walletconnect/utils" "2.13.3-canary-19083bdd"
     events "3.3.0"
     isomorphic-unfetch "3.1.0"
     lodash.isequal "4.5.0"
@@ -3253,10 +3253,10 @@
     pino "7.11.0"
     tslib "1.14.1"
 
-"@walletconnect/react-native-compat@2.13.3-canary-c1f48b78a":
-  version "2.13.3-canary-c1f48b78a"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.13.3-canary-c1f48b78a.tgz#7b01b54a4a904c609ba58c9aa018565f8003ecf0"
-  integrity sha512-3p9CxCLXCPe5GErOhGVCJHVhsa+9Vyhjh4VQ/3VfFvkOOjJVfm1J8QgYnTc2AgVsR1hW1FnJVaZb6QIzmjdlAw==
+"@walletconnect/react-native-compat@2.13.3-canary-19083bdd":
+  version "2.13.3-canary-19083bdd"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.13.3-canary-19083bdd.tgz#c2214e646236416b1936c209f51162d3318526a3"
+  integrity sha512-NkezqN30cIftY0G5+lU9MemjVlEYa5W/tX5FTp8nGvdbhKU++kpfn5MDwFKmzFkekvrxCCuHbRDHKUnrNNIc+A==
   dependencies:
     events "3.3.0"
     fast-text-encoding "1.0.6"
@@ -3288,19 +3288,19 @@
   dependencies:
     tslib "1.14.1"
 
-"@walletconnect/sign-client@2.13.3-canary-c1f48b78a":
-  version "2.13.3-canary-c1f48b78a"
-  resolved "https://registry.yarnpkg.com/@walletconnect/sign-client/-/sign-client-2.13.3-canary-c1f48b78a.tgz#a1b7e6ea7d951147dcd0b7d85046f0f77cb56448"
-  integrity sha512-M1mGjGatNBIS1YZ8wOoggKtLVJo/ic9MAGRZiVKbKBDt/Vw0C+QzVnQL/X0/+xZE1hFIHxgQC60hRio6Qw9rgQ==
+"@walletconnect/sign-client@2.13.3-canary-19083bdd":
+  version "2.13.3-canary-19083bdd"
+  resolved "https://registry.yarnpkg.com/@walletconnect/sign-client/-/sign-client-2.13.3-canary-19083bdd.tgz#5cd36887163c80873248e00058474a13c2fc4f78"
+  integrity sha512-+7pE5lZ9QFI+lmXp1/9ni+8Ml5VxuNyC5wjc0AtVfZW01PEmgr6ExB6E8/Mia7Rvlm/C+kLcpKtTXxKo2glstA==
   dependencies:
-    "@walletconnect/core" "2.13.3-canary-c1f48b78a"
+    "@walletconnect/core" "2.13.3-canary-19083bdd"
     "@walletconnect/events" "1.0.1"
     "@walletconnect/heartbeat" "1.2.2"
     "@walletconnect/jsonrpc-utils" "1.0.8"
     "@walletconnect/logger" "2.1.2"
     "@walletconnect/time" "1.0.2"
-    "@walletconnect/types" "2.13.3-canary-c1f48b78a"
-    "@walletconnect/utils" "2.13.3-canary-c1f48b78a"
+    "@walletconnect/types" "2.13.3-canary-19083bdd"
+    "@walletconnect/utils" "2.13.3-canary-19083bdd"
     events "3.3.0"
 
 "@walletconnect/time@1.0.2", "@walletconnect/time@^1.0.2":
@@ -3310,10 +3310,10 @@
   dependencies:
     tslib "1.14.1"
 
-"@walletconnect/types@2.13.1", "@walletconnect/types@2.13.3-canary-c1f48b78a":
-  version "2.13.3-canary-c1f48b78a"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.13.3-canary-c1f48b78a.tgz#053004fb27ea30b8b5dd7499fa500d85bec0e569"
-  integrity sha512-Prvd3KrjN97JqPqQ2MJ0yEqe3zqE7XSPXjdr0EgyXgJ7ZjZVX1P87g1CcCzGl1loZactq07bt050jn8loOWpog==
+"@walletconnect/types@2.13.1", "@walletconnect/types@2.13.3-canary-19083bdd":
+  version "2.13.3-canary-19083bdd"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.13.3-canary-19083bdd.tgz#9e53e12f768893e6f0556839cbcadda15984d734"
+  integrity sha512-Odf9LeqxWHfbJ1TAY29UOO0fiJ3PbWdFwqFjVMmmD4HZZKyFiglHR1ZTSrl8VPdpOjCjFrF9lnSvlzCSURWzBA==
   dependencies:
     "@walletconnect/events" "1.0.1"
     "@walletconnect/heartbeat" "1.2.2"
@@ -3322,10 +3322,10 @@
     "@walletconnect/logger" "2.1.2"
     events "3.3.0"
 
-"@walletconnect/utils@2.13.1", "@walletconnect/utils@2.13.3-canary-c1f48b78a", "@walletconnect/utils@^2.10.1":
-  version "2.13.3-canary-c1f48b78a"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.13.3-canary-c1f48b78a.tgz#1a75b23340ed038b11737be128d504419e5d14a4"
-  integrity sha512-A8V8KFgvUY1+Ymdp3EvOZTAp0JhAnC3oNDbomMcWzYyOMrm1jZYULyYeDcSppOrm41HsrAHj7g0CXOWxspZp6g==
+"@walletconnect/utils@2.13.1", "@walletconnect/utils@2.13.3-canary-19083bdd", "@walletconnect/utils@^2.10.1":
+  version "2.13.3-canary-19083bdd"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.13.3-canary-19083bdd.tgz#520433d6b9321394f69e1dd040e55e8c72a15469"
+  integrity sha512-Sp5OwUasmZ+AnV6QV1lz/jtQ7GzS6EQHWw2oAWttByWAob9xRIxrvHwLRDco/S67J2VzvYoqKQ4oNaNXuf8FJQ==
   dependencies:
     "@stablelib/chacha20poly1305" "1.0.1"
     "@stablelib/hkdf" "1.0.1"
@@ -3335,26 +3335,26 @@
     "@walletconnect/relay-api" "1.0.10"
     "@walletconnect/safe-json" "1.0.2"
     "@walletconnect/time" "1.0.2"
-    "@walletconnect/types" "2.13.3-canary-c1f48b78a"
+    "@walletconnect/types" "2.13.3-canary-19083bdd"
     "@walletconnect/window-getters" "1.0.1"
     "@walletconnect/window-metadata" "1.0.1"
     detect-browser "5.3.0"
     query-string "7.1.3"
     uint8arrays "3.1.0"
 
-"@walletconnect/web3wallet@1.12.3-canary-c1f48b78a":
-  version "1.12.3-canary-c1f48b78a"
-  resolved "https://registry.yarnpkg.com/@walletconnect/web3wallet/-/web3wallet-1.12.3-canary-c1f48b78a.tgz#2675da289c1cd8a9bc02095ae89b6a1b0b7c3e8f"
-  integrity sha512-0RWuM2tSGhzhZ9yaSQAPzo9BbwlAuRJUP4Qq4C/sOvNkykwifj8Rvs6fwD3gdRTB1YnqYyV8sweeq4bdH31jFA==
+"@walletconnect/web3wallet@1.12.3-canary-19083bdd":
+  version "1.12.3-canary-19083bdd"
+  resolved "https://registry.yarnpkg.com/@walletconnect/web3wallet/-/web3wallet-1.12.3-canary-19083bdd.tgz#dc770a557b8e23808693c20cb9da3d15bfffcdab"
+  integrity sha512-+zP8HBe5OeiCezqGf0ssFa/vQOC/pxTsh9+xhVQULqstWYISLWwJbn7paip5DAXSgZ+U0CLOWilXQ8YoY1M3Ug==
   dependencies:
     "@walletconnect/auth-client" "2.1.2"
-    "@walletconnect/core" "2.13.3-canary-c1f48b78a"
+    "@walletconnect/core" "2.13.3-canary-19083bdd"
     "@walletconnect/jsonrpc-provider" "1.0.14"
     "@walletconnect/jsonrpc-utils" "1.0.8"
     "@walletconnect/logger" "2.1.2"
-    "@walletconnect/sign-client" "2.13.3-canary-c1f48b78a"
-    "@walletconnect/types" "2.13.3-canary-c1f48b78a"
-    "@walletconnect/utils" "2.13.3-canary-c1f48b78a"
+    "@walletconnect/sign-client" "2.13.3-canary-19083bdd"
+    "@walletconnect/types" "2.13.3-canary-19083bdd"
+    "@walletconnect/utils" "2.13.3-canary-19083bdd"
 
 "@walletconnect/window-getters@1.0.1", "@walletconnect/window-getters@^1.0.1":
   version "1.0.1"
@@ -8015,6 +8015,11 @@ react-native-svg@15.2.0:
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
+
+react-native-toast-message@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.2.0.tgz#c53a4746b15616858a7d61c4386b92cbe9fbf911"
+  integrity sha512-AFti8VzUk6JvyGAlLm9/BknTNDXrrhqnUk7ak/pM7uCTxDPveAu2ekszU0on6vnUPFnG04H/QfYE2IlETqeaWw==
 
 react-native-url-polyfill@2.0.0:
   version "2.0.0"

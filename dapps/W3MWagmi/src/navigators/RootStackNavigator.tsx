@@ -3,11 +3,13 @@ import {RootStackParamList} from '@/utils/TypesUtil';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {HomeTabNavigator} from '@/navigators/HomeTabNavigagor';
 import {useTheme} from '@/hooks/useTheme';
+import {useSocketStatus} from '@/hooks/useSocketStatus';
 
 const StackNavigator = createNativeStackNavigator<RootStackParamList>();
 
 export function RootStackNavigator() {
   const Theme = useTheme();
+  useSocketStatus();
 
   return (
     <StackNavigator.Navigator
