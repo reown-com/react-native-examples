@@ -33,6 +33,7 @@
     "@sentry/react-native": "5.17.0",
     "@walletconnect/react-native-compat": "2.13.3-canary-19083bdd",
     "@walletconnect/web3wallet": "1.12.3-canary-19083bdd",
+    "@web3modal/ui-react-native": "1.4.1",
     "dayjs": "1.11.10",
     "ethers": "5.7.2",
     "patch-package": "8.0.0",

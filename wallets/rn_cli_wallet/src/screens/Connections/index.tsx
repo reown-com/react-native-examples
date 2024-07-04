@@ -34,26 +34,31 @@ export default function Connections({route}: Props) {
      * Wait for settings web3wallet to be initialized before calling pair
      */
     await SettingsStore.state.initPromise;
-    await web3wallet.pair({uri});
-    setCopyDialogVisible(false);
+
+    try {
+      setCopyDialogVisible(false);
+      await web3wallet.pair({uri});
+    } catch (error: any) {
+      ModalStore.open('LoadingModal', {
+        errorMessage: error?.message || 'There was an error pairing',
+      });
+    }
   }
 
-  const deeplinkCallback = useCallback((event: any) => {
-    const {url} = event;
-    const uri = url.split('wc?uri=')[1];
-
-    if (uri) {
-      pair(decodeURIComponent(uri));
+  const deeplinkCallback = useCallback(({url}: {url: string}) => {
+    if (!url.includes('wc?uri=')) {
+      return;
     }
+
+    const uri = url.split('wc?uri=')[1];
+    pair(decodeURIComponent(uri));
   }, []);
 
   // Handle deep link if app was closed
   useEffect(() => {
-    if (initialUrl && !processing) {
+    if (initialUrl && initialUrl.includes('wc?uri=') && !processing) {
       const uri = initialUrl.split('wc?uri=')[1];
-      if (uri) {
-        pair(decodeURIComponent(uri));
-      }
+      pair(decodeURIComponent(uri));
     }
   }, [initialUrl, processing]);
 

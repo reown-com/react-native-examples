@@ -12,6 +12,7 @@ interface ModalData {
   request?: Web3WalletTypes.AuthRequest;
   authRequest?: SignClientTypes.EventArguments['session_authenticate'];
   loadingMessage?: string;
+  errorMessage?: string;
 }
 
 interface State {

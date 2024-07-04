@@ -14,7 +14,7 @@ export const useInitialURL = () => {
       setTimeout(() => {
         setUrl(initialUrl);
         setProcessing(false);
-      }, 1000);
+      }, 0);
     };
 
     getUrlAsync();

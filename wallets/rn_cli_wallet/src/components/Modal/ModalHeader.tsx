@@ -1,32 +1,34 @@
 import {Image, StyleSheet, Text, View} from 'react-native';
-import {useSnapshot} from 'valtio';
+
 import {SignClientTypes, Verify} from '@walletconnect/types';
 
 import {useTheme} from '@/hooks/useTheme';
 import VerifiedDomain from '@/assets/VerifiedDomain.png';
 import VerifyTag from '@/components/VerifyTag';
-import SettingsStore from '@/store/SettingsStore';
 
 interface ModalHeaderProps {
   metadata?: SignClientTypes.Metadata;
   intention?: string;
   verifyContext?: Verify.Context;
+  showVerifyContext?: boolean;
+  isLinkMode?: boolean;
 }
 
 export function ModalHeader({
   metadata,
   intention,
   verifyContext,
+  showVerifyContext = true,
+  isLinkMode,
 }: ModalHeaderProps) {
   const Theme = useTheme();
-  const {isCurrentRequestLinkMode} = useSnapshot(SettingsStore.state);
   const color = Theme['fg-100'];
   const validation = verifyContext?.verified.validation;
   const isScam = verifyContext?.verified.isScam;
 
   return (
     <View style={styles.container}>
-      {isCurrentRequestLinkMode && (
+      {isLinkMode && (
         <View
           style={[
             styles.linkModeContainer,
@@ -54,7 +56,9 @@ export function ModalHeader({
           {metadata?.url || 'unknown domain'}
         </Text>
       </View>
-      <VerifyTag validation={validation} isScam={isScam} style={styles.tag} />
+      {showVerifyContext && (
+        <VerifyTag validation={validation} isScam={isScam} style={styles.tag} />
+      )}
     </View>
   );
 }
