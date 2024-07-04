@@ -18,8 +18,8 @@ export default function Modal() {
   const onClose = useCallback(() => {
     if (open) {
       ModalStore.close();
+      SettingsStore.setCurrentRequestLinkMode(false);
     }
-    SettingsStore.setCurrentRequestLinkMode(false);
   }, [open]);
 
   const componentView = useMemo(() => {
@@ -45,6 +45,9 @@ export default function Modal() {
     <RNModal
       backdropOpacity={0.6}
       hideModalContentWhileAnimating
+      useNativeDriver
+      statusBarTranslucent
+      propagateSwipe
       onBackdropPress={onClose}
       onModalHide={onClose}
       style={styles.modal}

@@ -52,7 +52,19 @@ export function RequestModal({
             </Text>
           </>
         )}
-
+        {isCurrentRequestLinkMode && (
+          <View
+            style={[
+              styles.linkModeContainer,
+              {
+                backgroundColor: Theme['accent-100'],
+              },
+            ]}>
+            <Text style={[styles.linkMode, {color: Theme['inverse-100']}]}>
+              LINK MODE
+            </Text>
+          </View>
+        )}
         {rpcResponse && (
           <>
             <Text style={[styles.title, {color: Theme['success-100']}]}>
@@ -70,19 +82,6 @@ export function RequestModal({
               Error: <Text style={styles.responseText}>{rpcError}</Text>
             </Text>
           </>
-        )}
-        {isCurrentRequestLinkMode && (
-          <View
-            style={[
-              styles.linkModeContainer,
-              {
-                backgroundColor: Theme['accent-100'],
-              },
-            ]}>
-            <Text style={[styles.linkMode, {color: Theme['inverse-100']}]}>
-              LINK MODE
-            </Text>
-          </View>
         )}
       </View>
     </Modal>
@@ -135,7 +134,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    marginTop: 20,
+    marginBottom: 12,
   },
   linkMode: {
     fontSize: 12,
