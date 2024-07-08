@@ -6,6 +6,7 @@ import {proxy} from 'valtio';
 interface State {
   isCurrentRequestLinkMode?: boolean;
   socketStatus: 'connected' | 'disconnected' | 'stalled' | 'closed' | 'unknown';
+  logs: string[];
 }
 
 /**
@@ -14,6 +15,7 @@ interface State {
 const state = proxy<State>({
   isCurrentRequestLinkMode: false,
   socketStatus: 'unknown',
+  logs: [],
 });
 
 /**
@@ -28,6 +30,10 @@ const SettingsStore = {
 
   setSocketStatus(value: State['socketStatus']) {
     state.socketStatus = value;
+  },
+
+  setLogs(value: State['logs']) {
+    state.logs = value;
   },
 };
 

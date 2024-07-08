@@ -5,12 +5,14 @@ import {HomeTabNavigator} from '@/navigators/HomeTabNavigagor';
 import {useTheme} from '@/hooks/useTheme';
 import {useSocketStatus} from '@/hooks/useSocketStatus';
 import {LogList} from '@/screens/LogList';
+import {useLogs} from '@/hooks/useLogs';
 
 const StackNavigator = createNativeStackNavigator<RootStackParamList>();
 
 export function RootStackNavigator() {
   const Theme = useTheme();
   useSocketStatus();
+  useLogs();
 
   return (
     <StackNavigator.Navigator
