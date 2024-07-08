@@ -149,7 +149,7 @@ export default function SessionAuthenticateModal() {
       rejectLoader={isLoadingReject}>
       <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
       <View style={styles.container}>
-        <Text>{`Messages to sign (${messages.length})`}</Text>
+        <Text>{`Messages to sign (${messages?.length})`}</Text>
         <Message
           showTitle={false}
           message={messages.map(m => `${m.message}\n\n`).toString()}

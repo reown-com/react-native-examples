@@ -25,6 +25,10 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
     case EIP155_SIGNING_METHODS.ETH_SIGN:
       try {
         const message = getSignParamsMessage(request.params);
+
+        if (!message) {
+          throw new Error('Message is empty');
+        }
         const signedMessage = await wallet.signMessage(message);
         return formatJsonRpcResult(id, signedMessage);
       } catch (error: any) {
