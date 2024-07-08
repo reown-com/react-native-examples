@@ -47,6 +47,16 @@ export function useSocketStatus() {
           SettingsStore.setSocketStatus('stalled');
         },
       );
+      provider.signer.client.core.relayer.on(
+        RELAYER_EVENTS.transport_closed,
+        () => {
+          Toast.show({
+            type: 'info',
+            text1: 'Network connection closed.',
+          });
+          SettingsStore.setSocketStatus('closed');
+        },
+      );
     }
   }, [provider]);
 

@@ -13,7 +13,7 @@ export function SignMessage() {
 
   const onPress = () => {
     signMessage({
-      message: 'hello web3modal + wagmi',
+      message: 'hello appkit + wagmi',
     });
   };
 

@@ -67,6 +67,7 @@ declare global {
 
 export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeTabParamList>; // Nested Navigator
+  Logs: undefined;
 };
 
 export type HomeTabParamList = {

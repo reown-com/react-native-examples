@@ -5,7 +5,7 @@ import {proxy} from 'valtio';
  */
 interface State {
   isCurrentRequestLinkMode?: boolean;
-  socketStatus: 'connected' | 'disconnected' | 'stalled' | 'unknown';
+  socketStatus: 'connected' | 'disconnected' | 'stalled' | 'closed' | 'unknown';
 }
 
 /**
