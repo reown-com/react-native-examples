@@ -31,8 +31,8 @@
     "@react-navigation/native-stack": "6.9.26",
     "@react-navigation/stack": "6.3.29",
     "@sentry/react-native": "5.17.0",
-    "@walletconnect/react-native-compat": "2.13.3-canary-19083bdd",
-    "@walletconnect/web3wallet": "1.12.3-canary-19083bdd",
+    "@walletconnect/react-native-compat": "2.13.3-link-mode-0",
+    "@walletconnect/web3wallet": "1.12.3-link-mode-0",
     "@web3modal/ui-react-native": "1.4.1",
     "dayjs": "1.11.10",
     "ethers": "5.7.2",
@@ -79,8 +79,8 @@
     "typescript": "5.0.4"
   },
   "resolutions": {
-    "@walletconnect/utils": "2.13.3-canary-19083bdd",
-    "@walletconnect/types": "2.13.3-canary-19083bdd"
+    "@walletconnect/utils": "2.13.3-link-mode-0",
+    "@walletconnect/types": "2.13.3-link-mode-0"
   },
   "engines": {
     "node": ">=18"

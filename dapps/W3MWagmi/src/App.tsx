@@ -91,7 +91,9 @@ function App(): JSX.Element {
       const handledBySdk = handleResponse(new URL(url));
       if (!handledBySdk) {
         // Handle other deeplinks
-        SettingsStore.setCurrentRequestLinkMode(true);
+        if (url.includes('wc_ev')) {
+          SettingsStore.setCurrentRequestLinkMode(true);
+        }
       }
     });
 

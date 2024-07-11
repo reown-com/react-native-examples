@@ -1475,7 +1475,7 @@
 				CODE_SIGN_ENTITLEMENTS = W3MWagmi/W3MWagmi.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_TEAM = W5R8AG9K22;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W5R8AG9K22;
 				ENABLE_BITCODE = NO;
@@ -1595,7 +1595,7 @@
 				CODE_SIGN_ENTITLEMENTS = W3MWagmi/W3MWagmi.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_TEAM = W5R8AG9K22;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W5R8AG9K22;
 				HEADER_SEARCH_PATHS = (

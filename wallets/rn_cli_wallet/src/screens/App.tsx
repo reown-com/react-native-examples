@@ -69,13 +69,15 @@ const App = () => {
   useEffect(() => {
     async function checkInitialUrl() {
       const initialUrl = await Linking.getInitialURL();
-      if (initialUrl) {
+      if (initialUrl && initialUrl.includes('wc_ev')) {
         SettingsStore.setCurrentRequestLinkMode(true);
       }
     }
 
-    const sub = Linking.addEventListener('url', () => {
-      SettingsStore.setCurrentRequestLinkMode(true);
+    const sub = Linking.addEventListener('url', ({url}) => {
+      if (url.includes('wc_ev')) {
+        SettingsStore.setCurrentRequestLinkMode(true);
+      }
     });
 
     checkInitialUrl();
