@@ -46,21 +46,20 @@ export default function Connections({route}: Props) {
   }
 
   const deeplinkCallback = useCallback(({url}: {url: string}) => {
-    if (!url.includes('wc?uri=')) {
-      return;
+    if (url.includes('wc?uri=')) {
+      const uri = url.split('wc?uri=')[1];
+      pair(decodeURIComponent(uri));
+    } else if (url.includes('wc:')) {
+      pair(url);
     }
-
-    const uri = url.split('wc?uri=')[1];
-    pair(decodeURIComponent(uri));
   }, []);
 
   // Handle deep link if app was closed
   useEffect(() => {
-    if (initialUrl && initialUrl.includes('wc?uri=') && !processing) {
-      const uri = initialUrl.split('wc?uri=')[1];
-      pair(decodeURIComponent(uri));
+    if (initialUrl && !processing) {
+      deeplinkCallback({url: initialUrl});
     }
-  }, [initialUrl, processing]);
+  }, [initialUrl, processing, deeplinkCallback]);
 
   useEffect(() => {
     // Handle deep link if app was in background
