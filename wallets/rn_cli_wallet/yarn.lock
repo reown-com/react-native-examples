@@ -2741,15 +2741,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@notifee/react-native@npm:7.8.2":
-  version: 7.8.2
-  resolution: "@notifee/react-native@npm:7.8.2"
-  peerDependencies:
-    react-native: "*"
-  checksum: f3b3ea116653d4dc7b50f8124898f9e22567ae30306225841d2057bc9ce40d451b15436dff3e60e0e042ffd7f34338054b202cd2dc61c5dc5eab7676b625b9f9
-  languageName: node
-  linkType: hard
-
 "@npmcli/agent@npm:^2.0.0":
   version: 2.2.2
   resolution: "@npmcli/agent@npm:2.2.2"
@@ -13209,7 +13200,6 @@ __metadata:
     "@craftzdog/react-native-buffer": 6.0.5
     "@ethersproject/shims": 5.7.0
     "@json-rpc-tools/utils": 1.7.6
-    "@notifee/react-native": 7.8.2
     "@react-native-async-storage/async-storage": 1.24.0
     "@react-native-clipboard/clipboard": 1.14.1
     "@react-native-community/netinfo": 11.3.2
