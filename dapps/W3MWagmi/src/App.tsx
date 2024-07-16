@@ -35,9 +35,9 @@ const projectId = Config.ENV_PROJECT_ID;
 
 // 2. Create config
 const metadata = {
-  name: 'Web3Modal + wagmi',
-  description: 'Web3Modal + wagmi',
-  url: 'https://web3modal.com',
+  name: 'AppKit + wagmi',
+  description: 'AppKit + wagmi',
+  url: 'https://walletconnect.com',
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
   redirect: {
     native: 'w3mwagmisample://',
