@@ -4206,14 +4206,14 @@
     randombytes "^2.1.0"
     tslib "1.14.1"
 
-"@walletconnect/react-native-compat@2.11.2":
-  version "2.11.2"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.11.2.tgz#bd0d3ab77589050fb4cb750261e257455c09af46"
-  integrity sha512-Ozz0vPyWDBIKQfjHEwt3OKK6EslDMaTUVpgOaGfZjQ8gw/vuOnYOybn1IpgAQjuPfIQSkPebtE36dxlJyGPzOg==
+"@walletconnect/react-native-compat@2.13.3":
+  version "2.13.3"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.13.3.tgz#91c8a54cf4cde613fa07088a7b39a65b506f05bd"
+  integrity sha512-IUsTVVgJNsd60Yx8qe0rzc0S9ix3/D3mAbEZnoN6P7MtybPOpY5qK1gJOg2oK+KaZ41pyzlO01wW35gvc3vBAQ==
   dependencies:
     events "3.3.0"
-    fast-text-encoding "^1.0.6"
-    react-native-url-polyfill "^2.0.0"
+    fast-text-encoding "1.0.6"
+    react-native-url-polyfill "2.0.0"
 
 "@walletconnect/relay-api@^1.0.9":
   version "1.0.9"
@@ -4326,63 +4326,63 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/coinbase-wagmi-react-native@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-wagmi-react-native/-/coinbase-wagmi-react-native-1.4.0.tgz#01a0caa3b752768c4f41b65734c268115df01f2d"
-  integrity sha512-ezSEiNHRVdWp4HRmySbaHx+6fONNMzQS1WAH+PV4Q/a/yFeNk5oz7fnAq4Wr4cvCB7HW6VZv5T17TdADDGJvbw==
+"@web3modal/coinbase-wagmi-react-native@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-wagmi-react-native/-/coinbase-wagmi-react-native-1.4.3.tgz#24fe179bf00a8216f398104330f53e1d9f8b056a"
+  integrity sha512-CgyMEo/gAIn9vgIHhiXIlR/Sx8nwYPe7V4i8aKpvh6RBTiivFXuKySksKfSm3OBwwrf5xp0WJEv4RfPZFJe1Bw==
 
-"@web3modal/core-react-native@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.0.tgz#4c1f24269e5b58b60d3dc1f738c592981876663d"
-  integrity sha512-LHK+10C6ImFx6YQGrOInz7REKDZPWjS8WMqfelulw+zhY/YGGa4MPsELvoOnRY9VVYN8Giqs4cmjFYs+HW7+nA==
+"@web3modal/core-react-native@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.3.tgz#c6598eb99efad0b8baec2472d43ff889c4cf4024"
+  integrity sha512-o8m2ltMuZvjqoJqhuFHxgBJqqQgainNYJ4iSLAoWIyej/84HoP+zv97MoOfoMuLvwYBmJ2kPttP646/X5T8i5w==
   dependencies:
     valtio "1.10.5"
 
-"@web3modal/email-react-native@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.0.tgz#542d9d8abed85e895c08b2ae3d0b91493ce4f1b5"
-  integrity sha512-RqoVxoceePREEwHuY+lE/7JIh0Bp8z+V49CtF80qS6RsZi4MMWiup8muksWQNFOLuKTdtrnXObnWYsP1pwSVrw==
+"@web3modal/email-react-native@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.3.tgz#c6377766e0399d4f057da356c4ffd65f555c7b9b"
+  integrity sha512-aITyPzYaVzs1SB/kFpQjeeeN7FAXa/MnMby/qLOWnv5oEthaQY9cpzzB90g9H4wNYuqzWg/RLFNokHjOgK81Zg==
   dependencies:
-    "@web3modal/core-react-native" "1.4.0"
-    "@web3modal/ui-react-native" "1.4.0"
+    "@web3modal/core-react-native" "1.4.3"
+    "@web3modal/ui-react-native" "1.4.3"
     zod "3.22.4"
 
-"@web3modal/email-wagmi-react-native@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-wagmi-react-native/-/email-wagmi-react-native-1.4.0.tgz#2f50646a2a47e08f12d49e883245a24bbbb37ce2"
-  integrity sha512-lzWXWBX+yIoa9X6tbs0ioS67xXwTnBdJeQVtm29tLlZhmimfcbFuBSFJQXZgacValtgc6+iYIX7SzaYH9rCNtw==
+"@web3modal/email-wagmi-react-native@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-wagmi-react-native/-/email-wagmi-react-native-1.4.3.tgz#577332bfc23d3b56b33837db3a386bdab46268cc"
+  integrity sha512-7NNFYlp4IKMOARiqhUk223hsvP2/MciCVKaPIidxgGsoF9WbvNIo8EAs6gq36iP/70bpwtuYmOMzOaRzr0kxWg==
   dependencies:
-    "@web3modal/email-react-native" "1.4.0"
+    "@web3modal/email-react-native" "1.4.3"
 
-"@web3modal/scaffold-react-native@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.0.tgz#bca3a1e9e991bf24e059e444301cb2b8761bcf56"
-  integrity sha512-nR2LMUY+T6QdXICqNZ80EKCQ1ZvzGl96K33Q4e800CPhV2+zgfiUVWFKtfMSw8plpI7vbRl7IOyExl12889PHA==
+"@web3modal/scaffold-react-native@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.3.tgz#01eec23454b94c8a4199b26238e6e24ff2a8ff21"
+  integrity sha512-CSsknCdfba/sCnsp2bkFnP3mMjSBHI/CcjbzXjAABH/KNTpFkA337WEus2EJA8XgbuS6EtVD0nq4WHg9z6sTFQ==
   dependencies:
-    "@web3modal/core-react-native" "1.4.0"
-    "@web3modal/ui-react-native" "1.4.0"
+    "@web3modal/core-react-native" "1.4.3"
+    "@web3modal/ui-react-native" "1.4.3"
 
-"@web3modal/scaffold-utils-react-native@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.0.tgz#e993e32271552936075b768ef897be99ebe4cad5"
-  integrity sha512-lBWzJIfQWRXdtv6L9wIY8LHPvQWRTgRMMzSFAWKUNkb/5biEOqI6JIBHWTuAzJ5dq/su3YpMz1/ludqj1EHk9A==
+"@web3modal/scaffold-utils-react-native@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.3.tgz#3429ca9a167458d685840c5a4fbd5ebf7c0ecac3"
+  integrity sha512-inFBZJQls+hx3Y3+Aj+UtrDrmQji6OtVwkhkXZ0txHSEya9D7Iqtnb17hfjp/kn8+nu3UcigEGJYBD/v+M2YhQ==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.4.0"
+    "@web3modal/scaffold-react-native" "1.4.3"
 
-"@web3modal/ui-react-native@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.0.tgz#d17f2d7a5ebad94536036d48b031af48c2fdf248"
-  integrity sha512-1Hmk/RmpLb2K1auDcZrQcH92mpHkzOSIp6u4bWU02uD7PofOJUQTv9Mig/lj5WjyRvYmBcT5/oRrQQbymof35A==
+"@web3modal/ui-react-native@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.3.tgz#d40012947be90842af65ce8c82459fa24545d054"
+  integrity sha512-8jwe4y+oPQVLUMWzXBFBngdIKv70QxDWKt7V0Ht+AHTeRNJhzKzUnqT6iTvuMPB5WRRMq/w+PXiqAh+REla/wQ==
   dependencies:
     qrcode "1.5.3"
 
-"@web3modal/wagmi-react-native@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.4.0.tgz#268a374c6a38d967e08829a0b751835835692733"
-  integrity sha512-ThsQZnQdolu9CyfzahBwBnn7TLKMnCxM0CLx+fZh0Sb8ogb3xrMKxueSWZ2vXOqA6yh372o5CTSXcy8fGeMZ2Q==
+"@web3modal/wagmi-react-native@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.4.3.tgz#b85d13bf2540a87955b18fbc14a88d9b8daa1a4f"
+  integrity sha512-wYaAOCw2fxzw4On1TTcR1siyv885FHSqqMbJfKG5KBLjnJEqtYVoRMNZ2tRCj66OJuxjOTIjYb2+eRoDCYHb5Q==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.4.0"
-    "@web3modal/scaffold-utils-react-native" "1.4.0"
+    "@web3modal/scaffold-react-native" "1.4.3"
+    "@web3modal/scaffold-utils-react-native" "1.4.3"
 
 "@xmldom/xmldom@^0.8.8":
   version "0.8.10"
@@ -6484,7 +6484,7 @@ fast-stable-stringify@^1.0.0:
   resolved "https://registry.yarnpkg.com/fast-stable-stringify/-/fast-stable-stringify-1.0.0.tgz#5c5543462b22aeeefd36d05b34e51c78cb86d313"
   integrity sha512-wpYMUmFu5f00Sm0cj2pfivpmawLZ0NKdviQ4w9zJeR8JVtOpOxHmLaJuj0vxvGqMJQWyP/COUkF75/57OKyRag==
 
-fast-text-encoding@^1.0.6:
+fast-text-encoding@1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/fast-text-encoding/-/fast-text-encoding-1.0.6.tgz#0aa25f7f638222e3396d72bf936afcf1d42d6867"
   integrity sha512-VhXlQgj9ioXCqGstD37E/HBeqEGV/qOD/kmbVG8h5xKBYvM1L3lR1Zn4555cQ8GkYbJa8aJSipLPndE1k6zK2w==
@@ -9852,7 +9852,7 @@ react-native-svg@14.1.0:
     css-select "^5.1.0"
     css-tree "^1.1.3"
 
-react-native-url-polyfill@^2.0.0:
+react-native-url-polyfill@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-url-polyfill/-/react-native-url-polyfill-2.0.0.tgz#db714520a2985cff1d50ab2e66279b9f91ffd589"
   integrity sha512-My330Do7/DvKnEvwQc0WdcBnFPploYKp9CYlefDXzIdEaA+PAhDYllkvGeEroEzvc4Kzzj2O4yVdz8v6fjRvhA==
