@@ -47,7 +47,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RNWeb3WalletTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNWeb3WalletTests.m; sourceTree = "<group>"; };
 		031EE68964566288D60DF92C /* Pods-App-RNWallet Debug.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Debug.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug.debug.xcconfig"; sourceTree = "<group>"; };
-		0FF5517EE50A98CDBAD33515 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		0FF5517EE50A98CDBAD33515 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* RNWallet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNWallet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RNWeb3Wallet/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RNWeb3Wallet/AppDelegate.mm; sourceTree = "<group>"; };
@@ -60,7 +60,7 @@
 		1FCDA2BD2B9B8ED900E0BF0C /* Debug-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Debug-Info.plist"; path = "RNWeb3Wallet/Debug-Info.plist"; sourceTree = "<group>"; };
 		24FAD35754BADACA3CB526EE /* Pods-App-RNWallet Internal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Internal.release.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal.release.xcconfig"; sourceTree = "<group>"; };
 		2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = RNWeb3Wallet/BootSplash.storyboard; sourceTree = "<group>"; };
-		3F16776DD2AD1459C80F97BA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		3F16776DD2AD1459C80F97BA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		51BFE63F1FC30CFD7AD1940E /* libPods-App-RNWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWallet.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		59C695897E3995A30CC7F7FF /* Pods-App-RNWallet Internal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Internal.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal.debug.xcconfig"; sourceTree = "<group>"; };
 		6B702F6D31105953E9AE7299 /* libPods-App-RNWalletTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWalletTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -71,7 +71,7 @@
 		BC0E53642B7E95F80075EFC3 /* RNWeb3Wallet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNWeb3Wallet.entitlements; path = RNWeb3Wallet/RNWeb3Wallet.entitlements; sourceTree = "<group>"; };
 		BC0E53652B7EAFF70075EFC3 /* RNWeb3WalletDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNWeb3WalletDebug.entitlements; path = RNWeb3Wallet/RNWeb3WalletDebug.entitlements; sourceTree = "<group>"; };
 		BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		C3A29D35A12B15C6680651C1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		C3A29D35A12B15C6680651C1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C8AFB47DF440CEAA5FABC1DE /* Pods-App-RNWalletTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWalletTests.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CC25D334E0CEF619BE7AAA96 /* Pods-App-RNWallet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet.debug.xcconfig"; sourceTree = "<group>"; };
 		CE3E5EA7A1F9F12A3984BA16 /* Pods-App-RNWallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet.release.xcconfig"; path = "Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet.release.xcconfig"; sourceTree = "<group>"; };
@@ -936,7 +936,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RNWeb3Wallet/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1025,7 +1025,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RNWeb3Wallet/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1115,7 +1115,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Debug-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN (debug)";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1203,7 +1203,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Debug-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN (debug)";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1294,7 +1294,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Internal-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN (internal)";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1385,7 +1385,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Internal-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN (internal)";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
