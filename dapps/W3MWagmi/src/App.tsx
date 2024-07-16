@@ -1,6 +1,7 @@
 import '@walletconnect/react-native-compat';
 import React, {useEffect} from 'react';
 import {Linking} from 'react-native';
+import BootSplash from 'react-native-bootsplash';
 import {
   createWeb3Modal,
   defaultWagmiConfig,
@@ -92,6 +93,10 @@ function App(): JSX.Element {
     });
 
     return () => sub.remove();
+  }, []);
+
+  useEffect(() => {
+    BootSplash.hide({fade: true});
   }, []);
 
   return (
