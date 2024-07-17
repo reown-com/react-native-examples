@@ -1,6 +1,7 @@
 import '@walletconnect/react-native-compat';
 import React, {useEffect} from 'react';
 import {Linking} from 'react-native';
+import BootSplash from 'react-native-bootsplash';
 import {
   createWeb3Modal,
   defaultWagmiConfig,
@@ -36,8 +37,8 @@ const projectId = Config.ENV_PROJECT_ID;
 
 // 2. Create config
 const metadata = {
-  name: 'Appkit + wagmi',
-  description: 'Appkit + wagmi',
+  name: 'AppKit + wagmi',
+  description: 'AppKit + wagmi',
   url: 'https://walletconnect.com',
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
   redirect: {
@@ -101,6 +102,9 @@ function App(): JSX.Element {
   }, []);
 
   useEffect(() => {
+    // Hide splashscreen
+    BootSplash.hide({fade: true});
+
     // Check if app was opened from a link-mode response
     async function checkInitialUrl() {
       const initialUrl = await Linking.getInitialURL();

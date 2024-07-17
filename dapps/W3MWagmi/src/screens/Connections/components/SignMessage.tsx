@@ -13,7 +13,7 @@ export function SignMessage() {
 
   const onPress = () => {
     signMessage({
-      message: 'hello rn appkit sample + wagmi',
+      message: 'hello appkit rn + wagmi',
     });
   };
 

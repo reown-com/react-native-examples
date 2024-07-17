@@ -8,11 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* RNWeb3WalletTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* RNWeb3WalletTests.m */; };
+		123D3DB96BA95F36888650CC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3F16776DD2AD1459C80F97BA /* PrivacyInfo.xcprivacy */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		1F924FC92BDC053400BD28AD /* PrivacyInfo-Prod.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1FE92C692BDAB75900172856 /* PrivacyInfo-Prod.xcprivacy */; };
-		1F924FCB2BDC055B00BD28AD /* PrivacyInfo-Internal.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1F924FCA2BDC055B00BD28AD /* PrivacyInfo-Internal.xcprivacy */; };
 		1FCDA2902B9B8E6200E0BF0C /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		1FCDA2912B9B8E6200E0BF0C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1FCDA2962B9B8E6200E0BF0C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -23,12 +22,14 @@
 		1FCDA2AF2B9B8E6800E0BF0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
 		1FEC46DE2BD9835300064EFF /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */; };
 		1FEC46DF2BD9835300064EFF /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */; };
-		3E2F4C105427E23D00C0F7B4 /* libPods-App-RNWallet Debug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EAE01D21C704BB2721841075 /* libPods-App-RNWallet Debug.a */; };
-		5D31BCAE3070197B4A668DA1 /* libPods-App-RNWallet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C9A009D1B7BD8E4263DAA9 /* libPods-App-RNWallet.a */; };
+		3D28D8B186B853F8087F5C78 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C3A29D35A12B15C6680651C1 /* PrivacyInfo.xcprivacy */; };
+		9685071820BFBBEE117DCE09 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0FF5517EE50A98CDBAD33515 /* PrivacyInfo.xcprivacy */; };
 		97927E27E3F047C29FBF2FD7 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */; };
 		BC55FDB92B7D243600340DDB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
-		D41B3E4B292B91FECAB80A98 /* libPods-App-RNWalletTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ACB848401C39F87247D7EDB1 /* libPods-App-RNWalletTests.a */; };
-		EDA27E39B9BEE5A3A9F0A82E /* libPods-App-RNWallet Internal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F88CEA4483694AEE407673D3 /* libPods-App-RNWallet Internal.a */; };
+		C1AA187B6F3DCD1CEFDD41B2 /* libPods-App-RNWalletTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B702F6D31105953E9AE7299 /* libPods-App-RNWalletTests.a */; };
+		C886399FF80B23665557C079 /* libPods-App-RNWallet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 51BFE63F1FC30CFD7AD1940E /* libPods-App-RNWallet.a */; };
+		CB2268A8FF613D14B37420DE /* libPods-App-RNWallet Internal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA21DCC919EDC25DD68324F1 /* libPods-App-RNWallet Internal.a */; };
+		D02EBCC714BE30A6ABB790CC /* libPods-App-RNWallet Debug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A0ED8A67BC49F967858A88CC /* libPods-App-RNWallet Debug.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,35 +46,36 @@
 		00E356EE1AD99517003FC87E /* RNWalletTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNWalletTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RNWeb3WalletTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNWeb3WalletTests.m; sourceTree = "<group>"; };
-		054E2F9007BDEBC60237B3D5 /* Pods-App-RNWallet Internal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Internal.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal.debug.xcconfig"; sourceTree = "<group>"; };
-		119324685ED055EB20B566B4 /* Pods-App-RNWalletTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWalletTests.release.xcconfig"; path = "Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests.release.xcconfig"; sourceTree = "<group>"; };
-		12CF8FE364D78AC0B7B64F42 /* Pods-App-RNWalletTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWalletTests.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests.debug.xcconfig"; sourceTree = "<group>"; };
+		031EE68964566288D60DF92C /* Pods-App-RNWallet Debug.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Debug.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug.debug.xcconfig"; sourceTree = "<group>"; };
+		0FF5517EE50A98CDBAD33515 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* RNWallet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RNWallet.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RNWeb3Wallet/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RNWeb3Wallet/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = RNWeb3Wallet/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RNWeb3Wallet/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RNWeb3Wallet/main.m; sourceTree = "<group>"; };
-		182755159C74BFB01CFBE167 /* Pods-App-RNWallet Debug.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Debug.release.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug.release.xcconfig"; sourceTree = "<group>"; };
-		1F924FCA2BDC055B00BD28AD /* PrivacyInfo-Internal.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "PrivacyInfo-Internal.xcprivacy"; sourceTree = "<group>"; };
 		1FCDA2A22B9B8E6200E0BF0C /* RNWallet Debug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RNWallet Debug.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FCDA2BA2B9B8E6800E0BF0C /* RNWallet Internal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RNWallet Internal.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FCDA2BC2B9B8ED900E0BF0C /* Internal-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Internal-Info.plist"; path = "RNWeb3Wallet/Internal-Info.plist"; sourceTree = "<group>"; };
 		1FCDA2BD2B9B8ED900E0BF0C /* Debug-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Debug-Info.plist"; path = "RNWeb3Wallet/Debug-Info.plist"; sourceTree = "<group>"; };
-		1FE92C692BDAB75900172856 /* PrivacyInfo-Prod.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "PrivacyInfo-Prod.xcprivacy"; sourceTree = "<group>"; };
+		24FAD35754BADACA3CB526EE /* Pods-App-RNWallet Internal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Internal.release.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal.release.xcconfig"; sourceTree = "<group>"; };
 		2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = RNWeb3Wallet/BootSplash.storyboard; sourceTree = "<group>"; };
-		3C5C498D42DBB0D0F5271418 /* Pods-App-RNWallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet.release.xcconfig"; path = "Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet.release.xcconfig"; sourceTree = "<group>"; };
-		60A7488C432C9F419AAF57B4 /* Pods-App-RNWallet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet.debug.xcconfig"; sourceTree = "<group>"; };
-		7241E100931CD61CED0E9702 /* Pods-App-RNWallet Debug.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Debug.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug.debug.xcconfig"; sourceTree = "<group>"; };
-		ACB848401C39F87247D7EDB1 /* libPods-App-RNWalletTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWalletTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		B8B4F1648A39BC692BD1BD11 /* Pods-App-RNWallet Internal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Internal.release.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal.release.xcconfig"; sourceTree = "<group>"; };
+		3F16776DD2AD1459C80F97BA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		51BFE63F1FC30CFD7AD1940E /* libPods-App-RNWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWallet.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		59C695897E3995A30CC7F7FF /* Pods-App-RNWallet Internal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Internal.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal.debug.xcconfig"; sourceTree = "<group>"; };
+		6B702F6D31105953E9AE7299 /* libPods-App-RNWalletTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWalletTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		909CC196F808EFAAFC7E6666 /* Pods-App-RNWalletTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWalletTests.release.xcconfig"; path = "Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests.release.xcconfig"; sourceTree = "<group>"; };
+		A0ED8A67BC49F967858A88CC /* libPods-App-RNWallet Debug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWallet Debug.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A877A0028C91BA9749B9293C /* Pods-App-RNWallet Debug.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Debug.release.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug.release.xcconfig"; sourceTree = "<group>"; };
+		AA21DCC919EDC25DD68324F1 /* libPods-App-RNWallet Internal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWallet Internal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC0E53642B7E95F80075EFC3 /* RNWeb3Wallet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNWeb3Wallet.entitlements; path = RNWeb3Wallet/RNWeb3Wallet.entitlements; sourceTree = "<group>"; };
 		BC0E53652B7EAFF70075EFC3 /* RNWeb3WalletDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNWeb3WalletDebug.entitlements; path = RNWeb3Wallet/RNWeb3WalletDebug.entitlements; sourceTree = "<group>"; };
 		BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		E5C9A009D1B7BD8E4263DAA9 /* libPods-App-RNWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWallet.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		EAE01D21C704BB2721841075 /* libPods-App-RNWallet Debug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWallet Debug.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3A29D35A12B15C6680651C1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		C8AFB47DF440CEAA5FABC1DE /* Pods-App-RNWalletTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWalletTests.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CC25D334E0CEF619BE7AAA96 /* Pods-App-RNWallet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet.debug.xcconfig"; sourceTree = "<group>"; };
+		CE3E5EA7A1F9F12A3984BA16 /* Pods-App-RNWallet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet.release.xcconfig"; path = "Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F88CEA4483694AEE407673D3 /* libPods-App-RNWallet Internal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWallet Internal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,7 +83,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D41B3E4B292B91FECAB80A98 /* libPods-App-RNWalletTests.a in Frameworks */,
+				C1AA187B6F3DCD1CEFDD41B2 /* libPods-App-RNWalletTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,7 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5D31BCAE3070197B4A668DA1 /* libPods-App-RNWallet.a in Frameworks */,
+				C886399FF80B23665557C079 /* libPods-App-RNWallet.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,7 +99,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3E2F4C105427E23D00C0F7B4 /* libPods-App-RNWallet Debug.a in Frameworks */,
+				D02EBCC714BE30A6ABB790CC /* libPods-App-RNWallet Debug.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,7 +107,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDA27E39B9BEE5A3A9F0A82E /* libPods-App-RNWallet Internal.a in Frameworks */,
+				CB2268A8FF613D14B37420DE /* libPods-App-RNWallet Internal.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,7 +134,6 @@
 		13B07FAE1A68108700A75B9A /* RNWeb3Wallet */ = {
 			isa = PBXGroup;
 			children = (
-				1FE92C692BDAB75900172856 /* PrivacyInfo-Prod.xcprivacy */,
 				1FCDA2BD2B9B8ED900E0BF0C /* Debug-Info.plist */,
 				1FCDA2BC2B9B8ED900E0BF0C /* Internal-Info.plist */,
 				BC0E53652B7EAFF70075EFC3 /* RNWeb3WalletDebug.entitlements */,
@@ -143,7 +144,6 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */,
-				1F924FCA2BDC055B00BD28AD /* PrivacyInfo-Internal.xcprivacy */,
 			);
 			name = RNWeb3Wallet;
 			sourceTree = "<group>";
@@ -152,10 +152,10 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				E5C9A009D1B7BD8E4263DAA9 /* libPods-App-RNWallet.a */,
-				EAE01D21C704BB2721841075 /* libPods-App-RNWallet Debug.a */,
-				F88CEA4483694AEE407673D3 /* libPods-App-RNWallet Internal.a */,
-				ACB848401C39F87247D7EDB1 /* libPods-App-RNWalletTests.a */,
+				51BFE63F1FC30CFD7AD1940E /* libPods-App-RNWallet.a */,
+				A0ED8A67BC49F967858A88CC /* libPods-App-RNWallet Debug.a */,
+				AA21DCC919EDC25DD68324F1 /* libPods-App-RNWallet Internal.a */,
+				6B702F6D31105953E9AE7299 /* libPods-App-RNWalletTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -178,6 +178,9 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
 				C9361DCED1EF478AB2163518 /* Resources */,
+				C3A29D35A12B15C6680651C1 /* PrivacyInfo.xcprivacy */,
+				3F16776DD2AD1459C80F97BA /* PrivacyInfo.xcprivacy */,
+				0FF5517EE50A98CDBAD33515 /* PrivacyInfo.xcprivacy */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -198,14 +201,14 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				60A7488C432C9F419AAF57B4 /* Pods-App-RNWallet.debug.xcconfig */,
-				3C5C498D42DBB0D0F5271418 /* Pods-App-RNWallet.release.xcconfig */,
-				7241E100931CD61CED0E9702 /* Pods-App-RNWallet Debug.debug.xcconfig */,
-				182755159C74BFB01CFBE167 /* Pods-App-RNWallet Debug.release.xcconfig */,
-				054E2F9007BDEBC60237B3D5 /* Pods-App-RNWallet Internal.debug.xcconfig */,
-				B8B4F1648A39BC692BD1BD11 /* Pods-App-RNWallet Internal.release.xcconfig */,
-				12CF8FE364D78AC0B7B64F42 /* Pods-App-RNWalletTests.debug.xcconfig */,
-				119324685ED055EB20B566B4 /* Pods-App-RNWalletTests.release.xcconfig */,
+				CC25D334E0CEF619BE7AAA96 /* Pods-App-RNWallet.debug.xcconfig */,
+				CE3E5EA7A1F9F12A3984BA16 /* Pods-App-RNWallet.release.xcconfig */,
+				031EE68964566288D60DF92C /* Pods-App-RNWallet Debug.debug.xcconfig */,
+				A877A0028C91BA9749B9293C /* Pods-App-RNWallet Debug.release.xcconfig */,
+				59C695897E3995A30CC7F7FF /* Pods-App-RNWallet Internal.debug.xcconfig */,
+				24FAD35754BADACA3CB526EE /* Pods-App-RNWallet Internal.release.xcconfig */,
+				C8AFB47DF440CEAA5FABC1DE /* Pods-App-RNWalletTests.debug.xcconfig */,
+				909CC196F808EFAAFC7E6666 /* Pods-App-RNWalletTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -224,12 +227,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "RNWalletTests" */;
 			buildPhases = (
-				49969A6744316B04C881D29A /* [CP] Check Pods Manifest.lock */,
+				38841F6DECFABF0C4C39EB4E /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				C033B441F8E6BB24534F1992 /* [CP] Embed Pods Frameworks */,
-				23A5D4C933B7F187EF4F145B /* [CP] Copy Pods Resources */,
+				DB9276334960DCB03830A380 /* [CP] Embed Pods Frameworks */,
+				1F5EC806636837982044C2BE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -245,15 +248,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "RNWallet" */;
 			buildPhases = (
-				80834365D3DBEB7A9506D4BC /* [CP] Check Pods Manifest.lock */,
+				1A7043AF6A76E6457EB80B77 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				F85C5923FAB7458FBDC41AD8 /* Upload Debug Symbols to Sentry */,
-				EDFE8F72163695A09A87ECA2 /* [CP] Embed Pods Frameworks */,
-				4DAA664525D6340769755AF0 /* [CP] Copy Pods Resources */,
+				D17DB289659619DCBBE96497 /* [CP] Embed Pods Frameworks */,
+				5C6D429858C117B81B44020A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -268,15 +271,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1FCDA29F2B9B8E6200E0BF0C /* Build configuration list for PBXNativeTarget "RNWallet Debug" */;
 			buildPhases = (
-				C4A321B5CE9F8E2521CAAC96 /* [CP] Check Pods Manifest.lock */,
+				EFE7B329082B2C371A200CCE /* [CP] Check Pods Manifest.lock */,
 				1FCDA28E2B9B8E6200E0BF0C /* Start Packager */,
 				1FCDA28F2B9B8E6200E0BF0C /* Sources */,
 				1FCDA2922B9B8E6200E0BF0C /* Frameworks */,
 				1FCDA2942B9B8E6200E0BF0C /* Resources */,
 				1FCDA29A2B9B8E6200E0BF0C /* Bundle React Native code and images */,
 				1FCDA29B2B9B8E6200E0BF0C /* Upload Debug Symbols to Sentry */,
-				7DEB2A63C5F9B6D45CB81780 /* [CP] Embed Pods Frameworks */,
-				BF4F1864C7E4262A3618CC38 /* [CP] Copy Pods Resources */,
+				A3C5F72B08E64DA4313AB32C /* [CP] Embed Pods Frameworks */,
+				8399F8EC2244F083D33FC81C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -291,15 +294,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1FCDA2B72B9B8E6800E0BF0C /* Build configuration list for PBXNativeTarget "RNWallet Internal" */;
 			buildPhases = (
-				A4B62AED5A0EB28D6A6733F5 /* [CP] Check Pods Manifest.lock */,
+				D10305ED2A86F53B22B4E792 /* [CP] Check Pods Manifest.lock */,
 				1FCDA2A62B9B8E6800E0BF0C /* Start Packager */,
 				1FCDA2A72B9B8E6800E0BF0C /* Sources */,
 				1FCDA2AA2B9B8E6800E0BF0C /* Frameworks */,
 				1FCDA2AC2B9B8E6800E0BF0C /* Resources */,
 				1FCDA2B22B9B8E6800E0BF0C /* Bundle React Native code and images */,
 				1FCDA2B32B9B8E6800E0BF0C /* Upload Debug Symbols to Sentry */,
-				D8AD36F76F00AEF0AA63DC33 /* [CP] Embed Pods Frameworks */,
-				C8D0C7BBE833CDA044E269F5 /* [CP] Copy Pods Resources */,
+				D4316A7F1F1A986AC45C587E /* [CP] Embed Pods Frameworks */,
+				A3287E1CA83F1580EED4CDDA /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -363,8 +366,8 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				BC55FDB92B7D243600340DDB /* GoogleService-Info.plist in Resources */,
-				1F924FC92BDC053400BD28AD /* PrivacyInfo-Prod.xcprivacy in Resources */,
 				97927E27E3F047C29FBF2FD7 /* BootSplash.storyboard in Resources */,
+				3D28D8B186B853F8087F5C78 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,6 +378,7 @@
 				1FEC46DE2BD9835300064EFF /* BootSplash.storyboard in Resources */,
 				1FCDA2962B9B8E6200E0BF0C /* Images.xcassets in Resources */,
 				1FCDA2972B9B8E6200E0BF0C /* GoogleService-Info.plist in Resources */,
+				123D3DB96BA95F36888650CC /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,9 +387,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FEC46DF2BD9835300064EFF /* BootSplash.storyboard in Resources */,
-				1F924FCB2BDC055B00BD28AD /* PrivacyInfo-Internal.xcprivacy in Resources */,
 				1FCDA2AE2B9B8E6800E0BF0C /* Images.xcassets in Resources */,
 				1FCDA2AF2B9B8E6800E0BF0C /* GoogleService-Info.plist in Resources */,
+				9685071820BFBBEE117DCE09 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -406,180 +410,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\nSENTRY_XCODE=\"../node_modules/@sentry/react-native/scripts/sentry-xcode.sh\"\nBUNDLE_REACT_NATIVE=\"/bin/sh $SENTRY_XCODE $REACT_NATIVE_XCODE\"\n\n# RN 0.69+\n/bin/sh -c \"$WITH_ENVIRONMENT \\\"$BUNDLE_REACT_NATIVE\\\"\"\n";
+			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\nSENTRY_XCODE=\"../node_modules/@sentry/react-native/scripts/sentry-xcode.sh\"\nBUNDLE_REACT_NATIVE=\"/bin/sh $SENTRY_XCODE $REACT_NATIVE_XCODE\"\n\n# RN 0.69+\n/bin/sh -c \"$WITH_ENVIRONMENT \\\"$BUNDLE_REACT_NATIVE\\\"\"\n";
 		};
-		1FCDA28E2B9B8E6200E0BF0C /* Start Packager */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Start Packager";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		1FCDA29A2B9B8E6200E0BF0C /* Bundle React Native code and images */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/.xcode.env",
-			);
-			name = "Bundle React Native code and images";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\nSENTRY_XCODE=\"../node_modules/@sentry/react-native/scripts/sentry-xcode.sh\"\nBUNDLE_REACT_NATIVE=\"/bin/sh $SENTRY_XCODE $REACT_NATIVE_XCODE\"\n\n# RN 0.69+\n/bin/sh -c \"$WITH_ENVIRONMENT \\\"$BUNDLE_REACT_NATIVE\\\"\"\n";
-		};
-		1FCDA29B2B9B8E6200E0BF0C /* Upload Debug Symbols to Sentry */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Upload Debug Symbols to Sentry";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n    . \"$WITH_ENVIRONMENT\"\nfi \nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
-		};
-		1FCDA2A62B9B8E6800E0BF0C /* Start Packager */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Start Packager";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		1FCDA2B22B9B8E6800E0BF0C /* Bundle React Native code and images */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/.xcode.env",
-			);
-			name = "Bundle React Native code and images";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\nSENTRY_XCODE=\"../node_modules/@sentry/react-native/scripts/sentry-xcode.sh\"\nBUNDLE_REACT_NATIVE=\"/bin/sh $SENTRY_XCODE $REACT_NATIVE_XCODE\"\n\n# RN 0.69+\n/bin/sh -c \"$WITH_ENVIRONMENT \\\"$BUNDLE_REACT_NATIVE\\\"\"\n";
-		};
-		1FCDA2B32B9B8E6800E0BF0C /* Upload Debug Symbols to Sentry */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Upload Debug Symbols to Sentry";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n    . \"$WITH_ENVIRONMENT\"\nfi \nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
-		};
-		23A5D4C933B7F187EF4F145B /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		49969A6744316B04C881D29A /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-App-RNWalletTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4DAA664525D6340769755AF0 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7DEB2A63C5F9B6D45CB81780 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		80834365D3DBEB7A9506D4BC /* [CP] Check Pods Manifest.lock */ = {
+		1A7043AF6A76E6457EB80B77 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -601,7 +434,212 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A4B62AED5A0EB28D6A6733F5 /* [CP] Check Pods Manifest.lock */ = {
+		1F5EC806636837982044C2BE /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		1FCDA28E2B9B8E6200E0BF0C /* Start Packager */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Start Packager";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/$REACT_NATIVE_PATH/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/$REACT_NATIVE_PATH/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		1FCDA29A2B9B8E6200E0BF0C /* Bundle React Native code and images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/.xcode.env",
+			);
+			name = "Bundle React Native code and images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\nSENTRY_XCODE=\"../node_modules/@sentry/react-native/scripts/sentry-xcode.sh\"\nBUNDLE_REACT_NATIVE=\"/bin/sh $SENTRY_XCODE $REACT_NATIVE_XCODE\"\n\n# RN 0.69+\n/bin/sh -c \"$WITH_ENVIRONMENT \\\"$BUNDLE_REACT_NATIVE\\\"\"\n";
+		};
+		1FCDA29B2B9B8E6200E0BF0C /* Upload Debug Symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Upload Debug Symbols to Sentry";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n    . \"$WITH_ENVIRONMENT\"\nfi \nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
+		};
+		1FCDA2A62B9B8E6800E0BF0C /* Start Packager */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Start Packager";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/$REACT_NATIVE_PATH/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/$REACT_NATIVE_PATH/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		1FCDA2B22B9B8E6800E0BF0C /* Bundle React Native code and images */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/.xcode.env",
+			);
+			name = "Bundle React Native code and images";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\nSENTRY_XCODE=\"../node_modules/@sentry/react-native/scripts/sentry-xcode.sh\"\nBUNDLE_REACT_NATIVE=\"/bin/sh $SENTRY_XCODE $REACT_NATIVE_XCODE\"\n\n# RN 0.69+\n/bin/sh -c \"$WITH_ENVIRONMENT \\\"$BUNDLE_REACT_NATIVE\\\"\"\n";
+		};
+		1FCDA2B32B9B8E6800E0BF0C /* Upload Debug Symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Upload Debug Symbols to Sentry";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n    . \"$WITH_ENVIRONMENT\"\nfi \nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
+		};
+		38841F6DECFABF0C4C39EB4E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-App-RNWalletTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5C6D429858C117B81B44020A /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8399F8EC2244F083D33FC81C /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A3287E1CA83F1580EED4CDDA /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A3C5F72B08E64DA4313AB32C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D10305ED2A86F53B22B4E792 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -623,24 +661,41 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BF4F1864C7E4262A3618CC38 /* [CP] Copy Pods Resources */ = {
+		D17DB289659619DCBBE96497 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			name = "[CP] Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C033B441F8E6BB24534F1992 /* [CP] Embed Pods Frameworks */ = {
+		D4316A7F1F1A986AC45C587E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DB9276334960DCB03830A380 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -657,7 +712,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWalletTests/Pods-App-RNWalletTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C4A321B5CE9F8E2521CAAC96 /* [CP] Check Pods Manifest.lock */ = {
+		EFE7B329082B2C371A200CCE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -679,57 +734,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C8D0C7BBE833CDA044E269F5 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D8AD36F76F00AEF0AA63DC33 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EDFE8F72163695A09A87ECA2 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-RNWallet/Pods-App-RNWallet-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		F85C5923FAB7458FBDC41AD8 /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -742,7 +746,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n    . \"$WITH_ENVIRONMENT\"\nfi \nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
+			shellScript = "\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n    . \"$WITH_ENVIRONMENT\"\nfi \nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -760,7 +764,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/$REACT_NATIVE_PATH/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/$REACT_NATIVE_PATH/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -814,7 +818,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 12CF8FE364D78AC0B7B64F42 /* Pods-App-RNWalletTests.debug.xcconfig */;
+			baseConfigurationReference = C8AFB47DF440CEAA5FABC1DE /* Pods-App-RNWalletTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -843,7 +847,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 119324685ED055EB20B566B4 /* Pods-App-RNWalletTests.release.xcconfig */;
+			baseConfigurationReference = 909CC196F808EFAAFC7E6666 /* Pods-App-RNWalletTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -869,7 +873,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 60A7488C432C9F419AAF57B4 /* Pods-App-RNWallet.debug.xcconfig */;
+			baseConfigurationReference = CC25D334E0CEF619BE7AAA96 /* Pods-App-RNWallet.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -932,7 +936,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RNWeb3Wallet/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -960,7 +964,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3C5C498D42DBB0D0F5271418 /* Pods-App-RNWallet.release.xcconfig */;
+			baseConfigurationReference = CE3E5EA7A1F9F12A3984BA16 /* Pods-App-RNWallet.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -1021,7 +1025,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RNWeb3Wallet/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1048,7 +1052,7 @@
 		};
 		1FCDA2A02B9B8E6200E0BF0C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7241E100931CD61CED0E9702 /* Pods-App-RNWallet Debug.debug.xcconfig */;
+			baseConfigurationReference = 031EE68964566288D60DF92C /* Pods-App-RNWallet Debug.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Debug";
 				CLANG_ENABLE_MODULES = YES;
@@ -1111,7 +1115,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Debug-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN (debug)";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1139,7 +1143,7 @@
 		};
 		1FCDA2A12B9B8E6200E0BF0C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 182755159C74BFB01CFBE167 /* Pods-App-RNWallet Debug.release.xcconfig */;
+			baseConfigurationReference = A877A0028C91BA9749B9293C /* Pods-App-RNWallet Debug.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Debug";
 				CLANG_ENABLE_MODULES = YES;
@@ -1199,7 +1203,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Debug-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN (debug)";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1226,7 +1230,7 @@
 		};
 		1FCDA2B82B9B8E6800E0BF0C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 054E2F9007BDEBC60237B3D5 /* Pods-App-RNWallet Internal.debug.xcconfig */;
+			baseConfigurationReference = 59C695897E3995A30CC7F7FF /* Pods-App-RNWallet Internal.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Internal";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
@@ -1290,7 +1294,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Internal-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN (internal)";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1318,7 +1322,7 @@
 		};
 		1FCDA2B92B9B8E6800E0BF0C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B8B4F1648A39BC692BD1BD11 /* Pods-App-RNWallet Internal.release.xcconfig */;
+			baseConfigurationReference = 24FAD35754BADACA3CB526EE /* Pods-App-RNWallet Internal.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Internal";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
@@ -1381,7 +1385,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Internal-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Web3Wallet RN (internal)";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1410,6 +1414,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1437,6 +1442,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				CXX = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1468,6 +1474,8 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				LD = "";
+				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -1497,6 +1505,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1524,6 +1533,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				CXX = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1548,6 +1558,8 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				LD = "";
+				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
