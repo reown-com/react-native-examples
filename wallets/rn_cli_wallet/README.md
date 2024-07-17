@@ -1,4 +1,4 @@
-# Web3Wallet example
+# WalletKit example
 
 ## Getting Started
 

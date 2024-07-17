@@ -13,7 +13,7 @@ function ConnectionsScreen() {
   return (
     <FlexView flexGrow={1} justifyContent="center" alignItems="center">
       <Text style={styles.title} center variant="large-600">
-        Web3Modal + wagmi
+        AppKit + wagmi
       </Text>
       <View style={styles.buttonContainer}>
         <W3mButton balance="show" />

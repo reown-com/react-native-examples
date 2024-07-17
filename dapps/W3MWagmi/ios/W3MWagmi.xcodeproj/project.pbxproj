@@ -15,23 +15,25 @@
 		1DF039B7B9F0E159D14A835B /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17E85A52855CFD33E5041BA /* ExpoModulesProvider.swift */; };
 		1F1C00722B8E4F9600FC18DB /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		1F1C00732B8E4F9600FC18DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		1F1C00782B8E4F9600FC18DB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		1F1C00792B8E4F9600FC18DB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		1F1C008C2B8E539F00FC18DB /* Debug-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F1C008B2B8E539F00FC18DB /* Debug-Info.plist */; };
 		1F1C00922B8E53EE00FC18DB /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		1F1C00932B8E53EE00FC18DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		1F1C00992B8E53EE00FC18DB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		1F1C009A2B8E53EE00FC18DB /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		1F1C00A62B8E543C00FC18DB /* Internal-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F1C00A42B8E543300FC18DB /* Internal-Info.plist */; };
+		1F31E52C2C46FA15007B1746 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E445F9756054F479E8D2973 /* BootSplash.storyboard */; };
+		1F31E52D2C46FA2A007B1746 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E445F9756054F479E8D2973 /* BootSplash.storyboard */; };
 		1FED56F32C04D58700E117C9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1FED56F22C04D58700E117C9 /* PrivacyInfo.xcprivacy */; };
+		45B11C20E1DA948AC864AF49 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 49BEE6AAA90D00533CF06130 /* PrivacyInfo.xcprivacy */; };
 		523F07284AAB408FF308431D /* libPods-App-W3MWagmi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E1AB42B94A123446CF9081B /* libPods-App-W3MWagmi.a */; };
 		5EFC5B51E34E236600D965D5 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01F9F2E77A287A42A071531 /* ExpoModulesProvider.swift */; };
 		62E16E100E987162F1DE10CB /* libPods-App-W3MWagmi Debug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F417D12F2F6EF11DB654689F /* libPods-App-W3MWagmi Debug.a */; };
 		6B1A53C7CCD172EB49BA17F6 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13892DB6EEABD959468B14EE /* ExpoModulesProvider.swift */; };
 		70F9154B52B63B1B11EC9B00 /* libPods-App-W3MWagmiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4930C6E49C5BD621FC12F8F /* libPods-App-W3MWagmiTests.a */; };
 		7B1A0654D97E0DC80D406822 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEAAEBE88CC19D9314B6076C /* ExpoModulesProvider.swift */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		99CFC20629154EF9A892D2D8 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E445F9756054F479E8D2973 /* BootSplash.storyboard */; };
 		CB4E23EFF00E1AB039998C3B /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5B7BAF7B00B10ECC43FAB7 /* ExpoModulesProvider.swift */; };
+		D9256621E00D38BF53C3DD9F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 91137E93C077D4603FB04D5E /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,8 +68,10 @@
 		1FED56F22C04D58700E117C9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		235BC754299BA1770EDA59D3 /* libPods-App-W3MWagmi Internal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-W3MWagmi Internal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2BB6B6C93CEA66CC35D0F82A /* Pods-App-W3MWagmi Debug.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi Debug.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug.debug.xcconfig"; sourceTree = "<group>"; };
+		49BEE6AAA90D00533CF06130 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		4E1AB42B94A123446CF9081B /* libPods-App-W3MWagmi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-W3MWagmi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = W3MWagmi/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8E445F9756054F479E8D2973 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = W3MWagmi/BootSplash.storyboard; sourceTree = "<group>"; };
+		91137E93C077D4603FB04D5E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		C01F9F2E77A287A42A071531 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-App-W3MWagmiTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		C0E623856FBFCA42A5187F5F /* Pods-App-W3MWagmiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmiTests.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CAD050A4EBCDA56DCFA7FC42 /* Pods-App-W3MWagmi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi.debug.xcconfig"; sourceTree = "<group>"; };
@@ -144,8 +148,8 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				8E445F9756054F479E8D2973 /* BootSplash.storyboard */,
 			);
 			name = W3MWagmi;
 			sourceTree = "<group>";
@@ -205,6 +209,8 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
 				F143E7FB2F9F77658DD7B47C /* ExpoModulesProviders */,
+				49BEE6AAA90D00533CF06130 /* PrivacyInfo.xcprivacy */,
+				91137E93C077D4603FB04D5E /* PrivacyInfo.xcprivacy */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -404,8 +410,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FED56F32C04D58700E117C9 /* PrivacyInfo.xcprivacy in Resources */,
-				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				99CFC20629154EF9A892D2D8 /* BootSplash.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,9 +419,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F31E52C2C46FA15007B1746 /* BootSplash.storyboard in Resources */,
 				1F1C008C2B8E539F00FC18DB /* Debug-Info.plist in Resources */,
-				1F1C00782B8E4F9600FC18DB /* LaunchScreen.storyboard in Resources */,
 				1F1C00792B8E4F9600FC18DB /* Images.xcassets in Resources */,
+				45B11C20E1DA948AC864AF49 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,9 +430,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F1C00992B8E53EE00FC18DB /* LaunchScreen.storyboard in Resources */,
+				1F31E52D2C46FA2A007B1746 /* BootSplash.storyboard in Resources */,
 				1F1C00A62B8E543C00FC18DB /* Internal-Info.plist in Resources */,
 				1F1C009A2B8E53EE00FC18DB /* Images.xcassets in Resources */,
+				D9256621E00D38BF53C3DD9F /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -514,7 +522,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  . \"$WITH_ENVIRONMENT\"\nfi\nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
+			shellScript = "\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  . \"$WITH_ENVIRONMENT\"\nfi\nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
 		};
 		1F1C008F2B8E53EE00FC18DB /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -582,7 +590,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  . \"$WITH_ENVIRONMENT\"\nfi\nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
+			shellScript = "\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  . \"$WITH_ENVIRONMENT\"\nfi\nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
 		};
 		1F8480CE4CB279ECDFA61B8B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -858,7 +866,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  . \"$WITH_ENVIRONMENT\"\nfi\nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
+			shellScript = "\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  . \"$WITH_ENVIRONMENT\"\nfi\nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1091,7 +1099,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = W3MWagmi/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "RN W3Modal";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1205,7 +1213,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = W3MWagmi/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "RN W3Modal";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1319,7 +1327,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "W3MWagmi/Debug-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "RN W3Modal";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1433,7 +1441,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "W3MWagmi/Debug-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "RN W3Modal";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1550,7 +1558,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "W3MWagmi/Internal-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "RN W3Modal";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1669,7 +1677,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "W3MWagmi/Internal-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "RN W3Modal";
+				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1698,6 +1706,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1725,6 +1734,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				CXX = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
@@ -1745,6 +1755,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD = "";
+				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -1774,6 +1786,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1801,6 +1814,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				CXX = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
@@ -1817,6 +1831,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD = "";
+				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",

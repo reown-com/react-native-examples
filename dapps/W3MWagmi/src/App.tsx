@@ -1,6 +1,7 @@
 import '@walletconnect/react-native-compat';
 import React, {useEffect} from 'react';
 import {Linking} from 'react-native';
+import BootSplash from 'react-native-bootsplash';
 import {
   createWeb3Modal,
   defaultWagmiConfig,
@@ -35,9 +36,9 @@ const projectId = Config.ENV_PROJECT_ID;
 
 // 2. Create config
 const metadata = {
-  name: 'Web3Modal + wagmi',
-  description: 'Web3Modal + wagmi',
-  url: 'https://web3modal.com',
+  name: 'AppKit + wagmi',
+  description: 'AppKit + wagmi',
+  url: 'https://walletconnect.com',
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
   redirect: {
     native: 'w3mwagmisample://',
@@ -92,6 +93,10 @@ function App(): JSX.Element {
     });
 
     return () => sub.remove();
+  }, []);
+
+  useEffect(() => {
+    BootSplash.hide({fade: true});
   }, []);
 
   return (

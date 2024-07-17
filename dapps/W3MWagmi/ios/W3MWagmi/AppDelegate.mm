@@ -1,4 +1,5 @@
 #import "AppDelegate.h"
+#import "RNBootSplash.h"
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
@@ -17,10 +18,10 @@
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-  return [self getBundleURL];
+  return [self bundleURL];
 }
 
-- (NSURL *)getBundleURL
+- (NSURL *)bundleURL
 {
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
@@ -44,6 +45,11 @@
  return [RCTLinkingManager application:application
                   continueUserActivity:userActivity
                     restorationHandler:restorationHandler];
+}
+
+// react-native-bootsplash
+- (void)customizeRootView:(RCTRootView *)rootView {
+  [RNBootSplash initWithStoryboard:@"BootSplash" rootView:rootView]; // ⬅️ initialize the splash screen
 }
 
 @end
