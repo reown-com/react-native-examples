@@ -1,6 +1,6 @@
-import {useEffect} from 'react';
+import {useCallback, useEffect} from 'react';
 import Config from 'react-native-config';
-import {Linking, StatusBar, useColorScheme} from 'react-native';
+import {Linking, Platform, StatusBar, useColorScheme} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
@@ -12,6 +12,7 @@ import useInitializeWeb3Wallet from '@/hooks/useInitializeWeb3Wallet';
 import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import SettingsStore from '@/store/SettingsStore';
+import ModalStore from '@/store/ModalStore';
 
 if (!__DEV__ && Config.ENV_SENTRY_DSN) {
   Sentry.init({
@@ -57,6 +58,36 @@ const App = () => {
     }
   }, [initialized]);
 
+  const pair = useCallback(async (uri: string) => {
+    try {
+      ModalStore.open('LoadingModal', {loadingMessage: 'Pairing...'});
+
+      await SettingsStore.state.initPromise;
+      await web3wallet.pair({uri});
+    } catch (error: any) {
+      ModalStore.open('LoadingModal', {
+        errorMessage: error?.message || 'There was an error pairing',
+      });
+    }
+  }, []);
+
+  const deeplinkHandler = useCallback(
+    ({url}: {url: string}) => {
+      if (url.includes('wc_ev')) {
+        ModalStore.open('LoadingModal', {loadingMessage: 'Loading request...'});
+        SettingsStore.setCurrentRequestLinkMode(true);
+      } else if (url.includes('wc?uri=')) {
+        const uri = url.split('wc?uri=')[1];
+        pair(decodeURIComponent(uri));
+      } else if (url.includes('wc:')) {
+        pair(url);
+      } else if (url.includes('wc?')) {
+        ModalStore.open('LoadingModal', {loadingMessage: 'Loading request...'});
+      }
+    },
+    [pair],
+  );
+
   useEffect(() => {
     /**
      * Empty promise that resolves after web3wallet is initialized
@@ -67,22 +98,22 @@ const App = () => {
 
   // Check if app was opened from a link-mode request
   useEffect(() => {
+    SettingsStore.setInitPromise();
+
     async function checkInitialUrl() {
       const initialUrl = await Linking.getInitialURL();
-      if (initialUrl && initialUrl.includes('wc_ev')) {
-        SettingsStore.setCurrentRequestLinkMode(true);
+      if (!initialUrl) {
+        return;
       }
+
+      deeplinkHandler({url: initialUrl});
     }
 
-    const sub = Linking.addEventListener('url', ({url}) => {
-      if (url.includes('wc_ev')) {
-        SettingsStore.setCurrentRequestLinkMode(true);
-      }
-    });
+    const sub = Linking.addEventListener('url', deeplinkHandler);
 
     checkInitialUrl();
     return () => sub.remove();
-  }, []);
+  }, [deeplinkHandler]);
 
   return (
     <NavigationContainer>
@@ -90,7 +121,7 @@ const App = () => {
         barStyle={scheme === 'light' ? 'dark-content' : 'light-content'}
       />
       <RootStackNavigator />
-      <Toast />
+      <Toast position="top" topOffset={Platform.select({ ios: 80, android: 0 })} />
     </NavigationContainer>
   );
 };

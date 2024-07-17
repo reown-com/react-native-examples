@@ -11,7 +11,7 @@ import {
   rejectEIP155Request,
 } from '@/utils/EIP155RequestHandlerUtil';
 import {web3wallet} from '@/utils/WalletConnectUtil';
-import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
+import {handleRedirect} from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
 import {RequestModal} from './RequestModal';
 import {Chains} from '@/components/Modal/Chains';
@@ -21,7 +21,7 @@ export default function SessionSignModal() {
   // Get request and wallet data from store
   const {data} = useSnapshot(ModalStore.state);
   const requestEvent = data?.requestEvent;
-  const requestSession = data?.requestSession;
+  const session = data?.requestSession;
 
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
@@ -30,8 +30,7 @@ export default function SessionSignModal() {
   const {topic, params} = requestEvent!;
   const {request, chainId} = params;
   const chain = PresetsUtil.getChainData(chainId.split(':')[1]);
-  const requestMetadata = requestSession?.peer
-    ?.metadata as SignClientTypes.Metadata;
+  const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
 
   // Get message, convert it to UTF8 string if it is valid hex
   const message = getSignParamsMessage(request.params);
@@ -46,7 +45,8 @@ export default function SessionSignModal() {
           topic,
           response,
         });
-        handleDeepLinkRedirect(requestMetadata?.redirect);
+
+        handleRedirect(peerMetadata?.redirect, web3wallet.metadata.redirect);
       } catch (e) {
         console.log((e as Error).message, 'error');
         return;
@@ -54,7 +54,7 @@ export default function SessionSignModal() {
       setIsLoadingApprove(false);
       ModalStore.close();
     }
-  }, [requestEvent, requestMetadata, topic]);
+  }, [requestEvent, peerMetadata, topic]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
@@ -79,14 +79,14 @@ export default function SessionSignModal() {
   const method = requestEvent?.params?.request?.method!;
 
   // Ensure request and wallet are defined
-  if (!requestEvent || !requestSession) {
+  if (!requestEvent || !session) {
     return <Text>Missing request data</Text>;
   }
 
   return (
     <RequestModal
       intention="wants to request a signature"
-      metadata={requestMetadata}
+      metadata={peerMetadata}
       onApprove={onApprove}
       onReject={onReject}
       approveLoader={isLoadingApprove}

@@ -12,7 +12,7 @@ import ModalStore from '@/store/ModalStore';
 import {eip155Addresses, eip155Wallets} from '@/utils/EIP155WalletUtil';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import SettingsStore from '@/store/SettingsStore';
-import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
+import {handleRedirect} from '@/utils/LinkingUtils';
 import {useTheme} from '@/hooks/useTheme';
 
 import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
@@ -80,8 +80,10 @@ export default function SessionAuthenticateModal() {
         SettingsStore.setSessions(
           Object.values(web3wallet.getActiveSessions()),
         );
-        handleDeepLinkRedirect(
+
+        handleRedirect(
           authRequest.params.requester?.metadata?.redirect,
+          web3wallet.metadata.redirect,
         );
       } catch (e) {
         console.log((e as Error).message, 'error');

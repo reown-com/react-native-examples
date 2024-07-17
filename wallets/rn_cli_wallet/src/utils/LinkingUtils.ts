@@ -1,31 +1,50 @@
 import {Linking} from 'react-native';
+import Toast from 'react-native-toast-message';
 
-export const handleDeepLinkRedirect = (redirect?: {
+interface redirect {
   native?: string;
   universal?: string;
   linkMode?: boolean;
-}) => {
+}
+
+export const handleRedirect = (
+  peerRedirect?: redirect,
+  selfRedirect?: redirect,
+) => {
   try {
-    if (redirect?.linkMode) {
+    if (peerRedirect?.linkMode && selfRedirect?.linkMode) {
+      Toast.show({
+        type: 'success',
+        text1: 'Redirecting to the dapp...',
+      });
       return;
     }
 
-    if (redirect?.native) {
-      Linking.openURL(redirect.native).catch(() => {
+    if (peerRedirect?.native) {
+      Linking.openURL(peerRedirect.native).catch(() => {
         // Fallback to universal link
-        if (redirect?.universal) {
-          Linking.openURL(redirect.universal);
+        if (peerRedirect?.universal) {
+          Linking.openURL(peerRedirect.universal);
         } else {
-          //Show success toast
+          Toast.show({
+            type: 'success',
+            text1: 'Go back to the dapp',
+          });
         }
       });
-    } else if (redirect?.universal) {
-      Linking.openURL(redirect.universal);
+    } else if (peerRedirect?.universal) {
+      Linking.openURL(peerRedirect.universal);
     } else {
-      //Show success toast
+      Toast.show({
+        type: 'success',
+        text1: 'Go back to the dapp',
+      });
     }
   } catch (error) {
     console.log(error);
-    //Show success toast
+    Toast.show({
+      type: 'success',
+      text1: 'Go back to the dapp',
+    });
   }
 };

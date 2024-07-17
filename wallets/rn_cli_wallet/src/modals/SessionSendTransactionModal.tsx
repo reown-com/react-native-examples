@@ -10,7 +10,7 @@ import {
   rejectEIP155Request,
 } from '@/utils/EIP155RequestHandlerUtil';
 import {web3wallet} from '@/utils/WalletConnectUtil';
-import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
+import {handleRedirect} from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
 import {RequestModal} from '@/modals/RequestModal';
 import {Chains} from '@/components/Modal/Chains';
@@ -23,7 +23,7 @@ export default function SessionSendTransactionModal() {
 
   // Get request and wallet data from store
   const requestEvent = data?.requestEvent;
-  const requestSession = data?.requestSession;
+  const session = data?.requestSession;
 
   const topic = requestEvent?.topic;
   const params = requestEvent?.params;
@@ -33,8 +33,7 @@ export default function SessionSendTransactionModal() {
   const transaction = request?.params[0];
   const method = requestEvent?.params?.request?.method!;
 
-  const requestMetadata = requestSession?.peer
-    ?.metadata as SignClientTypes.Metadata;
+  const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
 
   // Handle approve action
   const onApprove = useCallback(async () => {
@@ -46,7 +45,7 @@ export default function SessionSendTransactionModal() {
           topic,
           response,
         });
-        handleDeepLinkRedirect(requestMetadata?.redirect);
+        handleRedirect(peerMetadata?.redirect, web3wallet.metadata.redirect);
       } catch (e) {
         console.log((e as Error).message, 'error');
         return;
@@ -54,7 +53,7 @@ export default function SessionSendTransactionModal() {
       setIsLoadingApprove(false);
       ModalStore.close();
     }
-  }, [requestEvent, requestMetadata, topic]);
+  }, [requestEvent, peerMetadata, topic]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
@@ -78,7 +77,7 @@ export default function SessionSendTransactionModal() {
   return (
     <RequestModal
       intention="sign a transaction"
-      metadata={requestMetadata}
+      metadata={peerMetadata}
       onApprove={onApprove}
       onReject={onReject}
       approveLoader={isLoadingApprove}

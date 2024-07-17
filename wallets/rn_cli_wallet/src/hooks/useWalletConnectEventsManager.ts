@@ -73,7 +73,6 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
 
   const onSessionAuthenticate = useCallback(
     (authRequest: SignClientTypes.EventArguments['session_authenticate']) => {
-      console.log('onSessionAuthenticate', authRequest);
       ModalStore.open('SessionAuthenticateModal', {authRequest});
     },
     [],

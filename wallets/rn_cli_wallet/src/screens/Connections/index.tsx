@@ -1,5 +1,4 @@
-import {useCallback, useEffect, useState} from 'react';
-import {Linking} from 'react-native';
+import {useEffect, useState} from 'react';
 
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import Sessions from '@/screens/Connections/components/Sessions';
@@ -7,13 +6,12 @@ import ActionButtons from '@/screens/Connections/components/ActionButtons';
 import {CopyURIDialog} from '@/components/CopyURIDialog';
 import {ConnectionsStackScreenProps} from '@/utils/TypesUtil';
 import ModalStore from '@/store/ModalStore';
-import {useInitialURL} from '@/hooks/useInitialUrl';
 import SettingsStore from '@/store/SettingsStore';
+import { useSnapshot } from 'valtio';
 
 type Props = ConnectionsStackScreenProps<'Connections'>;
 
 export default function Connections({route}: Props) {
-  const {url: initialUrl, processing} = useInitialURL();
   const [copyDialogVisible, setCopyDialogVisible] = useState(false);
 
   const onDialogConnect = (uri: string) => {
@@ -28,7 +26,7 @@ export default function Connections({route}: Props) {
   };
 
   async function pair(uri: string) {
-    ModalStore.open('LoadingModal', {});
+    ModalStore.open('LoadingModal', {loadingMessage: 'Pairing...'});
 
     /**
      * Wait for settings web3wallet to be initialized before calling pair
@@ -45,29 +43,8 @@ export default function Connections({route}: Props) {
     }
   }
 
-  const deeplinkCallback = useCallback(({url}: {url: string}) => {
-    if (url.includes('wc?uri=')) {
-      const uri = url.split('wc?uri=')[1];
-      pair(decodeURIComponent(uri));
-    } else if (url.includes('wc:')) {
-      pair(url);
-    }
-  }, []);
-
-  // Handle deep link if app was closed
   useEffect(() => {
-    if (initialUrl && !processing) {
-      deeplinkCallback({url: initialUrl});
-    }
-  }, [initialUrl, processing, deeplinkCallback]);
-
-  useEffect(() => {
-    // Handle deep link if app was in background
-    Linking.addEventListener('url', deeplinkCallback);
-  }, [deeplinkCallback]);
-
-  useEffect(() => {
-    // Uri received from QR code scanner
+    // URI received from QR code scanner
     if (route.params?.uri) {
       pair(route.params.uri);
     }
