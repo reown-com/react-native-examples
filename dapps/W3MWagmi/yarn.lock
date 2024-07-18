@@ -5611,25 +5611,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.13.3-canary-c1f48b78a":
-  version: 2.13.3-canary-c1f48b78a
-  resolution: "@walletconnect/react-native-compat@npm:2.13.3-canary-c1f48b78a"
-  dependencies:
-    events: 3.3.0
-    fast-text-encoding: 1.0.6
-    react-native-url-polyfill: 2.0.0
-  peerDependencies:
-    "@react-native-async-storage/async-storage": "*"
-    "@react-native-community/netinfo": "*"
-    expo-application: "*"
-    react-native-get-random-values: "*"
-  peerDependenciesMeta:
-    expo-application:
-      optional: true
-  checksum: d5b9d12184c26552d1ba31cda61c274d30e17492c8d2911ed36c29b2f5085d021bacb10187983864ea45c82a0d931570744f8d0d86720d578bfbd7ae8283550c
-  languageName: node
-  linkType: hard
-
 "@walletconnect/react-native-compat@npm:2.13.3-link-mode-0":
   version: 2.13.3-link-mode-0
   resolution: "@walletconnect/react-native-compat@npm:2.13.3-link-mode-0"
@@ -5779,127 +5760,121 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3modal/coinbase-wagmi-react-native@npm:2.0.0-canary-link.5":
-  version: 2.0.0-canary-link.5
-  resolution: "@web3modal/coinbase-wagmi-react-native@npm:2.0.0-canary-link.5"
+"@web3modal/coinbase-wagmi-react-native@npm:0.0.0-feat-link-mode-20240717210712":
+  version: 0.0.0-feat-link-mode-20240717210712
+  resolution: "@web3modal/coinbase-wagmi-react-native@npm:0.0.0-feat-link-mode-20240717210712"
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: 067e60b6519b818d843b1c93ff0f1b9973011161e8b03a332a8f1ff6e3b7cbb6f6f8a69610c7a43de83cd4400bd3457dc243e2e9c6e8ec67626883be19de28f5
+  checksum: 3f2334ed7c6150d9b13b7cfdc412bcc35f8f83eeb4344ea6acb946ee39a0f012669d5cf88d66dbda602d693ec915a1da1057514e51bb5e10d2682dc13fca4084
   languageName: node
   linkType: hard
 
-"@web3modal/common-react-native@npm:2.0.0-canary-link.5":
-  version: 2.0.0-canary-link.5
-  resolution: "@web3modal/common-react-native@npm:2.0.0-canary-link.5"
-  checksum: e471382d8088b72d12a5f4f17a63e5101c94a86e914e180916a7c0680bb5f9b6cd4e123898cece30bc1eefc6cc5d0732600099485b0235ec42943524fd8b257a
+"@web3modal/common-react-native@npm:0.0.0-feat-link-mode-20240717210712":
+  version: 0.0.0-feat-link-mode-20240717210712
+  resolution: "@web3modal/common-react-native@npm:0.0.0-feat-link-mode-20240717210712"
+  checksum: 85f679ea2bb0a10f19313827d7184ab25eb62c468f01384ec5eb49938cd9b4c594c270f95409e69f25afa65f7185ad9ff1a7b581845153b2deb92a470363e058
   languageName: node
   linkType: hard
 
-"@web3modal/core-react-native@npm:2.0.0-canary-link.5":
-  version: 2.0.0-canary-link.5
-  resolution: "@web3modal/core-react-native@npm:2.0.0-canary-link.5"
+"@web3modal/core-react-native@npm:0.0.0-feat-link-mode-20240717210712":
+  version: 0.0.0-feat-link-mode-20240717210712
+  resolution: "@web3modal/core-react-native@npm:0.0.0-feat-link-mode-20240717210712"
   dependencies:
+    "@web3modal/common-react-native": 0.0.0-feat-link-mode-20240717210712
     valtio: 1.10.5
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 6a03da4fc28e9a478126a6fe2ea48a34840498c20205ec376585addc2c601b154e258f748efcbf609223b1a9f34718689f203af605bcb9372a9213a6a8c6e73e
+  checksum: d52729c02658e9550423079cf7438d84f282f1501b407537c2700c32160f86b1840df7ed2b4a53174eaeb4699865d6fba1f6337278ca2c0032b5306b7307a14d
   languageName: node
   linkType: hard
 
-"@web3modal/email-react-native@npm:2.0.0-canary-link.5":
-  version: 2.0.0-canary-link.5
-  resolution: "@web3modal/email-react-native@npm:2.0.0-canary-link.5"
+"@web3modal/email-react-native@npm:0.0.0-feat-link-mode-20240717210712":
+  version: 0.0.0-feat-link-mode-20240717210712
+  resolution: "@web3modal/email-react-native@npm:0.0.0-feat-link-mode-20240717210712"
   dependencies:
-    "@web3modal/core-react-native": 2.0.0-canary-link.5
-    "@web3modal/ui-react-native": 2.0.0-canary-link.5
+    "@web3modal/core-react-native": 0.0.0-feat-link-mode-20240717210712
+    "@web3modal/ui-react-native": 0.0.0-feat-link-mode-20240717210712
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: 1165cb086169f832f149dd7095616e21dc7aecbc5f2f094fd3ddc018e64f6b9266100e5323ead8f2eb27f1cc52c76b975282788f9edf129ec9e5561a154e21e8
+  checksum: bfff672ffea16b0845f07ea0140a0c1233e4ff3e3bf615a377eeb66a38ce9ef695b6c6e246f54a6347447c975d97c0fab7c6cdbe9fc6613a3d25f98927fd84b6
   languageName: node
   linkType: hard
 
-"@web3modal/email-wagmi-react-native@npm:2.0.0-canary-link.5":
-  version: 2.0.0-canary-link.5
-  resolution: "@web3modal/email-wagmi-react-native@npm:2.0.0-canary-link.5"
+"@web3modal/email-wagmi-react-native@npm:0.0.0-feat-link-mode-20240717210712":
+  version: 0.0.0-feat-link-mode-20240717210712
+  resolution: "@web3modal/email-wagmi-react-native@npm:0.0.0-feat-link-mode-20240717210712"
   dependencies:
-    "@web3modal/email-react-native": 2.0.0-canary-link.5
+    "@web3modal/email-react-native": 0.0.0-feat-link-mode-20240717210712
   peerDependencies:
     wagmi: ">=2"
-  checksum: abbaeacd0f4e3e46e8a69a9566be24175069da1cb39e7c1b56f75299caf154846a6b03a05e13c7def8cfdb2f8e533ef7c5b2ad2eaff5fb546280efab43629748
+  checksum: 7e97bbb3dee41e5d375d9a350c8dde58979367bdd9581e92875e2c61ad7aaeed1791dcd579c16c1273d24b05c858015088aa03dfc821599bfd422fdde8dae232
   languageName: node
   linkType: hard
 
-"@web3modal/scaffold-react-native@npm:2.0.0-canary-link.5":
-  version: 2.0.0-canary-link.5
-  resolution: "@web3modal/scaffold-react-native@npm:2.0.0-canary-link.5"
+"@web3modal/scaffold-react-native@npm:0.0.0-feat-link-mode-20240717210712":
+  version: 0.0.0-feat-link-mode-20240717210712
+  resolution: "@web3modal/scaffold-react-native@npm:0.0.0-feat-link-mode-20240717210712"
   dependencies:
-    "@web3modal/core-react-native": 2.0.0-canary-link.5
-    "@web3modal/siwe-react-native": 2.0.0-canary-link.5
-    "@web3modal/ui-react-native": 2.0.0-canary-link.5
+    "@web3modal/core-react-native": 0.0.0-feat-link-mode-20240717210712
+    "@web3modal/siwe-react-native": 0.0.0-feat-link-mode-20240717210712
+    "@web3modal/ui-react-native": 0.0.0-feat-link-mode-20240717210712
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: e31c3add1fa3e5029ff7d172cc3c38c899bda59c64ba1e87081f23e1109de790506592f1c06c54f55f407786f503a7e70f647cbbada942aac2b1f66237c1ab3f
+  checksum: f558b3bcf26b9b548849abba3e8a6f29e7de41b8756a7cb101a0d669219940374e83020b017513bb67ca2f3bb3b6357bb71d3f50a0689269d4e32f41420fec8a
   languageName: node
   linkType: hard
 
-"@web3modal/scaffold-utils-react-native@npm:2.0.0-canary-link.5":
-  version: 2.0.0-canary-link.5
-  resolution: "@web3modal/scaffold-utils-react-native@npm:2.0.0-canary-link.5"
+"@web3modal/scaffold-utils-react-native@npm:0.0.0-feat-link-mode-20240717210712":
+  version: 0.0.0-feat-link-mode-20240717210712
+  resolution: "@web3modal/scaffold-utils-react-native@npm:0.0.0-feat-link-mode-20240717210712"
   dependencies:
-    "@web3modal/scaffold-react-native": 2.0.0-canary-link.5
-  checksum: f19e277d3a11897db7a4bf944722e0724cbeafa7075c3ee0f2834006df93acca184b6012286341aee952969e008b28e26837d5bc70e19daef804df73dd208710
+    "@web3modal/scaffold-react-native": 0.0.0-feat-link-mode-20240717210712
+  checksum: 9c9234fa6e727871a9dae27dcf2c0bf2716ccebeca3c6fca112b95b0698d6b58d538a075ba22d73e764859e86189bff09119572e2348fbaa0e453f14eabaff28
   languageName: node
   linkType: hard
 
-"@web3modal/siwe-react-native@npm:2.0.0-canary-link.5":
-  version: 2.0.0-canary-link.5
-  resolution: "@web3modal/siwe-react-native@npm:2.0.0-canary-link.5"
+"@web3modal/siwe-react-native@npm:0.0.0-feat-link-mode-20240717210712":
+  version: 0.0.0-feat-link-mode-20240717210712
+  resolution: "@web3modal/siwe-react-native@npm:0.0.0-feat-link-mode-20240717210712"
   dependencies:
     "@walletconnect/utils": 2.13.1
-    "@web3modal/common-react-native": 2.0.0-canary-link.5
-    "@web3modal/core-react-native": 2.0.0-canary-link.5
-    "@web3modal/ui-react-native": 2.0.0-canary-link.5
+    "@web3modal/common-react-native": 0.0.0-feat-link-mode-20240717210712
+    "@web3modal/core-react-native": 0.0.0-feat-link-mode-20240717210712
+    "@web3modal/ui-react-native": 0.0.0-feat-link-mode-20240717210712
     valtio: 1.10.5
-  checksum: 0b657d52fa0fdf91285f11df0c895f7b43cf9c2cfd6fed41db3a51a48b3afd4054142aa234693ec7566740a309d8c3f0fe1bc3929ba35cbb1ed909cf89c463f4
+  checksum: 0a1b017e364f1f3101de5ba2953f32641f122560c1d30db35d407a25f625e2c7306018a3d68b55aff8d49ee5e00e02ea276d40e02ada5f4a6c5882dd1f1b9f14
   languageName: node
   linkType: hard
 
-"@web3modal/ui-react-native@npm:2.0.0-canary-link.5":
-  version: 2.0.0-canary-link.5
-  resolution: "@web3modal/ui-react-native@npm:2.0.0-canary-link.5"
+"@web3modal/ui-react-native@npm:0.0.0-feat-link-mode-20240717210712":
+  version: 0.0.0-feat-link-mode-20240717210712
+  resolution: "@web3modal/ui-react-native@npm:0.0.0-feat-link-mode-20240717210712"
   dependencies:
     qrcode: 1.5.3
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 55bd321aeab6108f3816737ccd2f47bbe819f7e70b968e6537b4804e3471a17ff7b0b390c69246223bc1d02a3f38da8b01ea21953192abc0b43b3d93f8773c6f
+  checksum: 71670e4689eb9f75b211843df3e0c12afbec404d997c92aa2776413632354bd5427dead4be3fab717f1de72bae998893926fe8eafb521dd26bf4663e51c32991
   languageName: node
   linkType: hard
 
-"@web3modal/wagmi-react-native@npm:2.0.0-canary-link.5":
-  version: 2.0.0-canary-link.5
-  resolution: "@web3modal/wagmi-react-native@npm:2.0.0-canary-link.5"
+"@web3modal/wagmi-react-native@npm:0.0.0-feat-link-mode-20240717210712":
+  version: 0.0.0-feat-link-mode-20240717210712
+  resolution: "@web3modal/wagmi-react-native@npm:0.0.0-feat-link-mode-20240717210712"
   dependencies:
-    "@walletconnect/core": 2.13.3-canary-c1f48b78a
-    "@walletconnect/ethereum-provider": 2.13.3-canary-c1f48b78a
-    "@walletconnect/react-native-compat": 2.13.3-canary-c1f48b78a
-    "@walletconnect/sign-client": 2.13.3-canary-c1f48b78a
-    "@walletconnect/types": 2.13.3-canary-c1f48b78a
-    "@walletconnect/universal-provider": 2.13.3-canary-c1f48b78a
-    "@walletconnect/utils": 2.13.3-canary-c1f48b78a
-    "@web3modal/common-react-native": 2.0.0-canary-link.5
-    "@web3modal/scaffold-react-native": 2.0.0-canary-link.5
-    "@web3modal/scaffold-utils-react-native": 2.0.0-canary-link.5
-    "@web3modal/siwe-react-native": 2.0.0-canary-link.5
+    "@web3modal/common-react-native": 0.0.0-feat-link-mode-20240717210712
+    "@web3modal/scaffold-react-native": 0.0.0-feat-link-mode-20240717210712
+    "@web3modal/scaffold-utils-react-native": 0.0.0-feat-link-mode-20240717210712
+    "@web3modal/siwe-react-native": 0.0.0-feat-link-mode-20240717210712
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -5909,7 +5884,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2"
     wagmi: ">=2"
-  checksum: dc504c8396bc10b5906b3d5ceab9d01abb5d1b2d4d912e955e75b7ef719d4ebd5bcc90e01ac0443a2cb73efbdd3967d22978fd176d117829b35ae1b9c6e46a9b
+  checksum: de4b64a99d5c8a919d08795512cd191b530b49e16ef888b52354608b40e80eb1966493cd677f2c5cff069f7ee410d0db66024d7eddb60309144febc1f5c9170a
   languageName: node
   linkType: hard
 
@@ -6177,9 +6152,9 @@ __metadata:
     "@types/react": ^18.2.6
     "@types/react-test-renderer": ^18.0.0
     "@walletconnect/react-native-compat": 2.13.3-link-mode-0
-    "@web3modal/coinbase-wagmi-react-native": 2.0.0-canary-link.5
-    "@web3modal/email-wagmi-react-native": 2.0.0-canary-link.5
-    "@web3modal/wagmi-react-native": 2.0.0-canary-link.5
+    "@web3modal/coinbase-wagmi-react-native": 0.0.0-feat-link-mode-20240717210712
+    "@web3modal/email-wagmi-react-native": 0.0.0-feat-link-mode-20240717210712
+    "@web3modal/wagmi-react-native": 0.0.0-feat-link-mode-20240717210712
     babel-jest: ^29.6.3
     babel-plugin-module-resolver: ^5.0.0
     eslint: ^8.19.0
