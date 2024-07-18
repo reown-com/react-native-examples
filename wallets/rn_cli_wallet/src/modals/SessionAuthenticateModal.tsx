@@ -22,9 +22,9 @@ import {Message} from '@/components/Modal/Message';
 export default function SessionAuthenticateModal() {
   const Theme = useTheme();
 
-  const data = useSnapshot(ModalStore.state);
-  const authRequest = data?.data
-    ?.authRequest as SignClientTypes.EventArguments['session_authenticate'];
+  const {data} = useSnapshot(ModalStore.state);
+  const authRequest =
+    data?.authRequest as SignClientTypes.EventArguments['session_authenticate'];
 
   const {account} = useSnapshot(SettingsStore.state);
   const [messages, setMessages] = useState<
@@ -81,10 +81,10 @@ export default function SessionAuthenticateModal() {
           Object.values(web3wallet.getActiveSessions()),
         );
 
-        handleRedirect(
-          authRequest.params.requester?.metadata?.redirect,
-          web3wallet.metadata.redirect,
-        );
+        handleRedirect({
+          peerRedirect: authRequest.params.requester?.metadata?.redirect,
+          isLinkMode: SettingsStore.state.isCurrentRequestLinkMode,
+        });
       } catch (e) {
         console.log((e as Error).message, 'error');
         return;

@@ -15,6 +15,7 @@ import ModalStore from '@/store/ModalStore';
 import {RequestModal} from '@/modals/RequestModal';
 import {Chains} from '@/components/Modal/Chains';
 import {PresetsUtil} from '@/utils/PresetsUtil';
+import SettingsStore from '@/store/SettingsStore';
 
 export default function SessionSendTransactionModal() {
   const {data} = useSnapshot(ModalStore.state);
@@ -45,7 +46,10 @@ export default function SessionSendTransactionModal() {
           topic,
           response,
         });
-        handleRedirect(peerMetadata?.redirect, web3wallet.metadata.redirect);
+        handleRedirect({
+          peerRedirect: peerMetadata?.redirect,
+          isLinkMode: SettingsStore.state.isCurrentRequestLinkMode,
+        });
       } catch (e) {
         console.log((e as Error).message, 'error');
         return;

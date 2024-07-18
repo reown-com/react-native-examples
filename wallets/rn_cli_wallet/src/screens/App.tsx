@@ -73,9 +73,11 @@ const App = () => {
 
   const deeplinkHandler = useCallback(
     ({url}: {url: string}) => {
-      if (url.includes('wc_ev')) {
+      const isLinkMode = url.includes('wc_ev');
+      SettingsStore.setCurrentRequestLinkMode(isLinkMode);
+
+      if (isLinkMode) {
         ModalStore.open('LoadingModal', {loadingMessage: 'Loading request...'});
-        SettingsStore.setCurrentRequestLinkMode(true);
       } else if (url.includes('wc?uri=')) {
         const uri = url.split('wc?uri=')[1];
         pair(decodeURIComponent(uri));
@@ -121,7 +123,10 @@ const App = () => {
         barStyle={scheme === 'light' ? 'dark-content' : 'light-content'}
       />
       <RootStackNavigator />
-      <Toast position="top" topOffset={Platform.select({ ios: 80, android: 0 })} />
+      <Toast
+        position="top"
+        topOffset={Platform.select({ios: 80, android: 0})}
+      />
     </NavigationContainer>
   );
 };

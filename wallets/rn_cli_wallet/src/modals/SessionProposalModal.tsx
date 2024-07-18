@@ -23,9 +23,9 @@ import {RequestModal} from './RequestModal';
 export default function SessionProposalModal() {
   const Theme = useTheme();
   // Get proposal data and wallet address from store
-  const data = useSnapshot(ModalStore.state);
-  const proposal = data?.data
-    ?.proposal as SignClientTypes.EventArguments['session_proposal'];
+  const {data} = useSnapshot(ModalStore.state);
+  const proposal =
+    data?.proposal as SignClientTypes.EventArguments['session_proposal'];
 
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
@@ -109,10 +109,9 @@ export default function SessionProposalModal() {
           Object.values(web3wallet.getActiveSessions()),
         );
 
-        handleRedirect(
-          session.peer.metadata.redirect,
-          web3wallet.metadata.redirect,
-        );
+        handleRedirect({
+          peerRedirect: session.peer.metadata.redirect,
+        });
       } catch (e) {
         console.log((e as Error).message, 'error');
         return;

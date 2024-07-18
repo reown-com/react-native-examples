@@ -7,7 +7,6 @@ import {CopyURIDialog} from '@/components/CopyURIDialog';
 import {ConnectionsStackScreenProps} from '@/utils/TypesUtil';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
-import { useSnapshot } from 'valtio';
 
 type Props = ConnectionsStackScreenProps<'Connections'>;
 
@@ -35,6 +34,7 @@ export default function Connections({route}: Props) {
 
     try {
       setCopyDialogVisible(false);
+      SettingsStore.setCurrentRequestLinkMode(false);
       await web3wallet.pair({uri});
     } catch (error: any) {
       ModalStore.open('LoadingModal', {

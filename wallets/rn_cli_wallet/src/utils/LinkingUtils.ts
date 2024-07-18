@@ -7,15 +7,18 @@ interface redirect {
   linkMode?: boolean;
 }
 
-export const handleRedirect = (
-  peerRedirect?: redirect,
-  selfRedirect?: redirect,
-) => {
+interface Props {
+  peerRedirect?: redirect;
+  isLinkMode?: boolean;
+}
+
+export const handleRedirect = ({peerRedirect, isLinkMode}: Props) => {
   try {
-    if (peerRedirect?.linkMode && selfRedirect?.linkMode) {
+    if (isLinkMode) {
       Toast.show({
         type: 'success',
-        text1: 'Redirecting to the dapp...',
+        text1: 'Success!',
+        text2: 'Redirecting to the dapp...',
       });
       return;
     }
@@ -28,7 +31,8 @@ export const handleRedirect = (
         } else {
           Toast.show({
             type: 'success',
-            text1: 'Go back to the dapp',
+            text1: 'Success!',
+            text2: 'Please go back to the dapp',
           });
         }
       });
@@ -37,14 +41,16 @@ export const handleRedirect = (
     } else {
       Toast.show({
         type: 'success',
-        text1: 'Go back to the dapp',
+        text1: 'Success!',
+        text2: 'Please go back to the dapp',
       });
     }
   } catch (error) {
     console.log(error);
     Toast.show({
       type: 'success',
-      text1: 'Go back to the dapp',
+      text1: 'Success!',
+      text2: 'Please go back to the dapp',
     });
   }
 };
