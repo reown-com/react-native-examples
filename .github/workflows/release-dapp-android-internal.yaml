@@ -5,7 +5,7 @@ jobs:
   release-internal:
     uses: ./.github/workflows/release-android-base.yaml
     with:
-      name: Web3Modal React Native
+      name: RN AppKit
       root-path: 'dapps/W3MWagmi'
       release-type: 'internal'
       output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk'

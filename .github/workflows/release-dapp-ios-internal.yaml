@@ -5,7 +5,7 @@ jobs:
   release-internal:
     uses: ./.github/workflows/release-ios-base.yaml
     with:
-      name: Web3Modal React Native
+      name: RN AppKit
       root-path: 'dapps/W3MWagmi'
       xcode-project-path: 'dapps/W3MWagmi/ios/W3MWagmi.xcodeproj'
       xcode-workspace-path: 'dapps/W3MWagmi/ios/W3MWagmi.xcworkspace'
