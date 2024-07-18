@@ -2640,6 +2640,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kangfenmao/react-native-minimizer@npm:1.0.4":
+  version: 1.0.4
+  resolution: "@kangfenmao/react-native-minimizer@npm:1.0.4"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: b752ac3635acff719e3bd1bdcc7a47833b121c14d6133e0cc83fd5280b45a22b93b19795b9d6f7f07e6796a21af22dc7473fc14dbefd261da3765e54122b481b
+  languageName: node
+  linkType: hard
+
 "@nicolo-ribaudo/eslint-scope-5-internals@npm:5.1.1-v1":
   version: 5.1.1-v1
   resolution: "@nicolo-ribaudo/eslint-scope-5-internals@npm:5.1.1-v1"
@@ -13179,6 +13189,7 @@ __metadata:
     "@craftzdog/react-native-buffer": 6.0.5
     "@ethersproject/shims": 5.7.0
     "@json-rpc-tools/utils": 1.7.6
+    "@kangfenmao/react-native-minimizer": 1.0.4
     "@react-native-async-storage/async-storage": 1.24.0
     "@react-native-clipboard/clipboard": 1.14.1
     "@react-native-community/netinfo": 11.3.2
