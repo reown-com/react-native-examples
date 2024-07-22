@@ -41,8 +41,8 @@
     "react-native-toast-message": "2.2.0",
     "react-native-webview": "13.10.5",
     "valtio": "1.10.5",
-    "viem": "2.17.4",
-    "wagmi": "2.10.11"
+    "viem": "2.17.9",
+    "wagmi": "2.11.3"
   },
   "resolutions": {
     "@walletconnect/utils": "2.13.3-link-mode-0",
