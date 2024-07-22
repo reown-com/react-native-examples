@@ -4326,63 +4326,63 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/coinbase-wagmi-react-native@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-wagmi-react-native/-/coinbase-wagmi-react-native-1.4.3.tgz#24fe179bf00a8216f398104330f53e1d9f8b056a"
-  integrity sha512-CgyMEo/gAIn9vgIHhiXIlR/Sx8nwYPe7V4i8aKpvh6RBTiivFXuKySksKfSm3OBwwrf5xp0WJEv4RfPZFJe1Bw==
+"@web3modal/coinbase-wagmi-react-native@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-wagmi-react-native/-/coinbase-wagmi-react-native-1.4.4.tgz#6815dc224b3d25b72b042484c7648d9b141d1039"
+  integrity sha512-5C80iqv6RdUlDH+wODTtufVQ2Tn5b9bUppwcd9poTi1l9tNLvb48KdaTKcYUNWkn6bwqU2pcWVz1XkxdLJk0+w==
 
-"@web3modal/core-react-native@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.3.tgz#c6598eb99efad0b8baec2472d43ff889c4cf4024"
-  integrity sha512-o8m2ltMuZvjqoJqhuFHxgBJqqQgainNYJ4iSLAoWIyej/84HoP+zv97MoOfoMuLvwYBmJ2kPttP646/X5T8i5w==
+"@web3modal/core-react-native@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-1.4.4.tgz#e2a69b9e17fc2f73a50a2d782dfc9b637cc8923e"
+  integrity sha512-9hy4ZzUEB9fct50zwB72OWpjaHkpADC+kxaaQMg4SsAZPPJUpRKIq7sSNDWBtjAWTVhJOhY9zptQ1+6rTXH0rw==
   dependencies:
     valtio "1.10.5"
 
-"@web3modal/email-react-native@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.3.tgz#c6377766e0399d4f057da356c4ffd65f555c7b9b"
-  integrity sha512-aITyPzYaVzs1SB/kFpQjeeeN7FAXa/MnMby/qLOWnv5oEthaQY9cpzzB90g9H4wNYuqzWg/RLFNokHjOgK81Zg==
+"@web3modal/email-react-native@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-1.4.4.tgz#670fc326c5702bfb08d6c4819b17a1f3952aa039"
+  integrity sha512-z/30rK5PU6OPXIbEzDC/Jb1QbbTJcgswwMHsTgUNo6cEMHrQhy9RSo8jwLBvkY/d1TWFdtT9awb2/pugKWlvbA==
   dependencies:
-    "@web3modal/core-react-native" "1.4.3"
-    "@web3modal/ui-react-native" "1.4.3"
+    "@web3modal/core-react-native" "1.4.4"
+    "@web3modal/ui-react-native" "1.4.4"
     zod "3.22.4"
 
-"@web3modal/email-wagmi-react-native@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-wagmi-react-native/-/email-wagmi-react-native-1.4.3.tgz#577332bfc23d3b56b33837db3a386bdab46268cc"
-  integrity sha512-7NNFYlp4IKMOARiqhUk223hsvP2/MciCVKaPIidxgGsoF9WbvNIo8EAs6gq36iP/70bpwtuYmOMzOaRzr0kxWg==
+"@web3modal/email-wagmi-react-native@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-wagmi-react-native/-/email-wagmi-react-native-1.4.4.tgz#9b9c20eff7619cbd7fdab5ef3340856a012feb53"
+  integrity sha512-rwtCXNvYvaPKx2E/f3S8NuV8TklBae31ANFd6CYzjq2aKAwFSf75P6WM3NDVtHqSxEgXPamOVsQs838kcGNnFw==
   dependencies:
-    "@web3modal/email-react-native" "1.4.3"
+    "@web3modal/email-react-native" "1.4.4"
 
-"@web3modal/scaffold-react-native@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.3.tgz#01eec23454b94c8a4199b26238e6e24ff2a8ff21"
-  integrity sha512-CSsknCdfba/sCnsp2bkFnP3mMjSBHI/CcjbzXjAABH/KNTpFkA337WEus2EJA8XgbuS6EtVD0nq4WHg9z6sTFQ==
+"@web3modal/scaffold-react-native@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-1.4.4.tgz#93b449fdef0afad5065a8661daa78cb95de6e9d3"
+  integrity sha512-fvbx1dFH3D1XrKPQ3TJ9BDLkJdlRi9iSirNTQbPzARVuYuYhL+FQ8otVO9ntrVKOmyn6h+ItVhoYDFN8FTJtIQ==
   dependencies:
-    "@web3modal/core-react-native" "1.4.3"
-    "@web3modal/ui-react-native" "1.4.3"
+    "@web3modal/core-react-native" "1.4.4"
+    "@web3modal/ui-react-native" "1.4.4"
 
-"@web3modal/scaffold-utils-react-native@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.3.tgz#3429ca9a167458d685840c5a4fbd5ebf7c0ecac3"
-  integrity sha512-inFBZJQls+hx3Y3+Aj+UtrDrmQji6OtVwkhkXZ0txHSEya9D7Iqtnb17hfjp/kn8+nu3UcigEGJYBD/v+M2YhQ==
+"@web3modal/scaffold-utils-react-native@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-1.4.4.tgz#8e57473bf00224f56e8c56bac10accf71f1e0541"
+  integrity sha512-2wDTr8zuS4XCRCftghLfwXLU87D1PfCDexcL6sCeWDW6+6GXnwDl/2m7/LDwhGKjZ26M/F9/n3/e+6cw6h0YGQ==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.4.3"
+    "@web3modal/scaffold-react-native" "1.4.4"
 
-"@web3modal/ui-react-native@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.3.tgz#d40012947be90842af65ce8c82459fa24545d054"
-  integrity sha512-8jwe4y+oPQVLUMWzXBFBngdIKv70QxDWKt7V0Ht+AHTeRNJhzKzUnqT6iTvuMPB5WRRMq/w+PXiqAh+REla/wQ==
+"@web3modal/ui-react-native@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-1.4.4.tgz#ae86dcf6ca8023991089c26f759e9869a1fe4750"
+  integrity sha512-IR8m3WLjyvmh3Knaz0ZxgDkz/sbs7RmbRgrgy31G8Fdnanq0WkjvOKnOOWF9kOgqioT6Qz649xfp87gPA1vOKw==
   dependencies:
     qrcode "1.5.3"
 
-"@web3modal/wagmi-react-native@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.4.3.tgz#b85d13bf2540a87955b18fbc14a88d9b8daa1a4f"
-  integrity sha512-wYaAOCw2fxzw4On1TTcR1siyv885FHSqqMbJfKG5KBLjnJEqtYVoRMNZ2tRCj66OJuxjOTIjYb2+eRoDCYHb5Q==
+"@web3modal/wagmi-react-native@1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@web3modal/wagmi-react-native/-/wagmi-react-native-1.4.4.tgz#685a3b3f1f65cf3b116ca125a6726a5ce63051a2"
+  integrity sha512-ncHCe7nAsKgu/gd7gDe3cnCoBno0FGDT2lRKqyEOJs5tM8NxSI4nbzVIWzw3ZO4FVHywUkuKOIZr1ocAzpTs3g==
   dependencies:
-    "@web3modal/scaffold-react-native" "1.4.3"
-    "@web3modal/scaffold-utils-react-native" "1.4.3"
+    "@web3modal/scaffold-react-native" "1.4.4"
+    "@web3modal/scaffold-utils-react-native" "1.4.4"
 
 "@xmldom/xmldom@^0.8.8":
   version "0.8.10"
