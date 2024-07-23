@@ -30,8 +30,8 @@
     "@react-navigation/native-stack": "6.10.1",
     "@react-navigation/stack": "6.4.1",
     "@sentry/react-native": "5.26.0",
-    "@walletconnect/react-native-compat": "2.13.1",
-    "@walletconnect/web3wallet": "1.12.3",
+    "@walletconnect/react-native-compat": "2.14.0",
+    "@walletconnect/web3wallet": "1.13.0",
     "dayjs": "1.11.11",
     "ethers": "5.7.2",
     "patch-package": "8.0.0",
@@ -73,10 +73,6 @@
     "prettier": "2.8.8",
     "react-test-renderer": "18.2.0",
     "typescript": "5.0.4"
-  },
-  "resolutions": {
-    "@walletconnect/utils": "2.13.1",
-    "@walletconnect/core": "2.13.1"
   },
   "engines": {
     "node": ">=18"
