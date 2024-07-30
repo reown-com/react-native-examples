@@ -22,8 +22,8 @@ export function useSocketStatus() {
   }, [connector]);
 
   useEffect(() => {
-    if (provider) {
-      provider.signer.client.core.relayer.on(RELAYER_EVENTS.connect, () => {
+    if (provider?.signer?.client?.core) {
+      provider?.signer?.client?.core.relayer.on(RELAYER_EVENTS.connect, () => {
         Toast.show({
           type: 'success',
           text1: 'Network connection is restored!',

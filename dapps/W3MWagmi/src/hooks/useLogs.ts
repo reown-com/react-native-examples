@@ -7,10 +7,10 @@ export function useLogs() {
   const [provider, setProvider] = useState<any>(null);
 
   const getLogs = useCallback(async () => {
-    if (provider) {
+    if (provider?.signer?.client?.core) {
       const _logs =
-        await provider.signer.client.core.logChunkController?.getLogArray();
-      SettingsStore.setLogs(_logs.reverse());
+        await provider.signer?.client.core.logChunkController?.getLogArray();
+      SettingsStore.setLogs(_logs ? _logs.reverse() : []);
     }
   }, [provider]);
 
