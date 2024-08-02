@@ -3,10 +3,11 @@ import {Web3WalletTypes} from '@walletconnect/web3wallet';
 import {SignClientTypes} from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
-import {EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
+import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import {web3wallet} from '@/utils/WalletConnectUtil';
+import {getSupportedChains} from '@/utils/HelperUtil';
 
 export default function useWalletConnectEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -16,7 +17,17 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(proposal.verifyContext);
-      ModalStore.open('SessionProposalModal', {proposal});
+
+      const chains = getSupportedChains(
+        proposal.params.requiredNamespaces,
+        proposal.params.optionalNamespaces,
+      );
+
+      if (chains.length === 0) {
+        ModalStore.open('LoadingModal', {errorMessage: 'Unsupported chains'});
+      } else {
+        ModalStore.open('SessionProposalModal', {proposal});
+      }
     },
     [],
   );
@@ -73,7 +84,15 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
 
   const onSessionAuthenticate = useCallback(
     (authRequest: SignClientTypes.EventArguments['session_authenticate']) => {
-      ModalStore.open('SessionAuthenticateModal', {authRequest});
+      const chains = authRequest.params.authPayload.chains.filter(
+        chain => !!EIP155_CHAINS[chain.split(':')[1]],
+      );
+
+      if (chains.length === 0) {
+        ModalStore.open('LoadingModal', {errorMessage: 'Unsupported chains'});
+      } else {
+        ModalStore.open('SessionAuthenticateModal', {authRequest});
+      }
     },
     [],
   );

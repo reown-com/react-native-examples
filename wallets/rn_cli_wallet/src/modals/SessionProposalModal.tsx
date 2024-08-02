@@ -13,12 +13,9 @@ import SettingsStore from '@/store/SettingsStore';
 import {handleRedirect} from '@/utils/LinkingUtils';
 import {useTheme} from '@/hooks/useTheme';
 import {Chains} from '@/components/Modal/Chains';
-import {
-  EIP155_CHAINS,
-  EIP155_SIGNING_METHODS,
-  PresetsUtil,
-} from '@/utils/PresetsUtil';
+import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
 import {RequestModal} from './RequestModal';
+import {getSupportedChains} from '@/utils/HelperUtil';
 
 export default function SessionProposalModal() {
   const Theme = useTheme();
@@ -56,40 +53,16 @@ export default function SessionProposalModal() {
     };
   }, []);
 
-  const requestedChains = useMemo(() => {
+  const supportedChains = useMemo(() => {
     if (!proposal) {
       return [];
     }
-    const required = [];
-    for (const [key, values] of Object.entries(
+
+    return getSupportedChains(
       proposal.params.requiredNamespaces,
-    )) {
-      const chains = key.includes(':') ? key : values.chains;
-      if (chains) {
-        required.push(chains);
-      }
-    }
-
-    const optional = [];
-    for (const [key, values] of Object.entries(
       proposal.params.optionalNamespaces,
-    )) {
-      const chains = key.includes(':') ? key : values.chains;
-      if (chains) {
-        optional.push(chains);
-      }
-    }
-
-    return [...new Set([...required.flat(), ...optional.flat()])];
+    );
   }, [proposal]);
-
-  // the chains that are supported by the wallet from the proposal
-  const supportedChains = useMemo(() => {
-    const chains = requestedChains
-      .map(chain => PresetsUtil.getChainData(chain.split(':')[1]))
-      .filter(chain => chain !== undefined);
-    return chains;
-  }, [requestedChains]);
 
   // Handle approve action, construct session namespace
   const onApprove = useCallback(async () => {
