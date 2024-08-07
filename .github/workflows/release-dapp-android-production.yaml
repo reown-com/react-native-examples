@@ -1,4 +1,4 @@
-name: release-android-appkit-internal
+name: release-android-appkit-production
 on: workflow_dispatch
 
 jobs:
@@ -7,7 +7,7 @@ jobs:
     with:
       name: AppKit React Native
       root-path: 'dapps/W3MWagmi'
-      release-type: 'internal'
+      release-type: 'production'
       output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk'
     secrets:
       project-id: ${{ secrets.ENV_PROJECT_ID }}
@@ -15,7 +15,7 @@ jobs:
       sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
-      firebase-app-id: ${{ secrets.W3M_WAGMI_ANDROID_INTERNAL_FIREBASE_APP_ID }}
+      firebase-app-id: ${{ secrets.APPKIT_ANDROID_PROD_FIREBASE_APP_ID }}
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
       keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
       keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}

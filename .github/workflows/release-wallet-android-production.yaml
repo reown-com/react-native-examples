@@ -1,11 +1,11 @@
-name: release-android-web3wallet-production
+name: release-android-walletkit-production
 on: workflow_dispatch
 
 jobs:
   release-production:
     uses: ./.github/workflows/release-android-base.yaml
     with:
-      name: Web3Wallet React Native
+      name: WalletKit React Native
       root-path: 'wallets/rn_cli_wallet'
       release-type: 'production'
       output-path: 'wallets/rn_cli_wallet/android/app/build/outputs/apk/release/app-release.apk'
@@ -15,7 +15,7 @@ jobs:
       sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
-      firebase-app-id: ${{ vars.W3W_ANDROID_PROD_FIREBASE_APP_ID }}
+      firebase-app-id: ${{ secrets.W3W_ANDROID_PROD_FIREBASE_APP_ID }}
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
       keystore-name: ${{ vars.WC_PROD_KEYSTORE_NAME }}
       keystore: ${{ secrets.WC_PROD_KEYSTORE }}

@@ -1,11 +1,11 @@
-name: release-ios-web3wallet-internal
+name: release-ios-walletkit-internal
 on: workflow_dispatch
 
 jobs:
   release-internal:
     uses: ./.github/workflows/release-ios-base.yaml
     with:
-      name: Web3Wallet React Native
+      name: WalletKit React Native
       root-path: 'wallets/rn_cli_wallet'
       xcode-project-path: 'wallets/rn_cli_wallet/ios/RNWeb3Wallet.xcodeproj'
       xcode-workspace-path: 'wallets/rn_cli_wallet/ios/RNWeb3Wallet.xcworkspace'
