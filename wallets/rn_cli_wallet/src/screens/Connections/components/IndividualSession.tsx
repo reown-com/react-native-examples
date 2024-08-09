@@ -36,7 +36,9 @@ const IndividualSession = ({
           <Text style={[styles.mainText, {color: textColor}]}>
             {name ? name : 'No Name'}
           </Text>
-          <Text style={styles.greyText}>{url.slice(8)} </Text>
+          <Text style={styles.greyText} numberOfLines={1} ellipsizeMode="head">
+            {url}
+          </Text>
         </View>
       </View>
       <SvgChevronRight fill={Theme['fg-250']} height={16} width={16} />
