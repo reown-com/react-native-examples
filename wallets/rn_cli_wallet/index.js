@@ -1,6 +1,5 @@
 import 'react-native-gesture-handler';
 import '@walletconnect/react-native-compat';
-import '@ethersproject/shims';
 import {AppRegistry} from 'react-native';
 import {name as appName} from './app.json';
 import crypto from 'react-native-quick-crypto';

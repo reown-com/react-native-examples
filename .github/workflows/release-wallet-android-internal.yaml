@@ -1,11 +1,11 @@
-name: release-android-web3wallet-internal
+name: release-android-walletkit-internal
 on: workflow_dispatch
 
 jobs:
   release-internal:
     uses: ./.github/workflows/release-android-base.yaml
     with:
-      name: RN Wallet
+      name: WalletKit React Native
       root-path: 'wallets/rn_cli_wallet'
       release-type: 'internal'
       output-path: 'wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk'
