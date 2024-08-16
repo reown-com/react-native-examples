@@ -15,7 +15,6 @@ import ModalStore from '@/store/ModalStore';
 import {RequestModal} from '@/modals/RequestModal';
 import {Chains} from '@/components/Modal/Chains';
 import {PresetsUtil} from '@/utils/PresetsUtil';
-import SettingsStore from '@/store/SettingsStore';
 
 export default function SessionSendTransactionModal() {
   const {data} = useSnapshot(ModalStore.state);
@@ -33,6 +32,7 @@ export default function SessionSendTransactionModal() {
   const request = params?.request;
   const transaction = request?.params[0];
   const method = requestEvent?.params?.request?.method!;
+  const isLinkMode = session?.transportType === 'link-mode';
 
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
 
@@ -48,7 +48,7 @@ export default function SessionSendTransactionModal() {
         });
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
-          isLinkMode: SettingsStore.state.isCurrentRequestLinkMode,
+          isLinkMode: isLinkMode,
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
@@ -57,7 +57,7 @@ export default function SessionSendTransactionModal() {
       setIsLoadingApprove(false);
       ModalStore.close();
     }
-  }, [requestEvent, peerMetadata, topic]);
+  }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
@@ -84,6 +84,7 @@ export default function SessionSendTransactionModal() {
       metadata={peerMetadata}
       onApprove={onApprove}
       onReject={onReject}
+      isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}>
       <View style={styles.container}>

@@ -10,7 +10,6 @@ import SessionSendTransactionModal from '@/modals/SessionSendTransactionModal';
 import SessionSignTypedDataModal from '@/modals/SessionSignTypedDataModal';
 import {LoadingModal} from '@/modals/LoadingModal';
 import SessionAuthenticateModal from '@/modals/SessionAuthenticateModal';
-import SettingsStore from '@/store/SettingsStore';
 
 export default function Modal() {
   const {open, view} = useSnapshot(ModalStore.state);
@@ -18,7 +17,6 @@ export default function Modal() {
   const onClose = useCallback(() => {
     if (open) {
       ModalStore.close();
-      SettingsStore.setCurrentRequestLinkMode(false);
     }
   }, [open]);
 

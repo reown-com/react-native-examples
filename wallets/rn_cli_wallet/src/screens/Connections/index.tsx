@@ -34,7 +34,6 @@ export default function Connections({route}: Props) {
 
     try {
       setCopyDialogVisible(false);
-      SettingsStore.setCurrentRequestLinkMode(false);
       await web3wallet.pair({uri});
     } catch (error: any) {
       ModalStore.open('LoadingModal', {

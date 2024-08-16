@@ -84,6 +84,7 @@ export default function SessionProposalModal() {
 
         handleRedirect({
           peerRedirect: session.peer.metadata.redirect,
+          isLinkMode: session.transportType === 'link-mode',
         });
       } catch (e) {
         console.log((e as Error).message, 'error');

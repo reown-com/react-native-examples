@@ -16,13 +16,13 @@ import ModalStore from '@/store/ModalStore';
 import {RequestModal} from './RequestModal';
 import {Chains} from '@/components/Modal/Chains';
 import {PresetsUtil} from '@/utils/PresetsUtil';
-import SettingsStore from '@/store/SettingsStore';
 
 export default function SessionSignModal() {
   // Get request and wallet data from store
   const {data} = useSnapshot(ModalStore.state);
   const requestEvent = data?.requestEvent;
   const session = data?.requestSession;
+  const isLinkMode = session?.transportType === 'link-mode';
 
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
@@ -49,7 +49,7 @@ export default function SessionSignModal() {
 
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
-          isLinkMode: SettingsStore.state.isCurrentRequestLinkMode,
+          isLinkMode: isLinkMode,
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
@@ -58,7 +58,7 @@ export default function SessionSignModal() {
       setIsLoadingApprove(false);
       ModalStore.close();
     }
-  }, [requestEvent, peerMetadata, topic]);
+  }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
@@ -93,6 +93,7 @@ export default function SessionSignModal() {
       metadata={peerMetadata}
       onApprove={onApprove}
       onReject={onReject}
+      isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}>
       <View style={styles.container}>

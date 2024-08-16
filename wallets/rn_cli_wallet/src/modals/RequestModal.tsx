@@ -16,6 +16,7 @@ export interface RequestModalProps {
   approveLoader?: boolean;
   rejectLoader?: boolean;
   intention?: string;
+  isLinkMode?: boolean;
 }
 
 export function RequestModal({
@@ -26,11 +27,10 @@ export function RequestModal({
   approveLoader,
   rejectLoader,
   intention,
+  isLinkMode,
 }: RequestModalProps) {
   const Theme = useTheme();
-  const {currentRequestVerifyContext, isCurrentRequestLinkMode} = useSnapshot(
-    SettingsStore.state,
-  );
+  const {currentRequestVerifyContext} = useSnapshot(SettingsStore.state);
 
   return (
     <View style={[styles.container, {backgroundColor: Theme['bg-125']}]}>
@@ -38,7 +38,7 @@ export function RequestModal({
         metadata={metadata}
         intention={intention}
         verifyContext={currentRequestVerifyContext}
-        isLinkMode={isCurrentRequestLinkMode}
+        isLinkMode={isLinkMode}
       />
       {children}
       <ModalFooter

@@ -31,9 +31,7 @@ export default function SessionDetail({route}: Props) {
     [topic],
   );
   const namespaces = useMemo(() => session?.namespaces, [session]);
-  const isLinkMode =
-    session?.peer.metadata.redirect?.linkMode &&
-    session.self.metadata.redirect?.linkMode;
+  const isLinkMode = session?.transportType === 'link-mode';
 
   // Get necessary data from session
   const expiryDate = useMemo(
