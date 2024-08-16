@@ -15,6 +15,7 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
    *****************************************************************************/
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
+      console.log('onSessionProposal', proposal);
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(proposal.verifyContext);
 
@@ -35,6 +36,7 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
    * 2. Open Auth modal for confirmation / rejection
    *****************************************************************************/
   const onAuthRequest = useCallback((request: Web3WalletTypes.AuthRequest) => {
+    console.log('onAuthRequest', request);
     ModalStore.open('AuthRequestModal', {request});
   }, []);
 
@@ -44,6 +46,7 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
 
   const onSessionRequest = useCallback(
     async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
+      console.log('onSessionRequest', requestEvent);
       const {topic, params, verifyContext} = requestEvent;
       const {request} = params;
       const requestSession = web3wallet.engine.signClient.session.get(topic);
@@ -84,6 +87,7 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
 
   const onSessionAuthenticate = useCallback(
     (authRequest: SignClientTypes.EventArguments['session_authenticate']) => {
+      console.log('onSessionAuthenticate', authRequest);
       const chains = authRequest.params.authPayload.chains.filter(
         chain => !!EIP155_CHAINS[chain.split(':')[1]],
       );

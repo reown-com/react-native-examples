@@ -77,6 +77,7 @@ const App = () => {
       SettingsStore.setCurrentRequestLinkMode(isLinkMode);
 
       if (isLinkMode) {
+        console.log('Link mode request received');
         ModalStore.open('LoadingModal', {loadingMessage: 'Loading request...'});
       } else if (url.includes('wc?uri=')) {
         const uri = url.split('wc?uri=')[1];
