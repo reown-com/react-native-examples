@@ -22,10 +22,10 @@
     "@react-navigation/native-stack": "6.10.1",
     "@sentry/react-native": "5.20.0",
     "@tanstack/react-query": "5.51.1",
-    "@walletconnect/react-native-compat": "2.14.0",
-    "@web3modal/coinbase-wagmi-react-native": "2.0.1",
-    "@web3modal/email-wagmi-react-native": "2.0.1",
-    "@web3modal/wagmi-react-native": "2.0.1",
+    "@walletconnect/react-native-compat": "2.15.0-canary-lm.0",
+    "@web3modal/coinbase-wagmi-react-native": "0.0.0-feat-link-mode-20240816122559",
+    "@web3modal/email-wagmi-react-native": "0.0.0-feat-link-mode-20240816122559",
+    "@web3modal/wagmi-react-native": "0.0.0-feat-link-mode-20240816122559",
     "expo": "51.0.20",
     "react": "18.2.0",
     "react-native": "0.74.3",
@@ -42,6 +42,13 @@
     "react-native-webview": "13.10.5",
     "viem": "2.19.3",
     "wagmi": "2.12.5"
+  },
+  "resolutions": {
+    "@walletconnect/ethereum-provider": "2.15.0-canary-lm.0",
+    "@walletconnect/core": "2.15.0-canary-lm.0",
+    "@walletconnect/sign-client": "2.15.0-canary-lm.0",
+    "@walletconnect/utils": "2.15.0-canary-lm.0",
+    "@walletconnect/universal-provider": "2.15.0-canary-lm.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -43,7 +43,7 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
   redirect: {
     native: 'w3mwagmisample://',
-    universal: 'https://lab.web3modal.com/appkit_rn',
+    universal: 'https://lab.web3modal.com/rn_appkit',
     linkMode: true,
   },
 };
