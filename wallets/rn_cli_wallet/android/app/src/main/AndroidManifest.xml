@@ -38,7 +38,7 @@
         <intent-filter android:autoVerify="true">
           <data android:scheme="https"/>
           <data android:host="lab.web3modal.com"/>
-          <data android:pathPrefix="/walletkit_rn"/>
+          <data android:pathPrefix="/rn_walletkit"/>
           <action android:name="android.intent.action.VIEW" />
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
