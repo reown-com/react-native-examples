@@ -19,7 +19,7 @@ export async function createWeb3Wallet(relayerRegionURL: string) {
       icons: ['https://avatars.githubusercontent.com/u/37784886'],
       redirect: {
         native: 'rn-web3wallet://',
-        universal: 'https://lab.web3modal.com/walletkit_rn',
+        universal: 'https://lab.web3modal.com/rn_walletkit',
         linkMode: true,
       },
     },
