@@ -74,10 +74,10 @@ const App = () => {
   const deeplinkHandler = useCallback(
     ({url}: {url: string}) => {
       const isLinkMode = url.includes('wc_ev');
+      console.log('Deeplink received', url);
 
       if (isLinkMode) {
-        console.log('Link mode request received');
-        ModalStore.open('LoadingModal', {loadingMessage: 'Loading request...'});
+        return;
       } else if (url.includes('wc?uri=')) {
         const uri = url.split('wc?uri=')[1];
         pair(decodeURIComponent(uri));
