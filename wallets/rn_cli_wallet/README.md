@@ -10,7 +10,7 @@
 yarn install
 ```
 
-## Step 3: Create mocked google-service files
+## Step 2: Create mocked google-service files
 In order to build the app successfuly, you'll need some extra files
 
 ```bash
@@ -33,10 +33,10 @@ yarn android
 ### For iOS
 
 ```bash
-yarn ios
 cd ios && pod install
+yarn ios
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly.
 
 This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
