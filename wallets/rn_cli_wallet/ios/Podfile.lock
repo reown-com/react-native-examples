@@ -7,7 +7,7 @@ PODS:
   - hermes-engine (0.74.3):
     - hermes-engine/Pre-built (= 0.74.3)
   - hermes-engine/Pre-built (0.74.3)
-  - OpenSSL-Universal (3.1.5007)
+  - OpenSSL-Universal (3.1.6000)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -936,7 +936,7 @@ PODS:
   - React-Mapbuffer (0.74.3):
     - glog
     - React-debug
-  - react-native-compat (2.13.1):
+  - react-native-compat (2.14.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1543,7 +1543,7 @@ SPEC CHECKSUMS:
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 1f547997900dd0752dc0cc0ae6dd16173c49e09b
-  OpenSSL-Universal: 2d916d735a0196be6a14b959ce976c564d392861
+  OpenSSL-Universal: f8ff60e85501991636ffc3d184078d7526a27ff7
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 4c7eeb42be0b2e95195563c49be08d0b839d22b4
   RCTRequired: d530a0f489699c8500e944fde963102c42dcd0c2
@@ -1568,7 +1568,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 6b3c8c98313642140530f93c46f5a6ca4530b446
   React-logger: fa92ba4d3a5d39ac450f59be2a3cec7b099f0304
   React-Mapbuffer: 9f68550e7c6839d01411ac8896aea5c868eff63a
-  react-native-compat: 400dd5e0fa0c78cb3d53970fda541fb5f2a9e156
+  react-native-compat: e9d177f588d14bf4233ddfdd7a5b6aa87481c93d
   react-native-config: d7d8a0c65f7fa523197879f6b777997abbfc987e
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
