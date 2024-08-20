@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply plugin: "io.sentry.android.gradle"
 
 project.ext.sentryCli = [
     logLevel: "debug",
@@ -9,6 +10,7 @@ project.ext.sentryCli = [
 
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 
+project.ext.defaultEnvFile = ".env.debug"
 project.ext.envConfigFiles = [
     debug: ".env.debug",
     internal: ".env.internal",
@@ -146,6 +148,11 @@ android {
             signingConfig signingConfigs.upload
         }
     }
+}
+
+sentry {
+    autoUploadProguardMapping = shouldSentryAutoUpload()
+    uploadNativeSymbols = shouldSentryAutoUpload()
 }
 
 dependencies {
