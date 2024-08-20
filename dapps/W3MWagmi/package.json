@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
+    "android": "react-native run-android --appId com.walletconnect.web3modal.rnsample.debug",
     "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
     "android:build:internal": "cd android && ./gradlew clean && ./gradlew assembleInternal",
     "ios": "react-native run-ios",
