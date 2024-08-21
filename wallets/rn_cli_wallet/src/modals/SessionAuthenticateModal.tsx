@@ -21,12 +21,11 @@ import {Message} from '@/components/Modal/Message';
 
 export default function SessionAuthenticateModal() {
   const Theme = useTheme();
-
   const {data} = useSnapshot(ModalStore.state);
+  const {isLinkModeRequest} = useSnapshot(SettingsStore.state);
+
   const authRequest =
     data?.authRequest as SignClientTypes.EventArguments['session_authenticate'];
-
-  const isLinkMode = authRequest?.params?.transportType === 'link-mode';
 
   const {account} = useSnapshot(SettingsStore.state);
   const [messages, setMessages] = useState<
@@ -85,7 +84,7 @@ export default function SessionAuthenticateModal() {
 
         handleRedirect({
           peerRedirect: authRequest.params.requester?.metadata?.redirect,
-          isLinkMode: isLinkMode,
+          isLinkMode: isLinkModeRequest,
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
@@ -93,8 +92,9 @@ export default function SessionAuthenticateModal() {
       }
     }
     setIsLoadingApprove(false);
+    SettingsStore.setIsLinkModeRequest(false);
     ModalStore.close();
-  }, [address, messages, authRequest, isLinkMode]);
+  }, [address, messages, authRequest, isLinkModeRequest]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
@@ -111,6 +111,7 @@ export default function SessionAuthenticateModal() {
       }
     }
     setIsLoadingReject(false);
+    SettingsStore.setIsLinkModeRequest(false);
     ModalStore.close();
   }, [authRequest]);
 
@@ -149,7 +150,7 @@ export default function SessionAuthenticateModal() {
       metadata={authRequest.params.requester.metadata}
       onApprove={onApprove}
       onReject={onReject}
-      isLinkMode={isLinkMode}
+      isLinkMode={isLinkModeRequest}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}>
       <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />

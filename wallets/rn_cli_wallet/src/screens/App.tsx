@@ -74,7 +74,7 @@ const App = () => {
   const deeplinkHandler = useCallback(
     ({url}: {url: string}) => {
       const isLinkMode = url.includes('wc_ev');
-      console.log('Deeplink received', url);
+      SettingsStore.setIsLinkModeRequest(isLinkMode);
 
       if (isLinkMode) {
         return;

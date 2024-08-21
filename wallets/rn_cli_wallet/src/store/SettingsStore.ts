@@ -23,6 +23,7 @@ interface State {
   };
   socketStatus: 'connected' | 'disconnected' | 'stalled' | 'unknown';
   logs: string[];
+  isLinkModeRequest: boolean;
 }
 
 /**
@@ -38,6 +39,7 @@ const state = proxy<State>({
   wallet: null,
   socketStatus: 'unknown',
   logs: [],
+  isLinkModeRequest: false,
 });
 
 /**
@@ -82,6 +84,10 @@ const SettingsStore = {
 
   setLogs(logs: string[]) {
     state.logs = logs;
+  },
+
+  setIsLinkModeRequest(value: State['isLinkModeRequest']) {
+    state.isLinkModeRequest = value;
   },
 
   toggleTestNets() {
