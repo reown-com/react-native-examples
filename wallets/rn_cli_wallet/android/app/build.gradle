@@ -89,7 +89,7 @@ android {
         applicationId "com.walletconnect.web3wallet.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 29
+        versionCode 30
         versionName "1.0"
         resValue "string", "build_config_package", "com.walletconnect.web3wallet.rnsample"
     }
@@ -125,9 +125,9 @@ android {
             matchingFallbacks = ['release']
         }
         debug {
-            applicationIdSuffix ".debug"
-            versionNameSuffix "-debug"
-            signingConfig signingConfigs.debug
+            applicationIdSuffix ".internal"
+            versionNameSuffix "-internal"
+            signingConfig signingConfigs.internal
         }
         release {
             minifyEnabled enableProguardInReleaseBuilds
