@@ -64,7 +64,7 @@ const SettingsStore = {
     state.activeChainId = value;
   },
 
-  setCurrentRequestVerifyContext(context: Verify.Context) {
+  setCurrentRequestVerifyContext(context?: Verify.Context) {
     state.currentRequestVerifyContext = context;
   },
 

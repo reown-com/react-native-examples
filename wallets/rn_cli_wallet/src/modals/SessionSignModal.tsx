@@ -32,6 +32,7 @@ export default function SessionSignModal() {
   const {request, chainId} = params;
   const chain = PresetsUtil.getChainData(chainId.split(':')[1]);
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
+  const method = requestEvent?.params?.request?.method!;
 
   // Get message, convert it to UTF8 string if it is valid hex
   const message = getSignParamsMessage(request.params);
@@ -79,8 +80,6 @@ export default function SessionSignModal() {
       ModalStore.close();
     }
   }, [requestEvent, topic]);
-
-  const method = requestEvent?.params?.request?.method!;
 
   // Ensure request and wallet are defined
   if (!requestEvent || !session) {
