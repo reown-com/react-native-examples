@@ -125,9 +125,9 @@ android {
             matchingFallbacks = ['release']
         }
         debug {
-            applicationIdSuffix ".internal"
-            versionNameSuffix "-internal"
-            signingConfig signingConfigs.internal
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled enableProguardInReleaseBuilds

@@ -32,7 +32,7 @@ export default function SessionSendTransactionModal() {
   const request = params?.request;
   const transaction = request?.params[0];
   const method = requestEvent?.params?.request?.method!;
-  const isLinkMode = session?.transportType === 'link-mode';
+  const isLinkMode = session?.transportType === 'link_mode';
 
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
 

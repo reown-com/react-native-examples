@@ -22,7 +22,7 @@ export default function SessionSignTypedDataModal() {
   const {data} = useSnapshot(ModalStore.state);
   const requestEvent = data?.requestEvent;
   const session = data?.requestSession;
-  const isLinkMode = session?.transportType === 'link-mode';
+  const isLinkMode = session?.transportType === 'link_mode';
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 
