@@ -18,6 +18,14 @@ export const getCustomWallets = () => {
       mobile_link: 'wcflutterwallet://',
       link_mode: undefined,
     },
+    {
+      id: 'flutter-wallet',
+      name: 'Wallet(Flutter internal)',
+      image_url:
+        'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
+      mobile_link: 'wcflutterwallet-internal://',
+      link_mode: 'https://dev.lab.web3modal.com/flutter_walletkit_internal',
+    },
   ];
 
   if (Platform.OS === 'android') {
