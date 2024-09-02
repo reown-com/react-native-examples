@@ -103,7 +103,10 @@ export default function SessionAuthenticateModal() {
         setIsLoadingReject(true);
         await web3wallet.rejectSessionAuthenticate({
           id: authRequest.id,
-          reason: getSdkError('USER_REJECTED'),
+          reason: {
+            code: 12001,
+            message: 'User rejected auth request',
+          },
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
