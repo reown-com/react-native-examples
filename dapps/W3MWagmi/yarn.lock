@@ -5391,9 +5391,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/core@npm:2.15.2-canary-lm.0":
-  version: 2.15.2-canary-lm.0
-  resolution: "@walletconnect/core@npm:2.15.2-canary-lm.0"
+"@walletconnect/core@npm:2.15.2-canary-lm.1":
+  version: 2.15.2-canary-lm.1
+  resolution: "@walletconnect/core@npm:2.15.2-canary-lm.1"
   dependencies:
     "@walletconnect/heartbeat": 1.2.2
     "@walletconnect/jsonrpc-provider": 1.0.14
@@ -5406,12 +5406,12 @@ __metadata:
     "@walletconnect/relay-auth": 1.0.4
     "@walletconnect/safe-json": 1.0.2
     "@walletconnect/time": 1.0.2
-    "@walletconnect/types": 2.15.2-canary-lm.0
-    "@walletconnect/utils": 2.15.2-canary-lm.0
+    "@walletconnect/types": 2.15.2-canary-lm.1
+    "@walletconnect/utils": 2.15.2-canary-lm.1
     events: 3.3.0
     lodash.isequal: 4.5.0
     uint8arrays: 3.1.0
-  checksum: e0a1e51893525217f974d4c7f7643e14952c3e93ad21172b5aaf7b82a5b5b1cc53a3d1dcefa570925226e740509dd9800ae70eda546e0bd752037e1446e7eefe
+  checksum: c2926d1eefdb96f000837500baeaa0f38d0070cf96bb039b9e1f53c897b36d9989530b6e39fd631b9627c735a1b4f9d320bbed942d7edbc72f9891e80a96299d
   languageName: node
   linkType: hard
 
@@ -5424,21 +5424,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/ethereum-provider@npm:2.15.2-canary-lm.0":
-  version: 2.15.2-canary-lm.0
-  resolution: "@walletconnect/ethereum-provider@npm:2.15.2-canary-lm.0"
+"@walletconnect/ethereum-provider@npm:2.15.2-canary-lm.1":
+  version: 2.15.2-canary-lm.1
+  resolution: "@walletconnect/ethereum-provider@npm:2.15.2-canary-lm.1"
   dependencies:
     "@walletconnect/jsonrpc-http-connection": 1.0.8
     "@walletconnect/jsonrpc-provider": 1.0.14
     "@walletconnect/jsonrpc-types": 1.0.4
     "@walletconnect/jsonrpc-utils": 1.0.8
     "@walletconnect/modal": 2.6.2
-    "@walletconnect/sign-client": 2.15.2-canary-lm.0
-    "@walletconnect/types": 2.15.2-canary-lm.0
-    "@walletconnect/universal-provider": 2.15.2-canary-lm.0
-    "@walletconnect/utils": 2.15.2-canary-lm.0
+    "@walletconnect/sign-client": 2.15.2-canary-lm.1
+    "@walletconnect/types": 2.15.2-canary-lm.1
+    "@walletconnect/universal-provider": 2.15.2-canary-lm.1
+    "@walletconnect/utils": 2.15.2-canary-lm.1
     events: 3.3.0
-  checksum: 93a2d7aad41036fd4277b6fe381a14b9b7150b905e8d49f984dafab999a514dca3af8a2c5d8b4cb97d0ab37e24aeb13a346e1b0e4b04ff463c614496f7db5a9a
+  checksum: f61b3b0531379db172dad6090fbe78e72b4a23b4ae04b440e5014eb63127d0e1a279169ba064c478b256dbdda262adc0b6bd1f13dcefdf1ebffa0ae4295eaad7
   languageName: node
   linkType: hard
 
@@ -5586,9 +5586,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.15.2-canary-lm.0":
-  version: 2.15.2-canary-lm.0
-  resolution: "@walletconnect/react-native-compat@npm:2.15.2-canary-lm.0"
+"@walletconnect/react-native-compat@npm:2.15.2-canary-lm.1":
+  version: 2.15.2-canary-lm.1
+  resolution: "@walletconnect/react-native-compat@npm:2.15.2-canary-lm.1"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -5601,7 +5601,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: e656e2383c8b7faa8b3cecb5fbf8c4d7757d117210586a248f529f29d59e4fb71a3a06582f5c6e02552c4382e88596949af1102c626a9e72c049aa380b5e0d30
+  checksum: 1d138516cff2e4c09f861c5d88a8af4aa664893089991a3207a079b127ee043d8b6e6b2c64f628a797329ea883ae7c320c91fc8575e6b48b445503e25cbb1d84
   languageName: node
   linkType: hard
 
@@ -5637,20 +5637,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/sign-client@npm:2.15.2-canary-lm.0":
-  version: 2.15.2-canary-lm.0
-  resolution: "@walletconnect/sign-client@npm:2.15.2-canary-lm.0"
+"@walletconnect/sign-client@npm:2.15.2-canary-lm.1":
+  version: 2.15.2-canary-lm.1
+  resolution: "@walletconnect/sign-client@npm:2.15.2-canary-lm.1"
   dependencies:
-    "@walletconnect/core": 2.15.2-canary-lm.0
+    "@walletconnect/core": 2.15.2-canary-lm.1
     "@walletconnect/events": 1.0.1
     "@walletconnect/heartbeat": 1.2.2
     "@walletconnect/jsonrpc-utils": 1.0.8
     "@walletconnect/logger": 2.1.2
     "@walletconnect/time": 1.0.2
-    "@walletconnect/types": 2.15.2-canary-lm.0
-    "@walletconnect/utils": 2.15.2-canary-lm.0
+    "@walletconnect/types": 2.15.2-canary-lm.1
+    "@walletconnect/utils": 2.15.2-canary-lm.1
     events: 3.3.0
-  checksum: 7ddaeb1cf2cf13054bd0ef1d70c34bcf36d22759e844b8e42204f72c3ef7da6436861f6421f038033096e313d725815281e195aaa09bc1e55a2c581641d0f52a
+  checksum: 98751a2d5212fc38a6c5dff6dbce6ca904f54f1c5fc66d35796a31f758f64775be5b079c70e514d23602a65343fef4fdb1dfe7e1ca332141fc2cf0d384a352a1
   languageName: node
   linkType: hard
 
@@ -5663,9 +5663,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/types@npm:2.15.2-canary-lm.0":
-  version: 2.15.2-canary-lm.0
-  resolution: "@walletconnect/types@npm:2.15.2-canary-lm.0"
+"@walletconnect/types@npm:2.15.2-canary-lm.1":
+  version: 2.15.2-canary-lm.1
+  resolution: "@walletconnect/types@npm:2.15.2-canary-lm.1"
   dependencies:
     "@walletconnect/events": 1.0.1
     "@walletconnect/heartbeat": 1.2.2
@@ -5673,30 +5673,30 @@ __metadata:
     "@walletconnect/keyvaluestorage": 1.1.1
     "@walletconnect/logger": 2.1.2
     events: 3.3.0
-  checksum: 16c9780efbb7fda2a88a86c9709e8607b9513ba48d0d0f783bc53c081e04f208447384ecc7c6e16fad6595911d6f8cc609815373f9706ac7b401ef9048cb8606
+  checksum: 19ce5e5a5927a162a888765a5ca993d92fcd2f208bd7b6310ec86128014a76fb4b6aabcae706032ad9922e12e7fdae9412c59940e42a7f9add9d1abf3f79754f
   languageName: node
   linkType: hard
 
-"@walletconnect/universal-provider@npm:2.15.2-canary-lm.0":
-  version: 2.15.2-canary-lm.0
-  resolution: "@walletconnect/universal-provider@npm:2.15.2-canary-lm.0"
+"@walletconnect/universal-provider@npm:2.15.2-canary-lm.1":
+  version: 2.15.2-canary-lm.1
+  resolution: "@walletconnect/universal-provider@npm:2.15.2-canary-lm.1"
   dependencies:
     "@walletconnect/jsonrpc-http-connection": 1.0.8
     "@walletconnect/jsonrpc-provider": 1.0.14
     "@walletconnect/jsonrpc-types": 1.0.4
     "@walletconnect/jsonrpc-utils": 1.0.8
     "@walletconnect/logger": 2.1.2
-    "@walletconnect/sign-client": 2.15.2-canary-lm.0
-    "@walletconnect/types": 2.15.2-canary-lm.0
-    "@walletconnect/utils": 2.15.2-canary-lm.0
+    "@walletconnect/sign-client": 2.15.2-canary-lm.1
+    "@walletconnect/types": 2.15.2-canary-lm.1
+    "@walletconnect/utils": 2.15.2-canary-lm.1
     events: 3.3.0
-  checksum: 169c001ef45f90301f597e2dd956ec5a6fb8d32168c010c356a32a157c90cea50ed7716f42bb6e7111c8900b54a3e9c66c61e48a65279ca8222290259416cb3c
+  checksum: ab86012009df4e4755d817ac6ab144e1c4a3190d40a7a443437f0e740d6abf8dcc84a7c466b0193d1385237cd9aba4cb14b2b82f4e7f588436f32e7debba9032
   languageName: node
   linkType: hard
 
-"@walletconnect/utils@npm:2.15.2-canary-lm.0":
-  version: 2.15.2-canary-lm.0
-  resolution: "@walletconnect/utils@npm:2.15.2-canary-lm.0"
+"@walletconnect/utils@npm:2.15.2-canary-lm.1":
+  version: 2.15.2-canary-lm.1
+  resolution: "@walletconnect/utils@npm:2.15.2-canary-lm.1"
   dependencies:
     "@stablelib/chacha20poly1305": 1.0.1
     "@stablelib/hkdf": 1.0.1
@@ -5707,14 +5707,14 @@ __metadata:
     "@walletconnect/relay-auth": 1.0.4
     "@walletconnect/safe-json": 1.0.2
     "@walletconnect/time": 1.0.2
-    "@walletconnect/types": 2.15.2-canary-lm.0
+    "@walletconnect/types": 2.15.2-canary-lm.1
     "@walletconnect/window-getters": 1.0.1
     "@walletconnect/window-metadata": 1.0.1
     detect-browser: 5.3.0
     elliptic: ^6.5.7
     query-string: 7.1.3
     uint8arrays: 3.1.0
-  checksum: 7e57c42d0cba91bf0cac60f4678977d952f795e14a25cd17071c1d7cc5887a67a4b92e7f6aca39253a35b2ba00414778464c2baf69953d3dbc4d876c94c91b2f
+  checksum: 5beb69cfc2a0fd61162f5afeaba7ba024104f6f53c9226f22ac4982fa3f0f3b10aaa289f44b2d460a2528182e4711a5e0fe476719a78d4d7a0a921ccb91e7d47
   languageName: node
   linkType: hard
 
@@ -6113,7 +6113,7 @@ __metadata:
     "@tanstack/react-query": 5.51.1
     "@types/react": ^18.2.6
     "@types/react-test-renderer": ^18.0.0
-    "@walletconnect/react-native-compat": 2.15.2-canary-lm.0
+    "@walletconnect/react-native-compat": 2.15.2-canary-lm.1
     "@web3modal/coinbase-wagmi-react-native": 0.0.0-feat-link-mode-20240816122559
     "@web3modal/email-wagmi-react-native": 0.0.0-feat-link-mode-20240816122559
     "@web3modal/wagmi-react-native": 0.0.0-feat-link-mode-20240816122559

@@ -19,7 +19,7 @@ export const getCustomWallets = () => {
       link_mode: undefined,
     },
     {
-      id: 'flutter-wallet',
+      id: 'flutter-wallet-internal',
       name: 'Wallet(Flutter internal)',
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
@@ -39,8 +39,8 @@ export const getCustomWallets = () => {
         'https://web3modal-laboratory-git-chore-kotlin-assetlinks-walletconnect1.vercel.app/wallet',
     });
     wallets.push({
-      id: 'android-wallet',
-      name: 'Wallet(Android)',
+      id: 'android-wallet-internal',
+      name: 'Wallet(Android internal)',
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
       mobile_link: 'kotlin-web3wallet://',
