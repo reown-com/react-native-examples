@@ -4302,9 +4302,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/core@npm:2.15.2-canary-lm.5":
-  version: 2.15.2-canary-lm.5
-  resolution: "@walletconnect/core@npm:2.15.2-canary-lm.5"
+"@walletconnect/core@npm:2.15.2-canary-lm.6":
+  version: 2.15.2-canary-lm.6
+  resolution: "@walletconnect/core@npm:2.15.2-canary-lm.6"
   dependencies:
     "@walletconnect/heartbeat": 1.2.2
     "@walletconnect/jsonrpc-provider": 1.0.14
@@ -4317,12 +4317,12 @@ __metadata:
     "@walletconnect/relay-auth": 1.0.4
     "@walletconnect/safe-json": 1.0.2
     "@walletconnect/time": 1.0.2
-    "@walletconnect/types": 2.15.2-canary-lm.5
-    "@walletconnect/utils": 2.15.2-canary-lm.5
+    "@walletconnect/types": 2.15.2-canary-lm.6
+    "@walletconnect/utils": 2.15.2-canary-lm.6
     events: 3.3.0
     lodash.isequal: 4.5.0
     uint8arrays: 3.1.0
-  checksum: 6bd4c64b79d7331b959bbe2d531390801c4602351bd6b63cbaee7db27c8184356c2a6a5bf51929a53302f65fdcd94078554da5f5f3fa17f0db028e63157218cc
+  checksum: 69d4955003dba5f56aa41bb0a44d837508a6096f0c5f1ffde3fd5bb510a36b4a88d2b9581303d39aa2d9a812bbfa59bf234c4afb92c3d8af48758161844265f6
   languageName: node
   linkType: hard
 
@@ -4436,9 +4436,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.15.2-canary-lm.5":
-  version: 2.15.2-canary-lm.5
-  resolution: "@walletconnect/react-native-compat@npm:2.15.2-canary-lm.5"
+"@walletconnect/react-native-compat@npm:2.15.2-canary-lm.6":
+  version: 2.15.2-canary-lm.6
+  resolution: "@walletconnect/react-native-compat@npm:2.15.2-canary-lm.6"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -4451,7 +4451,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: 6828df82c5b0dde5d0f07f3f77edef5c863d5ed8730dfee1479f9d856065381d2d9300be14b6b771b5df745fdc7e9935180933fd648c0fb75fabf66522e30dbe
+  checksum: ed99a5adf1ac1277f202c3915d8b17508b89112be8b7c4c12ca7f40f351411785000f378e74e056a6d431d7c3f4495d14bfb5cf743db50f2ea4802a2786fdde8
   languageName: node
   linkType: hard
 
@@ -4487,20 +4487,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/sign-client@npm:2.15.2-canary-lm.5":
-  version: 2.15.2-canary-lm.5
-  resolution: "@walletconnect/sign-client@npm:2.15.2-canary-lm.5"
+"@walletconnect/sign-client@npm:2.15.2-canary-lm.6":
+  version: 2.15.2-canary-lm.6
+  resolution: "@walletconnect/sign-client@npm:2.15.2-canary-lm.6"
   dependencies:
-    "@walletconnect/core": 2.15.2-canary-lm.5
+    "@walletconnect/core": 2.15.2-canary-lm.6
     "@walletconnect/events": 1.0.1
     "@walletconnect/heartbeat": 1.2.2
     "@walletconnect/jsonrpc-utils": 1.0.8
     "@walletconnect/logger": 2.1.2
     "@walletconnect/time": 1.0.2
-    "@walletconnect/types": 2.15.2-canary-lm.5
-    "@walletconnect/utils": 2.15.2-canary-lm.5
+    "@walletconnect/types": 2.15.2-canary-lm.6
+    "@walletconnect/utils": 2.15.2-canary-lm.6
     events: 3.3.0
-  checksum: 23e8be1c97d5244f6887b76efe0ba66b8db418ef629670a3c19c8d9f56a72a5534f2707948afe4fd1110fd98ac7aff39b4d9547294e3371d68c0ccb148780c12
+  checksum: befbf926d304cf224cf059f3a8e1be8c508809909990a58abd75c3cfae484cbe1e8b6f3b2a0aa3501b9c081da32a2f3740eed66c9cdb71a057952fbec943e852
   languageName: node
   linkType: hard
 
@@ -4513,9 +4513,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/types@npm:2.15.2-canary-lm.5":
-  version: 2.15.2-canary-lm.5
-  resolution: "@walletconnect/types@npm:2.15.2-canary-lm.5"
+"@walletconnect/types@npm:2.15.2-canary-lm.6":
+  version: 2.15.2-canary-lm.6
+  resolution: "@walletconnect/types@npm:2.15.2-canary-lm.6"
   dependencies:
     "@walletconnect/events": 1.0.1
     "@walletconnect/heartbeat": 1.2.2
@@ -4523,13 +4523,13 @@ __metadata:
     "@walletconnect/keyvaluestorage": 1.1.1
     "@walletconnect/logger": 2.1.2
     events: 3.3.0
-  checksum: cc94812616f8940879a8261ee92b37b799acc29218c09cd179c1d9ba105a63da8bf85a35d953f61eb4634ccac315eda76f4fc1a398cb5deb9c9149c63a6426e1
+  checksum: 2bc581e4a7485cb1203922aaaa1000f90d9ae1cbc7be6dc6d9a03b00d0e7b442817e2f14834931eb09e31ff345f5be8d61d65f1690680a83491d1df7e49ab6a5
   languageName: node
   linkType: hard
 
-"@walletconnect/utils@npm:2.15.2-canary-lm.5":
-  version: 2.15.2-canary-lm.5
-  resolution: "@walletconnect/utils@npm:2.15.2-canary-lm.5"
+"@walletconnect/utils@npm:2.15.2-canary-lm.6":
+  version: 2.15.2-canary-lm.6
+  resolution: "@walletconnect/utils@npm:2.15.2-canary-lm.6"
   dependencies:
     "@stablelib/chacha20poly1305": 1.0.1
     "@stablelib/hkdf": 1.0.1
@@ -4540,30 +4540,30 @@ __metadata:
     "@walletconnect/relay-auth": 1.0.4
     "@walletconnect/safe-json": 1.0.2
     "@walletconnect/time": 1.0.2
-    "@walletconnect/types": 2.15.2-canary-lm.5
+    "@walletconnect/types": 2.15.2-canary-lm.6
     "@walletconnect/window-getters": 1.0.1
     "@walletconnect/window-metadata": 1.0.1
     detect-browser: 5.3.0
     elliptic: ^6.5.7
     query-string: 7.1.3
     uint8arrays: 3.1.0
-  checksum: 11fd108965e60cc5ed5a7b6d97206a5bf37f2f72ec0b9c7de0e3723f7e1fe324bcabd4c8dc310d628d8b388e223c36edf33ec700b69d1723595c32d83f9716b8
+  checksum: b8126f5d2a0e8f9295900231f98087c075ba468cae04fd06e8478008885f7d9b6e0aabb511e038830465549a75ec0ad992438f1ba56560edbe0c53f7e71b1e0e
   languageName: node
   linkType: hard
 
-"@walletconnect/web3wallet@npm:1.14.2-canary-lm.5":
-  version: 1.14.2-canary-lm.5
-  resolution: "@walletconnect/web3wallet@npm:1.14.2-canary-lm.5"
+"@walletconnect/web3wallet@npm:1.14.2-canary-lm.6":
+  version: 1.14.2-canary-lm.6
+  resolution: "@walletconnect/web3wallet@npm:1.14.2-canary-lm.6"
   dependencies:
     "@walletconnect/auth-client": 2.1.2
-    "@walletconnect/core": 2.15.2-canary-lm.5
+    "@walletconnect/core": 2.15.2-canary-lm.6
     "@walletconnect/jsonrpc-provider": 1.0.14
     "@walletconnect/jsonrpc-utils": 1.0.8
     "@walletconnect/logger": 2.1.2
-    "@walletconnect/sign-client": 2.15.2-canary-lm.5
-    "@walletconnect/types": 2.15.2-canary-lm.5
-    "@walletconnect/utils": 2.15.2-canary-lm.5
-  checksum: 0cb88f06d8e629214b0bc0d36b835cb451b429d6cd363ad92dde7e679b44b0e8b00ed8c3adbb178d5e190c02c03d6e6247781ee581c723ebbcfd5e0eeca2ed37
+    "@walletconnect/sign-client": 2.15.2-canary-lm.6
+    "@walletconnect/types": 2.15.2-canary-lm.6
+    "@walletconnect/utils": 2.15.2-canary-lm.6
+  checksum: 91b534f6019e4ebbeb79996e6dfece8652a71b67c87483200b7bc7c775b511e15bbbc8a64ba8ee84854a7df165da51ac90df1273670c0a6383e234cd348295a4
   languageName: node
   linkType: hard
 
@@ -13199,8 +13199,8 @@ __metadata:
     "@types/lodash.clonedeep": ^4.5.9
     "@types/react": ^18.2.6
     "@types/react-test-renderer": ^18.0.0
-    "@walletconnect/react-native-compat": 2.15.2-canary-lm.5
-    "@walletconnect/web3wallet": 1.14.2-canary-lm.5
+    "@walletconnect/react-native-compat": 2.15.2-canary-lm.6
+    "@walletconnect/web3wallet": 1.14.2-canary-lm.6
     "@web3modal/ui-react-native": 2.0.1
     babel-jest: ^29.6.3
     babel-plugin-module-resolver: ^5.0.0
