@@ -3095,10 +3095,10 @@
     "@walletconnect/modal-core" "2.6.2"
     "@walletconnect/modal-ui" "2.6.2"
 
-"@walletconnect/react-native-compat@2.13.1":
-  version "2.13.1"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.13.1.tgz#dbf6b0b264fb2ca66b03282a4c016614e843f3c8"
-  integrity sha512-NBkSIClPj1romjx0yL6qSazewrdsxyOYp8L6krRE/A0y8xIjPLT4cPPbxW/6ewvHlHesze8hRbO24bG8tJJCbg==
+"@walletconnect/react-native-compat@2.15.1":
+  version "2.15.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.15.1.tgz#5d5df9b52cd197eae31cc2a22af481cdfe4fefff"
+  integrity sha512-49CUBihJHWWYm+gHLnr9ihJHRo52F1NJliz3fdq4dyUsDtxnuSghHU1vE3G+EKd8Z/ckhCVEUNHn1NlOYsGBGw==
   dependencies:
     events "3.3.0"
     fast-text-encoding "1.0.6"
@@ -3214,82 +3214,82 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3modal/coinbase-ethers-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-ethers-react-native/-/coinbase-ethers-react-native-2.0.1.tgz#4a23e8ce9adcedaae56217d21dbc94e90ae78940"
-  integrity sha512-ke/HjjK1KRj2GM12wcIwnCEbjHwDHiuZdO3fWhLI8zCZ5JSa64umxnoiuojV/nBh5oOgvbz555++yiSrAbnjbw==
+"@web3modal/coinbase-ethers-react-native@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/coinbase-ethers-react-native/-/coinbase-ethers-react-native-2.0.2.tgz#0c5f62808fad1b6c2e54f4af0b990dbddf6b2d21"
+  integrity sha512-3+5ZD/+Kaie4MAG3PsSLt49geKR3SN4APdzlfJsS3W3WRfZZHvEcL9iH1rKqew4PD7snTju5oCJCxtgds6xx6A==
 
-"@web3modal/common-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/common-react-native/-/common-react-native-2.0.1.tgz#7de394006aa8d45c5c24d8aa2dea6f984fb04db9"
-  integrity sha512-dgXyXxXCHZNedf/A5EMDq9+BDeSXP+FGQnb1BXPqLBDWDvgEWnZact4r6PrmOdZqijR+g9lcJXCsZpKsuOZ9jQ==
+"@web3modal/common-react-native@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/common-react-native/-/common-react-native-2.0.2.tgz#f085d4b904a5d5f0d89b109725f79a5a65608c71"
+  integrity sha512-nkwkuS5+QIL2OKIMCzGJrao4SCyfQ8y759OmXfkb7RIcshP6PAWfZtW9MCVV4H7qHe7Q5g4BSPpIXPZS8rdPKg==
 
-"@web3modal/core-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-2.0.1.tgz#3d659c9f323d59507f1d774babb58a3dd94d037d"
-  integrity sha512-e5U7TuNj3fcQo2zU6FdOlQ0t/+VhDVnz4AbeJt7TipILiEJ3wifPj2EUlLirXimjaQsM4NLkIKY1BwHpIaWa7w==
+"@web3modal/core-react-native@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/core-react-native/-/core-react-native-2.0.2.tgz#ed59f60c6592816bb8091e1582e41c2d13a78c58"
+  integrity sha512-whZNmgYAwQtSZQvzcXWk++hNnpKqaoQvzA0paDtWEHMOqZL/6r7MPSntXoCilgPixc8HRHOOr/IkPWPdrgVuig==
   dependencies:
-    "@web3modal/common-react-native" "2.0.1"
+    "@web3modal/common-react-native" "2.0.2"
     valtio "1.11.2"
 
-"@web3modal/email-ethers-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-ethers-react-native/-/email-ethers-react-native-2.0.1.tgz#89ddf3692bebe606a90394a9fcc326d857cd2d2d"
-  integrity sha512-/rLk1yrMi7MFyom38BiO4x9hrrvCMG7o0VcAOkn8vx0nzlsL//Y8FamsuEX9pj5V9nODVFsR8mTshGyuzfIM4A==
+"@web3modal/email-ethers-react-native@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-ethers-react-native/-/email-ethers-react-native-2.0.2.tgz#d863f507002437331aefa5ff644391a5c644e785"
+  integrity sha512-OYRRQ8FazkrfVNsJhwGP3cgDt8k18HdqifWYl7asYLgiFxaAlRYN8aZ+/Ue7H6AZUICHpBUj2dU9tGBQb7Pg0w==
   dependencies:
-    "@web3modal/email-react-native" "2.0.1"
+    "@web3modal/email-react-native" "2.0.2"
 
-"@web3modal/email-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-2.0.1.tgz#51c472f4e83efb012bf1c69ba52ec96c5cc9b2c5"
-  integrity sha512-NnggbTkpNyua+xOGk9Xm2QVqLJiNuuVoKVBToygf0qVY5RNE99uthFgB3e8kZLe579P0bN3hJLcOGf57hcPoww==
+"@web3modal/email-react-native@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/email-react-native/-/email-react-native-2.0.2.tgz#8c1161a839cded03988d9a63b8112c29d6c8cb8e"
+  integrity sha512-ZB1Qg+afo/OV3kZg78Z+HuUyFsF1UUf5pO+IkmSpHqyNeJVbYGDkJiMuu4XQN+tYEAJLOrKhmXgmVb3FCZK6bA==
   dependencies:
-    "@web3modal/core-react-native" "2.0.1"
-    "@web3modal/ui-react-native" "2.0.1"
+    "@web3modal/core-react-native" "2.0.2"
+    "@web3modal/ui-react-native" "2.0.2"
     zod "3.22.4"
 
-"@web3modal/ethers-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/ethers-react-native/-/ethers-react-native-2.0.1.tgz#5786d2870a8f9d581c07c6b2584f9cb4855103b5"
-  integrity sha512-kSMfHwPuXgwzAkStT6E8E4Sb5ZaeqdPYHnELouEEVwWoxbRbdj0LWsWXEMMjcBWiLu6xJo/n9iQRKC/EbioR3w==
+"@web3modal/ethers-react-native@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/ethers-react-native/-/ethers-react-native-2.0.2.tgz#bece4ffd9506c9c5a605ce4e04f562366d65b913"
+  integrity sha512-SHX2m8eGstrKc81ansGx2qzyLvPcurz5WcWEepGoFAOJihYWPVo33IDvRLOHkdGACUv92LA+8ebL6764mXsFGg==
   dependencies:
     "@walletconnect/ethereum-provider" "2.13.1"
-    "@web3modal/common-react-native" "2.0.1"
-    "@web3modal/scaffold-react-native" "2.0.1"
-    "@web3modal/scaffold-utils-react-native" "2.0.1"
-    "@web3modal/siwe-react-native" "2.0.1"
+    "@web3modal/common-react-native" "2.0.2"
+    "@web3modal/scaffold-react-native" "2.0.2"
+    "@web3modal/scaffold-utils-react-native" "2.0.2"
+    "@web3modal/siwe-react-native" "2.0.2"
 
-"@web3modal/scaffold-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-2.0.1.tgz#133c860840f1b706f86059e2080847e5fbff8f50"
-  integrity sha512-VRODJNBH4q8bBdAgONYXuu0B1HN4ekZOQOJOap61NSbd9WHxlD7ANPcFIFR6wKryshU0bho+axnt8cIG91JfXQ==
+"@web3modal/scaffold-react-native@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-react-native/-/scaffold-react-native-2.0.2.tgz#2b5c726d7bb389a6c7ab1ee1fe8653cb898d080a"
+  integrity sha512-UqOUS8IL8mFkShZQg3TTZbnAH32haduFJwffwFi5SCo2ARrAbKRszLpCaBhmnMPt5BSV6BdCsu9WRTm5j1zWNQ==
   dependencies:
-    "@web3modal/core-react-native" "2.0.1"
-    "@web3modal/siwe-react-native" "2.0.1"
-    "@web3modal/ui-react-native" "2.0.1"
+    "@web3modal/core-react-native" "2.0.2"
+    "@web3modal/siwe-react-native" "2.0.2"
+    "@web3modal/ui-react-native" "2.0.2"
 
-"@web3modal/scaffold-utils-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-2.0.1.tgz#c52878617b668772258fb06ba3becaf9eaf6925f"
-  integrity sha512-XllUqoT2jb/hb9smv7LB80vRpmb8viAxp3zQHjVaBShhGNm91oQL2bbMC2LxPZINk0hLfuaNI3+TkX1p0hMUiw==
+"@web3modal/scaffold-utils-react-native@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/scaffold-utils-react-native/-/scaffold-utils-react-native-2.0.2.tgz#403603869b94657e347225ce320010b625a26f9f"
+  integrity sha512-vw6Ht6wEWkZpbF4beA5z+LiFt1esL3MOQ60veQpsP59d3M8jz3HgalUeV2uJjWGZ9kgqZbDOCL+9AEYdqlt62A==
   dependencies:
-    "@web3modal/scaffold-react-native" "2.0.1"
+    "@web3modal/scaffold-react-native" "2.0.2"
 
-"@web3modal/siwe-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/siwe-react-native/-/siwe-react-native-2.0.1.tgz#e42e2f5f9792da28b3a70261b893ebabaa76608b"
-  integrity sha512-ofdAdDV5gK5IpcpaOkbXFDzhAE5AgmD5M67+6/e5/N5htpE1h0a9gnXDOcUiIJ1MRMDAjfwbjaurPH1PJuLi6w==
+"@web3modal/siwe-react-native@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/siwe-react-native/-/siwe-react-native-2.0.2.tgz#7d727aa1d1c943e3ae26cae6db61715e40fa475e"
+  integrity sha512-NNdZ6heXDfF7Qq1+2bwABTmkcaF3Ohq/1WqGgj6Cu5A4ZNnyI4wKXJCuobNUmhFtbWMQkc4ZxT6XF8QNsdu2rQ==
   dependencies:
     "@walletconnect/utils" "2.13.1"
-    "@web3modal/common-react-native" "2.0.1"
-    "@web3modal/core-react-native" "2.0.1"
-    "@web3modal/ui-react-native" "2.0.1"
+    "@web3modal/common-react-native" "2.0.2"
+    "@web3modal/core-react-native" "2.0.2"
+    "@web3modal/ui-react-native" "2.0.2"
     valtio "1.11.2"
 
-"@web3modal/ui-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-2.0.1.tgz#9d581397e530720e21d01596993792d3fd1a5477"
-  integrity sha512-zzioHalCzd8j1f4qAQQuS47ZnY2Awwe6z55Ddaze0hhdOXrlF0mDXlJXGlbynZmiu//uk5l2dRHPpWllf5O15Q==
+"@web3modal/ui-react-native@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui-react-native/-/ui-react-native-2.0.2.tgz#be73dd3f3d4c19624fe34cb0534f07f99d094b22"
+  integrity sha512-ZVRPD9fkSSijtrVqFt2W0komy4dT+Nr4x5wGWrFK9fruXpdTNPeoVbjY+OqSeoThf1r8MOnxyoZe57MNddvH5Q==
   dependencies:
     qrcode "1.5.3"
 
