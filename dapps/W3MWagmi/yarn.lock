@@ -5806,121 +5806,121 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3modal/coinbase-wagmi-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@web3modal/coinbase-wagmi-react-native@npm:2.0.2"
+"@web3modal/coinbase-wagmi-react-native@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@web3modal/coinbase-wagmi-react-native@npm:2.0.3"
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: 186bdf78dd26c576f0f023609107fc908793bea96180bffefda43a23be90a1b04894b26615a15cde74347efaab40a763f79c70af793328fdd463e5bc7977f565
+  checksum: 96cff156e7169aaa5d05ec631234a61b64c56937c10dcb278e52518177e89327b0d8755c8e3f7daed369b5169e814b2c13e87b10683c8ba9dde281f579d00d0a
   languageName: node
   linkType: hard
 
-"@web3modal/common-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@web3modal/common-react-native@npm:2.0.2"
-  checksum: d306555d176663b67da62b145596c648f054fb7aba1922befc1651c7a720d45980bdffef242d72c21f99f01c2dc45fa3ff4ad30eeb2392c0cafa405136a231b9
+"@web3modal/common-react-native@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@web3modal/common-react-native@npm:2.0.3"
+  checksum: 7ff534d3d4dde1166682bbc82e0da1af00c2b778ca490a22884c3b402ed7304c4023bb38e0f6dd4b5bb6d178882a7adaba21c128828e9da2785e70583420aa4a
   languageName: node
   linkType: hard
 
-"@web3modal/core-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@web3modal/core-react-native@npm:2.0.2"
+"@web3modal/core-react-native@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@web3modal/core-react-native@npm:2.0.3"
   dependencies:
-    "@web3modal/common-react-native": 2.0.2
+    "@web3modal/common-react-native": 2.0.3
     valtio: 1.11.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 0d00e29971fcd3672321f8a705566bb515596bc30b2aefc3dbf4245464ee0dcd8cbc84201d05871f894ff5cb11022f78c80a36097af490aa76c0467e35157cff
+  checksum: affc43e7a7c1d1ca810d581c33d5ab8829809c1cf10dcd0378cc40b6a18d3b3144fed794c26ab16af03f7180fad39fb63cff2c2f87b16f84501e21727bae8bd9
   languageName: node
   linkType: hard
 
-"@web3modal/email-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@web3modal/email-react-native@npm:2.0.2"
+"@web3modal/email-react-native@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@web3modal/email-react-native@npm:2.0.3"
   dependencies:
-    "@web3modal/core-react-native": 2.0.2
-    "@web3modal/ui-react-native": 2.0.2
+    "@web3modal/core-react-native": 2.0.3
+    "@web3modal/ui-react-native": 2.0.3
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: 687ebea6861ae6877efc72555862a220b9cbe4242297bcb36fe86e35be475091a1b576297c51e022456869deb4d76295d30b9c5b93e3419b491d66e9bd5ea1d7
+  checksum: 968ebd6a3940b2d052d779472b97313b4ac283e7b1242831795660dbe69128b2e5ec8f0b7f973275fd7afc797925f432b2e327c97c70324334f9b20870353d91
   languageName: node
   linkType: hard
 
-"@web3modal/email-wagmi-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@web3modal/email-wagmi-react-native@npm:2.0.2"
+"@web3modal/email-wagmi-react-native@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@web3modal/email-wagmi-react-native@npm:2.0.3"
   dependencies:
-    "@web3modal/email-react-native": 2.0.2
+    "@web3modal/email-react-native": 2.0.3
   peerDependencies:
     wagmi: ">=2"
-  checksum: 637529e5584fc518d877fe4e724f3b15f9bbc4c7b5958b040004a609bfa58c863ad1f076c20996c8b0a77b15bbb16c1a46be3121138826735388fb1b3ff438f6
+  checksum: d5197c602b7acea3ea8399cbab565e9946e66fd318cd93813733717e3b374df93d519d88f2991db222a47a185ed261d53df3238363df4edb9f416135e962f342
   languageName: node
   linkType: hard
 
-"@web3modal/scaffold-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@web3modal/scaffold-react-native@npm:2.0.2"
+"@web3modal/scaffold-react-native@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@web3modal/scaffold-react-native@npm:2.0.3"
   dependencies:
-    "@web3modal/core-react-native": 2.0.2
-    "@web3modal/siwe-react-native": 2.0.2
-    "@web3modal/ui-react-native": 2.0.2
+    "@web3modal/core-react-native": 2.0.3
+    "@web3modal/siwe-react-native": 2.0.3
+    "@web3modal/ui-react-native": 2.0.3
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: 8f82cbe6d57c01058f2b010f5cecc63ddbe6e7a86e9c29a6f7575326ec73d800354a5972d6f1eeb2f2623a466b8f062b60bade1753460a505f348cb816ee9411
+  checksum: fc488bbb1096d52b7a18b3ec63e47c246cbe95de6b65a4f6fdd02b6d73f0b08a7349c1ef5690672cbd16fa00f814cdd50dc03daf463c0283c562b4ceb5dbc275
   languageName: node
   linkType: hard
 
-"@web3modal/scaffold-utils-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@web3modal/scaffold-utils-react-native@npm:2.0.2"
+"@web3modal/scaffold-utils-react-native@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@web3modal/scaffold-utils-react-native@npm:2.0.3"
   dependencies:
-    "@web3modal/scaffold-react-native": 2.0.2
-  checksum: 639f5708bcd31270b896def7b72d2829ee10a624f8a54f2fd927cc0ba277f4cc72305a36e30484f29818f491c4e9be139234d4f2afb494dda602dba33dd5ec57
+    "@web3modal/scaffold-react-native": 2.0.3
+  checksum: 08a6296834d30d02dd44836f12277d64372422cfc42014f13fdc68196520de22fe93c6fd59323de106548dfd2a52c9ed85a0b61a7aeac1b11c45079768f0ab85
   languageName: node
   linkType: hard
 
-"@web3modal/siwe-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@web3modal/siwe-react-native@npm:2.0.2"
+"@web3modal/siwe-react-native@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@web3modal/siwe-react-native@npm:2.0.3"
   dependencies:
     "@walletconnect/utils": 2.13.1
-    "@web3modal/common-react-native": 2.0.2
-    "@web3modal/core-react-native": 2.0.2
-    "@web3modal/ui-react-native": 2.0.2
+    "@web3modal/common-react-native": 2.0.3
+    "@web3modal/core-react-native": 2.0.3
+    "@web3modal/ui-react-native": 2.0.3
     valtio: 1.11.2
-  checksum: 58109d76be2e4d87052255ae01834f667e7d09a95048d6f38c79d4d76cbb00f110ed70b0edaef1d648eec099b15d766ff06a879d735225b0e895ee6af0128c12
+  checksum: 6aa3fbdbc31010466dc2b848aede8b7f55ba4a96151e6a34af551e2ff648805328feb7e8f91e95d853ca216b39d8ccbb5b6a19e0283dd3b3588c5aede9de1228
   languageName: node
   linkType: hard
 
-"@web3modal/ui-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@web3modal/ui-react-native@npm:2.0.2"
+"@web3modal/ui-react-native@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@web3modal/ui-react-native@npm:2.0.3"
   dependencies:
     qrcode: 1.5.3
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 7b741e969286d893bf6671860ece0b5c09f4ec1e316b3f285c9e0907613ed3f526aed4a0d718c18e80265e0bf127f58a7440d57f91eb64c316cf5b382b8ec895
+  checksum: 64d994294b6008f1f8861ecc4842b6994da097e1d05d28b60e9d5f2e08a9b5c35aac39bc9a04af1c59f381b1fd588c374dbbe31cdee6f6afc5504f714d259b95
   languageName: node
   linkType: hard
 
-"@web3modal/wagmi-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@web3modal/wagmi-react-native@npm:2.0.2"
+"@web3modal/wagmi-react-native@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@web3modal/wagmi-react-native@npm:2.0.3"
   dependencies:
-    "@web3modal/common-react-native": 2.0.2
-    "@web3modal/scaffold-react-native": 2.0.2
-    "@web3modal/scaffold-utils-react-native": 2.0.2
-    "@web3modal/siwe-react-native": 2.0.2
+    "@web3modal/common-react-native": 2.0.3
+    "@web3modal/scaffold-react-native": 2.0.3
+    "@web3modal/scaffold-utils-react-native": 2.0.3
+    "@web3modal/siwe-react-native": 2.0.3
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -5930,7 +5930,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2"
     wagmi: ">=2"
-  checksum: 2c2779775acf13a7beb5d81d7ab0bea014b960df07c2b0e00374fd06ea1877967f470731a4a23bca4d1f4b6c0955fd5fff671d63e1e29340f279ebe574aa0d29
+  checksum: 3c34812f3a79d97f52f671a31e9a9b5c2ea0bc5cd9ce38cb9e4fa7076c6972797ca784e2e768419a286cf6311700f761b69bca3cc7cfa5d4cfb62920b1b2d7f4
   languageName: node
   linkType: hard
 
@@ -6183,9 +6183,9 @@ __metadata:
     "@types/react": ^18.2.6
     "@types/react-test-renderer": ^18.0.0
     "@walletconnect/react-native-compat": 2.15.2
-    "@web3modal/coinbase-wagmi-react-native": 2.0.2
-    "@web3modal/email-wagmi-react-native": 2.0.2
-    "@web3modal/wagmi-react-native": 2.0.2
+    "@web3modal/coinbase-wagmi-react-native": 2.0.3
+    "@web3modal/email-wagmi-react-native": 2.0.3
+    "@web3modal/wagmi-react-native": 2.0.3
     babel-jest: ^29.6.3
     babel-plugin-module-resolver: ^5.0.0
     eslint: ^8.19.0
