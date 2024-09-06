@@ -6,11 +6,14 @@ import SessionDetail from '@/screens/SessionDetail';
 import Scan from '@/screens/Scan';
 import Modal from '@/components/Modal';
 import {useTheme} from '@/hooks/useTheme';
+import {LogList} from '@/screens/LogList';
+import {useLogs} from '@/hooks/useLogs';
 
 const StackNavigator = createStackNavigator<RootStackParamList>();
 
 export function RootStackNavigator() {
   const Theme = useTheme();
+  useLogs();
 
   return (
     <>
@@ -45,6 +48,15 @@ export function RootStackNavigator() {
           name="Scan"
           component={Scan}
           options={{headerShown: false}}
+        />
+        <StackNavigator.Screen
+          name="Logs"
+          component={LogList}
+          options={{
+            headerShown: true,
+            headerBackTitleVisible: false,
+            title: 'Logs',
+          }}
         />
       </StackNavigator.Navigator>
     </>

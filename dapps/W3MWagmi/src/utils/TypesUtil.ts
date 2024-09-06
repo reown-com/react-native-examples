@@ -37,7 +37,15 @@ export type ThemeKeys =
   | 'inverse-100'
   | 'inverse-000'
   | 'success-100'
+  | 'success-glass-020'
+  | 'success-glass-015'
+  | 'success-glass-010'
+  | 'success-glass-005'
   | 'error-100'
+  | 'error-glass-020'
+  | 'error-glass-015'
+  | 'error-glass-010'
+  | 'error-glass-005'
   | 'gray-glass-001'
   | 'gray-glass-002'
   | 'gray-glass-005'
@@ -59,6 +67,7 @@ declare global {
 
 export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeTabParamList>; // Nested Navigator
+  Logs: undefined;
 };
 
 export type HomeTabParamList = {

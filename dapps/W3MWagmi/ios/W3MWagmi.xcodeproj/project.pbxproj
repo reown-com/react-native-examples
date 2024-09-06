@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* W3MWagmiTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* W3MWagmiTests.m */; };
-		03A5F675B9ED41F16FF9D7E2 /* libPods-App-W3MWagmi Internal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 235BC754299BA1770EDA59D3 /* libPods-App-W3MWagmi Internal.a */; };
+		10E58D7DBA1A57018B34D57D /* libPods-App-W3MWagmi Internal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D1ABCB94073BCDD72E8DEBF8 /* libPods-App-W3MWagmi Internal.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -25,13 +25,13 @@
 		1F31E52D2C46FA2A007B1746 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E445F9756054F479E8D2973 /* BootSplash.storyboard */; };
 		1FED56F32C04D58700E117C9 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 1FED56F22C04D58700E117C9 /* PrivacyInfo.xcprivacy */; };
 		45B11C20E1DA948AC864AF49 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 49BEE6AAA90D00533CF06130 /* PrivacyInfo.xcprivacy */; };
-		523F07284AAB408FF308431D /* libPods-App-W3MWagmi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E1AB42B94A123446CF9081B /* libPods-App-W3MWagmi.a */; };
 		5EFC5B51E34E236600D965D5 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01F9F2E77A287A42A071531 /* ExpoModulesProvider.swift */; };
-		62E16E100E987162F1DE10CB /* libPods-App-W3MWagmi Debug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F417D12F2F6EF11DB654689F /* libPods-App-W3MWagmi Debug.a */; };
+		6634CE88402CBFD25D2BB5FF /* libPods-App-W3MWagmiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA066F6FB24DADC146C68A82 /* libPods-App-W3MWagmiTests.a */; };
+		67338D083BDCCD9F0CF66D08 /* libPods-App-W3MWagmi Debug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 240CE93A99F378480BA922D4 /* libPods-App-W3MWagmi Debug.a */; };
 		6B1A53C7CCD172EB49BA17F6 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13892DB6EEABD959468B14EE /* ExpoModulesProvider.swift */; };
-		70F9154B52B63B1B11EC9B00 /* libPods-App-W3MWagmiTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4930C6E49C5BD621FC12F8F /* libPods-App-W3MWagmiTests.a */; };
 		7B1A0654D97E0DC80D406822 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEAAEBE88CC19D9314B6076C /* ExpoModulesProvider.swift */; };
 		99CFC20629154EF9A892D2D8 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E445F9756054F479E8D2973 /* BootSplash.storyboard */; };
+		A2B11213B79466F58DF9D52E /* libPods-App-W3MWagmi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00F7426F5A0D69C87DEF034B /* libPods-App-W3MWagmi.a */; };
 		CB4E23EFF00E1AB039998C3B /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5B7BAF7B00B10ECC43FAB7 /* ExpoModulesProvider.swift */; };
 		D9256621E00D38BF53C3DD9F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 91137E93C077D4603FB04D5E /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
@@ -50,7 +50,7 @@
 		00E356EE1AD99517003FC87E /* W3MWagmiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = W3MWagmiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* W3MWagmiTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = W3MWagmiTests.m; sourceTree = "<group>"; };
-		12D0D55CF6217493AC573C2D /* Pods-App-W3MWagmi Debug.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi Debug.release.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug.release.xcconfig"; sourceTree = "<group>"; };
+		00F7426F5A0D69C87DEF034B /* libPods-App-W3MWagmi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-W3MWagmi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13892DB6EEABD959468B14EE /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-App-W3MWagmi Internal/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* W3MWagmi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = W3MWagmi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = W3MWagmi/AppDelegate.h; sourceTree = "<group>"; };
@@ -58,30 +58,30 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = W3MWagmi/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = W3MWagmi/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = W3MWagmi/main.m; sourceTree = "<group>"; };
-		177A94FE8801046AED5B95C8 /* Pods-App-W3MWagmi Internal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi Internal.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal.debug.xcconfig"; sourceTree = "<group>"; };
-		1C7EE44A951EF9FE30AB3D0D /* Pods-App-W3MWagmiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmiTests.release.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests.release.xcconfig"; sourceTree = "<group>"; };
+		1D93FF7F95B6D0317C9AF3D3 /* Pods-App-W3MWagmi Debug.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi Debug.release.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug.release.xcconfig"; sourceTree = "<group>"; };
 		1F1C00812B8E4F9600FC18DB /* W3MWagmi Debug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "W3MWagmi Debug.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F1C008B2B8E539F00FC18DB /* Debug-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Debug-Info.plist"; path = "W3MWagmi/Debug-Info.plist"; sourceTree = "<group>"; };
 		1F1C00A22B8E53EE00FC18DB /* W3MWagmi Internal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "W3MWagmi Internal.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F1C00A42B8E543300FC18DB /* Internal-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Internal-Info.plist"; path = "W3MWagmi/Internal-Info.plist"; sourceTree = "<group>"; };
 		1FEC28A52B3612B00093B31A /* W3MWagmi.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = W3MWagmi.entitlements; path = W3MWagmi/W3MWagmi.entitlements; sourceTree = "<group>"; };
 		1FED56F22C04D58700E117C9 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		235BC754299BA1770EDA59D3 /* libPods-App-W3MWagmi Internal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-W3MWagmi Internal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2BB6B6C93CEA66CC35D0F82A /* Pods-App-W3MWagmi Debug.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi Debug.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug.debug.xcconfig"; sourceTree = "<group>"; };
+		240CE93A99F378480BA922D4 /* libPods-App-W3MWagmi Debug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-W3MWagmi Debug.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2927EB5AA455E32A0B482D96 /* Pods-App-W3MWagmiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmiTests.release.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests.release.xcconfig"; sourceTree = "<group>"; };
 		49BEE6AAA90D00533CF06130 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		4E1AB42B94A123446CF9081B /* libPods-App-W3MWagmi.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-W3MWagmi.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		89197F36E3A9B8713EFD0361 /* Pods-App-W3MWagmiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmiTests.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests.debug.xcconfig"; sourceTree = "<group>"; };
 		8E445F9756054F479E8D2973 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = W3MWagmi/BootSplash.storyboard; sourceTree = "<group>"; };
 		91137E93C077D4603FB04D5E /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B225F2247E00E54550864F9B /* Pods-App-W3MWagmi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi.release.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi.release.xcconfig"; sourceTree = "<group>"; };
 		C01F9F2E77A287A42A071531 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-App-W3MWagmiTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		C0E623856FBFCA42A5187F5F /* Pods-App-W3MWagmiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmiTests.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests.debug.xcconfig"; sourceTree = "<group>"; };
-		CAD050A4EBCDA56DCFA7FC42 /* Pods-App-W3MWagmi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi.debug.xcconfig"; sourceTree = "<group>"; };
+		C4D833E176E870EB5AA46FED /* Pods-App-W3MWagmi Internal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi Internal.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal.debug.xcconfig"; sourceTree = "<group>"; };
+		CA066F6FB24DADC146C68A82 /* libPods-App-W3MWagmiTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-W3MWagmiTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1ABCB94073BCDD72E8DEBF8 /* libPods-App-W3MWagmi Internal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-W3MWagmi Internal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB5B7BAF7B00B10ECC43FAB7 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-App-W3MWagmi/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		DE3848FC8CEA8A7D83962D03 /* Pods-App-W3MWagmi Internal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi Internal.release.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal.release.xcconfig"; sourceTree = "<group>"; };
+		DEF815375A62B2CE346BEBEC /* Pods-App-W3MWagmi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi.debug.xcconfig"; sourceTree = "<group>"; };
 		E17E85A52855CFD33E5041BA /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-W3MWagmi-W3MWagmiTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		E4930C6E49C5BD621FC12F8F /* libPods-App-W3MWagmiTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-W3MWagmiTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E93A110BCD45AB30C69928BF /* Pods-App-W3MWagmi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi.release.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F417D12F2F6EF11DB654689F /* libPods-App-W3MWagmi Debug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-W3MWagmi Debug.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA6887094C5CCD190EE90058 /* Pods-App-W3MWagmi Internal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi Internal.release.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal.release.xcconfig"; sourceTree = "<group>"; };
+		F4138E2E127210836A144465 /* Pods-App-W3MWagmi Debug.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-W3MWagmi Debug.debug.xcconfig"; path = "Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug.debug.xcconfig"; sourceTree = "<group>"; };
 		FEAAEBE88CC19D9314B6076C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-App-W3MWagmi Debug/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -90,7 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				70F9154B52B63B1B11EC9B00 /* libPods-App-W3MWagmiTests.a in Frameworks */,
+				6634CE88402CBFD25D2BB5FF /* libPods-App-W3MWagmiTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,7 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				523F07284AAB408FF308431D /* libPods-App-W3MWagmi.a in Frameworks */,
+				A2B11213B79466F58DF9D52E /* libPods-App-W3MWagmi.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,7 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				62E16E100E987162F1DE10CB /* libPods-App-W3MWagmi Debug.a in Frameworks */,
+				67338D083BDCCD9F0CF66D08 /* libPods-App-W3MWagmi Debug.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,7 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03A5F675B9ED41F16FF9D7E2 /* libPods-App-W3MWagmi Internal.a in Frameworks */,
+				10E58D7DBA1A57018B34D57D /* libPods-App-W3MWagmi Internal.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,10 +158,10 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				4E1AB42B94A123446CF9081B /* libPods-App-W3MWagmi.a */,
-				F417D12F2F6EF11DB654689F /* libPods-App-W3MWagmi Debug.a */,
-				235BC754299BA1770EDA59D3 /* libPods-App-W3MWagmi Internal.a */,
-				E4930C6E49C5BD621FC12F8F /* libPods-App-W3MWagmiTests.a */,
+				D1ABCB94073BCDD72E8DEBF8 /* libPods-App-W3MWagmi Internal.a */,
+				CA066F6FB24DADC146C68A82 /* libPods-App-W3MWagmiTests.a */,
+				00F7426F5A0D69C87DEF034B /* libPods-App-W3MWagmi.a */,
+				240CE93A99F378480BA922D4 /* libPods-App-W3MWagmi Debug.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -239,14 +239,14 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				CAD050A4EBCDA56DCFA7FC42 /* Pods-App-W3MWagmi.debug.xcconfig */,
-				E93A110BCD45AB30C69928BF /* Pods-App-W3MWagmi.release.xcconfig */,
-				2BB6B6C93CEA66CC35D0F82A /* Pods-App-W3MWagmi Debug.debug.xcconfig */,
-				12D0D55CF6217493AC573C2D /* Pods-App-W3MWagmi Debug.release.xcconfig */,
-				177A94FE8801046AED5B95C8 /* Pods-App-W3MWagmi Internal.debug.xcconfig */,
-				FA6887094C5CCD190EE90058 /* Pods-App-W3MWagmi Internal.release.xcconfig */,
-				C0E623856FBFCA42A5187F5F /* Pods-App-W3MWagmiTests.debug.xcconfig */,
-				1C7EE44A951EF9FE30AB3D0D /* Pods-App-W3MWagmiTests.release.xcconfig */,
+				DEF815375A62B2CE346BEBEC /* Pods-App-W3MWagmi.debug.xcconfig */,
+				F4138E2E127210836A144465 /* Pods-App-W3MWagmi Debug.debug.xcconfig */,
+				1D93FF7F95B6D0317C9AF3D3 /* Pods-App-W3MWagmi Debug.release.xcconfig */,
+				C4D833E176E870EB5AA46FED /* Pods-App-W3MWagmi Internal.debug.xcconfig */,
+				B225F2247E00E54550864F9B /* Pods-App-W3MWagmi.release.xcconfig */,
+				DE3848FC8CEA8A7D83962D03 /* Pods-App-W3MWagmi Internal.release.xcconfig */,
+				89197F36E3A9B8713EFD0361 /* Pods-App-W3MWagmiTests.debug.xcconfig */,
+				2927EB5AA455E32A0B482D96 /* Pods-App-W3MWagmiTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -269,13 +269,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "W3MWagmiTests" */;
 			buildPhases = (
-				1F8480CE4CB279ECDFA61B8B /* [CP] Check Pods Manifest.lock */,
+				2EE4BF3EE058FE90A7C55DDF /* [CP] Check Pods Manifest.lock */,
 				8FD4D24162D469B92ADB1AC6 /* [Expo] Configure project */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				6B07FBB706FF97C693ACE0A8 /* [CP] Embed Pods Frameworks */,
-				975AF59D2FB9CF8C438D2269 /* [CP] Copy Pods Resources */,
+				5B99E314DE3E48305A5F7325 /* [CP] Embed Pods Frameworks */,
+				3E2F3623D4AFAEFFB9E106A6 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -291,7 +291,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "W3MWagmi" */;
 			buildPhases = (
-				F103726162077C4EB0CC42B7 /* [CP] Check Pods Manifest.lock */,
+				AFD1CB9F2F3B67532B3BC68F /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				76361066F2740B2BBDCC9CF2 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
@@ -299,8 +299,8 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				F906645FDE2347359ED66400 /* Upload Debug Symbols to Sentry */,
-				5A47C2D0705D1F0A1E1B021D /* [CP] Embed Pods Frameworks */,
-				C3B6C01B91DE2859CCB5E7A7 /* [CP] Copy Pods Resources */,
+				6FD6AEA93C05E2433A36A48A /* [CP] Embed Pods Frameworks */,
+				716F6FE56395B4641861A15A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -315,7 +315,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1F1C007E2B8E4F9600FC18DB /* Build configuration list for PBXNativeTarget "W3MWagmi Debug" */;
 			buildPhases = (
-				3850A4FD3A9EA6588B97D42A /* [CP] Check Pods Manifest.lock */,
+				5717C246A272AF585563E644 /* [CP] Check Pods Manifest.lock */,
 				1F1C006F2B8E4F9600FC18DB /* Start Packager */,
 				1F1C00702B8E4F9600FC18DB /* [Expo] Configure project */,
 				1F1C00712B8E4F9600FC18DB /* Sources */,
@@ -323,8 +323,8 @@
 				1F1C00772B8E4F9600FC18DB /* Resources */,
 				1F1C007A2B8E4F9600FC18DB /* Bundle React Native code and images */,
 				1F1C007B2B8E4F9600FC18DB /* Upload Debug Symbols to Sentry */,
-				E461C4FB9535EAABAE5DC61B /* [CP] Embed Pods Frameworks */,
-				B3E060BE736FFA55A234BC69 /* [CP] Copy Pods Resources */,
+				862F317A6EE901F9F80C07FF /* [CP] Embed Pods Frameworks */,
+				517CB42362ED36C0AB6A7B07 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -339,7 +339,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1F1C009F2B8E53EE00FC18DB /* Build configuration list for PBXNativeTarget "W3MWagmi Internal" */;
 			buildPhases = (
-				F03344A0466981C82ECD314C /* [CP] Check Pods Manifest.lock */,
+				42E3F8E361D97667CF207EC1 /* [CP] Check Pods Manifest.lock */,
 				1F1C008F2B8E53EE00FC18DB /* Start Packager */,
 				1F1C00902B8E53EE00FC18DB /* [Expo] Configure project */,
 				1F1C00912B8E53EE00FC18DB /* Sources */,
@@ -347,8 +347,8 @@
 				1F1C00972B8E53EE00FC18DB /* Resources */,
 				1F1C009B2B8E53EE00FC18DB /* Bundle React Native code and images */,
 				1F1C009C2B8E53EE00FC18DB /* Upload Debug Symbols to Sentry */,
-				9A5F85ED2EF6A3DDEB885C0B /* [CP] Embed Pods Frameworks */,
-				AD87A90031BEACD8AE7841D8 /* [CP] Copy Pods Resources */,
+				CF75C34FAD8767964D07A5AD /* [CP] Embed Pods Frameworks */,
+				EC59DD71D9B1F9BC35C2AAD6 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -592,7 +592,7 @@
 			shellPath = /bin/sh;
 			shellScript = "\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nif [ -f \"$WITH_ENVIRONMENT\" ]; then\n  . \"$WITH_ENVIRONMENT\"\nfi\nexport SENTRY_PROPERTIES=sentry.properties\n[ \"$SENTRY_INCLUDE_NATIVE_SOURCES\" = \"true\" ] && INCLUDE_SOURCES_FLAG=\"--include-sources\" || INCLUDE_SOURCES_FLAG=\"\"\n../node_modules/@sentry/cli/bin/sentry-cli debug-files upload \"$INCLUDE_SOURCES_FLAG\" \"$DWARF_DSYM_FOLDER_PATH\"\n";
 		};
-		1F8480CE4CB279ECDFA61B8B /* [CP] Check Pods Manifest.lock */ = {
+		2EE4BF3EE058FE90A7C55DDF /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -614,101 +614,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		3850A4FD3A9EA6588B97D42A /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-App-W3MWagmi Debug-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5A47C2D0705D1F0A1E1B021D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6B07FBB706FF97C693ACE0A8 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		76361066F2740B2BBDCC9CF2 /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-App-W3MWagmi/expo-configure-project.sh\"\n";
-		};
-		8FD4D24162D469B92ADB1AC6 /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-App-W3MWagmiTests/expo-configure-project.sh\"\n";
-		};
-		975AF59D2FB9CF8C438D2269 /* [CP] Copy Pods Resources */ = {
+		3E2F3623D4AFAEFFB9E106A6 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -725,92 +631,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9A5F85ED2EF6A3DDEB885C0B /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		AD87A90031BEACD8AE7841D8 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		B3E060BE736FFA55A234BC69 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C3B6C01B91DE2859CCB5E7A7 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E461C4FB9535EAABAE5DC61B /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F03344A0466981C82ECD314C /* [CP] Check Pods Manifest.lock */ = {
+		42E3F8E361D97667CF207EC1 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -832,7 +653,152 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F103726162077C4EB0CC42B7 /* [CP] Check Pods Manifest.lock */ = {
+		517CB42362ED36C0AB6A7B07 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5717C246A272AF585563E644 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-App-W3MWagmi Debug-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5B99E314DE3E48305A5F7325 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmiTests/Pods-App-W3MWagmiTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6FD6AEA93C05E2433A36A48A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		716F6FE56395B4641861A15A /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi/Pods-App-W3MWagmi-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		76361066F2740B2BBDCC9CF2 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-App-W3MWagmi/expo-configure-project.sh\"\n";
+		};
+		862F317A6EE901F9F80C07FF /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Debug/Pods-App-W3MWagmi Debug-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8FD4D24162D469B92ADB1AC6 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-App-W3MWagmiTests/expo-configure-project.sh\"\n";
+		};
+		AFD1CB9F2F3B67532B3BC68F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -852,6 +818,40 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CF75C34FAD8767964D07A5AD /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EC59DD71D9B1F9BC35C2AAD6 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-App-W3MWagmi Internal/Pods-App-W3MWagmi Internal-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F906645FDE2347359ED66400 /* Upload Debug Symbols to Sentry */ = {
@@ -943,7 +943,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C0E623856FBFCA42A5187F5F /* Pods-App-W3MWagmiTests.debug.xcconfig */;
+			baseConfigurationReference = 89197F36E3A9B8713EFD0361 /* Pods-App-W3MWagmiTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Manual;
@@ -978,7 +978,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1C7EE44A951EF9FE30AB3D0D /* Pods-App-W3MWagmiTests.release.xcconfig */;
+			baseConfigurationReference = 2927EB5AA455E32A0B482D96 /* Pods-App-W3MWagmiTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Manual;
@@ -1010,11 +1010,12 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CAD050A4EBCDA56DCFA7FC42 /* Pods-App-W3MWagmi.debug.xcconfig */;
+			baseConfigurationReference = DEF815375A62B2CE346BEBEC /* Pods-App-W3MWagmi.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = W3MWagmi/W3MWagmi.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 31;
 				DEVELOPMENT_TEAM = "";
@@ -1116,7 +1117,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.web3modal.rnsample;
 				PRODUCT_NAME = W3MWagmi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.walletconnect.web3modal.rnsample";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.rnsample";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -1129,11 +1130,12 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E93A110BCD45AB30C69928BF /* Pods-App-W3MWagmi.release.xcconfig */;
+			baseConfigurationReference = B225F2247E00E54550864F9B /* Pods-App-W3MWagmi.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = W3MWagmi/W3MWagmi.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 31;
 				DEVELOPMENT_TEAM = "";
@@ -1234,7 +1236,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.web3modal.rnsample;
 				PRODUCT_NAME = W3MWagmi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.walletconnect.web3modal.rnsample";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.rnsample";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -1246,7 +1248,7 @@
 		};
 		1F1C007F2B8E4F9600FC18DB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2BB6B6C93CEA66CC35D0F82A /* Pods-App-W3MWagmi Debug.debug.xcconfig */;
+			baseConfigurationReference = F4138E2E127210836A144465 /* Pods-App-W3MWagmi Debug.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Debug";
 				CLANG_ENABLE_MODULES = YES;
@@ -1361,7 +1363,7 @@
 		};
 		1F1C00802B8E4F9600FC18DB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 12D0D55CF6217493AC573C2D /* Pods-App-W3MWagmi Debug.release.xcconfig */;
+			baseConfigurationReference = 1D93FF7F95B6D0317C9AF3D3 /* Pods-App-W3MWagmi Debug.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Debug";
 				CLANG_ENABLE_MODULES = YES;
@@ -1474,14 +1476,14 @@
 		};
 		1F1C00A02B8E53EE00FC18DB /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 177A94FE8801046AED5B95C8 /* Pods-App-W3MWagmi Internal.debug.xcconfig */;
+			baseConfigurationReference = C4D833E176E870EB5AA46FED /* Pods-App-W3MWagmi Internal.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Internal";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = W3MWagmi/W3MWagmi.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_TEAM = W5R8AG9K22;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W5R8AG9K22;
 				ENABLE_BITCODE = NO;
@@ -1594,14 +1596,14 @@
 		};
 		1F1C00A12B8E53EE00FC18DB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FA6887094C5CCD190EE90058 /* Pods-App-W3MWagmi Internal.release.xcconfig */;
+			baseConfigurationReference = DE3848FC8CEA8A7D83962D03 /* Pods-App-W3MWagmi Internal.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Internal";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = W3MWagmi/W3MWagmi.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 28;
+				CURRENT_PROJECT_VERSION = 52;
 				DEVELOPMENT_TEAM = W5R8AG9K22;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W5R8AG9K22;
 				HEADER_SEARCH_PATHS = (

@@ -4,15 +4,21 @@ import {useAccount} from 'wagmi';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {getVersion, getBuildNumber} from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSnapshot} from 'valtio';
 
+import SettingsStore from '@/stores/SettingsStore';
 import {Card} from '@/components/Card';
 import {useTheme} from '@/hooks/useTheme';
+import {HomeTabScreenProps} from '@/utils/TypesUtil';
 import styles from './styles';
 
-function SettingsScreen() {
+type Props = HomeTabScreenProps<'SettingsScreen'>;
+
+function SettingsScreen({navigation}: Props) {
   const Theme = useTheme();
   const {connector} = useAccount();
   const [clientId, setClientId] = useState('');
+  const {socketStatus} = useSnapshot(SettingsStore.state);
 
   useEffect(() => {
     async function getAsyncData() {
@@ -22,6 +28,7 @@ function SettingsScreen() {
       } else {
         const provider = await connector?.getProvider();
         _clientId =
+          // @ts-ignore
           await provider?.signer?.rpcProviders?.eip155?.client?.core?.crypto?.getClientId();
 
         if (_clientId) {
@@ -56,6 +63,12 @@ function SettingsScreen() {
           onPress={() =>
             copyToClipboard(`${getVersion()} (${getBuildNumber()})`)
           }
+        />
+        <Card title="Socket status" value={socketStatus} />
+        <Card
+          title="Read full logs"
+          onPress={() => navigation.navigate('Logs')}
+          icon="chevronRight"
         />
       </View>
     </ScrollView>

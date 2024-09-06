@@ -1,4 +1,5 @@
 import {Image, StyleSheet, Text, View} from 'react-native';
+
 import {SignClientTypes, Verify} from '@walletconnect/types';
 
 import {useTheme} from '@/hooks/useTheme';
@@ -9,12 +10,16 @@ interface ModalHeaderProps {
   metadata?: SignClientTypes.Metadata;
   intention?: string;
   verifyContext?: Verify.Context;
+  showVerifyContext?: boolean;
+  isLinkMode?: boolean;
 }
 
 export function ModalHeader({
   metadata,
   intention,
   verifyContext,
+  showVerifyContext = true,
+  isLinkMode,
 }: ModalHeaderProps) {
   const Theme = useTheme();
   const color = Theme['fg-100'];
@@ -23,6 +28,19 @@ export function ModalHeader({
 
   return (
     <View style={styles.container}>
+      {isLinkMode && (
+        <View
+          style={[
+            styles.linkModeContainer,
+            {
+              backgroundColor: Theme['accent-100'],
+            },
+          ]}>
+          <Text style={[styles.linkMode, {color: Theme['inverse-100']}]}>
+            LINK MODE
+          </Text>
+        </View>
+      )}
       <Image
         source={{uri: metadata?.icons[0] ?? ''}}
         style={[styles.logo, {borderColor: Theme['gray-glass-010']}]}
@@ -38,7 +56,9 @@ export function ModalHeader({
           {metadata?.url || 'unknown domain'}
         </Text>
       </View>
-      <VerifyTag validation={validation} isScam={isScam} style={styles.tag} />
+      {showVerifyContext && (
+        <VerifyTag validation={validation} isScam={isScam} style={styles.tag} />
+      )}
     </View>
   );
 }
@@ -80,5 +100,18 @@ const styles = StyleSheet.create({
   },
   tag: {
     marginTop: 4,
+  },
+  linkModeContainer: {
+    borderRadius: 20,
+    height: 25,
+    width: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 12,
+  },
+  linkMode: {
+    fontSize: 12,
+    fontWeight: '500',
   },
 });

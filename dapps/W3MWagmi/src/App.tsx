@@ -12,17 +12,18 @@ import {coinbaseConnector} from '@web3modal/coinbase-wagmi-react-native';
 import {emailConnector} from '@web3modal/email-wagmi-react-native';
 import {WagmiProvider} from 'wagmi';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
-
+import Toast from 'react-native-toast-message';
 import Config from 'react-native-config';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as Sentry from '@sentry/react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import {getCustomWallets} from './utils/misc';
-import {RootStackNavigator} from './navigators/RootStackNavigator';
-import {siweConfig} from './utils/SiweUtils';
-import {chains} from './utils/WagmiUtils';
+import {getCustomWallets} from '@/utils/misc';
+import {RootStackNavigator} from '@/navigators/RootStackNavigator';
+import {siweConfig} from '@/utils/SiweUtils';
+import {chains} from '@/utils/WagmiUtils';
+import SettingsStore from '@/stores/SettingsStore';
 
 if (!__DEV__ && Config.ENV_SENTRY_DSN) {
   Sentry.init({
@@ -42,6 +43,8 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
   redirect: {
     native: 'w3mwagmisample://',
+    universal: 'https://lab.web3modal.com/rn_appkit',
+    linkMode: true,
   },
 };
 
@@ -89,6 +92,9 @@ function App(): JSX.Element {
       const handledBySdk = handleResponse(new URL(url));
       if (!handledBySdk) {
         // Handle other deeplinks
+        if (url.includes('wc_ev')) {
+          SettingsStore.setCurrentRequestLinkMode(true);
+        }
       }
     });
 
@@ -96,7 +102,18 @@ function App(): JSX.Element {
   }, []);
 
   useEffect(() => {
+    // Hide splashscreen
     BootSplash.hide({fade: true});
+
+    // Check if app was opened from a link-mode response
+    async function checkInitialUrl() {
+      const initialUrl = await Linking.getInitialURL();
+      if (initialUrl) {
+        SettingsStore.setCurrentRequestLinkMode(initialUrl.includes('wc_ev'));
+      }
+    }
+
+    checkInitialUrl();
   }, []);
 
   return (
@@ -104,6 +121,7 @@ function App(): JSX.Element {
       <WagmiProvider config={wagmiConfig}>
         <QueryClientProvider client={queryClient}>
           <RootStackNavigator />
+          <Toast />
           <Web3Modal />
         </QueryClientProvider>
       </WagmiProvider>

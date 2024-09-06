@@ -31,6 +31,7 @@ export default function SessionDetail({route}: Props) {
     [topic],
   );
   const namespaces = useMemo(() => session?.namespaces, [session]);
+  const isLinkMode = session?.transportType === 'link_mode';
 
   // Get necessary data from session
   const expiryDate = useMemo(
@@ -109,7 +110,11 @@ export default function SessionDetail({route}: Props) {
       bounces={false}
       style={[styles.container, {backgroundColor: Theme['bg-100']}]}
       contentContainerStyle={styles.contentContainer}>
-      <ModalHeader metadata={session?.peer.metadata} />
+      <ModalHeader
+        metadata={session?.peer.metadata}
+        isLinkMode={isLinkMode}
+        showVerifyContext={false}
+      />
       <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
       {namespaces &&
         Object.keys(namespaces).map(chain => {

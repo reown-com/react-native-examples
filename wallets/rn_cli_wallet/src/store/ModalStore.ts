@@ -1,6 +1,6 @@
 import {SessionTypes, SignClientTypes} from '@walletconnect/types';
 import {Web3WalletTypes} from '@walletconnect/web3wallet';
-import {proxy} from 'valtio';
+import {proxy, ref} from 'valtio';
 
 /**
  * Types
@@ -12,6 +12,7 @@ interface ModalData {
   request?: Web3WalletTypes.AuthRequest;
   authRequest?: SignClientTypes.EventArguments['session_authenticate'];
   loadingMessage?: string;
+  errorMessage?: string;
 }
 
 interface State {
@@ -43,7 +44,7 @@ const ModalStore = {
 
   open(view: State['view'], data: State['data']) {
     state.view = view;
-    state.data = data;
+    state.data = data ? ref(data) : undefined;
     state.open = true;
   },
 

@@ -7,6 +7,9 @@ import {
   View,
 } from 'react-native';
 import Modal from 'react-native-modal';
+import {useSnapshot} from 'valtio';
+import SettingsStore from '@/stores/SettingsStore';
+import {useTheme} from '@/hooks/useTheme';
 
 interface Props {
   isVisible: boolean;
@@ -23,24 +26,48 @@ export function RequestModal({
   rpcResponse,
   rpcError,
 }: Props) {
+  const Theme = useTheme();
+  const {isCurrentRequestLinkMode} = useSnapshot(SettingsStore.state);
+
+  const handleClose = () => {
+    SettingsStore.setCurrentRequestLinkMode(false);
+    onClose();
+  };
+
   return (
-    <Modal isVisible={isVisible} onBackdropPress={onClose}>
-      <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+    <Modal isVisible={isVisible} onBackdropPress={handleClose}>
+      <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
         <Text>X</Text>
       </TouchableOpacity>
       <View style={styles.innerContainer}>
         {isLoading && (
           <>
             <Text style={styles.title}>Pending Request</Text>
-            <ActivityIndicator color="#3396FF" style={styles.loader} />
+            <ActivityIndicator
+              color={Theme['accent-100']}
+              style={styles.loader}
+            />
             <Text style={styles.center}>
               Approve or reject request using your wallet if needed
             </Text>
           </>
         )}
+        {isCurrentRequestLinkMode && (
+          <View
+            style={[
+              styles.linkModeContainer,
+              {
+                backgroundColor: Theme['accent-100'],
+              },
+            ]}>
+            <Text style={[styles.linkMode, {color: Theme['inverse-100']}]}>
+              LINK MODE
+            </Text>
+          </View>
+        )}
         {rpcResponse && (
           <>
-            <Text style={[styles.title, styles.successText]}>
+            <Text style={[styles.title, {color: Theme['success-100']}]}>
               Request Response
             </Text>
             <Text style={styles.responseText}>{rpcResponse}</Text>
@@ -48,7 +75,7 @@ export function RequestModal({
         )}
         {rpcError && (
           <>
-            <Text style={[styles.title, styles.failureText]}>
+            <Text style={[styles.title, {color: Theme['error-100']}]}>
               Request Failure
             </Text>
             <Text style={styles.subtitle}>
@@ -90,12 +117,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 8,
   },
-  successText: {
-    color: '#3396FF',
-  },
-  failureText: {
-    color: '#F05142',
-  },
   subtitle: {
     fontWeight: 'bold',
     marginVertical: 4,
@@ -105,5 +126,19 @@ const styles = StyleSheet.create({
   },
   responseText: {
     fontWeight: '300',
+  },
+  linkModeContainer: {
+    borderRadius: 20,
+    height: 25,
+    width: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: 12,
+  },
+  linkMode: {
+    fontSize: 12,
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });

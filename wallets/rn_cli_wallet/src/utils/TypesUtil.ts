@@ -64,6 +64,7 @@ export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeTabParamList>; // Nested Navigator
   SessionDetail: {topic: string};
   Scan: undefined;
+  Logs: undefined;
 };
 
 export type HomeTabParamList = {

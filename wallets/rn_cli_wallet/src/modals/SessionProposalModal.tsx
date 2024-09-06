@@ -10,22 +10,19 @@ import ModalStore from '@/store/ModalStore';
 import {eip155Addresses} from '@/utils/EIP155WalletUtil';
 import {web3wallet} from '@/utils/WalletConnectUtil';
 import SettingsStore from '@/store/SettingsStore';
-import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
+import {handleRedirect} from '@/utils/LinkingUtils';
 import {useTheme} from '@/hooks/useTheme';
 import {Chains} from '@/components/Modal/Chains';
-import {
-  EIP155_CHAINS,
-  EIP155_SIGNING_METHODS,
-  PresetsUtil,
-} from '@/utils/PresetsUtil';
+import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
 import {RequestModal} from './RequestModal';
+import {getSupportedChains} from '@/utils/HelperUtil';
 
 export default function SessionProposalModal() {
   const Theme = useTheme();
   // Get proposal data and wallet address from store
-  const data = useSnapshot(ModalStore.state);
-  const proposal = data?.data
-    ?.proposal as SignClientTypes.EventArguments['session_proposal'];
+  const {data} = useSnapshot(ModalStore.state);
+  const proposal =
+    data?.proposal as SignClientTypes.EventArguments['session_proposal'];
 
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
@@ -56,42 +53,16 @@ export default function SessionProposalModal() {
     };
   }, []);
 
-  const requestedChains = useMemo(() => {
+  const supportedChains = useMemo(() => {
     if (!proposal) {
       return [];
     }
-    const required = [];
-    for (const [key, values] of Object.entries(
+
+    return getSupportedChains(
       proposal.params.requiredNamespaces,
-    )) {
-      const chains = key.includes(':') ? key : values.chains;
-      if (chains) {
-        required.push(chains);
-      }
-    }
-
-    const optional = [];
-    for (const [key, values] of Object.entries(
       proposal.params.optionalNamespaces,
-    )) {
-      const chains = key.includes(':') ? key : values.chains;
-      if (chains) {
-        optional.push(chains);
-      }
-    }
-    console.log('requestedChains', [
-      ...new Set([...required.flat(), ...optional.flat()]),
-    ]);
-    return [...new Set([...required.flat(), ...optional.flat()])];
+    );
   }, [proposal]);
-
-  // the chains that are supported by the wallet from the proposal
-  const supportedChains = useMemo(() => {
-    const chains = requestedChains
-      .map(chain => PresetsUtil.getChainData(chain.split(':')[1]))
-      .filter(chain => chain !== undefined);
-    return chains;
-  }, [requestedChains]);
 
   // Handle approve action, construct session namespace
   const onApprove = useCallback(async () => {
@@ -102,8 +73,6 @@ export default function SessionProposalModal() {
         supportedNamespaces,
       });
 
-      console.log('approving namespaces:', namespaces);
-
       try {
         const session = await web3wallet.approveSession({
           id: proposal.id,
@@ -112,8 +81,11 @@ export default function SessionProposalModal() {
         SettingsStore.setSessions(
           Object.values(web3wallet.getActiveSessions()),
         );
-        const sessionMetadata = session?.peer?.metadata;
-        handleDeepLinkRedirect(sessionMetadata?.redirect);
+
+        handleRedirect({
+          peerRedirect: session.peer.metadata.redirect,
+          isLinkMode: session?.transportType === 'link_mode',
+        });
       } catch (e) {
         console.log((e as Error).message, 'error');
         return;

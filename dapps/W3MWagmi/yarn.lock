@@ -5610,9 +5610,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.15.2":
-  version: 2.15.2
-  resolution: "@walletconnect/react-native-compat@npm:2.15.2"
+"@walletconnect/react-native-compat@npm:2.16.0":
+  version: 2.16.0
+  resolution: "@walletconnect/react-native-compat@npm:2.16.0"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -5625,7 +5625,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: 2e9384039c20557b8d34fe801727eda89ab71cd318728a05231d8f77626fd6ee994aa984419bdc6790715875b72a1f4b7e1a1a2e5ef58b45109c0fa2d98843c5
+  checksum: bbe17f049e8f213f8505bedd6e1f0dccdef73dae92f8b4d55827169417129c35970366a89efb7eda4c88d8353edd5973d0ebf85a061b742aaf8a082dd6bae478
   languageName: node
   linkType: hard
 
@@ -6182,7 +6182,7 @@ __metadata:
     "@tanstack/react-query": 5.51.1
     "@types/react": ^18.2.6
     "@types/react-test-renderer": ^18.0.0
-    "@walletconnect/react-native-compat": 2.15.2
+    "@walletconnect/react-native-compat": 2.16.0
     "@web3modal/coinbase-wagmi-react-native": 2.0.3
     "@web3modal/email-wagmi-react-native": 2.0.3
     "@web3modal/wagmi-react-native": 2.0.3
@@ -6203,6 +6203,7 @@ __metadata:
     react-native-safe-area-context: 4.10.8
     react-native-screens: 3.32.0
     react-native-svg: 15.4.0
+    react-native-toast-message: 2.2.0
     react-native-webview: 13.10.5
     react-test-renderer: 18.2.0
     typescript: 5.0.4
@@ -13727,6 +13728,16 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 04f5aafa88e5d641df998c195988904760984004ae3d5b16c3313941f2027d85b4d5f9c35ac9d696ee533ccff33f4f3c9b86249ca6fec787ca4895075ee4d9d0
+  languageName: node
+  linkType: hard
+
+"react-native-toast-message@npm:2.2.0":
+  version: 2.2.0
+  resolution: "react-native-toast-message@npm:2.2.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: b286b8d5ca0f21737c2e0a8e9c2d6dab2c06a3895335aa541c69eeb42d526cc6f3951069e59d8d346d3e6cafb8feaa450c35b0efe7c3d51ff81351d1477e71eb
   languageName: node
   linkType: hard
 

@@ -1,4 +1,6 @@
 import {utils} from 'ethers';
+import {ProposalTypes} from '@walletconnect/types';
+import {PresetsUtil} from './PresetsUtil';
 
 /**
  * Truncates string (in the middle) via given lenght value
@@ -91,4 +93,38 @@ export function isCosmosChain(chain: string) {
  */
 export function isSolanaChain(chain: string) {
   return chain.includes('solana');
+}
+
+/**
+ * Get Wallet supported chains
+ */
+export function getSupportedChains(
+  requiredNamespaces: ProposalTypes.RequiredNamespaces,
+  optionalNamespaces: ProposalTypes.OptionalNamespaces,
+) {
+  if (!requiredNamespaces && !optionalNamespaces) {
+    return [];
+  }
+
+  const required = [];
+  for (const [key, values] of Object.entries(requiredNamespaces)) {
+    const chains = key.includes(':') ? key : values.chains;
+    if (chains) {
+      required.push(chains);
+    }
+  }
+
+  const optional = [];
+  for (const [key, values] of Object.entries(optionalNamespaces)) {
+    const chains = key.includes(':') ? key : values.chains;
+    if (chains) {
+      optional.push(chains);
+    }
+  }
+
+  const chains = [...required.flat(), ...optional.flat()];
+
+  return chains
+    .map(chain => PresetsUtil.getChainData(chain.split(':')[1]))
+    .filter(chain => chain !== undefined);
 }

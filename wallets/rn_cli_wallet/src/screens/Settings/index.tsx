@@ -10,9 +10,13 @@ import SettingsStore from '@/store/SettingsStore';
 import {Card} from '@/components/Card';
 import {useTheme} from '@/hooks/useTheme';
 import styles from './styles';
-export default function Settings() {
+import {SettingsStackScreenProps} from '@/utils/TypesUtil';
+
+type Props = SettingsStackScreenProps<'Settings'>;
+
+export default function Settings({navigation}: Props) {
   const Theme = useTheme();
-  const {eip155Address} = useSnapshot(SettingsStore.state);
+  const {eip155Address, socketStatus} = useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
 
   useEffect(() => {
@@ -60,6 +64,12 @@ export default function Settings() {
         <Card
           title="App version"
           value={`${getVersion()} (${getBuildNumber()})`}
+        />
+        <Card title="Socket status" value={socketStatus} />
+        <Card
+          title="Read full logs"
+          onPress={() => navigation.navigate('Logs')}
+          icon="chevronRight"
         />
       </View>
     </ScrollView>

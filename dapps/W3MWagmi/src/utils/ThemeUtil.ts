@@ -35,8 +35,17 @@ export const LightTheme: {[key in ThemeKeys]: string} = {
   'inverse-100': '#ffffff',
   'inverse-000': '#000000',
 
-  'success-100': '#26b562',
+  'success-100': '#26D562',
+  'success-glass-020': 'rgba(38, 213, 98, 0.20)',
+  'success-glass-015': 'rgba(38, 213, 98, 0.15)',
+  'success-glass-010': 'rgba(38, 213, 98, 0.10)',
+  'success-glass-005': 'rgba(38, 213, 98, 0.05)',
+
   'error-100': '#f05142',
+  'error-glass-020': 'rgba(240, 81, 66, 0.20)',
+  'error-glass-015': 'rgba(240, 81, 66, 0.15)',
+  'error-glass-010': 'rgba(240, 81, 66, 0.10)',
+  'error-glass-005': 'rgba(240, 81, 66, 0.05)',
 
   'gray-glass-001': 'rgba(255, 255, 255, 0.01)',
   'gray-glass-002': 'rgba(0, 0, 0, 0.02)',
@@ -86,8 +95,17 @@ export const DarkTheme: {[key in ThemeKeys]: string} = {
   'inverse-100': '#ffffff',
   'inverse-000': '#000000',
 
-  'success-100': '#26d962',
-  'error-100': '#f25a67',
+  'success-100': '#26D962',
+  'success-glass-020': 'rgba(38, 217, 98, 0.20)',
+  'success-glass-015': 'rgba(38, 217, 98, 0.15)',
+  'success-glass-010': 'rgba(38, 217, 98, 0.10)',
+  'success-glass-005': 'rgba(38, 217, 98, 0.05)',
+
+  'error-100': '#F25A67',
+  'error-glass-020': 'rgba(242, 90, 103, 0.20)',
+  'error-glass-015': 'rgba(242, 90, 103, 0.15)',
+  'error-glass-010': 'rgba(242, 90, 103, 0.10)',
+  'error-glass-005': 'rgba(242, 90, 103, 0.05)',
 
   'gray-glass-001': 'rgba(255, 255, 255, 0.01)',
   'gray-glass-002': 'rgba(255, 255, 255, 0.02)',

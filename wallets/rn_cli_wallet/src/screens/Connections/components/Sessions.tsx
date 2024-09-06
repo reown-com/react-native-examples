@@ -48,15 +48,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingHorizontal: 16,
   },
-  sessionContainer: {
-    height: 80,
-    paddingVertical: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  flexRow: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    paddingTop: 16,
+    paddingHorizontal: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -64,17 +59,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#798686',
     textAlign: 'center',
-  },
-  imageContainer: {
-    height: 30,
-    width: 35,
-    marginBottom: 8,
-  },
-  container: {
-    flex: 1,
-    paddingTop: 16,
-    paddingHorizontal: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });

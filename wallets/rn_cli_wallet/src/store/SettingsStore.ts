@@ -21,6 +21,9 @@ interface State {
     resolve: (value: undefined) => void;
     reject: (reason?: unknown) => void;
   };
+  socketStatus: 'connected' | 'disconnected' | 'stalled' | 'unknown';
+  logs: string[];
+  isLinkModeRequest: boolean;
 }
 
 /**
@@ -34,6 +37,9 @@ const state = proxy<State>({
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
+  socketStatus: 'unknown',
+  logs: [],
+  isLinkModeRequest: false,
 });
 
 /**
@@ -58,7 +64,7 @@ const SettingsStore = {
     state.activeChainId = value;
   },
 
-  setCurrentRequestVerifyContext(context: Verify.Context) {
+  setCurrentRequestVerifyContext(context?: Verify.Context) {
     state.currentRequestVerifyContext = context;
   },
 
@@ -70,6 +76,18 @@ const SettingsStore = {
     state.initPromise = new Promise((resolve, reject) => {
       state.initPromiseResolver = {resolve, reject};
     });
+  },
+
+  setSocketStatus(value: State['socketStatus']) {
+    state.socketStatus = value;
+  },
+
+  setLogs(logs: string[]) {
+    state.logs = logs;
+  },
+
+  setIsLinkModeRequest(value: State['isLinkModeRequest']) {
+    state.isLinkModeRequest = value;
   },
 
   toggleTestNets() {

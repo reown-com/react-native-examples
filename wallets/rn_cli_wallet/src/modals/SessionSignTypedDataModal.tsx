@@ -11,7 +11,7 @@ import {
   rejectEIP155Request,
 } from '@/utils/EIP155RequestHandlerUtil';
 import {web3wallet} from '@/utils/WalletConnectUtil';
-import {handleDeepLinkRedirect} from '@/utils/LinkingUtils';
+import {handleRedirect} from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
 import {RequestModal} from './RequestModal';
 import {Chains} from '@/components/Modal/Chains';
@@ -21,7 +21,8 @@ export default function SessionSignTypedDataModal() {
   // Get request and wallet data from store
   const {data} = useSnapshot(ModalStore.state);
   const requestEvent = data?.requestEvent;
-  const requestSession = data?.requestSession;
+  const session = data?.requestSession;
+  const isLinkMode = session?.transportType === 'link_mode';
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 
@@ -33,8 +34,7 @@ export default function SessionSignTypedDataModal() {
   const method = request?.method;
   const message = getSignParamsMessage(request?.params);
 
-  const requestMetadata = requestSession?.peer
-    ?.metadata as SignClientTypes.Metadata;
+  const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
 
   // Handle approve action (logic varies based on request method)
   const onApprove = useCallback(async () => {
@@ -46,7 +46,10 @@ export default function SessionSignTypedDataModal() {
           topic,
           response,
         });
-        handleDeepLinkRedirect(requestMetadata?.redirect);
+        handleRedirect({
+          peerRedirect: peerMetadata?.redirect,
+          isLinkMode: isLinkMode,
+        });
       } catch (e) {
         console.log((e as Error).message, 'error');
         return;
@@ -54,7 +57,7 @@ export default function SessionSignTypedDataModal() {
       setIsLoadingApprove(false);
       ModalStore.close();
     }
-  }, [requestEvent, requestMetadata, topic]);
+  }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
@@ -76,16 +79,17 @@ export default function SessionSignTypedDataModal() {
   }, [requestEvent, topic]);
 
   // Ensure request and wallet are defined
-  if (!requestEvent || !requestSession) {
+  if (!requestEvent || !session) {
     return <Text>Missing request data</Text>;
   }
 
   return (
     <RequestModal
       intention="wants to sign a message"
-      metadata={requestMetadata}
+      metadata={peerMetadata}
       onApprove={onApprove}
       onReject={onReject}
+      isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}>
       <View style={styles.container}>

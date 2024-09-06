@@ -1,4 +1,4 @@
-# Web3Modal + Wagmi example
+# AppKit + Wagmi example
 
 ## Getting Started
 
