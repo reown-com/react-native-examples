@@ -36,12 +36,12 @@ const IndividualSession = ({
           <Text style={[styles.mainText, {color: textColor}]}>
             {name ? name : 'No Name'}
           </Text>
-          <Text style={styles.greyText} numberOfLines={1} ellipsizeMode="head">
+          <Text style={styles.urlText} numberOfLines={1} ellipsizeMode="middle">
             {url}
           </Text>
         </View>
+        <SvgChevronRight fill={Theme['fg-250']} height={16} width={16} />
       </View>
-      <SvgChevronRight fill={Theme['fg-250']} height={16} width={16} />
     </TouchableOpacity>
   );
 };
@@ -63,18 +63,19 @@ const styles = StyleSheet.create({
   },
   flexRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
   },
   textContainer: {
     paddingLeft: 10,
+    marginRight: 10,
+    flex: 1,
   },
   mainText: {
     fontSize: 20,
     lineHeight: 26,
     fontWeight: '600',
   },
-  greyText: {
+  urlText: {
     fontSize: 13,
     lineHeight: 28,
     color: '#798686',
