@@ -1,11 +1,9 @@
-// If you are updating this file, please update src/utils/misc.ts as well
-
 import {Platform} from 'react-native';
 
 export const getMetadata = () => {
   return {
-    name: 'AppKit + wagmi',
-    description: 'AppKit + wagmi',
+    name: 'AppKit + wagmi (debug)',
+    description: 'AppKit + wagmi (debug)',
     url: 'https://walletconnect.com',
     icons: ['https://avatars.githubusercontent.com/u/37784886'],
     redirect: {
@@ -19,20 +17,20 @@ export const getMetadata = () => {
 export const getCustomWallets = () => {
   const wallets = [
     {
-      id: 'rn-wallet',
+      id: 'rn-wallet-debug',
       name: 'Wallet (RN debug)',
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
       mobile_link: 'rn-web3wallet-debug://',
-      link_mode: 'https://lab.web3modal.com/rn_walletkit_debug',
+      link_mode: 'https://dev.lab.web3modal.com/rn_walletkit_debug',
     },
     {
-      id: 'rn-wallet',
+      id: 'rn-wallet-internal',
       name: 'Wallet (RN internal)',
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
       mobile_link: 'rn-web3wallet-internal://',
-      link_mode: 'https://lab.web3modal.com/rn_walletkit_internal',
+      link_mode: 'https://dev.lab.web3modal.com/rn_walletkit_internal',
     },
     {
       id: 'flutter-wallet-internal',

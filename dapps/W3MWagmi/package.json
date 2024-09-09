@@ -3,14 +3,17 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "./scripts/copy-variant-files.sh 'debug' && react-native run-android --appId com.walletconnect.web3modal.rnsample.debug",
-    "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
-    "android:build:internal": "./scripts/copy-variant-files.sh 'internal' && cd android && ./gradlew clean && ./gradlew assembleInternal",
+    "android": "yarn run copy:debug && react-native run-android --appId com.walletconnect.web3modal.rnsample.debug",
+    "android:build": "yarn run copy:production && cd android && ./gradlew clean && ./gradlew assembleRelease",
+    "android:build:internal": "yarn run copy:internal && cd android && ./gradlew clean && ./gradlew assembleInternal",
     "ios": "react-native run-ios",
     "ios:internal": "react-native run-ios --scheme 'W3MWagmi Internal' ",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "copy:debug": "./scripts/copy-variant-files.sh 'debug'",
+    "copy:internal": "./scripts/copy-variant-files.sh 'internal'",
+    "copy:production": "./scripts/copy-variant-files.sh 'production'"
   },
   "dependencies": {
     "@coinbase/wallet-mobile-sdk": "1.0.13",

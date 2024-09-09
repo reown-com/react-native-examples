@@ -1,11 +1,9 @@
-// If you are updating this file, please update src/utils/misc.ts as well
-
 import {Platform} from 'react-native';
 
 export const getMetadata = () => {
   return {
-    name: 'AppKit + wagmi',
-    description: 'AppKit + wagmi',
+    name: 'AppKit + wagmi (internal)',
+    description: 'AppKit + wagmi (internal)',
     url: 'https://walletconnect.com',
     icons: ['https://avatars.githubusercontent.com/u/37784886'],
     redirect: {
@@ -19,7 +17,7 @@ export const getMetadata = () => {
 export const getCustomWallets = () => {
   const wallets = [
     {
-      id: 'rn-wallet',
+      id: 'rn-wallet-internal',
       name: 'Wallet (RN internal)',
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
