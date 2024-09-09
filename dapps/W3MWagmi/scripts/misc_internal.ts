@@ -10,7 +10,7 @@ export const getMetadata = () => {
     icons: ['https://avatars.githubusercontent.com/u/37784886'],
     redirect: {
       native: 'w3mwagmisample_internal://',
-      universal: 'https://lab.web3modal.com/rn_appkit_internal',
+      universal: 'https://dev.lab.web3modal.com/rn_appkit_internal',
       linkMode: true,
     },
   };
