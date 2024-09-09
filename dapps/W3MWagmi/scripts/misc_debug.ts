@@ -9,8 +9,8 @@ export const getMetadata = () => {
     url: 'https://walletconnect.com',
     icons: ['https://avatars.githubusercontent.com/u/37784886'],
     redirect: {
-      native: 'w3mwagmisample_internal://',
-      universal: 'https://lab.web3modal.com/rn_appkit_internal',
+      native: 'w3mwagmisample_debug://',
+      universal: 'https://lab.web3modal.com/rn_appkit_debug',
       linkMode: true,
     },
   };
@@ -18,6 +18,14 @@ export const getMetadata = () => {
 
 export const getCustomWallets = () => {
   const wallets = [
+    {
+      id: 'rn-wallet',
+      name: 'Wallet (RN debug)',
+      image_url:
+        'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
+      mobile_link: 'rn-web3wallet-debug://',
+      link_mode: 'https://lab.web3modal.com/rn_walletkit_debug',
+    },
     {
       id: 'rn-wallet',
       name: 'Wallet (RN internal)',

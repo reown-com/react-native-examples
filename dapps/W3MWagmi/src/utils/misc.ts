@@ -2,6 +2,20 @@
 
 import {Platform} from 'react-native';
 
+export const getMetadata = () => {
+  return {
+    name: 'AppKit + wagmi',
+    description: 'AppKit + wagmi',
+    url: 'https://walletconnect.com',
+    icons: ['https://avatars.githubusercontent.com/u/37784886'],
+    redirect: {
+      native: 'w3mwagmisample://',
+      universal: 'https://lab.web3modal.com/rn_appkit',
+      linkMode: true,
+    },
+  };
+};
+
 export const getCustomWallets = () => {
   const wallets = [
     {
