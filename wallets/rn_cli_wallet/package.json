@@ -3,9 +3,9 @@
   "version": "0.0.2",
   "private": true,
   "scripts": {
-    "android": "react-native run-android --mode=debug --appId com.walletconnect.web3wallet.rnsample.debug",
+    "android": "./scripts/copy-variant-files.sh 'debug' && react-native run-android --mode=debug --appId com.walletconnect.web3wallet.rnsample.debug",
     "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
-    "android:build:internal": "cd android && ./gradlew clean && ./gradlew assembleInternal",
+    "android:build:internal": "./scripts/copy-variant-files.sh 'internal' && cd android && ./gradlew clean && ./gradlew assembleInternal",
     "ios": "react-native run-ios --scheme 'RNWallet-Debug'",
     "ios:internal": "react-native run-ios --scheme 'RNWallet-Internal'",
     "bundle:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",

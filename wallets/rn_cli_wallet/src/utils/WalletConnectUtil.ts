@@ -2,6 +2,7 @@ import {Web3Wallet, IWeb3Wallet} from '@walletconnect/web3wallet';
 import {Core} from '@walletconnect/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
+import {getMetadata} from './misc';
 
 export let web3wallet: IWeb3Wallet;
 
@@ -12,17 +13,7 @@ export async function createWeb3Wallet(relayerRegionURL: string) {
   });
   web3wallet = await Web3Wallet.init({
     core,
-    metadata: {
-      name: 'React Native Wallet Example',
-      description: 'React Native Wallet for WalletConnect',
-      url: 'https://walletconnect.com/',
-      icons: ['https://avatars.githubusercontent.com/u/37784886'],
-      redirect: {
-        native: 'rn-web3wallet://',
-        universal: 'https://lab.web3modal.com/rn_walletkit',
-        linkMode: true,
-      },
-    },
+    metadata: getMetadata(),
   });
 
   try {
