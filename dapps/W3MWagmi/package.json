@@ -5,7 +5,7 @@
   "scripts": {
     "android": "react-native run-android --appId com.walletconnect.web3modal.rnsample.debug",
     "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
-    "android:build:internal": "cd android && ./gradlew clean && ./gradlew assembleInternal",
+    "android:build:internal": "./scripts/custom-wallets.sh 'internal' && cd android && ./gradlew clean && ./gradlew assembleInternal",
     "ios": "react-native run-ios",
     "ios:internal": "react-native run-ios --scheme 'W3MWagmi Internal' ",
     "lint": "eslint .",
