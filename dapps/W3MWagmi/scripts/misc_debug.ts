@@ -7,7 +7,7 @@ export const getMetadata = () => {
     url: 'https://walletconnect.com',
     icons: ['https://avatars.githubusercontent.com/u/37784886'],
     redirect: {
-      native: 'w3mwagmisample_debug://',
+      native: 'w3mwagmisample-debug://',
       universal: 'https://dev.lab.web3modal.com/rn_appkit_debug',
       linkMode: true,
     },
