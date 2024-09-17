@@ -1,5 +1,4 @@
 import {SessionTypes, SignClientTypes} from '@walletconnect/types';
-import {Web3WalletTypes} from '@walletconnect/web3wallet';
 import {proxy, ref} from 'valtio';
 
 /**
@@ -9,7 +8,6 @@ interface ModalData {
   proposal?: SignClientTypes.EventArguments['session_proposal'];
   requestEvent?: SignClientTypes.EventArguments['session_request'];
   requestSession?: SessionTypes.Struct;
-  request?: Web3WalletTypes.AuthRequest;
   authRequest?: SignClientTypes.EventArguments['session_authenticate'];
   loadingMessage?: string;
   errorMessage?: string;

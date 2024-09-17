@@ -1,12 +1,11 @@
 import {useCallback, useEffect} from 'react';
-import {Web3WalletTypes} from '@walletconnect/web3wallet';
 import {SignClientTypes} from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
 import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
-import {web3wallet} from '@/utils/WalletConnectUtil';
+import {walletKit} from '@/utils/WalletKitUtil';
 import {getSupportedChains} from '@/utils/HelperUtil';
 
 export default function useWalletConnectEventsManager(initialized: boolean) {
@@ -32,16 +31,9 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
     },
     [],
   );
-  /******************************************************************************
-   * 2. Open Auth modal for confirmation / rejection
-   *****************************************************************************/
-  const onAuthRequest = useCallback((request: Web3WalletTypes.AuthRequest) => {
-    console.log('onAuthRequest', request);
-    ModalStore.open('AuthRequestModal', {request});
-  }, []);
 
   /******************************************************************************
-   * 3. Open request handling modal based on method that was used
+   * 2. Open request handling modal based on method that was used
    *****************************************************************************/
 
   const onSessionRequest = useCallback(
@@ -49,7 +41,7 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
       console.log('onSessionRequest', requestEvent);
       const {topic, params, verifyContext} = requestEvent;
       const {request} = params;
-      const requestSession = web3wallet.engine.signClient.session.get(topic);
+      const requestSession = walletKit.engine.signClient.session.get(topic);
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(verifyContext);
 
@@ -107,33 +99,24 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
   useEffect(() => {
     if (initialized) {
       //sign
-      web3wallet.on('session_proposal', onSessionProposal);
-      web3wallet.on('session_request', onSessionRequest);
+      walletKit.on('session_proposal', onSessionProposal);
+      walletKit.on('session_request', onSessionRequest);
       // auth
-      web3wallet.on('auth_request', onAuthRequest);
-      web3wallet.on('session_authenticate', onSessionAuthenticate);
+      walletKit.on('session_authenticate', onSessionAuthenticate);
 
-      web3wallet.engine.signClient.events.on('session_ping', data => {
+      walletKit.engine.signClient.events.on('session_ping', data => {
         console.log('session_ping received', data);
         Toast.show({
           type: 'info',
           text1: 'Session ping received',
         });
       });
-      web3wallet.on('session_delete', data => {
+      walletKit.on('session_delete', data => {
         console.log('session_delete event received', data);
-        SettingsStore.setSessions(
-          Object.values(web3wallet.getActiveSessions()),
-        );
+        SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
       });
       // load sessions on init
-      SettingsStore.setSessions(Object.values(web3wallet.getActiveSessions()));
+      SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
     }
-  }, [
-    initialized,
-    onAuthRequest,
-    onSessionProposal,
-    onSessionRequest,
-    onSessionAuthenticate,
-  ]);
+  }, [initialized, onSessionProposal, onSessionRequest, onSessionAuthenticate]);
 }

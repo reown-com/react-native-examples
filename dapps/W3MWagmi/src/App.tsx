@@ -38,9 +38,9 @@ const projectId = Config.ENV_PROJECT_ID;
 // 2. Create config
 const metadata = {
   name: 'AppKit + wagmi',
-  description: 'AppKit + wagmi',
+  description: 'AppKit Reown',
   url: 'https://reown.com',
-  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  icons: ['https://avatars.githubusercontent.com/u/179229932'],
   redirect: {
     native: 'w3mwagmisample://',
     universal: 'https://lab.web3modal.com/rn_appkit',
