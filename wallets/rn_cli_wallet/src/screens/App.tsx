@@ -8,9 +8,9 @@ import Toast from 'react-native-toast-message';
 import {RELAYER_EVENTS} from '@walletconnect/core';
 
 import {RootStackNavigator} from '@/navigators/RootStackNavigator';
-import useInitializeWeb3Wallet from '@/hooks/useInitializeWeb3Wallet';
-import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
-import {web3wallet} from '@/utils/WalletConnectUtil';
+import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
+import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
+import {walletKit} from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
 
@@ -25,30 +25,30 @@ const App = () => {
   const scheme = useColorScheme();
 
   // Step 1 - Initialize wallets and wallet connect client
-  const initialized = useInitializeWeb3Wallet();
+  const initialized = useInitializeWalletKit();
 
   // Step 2 - Once initialized, set up wallet connect event manager
-  useWalletConnectEventsManager(initialized);
+  useWalletKitEventsManager(initialized);
 
   useEffect(() => {
     if (initialized) {
       BootSplash.hide({fade: true});
 
-      web3wallet.core.relayer.on(RELAYER_EVENTS.connect, () => {
+      walletKit.core.relayer.on(RELAYER_EVENTS.connect, () => {
         Toast.show({
           type: 'success',
           text1: 'Network connection is restored!',
         });
         SettingsStore.setSocketStatus('connected');
       });
-      web3wallet.core.relayer.on(RELAYER_EVENTS.disconnect, () => {
+      walletKit.core.relayer.on(RELAYER_EVENTS.disconnect, () => {
         Toast.show({
           type: 'error',
           text1: 'Network connection lost.',
         });
         SettingsStore.setSocketStatus('disconnected');
       });
-      web3wallet.core.relayer.on(RELAYER_EVENTS.connection_stalled, () => {
+      walletKit.core.relayer.on(RELAYER_EVENTS.connection_stalled, () => {
         Toast.show({
           type: 'error',
           text1: 'Network connection stalled.',
@@ -63,7 +63,7 @@ const App = () => {
       ModalStore.open('LoadingModal', {loadingMessage: 'Pairing...'});
 
       await SettingsStore.state.initPromise;
-      await web3wallet.pair({uri});
+      await walletKit.pair({uri});
     } catch (error: any) {
       ModalStore.open('LoadingModal', {
         errorMessage: error?.message || 'There was an error pairing',
@@ -92,7 +92,7 @@ const App = () => {
 
   useEffect(() => {
     /**
-     * Empty promise that resolves after web3wallet is initialized
+     * Empty promise that resolves after WalletKit is initialized
      * Usefull for cold starts
      */
     SettingsStore.setInitPromise();

@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {W3mButton} from '@web3modal/wagmi-react-native';
-import {FlexView, Text} from '@web3modal/ui-react-native';
+import {AppKitButton} from '@reown/appkit-wagmi-react-native';
+import {FlexView, Text} from '@reown/appkit-ui-react-native';
 
 import {SignMessage} from './components/SignMessage';
 import {SendTransaction} from './components/SendTransaction';
@@ -16,7 +16,7 @@ function ConnectionsScreen() {
         AppKit + wagmi
       </Text>
       <View style={styles.buttonContainer}>
-        <W3mButton balance="show" />
+        <AppKitButton balance="show" />
         <SignMessage />
         <SendTransaction />
         <SignTypedDataV4 />

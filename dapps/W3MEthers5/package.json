@@ -1,5 +1,5 @@
 {
-  "name": "web3modal-ethers5",
+  "name": "appkit-ethers5",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -15,9 +15,9 @@
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-clipboard/clipboard": "1.13.2",
     "@react-native-community/netinfo": "11.2.1",
-    "@walletconnect/react-native-compat": "2.15.1",
-    "@web3modal/email-ethers-react-native": "2.0.2",
-    "@web3modal/ethers5-react-native": "2.0.2",
+    "@walletconnect/react-native-compat": "2.16.1",
+    "@reown/appkit-auth-ethers-react-native": "1.0.0",
+    "@reown/appkit-ethers5-react-native": "1.0.0",
     "ethers": "5.7.2",
     "react": "18.2.0",
     "react-native": "0.73.4",

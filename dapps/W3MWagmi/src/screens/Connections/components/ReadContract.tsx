@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
-import {Button} from '@web3modal/ui-react-native';
+import {Button} from '@reown/appkit-ui-react-native';
 import {useAccount, useReadContract} from 'wagmi';
 import {RequestModal} from '@/components/RequestModal';
 import wagmigotchiABI from '@/utils/wagmigotchiABI';

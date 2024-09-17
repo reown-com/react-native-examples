@@ -3,9 +3,9 @@ import {useSnapshot} from 'valtio';
 
 import SettingsStore from '@/store/SettingsStore';
 import {createOrRestoreEIP155Wallet} from '@/utils/EIP155WalletUtil';
-import {createWeb3Wallet, web3wallet} from '@/utils/WalletConnectUtil';
+import {createWalletKit, walletKit} from '@/utils/WalletKitUtil';
 
-export default function useInitializeWeb3Wallet() {
+export default function useInitializeWalletKit() {
   const [initialized, setInitialized] = useState(false);
   const prevRelayerURLValue = useRef<string>('');
 
@@ -18,7 +18,7 @@ export default function useInitializeWeb3Wallet() {
 
       SettingsStore.setEIP155Address(eip155Addresses[0]);
       SettingsStore.setWallet(eip155Wallets[eip155Addresses[0]]);
-      await createWeb3Wallet(relayerRegionURL);
+      await createWalletKit(relayerRegionURL);
       setInitialized(true);
       SettingsStore.state.initPromiseResolver?.resolve(undefined);
     } catch (err: unknown) {
@@ -29,7 +29,7 @@ export default function useInitializeWeb3Wallet() {
   // restart transport if relayer region changes
   const onRelayerRegionChange = useCallback(() => {
     try {
-      web3wallet.core.relayer.restartTransport(relayerRegionURL);
+      walletKit.core.relayer.restartTransport(relayerRegionURL);
       prevRelayerURLValue.current = relayerRegionURL;
     } catch (err: unknown) {
       console.log(err);

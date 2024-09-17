@@ -5,15 +5,15 @@ import {Linking, SafeAreaView, StyleSheet} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import {
-  createWeb3Modal,
+  createAppKit,
   defaultConfig,
-  W3mButton,
-  Web3Modal,
-} from '@web3modal/ethers-react-native';
-import {FlexView, Text} from '@web3modal/ui-react-native';
+  AppKitButton,
+  AppKit,
+} from '@reown/appkit-ethers-react-native';
+import {FlexView, Text} from '@reown/appkit-ui-react-native';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
-import {CoinbaseProvider} from '@web3modal/coinbase-ethers-react-native';
-import {EmailProvider} from '@web3modal/email-ethers-react-native';
+import {CoinbaseProvider} from '@reown/appkit-coinbase-ethers-react-native';
+import {AuthProvider} from '@reown/appkit-auth-ethers-react-native';
 import {ENV_PROJECT_ID} from '@env';
 
 import {SignMessage} from './views/SignMessage';
@@ -24,7 +24,7 @@ import {SignTypedDataV4} from './views/SignTypedDataV4';
 import {mainnet, polygon} from './utils/ChainUtils';
 import {siweConfig} from './utils/SiweUtils';
 
-// 1. Get projectId at https://cloud.walletconnect.com
+// 1. Get projectId at https://cloud.reown.com
 const projectId = ENV_PROJECT_ID;
 
 // 2. Define your chains
@@ -32,10 +32,10 @@ const chains = [mainnet, polygon];
 
 // 3. Create config
 const metadata = {
-  name: 'W3M ethers',
-  description: 'Web3Modal with Ethers',
-  url: 'https://web3modal.com',
-  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  name: 'AppKit Ethers',
+  description: 'AppKit with Ethers',
+  url: 'https://reown.com/appkit',
+  icons: ['https://avatars.githubusercontent.com/u/179229932'],
   redirect: {
     native: 'rn-w3m-ethers-sample://',
   },
@@ -46,11 +46,11 @@ const coinbaseProvider = new CoinbaseProvider({
   rpcUrl: mainnet.rpcUrl,
 });
 
-const emailProvider = new EmailProvider({projectId, metadata});
+const auth = new AuthProvider({projectId, metadata});
 
 const config = defaultConfig({
   metadata,
-  extraConnectors: [coinbaseProvider, emailProvider],
+  extraConnectors: [coinbaseProvider, auth],
 });
 
 const clipboardClient = {
@@ -70,7 +70,7 @@ const customWallets = [
 ];
 
 // 3. Create modal
-createWeb3Modal({
+createAppKit({
   projectId,
   chains,
   config,
@@ -96,17 +96,17 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title} variant="large-600">
-        Web3Modal + ethers
+        AppKit + ethers
       </Text>
       <FlexView style={styles.buttonContainer}>
-        <W3mButton balance="show" />
+        <AppKitButton balance="show" />
         <SignMessage />
         <SendTransaction />
         <SignTypedDataV4 />
         <ReadContract />
         <WriteContract />
       </FlexView>
-      <Web3Modal />
+      <AppKit />
     </SafeAreaView>
   );
 }

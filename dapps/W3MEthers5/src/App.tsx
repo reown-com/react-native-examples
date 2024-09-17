@@ -6,13 +6,13 @@ import {SafeAreaView, StyleSheet} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import {
-  createWeb3Modal,
+  createAppKit,
   defaultConfig,
-  W3mButton,
-  Web3Modal,
-} from '@web3modal/ethers5-react-native';
-import {FlexView, Text} from '@web3modal/ui-react-native';
-import {EmailProvider} from '@web3modal/email-ethers-react-native';
+  AppKitButton,
+  AppKit,
+} from '@reown/appkit-ethers5-react-native';
+import {FlexView, Text} from '@reown/appkit-ui-react-native';
+import {AuthProvider} from '@reown/appkit-auth-ethers-react-native';
 import {ENV_PROJECT_ID} from '@env';
 
 import {SignMessage} from './views/SignMessage';
@@ -22,25 +22,25 @@ import {WriteContract} from './views/WriteContract';
 import {SignTypedDataV4} from './views/SignTypedDataV4';
 import {siweConfig} from './utils/SiweUtils';
 
-// 1. Get projectId at https://cloud.walletconnect.com
+// 1. Get projectId at https://cloud.reown.com
 const projectId = ENV_PROJECT_ID;
 
 // 2. Create config
 const metadata = {
   name: 'W3M ethers5',
-  description: 'Web3Modal with Ethers v5',
-  url: 'https://web3modal.com',
-  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  description: 'AppKit with Ethers v5',
+  url: 'https://reown.com/appkit',
+  icons: ['https://avatars.githubusercontent.com/u/179229932'],
   redirect: {
     native: 'rn-w3m-ethers5-sample://',
   },
 };
 
-const emailProvider = new EmailProvider({projectId, metadata});
+const auth = new AuthProvider({projectId, metadata});
 
 const config = defaultConfig({
   metadata,
-  extraConnectors: [emailProvider],
+  extraConnectors: [auth],
 });
 
 // 3. Define your chains
@@ -79,7 +79,7 @@ const customWallets = [
 ];
 
 // 3. Create modal
-createWeb3Modal({
+createAppKit({
   projectId,
   chains,
   config,
@@ -93,17 +93,17 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title} variant="large-600">
-        Web3Modal + ethers 5
+        AppKit + ethers 5
       </Text>
       <FlexView style={styles.buttonContainer}>
-        <W3mButton balance="show" />
+        <AppKitButton balance="show" />
         <SignMessage />
         <SendTransaction />
         <SignTypedDataV4 />
         <ReadContract />
         <WriteContract />
       </FlexView>
-      <Web3Modal />
+      <AppKit />
     </SafeAreaView>
   );
 }

@@ -28,7 +28,7 @@ export async function createWeb3Wallet() {
       name: 'React Native Web3Wallet',
       description: 'ReactNative Web3Wallet',
       url: 'https://walletconnect.com/',
-      icons: ['https://avatars.githubusercontent.com/u/37784886'],
+      icons: ['https://avatars.githubusercontent.com/u/179229932'],
     },
   });
 }

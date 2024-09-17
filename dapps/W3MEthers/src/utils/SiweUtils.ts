@@ -3,9 +3,9 @@
 import type {
   SIWEVerifyMessageArgs,
   SIWECreateMessageArgs,
-} from '@web3modal/siwe-react-native';
+} from '@reown/appkit-siwe-react-native';
 import {generateRandomBytes32} from '@walletconnect/utils';
-import {createSIWEConfig, formatMessage} from '@web3modal/siwe-react-native';
+import {createSIWEConfig, formatMessage} from '@reown/appkit-siwe-react-native';
 import {mainnet, polygon} from './ChainUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

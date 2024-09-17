@@ -17,7 +17,7 @@ In order to build the app successfuly, you'll need some extra files
 chmod +x ./scripts/copy-sample-files.sh && ./scripts/copy-sample-files.sh
 ```
 
-## Step 3: Open .env.debug file and replace **ENV_PROJECT_ID with your [Cloud Project ID](https://cloud.walletconnect.com/)
+## Step 3: Open .env.debug file and replace **ENV_PROJECT_ID with your [Cloud Project ID](https://cloud.reown.com/)
 
 ## Step 4: Start your Application
 

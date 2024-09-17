@@ -7,7 +7,7 @@ import {
   ViewStyle,
   View,
 } from 'react-native';
-import {Icon, IconProps} from '@web3modal/ui-react-native';
+import {Icon, IconProps} from '@reown/appkit-ui-react-native';
 
 import {useTheme} from '@/hooks/useTheme';
 

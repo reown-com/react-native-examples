@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
-import {Button} from '@web3modal/ui-react-native';
+import {Button} from '@reown/appkit-ui-react-native';
 
 import {RequestModal} from '../components/RequestModal';
 import {
-  useWeb3ModalAccount,
-  useWeb3ModalProvider,
-} from '@web3modal/ethers-react-native';
+  useAppKitAccount,
+  useAppKitProvider,
+} from '@reown/appkit-ethers-react-native';
 import {BrowserProvider, Contract} from 'ethers';
 import wagmigotchiABI from '../utils/wagmigotchiABI';
 
@@ -15,8 +15,8 @@ export function ReadContract() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
-  const {walletProvider} = useWeb3ModalProvider();
-  const {isConnected} = useWeb3ModalAccount();
+  const {walletProvider} = useAppKitProvider();
+  const {isConnected} = useAppKitAccount();
 
   const onPress = async () => {
     if (!isConnected || !walletProvider) {

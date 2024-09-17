@@ -20,7 +20,7 @@ React Native examples implementing WalletConnect AppKit and WalletKit
 ## Getting Started
 
 - Ensure your [React Native environment](https://reactnative.dev/docs/next/set-up-your-environment) has been properly setup (XCode, ruby etc).
-- Read our [React Native docs](https://docs.walletconnect.com/appkit/react-native/core/installation)
+- Read our [React Native docs](https://docs.reown.com/appkit/react-native/core/installation)
 - Read through the various README files for further information
 - Submit any issues / feature requests.
 
