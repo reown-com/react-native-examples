@@ -1,6 +1,6 @@
 # React Native Examples
 
-React Native examples implementing WalletConnect AppKit and WalletKit
+React Native examples implementing Reown AppKit and WalletKit
 
 ## Wallets
 
