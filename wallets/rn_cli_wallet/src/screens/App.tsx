@@ -9,7 +9,7 @@ import {RELAYER_EVENTS} from '@walletconnect/core';
 
 import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
-import useWalletConnectEventsManager from '@/hooks/useWalletConnectEventsManager';
+import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
 import {walletKit} from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
@@ -28,7 +28,7 @@ const App = () => {
   const initialized = useInitializeWalletKit();
 
   // Step 2 - Once initialized, set up wallet connect event manager
-  useWalletConnectEventsManager(initialized);
+  useWalletKitEventsManager(initialized);
 
   useEffect(() => {
     if (initialized) {

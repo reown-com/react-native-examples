@@ -39,7 +39,7 @@ const projectId = Config.ENV_PROJECT_ID;
 const metadata = {
   name: 'AppKit + wagmi',
   description: 'AppKit Reown',
-  url: 'https://reown.com',
+  url: 'https://reown.com/appkit',
   icons: ['https://avatars.githubusercontent.com/u/179229932'],
   redirect: {
     native: 'w3mwagmisample://',

@@ -8,7 +8,7 @@ import SettingsStore from '@/store/SettingsStore';
 import {walletKit} from '@/utils/WalletKitUtil';
 import {getSupportedChains} from '@/utils/HelperUtil';
 
-export default function useWalletConnectEventsManager(initialized: boolean) {
+export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
    * 1. Open session proposal modal for confirmation / rejection
    *****************************************************************************/

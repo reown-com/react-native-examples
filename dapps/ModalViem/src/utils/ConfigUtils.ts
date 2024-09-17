@@ -5,7 +5,7 @@ const providerMetadata: IProviderMetadata = {
   name: 'Modal with Viem',
   description: 'RN example using Viem by WalletConnect',
   url: 'https://walletconnect.com/',
-  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  icons: ['https://avatars.githubusercontent.com/u/179229932'],
   redirect: {
     native: 'wcmviemsample://',
   },
