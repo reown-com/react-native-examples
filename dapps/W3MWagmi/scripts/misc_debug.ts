@@ -8,7 +8,7 @@ export const getMetadata = () => {
     icons: ['https://avatars.githubusercontent.com/u/179229932'],
     redirect: {
       native: 'w3mwagmisample-debug://',
-      universal: 'https://dev.appkit-lab.reown.com/rn_appkit_debug',
+      universal: 'https://appkit-lab.reown.com/rn_appkit_debug',
       linkMode: true,
     },
   };
@@ -22,7 +22,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'rn-web3wallet-debug://',
-      link_mode: 'https://dev.appkit-lab.reown.com/rn_walletkit_debug',
+      link_mode: 'https://appkit-lab.reown.com/rn_walletkit_debug',
     },
     {
       id: 'rn-wallet-internal',
@@ -30,7 +30,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'rn-web3wallet-internal://',
-      link_mode: 'https://dev.appkit-lab.reown.com/rn_walletkit_internal',
+      link_mode: 'https://appkit-lab.reown.com/rn_walletkit_internal',
     },
     {
       id: 'flutter-wallet-internal',
@@ -38,7 +38,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'wcflutterwallet-internal://',
-      link_mode: 'https://dev.appkit-lab.reown.com/flutter_walletkit_internal',
+      link_mode: 'https://appkit-lab.reown.com/flutter_walletkit_internal',
     },
   ];
 
@@ -49,8 +49,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'kotlin-web3wallet://',
-      link_mode:
-        'https://web3modal-laboratory-git-chore-kotlin-assetlinks-walletconnect1.vercel.app/wallet_internal',
+      link_mode: 'https://appkit-lab.reown.com/wallet_internal',
     });
   } else if (Platform.OS === 'ios') {
     wallets.push({
