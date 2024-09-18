@@ -2,10 +2,9 @@
 
 React Native examples implementing Reown AppKit and WalletKit
 
-## Wallets
+## Wallet
 
 - Wallet: `wallets/rn_cli_wallet`
-- Wallet with RN 0.68.5: `wallets/rn_cli_wallet_068_5`
 
 ## Dapps
 
