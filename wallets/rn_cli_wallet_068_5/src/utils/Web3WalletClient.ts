@@ -27,7 +27,7 @@ export async function createWeb3Wallet() {
     metadata: {
       name: 'React Native WalletKit',
       description: 'ReactNative WalletKit',
-      url: 'https://reown.com/',
+      url: 'https://reown.com/walletkit',
       icons: ['https://avatars.githubusercontent.com/u/179229932'],
     },
   });

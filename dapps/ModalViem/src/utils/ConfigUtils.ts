@@ -4,7 +4,7 @@ import {IProviderMetadata} from '@walletconnect/modal-react-native';
 const providerMetadata: IProviderMetadata = {
   name: 'Modal with Viem',
   description: 'RN example using Viem by Reown',
-  url: 'https://reown.com/',
+  url: 'https://reown.com/appkit',
   icons: ['https://avatars.githubusercontent.com/u/179229932'],
   redirect: {
     native: 'wcmviemsample://',
