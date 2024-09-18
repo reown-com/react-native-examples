@@ -7,7 +7,7 @@ import {
   formatMessage,
   type SIWEVerifyMessageArgs,
   type SIWECreateMessageArgs,
-} from '@web3modal/siwe-react-native';
+} from '@reown/appkit-siwe-react-native';
 import {generateRandomBytes32} from '@walletconnect/utils';
 import {chains} from './WagmiUtils';
 

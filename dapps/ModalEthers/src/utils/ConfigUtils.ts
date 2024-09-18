@@ -5,7 +5,7 @@ const providerMetadata: IProviderMetadata = {
   name: 'Modal with Ethers',
   description: 'RN example using Ethers 5 by WalletConnect',
   url: 'https://walletconnect.com/',
-  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  icons: ['https://avatars.githubusercontent.com/u/179229932'],
   redirect: {
     native: 'wcmetherssample://',
   },

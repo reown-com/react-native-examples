@@ -3,13 +3,13 @@ import React, {useEffect} from 'react';
 import {Linking} from 'react-native';
 import BootSplash from 'react-native-bootsplash';
 import {
-  createWeb3Modal,
+  createAppKit,
   defaultWagmiConfig,
-  Web3Modal,
-} from '@web3modal/wagmi-react-native';
+  AppKit,
+} from '@reown/appkit-wagmi-react-native';
 
-import {coinbaseConnector} from '@web3modal/coinbase-wagmi-react-native';
-import {emailConnector} from '@web3modal/email-wagmi-react-native';
+import {coinbaseConnector} from '@reown/appkit-coinbase-wagmi-react-native';
+import {authConnector} from '@reown/appkit-auth-wagmi-react-native';
 import {WagmiProvider} from 'wagmi';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import Toast from 'react-native-toast-message';
@@ -48,7 +48,7 @@ const _coinbaseConnector = coinbaseConnector({
   redirect: metadata?.redirect?.native || '',
 });
 
-const _emailConnector = emailConnector({
+const _authConnector = authConnector({
   projectId,
   metadata,
 });
@@ -57,13 +57,13 @@ const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
-  extraConnectors: [_coinbaseConnector, _emailConnector],
+  extraConnectors: [_coinbaseConnector, _authConnector],
 });
 
 const customWallets = getCustomWallets();
 
 // 3. Create modal
-createWeb3Modal({
+createAppKit({
   projectId,
   wagmiConfig,
   metadata,
@@ -112,7 +112,7 @@ function App(): JSX.Element {
         <QueryClientProvider client={queryClient}>
           <RootStackNavigator />
           <Toast />
-          <Web3Modal />
+          <AppKit />
         </QueryClientProvider>
       </WagmiProvider>
     </NavigationContainer>

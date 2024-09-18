@@ -12,7 +12,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.19.0",
     "@react-native-community/netinfo": "9.4.1",
-    "@walletconnect/modal-react-native": "1.0.0-rc.11",
+    "@walletconnect/modal-react-native": "1.1.0",
     "big-integer": "1.6.51",
     "react": "17.0.2",
     "react-native": "0.68.5",

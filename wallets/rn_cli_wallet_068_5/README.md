@@ -10,7 +10,7 @@ Inside this directory (`wallets/rn_cli_wallet_068_5`), install the React Native 
 yarn
 ```
 
-Set up your own `.env` file from the example and **replace `ENV_PROJECT_ID` with your own ProjectId from https://cloud.walletconnect.com**
+Set up your own `.env` file from the example and **replace `ENV_PROJECT_ID` with your own ProjectId from https://cloud.reown.com**
 
 ```bash
 cp .env.example .env
@@ -18,7 +18,7 @@ cp .env.example .env
 
 ### Testing the Wallet
 
-- Go to our [React App](https://react-app.walletconnect.com/)
+- Go to our [React App](https://react-app.reown.com/)
 - Get the WC URI
 - Paste into the React Native Wallet
 - Pair (Approve or reject)

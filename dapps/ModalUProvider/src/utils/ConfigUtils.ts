@@ -5,7 +5,7 @@ const providerMetadata: IProviderMetadata = {
   name: 'Modal with UProvider',
   description: 'RN example using Universal Provider by WalletConnect',
   url: 'https://walletconnect.com/',
-  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+  icons: ['https://avatars.githubusercontent.com/u/179229932'],
   redirect: {
     native: 'wcmuprovidersample://',
   },

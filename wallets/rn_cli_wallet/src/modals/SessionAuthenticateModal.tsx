@@ -2,15 +2,11 @@ import {useSnapshot} from 'valtio';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {SignClientTypes, AuthTypes} from '@walletconnect/types';
-import {
-  buildAuthObject,
-  getSdkError,
-  populateAuthPayload,
-} from '@walletconnect/utils';
+import {buildAuthObject, populateAuthPayload} from '@walletconnect/utils';
 
 import ModalStore from '@/store/ModalStore';
 import {eip155Addresses, eip155Wallets} from '@/utils/EIP155WalletUtil';
-import {web3wallet} from '@/utils/WalletConnectUtil';
+import {walletKit} from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import {handleRedirect} from '@/utils/LinkingUtils';
 import {useTheme} from '@/hooks/useTheme';
@@ -45,6 +41,7 @@ export default function SessionAuthenticateModal() {
   );
 
   // TODO: Add checkbox to change strategy
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [signStrategy, setSignStrategy] = useState<'one' | 'all'>('one');
 
   const address = eip155Addresses[account];
@@ -73,14 +70,12 @@ export default function SessionAuthenticateModal() {
           );
           signedAuths.push(signedCacao);
         });
-        await web3wallet.approveSessionAuthenticate({
+        await walletKit.approveSessionAuthenticate({
           id: messages[0].id,
           auths: signedAuths,
         });
 
-        SettingsStore.setSessions(
-          Object.values(web3wallet.getActiveSessions()),
-        );
+        SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
 
         handleRedirect({
           peerRedirect: authRequest.params.requester?.metadata?.redirect,
@@ -101,7 +96,7 @@ export default function SessionAuthenticateModal() {
     if (authRequest) {
       try {
         setIsLoadingReject(true);
-        await web3wallet.rejectSessionAuthenticate({
+        await walletKit.rejectSessionAuthenticate({
           id: authRequest.id,
           reason: {
             code: 12001,
@@ -128,7 +123,7 @@ export default function SessionAuthenticateModal() {
       const iss = `${authPayload.chains[0]}:${address}`;
 
       if (signStrategy === 'one') {
-        const message = web3wallet.formatAuthMessage({
+        const message = walletKit.formatAuthMessage({
           request: authPayload,
           iss,
         });
@@ -136,7 +131,7 @@ export default function SessionAuthenticateModal() {
       } else if (signStrategy === 'all') {
         const messagesToSign: any[] = [];
         authPayload.chains.forEach((chain: string) => {
-          const message = web3wallet.formatAuthMessage({
+          const message = walletKit.formatAuthMessage({
             request: authPayload,
             iss: `${chain}:${address}`,
           });

@@ -8,7 +8,7 @@ import {Events} from '@/components/Modal/Events';
 import {Methods} from '@/components/Modal/Methods';
 import ModalStore from '@/store/ModalStore';
 import {eip155Addresses} from '@/utils/EIP155WalletUtil';
-import {web3wallet} from '@/utils/WalletConnectUtil';
+import {walletKit} from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import {handleRedirect} from '@/utils/LinkingUtils';
 import {useTheme} from '@/hooks/useTheme';
@@ -74,12 +74,12 @@ export default function SessionProposalModal() {
       });
 
       try {
-        const session = await web3wallet.approveSession({
+        const session = await walletKit.approveSession({
           id: proposal.id,
           namespaces,
         });
         SettingsStore.setSessions(
-          Object.values(web3wallet.getActiveSessions()),
+          Object.values(walletKit.getActiveSessions()),
         );
 
         handleRedirect({
@@ -101,7 +101,7 @@ export default function SessionProposalModal() {
       try {
         setIsLoadingReject(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        await web3wallet.rejectSession({
+        await walletKit.rejectSession({
           id: proposal.id,
           reason: getSdkError('USER_REJECTED_METHODS'),
         });

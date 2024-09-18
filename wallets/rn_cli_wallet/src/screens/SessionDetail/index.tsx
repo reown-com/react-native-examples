@@ -3,7 +3,7 @@ import {View, Text, ScrollView} from 'react-native';
 import {getSdkError} from '@walletconnect/utils';
 import {useNavigation} from '@react-navigation/native';
 
-import {web3wallet} from '@/utils/WalletConnectUtil';
+import {walletKit} from '@/utils/WalletKitUtil';
 import {ModalHeader} from '@/components/Modal/ModalHeader';
 import {useTheme} from '@/hooks/useTheme';
 import {ActionButton} from '@/components/ActionButton';
@@ -27,7 +27,7 @@ export default function SessionDetail({route}: Props) {
 
   const session = useMemo(
     () =>
-      web3wallet.engine.signClient.session.values.find(s => s.topic === topic),
+      walletKit.engine.signClient.session.values.find(s => s.topic === topic),
     [topic],
   );
   const namespaces = useMemo(() => session?.namespaces, [session]);
@@ -43,11 +43,11 @@ export default function SessionDetail({route}: Props) {
   const onDeleteSession = useCallback(async () => {
     setDeleteLoading(true);
     try {
-      await web3wallet.disconnectSession({
+      await walletKit.disconnectSession({
         topic,
         reason: getSdkError('USER_DISCONNECTED'),
       });
-      SettingsStore.setSessions(Object.values(web3wallet.getActiveSessions()));
+      SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
       nativagor.goBack();
     } catch (e) {
       console.log((e as Error).message, 'error');
@@ -57,7 +57,7 @@ export default function SessionDetail({route}: Props) {
 
   const onSessionPing = useCallback(async () => {
     setPingLoading(true);
-    await web3wallet.engine.signClient.ping({topic});
+    await walletKit.engine.signClient.ping({topic});
     setPingLoading(false);
   }, [topic]);
 
@@ -66,7 +66,7 @@ export default function SessionDetail({route}: Props) {
     try {
       const namespace = Object.keys(session?.namespaces!)[0];
       const chainId = session?.namespaces[namespace].chains?.[0];
-      await web3wallet.emitSessionEvent({
+      await walletKit.emitSessionEvent({
         topic,
         event: {name: 'chainChanged', data: 'Hello World'},
         chainId: chainId!, // chainId: 'eip155:1'
@@ -80,11 +80,11 @@ export default function SessionDetail({route}: Props) {
   const onSessionUpdate = useCallback(async () => {
     setUpdateLoading(true);
     try {
-      const _session = web3wallet.engine.signClient.session.get(topic);
+      const _session = walletKit.engine.signClient.session.get(topic);
       const baseAddress = '0x70012948c348CBF00806A3C79E3c5DAdFaAa347';
       const namespaceKeyToUpdate = Object.keys(_session?.namespaces)[0];
       const namespaceToUpdate = _session?.namespaces[namespaceKeyToUpdate];
-      await web3wallet.updateSession({
+      await walletKit.updateSession({
         topic,
         namespaces: {
           ..._session?.namespaces,

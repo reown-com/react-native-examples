@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 
-import {web3wallet} from '@/utils/WalletConnectUtil';
+import {walletKit} from '@/utils/WalletKitUtil';
 import Sessions from '@/screens/Connections/components/Sessions';
 import ActionButtons from '@/screens/Connections/components/ActionButtons';
 import {CopyURIDialog} from '@/components/CopyURIDialog';
@@ -28,13 +28,13 @@ export default function Connections({route}: Props) {
     ModalStore.open('LoadingModal', {loadingMessage: 'Pairing...'});
 
     /**
-     * Wait for settings web3wallet to be initialized before calling pair
+     * Wait for settings walletKit to be initialized before calling pair
      */
     await SettingsStore.state.initPromise;
 
     try {
       setCopyDialogVisible(false);
-      await web3wallet.pair({uri});
+      await walletKit.pair({uri});
     } catch (error: any) {
       ModalStore.open('LoadingModal', {
         errorMessage: error?.message || 'There was an error pairing',

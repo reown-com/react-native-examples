@@ -1,12 +1,12 @@
 import {useCallback, useEffect} from 'react';
 import SettingsStore from '@/store/SettingsStore';
-import {web3wallet} from '@/utils/WalletConnectUtil';
+import {walletKit} from '@/utils/WalletKitUtil';
 
 export function useLogs() {
   const getLogs = useCallback(async () => {
-    if (web3wallet) {
+    if (walletKit) {
       // @ts-ignore
-      const _logs = await web3wallet.core.logChunkController?.getLogArray();
+      const _logs = await walletKit.core.logChunkController?.getLogArray();
       SettingsStore.setLogs(_logs.reverse());
     }
   }, []);

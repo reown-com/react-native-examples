@@ -9,7 +9,7 @@ import {
   approveEIP155Request,
   rejectEIP155Request,
 } from '@/utils/EIP155RequestHandlerUtil';
-import {web3wallet} from '@/utils/WalletConnectUtil';
+import {walletKit} from '@/utils/WalletKitUtil';
 import {handleRedirect} from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
 import {RequestModal} from '@/modals/RequestModal';
@@ -42,7 +42,7 @@ export default function SessionSendTransactionModal() {
       setIsLoadingApprove(true);
       try {
         const response = await approveEIP155Request(requestEvent);
-        await web3wallet.respondSessionRequest({
+        await walletKit.respondSessionRequest({
           topic,
           response,
         });
@@ -65,7 +65,7 @@ export default function SessionSendTransactionModal() {
       setIsLoadingReject(true);
       const response = rejectEIP155Request(requestEvent);
       try {
-        await web3wallet.respondSessionRequest({
+        await walletKit.respondSessionRequest({
           topic,
           response,
         });
