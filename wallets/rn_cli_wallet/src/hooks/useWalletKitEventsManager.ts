@@ -94,7 +94,7 @@ export default function useWalletKitEventsManager(initialized: boolean) {
   );
 
   /******************************************************************************
-   * Set up WalletConnect event listeners
+   * Set up WalletKit event listeners
    *****************************************************************************/
   useEffect(() => {
     if (initialized) {

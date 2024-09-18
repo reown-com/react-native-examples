@@ -3,8 +3,8 @@ import {IProviderMetadata} from '@walletconnect/modal-react-native';
 
 const providerMetadata: IProviderMetadata = {
   name: 'Modal with UProvider',
-  description: 'RN example using Universal Provider by WalletConnect',
-  url: 'https://walletconnect.com/',
+  description: 'RN example using Universal Provider by Reown',
+  url: 'https://reown.com/',
   icons: ['https://avatars.githubusercontent.com/u/179229932'],
   redirect: {
     native: 'wcmuprovidersample://',

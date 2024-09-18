@@ -25,9 +25,9 @@ export async function createWeb3Wallet() {
   web3wallet = await Web3Wallet.init({
     core,
     metadata: {
-      name: 'React Native Web3Wallet',
-      description: 'ReactNative Web3Wallet',
-      url: 'https://walletconnect.com/',
+      name: 'React Native WalletKit',
+      description: 'ReactNative WalletKit',
+      url: 'https://reown.com/',
       icons: ['https://avatars.githubusercontent.com/u/179229932'],
     },
   });

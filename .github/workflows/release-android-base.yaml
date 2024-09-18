@@ -21,14 +21,14 @@ on:
         type: string
     secrets:
       project-id:
-        description: 'WalletConnect Cloud ID'
+        description: 'Reown Cloud ID'
         required: true
       firebase-app-id:
         required: true
       gsa-key:
         required: true
       relay-url:
-        description: 'WalletConnect Relay URL'
+        description: 'Relay URL'
         required: false
       sentry-dsn:
         required: true
