@@ -20,8 +20,8 @@
 						<category android:name="android.intent.category.DEFAULT" />
 						<category android:name="android.intent.category.BROWSABLE" />
 						<data android:scheme="https"/>
-						<data android:host="lab.web3modal.com"/>
-						<data android:host="dev.lab.web3modal.com"/>
+						<data android:host="appkit-lab.reown.com"/>
+						<data android:host="dev.appkit-lab.reown.com"/>
 						<data android:pathPrefix="/rn_walletkit_debug"/>
 					</intent-filter>
 			</activity>

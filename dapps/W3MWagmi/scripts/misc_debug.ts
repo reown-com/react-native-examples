@@ -4,11 +4,11 @@ export const getMetadata = () => {
   return {
     name: 'AppKit + wagmi (debug)',
     description: 'AppKit + wagmi (debug)',
-    url: 'https://walletconnect.com',
-    icons: ['https://avatars.githubusercontent.com/u/37784886'],
+    url: 'https://reown.com/appkit',
+    icons: ['https://avatars.githubusercontent.com/u/179229932'],
     redirect: {
       native: 'w3mwagmisample-debug://',
-      universal: 'https://dev.lab.web3modal.com/rn_appkit_debug',
+      universal: 'https://dev.appkit-lab.reown.com/rn_appkit_debug',
       linkMode: true,
     },
   };
@@ -22,7 +22,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
       mobile_link: 'rn-web3wallet-debug://',
-      link_mode: 'https://dev.lab.web3modal.com/rn_walletkit_debug',
+      link_mode: 'https://dev.appkit-lab.reown.com/rn_walletkit_debug',
     },
     {
       id: 'rn-wallet-internal',
@@ -30,7 +30,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
       mobile_link: 'rn-web3wallet-internal://',
-      link_mode: 'https://dev.lab.web3modal.com/rn_walletkit_internal',
+      link_mode: 'https://dev.appkit-lab.reown.com/rn_walletkit_internal',
     },
     {
       id: 'flutter-wallet-internal',
@@ -38,7 +38,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
       mobile_link: 'wcflutterwallet-internal://',
-      link_mode: 'https://dev.lab.web3modal.com/flutter_walletkit_internal',
+      link_mode: 'https://dev.appkit-lab.reown.com/flutter_walletkit_internal',
     },
   ];
 
@@ -59,7 +59,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
       mobile_link: 'walletapp://',
-      link_mode: 'https://lab.web3modal.com/wallet',
+      link_mode: 'https://appkit-lab.reown.com/wallet',
     });
   }
 

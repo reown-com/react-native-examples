@@ -4,11 +4,11 @@ export const getMetadata = () => {
   return {
     name: 'AppKit + wagmi',
     description: 'AppKit + wagmi',
-    url: 'https://walletconnect.com',
-    icons: ['https://avatars.githubusercontent.com/u/37784886'],
+    url: 'https://reown.com/appkit',
+    icons: ['https://avatars.githubusercontent.com/u/179229932'],
     redirect: {
       native: 'w3mwagmisample://',
-      universal: 'https://lab.web3modal.com/rn_appkit',
+      universal: 'https://appkit-lab.reown.com/rn_appkit',
       linkMode: true,
     },
   };
@@ -22,7 +22,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
       mobile_link: 'rn-web3wallet://',
-      link_mode: 'https://lab.web3modal.com/rn_walletkit',
+      link_mode: 'https://appkit-lab.reown.com/rn_walletkit',
     },
     {
       id: 'flutter-wallet',
@@ -51,7 +51,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
       mobile_link: 'walletapp://',
-      link_mode: 'https://lab.web3modal.com/wallet',
+      link_mode: 'https://appkit-lab.reown.com/wallet',
     });
   }
 

@@ -1,12 +1,12 @@
 export const getMetadata = () => {
   return {
     name: 'React Native Wallet Example',
-    description: 'React Native Wallet for WalletConnect',
-    url: 'https://walletconnect.com/',
-    icons: ['https://avatars.githubusercontent.com/u/37784886'],
+    description: 'React Native Wallet for Reown',
+    url: 'https://reown.com/walletkit',
+    icons: ['https://avatars.githubusercontent.com/u/179229932'],
     redirect: {
       native: 'rn-web3wallet-internal://',
-      universal: 'https://dev.lab.web3modal.com/rn_walletkit_internal',
+      universal: 'https://dev.appkit-lab.reown.com/rn_walletkit_internal',
       linkMode: true,
     },
   };
