@@ -20,7 +20,7 @@ export const getCustomWallets = () => {
       id: 'rn-wallet',
       name: 'Wallet(RN)',
       image_url:
-        'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
+        'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'rn-web3wallet://',
       link_mode: 'https://appkit-lab.reown.com/rn_walletkit',
     },
@@ -28,7 +28,7 @@ export const getCustomWallets = () => {
       id: 'flutter-wallet',
       name: 'Wallet(Flutter)',
       image_url:
-        'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
+        'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'wcflutterwallet://',
       link_mode: undefined,
     },
@@ -39,7 +39,7 @@ export const getCustomWallets = () => {
       id: 'android-wallet',
       name: 'Wallet(Android)',
       image_url:
-        'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
+        'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'kotlin-web3wallet://',
       link_mode:
         'https://web3modal-laboratory-git-chore-kotlin-assetlinks-walletconnect1.vercel.app/wallet',
@@ -49,7 +49,7 @@ export const getCustomWallets = () => {
       id: 'ios-wallet',
       name: 'Wallet(iOS)',
       image_url:
-        'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
+        'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'walletapp://',
       link_mode: 'https://appkit-lab.reown.com/wallet',
     });
