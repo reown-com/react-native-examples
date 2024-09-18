@@ -2,6 +2,7 @@ import {WalletKit, IWalletKit} from '@reown/walletkit';
 import {Core} from '@walletconnect/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
+import {getMetadata} from './misc';
 
 export let walletKit: IWalletKit;
 
@@ -12,17 +13,7 @@ export async function createWalletKit(relayerRegionURL: string) {
   });
   walletKit = await WalletKit.init({
     core,
-    metadata: {
-      name: 'React Native Wallet Example',
-      description: 'React Native Wallet with Reown WalletKit',
-      url: 'https://reown.com/',
-      icons: ['https://avatars.githubusercontent.com/u/179229932'],
-      redirect: {
-        native: 'rn-web3wallet://',
-        universal: 'https://lab.web3modal.com/rn_walletkit',
-        linkMode: true,
-      },
-    },
+    metadata: getMetadata(),
   });
 
   try {

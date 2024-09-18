@@ -64,7 +64,7 @@ const customWallets = [
     id: 'rn-wallet',
     name: 'RN Wallet',
     image_url:
-      'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png',
+      'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
     mobile_link: 'rn-web3wallet://',
   },
 ];

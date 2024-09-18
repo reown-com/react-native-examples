@@ -3,9 +3,9 @@
   "version": "0.0.2",
   "private": true,
   "scripts": {
-    "android": "react-native run-android --mode=debug --appId com.walletconnect.web3wallet.rnsample.debug",
-    "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
-    "android:build:internal": "cd android && ./gradlew clean && ./gradlew assembleInternal",
+    "android": "yarn run copy:debug && react-native run-android --mode=debug --appId com.walletconnect.web3wallet.rnsample.debug",
+    "android:build": "yarn run copy:production cd android && ./gradlew clean && ./gradlew assembleRelease",
+    "android:build:internal": "yarn run copy:internal && cd android && ./gradlew clean && ./gradlew assembleInternal",
     "ios": "react-native run-ios --scheme 'RNWallet-Debug'",
     "ios:internal": "react-native run-ios --scheme 'RNWallet-Internal'",
     "bundle:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
@@ -15,6 +15,9 @@
     "e2e": "maestro test ../../.maestro",
     "e2e:studio": "maestro studio",
     "e2e:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro",
+    "copy:debug": "./scripts/copy-variant-files.sh 'debug'",
+    "copy:internal": "./scripts/copy-variant-files.sh 'internal'",
+    "copy:production": "./scripts/copy-variant-files.sh 'production'",
     "postinstall": "patch-package"
   },
   "dependencies": {

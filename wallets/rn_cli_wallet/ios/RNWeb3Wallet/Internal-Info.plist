@@ -27,7 +27,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>rn-web3wallet</string>
+				<string>rn-web3wallet-internal</string>
 			</array>
 		</dict>
 	</array>

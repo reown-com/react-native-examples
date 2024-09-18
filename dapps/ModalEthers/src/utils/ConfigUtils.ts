@@ -3,8 +3,8 @@ import {IProviderMetadata} from '@walletconnect/modal-react-native';
 
 const providerMetadata: IProviderMetadata = {
   name: 'Modal with Ethers',
-  description: 'RN example using Ethers 5 by WalletConnect',
-  url: 'https://walletconnect.com/',
+  description: 'RN example using Ethers 5 by Reown',
+  url: 'https://reown.com/appkit',
   icons: ['https://avatars.githubusercontent.com/u/179229932'],
   redirect: {
     native: 'wcmetherssample://',

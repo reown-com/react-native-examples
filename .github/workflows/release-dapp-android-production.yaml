@@ -2,13 +2,13 @@ name: release-android-appkit-production
 on: workflow_dispatch
 
 jobs:
-  release-internal:
+  release-production:
     uses: ./.github/workflows/release-android-base.yaml
     with:
       name: AppKit React Native
       root-path: 'dapps/W3MWagmi'
       release-type: 'production'
-      output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk'
+      output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/release/app-release.apk'
     secrets:
       project-id: ${{ secrets.ENV_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}
@@ -17,5 +17,5 @@ jobs:
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
       firebase-app-id: ${{ secrets.APPKIT_ANDROID_PROD_FIREBASE_APP_ID }}
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-      keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
-      keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
+      keystore-name: ${{ secrets.WC_PROD_KEYSTORE_NAME }}
+      keystore: ${{ secrets.WC_PROD_KEYSTORE }}

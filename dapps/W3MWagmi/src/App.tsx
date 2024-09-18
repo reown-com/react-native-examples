@@ -19,7 +19,7 @@ import * as Sentry from '@sentry/react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import {getCustomWallets} from '@/utils/misc';
+import {getCustomWallets, getMetadata} from '@/utils/misc';
 import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import {siweConfig} from '@/utils/SiweUtils';
 import {chains} from '@/utils/WagmiUtils';
@@ -36,17 +36,7 @@ if (!__DEV__ && Config.ENV_SENTRY_DSN) {
 const projectId = Config.ENV_PROJECT_ID;
 
 // 2. Create config
-const metadata = {
-  name: 'AppKit + wagmi',
-  description: 'AppKit Reown',
-  url: 'https://reown.com/appkit',
-  icons: ['https://avatars.githubusercontent.com/u/179229932'],
-  redirect: {
-    native: 'w3mwagmisample://',
-    universal: 'https://lab.web3modal.com/rn_appkit',
-    linkMode: true,
-  },
-};
+const metadata = getMetadata();
 
 const clipboardClient = {
   setString: async (value: string) => {
