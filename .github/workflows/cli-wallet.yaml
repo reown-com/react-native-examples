@@ -18,7 +18,6 @@ jobs:
         with:
           java-version: 17
           distribution: 'zulu'
-          cache: gradle      
       - run: touch .env && echo "ENV_PROJECT_ID=${{ secrets.ENV_PROJECT_ID }}\nENV_RELAY_URL=${{ secrets.ENV_RELAY_URL }}\nENV_SENTRY_DSN=${{ secrets.W3W_SENTRY_DSN }}" >> .env
       - run: touch ./android/sentry.properties && echo "${{ secrets.W3W_SENTRY_FILE }}" >> ./android/sentry.properties
       - run: npm install -g yarn
