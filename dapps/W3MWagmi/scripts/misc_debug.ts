@@ -44,12 +44,12 @@ export const getCustomWallets = () => {
 
   if (Platform.OS === 'android') {
     wallets.push({
-      id: 'android-wallet-internal',
-      name: 'Wallet(Android internal)',
+      id: 'android-wallet-debug',
+      name: 'Wallet(Android debug)',
       image_url:
         'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'kotlin-web3wallet://',
-      link_mode: 'https://appkit-lab.reown.com/wallet_internal',
+      link_mode: 'https://appkit-lab.reown.com/wallet_debug',
     });
   } else if (Platform.OS === 'ios') {
     wallets.push({

@@ -41,7 +41,7 @@ export const getCustomWallets = () => {
       image_url:
         'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'kotlin-web3wallet://',
-      link_mode: 'https://appkit-lab.reown.com/wallet',
+      link_mode: 'https://appkit-lab.reown.com/wallet_release',
     });
   } else if (Platform.OS === 'ios') {
     wallets.push({
