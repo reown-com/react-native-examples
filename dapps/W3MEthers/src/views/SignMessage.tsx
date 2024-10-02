@@ -30,7 +30,7 @@ export function SignMessage() {
       const ethersProvider = new BrowserProvider(walletProvider);
 
       const signer = await ethersProvider.getSigner();
-      const message = 'hello web3modal + ethers';
+      const message = 'hello appkit + ethers';
       const signature = await signer.signMessage(message);
       setData(signature.toString());
     } catch (e) {
