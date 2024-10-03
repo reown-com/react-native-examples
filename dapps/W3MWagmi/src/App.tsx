@@ -7,6 +7,7 @@ import {
   defaultWagmiConfig,
   AppKit,
 } from '@reown/appkit-wagmi-react-native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import {coinbaseConnector} from '@reown/appkit-coinbase-wagmi-react-native';
 import {authConnector} from '@reown/appkit-auth-wagmi-react-native';
@@ -107,15 +108,17 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <NavigationContainer>
-      <WagmiProvider config={wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <RootStackNavigator />
-          <Toast />
-          <AppKit />
-        </QueryClientProvider>
-      </WagmiProvider>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <NavigationContainer>
+        <WagmiProvider config={wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <RootStackNavigator />
+            <Toast />
+            <AppKit />
+          </QueryClientProvider>
+        </WagmiProvider>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 
