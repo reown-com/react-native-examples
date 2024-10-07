@@ -102,7 +102,7 @@ android {
         applicationId "com.walletconnect.web3modal.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 65
+        versionCode 66
         versionName "1.1-social"
         resValue "string", "build_config_package", "com.w3mwagmi"
     }
