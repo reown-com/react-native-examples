@@ -72,6 +72,11 @@ createAppKit({
   clipboardClient,
   customWallets,
   enableAnalytics: true,
+  features: {
+    email: true,
+    socials: ['x', 'apple', 'farcaster', 'discord', 'facebook'],
+    emailShowWallets: false,
+  },
 });
 
 const queryClient = new QueryClient();
