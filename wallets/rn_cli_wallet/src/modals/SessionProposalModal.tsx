@@ -16,6 +16,7 @@ import {Chains} from '@/components/Modal/Chains';
 import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
 import {RequestModal} from './RequestModal';
 import {getSupportedChains} from '@/utils/HelperUtil';
+import Toast from 'react-native-toast-message';
 
 export default function SessionProposalModal() {
   const Theme = useTheme();
@@ -78,9 +79,7 @@ export default function SessionProposalModal() {
           id: proposal.id,
           namespaces,
         });
-        SettingsStore.setSessions(
-          Object.values(walletKit.getActiveSessions()),
-        );
+        SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
 
         handleRedirect({
           peerRedirect: session.peer.metadata.redirect,
@@ -88,7 +87,10 @@ export default function SessionProposalModal() {
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: (e as Error).message,
+        });
       }
     }
     setIsLoadingApprove(false);
