@@ -37,7 +37,7 @@ export function RequestModal({
   return (
     <Modal isVisible={isVisible} onBackdropPress={handleClose}>
       <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-        <Text>X</Text>
+        <Text style={styles.closeText}>X</Text>
       </TouchableOpacity>
       <View style={styles.innerContainer}>
         {isLoading && (
@@ -124,8 +124,12 @@ const styles = StyleSheet.create({
   center: {
     textAlign: 'center',
   },
+  closeText: {
+    color: 'black',
+  },
   responseText: {
     fontWeight: '300',
+    color: 'black',
   },
   linkModeContainer: {
     borderRadius: 20,
