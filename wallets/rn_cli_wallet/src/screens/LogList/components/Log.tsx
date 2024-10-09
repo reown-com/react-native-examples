@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import {useTheme} from '@/hooks/useTheme';
-import {Text} from '@web3modal/ui-react-native';
+import {Text} from '@reown/appkit-ui-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 type Log = {

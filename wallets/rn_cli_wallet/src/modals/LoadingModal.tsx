@@ -1,6 +1,6 @@
 import {StyleSheet, View} from 'react-native';
 import {useSnapshot} from 'valtio';
-import {Icon, Text, LoadingSpinner} from '@web3modal/ui-react-native';
+import {Icon, Text, LoadingSpinner} from '@reown/appkit-ui-react-native';
 
 import {useTheme} from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
