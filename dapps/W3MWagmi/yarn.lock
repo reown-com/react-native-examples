@@ -4782,115 +4782,115 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241009160232":
-  version: 0.0.0-refactor-modal-migration-20241009160232
-  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241009160232"
+"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241010184043":
+  version: 0.0.0-refactor-modal-migration-20241010184043
+  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241010184043"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-wallet-react-native": 0.0.0-refactor-modal-migration-20241009160232
+    "@reown/appkit-common-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-wallet-react-native": 0.0.0-refactor-modal-migration-20241010184043
   peerDependencies:
     wagmi: ">=2"
-  checksum: 236dba1d39fc3de5fc976ac2465e5e5ffb19ef153e0b44d6434f1b9c733ba59ef8a7fc95f07e2a90d230aa137e92596c3f86438170b423ad786eb9a03d0e806c
+  checksum: 6afa1aaadf582c67694a3fed98f17628ab7cd6686fa1824efe94c1cce3dd6018df85e8cfd67647d9610b8eab3d6cd4767b0296c00a9cb83fa7024528cfbf1389
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241009160232":
-  version: 0.0.0-refactor-modal-migration-20241009160232
-  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241009160232"
+"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241010184043":
+  version: 0.0.0-refactor-modal-migration-20241010184043
+  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241010184043"
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: 40ad4f52b8216589be582e329055f0488febd47a0cdd0b27cc953ee6fd66384e052c6e5949833a9b1996aebc93fdd842d83904485574f98bbdc07f4fb47d3cbd
+  checksum: 988466edb15ee98d4a56c0b5a7326e17aef3a730ce9d78ac919fdfaa41af5d2ebf6f755b68f2db5a1e960a63df6c0c5fe1ea6ae819243e8b695b646d08feb905
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-refactor-modal-migration-20241009160232":
-  version: 0.0.0-refactor-modal-migration-20241009160232
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-refactor-modal-migration-20241009160232"
+"@reown/appkit-common-react-native@npm:0.0.0-refactor-modal-migration-20241010184043":
+  version: 0.0.0-refactor-modal-migration-20241010184043
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-refactor-modal-migration-20241010184043"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: 136b017c8bd4d456935ec9fb62834a2ef644c089a70d1ec108309968541c261fa5f7bf0d30fbbbca59dcbd7a92292504a65b7e795dd41b452f05e2a0c70ff07e
+  checksum: ec91049080a9a07e2a4f64ed8c1f4d4ccd5635dc07db567c48a5731b62b2348245adab3dbe60de023e613cddc79a367b61b329bc4ca2932d9420bd3659793b74
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-refactor-modal-migration-20241009160232":
-  version: 0.0.0-refactor-modal-migration-20241009160232
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-refactor-modal-migration-20241009160232"
+"@reown/appkit-core-react-native@npm:0.0.0-refactor-modal-migration-20241010184043":
+  version: 0.0.0-refactor-modal-migration-20241010184043
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-refactor-modal-migration-20241010184043"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-refactor-modal-migration-20241009160232
+    "@reown/appkit-common-react-native": 0.0.0-refactor-modal-migration-20241010184043
     valtio: 1.11.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: f367db77f8a6e56f37f8832940be209e9c6b7bf175e3c519e136fdc905366f83baf6097351193efe11ea481797b849f762512e0a8b1d2dec7c9f0afa89a60f18
+  checksum: 7a1ce1c4df2575c845b54ace0c5779506d7031b45215df333ccb48dde7c21f360af616054cc060c522dbeeeab82d655c66f9910bfd8d8712ae6d546fb503c5f5
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-react-native@npm:0.0.0-refactor-modal-migration-20241009160232":
-  version: 0.0.0-refactor-modal-migration-20241009160232
-  resolution: "@reown/appkit-scaffold-react-native@npm:0.0.0-refactor-modal-migration-20241009160232"
+"@reown/appkit-scaffold-react-native@npm:0.0.0-refactor-modal-migration-20241010184043":
+  version: 0.0.0-refactor-modal-migration-20241010184043
+  resolution: "@reown/appkit-scaffold-react-native@npm:0.0.0-refactor-modal-migration-20241010184043"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-core-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-siwe-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-ui-react-native": 0.0.0-refactor-modal-migration-20241009160232
+    "@reown/appkit-common-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-core-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-siwe-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-ui-react-native": 0.0.0-refactor-modal-migration-20241010184043
   peerDependencies:
     "@gorhom/bottom-sheet": ">=4"
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-gesture-handler: ">=2"
-  checksum: 854482376897819ed669408886e1fcfac3161f4afc44493176f460bfdd6f7c70ccfa287e5fa99f8f9ed3ef8ef0d8ab3ae0abe11162d28773f822c0e3143095fb
+  checksum: c99c8ca3faf2f2048902c417c01fcb2c5005bc6dcd0b11754d7c23977bb3c067ed6998167fe8e19a66d2ab2064492d70dca0eaab6deb223f6ca735fa262431cd
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-refactor-modal-migration-20241009160232":
-  version: 0.0.0-refactor-modal-migration-20241009160232
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-refactor-modal-migration-20241009160232"
+"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-refactor-modal-migration-20241010184043":
+  version: 0.0.0-refactor-modal-migration-20241010184043
+  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-refactor-modal-migration-20241010184043"
   dependencies:
-    "@reown/appkit-scaffold-react-native": 0.0.0-refactor-modal-migration-20241009160232
-  checksum: 518be3b81ffbeea0d69595a5982c1b0b4a8ef8b160ea1a7d2bdff1617ecd9982c8b7c328dab6bd17f2ac634d80979d82655666fda089402b95a14187954efdee
+    "@reown/appkit-scaffold-react-native": 0.0.0-refactor-modal-migration-20241010184043
+  checksum: 1c2a24153ad30c83341b93bd4757dbf66be7f2eb6565cbbdcec922075a08cf90fed6e9804aeaacd365ac14ead0e90a27e382cb725176307aa41daee00675c8f8
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-refactor-modal-migration-20241009160232":
-  version: 0.0.0-refactor-modal-migration-20241009160232
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-refactor-modal-migration-20241009160232"
+"@reown/appkit-siwe-react-native@npm:0.0.0-refactor-modal-migration-20241010184043":
+  version: 0.0.0-refactor-modal-migration-20241010184043
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-refactor-modal-migration-20241010184043"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-core-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-ui-react-native": 0.0.0-refactor-modal-migration-20241009160232
+    "@reown/appkit-common-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-core-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-ui-react-native": 0.0.0-refactor-modal-migration-20241010184043
     valtio: 1.11.2
   peerDependencies:
     "@gorhom/bottom-sheet": ">=4"
     "@walletconnect/utils": ">=2.16.1"
-  checksum: 864b029c3b29e9bf271649eeb63c9c9d4929a368ff4ee7e8561c68073fecff11c938bd7a0fed7e8d09184a90d85ec00e72169a9b156151007c1a151a1e959209
+  checksum: 53d9b03bde1fbfc97517d2b919a101cb443079bba0d2e725676ea5d8c2c3229fe4436f2b6e12b3269b8a26ab6533cb868f2706cc149707856939e69186f91252
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-refactor-modal-migration-20241009160232":
-  version: 0.0.0-refactor-modal-migration-20241009160232
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-refactor-modal-migration-20241009160232"
+"@reown/appkit-ui-react-native@npm:0.0.0-refactor-modal-migration-20241010184043":
+  version: 0.0.0-refactor-modal-migration-20241010184043
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-refactor-modal-migration-20241010184043"
   dependencies:
     qrcode: 1.5.3
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: c395e859efacc41d4df5d69305214eb96767c020ea55dfaa13943f9250676c1ca6ba20528ed90cdb5bf7e170e3c8b3ccdedbebadc53c1c24e5eff67788233cc9
+  checksum: 5ca91f43c51c38a475534d4443918cc1d85f0d0947086a4f364babebae32b30f490db28dd7d0262e4ac0b59655cc2d48aaf634c8b7dc0f5398c771ab73604b80
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241009160232":
-  version: 0.0.0-refactor-modal-migration-20241009160232
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241009160232"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241010184043":
+  version: 0.0.0-refactor-modal-migration-20241010184043
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-refactor-modal-migration-20241010184043"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-scaffold-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-scaffold-utils-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-siwe-react-native": 0.0.0-refactor-modal-migration-20241009160232
+    "@reown/appkit-common-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-scaffold-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-scaffold-utils-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-siwe-react-native": 0.0.0-refactor-modal-migration-20241010184043
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -4900,21 +4900,21 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: 7faeb88c1e114d4f2e9141cd24881a60da4f0e6b3e78501964af24d5a3840f2a30c6c4a3b98702da9d31c1f948f0e2c8b39f8064656dadb61996081d2fed5dd7
+  checksum: f9b7d73bf6a5b16375b536766e494d3020b09b178a289c789bba1f7f87ed72eaf22692fa41aaf17065feaaa83dafba8caf5b03621c725e0bd3ded5697a02321c
   languageName: node
   linkType: hard
 
-"@reown/appkit-wallet-react-native@npm:0.0.0-refactor-modal-migration-20241009160232":
-  version: 0.0.0-refactor-modal-migration-20241009160232
-  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-refactor-modal-migration-20241009160232"
+"@reown/appkit-wallet-react-native@npm:0.0.0-refactor-modal-migration-20241010184043":
+  version: 0.0.0-refactor-modal-migration-20241010184043
+  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-refactor-modal-migration-20241010184043"
   dependencies:
-    "@reown/appkit-core-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-ui-react-native": 0.0.0-refactor-modal-migration-20241009160232
+    "@reown/appkit-core-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-ui-react-native": 0.0.0-refactor-modal-migration-20241010184043
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: 806b1dca2402810abe6804f9cce4fd4a310e6bc891d028fe0dc95230a1ed0757a398e324398d5aff2a82259d1ba20005932dda2ded0930bc6458aa685d3195fe
+  checksum: f495df63a793b2fd41e9a2d616ae377a1aebebcd9617079be53fd8739c8eed340a7234b93fbc0b46ebff0636d6fcd9d3a006708ec4f8d388f945bfe2d7735e43
   languageName: node
   linkType: hard
 
@@ -6648,9 +6648,9 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-auth-wagmi-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-refactor-modal-migration-20241009160232
-    "@reown/appkit-wagmi-react-native": 0.0.0-refactor-modal-migration-20241009160232
+    "@reown/appkit-auth-wagmi-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-refactor-modal-migration-20241010184043
+    "@reown/appkit-wagmi-react-native": 0.0.0-refactor-modal-migration-20241010184043
     "@sentry/react-native": 5.20.0
     "@tanstack/react-query": 5.51.1
     "@types/react": ^18.2.6
