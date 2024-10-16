@@ -8,7 +8,7 @@ import {
   useAppKitAccount,
   useAppKitProvider,
 } from '@reown/appkit-ethers-react-native';
-import {BrowserProvider, Contract} from 'ethers';
+import {BrowserProvider, Contract, JsonRpcSigner} from 'ethers';
 
 export function WriteContract() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
@@ -16,7 +16,7 @@ export function WriteContract() {
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
   const {walletProvider} = useAppKitProvider();
-  const {isConnected} = useAppKitAccount();
+  const {isConnected, address} = useAppKitAccount();
 
   const onPress = async () => {
     if (!isConnected || !walletProvider) {
@@ -29,14 +29,14 @@ export function WriteContract() {
 
     try {
       const ethersProvider = new BrowserProvider(walletProvider);
-      const signer = await ethersProvider.getSigner();
-      const address = signer.address;
+      const signer = new JsonRpcSigner(ethersProvider, address!);
       const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
       const contractABI = usdtAbi;
       const contract = new Contract(contractAddress, contractABI, signer);
       const response = await contract.approve(address, 100000);
       setData(response.toString());
-    } catch {
+    } catch (e) {
+      console.log(e);
       setError(true);
     } finally {
       setIsLoading(false);

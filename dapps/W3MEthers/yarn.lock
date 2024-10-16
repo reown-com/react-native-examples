@@ -2509,83 +2509,86 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@reown/appkit-auth-ethers-react-native@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-auth-ethers-react-native/-/appkit-auth-ethers-react-native-1.0.0.tgz#6fe4ca46170092668e73ca65da6500294dd71bb6"
-  integrity sha512-aPBRMU8GYx/XTF2V1CeMfja/FapTPeMMmqSrWAxkomJ4ToUgdlNo5dn1D4Fcf3LLXtA8Rqb/BqZKYf5Krugz8g==
+"@reown/appkit-auth-ethers-react-native@0.0.0-feat-smart-account-20241016183051":
+  version "0.0.0-feat-smart-account-20241016183051"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-auth-ethers-react-native/-/appkit-auth-ethers-react-native-0.0.0-feat-smart-account-20241016183051.tgz#b75ca356b8b06dde204e99013a750cc7e10a0df3"
+  integrity sha512-CJ4iNYl3fg3p7MDXVllKgyEaryZx29RQJocKPUAmWD/JV8/TkAN/4XYfLPIlxHFWvPSJQxXMETQLdoKPHcF0Kw==
   dependencies:
-    "@reown/appkit-wallet-react-native" "1.0.0"
+    "@reown/appkit-wallet-react-native" "0.0.0-feat-smart-account-20241016183051"
 
-"@reown/appkit-coinbase-ethers-react-native@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-ethers-react-native/-/appkit-coinbase-ethers-react-native-1.0.0.tgz#93846c0809d3f143bf5995735e5cc3abe9013ae9"
-  integrity sha512-miICkHZ0XV5G47HrbSHSmu3vm3c74Ao2bd6WjsUPycCityP5WYHQODku5idYjIZUUeCm1u5A24PJXjk3ve8ywQ==
+"@reown/appkit-coinbase-ethers-react-native@0.0.0-feat-smart-account-20241016183051":
+  version "0.0.0-feat-smart-account-20241016183051"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-ethers-react-native/-/appkit-coinbase-ethers-react-native-0.0.0-feat-smart-account-20241016183051.tgz#b2651dad5bd33fdbf9bc4b3e0b923542cfa1cec2"
+  integrity sha512-RlNusYO1yF6gusPOPTXhzKzqj3EKQaa3RqWFoU/BfyX88B5lVB8PfQMu/MG/RCMMYftuTo0DgYcMfNcKMgxmag==
 
-"@reown/appkit-common-react-native@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-1.0.0.tgz#bbf172189022588742cf6d757b0276a6f727258c"
-  integrity sha512-en9iGnqEZCCPAZMI7odyhAKZ784FLU3fmuylKK2gatJmbxuc/4rDM/V8XPyG1I9yoH3DbSF4ePylJTzWbWFqaA==
-
-"@reown/appkit-core-react-native@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-1.0.0.tgz#38ee9490b8cccc815c8ecc2e6ef65b8e429c396b"
-  integrity sha512-z3jSdvxOdhCkGDv9mG5iy1yE1c6OG0By6KBKPzMHvpZk2qt+kpCsefVhzPIpPwtdqdAZ5ZStSSRcsvj6OGkBHg==
+"@reown/appkit-common-react-native@0.0.0-feat-smart-account-20241016183051":
+  version "0.0.0-feat-smart-account-20241016183051"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-feat-smart-account-20241016183051.tgz#8c871fef2c8c798865b10a8364d0d6bcb72bda19"
+  integrity sha512-98l3UwMZIK0oexyZzKvcMNR6+WEMXn9kmSgtL7oyw80IRUobSkD6Ln1Kdlqt3FS5s5HMCEcFyeWs7/JztHfUUg==
   dependencies:
-    "@reown/appkit-common-react-native" "1.0.0"
+    bignumber.js "9.1.2"
+    dayjs "1.11.10"
+
+"@reown/appkit-core-react-native@0.0.0-feat-smart-account-20241016183051":
+  version "0.0.0-feat-smart-account-20241016183051"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-feat-smart-account-20241016183051.tgz#650daba35a0cdadd0069348e1d0731f8c5f551c5"
+  integrity sha512-oQ1wi6LEIYf8F+LZ7O5IuzZqUZvOLztLq0hU8kbiX+0JYcK4Z7PmJXG2DbqgJwk+CB5B1vcQJJel2E+hPf+WSg==
+  dependencies:
+    "@reown/appkit-common-react-native" "0.0.0-feat-smart-account-20241016183051"
     valtio "1.11.2"
 
-"@reown/appkit-ethers-react-native@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-1.0.0.tgz#16f86129704ad054de8585771d7c9b2057e1a284"
-  integrity sha512-HL3OF5nyrwsvveWTRtBavkcqGpZBinQTX/ygf4W/IS5L+j9IrczetfF7SlBsnQRGa4bN5/X5+5R/9dg2OSt5NA==
+"@reown/appkit-ethers-react-native@0.0.0-feat-smart-account-20241016183051":
+  version "0.0.0-feat-smart-account-20241016183051"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-0.0.0-feat-smart-account-20241016183051.tgz#bdc08186cfaffaa5336fb2baf9cf2e4bf478520c"
+  integrity sha512-WFkMyqrr6uc2fxPWEu7YBUxwpvrY6ndbfc9KkhN/7qx3yuSC96F/nJ8Gq/7PkMmht8iuUIlK0AViCkp7R5lmjA==
   dependencies:
-    "@reown/appkit-common-react-native" "1.0.0"
-    "@reown/appkit-scaffold-react-native" "1.0.0"
-    "@reown/appkit-scaffold-utils-react-native" "1.0.0"
-    "@reown/appkit-siwe-react-native" "1.0.0"
+    "@reown/appkit-common-react-native" "0.0.0-feat-smart-account-20241016183051"
+    "@reown/appkit-scaffold-react-native" "0.0.0-feat-smart-account-20241016183051"
+    "@reown/appkit-scaffold-utils-react-native" "0.0.0-feat-smart-account-20241016183051"
+    "@reown/appkit-siwe-react-native" "0.0.0-feat-smart-account-20241016183051"
     "@walletconnect/ethereum-provider" "2.16.1"
 
-"@reown/appkit-scaffold-react-native@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-react-native/-/appkit-scaffold-react-native-1.0.0.tgz#5088b058463e9fae80bd622c698f53f41358bb57"
-  integrity sha512-XW1bZc77Mx5tNtIJlwBiKN3QPPBIflEl/BBPKq60MiEShJy+kgZDdfsznoTCyJcuMlSwhgiCQiC/JAS6C9w0WQ==
+"@reown/appkit-scaffold-react-native@0.0.0-feat-smart-account-20241016183051":
+  version "0.0.0-feat-smart-account-20241016183051"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-react-native/-/appkit-scaffold-react-native-0.0.0-feat-smart-account-20241016183051.tgz#ddfdf204f39a232a8c88200da64926647a30a6d0"
+  integrity sha512-0x/3aL1U5ZETwRMz0fKkux5CE3fJJERXfxehX2Dg1b/CfXz1VIf1FMm68qsedQ9ilUa1VIHkKvMpDo6i43y9TA==
   dependencies:
-    "@reown/appkit-common-react-native" "1.0.0"
-    "@reown/appkit-core-react-native" "1.0.0"
-    "@reown/appkit-siwe-react-native" "1.0.0"
-    "@reown/appkit-ui-react-native" "1.0.0"
+    "@reown/appkit-common-react-native" "0.0.0-feat-smart-account-20241016183051"
+    "@reown/appkit-core-react-native" "0.0.0-feat-smart-account-20241016183051"
+    "@reown/appkit-siwe-react-native" "0.0.0-feat-smart-account-20241016183051"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-smart-account-20241016183051"
 
-"@reown/appkit-scaffold-utils-react-native@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-utils-react-native/-/appkit-scaffold-utils-react-native-1.0.0.tgz#c05ce80f869cbac1cbed7a55850278f6f12db7fd"
-  integrity sha512-KcNHyaiJRPWEl1WU0HcuvF4PozTruDmYwhnbi7Q+vz8d3Kg0aRk55l8snPIZ3UidwuQtwh927RRPZ7EZ15KfXA==
+"@reown/appkit-scaffold-utils-react-native@0.0.0-feat-smart-account-20241016183051":
+  version "0.0.0-feat-smart-account-20241016183051"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-utils-react-native/-/appkit-scaffold-utils-react-native-0.0.0-feat-smart-account-20241016183051.tgz#4ef9a7d32fc1d9abb06151dc2882fe8581e60fd8"
+  integrity sha512-TAZE3ddmXOtjVjn/bg95lXaKY8/nsscuXqA/ztx0xbW3Yrnd0ND1iHGbQVl7rAibLKBDfTn3SA0GrxZ0UcvDug==
   dependencies:
-    "@reown/appkit-scaffold-react-native" "1.0.0"
+    "@reown/appkit-scaffold-react-native" "0.0.0-feat-smart-account-20241016183051"
 
-"@reown/appkit-siwe-react-native@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-1.0.0.tgz#494342cfe986bc807d8daf97e669ddd2196d1559"
-  integrity sha512-ecTtPBM9UQaoE5gzkisL5Erv6vNLIyunqfnwayzxQ5s3r/cqfkMOxa27GqU19A/gdAw4l7Tcxr0KQ6R1ftwOIQ==
+"@reown/appkit-siwe-react-native@0.0.0-feat-smart-account-20241016183051":
+  version "0.0.0-feat-smart-account-20241016183051"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-0.0.0-feat-smart-account-20241016183051.tgz#80446ea142d6895507d3f09f9a8854bcd784afba"
+  integrity sha512-yWtShobqJ3I6SZ2cdkMKhNo05+kxw7FvR/FyKKCgFPZEODiusIh+n6OjZ51U+Y0/JWet0jQuNTgmKBY0UAQ+zA==
   dependencies:
-    "@reown/appkit-common-react-native" "1.0.0"
-    "@reown/appkit-core-react-native" "1.0.0"
-    "@reown/appkit-ui-react-native" "1.0.0"
+    "@reown/appkit-common-react-native" "0.0.0-feat-smart-account-20241016183051"
+    "@reown/appkit-core-react-native" "0.0.0-feat-smart-account-20241016183051"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-smart-account-20241016183051"
     valtio "1.11.2"
 
-"@reown/appkit-ui-react-native@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-1.0.0.tgz#9598717c109c7c98245576c5d1ec6dddbce8870e"
-  integrity sha512-ZiFZnIwsOSaLRlBY75Jzn5fH7khpajuYDxKeKRQ4I9IpPqsYUHUAcwQxekhLMVYQzFxA1O1TXPYcK9jiVAhYpg==
+"@reown/appkit-ui-react-native@0.0.0-feat-smart-account-20241016183051":
+  version "0.0.0-feat-smart-account-20241016183051"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-feat-smart-account-20241016183051.tgz#939b87f045959534e319f84de81c684dd606160f"
+  integrity sha512-n6gqSoxJsp+uq4n9r3RVD7tjNd3IgYLaa8L519XyAjj8UpFAZBrf2LqW0sWvsS2b3/pHhPeYDDKMBFstCB2kNg==
   dependencies:
     qrcode "1.5.3"
 
-"@reown/appkit-wallet-react-native@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-wallet-react-native/-/appkit-wallet-react-native-1.0.0.tgz#107592d9bfcb50426779a01674adb2e900f96660"
-  integrity sha512-g84P+j1fEiREmkOOUqfpcG2ajPnn5KfD/VXjMmcBkE1YIQgKWRUJYdV2jdNnyODQcR7bmEOzyq8h6ZIMhJL8XA==
+"@reown/appkit-wallet-react-native@0.0.0-feat-smart-account-20241016183051":
+  version "0.0.0-feat-smart-account-20241016183051"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-wallet-react-native/-/appkit-wallet-react-native-0.0.0-feat-smart-account-20241016183051.tgz#14f7e3635126e82ea54e931783a5c7cc4cf15f56"
+  integrity sha512-Xxik7uiGpMw4IPoN/LqS6l4uSF+f7qCK/3yCUQJSNRkCr/lGY1yE7VAtoVH+MRRb1hCZGc39+N2LlY3a/jEPZA==
   dependencies:
-    "@reown/appkit-core-react-native" "1.0.0"
-    "@reown/appkit-ui-react-native" "1.0.0"
+    "@reown/appkit-core-react-native" "0.0.0-feat-smart-account-20241016183051"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-smart-account-20241016183051"
     zod "3.22.4"
 
 "@segment/loosely-validate-event@^2.0.0":
@@ -3743,6 +3746,11 @@ big-integer@1.6.x:
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.52.tgz#60a887f3047614a8e1bffe5d7173490a97dc8c85"
   integrity sha512-QxD8cf2eVqJOOz63z6JIN9BzvVs/dlySa5HGSBH5xtR8dPteIRQnBxxKqkNTiT6jbDTF6jAfrd4oMcND9RGbQg==
 
+bignumber.js@9.1.2:
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
+  integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
+
 binary-extensions@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
@@ -4370,7 +4378,7 @@ dag-map@~1.0.0:
   resolved "https://registry.yarnpkg.com/dag-map/-/dag-map-1.0.2.tgz#e8379f041000ed561fc515475c1ed2c85eece8d7"
   integrity sha512-+LSAiGFwQ9dRnRdOeaj7g47ZFJcOUPukAP8J3A3fuZ1g9Y44BG+P1sgApjLXTQPOzC4+7S9Wr8kXsfpINM4jpw==
 
-dayjs@^1.8.15:
+dayjs@1.11.10, dayjs@^1.8.15:
   version "1.11.10"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
   integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==

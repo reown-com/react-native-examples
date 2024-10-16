@@ -15,7 +15,7 @@ export function SignMessage() {
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
   const {walletProvider} = useAppKitProvider();
-  const {isConnected} = useAppKitAccount();
+  const {isConnected, address} = useAppKitAccount();
 
   const onPress = async () => {
     if (!isConnected || !walletProvider) {
@@ -29,7 +29,7 @@ export function SignMessage() {
     try {
       const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
 
-      const signer = ethersProvider.getSigner();
+      const signer = ethersProvider.getSigner(address);
       const message = 'hello appkit + ethers5';
       const signature = await signer.signMessage(message);
       setData(signature.toString());

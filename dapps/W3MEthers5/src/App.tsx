@@ -1,5 +1,4 @@
 import '@walletconnect/react-native-compat';
-import '@ethersproject/shims';
 
 import React from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
