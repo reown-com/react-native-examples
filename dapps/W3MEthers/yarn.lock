@@ -2509,86 +2509,86 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@reown/appkit-auth-ethers-react-native@0.0.0-refactor-modal-migration-20241017140012":
-  version "0.0.0-refactor-modal-migration-20241017140012"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-auth-ethers-react-native/-/appkit-auth-ethers-react-native-0.0.0-refactor-modal-migration-20241017140012.tgz#d3d5333aec345f9da4c0790d235622c90842a5a6"
-  integrity sha512-nXXWiWwwFD6eMYAnvwN7YVbRTjMnMiKl1uPpGPWBuHy3tzWh9EiO7oCRQg+Iey4e1g6Bti4IEn52CrcnzcctHw==
+"@reown/appkit-auth-ethers-react-native@0.0.0-feat-smart-account-20241017180406":
+  version "0.0.0-feat-smart-account-20241017180406"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-auth-ethers-react-native/-/appkit-auth-ethers-react-native-0.0.0-feat-smart-account-20241017180406.tgz#4de6af0a4c425ae98e52b6e2c75264f43d6d4d73"
+  integrity sha512-sNYX5vuLeFE6jK9OYYzlMGLB7fgWLRorqo5SXo5tgV30MGzi2lHmWwNYtHSx1e+5AWBfcw5iSc1tpqGlA839ZQ==
   dependencies:
-    "@reown/appkit-wallet-react-native" "0.0.0-refactor-modal-migration-20241017140012"
+    "@reown/appkit-wallet-react-native" "0.0.0-feat-smart-account-20241017180406"
 
-"@reown/appkit-coinbase-ethers-react-native@0.0.0-refactor-modal-migration-20241017140012":
-  version "0.0.0-refactor-modal-migration-20241017140012"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-ethers-react-native/-/appkit-coinbase-ethers-react-native-0.0.0-refactor-modal-migration-20241017140012.tgz#7c2e97040645645b4e109a90488fbcb9d8d8fe95"
-  integrity sha512-L+4vTpL0c5DLOFLaK8S1jx8MtZMU2wriWO7umQa2XTYzQqZcXgiB2AJtiCApTcSShZgl8mLlte1eqrTuajKjUQ==
+"@reown/appkit-coinbase-ethers-react-native@0.0.0-feat-smart-account-20241017180406":
+  version "0.0.0-feat-smart-account-20241017180406"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-ethers-react-native/-/appkit-coinbase-ethers-react-native-0.0.0-feat-smart-account-20241017180406.tgz#2c3c82351af47d7478a57430d92137171aa98bae"
+  integrity sha512-JLkD7DG/T+SPRWhky7P2AQjRW0VxosOuGgveQBELjwxzi6Qof9H2XuMiad47mSfnuIIL9IbRvmW3fS/ELdmcTw==
 
-"@reown/appkit-common-react-native@0.0.0-refactor-modal-migration-20241017140012":
-  version "0.0.0-refactor-modal-migration-20241017140012"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-refactor-modal-migration-20241017140012.tgz#5af92e74099a4529f6929b9ac0992fc6bcbceb7f"
-  integrity sha512-/RFnbSVvzoFvJk+9iNjT87UjIxMbmuQ53sYbiMa5pR6YAT0cII2dXd2PvycsF506zKi+ZBCCVtEBzqfEvbgIPg==
+"@reown/appkit-common-react-native@0.0.0-feat-smart-account-20241017180406":
+  version "0.0.0-feat-smart-account-20241017180406"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-feat-smart-account-20241017180406.tgz#56f5cdf7bdac77d36a087d42b79e7855908b8075"
+  integrity sha512-dnfnqlgL7HyQ6x0euptQlLCgQRcKQ6h+2iGuyb+wYB/j3RNiG65v2bvhhRqQeaxM78Zwz5rwGwz7hD60571iZA==
   dependencies:
     bignumber.js "9.1.2"
     dayjs "1.11.10"
 
-"@reown/appkit-core-react-native@0.0.0-refactor-modal-migration-20241017140012":
-  version "0.0.0-refactor-modal-migration-20241017140012"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-refactor-modal-migration-20241017140012.tgz#a3165232386311e2472b274b75da119cd6c13789"
-  integrity sha512-j41PzyPB/gjK8IABNbylFN0mqZ+MLdoDPSuoEmfG3mLwVLSPUa6xMlXYo0UTk3pSQcEflkUtU27vJ7Tls82jfg==
+"@reown/appkit-core-react-native@0.0.0-feat-smart-account-20241017180406":
+  version "0.0.0-feat-smart-account-20241017180406"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-feat-smart-account-20241017180406.tgz#81086011e91d0ac78e6799cab2bc55c4b7da996c"
+  integrity sha512-NEZcVSYPFX0AffZbcD8rAmyXeDx5io41J4yAqGg0cfnhCN+Qk9lZfhq8ymLZoViPIdoef820HGLbX+ze3HGpcQ==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-refactor-modal-migration-20241017140012"
+    "@reown/appkit-common-react-native" "0.0.0-feat-smart-account-20241017180406"
     valtio "1.11.2"
 
-"@reown/appkit-ethers-react-native@0.0.0-refactor-modal-migration-20241017140012":
-  version "0.0.0-refactor-modal-migration-20241017140012"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-0.0.0-refactor-modal-migration-20241017140012.tgz#20bf6ffb5ce6fdfb52fc925589705d5a08f8710b"
-  integrity sha512-a6AgFs1EX/JDteIGHmLcUFLsVJBh+BQViV6KsUABEMSUXz+hnBnLDr6m6/oyvP8mtAvv36xquRQNI8Igjeia8A==
+"@reown/appkit-ethers-react-native@0.0.0-feat-smart-account-20241017180406":
+  version "0.0.0-feat-smart-account-20241017180406"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-0.0.0-feat-smart-account-20241017180406.tgz#d324b3a176615a8c2e088a1a8a9b72e48e523f59"
+  integrity sha512-sR+G9wPU10LL6hY8GFb3R7gnXH+P+JPJ5bH8uwgoIORFhSLtS/xAMJ64FDnBL7CLu3cYmxA0UjiZ+Rxy5yZYCg==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-refactor-modal-migration-20241017140012"
-    "@reown/appkit-scaffold-react-native" "0.0.0-refactor-modal-migration-20241017140012"
-    "@reown/appkit-scaffold-utils-react-native" "0.0.0-refactor-modal-migration-20241017140012"
-    "@reown/appkit-siwe-react-native" "0.0.0-refactor-modal-migration-20241017140012"
+    "@reown/appkit-common-react-native" "0.0.0-feat-smart-account-20241017180406"
+    "@reown/appkit-scaffold-react-native" "0.0.0-feat-smart-account-20241017180406"
+    "@reown/appkit-scaffold-utils-react-native" "0.0.0-feat-smart-account-20241017180406"
+    "@reown/appkit-siwe-react-native" "0.0.0-feat-smart-account-20241017180406"
     "@walletconnect/ethereum-provider" "2.16.1"
 
-"@reown/appkit-scaffold-react-native@0.0.0-refactor-modal-migration-20241017140012":
-  version "0.0.0-refactor-modal-migration-20241017140012"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-react-native/-/appkit-scaffold-react-native-0.0.0-refactor-modal-migration-20241017140012.tgz#73f216fe7e61e99c5af0f535f06e4b25136afd74"
-  integrity sha512-nSAcms+ij5nB7o7QxGt4ZejGfsRD89raaa7rUndXIYC1F434z3evEDOF7V1K1Q3RtPyqcleBe3ON8JRWuK+xNQ==
+"@reown/appkit-scaffold-react-native@0.0.0-feat-smart-account-20241017180406":
+  version "0.0.0-feat-smart-account-20241017180406"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-react-native/-/appkit-scaffold-react-native-0.0.0-feat-smart-account-20241017180406.tgz#64aaf80a40dc24b03f43d27844b07ae61521e51f"
+  integrity sha512-QQ86f5NNxnCJx+PRZn75eWMmAckgCEUBzgpykwmVth9/s4Bfo+AUOX3uvhX4TsMld8eYus8RPswBkHXj9Lmavg==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-refactor-modal-migration-20241017140012"
-    "@reown/appkit-core-react-native" "0.0.0-refactor-modal-migration-20241017140012"
-    "@reown/appkit-siwe-react-native" "0.0.0-refactor-modal-migration-20241017140012"
-    "@reown/appkit-ui-react-native" "0.0.0-refactor-modal-migration-20241017140012"
+    "@reown/appkit-common-react-native" "0.0.0-feat-smart-account-20241017180406"
+    "@reown/appkit-core-react-native" "0.0.0-feat-smart-account-20241017180406"
+    "@reown/appkit-siwe-react-native" "0.0.0-feat-smart-account-20241017180406"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-smart-account-20241017180406"
 
-"@reown/appkit-scaffold-utils-react-native@0.0.0-refactor-modal-migration-20241017140012":
-  version "0.0.0-refactor-modal-migration-20241017140012"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-utils-react-native/-/appkit-scaffold-utils-react-native-0.0.0-refactor-modal-migration-20241017140012.tgz#01cb599bdafee551995cfb86c22940fa10a7047e"
-  integrity sha512-xS1jYZQsf74jlI4y6sW2XTCjXZaQLUDb73EIufPl5vLSg9C5ZkjUrdEl63QHooNWH7mqTeHRxWURDhMnmmeVjg==
+"@reown/appkit-scaffold-utils-react-native@0.0.0-feat-smart-account-20241017180406":
+  version "0.0.0-feat-smart-account-20241017180406"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-utils-react-native/-/appkit-scaffold-utils-react-native-0.0.0-feat-smart-account-20241017180406.tgz#5345d8e32a2d5b3b00aeca1ea344bc319dd06336"
+  integrity sha512-dge0jz+FQORzD55PeE6MZWY1KMAgYI5ojZvt5bPapYVLqxqebbfYwre4vqtDKMhW3+2u5+ZIrrjoO4EmQ2tumQ==
   dependencies:
-    "@reown/appkit-scaffold-react-native" "0.0.0-refactor-modal-migration-20241017140012"
+    "@reown/appkit-scaffold-react-native" "0.0.0-feat-smart-account-20241017180406"
 
-"@reown/appkit-siwe-react-native@0.0.0-refactor-modal-migration-20241017140012":
-  version "0.0.0-refactor-modal-migration-20241017140012"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-0.0.0-refactor-modal-migration-20241017140012.tgz#98b76c2fda4dcbded266223c11fc0686067f6089"
-  integrity sha512-2rNwkevJUSrZsBPCEjeuPpXL2HNIh4vp6S88tvd83EKlltkk2e1z2Jp5qZnrEeICvZeyI27WGjYF/EG8G28vKw==
+"@reown/appkit-siwe-react-native@0.0.0-feat-smart-account-20241017180406":
+  version "0.0.0-feat-smart-account-20241017180406"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-0.0.0-feat-smart-account-20241017180406.tgz#8d582bd6959c21d082520609314da4059069ebda"
+  integrity sha512-6mo3YvVwrsqe8nJanG8kLFm3LHuw5oGTbzfbZJFgyiH/jft3ywo3SvymuBdgb/eHaB8deoWyA34OBcTucWRsug==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-refactor-modal-migration-20241017140012"
-    "@reown/appkit-core-react-native" "0.0.0-refactor-modal-migration-20241017140012"
-    "@reown/appkit-ui-react-native" "0.0.0-refactor-modal-migration-20241017140012"
+    "@reown/appkit-common-react-native" "0.0.0-feat-smart-account-20241017180406"
+    "@reown/appkit-core-react-native" "0.0.0-feat-smart-account-20241017180406"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-smart-account-20241017180406"
     valtio "1.11.2"
 
-"@reown/appkit-ui-react-native@0.0.0-refactor-modal-migration-20241017140012":
-  version "0.0.0-refactor-modal-migration-20241017140012"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-refactor-modal-migration-20241017140012.tgz#d99ab889f08a9d08da4370e6354752ed2ea2e8f6"
-  integrity sha512-rm9psiVVT/7afVX7Z05TDw7zxv3itP5ypnP94o1pWHhT2qPheChAfm8mAFVOgwklnfC0D/eNPHAjQRTYVyJ7Kg==
+"@reown/appkit-ui-react-native@0.0.0-feat-smart-account-20241017180406":
+  version "0.0.0-feat-smart-account-20241017180406"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-feat-smart-account-20241017180406.tgz#c9c2a5b8ec8e51b9db9fb06188cb707d4a251e68"
+  integrity sha512-THPE9V5xDm2N2K+zSDWjlVdGlD7S0c5OMmxPozjLNd0g8gR8Lt/W9taR7uGmNDtg5IVQrI6Fm7OIPPpHacxqTw==
   dependencies:
     qrcode "1.5.3"
 
-"@reown/appkit-wallet-react-native@0.0.0-refactor-modal-migration-20241017140012":
-  version "0.0.0-refactor-modal-migration-20241017140012"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-wallet-react-native/-/appkit-wallet-react-native-0.0.0-refactor-modal-migration-20241017140012.tgz#eb4d89f77294b8f063f114161641001e6f3f439e"
-  integrity sha512-5OPug2yQ5t2MDFKq4TFV6nzes15RT/Aw4X1FwkgcBE6K+Z2TzQgF7dZ5Ysp80UIAQXfzxhr0cpzAFO83hTVgwA==
+"@reown/appkit-wallet-react-native@0.0.0-feat-smart-account-20241017180406":
+  version "0.0.0-feat-smart-account-20241017180406"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-wallet-react-native/-/appkit-wallet-react-native-0.0.0-feat-smart-account-20241017180406.tgz#f06624fa0bee071c09a74e0815e34ec39ec4b68c"
+  integrity sha512-dQ/6ch8cls0kGo5xikKffgoC9+bx62SsTttokZXibw/j+zLWIy7nkiE0D18++SdLCYz2voqL12rXEuarbFu//Q==
   dependencies:
-    "@reown/appkit-core-react-native" "0.0.0-refactor-modal-migration-20241017140012"
-    "@reown/appkit-ui-react-native" "0.0.0-refactor-modal-migration-20241017140012"
+    "@reown/appkit-core-react-native" "0.0.0-feat-smart-account-20241017180406"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-smart-account-20241017180406"
     zod "3.22.4"
 
 "@segment/loosely-validate-event@^2.0.0":
