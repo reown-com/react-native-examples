@@ -57,11 +57,6 @@ PODS:
     - fmt (= 9.1.0)
     - glog
     - RCT-Folly/Default (= 2024.01.01.00)
-  - RCT-Folly/Default (2024.01.01.00):
-    - boost
-    - DoubleConversion
-    - fmt (= 9.1.0)
-    - glog
   - RCT-Folly/Fabric (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -1665,7 +1660,7 @@ SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   CoinbaseWalletSDK: ea1f37512bbc69ebe07416e3b29bf840f5cc3152
   CoinbaseWalletSDKExpo: fc6cc756974827763d7a0decf7140c2902dafca2
-  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
+  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
   EXConstants: 409690fbfd5afea964e5e9d6c4eb2c2b59222c59
   Expo: 0cab4b4dc73f263c0d4297e993686973725adb7f
   ExpoAsset: 323700f291684f110fb55f0d4022a3362ea9f875
@@ -1674,12 +1669,12 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
   ExpoModulesCore: 734c1802786b23c9598f4d15273753a779969368
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
-  fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
-  glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
+  fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
+  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   hermes-engine: 1f547997900dd0752dc0cc0ae6dd16173c49e09b
   MMKV: 36a22a9ec84c9bb960613a089ddf6f48be9312b0
   MMKVCore: 158e61c8516401a9fac730288acb29e6fc19bbf9
-  RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
+  RCT-Folly: bf5c0376ffe4dd2cf438dcf86db385df9fdce648
   RCTDeprecation: 4c7eeb42be0b2e95195563c49be08d0b839d22b4
   RCTRequired: d530a0f489699c8500e944fde963102c42dcd0c2
   RCTTypeSafety: b20878506b094fa3d9007d7b9e4be0faa3562499
