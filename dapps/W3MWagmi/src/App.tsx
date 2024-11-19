@@ -71,11 +71,10 @@ createAppKit({
   siweConfig,
   clipboardClient,
   customWallets,
-  enableAnalytics: true,
   features: {
     email: true,
-    socials: ['x', 'apple', 'farcaster', 'discord', 'facebook'],
-    emailShowWallets: false,
+    socials: ['x', 'apple', 'farcaster', 'discord'],
+    emailShowWallets: true,
   },
 });
 
