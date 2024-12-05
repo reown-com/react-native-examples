@@ -16,7 +16,7 @@
     "copy:production": "./scripts/copy-variant-files.sh 'production'"
   },
   "dependencies": {
-    "@coinbase/wallet-mobile-sdk": "1.0.13",
+    "@coinbase/wallet-mobile-sdk": "1.1.2",
     "@gorhom/bottom-sheet": "^4.6.4",
     "@react-native-async-storage/async-storage": "1.24.0",
     "@react-native-clipboard/clipboard": "1.14.1",
@@ -46,8 +46,8 @@
     "react-native-svg": "15.4.0",
     "react-native-toast-message": "2.2.1",
     "react-native-webview": "13.12.3",
-    "viem": "2.21.42",
-    "wagmi": "2.12.27"
+    "viem": "2.21.54",
+    "wagmi": "2.13.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
