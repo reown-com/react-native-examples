@@ -2394,81 +2394,78 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@reown/appkit-auth-ethers-react-native@0.0.0-feat-swaps-20241203153101":
-  version "0.0.0-feat-swaps-20241203153101"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-auth-ethers-react-native/-/appkit-auth-ethers-react-native-0.0.0-feat-swaps-20241203153101.tgz#fc2cadc777006c437f3f5220d5140e98873938cd"
-  integrity sha512-C2jQLIM5V1nIc1cCwyWA8zX6n4RntzW6xscsojZtZV542ota1WK9yotLdZ6GaF1DqG95IpJvGEhuszlQPoJZzg==
+"@reown/appkit-auth-ethers-react-native@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-auth-ethers-react-native/-/appkit-auth-ethers-react-native-1.0.2.tgz#d451cea6f8f435d8fd6185c6421015ed242daeb7"
+  integrity sha512-g81kLfygPhCM6a4zgGjvpA+x2eyT+v966qoXf5fizmlM0tjaH5tgbBMr7iRCfayPadxd2vtURDJJKRqlsJletQ==
   dependencies:
-    "@reown/appkit-wallet-react-native" "0.0.0-feat-swaps-20241203153101"
+    "@reown/appkit-wallet-react-native" "1.0.2"
 
-"@reown/appkit-common-react-native@0.0.0-feat-swaps-20241203153101":
-  version "0.0.0-feat-swaps-20241203153101"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-feat-swaps-20241203153101.tgz#076a3c3bcae3543fa9937f1f11d35fb5119fc263"
-  integrity sha512-5EDkGmvPJNdMVlb7OVw4jE/PpHbVjpy81zxhM4bFeMngEvQYQn2u5Tpun0wGy2I2yS559eSpavj3CgJm/YjefA==
-  dependencies:
-    bignumber.js "9.1.2"
-    dayjs "1.11.10"
+"@reown/appkit-common-react-native@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-1.0.2.tgz#5963434b30f76faa07d2a50acc104cffc3e9bd75"
+  integrity sha512-XLpK9agq9dm9Zysll5CFOOILYFYdb8lQJrprheHL1+flQ4v5GAkXmOHEuAOUfm9/OIx3yenl/lQLmdho4DI4Xg==
 
-"@reown/appkit-core-react-native@0.0.0-feat-swaps-20241203153101":
-  version "0.0.0-feat-swaps-20241203153101"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-feat-swaps-20241203153101.tgz#7326433a542a790c71acc4332816339c2c6506ab"
-  integrity sha512-WIHAlaCrohmVU8pGhwKGTCmYzCkM7gPeTkEQHK18+ehlze4YLOlgEoV2eTcqHDU+6OSGgJja98rJqQ1HGWZD6Q==
+"@reown/appkit-core-react-native@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-1.0.2.tgz#f89d99b38463cf5a0a559b5c700c3208e656479b"
+  integrity sha512-aXzn8W1hM+23B7Z7QV+BSYPNUvjK97I6DTQshAoasLtqsm0tQ1P6xxVuzC0n6dJBP8pOW7NukqWlJnwQjmsU2w==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-swaps-20241203153101"
+    "@reown/appkit-common-react-native" "1.0.2"
     valtio "1.11.2"
 
-"@reown/appkit-ethers5-react-native@0.0.0-feat-swaps-20241203153101":
-  version "0.0.0-feat-swaps-20241203153101"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers5-react-native/-/appkit-ethers5-react-native-0.0.0-feat-swaps-20241203153101.tgz#c18b877c4a1b2e9d2dbbb24ce4d497279e93a273"
-  integrity sha512-x2w9IWgRaylTwLswBeQ5smbwHmWoaJ57NFuXwl0zmggMMdDCoiClPYdnJf/MXa7cm+vgw2uekzml90i6KjNeBA==
+"@reown/appkit-ethers5-react-native@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers5-react-native/-/appkit-ethers5-react-native-1.0.2.tgz#06580bcd71b9eabc5bc7fd363d2ad2a811f571cc"
+  integrity sha512-nI5gIbONm/CFvzVr3fI0IAawI7sl1heSpZxco/FsIL2zn/kDHECGtNHkps+hDJbQ/XHmZpHZTZL4rwL5TbccTQ==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-swaps-20241203153101"
-    "@reown/appkit-scaffold-react-native" "0.0.0-feat-swaps-20241203153101"
-    "@reown/appkit-scaffold-utils-react-native" "0.0.0-feat-swaps-20241203153101"
-    "@reown/appkit-siwe-react-native" "0.0.0-feat-swaps-20241203153101"
-    "@walletconnect/ethereum-provider" "2.17.2"
+    "@reown/appkit-common-react-native" "1.0.2"
+    "@reown/appkit-scaffold-react-native" "1.0.2"
+    "@reown/appkit-scaffold-utils-react-native" "1.0.2"
+    "@reown/appkit-siwe-react-native" "1.0.2"
+    "@walletconnect/ethereum-provider" "2.16.1"
 
-"@reown/appkit-scaffold-react-native@0.0.0-feat-swaps-20241203153101":
-  version "0.0.0-feat-swaps-20241203153101"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-react-native/-/appkit-scaffold-react-native-0.0.0-feat-swaps-20241203153101.tgz#51811780a9cf60bd0acd665ae12b417e18589bbb"
-  integrity sha512-hDDeaHBmWx89TdqTzxF4APgoByhBgrZt7tbf5rGKbVMLzp30zxziQGAUdaBqua2PtKWxxXbiR+yKJCBfkf+sfw==
+"@reown/appkit-scaffold-react-native@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-react-native/-/appkit-scaffold-react-native-1.0.2.tgz#de5a0888e25111ff9dcfed4dc4d12897953ddecf"
+  integrity sha512-QLJZcXBXzlzBq1B+ZXc1E9NH7V+RRkqHEmYR6I3HN+hmTiJHoHfvtn6bWnVdSewo1sTsc4kofRelDipjgsMf4A==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-swaps-20241203153101"
-    "@reown/appkit-core-react-native" "0.0.0-feat-swaps-20241203153101"
-    "@reown/appkit-siwe-react-native" "0.0.0-feat-swaps-20241203153101"
-    "@reown/appkit-ui-react-native" "0.0.0-feat-swaps-20241203153101"
+    "@reown/appkit-common-react-native" "1.0.2"
+    "@reown/appkit-core-react-native" "1.0.2"
+    "@reown/appkit-siwe-react-native" "1.0.2"
+    "@reown/appkit-ui-react-native" "1.0.2"
 
-"@reown/appkit-scaffold-utils-react-native@0.0.0-feat-swaps-20241203153101":
-  version "0.0.0-feat-swaps-20241203153101"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-utils-react-native/-/appkit-scaffold-utils-react-native-0.0.0-feat-swaps-20241203153101.tgz#ed7bf2177fe591e521d6f62a099812d5c0ebbf67"
-  integrity sha512-W3gGTQhNksYa5NL2cCgt/Uib9joE5vXH7p7hUsSQsCPhyXNLFWMvQQsI4hv/jagWjbzUuoZ/vOpBJ/YF4on9EA==
+"@reown/appkit-scaffold-utils-react-native@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-scaffold-utils-react-native/-/appkit-scaffold-utils-react-native-1.0.2.tgz#9e7dcbc997e4bf08f2430e31148277b7c8450b84"
+  integrity sha512-XU9AefSBcJsoIFpb9ykl3q8FPshJisvDucwsFkTJUkpkVjBWyvDkRQgvWoLk78SV1hSdSmt54fPWj8wISi593g==
   dependencies:
-    "@reown/appkit-scaffold-react-native" "0.0.0-feat-swaps-20241203153101"
+    "@reown/appkit-scaffold-react-native" "1.0.2"
 
-"@reown/appkit-siwe-react-native@0.0.0-feat-swaps-20241203153101":
-  version "0.0.0-feat-swaps-20241203153101"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-0.0.0-feat-swaps-20241203153101.tgz#b7f1f19510b995b103caa06f22663bf0c62b393b"
-  integrity sha512-DDuSQ2x5uth0C5GA/+vT5hF4yfBLdwDHNVKk4zFyEG0trUxmj4gp+326tHUcfGVhBdMcKuRECjkW1wes/gH9jw==
+"@reown/appkit-siwe-react-native@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-1.0.2.tgz#f3ff01ade029f2fab3467bdd785ba59cae5dfab3"
+  integrity sha512-tnKOdxuWoAeqQfA5oeZfsn7KeOUAG0U2ni4FW7g9xeWWHjt+L0qNYw6hXLPeowoI3H8HDHxmzF7TtKJDZnnvFw==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-swaps-20241203153101"
-    "@reown/appkit-core-react-native" "0.0.0-feat-swaps-20241203153101"
-    "@reown/appkit-ui-react-native" "0.0.0-feat-swaps-20241203153101"
+    "@reown/appkit-common-react-native" "1.0.2"
+    "@reown/appkit-core-react-native" "1.0.2"
+    "@reown/appkit-ui-react-native" "1.0.2"
     valtio "1.11.2"
 
-"@reown/appkit-ui-react-native@0.0.0-feat-swaps-20241203153101":
-  version "0.0.0-feat-swaps-20241203153101"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-feat-swaps-20241203153101.tgz#815d0bee93d52963176e969b125481f0ed991211"
-  integrity sha512-MkS2wem4Mh7TJ9yeuCWVQUf4N3Rp0+HTnWjKaBA0TNsggWVcgArELd/t1pAkTJPK1W1W73WCaDhPtO1C0Md40w==
+"@reown/appkit-ui-react-native@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-1.0.2.tgz#f294e3371d95fef06b8a3d1d77400a2b148b6c08"
+  integrity sha512-mXXn8c3S+AqmK9yedPKhYD4nXQ8CZdTnVeVmx/8UDFyG67pK0QiorMF+6JbLfqoZBk/AMHMLi8/IglMpwWrDFA==
   dependencies:
     qrcode "1.5.3"
 
-"@reown/appkit-wallet-react-native@0.0.0-feat-swaps-20241203153101":
-  version "0.0.0-feat-swaps-20241203153101"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-wallet-react-native/-/appkit-wallet-react-native-0.0.0-feat-swaps-20241203153101.tgz#9f625c55415109beef3e8d76c347bdcbd5528e71"
-  integrity sha512-IiQg6nhk/9Qfnv2+TVNby1n/LPhx9QWlFytBu++NaO+WURVXu/T6iTb5fW0B/h9+SdC+jKZX8gGOupCGmQdqmA==
+"@reown/appkit-wallet-react-native@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-wallet-react-native/-/appkit-wallet-react-native-1.0.2.tgz#a05d6595091e8afb4812c209876d0cde0572bc8d"
+  integrity sha512-U6NkM/eO1hlmjF6AvMbdGr/piR6Fq0cJpk0Wf8uTaN15gSJeTlY5jPK7dJIBIl4JAmfuFulsiZnXp1HUMrF3FA==
   dependencies:
-    "@reown/appkit-core-react-native" "0.0.0-feat-swaps-20241203153101"
-    "@reown/appkit-ui-react-native" "0.0.0-feat-swaps-20241203153101"
+    "@reown/appkit-core-react-native" "1.0.2"
+    "@reown/appkit-ui-react-native" "1.0.2"
     zod "3.22.4"
 
 "@sideway/address@^4.1.5":
@@ -2861,10 +2858,10 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@walletconnect/core@2.17.2":
-  version "2.17.2"
-  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.17.2.tgz#877dc03f190d7b262bff8ce346330fdf1019cd83"
-  integrity sha512-O9VUsFg78CbvIaxfQuZMsHcJ4a2Z16DRz/O4S+uOAcGKhH/i/ln8hp864Tb+xRvifWSzaZ6CeAVxk657F+pscA==
+"@walletconnect/core@2.16.1":
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.16.1.tgz#019b181387792e0d284e75074b961b48193d9b6a"
+  integrity sha512-UlsnEMT5wwFvmxEjX8s4oju7R3zadxNbZgsFeHEsjh7uknY2zgmUe1Lfc5XU6zyPb1Jx7Nqpdx1KN485ee8ogw==
   dependencies:
     "@walletconnect/heartbeat" "1.2.2"
     "@walletconnect/jsonrpc-provider" "1.0.14"
@@ -2877,9 +2874,8 @@
     "@walletconnect/relay-auth" "1.0.4"
     "@walletconnect/safe-json" "1.0.2"
     "@walletconnect/time" "1.0.2"
-    "@walletconnect/types" "2.17.2"
-    "@walletconnect/utils" "2.17.2"
-    "@walletconnect/window-getters" "1.0.1"
+    "@walletconnect/types" "2.16.1"
+    "@walletconnect/utils" "2.16.1"
     events "3.3.0"
     lodash.isequal "4.5.0"
     uint8arrays "3.1.0"
@@ -2891,21 +2887,20 @@
   dependencies:
     tslib "1.14.1"
 
-"@walletconnect/ethereum-provider@2.17.2":
-  version "2.17.2"
-  resolved "https://registry.yarnpkg.com/@walletconnect/ethereum-provider/-/ethereum-provider-2.17.2.tgz#7ac8091daf65f33c9f77cb08f524246c638e9e66"
-  integrity sha512-o4aL4KkUKT+n0iDwGzC6IY4bl+9n8bwOeT2KwifaVHsFw/irhtRPlsAQQH4ezOiPyk8cri1KN9dPk/YeU0pe6w==
+"@walletconnect/ethereum-provider@2.16.1":
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/ethereum-provider/-/ethereum-provider-2.16.1.tgz#4fb8a1df39104ad3fbd02579233e796f432f6d35"
+  integrity sha512-oD7DNCssUX3plS5gGUZ9JQ63muQB/vxO68X6RzD2wd8gBsYtSPw4BqYFc7KTO6dUizD6gfPirw32yW2pTvy92w==
   dependencies:
     "@walletconnect/jsonrpc-http-connection" "1.0.8"
     "@walletconnect/jsonrpc-provider" "1.0.14"
     "@walletconnect/jsonrpc-types" "1.0.4"
     "@walletconnect/jsonrpc-utils" "1.0.8"
-    "@walletconnect/keyvaluestorage" "1.1.1"
-    "@walletconnect/modal" "2.7.0"
-    "@walletconnect/sign-client" "2.17.2"
-    "@walletconnect/types" "2.17.2"
-    "@walletconnect/universal-provider" "2.17.2"
-    "@walletconnect/utils" "2.17.2"
+    "@walletconnect/modal" "2.6.2"
+    "@walletconnect/sign-client" "2.16.1"
+    "@walletconnect/types" "2.16.1"
+    "@walletconnect/universal-provider" "2.16.1"
+    "@walletconnect/utils" "2.16.1"
     events "3.3.0"
 
 "@walletconnect/events@1.0.1", "@walletconnect/events@^1.0.1":
@@ -2996,35 +2991,35 @@
     "@walletconnect/safe-json" "^1.0.2"
     pino "7.11.0"
 
-"@walletconnect/modal-core@2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@walletconnect/modal-core/-/modal-core-2.7.0.tgz#73c13c3b7b0abf9ccdbac9b242254a86327ce0a4"
-  integrity sha512-oyMIfdlNdpyKF2kTJowTixZSo0PGlCJRdssUN/EZdA6H6v03hZnf09JnwpljZNfir2M65Dvjm/15nGrDQnlxSA==
+"@walletconnect/modal-core@2.6.2":
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/@walletconnect/modal-core/-/modal-core-2.6.2.tgz#d73e45d96668764e0c8668ea07a45bb8b81119e9"
+  integrity sha512-cv8ibvdOJQv2B+nyxP9IIFdxvQznMz8OOr/oR/AaUZym4hjXNL/l1a2UlSQBXrVjo3xxbouMxLb3kBsHoYP2CA==
   dependencies:
     valtio "1.11.2"
 
-"@walletconnect/modal-ui@2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@walletconnect/modal-ui/-/modal-ui-2.7.0.tgz#dbbb7ee46a5a25f7d39db622706f2d197b268cbb"
-  integrity sha512-gERYvU7D7K1ANCN/8vUgsE0d2hnRemfAFZ2novm9aZBg7TEd/4EgB+AqbJ+1dc7GhOL6dazckVq78TgccHb7mQ==
+"@walletconnect/modal-ui@2.6.2":
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/@walletconnect/modal-ui/-/modal-ui-2.6.2.tgz#fa57c087c57b7f76aaae93deab0f84bb68b59cf9"
+  integrity sha512-rbdstM1HPGvr7jprQkyPggX7rP4XiCG85ZA+zWBEX0dVQg8PpAgRUqpeub4xQKDgY7pY/xLRXSiCVdWGqvG2HA==
   dependencies:
-    "@walletconnect/modal-core" "2.7.0"
+    "@walletconnect/modal-core" "2.6.2"
     lit "2.8.0"
     motion "10.16.2"
     qrcode "1.5.3"
 
-"@walletconnect/modal@2.7.0":
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/@walletconnect/modal/-/modal-2.7.0.tgz#55f969796d104cce1205f5f844d8f8438b79723a"
-  integrity sha512-RQVt58oJ+rwqnPcIvRFeMGKuXb9qkgSmwz4noF8JZGUym3gUAzVs+uW2NQ1Owm9XOJAV+sANrtJ+VoVq1ftElw==
+"@walletconnect/modal@2.6.2":
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/@walletconnect/modal/-/modal-2.6.2.tgz#4b534a836f5039eeb3268b80be7217a94dd12651"
+  integrity sha512-eFopgKi8AjKf/0U4SemvcYw9zlLpx9njVN8sf6DAkowC2Md0gPU/UNEbH1Wwj407pEKnEds98pKWib1NN1ACoA==
   dependencies:
-    "@walletconnect/modal-core" "2.7.0"
-    "@walletconnect/modal-ui" "2.7.0"
+    "@walletconnect/modal-core" "2.6.2"
+    "@walletconnect/modal-ui" "2.6.2"
 
-"@walletconnect/react-native-compat@2.16.1":
-  version "2.16.1"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.16.1.tgz#7202cfec115993fdc0abd77b72201fa8a89501eb"
-  integrity sha512-MoVZAzKOQhnze8fLpS8XiVDRZRDb38AOasBA16jTssX3779HeYQkn0xieLU47OBz3WOMuGv0++6CivoXhwaBEg==
+"@walletconnect/react-native-compat@2.17.2":
+  version "2.17.2"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.17.2.tgz#bfbf53c10da893597ba87d6d089470281611022e"
+  integrity sha512-o5MlCIzeN5v/qkg7N1+f4TbsNehku4AvjwLs6flXDzYiMKS7KEs0RoazTzLPMi6F00tRDlCFpFf547NEgLMfBw==
   dependencies:
     events "3.3.0"
     fast-text-encoding "1.0.6"
@@ -3056,19 +3051,19 @@
   dependencies:
     tslib "1.14.1"
 
-"@walletconnect/sign-client@2.17.2":
-  version "2.17.2"
-  resolved "https://registry.yarnpkg.com/@walletconnect/sign-client/-/sign-client-2.17.2.tgz#b8bd125d7c34a67916745ebbdbbc834db5518c8b"
-  integrity sha512-/wigdCIQjlBXSWY43Id0IPvZ5biq4HiiQZti8Ljvx408UYjmqcxcBitbj2UJXMYkid7704JWAB2mw32I1HgshQ==
+"@walletconnect/sign-client@2.16.1":
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/sign-client/-/sign-client-2.16.1.tgz#94a2f630ba741bd180f540c53576c5ceaace4857"
+  integrity sha512-s2Tx2n2duxt+sHtuWXrN9yZVaHaYqcEcjwlTD+55/vs5NUPlISf+fFmZLwSeX1kUlrSBrAuxPUcqQuRTKcjLOA==
   dependencies:
-    "@walletconnect/core" "2.17.2"
+    "@walletconnect/core" "2.16.1"
     "@walletconnect/events" "1.0.1"
     "@walletconnect/heartbeat" "1.2.2"
     "@walletconnect/jsonrpc-utils" "1.0.8"
     "@walletconnect/logger" "2.1.2"
     "@walletconnect/time" "1.0.2"
-    "@walletconnect/types" "2.17.2"
-    "@walletconnect/utils" "2.17.2"
+    "@walletconnect/types" "2.16.1"
+    "@walletconnect/utils" "2.16.1"
     events "3.3.0"
 
 "@walletconnect/time@1.0.2", "@walletconnect/time@^1.0.2":
@@ -3078,10 +3073,10 @@
   dependencies:
     tslib "1.14.1"
 
-"@walletconnect/types@2.17.2":
-  version "2.17.2"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.17.2.tgz#f9afff242563be33f377de689b03b482f5b20aee"
-  integrity sha512-j/+0WuO00lR8ntu7b1+MKe/r59hNwYLFzW0tTmozzhfAlDL+dYwWasDBNq4AH8NbVd7vlPCQWmncH7/6FVtOfQ==
+"@walletconnect/types@2.16.1":
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.16.1.tgz#6583d458d3f7b1919d482ba516ccb7878ec8c91f"
+  integrity sha512-9P4RG4VoDEF+yBF/n2TF12gsvT/aTaeZTVDb/AOayafqiPnmrQZMKmNCJJjq1sfdsDcHXFcZWMGsuCeSJCmrXA==
   dependencies:
     "@walletconnect/events" "1.0.1"
     "@walletconnect/heartbeat" "1.2.2"
@@ -3090,47 +3085,40 @@
     "@walletconnect/logger" "2.1.2"
     events "3.3.0"
 
-"@walletconnect/universal-provider@2.17.2":
-  version "2.17.2"
-  resolved "https://registry.yarnpkg.com/@walletconnect/universal-provider/-/universal-provider-2.17.2.tgz#f4627dd9b66db3bacc31864584112868be23bf08"
-  integrity sha512-yIWDhBODRa9J349d/i1sObzon0vy4n+7R3MvGQQYaU1EVrV+WfoGSRsu8U7rYsL067/MAUu9t/QrpPblaSbz7g==
+"@walletconnect/universal-provider@2.16.1":
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/universal-provider/-/universal-provider-2.16.1.tgz#6d52c41c7388e01f89007956a1117748ab9a11e4"
+  integrity sha512-q/tyWUVNenizuClEiaekx9FZj/STU1F3wpDK4PUIh3xh+OmUI5fw2dY3MaNDjyb5AyrS0M8BuQDeuoSuOR/Q7w==
   dependencies:
-    "@walletconnect/events" "1.0.1"
     "@walletconnect/jsonrpc-http-connection" "1.0.8"
     "@walletconnect/jsonrpc-provider" "1.0.14"
     "@walletconnect/jsonrpc-types" "1.0.4"
     "@walletconnect/jsonrpc-utils" "1.0.8"
-    "@walletconnect/keyvaluestorage" "1.1.1"
     "@walletconnect/logger" "2.1.2"
-    "@walletconnect/sign-client" "2.17.2"
-    "@walletconnect/types" "2.17.2"
-    "@walletconnect/utils" "2.17.2"
+    "@walletconnect/sign-client" "2.16.1"
+    "@walletconnect/types" "2.16.1"
+    "@walletconnect/utils" "2.16.1"
     events "3.3.0"
-    lodash "4.17.21"
 
-"@walletconnect/utils@2.17.2":
-  version "2.17.2"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.17.2.tgz#b4b12e3f5ebbfd883b2a5c87fb818e53501dc7ea"
-  integrity sha512-T7eLRiuw96fgwUy2A5NZB5Eu87ukX8RCVoO9lji34RFV4o2IGU9FhTEWyd4QQKI8OuQRjSknhbJs0tU0r0faPw==
+"@walletconnect/utils@2.16.1":
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.16.1.tgz#2099cc2bd16b0edc32022f64aa2c2c323b45d1d4"
+  integrity sha512-aoQirVoDoiiEtYeYDtNtQxFzwO/oCrz9zqeEEXYJaAwXlGVTS34KFe7W3/Rxd/pldTYKFOZsku2EzpISfH8Wsw==
   dependencies:
-    "@ethersproject/hash" "5.7.0"
-    "@ethersproject/transactions" "5.7.0"
     "@stablelib/chacha20poly1305" "1.0.1"
     "@stablelib/hkdf" "1.0.1"
     "@stablelib/random" "1.0.2"
     "@stablelib/sha256" "1.0.1"
     "@stablelib/x25519" "1.0.3"
-    "@walletconnect/jsonrpc-utils" "1.0.8"
-    "@walletconnect/keyvaluestorage" "1.1.1"
     "@walletconnect/relay-api" "1.0.11"
     "@walletconnect/relay-auth" "1.0.4"
     "@walletconnect/safe-json" "1.0.2"
     "@walletconnect/time" "1.0.2"
-    "@walletconnect/types" "2.17.2"
+    "@walletconnect/types" "2.16.1"
     "@walletconnect/window-getters" "1.0.1"
     "@walletconnect/window-metadata" "1.0.1"
     detect-browser "5.3.0"
-    elliptic "6.6.0"
+    elliptic "^6.5.7"
     query-string "7.1.3"
     uint8arrays "3.1.0"
 
@@ -3481,11 +3469,6 @@ bech32@1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
-
-bignumber.js@9.1.2:
-  version "9.1.2"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
-  integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
 
 binary-extensions@^2.0.0:
   version "2.2.0"
@@ -3952,7 +3935,7 @@ csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
   integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
 
-dayjs@1.11.10, dayjs@^1.8.15:
+dayjs@^1.8.15:
   version "1.11.10"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
   integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
@@ -4174,10 +4157,10 @@ elliptic@6.5.4:
     minimalistic-assert "^1.0.1"
     minimalistic-crypto-utils "^1.0.1"
 
-elliptic@6.6.0:
-  version "6.6.0"
-  resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.6.0.tgz#5919ec723286c1edf28685aa89261d4761afa210"
-  integrity sha512-dpwoQcLc/2WLQvJvLRHKZ+f9FgOdjnq11rurqwekGQygGPsYSK29OMMD2WalatiqQ+XGFDglTNixpPfI+lpaAA==
+elliptic@^6.5.7:
+  version "6.6.1"
+  resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.6.1.tgz#3b8ffb02670bf69e382c7f65bf524c97c5405c06"
+  integrity sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==
   dependencies:
     bn.js "^4.11.9"
     brorand "^1.1.0"
@@ -6233,7 +6216,7 @@ lodash.throttle@^4.1.1:
   resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
   integrity sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==
 
-lodash@4.17.21, lodash@^4.17.21:
+lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
