@@ -18,6 +18,7 @@ jobs:
       relay-url: ${{ secrets.ENV_RELAY_URL }}
       sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
+      sentry-auth-token: ${{ secrets.W3M_WAGMI_SENTRY_AUTH_TOKEN }}
       apple-username: ${{ secrets.APPLE_USERNAME }}
       apple-key-id: ${{ secrets.APPLE_KEY_ID }}
       apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
