@@ -30,6 +30,13 @@ if (!__DEV__ && Config.ENV_SENTRY_DSN) {
   Sentry.init({
     dsn: Config.ENV_SENTRY_DSN,
     environment: Config.ENV_SENTRY_TAG,
+    _experiments: {
+      replaysSessionSampleRate: 0,
+      replaysOnErrorSampleRate: 1.0,
+    },
+    tracesSampleRate: 0.5,
+    profilesSampleRate: 1.0,
+    integrations: [Sentry.mobileReplayIntegration()],
   });
 }
 
@@ -71,11 +78,6 @@ createAppKit({
   siweConfig,
   clipboardClient,
   customWallets,
-  features: {
-    email: true,
-    socials: ['x', 'apple', 'farcaster', 'discord'],
-    emailShowWallets: true,
-  },
 });
 
 const queryClient = new QueryClient();
