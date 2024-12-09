@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
 import {Button} from '@reown/appkit-ui-react-native';
-
-import {RequestModal} from '../components/RequestModal';
-
+import {BrowserProvider, JsonRpcSigner, parseEther} from 'ethers';
 import {
   useAppKitAccount,
   useAppKitProvider,
 } from '@reown/appkit-ethers-react-native';
-import {BrowserProvider, parseEther} from 'ethers';
+
+import {RequestModal} from '../components/RequestModal';
+import {testAddress} from '../utils/misc';
 
 export function SendTransaction() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
@@ -16,7 +16,7 @@ export function SendTransaction() {
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
   const {walletProvider} = useAppKitProvider();
-  const {isConnected} = useAppKitAccount();
+  const {isConnected, address} = useAppKitAccount();
 
   const onPress = async () => {
     if (!isConnected || !walletProvider) {
@@ -29,16 +29,16 @@ export function SendTransaction() {
 
     try {
       const ethersProvider = new BrowserProvider(walletProvider);
-      const signer = await ethersProvider.getSigner();
-      const address = await signer.getAddress();
+      const signer = new JsonRpcSigner(ethersProvider, address!);
       const tx = {
-        to: address,
+        to: testAddress,
         value: parseEther('0.0001'),
         data: '0x',
       };
       const txResponse = await signer.sendTransaction(tx);
       setData(txResponse.hash);
-    } catch {
+    } catch (e) {
+      console.log(e);
       setError(true);
     } finally {
       setIsLoading(false);

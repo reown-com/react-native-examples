@@ -15,7 +15,7 @@ export function SendTransaction() {
 
   const onPress = () => {
     sendTransaction({
-      to: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // vitalik.eth
+      to: '0x704457b418E9Fb723e1Bc0cB98106a6B8Cf87689', // test address
       value: parseEther('0.001'),
       data: '0x', // to make it work with some wallets
     });

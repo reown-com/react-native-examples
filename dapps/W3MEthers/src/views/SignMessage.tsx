@@ -3,7 +3,7 @@ import {View} from 'react-native';
 import {Button} from '@reown/appkit-ui-react-native';
 
 import {RequestModal} from '../components/RequestModal';
-import {BrowserProvider} from 'ethers';
+import {BrowserProvider, JsonRpcSigner} from 'ethers';
 import {
   useAppKitAccount,
   useAppKitProvider,
@@ -15,7 +15,7 @@ export function SignMessage() {
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
   const {walletProvider} = useAppKitProvider();
-  const {isConnected} = useAppKitAccount();
+  const {isConnected, address} = useAppKitAccount();
 
   const onPress = async () => {
     if (!isConnected || !walletProvider) {
@@ -28,10 +28,8 @@ export function SignMessage() {
 
     try {
       const ethersProvider = new BrowserProvider(walletProvider);
-
-      const signer = await ethersProvider.getSigner();
-      const message = 'hello web3modal + ethers';
-      const signature = await signer.signMessage(message);
+      const signer = new JsonRpcSigner(ethersProvider, address!);
+      const signature = await signer.signMessage('hello appkit + ethers');
       setData(signature.toString());
     } catch (e) {
       console.log(e);

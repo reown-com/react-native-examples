@@ -18,7 +18,7 @@ export const getCustomWallets = () => {
   const wallets = [
     {
       id: 'rn-wallet-internal',
-      name: 'Wallet (RN internal)',
+      name: 'Wallet(RN internal)',
       image_url:
         'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'rn-web3wallet-internal://',
@@ -26,7 +26,7 @@ export const getCustomWallets = () => {
     },
     {
       id: 'flutter-wallet-internal',
-      name: 'Wallet (Flutter internal)',
+      name: 'Wallet(Flutter internal)',
       image_url:
         'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
       mobile_link: 'wcflutterwallet-internal://',
