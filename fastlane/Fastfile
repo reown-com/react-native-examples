@@ -87,7 +87,11 @@ platform :ios do
       auth_token: ENV["SENTRY_AUTH_TOKEN"],
       org_slug: 'walletconnect',
       project_slug: 'w3m-wagmi-react-native',
-  )
+      include_sources: true,
+      upload_symbol_maps: true,
+      wait: true,
+      sourcemap: ['main.jsbundle', 'main.jsbundle.map']
+    )
 
     clean_build_artifacts()
   end
