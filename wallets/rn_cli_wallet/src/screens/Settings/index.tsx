@@ -1,11 +1,11 @@
 import {useSnapshot} from 'valtio';
 import {useEffect, useState} from 'react';
-import {Text, View, Alert, ScrollView} from 'react-native';
+import {Text, View, Alert, ScrollView, DevSettings} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {getVersion, getBuildNumber} from 'react-native-device-info';
 
-import {eip155Wallets} from '@/utils/EIP155WalletUtil';
+import {eip155Wallets, replaceMnemonic} from '@/utils/EIP155WalletUtil';
 import SettingsStore from '@/store/SettingsStore';
 import {Card} from '@/components/Card';
 import {useTheme} from '@/hooks/useTheme';
@@ -34,6 +34,20 @@ export default function Settings({navigation}: Props) {
     Alert.alert('Value copied to clipboard');
   };
 
+  const onAddNewAccount = () => {
+    console.log('Add new account');
+    Alert.prompt('Enter mnemonic', '', text => {
+      replaceMnemonic(text)
+        .then(() => {
+          Alert.alert('Success', 'Mnemonic replaced, reloading the app...');
+          DevSettings.reload();
+        })
+        .catch(e => {
+          Alert.alert('Error', e.message);
+        });
+    });
+  };
+
   return (
     <ScrollView
       style={[styles.container]}
@@ -53,6 +67,7 @@ export default function Settings({navigation}: Props) {
           }
           value={eip155Wallets[eip155Address].getMnemonic()}
         />
+        <Card title="Add new account" onPress={onAddNewAccount} />
       </View>
       <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Device</Text>
       <View style={styles.sectionContainer}>

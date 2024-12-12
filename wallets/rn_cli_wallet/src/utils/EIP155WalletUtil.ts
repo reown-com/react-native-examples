@@ -39,12 +39,16 @@ export async function createOrRestoreEIP155Wallet() {
     [address2]: wallet2,
   };
   eip155Addresses = Object.keys(eip155Wallets);
-  console.log('eip155Wallets:', eip155Wallets);
 
   return {
     eip155Wallets,
     eip155Addresses,
   };
+}
+
+export async function replaceMnemonic(mnemonic: string) {
+  const wallet = EIP155Lib.init({mnemonic});
+  await AsyncStorage.setItem('EIP155_MNEMONIC_1', wallet.getMnemonic());
 }
 
 export async function calculateEip155Gas(transaction: any, chainId: string) {
