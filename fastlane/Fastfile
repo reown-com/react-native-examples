@@ -89,8 +89,7 @@ platform :ios do
       project_slug: 'w3m-wagmi-react-native',
       include_sources: true,
       upload_symbol_maps: true,
-      wait: true,
-      sourcemap: ['main.jsbundle', 'main.jsbundle.map']
+      wait: true
     )
 
     clean_build_artifacts()
