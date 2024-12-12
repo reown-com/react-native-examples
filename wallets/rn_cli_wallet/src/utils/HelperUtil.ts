@@ -128,3 +128,27 @@ export function getSupportedChains(
     .map(chain => PresetsUtil.getChainData(chain.split(':')[1]))
     .filter(chain => chain !== undefined);
 }
+
+export function getAbiByPrefix(prefix: string) {
+  console.log('matching prefix:', prefix);
+  if (prefix === '0xa9059cbb') {
+    return ['function transfer(address to, uint256 amount)'];
+  }
+
+  if (prefix === '0x23b872dd') {
+    return ['function approve(address spender, uint256 amount)'];
+  }
+
+  if (prefix === '0x095ea7b3') {
+    return ['function approve(address spender, uint256 amount)'];
+  }
+  throw new Error(`Unknown abi for prefix: ${prefix}`);
+}
+
+export const parseChainId = (chainId: string) => {
+  return chainId.includes(':') ? chainId.split(':')[1] : chainId;
+};
+
+export const isVerified = (verifyContext: any) => {
+  return verifyContext?.verified?.validation === 'VALID';
+};
