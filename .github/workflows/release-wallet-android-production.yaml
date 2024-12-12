@@ -15,7 +15,6 @@ jobs:
       sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
-      sentry-auth-token: ${{ secrets.W3W_SENTRY_AUTH_TOKEN }}
       firebase-app-id: ${{ secrets.W3W_ANDROID_PROD_FIREBASE_APP_ID }}
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
       keystore-name: ${{ vars.WC_PROD_KEYSTORE_NAME }}

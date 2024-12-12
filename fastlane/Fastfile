@@ -81,6 +81,14 @@ platform :ios do
       notify_external_testers: false,
       skip_waiting_for_build_processing: true
     )
+
+    # Upload sourcemaps to Sentry
+    sentry_debug_files_upload(
+      auth_token: ENV["SENTRY_AUTH_TOKEN"],
+      org_slug: 'walletconnect',
+      project_slug: 'w3m-wagmi-react-native',
+  )
+
     clean_build_artifacts()
   end
 
