@@ -65,7 +65,7 @@ function ModalFooter({
     let gradient;
     let textColor;
     if (disableApprove) {
-      gradient = ['transparent'];
+      gradient = ['transparent', 'transparent'];
       textColor = '#9A9A9A';
     } else {
       gradient = ['#732BCC', '#076CF1'];

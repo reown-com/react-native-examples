@@ -11,6 +11,7 @@ import {Card} from '@/components/Card';
 import {useTheme} from '@/hooks/useTheme';
 import styles from './styles';
 import {SettingsStackScreenProps} from '@/utils/TypesUtil';
+import {TextInput} from 'react-native-gesture-handler';
 
 type Props = SettingsStackScreenProps<'Settings'>;
 
@@ -18,7 +19,7 @@ export default function Settings({navigation}: Props) {
   const Theme = useTheme();
   const {eip155Address, socketStatus} = useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
-
+  const [newMnemonic, setNewMnemonic] = useState('');
   useEffect(() => {
     async function getAsyncData() {
       const _clientId = await AsyncStorage.getItem('WALLETCONNECT_CLIENT_ID');
@@ -35,17 +36,15 @@ export default function Settings({navigation}: Props) {
   };
 
   const onAddNewAccount = () => {
-    console.log('Add new account');
-    Alert.prompt('Enter mnemonic', '', text => {
-      replaceMnemonic(text)
-        .then(() => {
-          Alert.alert('Success', 'Mnemonic replaced, reloading the app...');
-          DevSettings.reload();
-        })
-        .catch(e => {
-          Alert.alert('Error', e.message);
-        });
-    });
+    console.log('Add new account', newMnemonic);
+    replaceMnemonic(newMnemonic)
+      .then(() => {
+        Alert.alert('Success', 'Mnemonic replaced, reloading the app...');
+        DevSettings.reload();
+      })
+      .catch(e => {
+        Alert.alert('Error', e.message);
+      });
   };
 
   return (
@@ -66,6 +65,12 @@ export default function Settings({navigation}: Props) {
             copyToClipboard(eip155Wallets[eip155Address].getMnemonic())
           }
           value={eip155Wallets[eip155Address].getMnemonic()}
+        />
+
+        <TextInput
+          style={{borderColor: 'black'}}
+          placeholder="Enter mnemonic"
+          onChangeText={value => setNewMnemonic(value)}
         />
         <Card title="Add new account" onPress={onAddNewAccount} />
       </View>
