@@ -1,6 +1,6 @@
 import {useSnapshot} from 'valtio';
 import {useCallback, useEffect, useMemo, useState} from 'react';
-import {View, StyleSheet, Image, Text} from 'react-native';
+import {View, StyleSheet, Image, Text, Alert} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
 import {ChainAbstractionTypes} from '@reown/walletkit';
 import {
@@ -186,10 +186,12 @@ export default function SessionSendTransactionModal() {
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
-      } finally {
+        Alert.alert((e as Error).message);
         setApproveLoading(false);
+        return;
       }
+
+      setApproveLoading(false);
       ModalStore.close();
     }
   }, [

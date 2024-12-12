@@ -136,41 +136,41 @@ export async function calculateEip155Gas(transaction: any, chainId: string) {
 }
 
 const fetchGasPrice = async (chainId: string) => {
-  // const result = await fetch(
-  //   `https://tokentool.bitbond.com/api/gas-price-20240116?chain_id=${parseChainId(
-  //     chainId,
-  //   )}&timestamp=${Date.now()}`,
-  // );
-  // const data = await result.json();
-  // console.log('fetchGasPrice:', data);
-  // return data?.data;
+  const result = await fetch(
+    `https://tokentool.bitbond.com/api/gas-price-20240116?chain_id=${parseChainId(
+      chainId,
+    )}&timestamp=${Date.now()}`,
+  );
+  const data = await result.json();
+  console.log('fetchGasPrice:', data);
+  return data?.data;
 
-  const result = {
-    data: {
-      fast: {
-        estimated_seconds: 0,
-        front_tx_count: 0,
-        level: 'fast',
-        price: 11006500,
-        priority_price: 1200000,
-      },
-      normal: {
-        estimated_seconds: 0,
-        front_tx_count: 0,
-        level: 'normal',
-        price: 1200800,
-        priority_price: 1100000,
-      },
-      slow: {
-        estimated_seconds: 0,
-        front_tx_count: 0,
-        level: 'slow',
-        price: 1000600,
-        priority_price: 1000000,
-      },
-    },
-    success: true,
-  };
+  // const result = {
+  //   data: {
+  //     fast: {
+  //       estimated_seconds: 0,
+  //       front_tx_count: 0,
+  //       level: 'fast',
+  //       price: 11006500,
+  //       priority_price: 1200000,
+  //     },
+  //     normal: {
+  //       estimated_seconds: 0,
+  //       front_tx_count: 0,
+  //       level: 'normal',
+  //       price: 1200800,
+  //       priority_price: 1100000,
+  //     },
+  //     slow: {
+  //       estimated_seconds: 0,
+  //       front_tx_count: 0,
+  //       level: 'slow',
+  //       price: 1000600,
+  //       priority_price: 1000000,
+  //     },
+  //   },
+  //   success: true,
+  // };
   return result.data;
 };
 

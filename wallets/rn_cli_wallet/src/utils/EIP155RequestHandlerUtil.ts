@@ -61,48 +61,42 @@ export async function approveEIP155Request(
       }
 
     case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-      try {
-        let hash = '';
-        if (additionalTransactions.length > 0) {
-          console.log(
-            'starting processing transactions: ',
-            additionalTransactions.length,
-          );
-          for (const transaction of additionalTransactions) {
-            const chain = transaction.chainId
-              ? parseChainId(transaction.chainId)
-              : parseChainId(chainId);
-            const chainData = PresetsUtil.getChainData(chain);
-            const provider = new providers.JsonRpcProvider(chainData.rpcUrl);
-            const connectedWallet = wallet.connect(provider);
-            console.log('sending transaction...', chain, transaction);
-            // await new Promise(resolve => setTimeout(resolve, 10_000));
-            delete transaction.chainId;
-            const result = await connectedWallet.sendTransaction({
-              ...transaction,
-              nonce: await provider.getTransactionCount(transaction.from),
-            });
-            console.log('transaction sent - hash:', result.hash);
-            console.log('waiting for transaction to be mined...');
-            const receipt = await waitForTransaction(result.hash, provider);
-            console.log('transaction mined:', receipt);
-            hash = result.hash;
-          }
-        } else {
-          const chainData = PresetsUtil.getChainData(parseChainId(chainId));
+      let hash = '';
+      if (additionalTransactions.length > 0) {
+        console.log(
+          'starting processing transactions: ',
+          additionalTransactions.length,
+        );
+        for (const transaction of additionalTransactions) {
+          const chain = transaction.chainId
+            ? parseChainId(transaction.chainId)
+            : parseChainId(chainId);
+          const chainData = PresetsUtil.getChainData(chain);
           const provider = new providers.JsonRpcProvider(chainData.rpcUrl);
-          const sendTransaction = request.params[0];
           const connectedWallet = wallet.connect(provider);
-          const result = await connectedWallet.sendTransaction(sendTransaction);
+          console.log('sending transaction...', chain, transaction);
+          // await new Promise(resolve => setTimeout(resolve, 10_000));
+          delete transaction.chainId;
+          const result = await connectedWallet.sendTransaction({
+            ...transaction,
+            nonce: await provider.getTransactionCount(transaction.from),
+          });
+          console.log('transaction sent - hash:', result.hash);
+          console.log('waiting for transaction to be mined...');
+          const receipt = await waitForTransaction(result.hash, provider);
+          console.log('transaction mined:', receipt);
           hash = result.hash;
         }
-
-        return formatJsonRpcResult(id, hash);
-      } catch (error: any) {
-        console.error(error);
-        console.log(error.message);
-        return formatJsonRpcError(id, error.message);
+      } else {
+        const chainData = PresetsUtil.getChainData(parseChainId(chainId));
+        const provider = new providers.JsonRpcProvider(chainData.rpcUrl);
+        const sendTransaction = request.params[0];
+        const connectedWallet = wallet.connect(provider);
+        const result = await connectedWallet.sendTransaction(sendTransaction);
+        hash = result.hash;
       }
+
+      return formatJsonRpcResult(id, hash);
 
     case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
       try {
