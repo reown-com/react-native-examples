@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
-import '@walletconnect/react-native-compat';
 import {AppRegistry} from 'react-native';
+import '@walletconnect/react-native-compat';
 import {name as appName} from './app.json';
 import crypto from 'react-native-quick-crypto';
 

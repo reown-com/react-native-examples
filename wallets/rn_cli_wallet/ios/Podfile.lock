@@ -1,5 +1,7 @@
 PODS:
   - boost (1.83.0)
+  - BVLinearGradient (2.8.3):
+    - React-Core
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.74.3)
   - fmt (9.1.0)
@@ -9,7 +11,7 @@ PODS:
   - hermes-engine/Pre-built (0.74.3)
   - kangfenmao-react-native-minimizer (1.0.4):
     - React-Core
-  - OpenSSL-Universal (3.1.5007)
+  - OpenSSL-Universal (3.3.2000)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -938,7 +940,7 @@ PODS:
   - React-Mapbuffer (0.74.3):
     - glog
     - React-debug
-  - react-native-compat (2.16.1):
+  - react-native-compat (2.17.2-canary-ca-1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -959,6 +961,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+    - YttriumWrapper (= 0.2.22)
   - react-native-config (1.5.2):
     - react-native-config/App (= 1.5.2)
   - react-native-config/App (1.5.2):
@@ -1246,7 +1249,7 @@ PODS:
     - React-Core
   - RNCAsyncStorage (1.24.0):
     - React-Core
-  - RNCClipboard (1.14.1):
+  - RNCClipboard (1.15.0):
     - React-Core
   - RNDeviceInfo (11.1.0):
     - React-Core
@@ -1295,14 +1298,32 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSentry (5.26.0):
+  - RNSentry (5.32.0):
+    - DoubleConversion
+    - glog
     - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
     - React-hermes
-    - Sentry/HybridSDK (= 8.31.1)
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Sentry/HybridSDK (= 8.36.0)
+    - Yoga
   - RNSVG (15.4.0):
     - React-Core
-  - Sentry/HybridSDK (8.31.1)
+  - Sentry/HybridSDK (8.36.0)
   - SocketRocket (0.7.0)
   - VisionCamera (4.5.0):
     - VisionCamera/Core (= 4.5.0)
@@ -1311,9 +1332,11 @@ PODS:
   - VisionCamera/React (4.5.0):
     - React-Core
   - Yoga (0.0.0)
+  - YttriumWrapper (0.2.22)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
+  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
@@ -1393,10 +1416,13 @@ SPEC REPOS:
     - OpenSSL-Universal
     - Sentry
     - SocketRocket
+    - YttriumWrapper
 
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
+  BVLinearGradient:
+    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
@@ -1543,13 +1569,14 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
+  BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 1f547997900dd0752dc0cc0ae6dd16173c49e09b
   kangfenmao-react-native-minimizer: 728600db598f3e40bf21aa4cffaf2fec6fa875c8
-  OpenSSL-Universal: 2d916d735a0196be6a14b959ce976c564d392861
+  OpenSSL-Universal: b60a3702c9fea8b3145549d421fdb018e53ab7b4
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 4c7eeb42be0b2e95195563c49be08d0b839d22b4
   RCTRequired: d530a0f489699c8500e944fde963102c42dcd0c2
@@ -1574,7 +1601,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 6b3c8c98313642140530f93c46f5a6ca4530b446
   React-logger: fa92ba4d3a5d39ac450f59be2a3cec7b099f0304
   React-Mapbuffer: 9f68550e7c6839d01411ac8896aea5c868eff63a
-  react-native-compat: df8345f4a15687aec734240d03f0a4ac52bd1a4e
+  react-native-compat: f7cd4bb640ad1d1f1fd2ebd2932097a5f4dceef5
   react-native-config: d7d8a0c65f7fa523197879f6b777997abbfc987e
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
@@ -1606,18 +1633,19 @@ SPEC CHECKSUMS:
   ReactCommon: f00e436b3925a7ae44dfa294b43ef360fbd8ccc4
   RNBootSplash: e025d4ee98d942ee6c8b495a6fe66339a6b5f6dd
   RNCAsyncStorage: ec53e44dc3e75b44aa2a9f37618a49c3bc080a7a
-  RNCClipboard: 0a720adef5ec193aa0e3de24c3977222c7e52a37
+  RNCClipboard: 69ab8e51324d5b351f6ba72bbdb72478087a2c64
   RNDeviceInfo: b899ce37a403a4dea52b7cb85e16e49c04a5b88e
   RNGestureHandler: 8dbcccada4a7e702e7dec9338c251b1cf393c960
   RNPermissions: 9fa74223844f437bc309e112994859dc47194829
   RNScreens: 5aeecbb09aa7285379b6e9f3c8a3c859bb16401c
-  RNSentry: 85fe1023bf60ead12d059d9c845de19de0ed6f0d
+  RNSentry: 3112fcac20fd19fcef2dd04362e48a7ed2734302
   RNSVG: cb24fb322de8c1ebf59904e7aca0447bb8dbed5a
-  Sentry: 9c1188876ea1291d1a9db4b38c3f17ebd8e6985e
+  Sentry: f8374b5415bc38dfb5645941b3ae31230fbeae57
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   VisionCamera: 412fec057156eb5fe84a44351e8ed71a072c1228
-  Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
+  Yoga: 88480008ccacea6301ff7bf58726e27a72931c8d
+  YttriumWrapper: bcabc27e968d0e942fee0eae8fdfefa2435fcabd
 
 PODFILE CHECKSUM: c71b4a1de1dcccdf71d8f7f0d4d9b3c37106456c
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2

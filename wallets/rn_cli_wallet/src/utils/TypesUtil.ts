@@ -14,6 +14,7 @@ export type ThemeKeys =
   | 'accent-glass-010'
   | 'accent-glass-005'
   | 'accent-glass-002'
+  | 'fg-secondary'
   | 'fg-100'
   | 'fg-125'
   | 'fg-150'

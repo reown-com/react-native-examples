@@ -5,6 +5,7 @@ import {providers, Wallet} from 'ethers';
  */
 interface IInitArgs {
   mnemonic?: string;
+  privateKey?: string;
 }
 
 /**
@@ -17,16 +18,21 @@ export default class EIP155Lib {
     this.wallet = wallet;
   }
 
-  static init({mnemonic}: IInitArgs) {
-    const wallet = mnemonic
-      ? Wallet.fromMnemonic(mnemonic)
-      : Wallet.createRandom();
+  static init({mnemonic, privateKey}: IInitArgs) {
+    let wallet;
+    if (privateKey) {
+      wallet = new Wallet(privateKey);
+    } else if (mnemonic) {
+      wallet = Wallet.fromMnemonic(mnemonic);
+    } else {
+      wallet = Wallet.createRandom();
+    }
 
     return new EIP155Lib(wallet);
   }
 
   getMnemonic() {
-    return this.wallet.mnemonic.phrase;
+    return this.wallet.mnemonic?.phrase || this.wallet.privateKey;
   }
 
   getAddress() {
