@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {AppKitButton} from '@reown/appkit-wagmi-react-native';
 import {FlexView, Text} from '@reown/appkit-ui-react-native';
 
@@ -22,12 +22,6 @@ function ConnectionsScreen() {
         <SignTypedDataV4 />
         <ReadContract />
         <WriteContract />
-        <Pressable
-          onPress={() => {
-            throw new Error('Break');
-          }}>
-          <Text>Sentry Test Break</Text>
-        </Pressable>
       </View>
     </FlexView>
   );
