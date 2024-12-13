@@ -90,8 +90,7 @@ platform :ios do
       include_sources: true,
       upload_symbol_maps: true,
       derived_data: true,
-      wait: true,
-      ids: true
+      wait: true
     )
 
     clean_build_artifacts()
