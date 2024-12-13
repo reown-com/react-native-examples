@@ -69,7 +69,7 @@ export default function Settings({navigation}: Props) {
 
         <TextInput
           style={{borderColor: 'black'}}
-          placeholder="Enter mnemonic"
+          placeholder="Enter mnemonic or private key"
           onChangeText={value => setNewMnemonic(value)}
         />
         <Card title="Add new account" onPress={onAddNewAccount} />

@@ -16,27 +16,24 @@ let address2: string;
  * Utilities
  */
 export async function createOrRestoreEIP155Wallet() {
-  const mnemonic1 = await AsyncStorage.getItem('EIP155_MNEMONIC_1');
-  const mnemonic2 = await AsyncStorage.getItem('EIP155_MNEMONIC_2');
+  const mnemonic1 =
+    (await AsyncStorage.getItem('EIP155_MNEMONIC_1')) || undefined;
+  const privateKey1 =
+    (await AsyncStorage.getItem('EIP155_PRIVATE_1')) || undefined;
 
-  if (mnemonic1 && mnemonic2) {
-    wallet1 = EIP155Lib.init({mnemonic: mnemonic1});
-    wallet2 = EIP155Lib.init({mnemonic: mnemonic2});
+  if (mnemonic1 || privateKey1) {
+    wallet1 = EIP155Lib.init({mnemonic: mnemonic1, privateKey: privateKey1});
   } else {
     wallet1 = EIP155Lib.init({});
-    wallet2 = EIP155Lib.init({});
-
     // Don't store mnemonic in local storage in a production project!
     AsyncStorage.setItem('EIP155_MNEMONIC_1', wallet1.getMnemonic());
-    AsyncStorage.setItem('EIP155_MNEMONIC_2', wallet2.getMnemonic());
   }
 
   address1 = wallet1.getAddress();
-  address2 = wallet2.getAddress();
 
   eip155Wallets = {
     [address1]: wallet1,
-    [address2]: wallet2,
+    [address2]: wallet1,
   };
   eip155Addresses = Object.keys(eip155Wallets);
 
@@ -46,9 +43,19 @@ export async function createOrRestoreEIP155Wallet() {
   };
 }
 
-export async function replaceMnemonic(mnemonic: string) {
-  const wallet = EIP155Lib.init({mnemonic});
-  await AsyncStorage.setItem('EIP155_MNEMONIC_1', wallet.getMnemonic());
+export async function replaceMnemonic(mnemonicOrPrivateKey: string) {
+  try {
+    let wallet;
+    if (mnemonicOrPrivateKey.includes(' ')) {
+      wallet = EIP155Lib.init({mnemonic: mnemonicOrPrivateKey});
+      await AsyncStorage.setItem('EIP155_MNEMONIC_1', wallet.getMnemonic());
+    } else {
+      wallet = EIP155Lib.init({privateKey: mnemonicOrPrivateKey});
+      await AsyncStorage.setItem('EIP155_PRIVATE_1', wallet.wallet.privateKey);
+    }
+  } catch (error) {
+    throw new Error('Invalid mnemonic or private key');
+  }
 }
 
 export async function calculateEip155Gas(transaction: any, chainId: string) {
@@ -67,23 +74,23 @@ export async function calculateEip155Gas(transaction: any, chainId: string) {
     data: data,
   };
 
+  let provider = new ethers.providers.JsonRpcProvider(chainData.rpcUrl);
+
+  // Fetch the latest block to get the base fee
+  const block = await provider.getBlock('latest');
+  if (!block) {
+    return;
+  }
+  const baseFee = block.baseFeePerGas;
+  const fees = await fetchGasPrice(parseChainId(chainId));
+
+  // You can adjust the priority fee based on current network conditions
+  const maxPriorityFeePerGas = fees.normal.priority_price.toString();
+  // console.log('fees:', fees);
+  // Calculate the max fee per gas (base fee + priority fee)
+  const maxFeePerGas = baseFee!.add(maxPriorityFeePerGas);
+
   try {
-    let provider = new ethers.providers.JsonRpcProvider(chainData.rpcUrl);
-
-    // Fetch the latest block to get the base fee
-    const block = await provider.getBlock('latest');
-    if (!block) {
-      return;
-    }
-    const baseFee = block.baseFeePerGas;
-    const fees = await fetchGasPrice(parseChainId(chainId));
-
-    // You can adjust the priority fee based on current network conditions
-    const maxPriorityFeePerGas = fees.normal.priority_price.toString();
-    // console.log('fees:', fees);
-    // Calculate the max fee per gas (base fee + priority fee)
-    const maxFeePerGas = baseFee!.add(maxPriorityFeePerGas);
-
     // use this node to estimate gas as it doesn't reject when the amount is greater than the balance
     // very useful for chain abstraction
     provider = new ethers.providers.JsonRpcProvider(
@@ -127,8 +134,8 @@ export async function calculateEip155Gas(transaction: any, chainId: string) {
   } catch (error) {
     console.error('Error fetching gas fees:', error);
     return {
-      gasLimit: {hex: '0x02db52', type: 'BigNumber'},
-      maxFeePerGas: '1100735',
+      gasLimit: {hex: '0x05b6a8', type: 'BigNumber'},
+      maxFeePerGas: maxFeePerGas,
       maxPriorityFeePerGas: '1100000',
       totalGas: '0.00000020607740523',
     };

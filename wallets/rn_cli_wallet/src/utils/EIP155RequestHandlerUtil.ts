@@ -67,6 +67,7 @@ export async function approveEIP155Request(
           'starting processing transactions: ',
           additionalTransactions.length,
         );
+        const start = Date.now();
         for (const transaction of additionalTransactions) {
           const chain = transaction.chainId
             ? parseChainId(transaction.chainId)
@@ -74,7 +75,7 @@ export async function approveEIP155Request(
           const chainData = PresetsUtil.getChainData(chain);
           const provider = new providers.JsonRpcProvider(chainData.rpcUrl);
           const connectedWallet = wallet.connect(provider);
-          console.log('sending transaction...', chain, transaction);
+          console.log('sending transaction...');
           // await new Promise(resolve => setTimeout(resolve, 10_000));
           delete transaction.chainId;
           const result = await connectedWallet.sendTransaction({
@@ -84,9 +85,11 @@ export async function approveEIP155Request(
           console.log('transaction sent - hash:', result.hash);
           console.log('waiting for transaction to be mined...');
           const receipt = await waitForTransaction(result.hash, provider);
-          console.log('transaction mined:', receipt);
+          console.log('transaction mined:');
           hash = result.hash;
+          console.log('tx done:', Date.now() - start);
         }
+        console.log('all tx done:', Date.now() - start);
       } else {
         const chainData = PresetsUtil.getChainData(parseChainId(chainId));
         const provider = new providers.JsonRpcProvider(chainData.rpcUrl);
@@ -129,7 +132,7 @@ async function waitForTransaction(
   // Loop until the transaction is mined (receipt is not null)
   while (receipt === null) {
     // Wait 2 seconds before checking again
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     try {
       // Get the receipt for the transaction hash
