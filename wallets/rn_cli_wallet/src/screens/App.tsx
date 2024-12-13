@@ -14,12 +14,18 @@ import {walletKit} from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
 
-if (!__DEV__ && Config.ENV_SENTRY_DSN) {
-  Sentry.init({
-    dsn: Config.ENV_SENTRY_DSN,
-    environment: Config.ENV_SENTRY_TAG,
-  });
-}
+Sentry.init({
+  enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
+  dsn: Config.ENV_SENTRY_DSN,
+  environment: Config.ENV_SENTRY_TAG,
+  _experiments: {
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 1.0,
+  },
+  tracesSampleRate: 0.5,
+  profilesSampleRate: 1.0,
+  integrations: [Sentry.mobileReplayIntegration()],
+});
 
 const App = () => {
   const scheme = useColorScheme();
@@ -131,4 +137,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Sentry.wrap(App);
