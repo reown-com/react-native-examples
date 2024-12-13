@@ -89,7 +89,9 @@ platform :ios do
       project_slug: 'w3m-wagmi-react-native',
       include_sources: true,
       upload_symbol_maps: true,
-      wait: true
+      derived_data: true,
+      wait: true,
+      ids: true
     )
 
     clean_build_artifacts()
