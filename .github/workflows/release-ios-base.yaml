@@ -140,6 +140,5 @@ jobs:
           MATCH_GIT_URL: ${{ secrets.match-git-url }}
           PODFILE_PATH: ${{ inputs.root-path }}/ios/Podfile
           SCHEME: ${{ inputs.scheme-name }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.sentry-auth-token }}
           XCODE_PROJECT_PATH: ${{ inputs.xcode-project-path }}
           XCWORKSPACE_PATH: ${{ inputs.xcode-workspace-path }}
