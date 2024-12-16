@@ -12,7 +12,7 @@ React Native examples implementing Reown AppKit and WalletKit
 - WalletConnect Modal + Ethers v5: `dapps/ModalEthers`
 - WalletConnect Modal + Universal Provider: `dapps/ModalUProvider`
 
-- AppKit + Wagmi v1: `dapps/W3MWagmi`
+- AppKit + Wagmi: `dapps/W3MWagmi`
 - AppKit + Ethers: `dapps/W3MEthers`
 - AppKit + Ethers v5: `dapps/W3MEthers5`
 
