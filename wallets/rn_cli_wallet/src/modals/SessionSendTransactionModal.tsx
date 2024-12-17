@@ -16,12 +16,12 @@ import {BridgeBadge} from '@/components/BridgeBadge';
 import {
   calculateEip155Gas,
   getNonce,
-  getTransactionGas,
   getTransferDetails,
 } from '@/utils/EIP155WalletUtil';
 import {isVerified} from '@/utils/HelperUtil';
 import {VerifiedDomain} from '@/components/VerifiedDomain';
 import {Loader} from '@/components/Loader';
+import {ethers} from 'ethers';
 
 export default function SessionSendTransactionModal() {
   const {data} = useSnapshot(ModalStore.state);
@@ -111,7 +111,7 @@ export default function SessionSendTransactionModal() {
       gasLimit: fees.gasLimit,
     });
     console.log('fees updated', fees);
-    setNetworkFee(`${fees.totalGas} ETH`);
+    setNetworkFee(`${ethers.utils.formatEther(fees.gasLimit)} ETH`);
     setFetchingGas(false);
   };
 
@@ -152,7 +152,7 @@ export default function SessionSendTransactionModal() {
         const txData = {
           ...tx,
           gasLimit: tx.gas,
-          ...(await getTransactionGas(tx, tx.chainId)),
+          ...(await calculateEip155Gas(tx, tx.chainId)),
         };
         delete txData.gas;
         delete txData.gasPrice;
@@ -166,11 +166,7 @@ export default function SessionSendTransactionModal() {
       );
       const txData = {
         ...transaction,
-        gasLimit: routes.initialTransaction?.gas || {
-          hex: '0x05b6a8',
-          type: 'BigNumber',
-        },
-        ...(await getTransactionGas(transaction, chainId)),
+        ...(await calculateEip155Gas(transaction, chainId)),
       };
       delete txData.gas;
       delete txData.gasPrice;

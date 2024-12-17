@@ -61,19 +61,6 @@ export async function replaceMnemonic(mnemonicOrPrivateKey: string) {
 export async function calculateEip155Gas(transaction: any, chainId: string) {
   console.log('calculateEip155Gas:', chainId);
   const chainData = PresetsUtil.getChainData(parseChainId(chainId));
-  console.log('chainData:');
-  // Define the sender (from) and receiver (to) addresses
-  const from = transaction.from;
-  const to = transaction.to; // Could be a contract address
-  const data = transaction.data; // Some contract interaction data
-
-  // Prepare the transaction object
-  const tx = {
-    from: from,
-    to: to,
-    data: data,
-  };
-
   let provider = new ethers.providers.JsonRpcProvider(chainData.rpcUrl);
 
   // Fetch the latest block to get the base fee
@@ -90,56 +77,26 @@ export async function calculateEip155Gas(transaction: any, chainId: string) {
   // Calculate the max fee per gas (base fee + priority fee)
   const maxFeePerGas = baseFee!.add(maxPriorityFeePerGas);
 
-  try {
-    // use this node to estimate gas as it doesn't reject when the amount is greater than the balance
-    // very useful for chain abstraction
-    provider = new ethers.providers.JsonRpcProvider(
-      'https://endpoints.omniatech.io/v1/arbitrum/one/public',
-    );
+  const gasLimit = ethers.BigNumber.from(0x05b6a8);
+  // Log the details of the gas fees
+  console.log('Base Fee:', ethers.utils.formatUnits(baseFee!, 'gwei'), 'Gwei');
+  console.log(
+    'Max Priority Fee:',
+    ethers.utils.formatUnits(maxPriorityFeePerGas, 'gwei'),
+    'Gwei',
+  );
+  console.log(
+    'Max Fee per Gas:',
+    ethers.utils.formatUnits(maxFeePerGas, 'gwei'),
+    'Gwei',
+  );
+  console.log('Estimated Gas Limit:', gasLimit.toString());
 
-    // Estimate the gas limit for this transaction based on its size and complexity
-    const gasLimit = await provider.estimateGas(tx);
-
-    // Log the details of the gas fees
-    console.log(
-      'Base Fee:',
-      ethers.utils.formatUnits(baseFee!, 'gwei'),
-      'Gwei',
-    );
-    console.log(
-      'Max Priority Fee:',
-      ethers.utils.formatUnits(maxPriorityFeePerGas, 'gwei'),
-      'Gwei',
-    );
-    console.log(
-      'Max Fee per Gas:',
-      ethers.utils.formatUnits(maxFeePerGas, 'gwei'),
-      'Gwei',
-    );
-    console.log('Estimated Gas Limit:', gasLimit.toString());
-
-    // The total gas cost (just as an example, no sign and send in this code)
-    const estimatedGasCost = gasLimit.mul(maxFeePerGas);
-    console.log('Estimated Gas Cost (Wei):', estimatedGasCost.toString());
-
-    return {
-      maxFeePerGas: ethers.utils.formatUnits(maxFeePerGas, 'wei'),
-      maxPriorityFeePerGas: ethers.utils.formatUnits(
-        maxPriorityFeePerGas,
-        'wei',
-      ),
-      gasLimit,
-      totalGas: ethers.utils.formatUnits(estimatedGasCost, 'ether'),
-    };
-  } catch (error) {
-    console.error('Error fetching gas fees:', error);
-    return {
-      gasLimit: {hex: '0x05b6a8', type: 'BigNumber'},
-      maxFeePerGas: maxFeePerGas,
-      maxPriorityFeePerGas: '1100000',
-      totalGas: '0.00000020607740523',
-    };
-  }
+  return {
+    maxFeePerGas: ethers.utils.formatUnits(maxFeePerGas, 'wei'),
+    maxPriorityFeePerGas: ethers.utils.formatUnits(maxPriorityFeePerGas, 'wei'),
+    gasLimit: ethers.utils.formatUnits(gasLimit, 'wei'),
+  };
 }
 
 const fetchGasPrice = async (chainId: string) => {
@@ -152,16 +109,6 @@ const fetchGasPrice = async (chainId: string) => {
   console.log('fetchGasPrice:', data);
   return data?.data;
 };
-
-export async function getTransactionGas(tx: any, chainId: string) {
-  const chainData = PresetsUtil.getChainData(parseChainId(chainId));
-  const provider = new ethers.providers.JsonRpcProvider(chainData.rpcUrl);
-  const feeData = await provider.getFeeData();
-  return {
-    maxFeePerGas: feeData.maxFeePerGas,
-    maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
-  };
-}
 
 export async function calculateGasLimit(tx: any, chainId: string) {
   const chainData = PresetsUtil.getChainData(parseChainId(chainId));
