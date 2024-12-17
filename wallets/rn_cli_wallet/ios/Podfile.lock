@@ -940,7 +940,7 @@ PODS:
   - React-Mapbuffer (0.74.3):
     - glog
     - React-debug
-  - react-native-compat (2.17.2-canary-ca-1):
+  - react-native-compat (2.17.2-canary-ca-5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -961,7 +961,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-    - YttriumWrapper (= 0.2.22)
+    - YttriumWrapper (= 0.4.6)
   - react-native-config (1.5.2):
     - react-native-config/App (= 1.5.2)
   - react-native-config/App (1.5.2):
@@ -1332,7 +1332,7 @@ PODS:
   - VisionCamera/React (4.5.0):
     - React-Core
   - Yoga (0.0.0)
-  - YttriumWrapper (0.2.22)
+  - YttriumWrapper (0.4.6)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -1601,7 +1601,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 6b3c8c98313642140530f93c46f5a6ca4530b446
   React-logger: fa92ba4d3a5d39ac450f59be2a3cec7b099f0304
   React-Mapbuffer: 9f68550e7c6839d01411ac8896aea5c868eff63a
-  react-native-compat: f7cd4bb640ad1d1f1fd2ebd2932097a5f4dceef5
+  react-native-compat: 6faa4d6dc830f46f8db20c8edee159c1981618fc
   react-native-config: d7d8a0c65f7fa523197879f6b777997abbfc987e
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
@@ -1644,7 +1644,7 @@ SPEC CHECKSUMS:
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   VisionCamera: 412fec057156eb5fe84a44351e8ed71a072c1228
   Yoga: 88480008ccacea6301ff7bf58726e27a72931c8d
-  YttriumWrapper: bcabc27e968d0e942fee0eae8fdfefa2435fcabd
+  YttriumWrapper: 7624df90692e87a3f7cdb6e1b6d9c069c7cb16c0
 
 PODFILE CHECKSUM: c71b4a1de1dcccdf71d8f7f0d4d9b3c37106456c
 

@@ -4,7 +4,6 @@ import {LinearGradient} from 'react-native-linear-gradient';
 import {CoreTypes} from '@walletconnect/types';
 
 import {ModalHeader} from './ModalHeader';
-import {useTheme} from '@/hooks/useTheme';
 import {useSnapshot} from 'valtio';
 import SettingsStore from '@/store/SettingsStore';
 import VerifyInfoBox from '@/components/VerifyInfoBox';
@@ -57,7 +56,6 @@ function ModalFooter({
   verifyContext,
   disableApprove,
 }: any) {
-  const Theme = useTheme();
   const validation = verifyContext?.verified.validation;
   const isScam = verifyContext?.verified.isScam;
 

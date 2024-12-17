@@ -16,6 +16,7 @@ import {BridgeBadge} from '@/components/BridgeBadge';
 import {
   calculateEip155Gas,
   getNonce,
+  getTransactionGas,
   getTransferDetails,
 } from '@/utils/EIP155WalletUtil';
 import {isVerified} from '@/utils/HelperUtil';
@@ -85,7 +86,7 @@ export default function SessionSendTransactionModal() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useMemo(async () => {
+  const calculateInitialTxFees = async () => {
     if (networkFee) {
       console.log('fees already updated');
       return;
@@ -110,17 +111,17 @@ export default function SessionSendTransactionModal() {
       gasLimit: fees.gasLimit,
     });
     console.log('fees updated', fees);
-    setNetworkFee(fees.totalGas);
+    setNetworkFee(`${fees.totalGas} ETH`);
     setFetchingGas(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [networkFee]);
+  };
 
   useMemo(async () => {
     if (fundingFrom) {
       return;
     }
     setFetchingRoutes(true);
-
+    setFetchingGas(true);
+    console.log('fetching routes...');
     const result = await walletKit.canFulfil({
       transaction: {
         from: transaction.from,
@@ -135,31 +136,59 @@ export default function SessionSendTransactionModal() {
         chainId: chainId,
       },
     });
-
+    console.log('routes done');
     if (result.status === 'error') {
       setRoutingStatus(`Error: ${result.reason}`);
       setHasError(true);
     } else if (result.status === 'available') {
-      const transactions = result.data.transactions.map((tx: any) => {
-        return {
-          from: tx.from,
-          to: tx.to,
-          data: tx.data,
-          nonce: tx.nonce,
-          value: tx.value,
-          gasPrice: tx.gasPrice,
-          chainId: tx.chainId,
+      const data = result.data;
+      const routes = data.routes;
+
+      console.log('ui fields', JSON.stringify(data.routesDetails, null, 2));
+      const uiFields = data.routesDetails;
+
+      const transactions: any[] = [];
+      for (const tx of routes.transactions) {
+        const txData = {
+          ...tx,
           gasLimit: tx.gas,
+          ...(await getTransactionGas(tx, tx.chainId)),
         };
+        delete txData.gas;
+        delete txData.gasPrice;
+        transactions.push(txData);
+      }
+
+      console.log('bridging txs', JSON.stringify(transactions, null, 2));
+
+      setNetworkFee(
+        `${uiFields.totalFees.formattedAlt} ${uiFields.totalFees.symbol}`,
+      );
+      const txData = {
+        ...transaction,
+        gasLimit: routes.initialTransaction?.gas || {
+          hex: '0x05b6a8',
+          type: 'BigNumber',
+        },
+        ...(await getTransactionGas(transaction, chainId)),
+      };
+      delete txData.gas;
+      delete txData.gasPrice;
+
+      setTransaction({
+        ...txData,
+        nonce: await getNonce(transaction.from, chainId),
       });
-      console.log('transactions', transactions);
+
       setBridgingTransactions(transactions);
-      setFundingFrom(result.data.funding);
+      setFundingFrom(routes.funding);
     } else {
       setRoutingStatus(result.status);
+      await calculateInitialTxFees();
     }
 
     setFetchingRoutes(false);
+    setFetchingGas(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // Handle approve action
@@ -377,11 +406,7 @@ export default function SessionSendTransactionModal() {
             {/* Right Column in Row */}
             <View style={styles.column}>
               <Text style={[styles.textMain, styles.textMid]}>
-                {networkFee ? (
-                  `${networkFee} ETH`
-                ) : (
-                  <Loader loading={fetchingGas} />
-                )}
+                {networkFee ? networkFee : <Loader loading={fetchingGas} />}
               </Text>
             </View>
           </View>
