@@ -151,35 +151,17 @@ const fetchGasPrice = async (chainId: string) => {
   const data = await result.json();
   console.log('fetchGasPrice:', data);
   return data?.data;
-
-  // const result = {
-  //   data: {
-  //     fast: {
-  //       estimated_seconds: 0,
-  //       front_tx_count: 0,
-  //       level: 'fast',
-  //       price: 11006500,
-  //       priority_price: 1200000,
-  //     },
-  //     normal: {
-  //       estimated_seconds: 0,
-  //       front_tx_count: 0,
-  //       level: 'normal',
-  //       price: 1200800,
-  //       priority_price: 1100000,
-  //     },
-  //     slow: {
-  //       estimated_seconds: 0,
-  //       front_tx_count: 0,
-  //       level: 'slow',
-  //       price: 1000600,
-  //       priority_price: 1000000,
-  //     },
-  //   },
-  //   success: true,
-  // };
-  return result.data;
 };
+
+export async function getTransactionGas(tx: any, chainId: string) {
+  const chainData = PresetsUtil.getChainData(parseChainId(chainId));
+  const provider = new ethers.providers.JsonRpcProvider(chainData.rpcUrl);
+  const feeData = await provider.getFeeData();
+  return {
+    maxFeePerGas: feeData.maxFeePerGas,
+    maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
+  };
+}
 
 export async function calculateGasLimit(tx: any, chainId: string) {
   const chainData = PresetsUtil.getChainData(parseChainId(chainId));
