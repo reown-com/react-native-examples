@@ -4768,113 +4768,113 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-swaps-20241203153101":
-  version: 0.0.0-feat-swaps-20241203153101
-  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-swaps-20241203153101"
+"@reown/appkit-auth-wagmi-react-native@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@reown/appkit-auth-wagmi-react-native@npm:1.1.0"
   dependencies:
-    "@reown/appkit-core-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-wallet-react-native": 0.0.0-feat-swaps-20241203153101
+    "@reown/appkit-core-react-native": 1.1.0
+    "@reown/appkit-wallet-react-native": 1.1.0
   peerDependencies:
     wagmi: ">=2"
-  checksum: de29ddf7eca5da71c773c9f985c474f5d87d5cf8abca19ce0b98ab7c8b5d63bb82c0987b4d1a62b542843a16833bf82d37026aee9bc630db1974285fc6b35e8b
+  checksum: 2b6ef220561739c6f0ee93cf4a1bb69890c1acd61f7c4b4e3bceb2e6fa4dd24cf2950bbbeb5a9bbf7d344fc4f993bb6faab55b0c66eb214161beea7b42cda1e4
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-swaps-20241203153101":
-  version: 0.0.0-feat-swaps-20241203153101
-  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-swaps-20241203153101"
+"@reown/appkit-coinbase-wagmi-react-native@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:1.1.0"
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: 01a02309ec0d2d841e72dc4396645ab0e58f3796157b797d57318895fe27f88445231eb08d1968558f2e9fc305c2eddd79305a9ce0eb69397067f3eff4f7ed91
+  checksum: befb9ac5467fc72f1ef6d7681f7e08d529ae2e408fbff55052893cfbde9be30fb33ab9878a0bbcc100adf6768a55cbce154fd03525e51a4502149514b4c2f553
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-feat-swaps-20241203153101":
-  version: 0.0.0-feat-swaps-20241203153101
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-swaps-20241203153101"
+"@reown/appkit-common-react-native@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@reown/appkit-common-react-native@npm:1.1.0"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: f0332e4c61d9c34fe5529af80dfadefcda4e7e47ff596e9456eae422ff1e4f84c914c7a488287696a8f25859b9386ec5a9899fd782994f73956b20ce62bea7d0
+  checksum: c07b65ba72de6905dabd11c2b26ec149f1b45489fe23f156065bfd9c6b1c21b7e6c462c8622949447757be8869cad9662b21470c076934a52d3a08717a12515c
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-feat-swaps-20241203153101":
-  version: 0.0.0-feat-swaps-20241203153101
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-swaps-20241203153101"
+"@reown/appkit-core-react-native@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@reown/appkit-core-react-native@npm:1.1.0"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-swaps-20241203153101
+    "@reown/appkit-common-react-native": 1.1.0
     valtio: 1.11.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 3af25b0088fb9cafd55b7fca56f67d2e9a19984c10ede5fb42e03666bf74b0cdfb2594d5fbc70f3ddb76de5c5c37bfb173b0b8fb1c8634203b20df0ca9aba6e3
+  checksum: 0ce92c72266374003ee3dd225108c454771745eb1784feab8ab3e921355729ee26c9033a522dbf3aa6e33e6e7fe8a42bfca4792cae302db31deff46d7b548704
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-react-native@npm:0.0.0-feat-swaps-20241203153101":
-  version: 0.0.0-feat-swaps-20241203153101
-  resolution: "@reown/appkit-scaffold-react-native@npm:0.0.0-feat-swaps-20241203153101"
+"@reown/appkit-scaffold-react-native@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@reown/appkit-scaffold-react-native@npm:1.1.0"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-core-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-ui-react-native": 0.0.0-feat-swaps-20241203153101
+    "@reown/appkit-common-react-native": 1.1.0
+    "@reown/appkit-core-react-native": 1.1.0
+    "@reown/appkit-siwe-react-native": 1.1.0
+    "@reown/appkit-ui-react-native": 1.1.0
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: 6786ddc7639328db17152bb60a2ba228bbbe8186fec7926510e73a38eaf91587ad640c39bca65923821dda3e8775ab913dbffd6d636dd69470e32455db929d0b
+  checksum: f44f22796b41fb288f22d65c91c640213a5628595dbf75d841202a561dc5f8105bee90bb8266418e42a10acd3e75592163219ddae5fb5d0f91e74f281f5171f6
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-swaps-20241203153101":
-  version: 0.0.0-feat-swaps-20241203153101
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-swaps-20241203153101"
+"@reown/appkit-scaffold-utils-react-native@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@reown/appkit-scaffold-utils-react-native@npm:1.1.0"
   dependencies:
-    "@reown/appkit-scaffold-react-native": 0.0.0-feat-swaps-20241203153101
-  checksum: 36dc02a303b4bfe590e112680000869e652c20b13fb16266432012a870160871f302a50d9223b20120185a56f3c633e61b9c21537841b2a4284273cbe140336e
+    "@reown/appkit-scaffold-react-native": 1.1.0
+  checksum: dc3ab05017ee1655d5e4d0dbeed5be4bb67a54933739199989f95c4a76551b4149d0183064c4bf178875543323c4ebb52a9d3b9c7ee34b854ae5669e6152397d
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-feat-swaps-20241203153101":
-  version: 0.0.0-feat-swaps-20241203153101
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-swaps-20241203153101"
+"@reown/appkit-siwe-react-native@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@reown/appkit-siwe-react-native@npm:1.1.0"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-core-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-ui-react-native": 0.0.0-feat-swaps-20241203153101
+    "@reown/appkit-common-react-native": 1.1.0
+    "@reown/appkit-core-react-native": 1.1.0
+    "@reown/appkit-ui-react-native": 1.1.0
     valtio: 1.11.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: b6380e091e4da07870d67d89d1d7e6956d73ddc10247c864c7eb39182d6abf4a17496d237d66d440a82adf9979d0324f78778656249d338a76b3e8077c8c1a5e
+  checksum: e5f00e47264cacf59200065a29a95a4c92d5c4ab41df6047f591efcc4a887c8ffc3f7ba76e2bd7a98b16d05884bc9ed60cfcaa6ff5ec994a406821b15cf18315
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-feat-swaps-20241203153101":
-  version: 0.0.0-feat-swaps-20241203153101
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-swaps-20241203153101"
+"@reown/appkit-ui-react-native@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@reown/appkit-ui-react-native@npm:1.1.0"
   dependencies:
     qrcode: 1.5.3
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 4177a3a0c59712ea916f8a3f7aa8bdbcb827a9adf786907a196d5f5e9c287a4062a880e86f7505638bc0d7848ef4ae7628feecff8eab9e4315a794a831c51be2
+  checksum: 0aef06cc316c1b8633e3279214fb152dc4de84213baec83c5b12b127942e44eacdf2447d2d8998f1863d3824835d30f45d6da7f83d593259156dbef40d5c11a6
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-swaps-20241203153101":
-  version: 0.0.0-feat-swaps-20241203153101
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-swaps-20241203153101"
+"@reown/appkit-wagmi-react-native@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@reown/appkit-wagmi-react-native@npm:1.1.0"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-scaffold-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-swaps-20241203153101
+    "@reown/appkit-common-react-native": 1.1.0
+    "@reown/appkit-scaffold-react-native": 1.1.0
+    "@reown/appkit-scaffold-utils-react-native": 1.1.0
+    "@reown/appkit-siwe-react-native": 1.1.0
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -4884,21 +4884,21 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: ca1bfd1eebbd98c6c597ea58746da6a1a41c51bfcd445afc2340a186253a114ae77458e2e847cddbdc07207b6e973cc53958b92eda03eaf705740e47d3375e28
+  checksum: 026fcf650fb50d024178b9f585d3abdc66b627c4e023def336f6b8c04ef38dc70d8815decac7a00415fef34a0db53dca400e18ec190f3c9242ce62c3b860f4e8
   languageName: node
   linkType: hard
 
-"@reown/appkit-wallet-react-native@npm:0.0.0-feat-swaps-20241203153101":
-  version: 0.0.0-feat-swaps-20241203153101
-  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-feat-swaps-20241203153101"
+"@reown/appkit-wallet-react-native@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@reown/appkit-wallet-react-native@npm:1.1.0"
   dependencies:
-    "@reown/appkit-core-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-ui-react-native": 0.0.0-feat-swaps-20241203153101
+    "@reown/appkit-core-react-native": 1.1.0
+    "@reown/appkit-ui-react-native": 1.1.0
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: 353f1332fc9f846a0a2a87babed01aa94a7c961b4f63ab5a6bc8e388c88c4b511b57ffb5cc3f4cb466e2f3373c2c809a94dcad276e7bea12736f2d85b7b286b4
+  checksum: 02d6c1cb5fff860d8fa86dd05b39137a2c8e1374555643ad1863971b768ec3e0944fa58b183f599b185263e73f976c4018b3f906a2a03fe4cdb82b5783b95cdc
   languageName: node
   linkType: hard
 
@@ -6578,9 +6578,9 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-swaps-20241203153101
-    "@reown/appkit-wagmi-react-native": 0.0.0-feat-swaps-20241203153101
+    "@reown/appkit-auth-wagmi-react-native": 1.1.0
+    "@reown/appkit-coinbase-wagmi-react-native": 1.1.0
+    "@reown/appkit-wagmi-react-native": 1.1.0
     "@sentry/react-native": 6.4.0
     "@tanstack/react-query": 5.51.1
     "@types/react": ^18.2.6
