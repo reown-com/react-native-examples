@@ -3,6 +3,7 @@ import EIP155Lib from '../lib/EIP155Lib';
 import {ethers} from 'ethers';
 import {PresetsUtil} from '../utils/PresetsUtil';
 import {getAbiByPrefix, parseChainId} from './HelperUtil';
+import {TransactionType} from './TypesUtil';
 
 export let wallet1: EIP155Lib;
 export let wallet2: EIP155Lib;
@@ -58,7 +59,10 @@ export async function replaceMnemonic(mnemonicOrPrivateKey: string) {
   }
 }
 
-export async function calculateEip155Gas(transaction: any, chainId: string) {
+export async function calculateEip155Gas(
+  transaction: TransactionType,
+  chainId: string,
+) {
   console.log('calculateEip155Gas:', chainId);
   const chainData = PresetsUtil.getChainData(parseChainId(chainId));
   let provider = new ethers.providers.JsonRpcProvider(chainData.rpcUrl);
@@ -77,7 +81,18 @@ export async function calculateEip155Gas(transaction: any, chainId: string) {
   // Calculate the max fee per gas (base fee + priority fee)
   const maxFeePerGas = baseFee!.add(maxPriorityFeePerGas);
 
-  const gasLimit = ethers.BigNumber.from(0x05b6a8);
+  let gasLimit;
+  try {
+    gasLimit = await provider.estimateGas({
+      ...transaction,
+      chainId: chainData.id,
+    });
+    console.log('Gas Limit estimated:', gasLimit.toString());
+  } catch (error) {
+    console.error('Error estimating gas:', error);
+    gasLimit = ethers.BigNumber.from(0x05b6a8);
+  }
+
   // Log the details of the gas fees
   console.log('Base Fee:', ethers.utils.formatUnits(baseFee!, 'gwei'), 'Gwei');
   console.log(
@@ -124,7 +139,7 @@ export async function getNonce(address: string, chainId: string) {
 
   const nonce = await provider.getTransactionCount(address);
   console.log('getNonce:', nonce);
-  return nonce;
+  return nonce.toString();
 }
 
 export async function getTransferDetails(

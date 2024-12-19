@@ -112,3 +112,15 @@ export type Chain = {
   rpcUrl: string;
   blockExplorer: string;
 };
+
+export type TransactionType = {
+  chainId: string;
+  from: string;
+  to: string;
+  value: string;
+  data: string;
+  gasLimit: string;
+  nonce: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+};
