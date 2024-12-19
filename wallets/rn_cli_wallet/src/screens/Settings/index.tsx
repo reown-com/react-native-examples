@@ -39,8 +39,7 @@ export default function Settings({navigation}: Props) {
     console.log('Add new account', newMnemonic);
     replaceMnemonic(newMnemonic)
       .then(() => {
-        Alert.alert('Success', 'Mnemonic replaced, reloading the app...');
-        DevSettings.reload();
+        Alert.alert('Success', 'Please restart the app!');
       })
       .catch(e => {
         Alert.alert('Error', e.message);
@@ -68,10 +67,18 @@ export default function Settings({navigation}: Props) {
         />
 
         <TextInput
-          style={{borderColor: 'black'}}
+          style={{
+            borderColor: 'gray',
+            marginVertical: 10,
+            borderWidth: 1,
+            lineHeight: 40,
+            borderRadius: 10,
+            padding: 10,
+          }}
           placeholder="Enter mnemonic or private key"
           onChangeText={value => setNewMnemonic(value)}
         />
+
         <Card title="Add new account" onPress={onAddNewAccount} />
       </View>
       <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Device</Text>

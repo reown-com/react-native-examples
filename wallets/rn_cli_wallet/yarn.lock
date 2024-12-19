@@ -4431,9 +4431,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.17.2-canary-ca-7":
-  version: 2.17.2-canary-ca-7
-  resolution: "@walletconnect/react-native-compat@npm:2.17.2-canary-ca-7"
+"@walletconnect/react-native-compat@npm:2.17.2-canary-ca-9":
+  version: 2.17.2-canary-ca-9
+  resolution: "@walletconnect/react-native-compat@npm:2.17.2-canary-ca-9"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -4447,7 +4447,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: 6557d927b15201c502e5b88b88b98b53d7e9aa882396874e57562ffc2c115f624ebce59b9f11f27bb7bd1e2361bbf3bfe2f118b8855011f131ecea8af37845b1
+  checksum: 97b3b430e6d44272f8cc7c0f1b9242c0fbc56c0eb58fa629afa45dcd157e181f99c43dab59579e0328c735fed6f4f79170cd07660f356023a6504ad11b7bc9df
   languageName: node
   linkType: hard
 
@@ -13311,7 +13311,7 @@ __metadata:
     "@types/react": ^18.2.6
     "@types/react-test-renderer": ^18.0.0
     "@walletconnect/core": 2.17.2
-    "@walletconnect/react-native-compat": 2.17.2-canary-ca-7
+    "@walletconnect/react-native-compat": 2.17.2-canary-ca-9
     babel-jest: ^29.6.3
     babel-plugin-module-resolver: ^5.0.0
     dayjs: 1.11.11
