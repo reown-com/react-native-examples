@@ -24,6 +24,7 @@ interface State {
   socketStatus: 'connected' | 'disconnected' | 'stalled' | 'unknown';
   logs: string[];
   isLinkModeRequest: boolean;
+  connectionViaDeepLink: boolean;
 }
 
 /**
@@ -40,6 +41,7 @@ const state = proxy<State>({
   socketStatus: 'unknown',
   logs: [],
   isLinkModeRequest: false,
+  connectionViaDeepLink: false,
 });
 
 /**
@@ -97,6 +99,9 @@ const SettingsStore = {
     } else {
       AsyncStorage.removeItem('TEST_NETS');
     }
+  },
+  setConnectionViaDeepLink(value: State['connectionViaDeepLink']) {
+    state.connectionViaDeepLink = value;
   },
 };
 
