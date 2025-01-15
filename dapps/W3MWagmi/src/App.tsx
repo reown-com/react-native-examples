@@ -77,6 +77,12 @@ createAppKit({
   siweConfig,
   clipboardClient,
   customWallets,
+  features: {
+    email: true,
+    socials: ['x', 'farcaster', 'discord', 'apple'],
+    emailShowWallets: true,
+    swaps: true,
+  },
 });
 
 const queryClient = new QueryClient();
