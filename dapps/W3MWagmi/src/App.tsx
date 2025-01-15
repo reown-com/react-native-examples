@@ -52,7 +52,7 @@ const clipboardClient = {
 };
 
 const _coinbaseConnector = coinbaseConnector({
-  redirect: metadata?.redirect?.native || '',
+  redirect: metadata?.redirect?.universal || '',
 });
 
 const _authConnector = authConnector({
