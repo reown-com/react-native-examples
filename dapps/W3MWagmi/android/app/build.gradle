@@ -102,7 +102,7 @@ android {
         applicationId "com.walletconnect.web3modal.rnsample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 62
+        versionCode 93
         versionName "1.1"
         resValue "string", "build_config_package", "com.w3mwagmi"
     }
@@ -152,7 +152,19 @@ android {
 
 sentry {
     autoUploadProguardMapping = shouldSentryAutoUpload()
+
+    // Enables or disables the automatic configuration of Native Symbols
+    // for Sentry. This executes sentry-cli automatically so
+    // you don't need to do it manually.
+    // Default is disabled.
     uploadNativeSymbols = shouldSentryAutoUpload()
+
+    // Enables or disables the automatic upload of the app's native source code to Sentry.
+    // This executes sentry-cli with the --include-sources param automatically so
+    // you don't need to do it manually.
+    // This option has an effect only when [uploadNativeSymbols] is enabled.
+    // Default is disabled.
+    includeNativeSources = shouldSentryAutoUpload()
 }
 
 dependencies {

@@ -9,7 +9,7 @@ import {
   useAppKitProvider,
 } from '@reown/appkit-ethers5-react-native';
 import {eip712} from '../utils/eip712';
-import {ethers} from 'ethers';
+// import {ethers} from 'ethers';
 
 export function SignTypedDataV4() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
@@ -17,7 +17,7 @@ export function SignTypedDataV4() {
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
   const {walletProvider} = useAppKitProvider();
-  const {isConnected} = useAppKitAccount();
+  const {isConnected, address} = useAppKitAccount();
 
   const onPress = async () => {
     if (!isConnected || !walletProvider) {
@@ -29,10 +29,9 @@ export function SignTypedDataV4() {
     setIsLoading(true);
 
     try {
-      const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
-      const signer = ethersProvider.getSigner();
+      // const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
+      // const signer = ethersProvider.getSigner(address);
       const message = JSON.stringify(eip712.example);
-      const address = await signer.getAddress();
 
       // eth_signTypedData_v4 params
       const params = [address, message];
