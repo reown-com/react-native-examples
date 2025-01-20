@@ -37,7 +37,7 @@ export function RequestModal({
   return (
     <Modal isVisible={isVisible} onBackdropPress={handleClose}>
       <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-        <Text>X</Text>
+        <Text style={styles.closeText}>X</Text>
       </TouchableOpacity>
       <View style={styles.innerContainer}>
         {isLoading && (
@@ -70,7 +70,9 @@ export function RequestModal({
             <Text style={[styles.title, {color: Theme['success-100']}]}>
               Request Response
             </Text>
-            <Text style={styles.responseText}>{rpcResponse}</Text>
+            <Text style={styles.responseText} numberOfLines={5}>
+              {rpcResponse}
+            </Text>
           </>
         )}
         {rpcError && (
@@ -78,7 +80,7 @@ export function RequestModal({
             <Text style={[styles.title, {color: Theme['error-100']}]}>
               Request Failure
             </Text>
-            <Text style={styles.subtitle}>
+            <Text style={styles.subtitle} numberOfLines={5}>
               Error: <Text style={styles.responseText}>{rpcError}</Text>
             </Text>
           </>
@@ -124,8 +126,12 @@ const styles = StyleSheet.create({
   center: {
     textAlign: 'center',
   },
+  closeText: {
+    color: 'black',
+  },
   responseText: {
     fontWeight: '300',
+    color: 'black',
   },
   linkModeContainer: {
     borderRadius: 20,

@@ -16,7 +16,7 @@ export function WriteContract() {
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
   const {walletProvider} = useAppKitProvider();
-  const {isConnected} = useAppKitAccount();
+  const {isConnected, address} = useAppKitAccount();
 
   const onPress = async () => {
     if (!isConnected || !walletProvider) {
@@ -29,8 +29,7 @@ export function WriteContract() {
 
     try {
       const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
-      const signer = ethersProvider.getSigner();
-      const address = await signer.getAddress();
+      const signer = ethersProvider.getSigner(address);
       const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
       const contractABI = usdtAbi;
       const contract = new ethers.Contract(

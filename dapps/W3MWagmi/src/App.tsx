@@ -7,6 +7,7 @@ import {
   defaultWagmiConfig,
   AppKit,
 } from '@reown/appkit-wagmi-react-native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import {coinbaseConnector} from '@reown/appkit-coinbase-wagmi-react-native';
 import {authConnector} from '@reown/appkit-auth-wagmi-react-native';
@@ -25,12 +26,18 @@ import {siweConfig} from '@/utils/SiweUtils';
 import {chains} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
 
-if (!__DEV__ && Config.ENV_SENTRY_DSN) {
-  Sentry.init({
-    dsn: Config.ENV_SENTRY_DSN,
-    environment: Config.ENV_SENTRY_TAG,
-  });
-}
+Sentry.init({
+  enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
+  dsn: Config.ENV_SENTRY_DSN,
+  environment: Config.ENV_SENTRY_TAG,
+  _experiments: {
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 1.0,
+  },
+  tracesSampleRate: 0.5,
+  profilesSampleRate: 1.0,
+  integrations: [Sentry.mobileReplayIntegration()],
+});
 
 // 1. Get projectId
 const projectId = Config.ENV_PROJECT_ID;
@@ -45,7 +52,7 @@ const clipboardClient = {
 };
 
 const _coinbaseConnector = coinbaseConnector({
-  redirect: metadata?.redirect?.native || '',
+  redirect: metadata?.redirect?.universal || '',
 });
 
 const _authConnector = authConnector({
@@ -66,11 +73,15 @@ const customWallets = getCustomWallets();
 createAppKit({
   projectId,
   wagmiConfig,
-  metadata,
   siweConfig,
   clipboardClient,
   customWallets,
-  enableAnalytics: true,
+  features: {
+    email: true,
+    socials: ['x', 'discord', 'apple'],
+    emailShowWallets: true,
+    swaps: true,
+  },
 });
 
 const queryClient = new QueryClient();
@@ -107,16 +118,18 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <NavigationContainer>
-      <WagmiProvider config={wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <RootStackNavigator />
-          <Toast />
-          <AppKit />
-        </QueryClientProvider>
-      </WagmiProvider>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <NavigationContainer>
+        <WagmiProvider config={wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <RootStackNavigator />
+            <Toast />
+            <AppKit />
+          </QueryClientProvider>
+        </WagmiProvider>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 
-export default App;
+export default Sentry.wrap(App);

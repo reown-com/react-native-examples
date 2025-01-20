@@ -3,7 +3,7 @@ import {View} from 'react-native';
 import {Button} from '@reown/appkit-ui-react-native';
 
 import {RequestModal} from '../components/RequestModal';
-import {BrowserProvider} from 'ethers';
+import {BrowserProvider, JsonRpcSigner} from 'ethers';
 import {
   useAppKitAccount,
   useAppKitProvider,
@@ -16,7 +16,7 @@ export function SignTypedDataV4() {
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
   const {walletProvider} = useAppKitProvider();
-  const {isConnected} = useAppKitAccount();
+  const {isConnected, address} = useAppKitAccount();
 
   const onPress = async () => {
     if (!isConnected || !walletProvider) {
@@ -29,7 +29,7 @@ export function SignTypedDataV4() {
 
     try {
       const ethersProvider = new BrowserProvider(walletProvider);
-      const signer = await ethersProvider.getSigner();
+      const signer = new JsonRpcSigner(ethersProvider, address!);
       const message = JSON.stringify(eip712.example);
 
       const signature = await walletProvider.request({

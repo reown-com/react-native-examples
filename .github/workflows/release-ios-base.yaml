@@ -132,11 +132,11 @@ jobs:
           APPLE_KEY_ID: ${{ secrets.apple-key-id }}
           APPLE_KEY_CONTENT: ${{ secrets.apple-key-content }}
           APPLE_ISSUER_ID: ${{ secrets.apple-issuer-id }}
+          BUNDLE_ID: ${{ inputs.bundle-id }}
           MATCH_USERNAME: ${{ secrets.match-username }}
           MATCH_PASSWORD: ${{ secrets.match-keychain-password }}
           MATCH_GIT_URL: ${{ secrets.match-git-url }}
-          BUNDLE_ID: ${{ inputs.bundle-id }}
-          SCHEME: ${{ inputs.scheme-name }}
           PODFILE_PATH: ${{ inputs.root-path }}/ios/Podfile
+          SCHEME: ${{ inputs.scheme-name }}
           XCODE_PROJECT_PATH: ${{ inputs.xcode-project-path }}
           XCWORKSPACE_PATH: ${{ inputs.xcode-workspace-path }}
