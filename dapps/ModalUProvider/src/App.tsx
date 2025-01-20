@@ -82,7 +82,7 @@ function App(): JSX.Element {
 
     const transaction = {
       from: address,
-      to: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // vitalik.eth
+      to: '0x704457b418E9Fb723e1Bc0cB98106a6B8Cf87689', // test address
       value: amount,
       chainId,
       data: '0x',

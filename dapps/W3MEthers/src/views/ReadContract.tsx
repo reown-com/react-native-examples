@@ -7,7 +7,7 @@ import {
   useAppKitAccount,
   useAppKitProvider,
 } from '@reown/appkit-ethers-react-native';
-import {BrowserProvider, Contract} from 'ethers';
+import {BrowserProvider, Contract, JsonRpcSigner} from 'ethers';
 import wagmigotchiABI from '../utils/wagmigotchiABI';
 
 export function ReadContract() {
@@ -16,7 +16,7 @@ export function ReadContract() {
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
   const {walletProvider} = useAppKitProvider();
-  const {isConnected} = useAppKitAccount();
+  const {isConnected, address} = useAppKitAccount();
 
   const onPress = async () => {
     if (!isConnected || !walletProvider) {
@@ -30,13 +30,14 @@ export function ReadContract() {
 
     try {
       const ethersProvider = new BrowserProvider(walletProvider);
-      const signer = await ethersProvider.getSigner();
+      const signer = new JsonRpcSigner(ethersProvider, address!);
       const contractAddress = '0xecb504d39723b0be0e3a9aa33d646642d1051ee1';
       const contractABI = wagmigotchiABI;
       const contract = new Contract(contractAddress, contractABI, signer);
       const balance = await contract.getHunger();
       setData(balance.toString());
-    } catch {
+    } catch (e) {
+      console.log(e);
       setError(true);
     }
     setIsLoading(false);
