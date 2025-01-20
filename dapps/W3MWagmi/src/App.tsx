@@ -79,7 +79,7 @@ createAppKit({
   customWallets,
   features: {
     email: true,
-    socials: ['x', 'farcaster', 'discord', 'apple'],
+    socials: ['x', 'discord', 'apple'],
     emailShowWallets: true,
     swaps: true,
   },
