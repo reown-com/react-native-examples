@@ -73,10 +73,15 @@ const customWallets = getCustomWallets();
 createAppKit({
   projectId,
   wagmiConfig,
-  metadata,
   siweConfig,
   clipboardClient,
   customWallets,
+  features: {
+    email: true,
+    socials: ['x', 'discord', 'apple'],
+    emailShowWallets: true,
+    swaps: true,
+  },
 });
 
 const queryClient = new QueryClient();
