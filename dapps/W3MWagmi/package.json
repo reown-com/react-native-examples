@@ -46,7 +46,7 @@
     "react-native-toast-message": "2.2.1",
     "react-native-webview": "13.12.5",
     "viem": "2.22.10",
-    "wagmi": "2.18.8"
+    "wagmi": "2.14.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
