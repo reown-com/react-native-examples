@@ -14852,6 +14852,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"secp256k1@npm:^5.0.0":
+  version: 5.0.1
+  resolution: "secp256k1@npm:5.0.1"
+  dependencies:
+    elliptic: ^6.5.7
+    node-addon-api: ^5.0.0
+    node-gyp: latest
+    node-gyp-build: ^4.2.0
+  checksum: e21fb801502fe03a233f04c294cfdf16bd6087c36caa6514ccc5eac38ebd5ff50090a59d0ee7d50adf87f6d508a8211d09b905290fac97b4d43751967b7dfd9e
+  languageName: node
+  linkType: hard
+
 "selfsigned@npm:^2.4.1":
   version: 2.4.1
   resolution: "selfsigned@npm:2.4.1"
