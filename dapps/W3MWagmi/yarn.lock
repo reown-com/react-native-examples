@@ -4768,95 +4768,95 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-canary-20250120171556":
-  version: 0.0.0-canary-20250120171556
-  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-canary-20250120171556"
+"@reown/appkit-auth-wagmi-react-native@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@reown/appkit-auth-wagmi-react-native@npm:1.2.0"
   dependencies:
-    "@reown/appkit-core-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-wallet-react-native": 0.0.0-canary-20250120171556
+    "@reown/appkit-core-react-native": 1.2.0
+    "@reown/appkit-wallet-react-native": 1.2.0
   peerDependencies:
     wagmi: ">=2"
-  checksum: 351a16b2bd33cc44c9b4bea292ae111a787c67570f90e2e01ea9a088272b9b554f2259fa5a8bc0c551b30cfe50a3a2a42c4b61bfc945bc8b76ab46743026edd8
+  checksum: 25ce030b7f7a073c3a8747b75fec0ff30f8960c645229cf534432eff26907a65bc39fdd4972c44737a1a4336828d33ab5834a980f4255e86536c6aac032d4066
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-canary-20250120171556":
-  version: 0.0.0-canary-20250120171556
-  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-canary-20250120171556"
+"@reown/appkit-coinbase-wagmi-react-native@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:1.2.0"
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: 6406d1c975c3de398e9e293fd189fd646ce0a3649a9e03c8d8b475f50abed394d5c46e4e4901338feb81376c2e881ea591c9d937e23207630f00e8bf196d6a1d
+  checksum: f9cbbab3522cab969a43fc853e3d4e452b5c81d520a699c18e5a0198765bbac178b2235af7ff5f3d4a199127f23cdfdc5cc01af2e6d78ba8b75cd190389ea9de
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-canary-20250120171556":
-  version: 0.0.0-canary-20250120171556
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-canary-20250120171556"
+"@reown/appkit-common-react-native@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@reown/appkit-common-react-native@npm:1.2.0"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: fb93655fc50b6d8253ad8d13fcd24d6fd7c3321c2dcb4bab37750319f458663c9b6cbec2f6bc9ef4ea6c44aa03b2fa30710b2b47b8d4ab78a9ea2be166fd6441
+  checksum: fa5501f5b51dcfb2ef8c9404b6da5eda59752ace157a1061cae9755347fe355fa6664958b33a1ff25267fe14fd86f67141b3ea9cbec311c9062122190b60543f
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-canary-20250120171556":
-  version: 0.0.0-canary-20250120171556
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-canary-20250120171556"
+"@reown/appkit-core-react-native@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@reown/appkit-core-react-native@npm:1.2.0"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-canary-20250120171556
+    "@reown/appkit-common-react-native": 1.2.0
     valtio: 1.11.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 9e3934c7fea5aa944347d61c137a8d7faddb63b10113606048e730fde051f137516486c3b8deda42b2e50788c3711607a189c9f684a0aeae8e70cb64fac66e26
+  checksum: 50164acac8a6e48cd153f95b8a0c1b8a65d493587e6994732217a9327ea14324f1313845e94f6cd5afc1264e8126876026ca7d53491f3d537ee5bd2a948bc9fa
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-react-native@npm:0.0.0-canary-20250120171556":
-  version: 0.0.0-canary-20250120171556
-  resolution: "@reown/appkit-scaffold-react-native@npm:0.0.0-canary-20250120171556"
+"@reown/appkit-scaffold-react-native@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@reown/appkit-scaffold-react-native@npm:1.2.0"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-core-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-siwe-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-ui-react-native": 0.0.0-canary-20250120171556
+    "@reown/appkit-common-react-native": 1.2.0
+    "@reown/appkit-core-react-native": 1.2.0
+    "@reown/appkit-siwe-react-native": 1.2.0
+    "@reown/appkit-ui-react-native": 1.2.0
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: 76643a3d28e469fb54dec0b64568200365cd8c7b0ed2326de3e0eadeb8c5cf4422646e498bb20ea952367b5661986e0ae8d4d2cb901d7d496d4c4132bd63b941
+  checksum: 076d1ab627dfce01c73eaf212f3da069b6bd7d0638795165e12d0e932b998321e4ef8c13e9a822c0742c817580665bb91977de1bc27746c6e25370cfde08b06e
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-canary-20250120171556":
-  version: 0.0.0-canary-20250120171556
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-canary-20250120171556"
+"@reown/appkit-scaffold-utils-react-native@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@reown/appkit-scaffold-utils-react-native@npm:1.2.0"
   dependencies:
-    "@reown/appkit-scaffold-react-native": 0.0.0-canary-20250120171556
-  checksum: 97670785a63e4f8d68f3b453e2bedbdb5ade3c0977b787816e50ee9202471d4997f32121b7f4aba955df9cb3e12f5a20516604e891ab4a4a7a3a497b4b8bf336
+    "@reown/appkit-scaffold-react-native": 1.2.0
+  checksum: 6edd9a1efeabbb1d1ca50b22301b10b1335f40019fa6d64ad5113f62d243835e812e79562dfa3da346b38c81bcf260b146e6331bfdb3984efd7c2de7dbaa84f9
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-canary-20250120171556":
-  version: 0.0.0-canary-20250120171556
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-canary-20250120171556"
+"@reown/appkit-siwe-react-native@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@reown/appkit-siwe-react-native@npm:1.2.0"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-core-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-ui-react-native": 0.0.0-canary-20250120171556
+    "@reown/appkit-common-react-native": 1.2.0
+    "@reown/appkit-core-react-native": 1.2.0
+    "@reown/appkit-ui-react-native": 1.2.0
     valtio: 1.11.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: 18b213c8907ad76e2f30d7298aafb357798243a1d260abe152906473b60c2a07e2cc6c96c6a8d6890735fa03c490732e6486310868d2a66dea0e0a35859fe0bd
+  checksum: 5cc94bbef1e91084033ed7680a31cfe9947852f6e7e5b6c17281c03eac8d34d073ef4e1d7e67bc75d9ec7fa78cf838ca54567f0628924b3f6cc8ebc54323c703
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-canary-20250120171556":
-  version: 0.0.0-canary-20250120171556
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-canary-20250120171556"
+"@reown/appkit-ui-react-native@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@reown/appkit-ui-react-native@npm:1.2.0"
   dependencies:
     polished: 4.3.1
     qrcode: 1.5.3
@@ -4864,18 +4864,18 @@ __metadata:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: d1cd6d2a141027d46246c0f63e04570511e3e89b3114bf74bc738baa617bf0e075d7642e5d01b50eaada4e32ba6756ba9640314ddf4a09edce9dfca3b8bae785
+  checksum: 1d50b35c1edf83a6d81b46827ae8f912a377319896617e98fba50b8dcf93079a75cd09420484da62272a5e457f6f69cc2530568a40e47ea82d317064ff40aa4c
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-canary-20250120171556":
-  version: 0.0.0-canary-20250120171556
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-canary-20250120171556"
+"@reown/appkit-wagmi-react-native@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@reown/appkit-wagmi-react-native@npm:1.2.0"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-scaffold-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-scaffold-utils-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-siwe-react-native": 0.0.0-canary-20250120171556
+    "@reown/appkit-common-react-native": 1.2.0
+    "@reown/appkit-scaffold-react-native": 1.2.0
+    "@reown/appkit-scaffold-utils-react-native": 1.2.0
+    "@reown/appkit-siwe-react-native": 1.2.0
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -4885,21 +4885,21 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: 6b6a4aaa415efcb7f108730218c41a937e8afc30d750f71a901f71545117299415ebb3591a3a55ab9650962ff9c467a79cc68138510e320f31e74ca785777dcd
+  checksum: ec21f5ce8b08e3eca1bd74f0806a02477a605e218596a98eb0b63d4262b6d8a9cdd4d421859a07fd1e5c47c4824f79827f052f6e8650b861b5d68aa1c70a70aa
   languageName: node
   linkType: hard
 
-"@reown/appkit-wallet-react-native@npm:0.0.0-canary-20250120171556":
-  version: 0.0.0-canary-20250120171556
-  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-canary-20250120171556"
+"@reown/appkit-wallet-react-native@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@reown/appkit-wallet-react-native@npm:1.2.0"
   dependencies:
-    "@reown/appkit-core-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-ui-react-native": 0.0.0-canary-20250120171556
+    "@reown/appkit-core-react-native": 1.2.0
+    "@reown/appkit-ui-react-native": 1.2.0
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: 1f6218d390e8a497bcd5064b3814c108828eb10711d6d37ab969fc2898c9392e84c5d515b2facf6bb5fd90df04dd893af9cd9e273957073b7871228c2818fb7c
+  checksum: a936a267c874e61ee9d2a14a3e82cddf9c36a3193b8fbb16da8c463ed6693f317c7b1f2a6d238cee99b8a35dc2a50ea8ef91ac0945f317202d0d712aa3d5d256
   languageName: node
   linkType: hard
 
@@ -6579,9 +6579,9 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-auth-wagmi-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-canary-20250120171556
-    "@reown/appkit-wagmi-react-native": 0.0.0-canary-20250120171556
+    "@reown/appkit-auth-wagmi-react-native": 1.2.0
+    "@reown/appkit-coinbase-wagmi-react-native": 1.2.0
+    "@reown/appkit-wagmi-react-native": 1.2.0
     "@sentry/react-native": 6.4.0
     "@tanstack/react-query": 5.51.1
     "@types/react": ^18.2.6
