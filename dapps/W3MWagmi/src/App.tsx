@@ -73,6 +73,7 @@ const customWallets = getCustomWallets();
 createAppKit({
   projectId,
   wagmiConfig,
+  metadata,
   siweConfig,
   clipboardClient,
   customWallets,

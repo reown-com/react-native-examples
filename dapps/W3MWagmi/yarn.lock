@@ -2457,12 +2457,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.26.0":
-  version: 7.26.0
-  resolution: "@babel/runtime@npm:7.26.0"
+"@babel/runtime@npm:^7.17.8":
+  version: 7.26.7
+  resolution: "@babel/runtime@npm:7.26.7"
   dependencies:
     regenerator-runtime: ^0.14.0
-  checksum: c8e2c0504ab271b3467a261a8f119bf2603eb857a0d71e37791f4e3fae00f681365073cc79f141ddaa90c6077c60ba56448004ad5429d07ac73532be9f7cf28a
+  checksum: a1664a08f3f4854b895b540cca2f5f5c6c1993b5fb788c9615d70fc201e16bb254df8e0550c83eaf2749a14d87775e11a7c9ded6161203e9da7a4a323d546925
   languageName: node
   linkType: hard
 
@@ -2472,6 +2472,15 @@ __metadata:
   dependencies:
     regenerator-runtime: ^0.14.0
   checksum: 755383192f3ac32ba4c62bd4f1ae92aed5b82d2c6665f39eb28fa94546777cf5c63493ea92dd03f1c2e621b17e860f190c056684b7f234270fdc91e29beda063
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.26.0":
+  version: 7.26.0
+  resolution: "@babel/runtime@npm:7.26.0"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: c8e2c0504ab271b3467a261a8f119bf2603eb857a0d71e37791f4e3fae00f681365073cc79f141ddaa90c6077c60ba56448004ad5429d07ac73532be9f7cf28a
   languageName: node
   linkType: hard
 
@@ -3746,9 +3755,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/sdk-communication-layer@npm:0.31.0":
-  version: 0.31.0
-  resolution: "@metamask/sdk-communication-layer@npm:0.31.0"
+"@metamask/sdk-communication-layer@npm:0.32.0":
+  version: 0.32.0
+  resolution: "@metamask/sdk-communication-layer@npm:0.32.0"
   dependencies:
     bufferutil: ^4.0.8
     date-fns: ^2.29.3
@@ -3761,28 +3770,28 @@ __metadata:
     eventemitter2: ^6.4.9
     readable-stream: ^3.6.2
     socket.io-client: ^4.5.1
-  checksum: 3f9283d828d736f331154bfa0e1368b7c7c18e00eff66ccd20e97fb86618433cef3c60ed4168e2565bda825303562eb00bb9ca101d1abdcdc3f3848f807e614e
+  checksum: 4981d97d1d1b7aa48176fbee8ca0dae8ab4df27e9434c380c28c5e2022ff3b775e283a08cc3512c27e76e4e54d906797cbe3b70670a0c9763632bc471776ced1
   languageName: node
   linkType: hard
 
-"@metamask/sdk-install-modal-web@npm:0.31.5":
-  version: 0.31.5
-  resolution: "@metamask/sdk-install-modal-web@npm:0.31.5"
+"@metamask/sdk-install-modal-web@npm:0.32.0":
+  version: 0.32.0
+  resolution: "@metamask/sdk-install-modal-web@npm:0.32.0"
   dependencies:
     "@paulmillr/qr": ^0.2.1
-  checksum: b0ed6812a72437ed4ea482737a3c3bed9710d623d2def43d86cde30d004bf9ccb39310ff81cd13dc1d3a951854de5e7c9ab81088fb6d261d8607f024eef95bd9
+  checksum: 78f8d6db286853524466ed667962a611415f7677938f5a0dab4cf66ca2a801f46b5c6764731c7f492878ff6293fa0ddd8cb3a0e0a582793a2504354273f8c34d
   languageName: node
   linkType: hard
 
-"@metamask/sdk@npm:0.31.5":
-  version: 0.31.5
-  resolution: "@metamask/sdk@npm:0.31.5"
+"@metamask/sdk@npm:0.32.0":
+  version: 0.32.0
+  resolution: "@metamask/sdk@npm:0.32.0"
   dependencies:
     "@babel/runtime": ^7.26.0
     "@metamask/onboarding": ^1.0.1
     "@metamask/providers": 16.1.0
-    "@metamask/sdk-communication-layer": 0.31.0
-    "@metamask/sdk-install-modal-web": 0.31.5
+    "@metamask/sdk-communication-layer": 0.32.0
+    "@metamask/sdk-install-modal-web": 0.32.0
     "@paulmillr/qr": ^0.2.1
     bowser: ^2.9.0
     cross-fetch: ^4.0.0
@@ -3797,7 +3806,7 @@ __metadata:
     tslib: ^2.6.0
     util: ^0.12.4
     uuid: ^8.3.2
-  checksum: 611f2e6b4f6e5486972f63bb5b546592cb46683b28ef70f30d71c2494c34429c3e3852f187b8989745a3819bd8acf316ed8f2a919af291d5919454cd3590a9d8
+  checksum: 2b05e1316667471f47d3f03deae5fa6c493d6511406e034edc2aab003d5d9f12b1344f5ec37027bcda26ac1dd752b9d9923c925d17d8df3305f4f89574c5ed44
   languageName: node
   linkType: hard
 
@@ -3950,7 +3959,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/curves@npm:1.7.0, @noble/curves@npm:^1.6.0, @noble/curves@npm:~1.7.0":
+"@noble/curves@npm:1.8.1, @noble/curves@npm:~1.8.1":
+  version: 1.8.1
+  resolution: "@noble/curves@npm:1.8.1"
+  dependencies:
+    "@noble/hashes": 1.7.1
+  checksum: 4143f1248ed57c1ae46dfef5c692a91383e5830420b9c72d3ff1061aa9ebbf8999297da6d2aed8a9716fef8e6b1f5a45737feeab02abf55ca2a4f514bf9339ec
+  languageName: node
+  linkType: hard
+
+"@noble/curves@npm:^1.6.0, @noble/curves@npm:~1.7.0":
   version: 1.7.0
   resolution: "@noble/curves@npm:1.7.0"
   dependencies:
@@ -3989,10 +4007,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:1.6.1, @noble/hashes@npm:^1.5.0, @noble/hashes@npm:~1.6.0":
-  version: 1.6.1
-  resolution: "@noble/hashes@npm:1.6.1"
-  checksum: 57c62f65ee217c0293b4321b547792aa6d79812bfe70a7d62dc83e0f936cc677b14ed981b4e88cf8fdad37cd6d3a0cbd3bd0908b0728adc9daf066e678be8901
+"@noble/hashes@npm:1.7.1, @noble/hashes@npm:~1.7.1":
+  version: 1.7.1
+  resolution: "@noble/hashes@npm:1.7.1"
+  checksum: 4f1b56428a10323feef17e4f437c9093556cb18db06f94d254043fadb69c3da8475f96eb3f8322d41e8670117d7486475a8875e68265c2839f60fd03edd6a616
   languageName: node
   linkType: hard
 
@@ -4007,6 +4025,13 @@ __metadata:
   version: 1.5.0
   resolution: "@noble/hashes@npm:1.5.0"
   checksum: 9cc031d5c888c455bfeef76af649b87f75380a4511405baea633c1e4912fd84aff7b61e99716f0231d244c9cfeda1fafd7d718963e6a0c674ed705e9b1b4f76b
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:^1.5.0, @noble/hashes@npm:~1.6.0":
+  version: 1.6.1
+  resolution: "@noble/hashes@npm:1.6.1"
+  checksum: 57c62f65ee217c0293b4321b547792aa6d79812bfe70a7d62dc83e0f936cc677b14ed981b4e88cf8fdad37cd6d3a0cbd3bd0908b0728adc9daf066e678be8901
   languageName: node
   linkType: hard
 
@@ -4759,95 +4784,95 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-auth-wagmi-react-native@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reown/appkit-auth-wagmi-react-native@npm:1.2.0"
+"@reown/appkit-auth-wagmi-react-native@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@reown/appkit-auth-wagmi-react-native@npm:1.2.1"
   dependencies:
-    "@reown/appkit-core-react-native": 1.2.0
-    "@reown/appkit-wallet-react-native": 1.2.0
+    "@reown/appkit-core-react-native": 1.2.1
+    "@reown/appkit-wallet-react-native": 1.2.1
   peerDependencies:
     wagmi: ">=2"
-  checksum: 25ce030b7f7a073c3a8747b75fec0ff30f8960c645229cf534432eff26907a65bc39fdd4972c44737a1a4336828d33ab5834a980f4255e86536c6aac032d4066
+  checksum: e7d0c4fee098081360ea3e35a6b605aa912c7e83b1d2bd171c0c4d5addfbcf2da6040a91ee997f1c889a3e605c382dac634fa7a18723ad84a07681f58391446c
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-wagmi-react-native@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:1.2.0"
+"@reown/appkit-coinbase-wagmi-react-native@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:1.2.1"
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: f9cbbab3522cab969a43fc853e3d4e452b5c81d520a699c18e5a0198765bbac178b2235af7ff5f3d4a199127f23cdfdc5cc01af2e6d78ba8b75cd190389ea9de
+  checksum: b06179dd21eb325aac2fae1156673b8b424be8145817a46cf29a6da2b58fbb7b3896da9748c2ffc9918db5ce4c1e6126914c026cbbfd6aa5263dc3d1e1152af0
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reown/appkit-common-react-native@npm:1.2.0"
+"@reown/appkit-common-react-native@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@reown/appkit-common-react-native@npm:1.2.1"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: fa5501f5b51dcfb2ef8c9404b6da5eda59752ace157a1061cae9755347fe355fa6664958b33a1ff25267fe14fd86f67141b3ea9cbec311c9062122190b60543f
+  checksum: fe1996a63d7ed81c2b4f4bc8bbcbe957aa12322801f1e5d6bce0081e77fbd3bf4129377b4c5adacb3b0cc681126d21e0e446c21c8824f012cc5f792722f6e49e
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reown/appkit-core-react-native@npm:1.2.0"
+"@reown/appkit-core-react-native@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@reown/appkit-core-react-native@npm:1.2.1"
   dependencies:
-    "@reown/appkit-common-react-native": 1.2.0
+    "@reown/appkit-common-react-native": 1.2.1
     valtio: 1.11.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 50164acac8a6e48cd153f95b8a0c1b8a65d493587e6994732217a9327ea14324f1313845e94f6cd5afc1264e8126876026ca7d53491f3d537ee5bd2a948bc9fa
+  checksum: 93bbbc9c086906e1b734dc710948b577ce530c37691bcf90c6c612b5c6ecbe841f8f3d7a7fec63f3106fead29240fbc74f4150e46ef1967ee0d6b49b984c5496
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-react-native@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reown/appkit-scaffold-react-native@npm:1.2.0"
+"@reown/appkit-scaffold-react-native@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@reown/appkit-scaffold-react-native@npm:1.2.1"
   dependencies:
-    "@reown/appkit-common-react-native": 1.2.0
-    "@reown/appkit-core-react-native": 1.2.0
-    "@reown/appkit-siwe-react-native": 1.2.0
-    "@reown/appkit-ui-react-native": 1.2.0
+    "@reown/appkit-common-react-native": 1.2.1
+    "@reown/appkit-core-react-native": 1.2.1
+    "@reown/appkit-siwe-react-native": 1.2.1
+    "@reown/appkit-ui-react-native": 1.2.1
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: 076d1ab627dfce01c73eaf212f3da069b6bd7d0638795165e12d0e932b998321e4ef8c13e9a822c0742c817580665bb91977de1bc27746c6e25370cfde08b06e
+  checksum: 4a1a77ea85ece58df9b0100ed7183292c1b5e85c90b97fe9197a9b5b4bca8fd30a24de2247c6a10f76845bf0eb9373d94f11df491a48c78a4030d643f8775e35
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:1.2.0"
+"@reown/appkit-scaffold-utils-react-native@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@reown/appkit-scaffold-utils-react-native@npm:1.2.1"
   dependencies:
-    "@reown/appkit-scaffold-react-native": 1.2.0
-  checksum: 6edd9a1efeabbb1d1ca50b22301b10b1335f40019fa6d64ad5113f62d243835e812e79562dfa3da346b38c81bcf260b146e6331bfdb3984efd7c2de7dbaa84f9
+    "@reown/appkit-scaffold-react-native": 1.2.1
+  checksum: 2bfafe049a908a9b9a7d1fe7030a9d418b81cb693e79efa879b45ed0a87bac74d811cf1d2602e3af4fd81fec23ef3bb52a5d610219ea3096abd43561dda03405
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reown/appkit-siwe-react-native@npm:1.2.0"
+"@reown/appkit-siwe-react-native@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@reown/appkit-siwe-react-native@npm:1.2.1"
   dependencies:
-    "@reown/appkit-common-react-native": 1.2.0
-    "@reown/appkit-core-react-native": 1.2.0
-    "@reown/appkit-ui-react-native": 1.2.0
+    "@reown/appkit-common-react-native": 1.2.1
+    "@reown/appkit-core-react-native": 1.2.1
+    "@reown/appkit-ui-react-native": 1.2.1
     valtio: 1.11.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: 5cc94bbef1e91084033ed7680a31cfe9947852f6e7e5b6c17281c03eac8d34d073ef4e1d7e67bc75d9ec7fa78cf838ca54567f0628924b3f6cc8ebc54323c703
+  checksum: 3f6680f4b3d4859bf68190ea8745ab70bc82dc88f11c91990d75083b0e8e533aebcb9f6ea918082acc09682272c24be9c6b11cce8793f605335b5d81cb8d0862
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reown/appkit-ui-react-native@npm:1.2.0"
+"@reown/appkit-ui-react-native@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@reown/appkit-ui-react-native@npm:1.2.1"
   dependencies:
     polished: 4.3.1
     qrcode: 1.5.3
@@ -4855,18 +4880,18 @@ __metadata:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 1d50b35c1edf83a6d81b46827ae8f912a377319896617e98fba50b8dcf93079a75cd09420484da62272a5e457f6f69cc2530568a40e47ea82d317064ff40aa4c
+  checksum: 8b8a310158ac739f316b2370d1aec0ceb59c5e9115675ad5ba2812535e77768ccdbc57be2dcf8c0add93423b32af16ba93b6340271be07c0f1288fbdddab0800
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reown/appkit-wagmi-react-native@npm:1.2.0"
+"@reown/appkit-wagmi-react-native@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@reown/appkit-wagmi-react-native@npm:1.2.1"
   dependencies:
-    "@reown/appkit-common-react-native": 1.2.0
-    "@reown/appkit-scaffold-react-native": 1.2.0
-    "@reown/appkit-scaffold-utils-react-native": 1.2.0
-    "@reown/appkit-siwe-react-native": 1.2.0
+    "@reown/appkit-common-react-native": 1.2.1
+    "@reown/appkit-scaffold-react-native": 1.2.1
+    "@reown/appkit-scaffold-utils-react-native": 1.2.1
+    "@reown/appkit-siwe-react-native": 1.2.1
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -4876,21 +4901,21 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: ec21f5ce8b08e3eca1bd74f0806a02477a605e218596a98eb0b63d4262b6d8a9cdd4d421859a07fd1e5c47c4824f79827f052f6e8650b861b5d68aa1c70a70aa
+  checksum: 658da388cf096ee2f40be720fd15c6f878a18e95c4ca21e23716e807b36395dc43ef7153290194e19c660b2597d3bda6f572c7345f07a6949441a8b89ac47e45
   languageName: node
   linkType: hard
 
-"@reown/appkit-wallet-react-native@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@reown/appkit-wallet-react-native@npm:1.2.0"
+"@reown/appkit-wallet-react-native@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@reown/appkit-wallet-react-native@npm:1.2.1"
   dependencies:
-    "@reown/appkit-core-react-native": 1.2.0
-    "@reown/appkit-ui-react-native": 1.2.0
+    "@reown/appkit-core-react-native": 1.2.1
+    "@reown/appkit-ui-react-native": 1.2.1
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: a936a267c874e61ee9d2a14a3e82cddf9c36a3193b8fbb16da8c463ed6693f317c7b1f2a6d238cee99b8a35dc2a50ea8ef91ac0945f317202d0d712aa3d5d256
+  checksum: 06acd4dedfe3236827eb418e7a429b0b08052b7ddab23bf37d3ed5adc7e1052c4136e842b26a09c7582328ba2b4b1049e894295c42ea5409e2dff530cc545119
   languageName: node
   linkType: hard
 
@@ -4956,6 +4981,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@scure/base@npm:~1.2.2, @scure/base@npm:~1.2.4":
+  version: 1.2.4
+  resolution: "@scure/base@npm:1.2.4"
+  checksum: db554eb550a1bd17684af9282e1ad751050a13d4add0e83ad61cc496680d7d1c1c1120ca780e72935a293bb59721c20a006a53a5eec6f6b5bdcd702cf27c8cae
+  languageName: node
+  linkType: hard
+
 "@scure/bip32@npm:1.3.3":
   version: 1.3.3
   resolution: "@scure/bip32@npm:1.3.3"
@@ -4978,7 +5010,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/bip32@npm:1.6.0, @scure/bip32@npm:^1.5.0":
+"@scure/bip32@npm:1.6.2":
+  version: 1.6.2
+  resolution: "@scure/bip32@npm:1.6.2"
+  dependencies:
+    "@noble/curves": ~1.8.1
+    "@noble/hashes": ~1.7.1
+    "@scure/base": ~1.2.2
+  checksum: e7586619f8a669e522267ce71a90b2d00c3a91da658f1f50e54072cf9f432ba26d2bb4d3d91a5d06932ab96612b8bd038bc31d885bbc048cebfb6509c4a790fc
+  languageName: node
+  linkType: hard
+
+"@scure/bip32@npm:^1.5.0":
   version: 1.6.0
   resolution: "@scure/bip32@npm:1.6.0"
   dependencies:
@@ -5009,7 +5052,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/bip39@npm:1.5.0, @scure/bip39@npm:^1.4.0":
+"@scure/bip39@npm:1.5.4":
+  version: 1.5.4
+  resolution: "@scure/bip39@npm:1.5.4"
+  dependencies:
+    "@noble/hashes": ~1.7.1
+    "@scure/base": ~1.2.4
+  checksum: 744f302559ad05ee6ea4928572ac8f0b5443e8068fd53234c9c2e158814e910a043c54f0688d05546decadd2ff66e0d0c76355d10e103a28cb8f44efe140857a
+  languageName: node
+  linkType: hard
+
+"@scure/bip39@npm:^1.4.0":
   version: 1.5.0
   resolution: "@scure/bip39@npm:1.5.0"
   dependencies:
@@ -5923,12 +5976,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/connectors@npm:5.7.4":
-  version: 5.7.4
-  resolution: "@wagmi/connectors@npm:5.7.4"
+"@wagmi/connectors@npm:5.7.6":
+  version: 5.7.6
+  resolution: "@wagmi/connectors@npm:5.7.6"
   dependencies:
     "@coinbase/wallet-sdk": 4.2.3
-    "@metamask/sdk": 0.31.5
+    "@metamask/sdk": 0.32.0
     "@safe-global/safe-apps-provider": 0.18.5
     "@safe-global/safe-apps-sdk": 9.1.0
     "@walletconnect/ethereum-provider": 2.17.0
@@ -5940,7 +5993,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 272526ddd9bcd0eb7a419070973180b6e7231a78043dd6f8b40564e4cb927bb4f22a00a20f11083bef8602909a164f57c74188c032fc162531350a65a5099867
+  checksum: d512b63f4f4d0fbf85e4484f36ce11c9dcb4a083d0c810080e91fa71a4a7e72528e510d295b23d7c2927c21c9a9d91064d4cf3c773dd9eea4ca077614113e706
   languageName: node
   linkType: hard
 
@@ -6159,9 +6212,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.17.2":
-  version: 2.17.2
-  resolution: "@walletconnect/react-native-compat@npm:2.17.2"
+"@walletconnect/react-native-compat@npm:2.18.0":
+  version: 2.18.0
+  resolution: "@walletconnect/react-native-compat@npm:2.18.0"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -6175,7 +6228,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: a038f29cc4e77a4493b735e14c4227f7883728845ad49ba5583e0598f0b3aaddfe5cf2a1550869d478e138d9b089ec177a5e28952c320b9c2f7e7fd84987d8cb
+  checksum: 17a862f2830a7f3c67879dd9dc29633fab6a60a380112ab52f281850fbfe94e9504ac6da802fd5471e4a57aae65f3489407552621b67def46763bc6195b2406e
   languageName: node
   linkType: hard
 
@@ -6347,7 +6400,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abitype@npm:1.0.7, abitype@npm:^1.0.6":
+"abitype@npm:1.0.8":
+  version: 1.0.8
+  resolution: "abitype@npm:1.0.8"
+  peerDependencies:
+    typescript: ">=5.0.4"
+    zod: ^3 >=3.22.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+    zod:
+      optional: true
+  checksum: 104bc2f6820ced8d2cb61521916f7f22c0981a846216f5b6144f69461265f7da137a4ae108bf4b84cd8743f2dd1e9fdadffc0f95371528e15a59e0a369e08438
+  languageName: node
+  linkType: hard
+
+"abitype@npm:^1.0.6":
   version: 1.0.7
   resolution: "abitype@npm:1.0.7"
   peerDependencies:
@@ -6570,14 +6638,14 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-auth-wagmi-react-native": 1.2.0
-    "@reown/appkit-coinbase-wagmi-react-native": 1.2.0
-    "@reown/appkit-wagmi-react-native": 1.2.0
+    "@reown/appkit-auth-wagmi-react-native": 1.2.1
+    "@reown/appkit-coinbase-wagmi-react-native": 1.2.1
+    "@reown/appkit-wagmi-react-native": 1.2.1
     "@sentry/react-native": 6.4.0
     "@tanstack/react-query": 5.51.1
     "@types/react": ^18.2.6
     "@types/react-test-renderer": ^18.0.0
-    "@walletconnect/react-native-compat": 2.17.2
+    "@walletconnect/react-native-compat": 2.18.0
     babel-jest: ^29.6.3
     babel-plugin-module-resolver: ^5.0.0
     eslint: ^8.19.0
@@ -6601,8 +6669,8 @@ __metadata:
     react-native-webview: 13.12.5
     react-test-renderer: 18.2.0
     typescript: 5.0.4
-    viem: 2.22.10
-    wagmi: 2.14.8
+    viem: 2.22.22
+    wagmi: 2.14.10
   languageName: unknown
   linkType: soft
 
@@ -13242,9 +13310,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ox@npm:0.6.5":
-  version: 0.6.5
-  resolution: "ox@npm:0.6.5"
+"ox@npm:0.6.7":
+  version: 0.6.7
+  resolution: "ox@npm:0.6.7"
   dependencies:
     "@adraffy/ens-normalize": ^1.10.1
     "@noble/curves": ^1.6.0
@@ -13258,7 +13326,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 2ad755c09652561c71f5d76e8af1d106fb2c09a2a61c3e606fb107dea5e436027438884968f995f4a5d2a8dc5608bd44c54931a2f4385c9db63340f7e1138e21
+  checksum: 99acb683ff1cf78749f2b4230d3c208b8cdea0b3bf2bff0db564207917ae6833093b203cb7b9853fc8ec642ca0c8c87cd70a50eab9ff9944c55bf990436112b5
   languageName: node
   linkType: hard
 
@@ -16552,24 +16620,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:2.22.10":
-  version: 2.22.10
-  resolution: "viem@npm:2.22.10"
+"viem@npm:2.22.22":
+  version: 2.22.22
+  resolution: "viem@npm:2.22.22"
   dependencies:
-    "@noble/curves": 1.7.0
-    "@noble/hashes": 1.6.1
-    "@scure/bip32": 1.6.0
-    "@scure/bip39": 1.5.0
-    abitype: 1.0.7
+    "@noble/curves": 1.8.1
+    "@noble/hashes": 1.7.1
+    "@scure/bip32": 1.6.2
+    "@scure/bip39": 1.5.4
+    abitype: 1.0.8
     isows: 1.0.6
-    ox: 0.6.5
+    ox: 0.6.7
     ws: 8.18.0
   peerDependencies:
     typescript: ">=5.0.4"
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 6e32423899b816e9ab976f032ff39ca85f147daaceb96e1139d82889b28cb2d476d43b933b4330e02575c11b15dffcc6c934353d83ead5dbddd22f9aaca48dcd
+  checksum: 666821316de073a32322390d23614327d85f34a699280f0c2bda3329640ac011091a7e75f290ccc8e904359379600096c956a6064b854d2ffb0b391932a438b8
   languageName: node
   linkType: hard
 
@@ -16601,11 +16669,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wagmi@npm:2.14.8":
-  version: 2.14.8
-  resolution: "wagmi@npm:2.14.8"
+"wagmi@npm:2.14.10":
+  version: 2.14.10
+  resolution: "wagmi@npm:2.14.10"
   dependencies:
-    "@wagmi/connectors": 5.7.4
+    "@wagmi/connectors": 5.7.6
     "@wagmi/core": 2.16.3
     use-sync-external-store: 1.4.0
   peerDependencies:
@@ -16616,7 +16684,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: b5285940f043bb2350b9e1212456c4370f3376096a801b4d1cb8ed9f4906542c2b0217966442756cd938472e68ecff9bb66a13f98d08911304b01ea694056b7f
+  checksum: a16ff464ff509e0fb1b8acf939bc5390497fa1ceff5921aeb8ab46398c547edc4f9edd969d5927eefb51e51ee0ab0a4ad12f0e161a4101c7cb0c6d6afccecbf1
   languageName: node
   linkType: hard
 

@@ -979,7 +979,7 @@ PODS:
   - React-Mapbuffer (0.74.3):
     - glog
     - React-debug
-  - react-native-compat (2.17.2):
+  - react-native-compat (2.18.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1718,7 +1718,7 @@ SPEC CHECKSUMS:
   React-jsitracing: 6b3c8c98313642140530f93c46f5a6ca4530b446
   React-logger: fa92ba4d3a5d39ac450f59be2a3cec7b099f0304
   React-Mapbuffer: 9f68550e7c6839d01411ac8896aea5c868eff63a
-  react-native-compat: 425ce849bdeb6dceeb1c003b254c3c2623a37ba1
+  react-native-compat: c361d04dab0d133527cb8fd48c10b0b7c28bbfa4
   react-native-config: d7d8a0c65f7fa523197879f6b777997abbfc987e
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-mmkv: 8c9a677e64a1ac89b0c6cf240feea528318b3074
