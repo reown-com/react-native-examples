@@ -77,6 +77,11 @@ createAppKit({
   siweConfig,
   clipboardClient,
   customWallets,
+  connectorImages: {
+    coinbaseWallet:
+      'https://play-lh.googleusercontent.com/wrgUujbq5kbn4Wd4tzyhQnxOXkjiGqq39N4zBvCHmxpIiKcZw_Pb065KTWWlnoejsg',
+    appKitAuth: 'https://avatars.githubusercontent.com/u/179229932',
+  },
 });
 
 const queryClient = new QueryClient();
