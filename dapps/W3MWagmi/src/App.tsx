@@ -52,7 +52,7 @@ const clipboardClient = {
 };
 
 const _coinbaseConnector = coinbaseConnector({
-  redirect: metadata?.redirect?.native || '',
+  redirect: metadata?.redirect?.universal || '',
 });
 
 const _authConnector = authConnector({
@@ -81,6 +81,12 @@ createAppKit({
     coinbaseWallet:
       'https://play-lh.googleusercontent.com/wrgUujbq5kbn4Wd4tzyhQnxOXkjiGqq39N4zBvCHmxpIiKcZw_Pb065KTWWlnoejsg',
     appKitAuth: 'https://avatars.githubusercontent.com/u/179229932',
+  },
+  features: {
+    email: true,
+    socials: ['x', 'discord', 'apple'],
+    emailShowWallets: true,
+    swaps: true,
   },
 });
 

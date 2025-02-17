@@ -979,7 +979,7 @@ PODS:
   - React-Mapbuffer (0.74.3):
     - glog
     - React-debug
-  - react-native-compat (2.17.2):
+  - react-native-compat (2.18.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1032,7 +1032,7 @@ PODS:
     - React-Core
   - react-native-safe-area-context (4.10.8):
     - React-Core
-  - react-native-webview (13.12.3):
+  - react-native-webview (13.12.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1718,13 +1718,13 @@ SPEC CHECKSUMS:
   React-jsitracing: 6b3c8c98313642140530f93c46f5a6ca4530b446
   React-logger: fa92ba4d3a5d39ac450f59be2a3cec7b099f0304
   React-Mapbuffer: 9f68550e7c6839d01411ac8896aea5c868eff63a
-  react-native-compat: 425ce849bdeb6dceeb1c003b254c3c2623a37ba1
+  react-native-compat: c361d04dab0d133527cb8fd48c10b0b7c28bbfa4
   react-native-config: d7d8a0c65f7fa523197879f6b777997abbfc987e
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-mmkv: 8c9a677e64a1ac89b0c6cf240feea528318b3074
   react-native-netinfo: 076df4f9b07f6670acf4ce9a75aac8d34c2e2ccc
   react-native-safe-area-context: b7daa1a8df36095a032dff095a1ea8963cb48371
-  react-native-webview: 445e447f227f775d8dd2b4823bca55c458d4eff7
+  react-native-webview: 66f10ef00efe847017fc1c809a84c412712bbef6
   React-nativeconfig: fa5de9d8f4dbd5917358f8ad3ad1e08762f01dcb
   React-NativeModulesApple: 585d1b78e0597de364d259cb56007052d0bda5e5
   React-perflogger: 7bb9ba49435ff66b666e7966ee10082508a203e8

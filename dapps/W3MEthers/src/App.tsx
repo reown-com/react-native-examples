@@ -78,6 +78,9 @@ createAppKit({
   customWallets,
   clipboardClient,
   enableAnalytics: true,
+  features: {
+    swaps: true,
+  },
 });
 
 function App(): React.JSX.Element {

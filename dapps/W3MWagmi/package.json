@@ -28,7 +28,7 @@
     "@reown/appkit-wagmi-react-native": "1.2.1",
     "@sentry/react-native": "6.4.0",
     "@tanstack/react-query": "5.51.1",
-    "@walletconnect/react-native-compat": "2.17.2",
+    "@walletconnect/react-native-compat": "2.18.0",
     "expo": "51.0.20",
     "react": "18.2.0",
     "react-native": "0.74.3",
@@ -44,9 +44,9 @@
     "react-native-screens": "3.32.0",
     "react-native-svg": "15.4.0",
     "react-native-toast-message": "2.2.1",
-    "react-native-webview": "13.12.3",
-    "viem": "2.21.54",
-    "wagmi": "2.13.3"
+    "react-native-webview": "13.12.5",
+    "viem": "2.22.22",
+    "wagmi": "2.14.10"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
