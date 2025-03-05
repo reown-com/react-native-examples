@@ -1,4 +1,4 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
 import Bridge from '@/assets/bridge.png';
 
 export function BridgeBadge() {

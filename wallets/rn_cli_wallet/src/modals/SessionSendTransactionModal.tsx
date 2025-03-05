@@ -1,15 +1,8 @@
 import {useSnapshot} from 'valtio';
 import {useCallback, useEffect, useMemo, useState} from 'react';
-import {
-  View,
-  StyleSheet,
-  Image,
-  Text,
-  Alert,
-  NativeModules,
-} from 'react-native';
+import {View, StyleSheet, Image, Text, Alert} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
-import {ChainAbstractionTypes} from '@reown/walletkit';
+
 import {
   approveEIP155Request,
   rejectEIP155Request,
@@ -24,18 +17,19 @@ import {
   calculateEip155Gas,
   getNonce,
   getTransferDetails,
+  wallet1,
 } from '@/utils/EIP155WalletUtil';
 import {isVerified} from '@/utils/HelperUtil';
 import {VerifiedDomain} from '@/components/VerifiedDomain';
 import {Loader} from '@/components/Loader';
 import {ethers} from 'ethers';
-import {TransactionType} from '@/utils/TypesUtil';
+import {ChainAbstractionTypes} from '@reown/walletkit';
+import {FeeEstimatedTransaction} from '@reown/walletkit/dist/types/libs/yttrium';
+import {formatJsonRpcResult} from '@json-rpc-tools/utils';
 
 export default function SessionSendTransactionModal() {
   const {data} = useSnapshot(ModalStore.state);
   const [payingAmount, setPayingAmount] = useState('');
-  const [bridgingTransactions, setBridgingTransactions] =
-    useState<TransactionType[]>();
   const [fundingFrom, setFundingFrom] =
     useState<
       {symbol: string; chainId: string; amount: string; tokenContract: string}[]
@@ -48,6 +42,9 @@ export default function SessionSendTransactionModal() {
   const [fetchingTransferAmount, setFetchingTransferAmount] = useState(false);
   const [routingStatus, setRoutingStatus] = useState('');
   const [hasError, setHasError] = useState(false);
+  const [bridgeDetails, setBridgeDetails] = useState<
+    ChainAbstractionTypes.UiFields | undefined
+  >();
 
   // Get request and wallet data from store
   const requestEvent = data?.requestEvent;
@@ -57,9 +54,10 @@ export default function SessionSendTransactionModal() {
   const params = requestEvent?.params;
   const chainId = params?.chainId as string;
   const request = params?.request;
-  const [transaction, setTransaction] = useState<TransactionType>(
-    request?.params[0],
-  );
+  const [transaction, setTransaction] = useState<FeeEstimatedTransaction>({
+    ...request?.params[0],
+    input: request?.params[0].data,
+  });
   const isLinkMode = session?.transportType === 'link_mode';
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
 
@@ -85,7 +83,7 @@ export default function SessionSendTransactionModal() {
       return;
     }
     setFetchingTransferAmount(true);
-    getTransferDetails(transaction.data, transaction.to, chainId)
+    getTransferDetails(transaction.input, transaction.to, chainId)
       .then(details => {
         console.log('details', details);
         setPayingAmount(`${details?.amount} ${details?.symbol}`);
@@ -113,13 +111,13 @@ export default function SessionSendTransactionModal() {
     setTransaction({
       from: transaction.from,
       to: transaction.to,
-      data: transaction.data,
+      input: transaction.input,
       chainId: chainId,
-      nonce: await getNonce(transaction.from, chainId),
-      value: transaction.value || '0',
-      maxFeePerGas: fees.maxFeePerGas,
-      maxPriorityFeePerGas: fees.maxPriorityFeePerGas,
-      gasLimit: fees.gasLimit,
+      nonce: (await getNonce(transaction.from!, chainId)) as `0x${string}`,
+      value: transaction.value || '0x',
+      maxFeePerGas: fees.maxFeePerGas as `0x${string}`,
+      maxPriorityFeePerGas: fees.maxPriorityFeePerGas as `0x${string}`,
+      gasLimit: fees.gasLimit as `0x${string}`,
     });
     console.log('fees updated', fees);
     setNetworkFee(`${ethers.utils.formatEther(fees.gasLimit)} ETH`);
@@ -133,70 +131,52 @@ export default function SessionSendTransactionModal() {
     setFetchingRoutes(true);
     setFetchingGas(true);
     try {
-      console.log('fetching routes...');
-      const result = await walletKit.prepareFulfilment({
+      console.log('fetching routes...', {
         transaction: {
           from: transaction.from,
           to: transaction.to,
-          data: transaction.data,
+          input: transaction.input,
           chainId: chainId,
         },
       });
-      console.log('routes done');
-      if (result.status === 'error') {
-        setRoutingStatus(`Error: ${result.reason}`);
-        setHasError(true);
-      } else if (result.status === 'available') {
-        console.log('checking details --------');
 
-        const details = await walletKit.getFulfilmentDetails({
-          fulfilmentId: result.data.fulfilmentId,
-        });
+      const result = await walletKit.chainAbstraction.prepareDetailed({
+        transaction: {
+          from: transaction.from as `0x${string}`,
+          to: transaction.to as `0x${string}`,
+          // @ts-ignore - cater for both input or data
+          input: transaction.input || (transaction.data as `0x${string}`),
+          chainId: chainId,
+        },
+      });
 
-        console.log('details --------', JSON.stringify(details, null, 2));
+      console.log('result', JSON.stringify(result, null, 2));
 
-        const transactions: any[] = [];
-
-        const routes = result.data;
-        for (const detail of details.routeDetails) {
-          const tx: TransactionType = {
-            data: detail.transaction.input,
-            from: detail.transaction.from,
-            to: detail.transaction.to,
-            nonce: detail.transaction.nonce,
-            value: detail.transaction.value,
-            gasLimit: detail.transaction.gasLimit,
-            maxFeePerGas: detail.transaction.maxFeePerGas,
-            maxPriorityFeePerGas: detail.transaction.maxPriorityFeePerGas,
-            chainId: detail.transaction.chainId,
-          };
-          transactions.push(tx);
+      if ('success' in result) {
+        if ('notRequired' in result.success) {
+          setRoutingStatus('no routing required');
+          await calculateInitialTxFees();
+          return;
         }
+        if ('available' in result.success) {
+          const available = result.success.available;
 
-        setNetworkFee(
-          `${details.totalFee.formattedAlt} ${details.totalFee.symbol}`,
-        );
+          console.log('details --------', JSON.stringify(available, null, 2));
 
-        const initialTransaction: TransactionType = {
-          data: details.initialTransactionDetails.transaction.input,
-          from: details.initialTransactionDetails.transaction.from,
-          to: details.initialTransactionDetails.transaction.to,
-          nonce: details.initialTransactionDetails.transaction.nonce,
-          value: details.initialTransactionDetails.transaction.value,
-          gasLimit: details.initialTransactionDetails.transaction.gasLimit,
-          maxFeePerGas:
-            details.initialTransactionDetails.transaction.maxFeePerGas,
-          maxPriorityFeePerGas:
-            details.initialTransactionDetails.transaction.maxPriorityFeePerGas,
-          chainId: details.initialTransactionDetails.transaction.chainId,
-        };
+          const transactions: any[] = [];
 
-        setTransaction(initialTransaction);
-        setBridgingTransactions(transactions);
-        setFundingFrom(routes.funding);
-      } else {
-        setRoutingStatus(result.status);
-        await calculateInitialTxFees();
+          for (const detail of available.route) {
+            transactions.push(detail.transactionHashToSign);
+          }
+
+          setNetworkFee(
+            `${available.localTotal.formattedAlt} ${available.localTotal.symbol}`,
+          );
+
+          setTransaction(available.initial.transaction);
+          setFundingFrom(available.routeResponse.metadata.fundingFrom);
+          setBridgeDetails(available);
+        }
       }
     } catch (e) {
       console.log('error', e);
@@ -208,20 +188,43 @@ export default function SessionSendTransactionModal() {
     setFetchingGas(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const execute = useCallback(async () => {
+    if (requestEvent && bridgeDetails) {
+      console.log('prepping executing...', {});
+      const bridgeTxs = bridgeDetails.route.map(tx => tx.transactionHashToSign);
+      const signedBridgeTxs = bridgeTxs.map(tx => wallet1.signAny(tx));
+      const signInitialTx = wallet1.signAny(
+        bridgeDetails.initial.transactionHashToSign,
+      );
+
+      console.log('executing...', {
+        signedBridgeTxs,
+        signInitialTx,
+      });
+
+      const result = await walletKit.chainAbstraction.execute({
+        bridgeSignedTransactions: signedBridgeTxs,
+        initialSignedTransaction: signInitialTx,
+        orchestrationId: bridgeDetails.routeResponse.orchestrationId,
+      });
+
+      console.log('execute result', result);
+
+      return formatJsonRpcResult(requestEvent.id, signInitialTx);
+    }
+  }, [bridgeDetails, requestEvent]);
   // Handle approve action
   const onApprove = useCallback(async () => {
     if (requestEvent && topic) {
       console.log('on Approve');
       try {
         setApproveLoading(true);
-        const txs = bridgingTransactions?.length
-          ? [...bridgingTransactions, transaction]
-          : [];
-        if (txs?.length) {
-          console.log('txs', txs.length);
-        }
+        const bridgeResult = await execute();
 
-        const response = await approveEIP155Request(requestEvent, txs);
+        const response = bridgeResult
+          ? bridgeResult
+          : await approveEIP155Request(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
@@ -240,14 +243,7 @@ export default function SessionSendTransactionModal() {
       setApproveLoading(false);
       ModalStore.close();
     }
-  }, [
-    requestEvent,
-    topic,
-    bridgingTransactions,
-    peerMetadata?.redirect,
-    isLinkMode,
-    transaction,
-  ]);
+  }, [requestEvent, topic, execute, peerMetadata?.redirect, isLinkMode]);
 
   // Handle reject action
   const onReject = useCallback(async () => {

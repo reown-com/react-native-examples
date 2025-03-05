@@ -33,7 +33,7 @@ export default function useInitializeWalletKit() {
     } catch (err: unknown) {
       console.log(err);
     }
-  }, [relayerRegionURL, walletKit]);
+  }, [relayerRegionURL]);
 
   useEffect(() => {
     if (!initialized) {

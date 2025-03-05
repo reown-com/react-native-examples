@@ -102,20 +102,20 @@ export default function useWalletKitEventsManager(initialized: boolean) {
     if (initialized && walletKit) {
       // ModalStore.open('SessionSendTransactionModal', {
       //   requestEvent: {
-      //     id: 1734344941527167,
+      //     id: 1734448264642458,
       //     topic:
-      //       '3cb5a65c0c87fffa21b19a3772ca6117040c80c4f4bd0e729c417ad1d119ea48',
+      //       '0a9e4131a9b8cb1b72a33bc55a659c6f5ddca006972e34bd062da6e2558fb4a9',
       //     params: {
       //       request: {
       //         method: 'eth_sendTransaction',
       //         params: [
       //           {
-      //             data: '0xa9059cbb00000000000000000000000013a2ff792037aa2cd77fe1f4b522921ac59a9c5200000000000000000000000000000000000000000000000000000000001e8480',
+      //             data: '0xa9059cbb00000000000000000000000013a2ff792037aa2cd77fe1f4b522921ac59a9c5200000000000000000000000000000000000000000000000000000000004c4b40',
       //             from: '0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52',
       //             to: '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
       //           },
       //         ],
-      //         expiryTimestamp: 1734345241,
+      //         expiryTimestamp: 1734448564,
       //       },
       //       chainId: 'eip155:10',
       //     },

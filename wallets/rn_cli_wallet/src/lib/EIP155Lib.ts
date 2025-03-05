@@ -1,4 +1,4 @@
-import {providers, Wallet} from 'ethers';
+import {ethers, providers, Wallet} from 'ethers';
 
 /**
  * Types
@@ -53,5 +53,10 @@ export default class EIP155Lib {
 
   signTransaction(transaction: providers.TransactionRequest) {
     return this.wallet.signTransaction(transaction);
+  }
+
+  signAny(data: any) {
+    const signature = this.wallet._signingKey().signDigest(data);
+    return ethers.utils.joinSignature(signature);
   }
 }
