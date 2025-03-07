@@ -3431,9 +3431,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/walletkit@npm:1.1.2-canary-ca-3":
-  version: 1.1.2-canary-ca-3
-  resolution: "@reown/walletkit@npm:1.1.2-canary-ca-3"
+"@reown/walletkit@npm:1.1.2-canary-ca-6":
+  version: 1.1.2-canary-ca-6
+  resolution: "@reown/walletkit@npm:1.1.2-canary-ca-6"
   dependencies:
     "@walletconnect/core": 2.18.1
     "@walletconnect/jsonrpc-provider": 1.0.14
@@ -3443,7 +3443,7 @@ __metadata:
     "@walletconnect/types": 2.18.1
     "@walletconnect/utils": 2.18.1
     brotli: ^1.3.3
-  checksum: 8eb3ae9f0a9576a04f937fd1e942be821e7b7d2d9b788d1bfb1ad61c93e3a9e12cb48dd4636c52564e80f472c8abe54d8d3ccbe5ef6405d459b04acca1ba5b92
+  checksum: 219034f2c11685b351d250234fbccdd9b0c8ea04ef4076c75fc60278ab9bfb67ee3c8478078006591f0de57f8403db9d0b834c8899d78fbaec424e0849a71766
   languageName: node
   linkType: hard
 
@@ -4264,9 +4264,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.18.1-canary-ca-2":
-  version: 2.18.1-canary-ca-2
-  resolution: "@walletconnect/react-native-compat@npm:2.18.1-canary-ca-2"
+"@walletconnect/react-native-compat@npm:2.18.1-canary-ca-5":
+  version: 2.18.1-canary-ca-5
+  resolution: "@walletconnect/react-native-compat@npm:2.18.1-canary-ca-5"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -4280,7 +4280,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: 76acbe2af87a39463d49a5e428083079fdf677e8fc3b91137884bb7eaf1db90e481814956aeca1595ba02324d1e9d1c14de66a24fbec992f7074a20dab4d8f2b
+  checksum: ee8804bd997572c903131cd86d3a754ca36133c425d72291f230d548aecb6c47152bc48e52b0d57e7f707d2247dbb27a6b8db90b11cfe74f855bdf1fb1a63871
   languageName: node
   linkType: hard
 
@@ -13086,12 +13086,12 @@ __metadata:
     "@react-navigation/native-stack": 6.10.1
     "@react-navigation/stack": 6.4.1
     "@reown/appkit-ui-react-native": 1.0.1
-    "@reown/walletkit": 1.1.2-canary-ca-3
+    "@reown/walletkit": 1.1.2-canary-ca-6
     "@sentry/react-native": 5.32.0
     "@types/lodash.clonedeep": ^4.5.9
     "@types/react": ^18.2.6
     "@types/react-test-renderer": ^18.0.0
-    "@walletconnect/react-native-compat": 2.18.1-canary-ca-2
+    "@walletconnect/react-native-compat": 2.18.1-canary-ca-5
     babel-jest: ^29.6.3
     babel-plugin-module-resolver: ^5.0.0
     dayjs: 1.11.11

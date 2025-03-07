@@ -154,11 +154,10 @@ export default function SessionSendTransactionModal() {
 
       if ('success' in result) {
         if ('notRequired' in result.success) {
-          setRoutingStatus('no routing required');
+          console.log('no routing required');
+          setRoutingStatus('no bridging required');
           await calculateInitialTxFees();
-          return;
-        }
-        if ('available' in result.success) {
+        } else if ('available' in result.success) {
           const available = result.success.available;
 
           console.log('details --------', JSON.stringify(available, null, 2));
@@ -211,7 +210,7 @@ export default function SessionSendTransactionModal() {
 
       console.log('execute result', result);
 
-      return formatJsonRpcResult(requestEvent.id, signInitialTx);
+      return formatJsonRpcResult(requestEvent.id, result);
     }
   }, [bridgeDetails, requestEvent]);
   // Handle approve action
