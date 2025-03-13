@@ -8,7 +8,7 @@ import {
 import {ethers} from 'ethers';
 
 import {RequestModal} from '../components/RequestModal';
-import {vitalikEthAddress} from '../utils/misc';
+import {testAddress} from '../utils/misc';
 
 export function SendTransaction() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
@@ -31,7 +31,7 @@ export function SendTransaction() {
       const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
       const signer = ethersProvider.getSigner(address);
       const tx = {
-        to: vitalikEthAddress,
+        to: testAddress,
         value: ethers.utils.parseEther('0.0001'),
         data: '0x',
       };

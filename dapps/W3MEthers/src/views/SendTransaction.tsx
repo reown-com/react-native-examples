@@ -8,7 +8,7 @@ import {
 } from '@reown/appkit-ethers-react-native';
 
 import {RequestModal} from '../components/RequestModal';
-import {vitalikEthAddress} from '../utils/misc';
+import {testAddress} from '../utils/misc';
 
 export function SendTransaction() {
   const [requestModalVisible, setRequetsModalVisible] = useState(false);
@@ -31,7 +31,7 @@ export function SendTransaction() {
       const ethersProvider = new BrowserProvider(walletProvider);
       const signer = new JsonRpcSigner(ethersProvider, address!);
       const tx = {
-        to: vitalikEthAddress,
+        to: testAddress,
         value: parseEther('0.0001'),
         data: '0x',
       };

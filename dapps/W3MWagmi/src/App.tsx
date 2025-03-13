@@ -26,12 +26,18 @@ import {siweConfig} from '@/utils/SiweUtils';
 import {chains} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
 
-if (!__DEV__ && Config.ENV_SENTRY_DSN) {
-  Sentry.init({
-    dsn: Config.ENV_SENTRY_DSN,
-    environment: Config.ENV_SENTRY_TAG,
-  });
-}
+Sentry.init({
+  enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
+  dsn: Config.ENV_SENTRY_DSN,
+  environment: Config.ENV_SENTRY_TAG,
+  _experiments: {
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 1.0,
+  },
+  tracesSampleRate: 0.5,
+  profilesSampleRate: 1.0,
+  integrations: [Sentry.mobileReplayIntegration()],
+});
 
 // 1. Get projectId
 const projectId = Config.ENV_PROJECT_ID;
@@ -46,7 +52,7 @@ const clipboardClient = {
 };
 
 const _coinbaseConnector = coinbaseConnector({
-  redirect: metadata?.redirect?.native || '',
+  redirect: metadata?.redirect?.universal || '',
 });
 
 const _authConnector = authConnector({
@@ -71,10 +77,16 @@ createAppKit({
   siweConfig,
   clipboardClient,
   customWallets,
+  connectorImages: {
+    coinbaseWallet:
+      'https://play-lh.googleusercontent.com/wrgUujbq5kbn4Wd4tzyhQnxOXkjiGqq39N4zBvCHmxpIiKcZw_Pb065KTWWlnoejsg',
+    appKitAuth: 'https://avatars.githubusercontent.com/u/179229932',
+  },
   features: {
     email: true,
-    socials: ['x', 'apple', 'farcaster', 'discord'],
+    socials: ['x', 'discord', 'apple'],
     emailShowWallets: true,
+    swaps: true,
   },
 });
 
@@ -126,4 +138,4 @@ function App(): JSX.Element {
   );
 }
 
-export default App;
+export default Sentry.wrap(App);

@@ -1,1 +1,1 @@
-export const vitalikEthAddress = '0xd8da6bf26964af9d7eed9e03e53415d37aa96045';
+export const testAddress = '0x704457b418E9Fb723e1Bc0cB98106a6B8Cf87689';

@@ -81,6 +81,7 @@ platform :ios do
       notify_external_testers: false,
       skip_waiting_for_build_processing: true
     )
+
     clean_build_artifacts()
   end
 
