@@ -27,7 +27,7 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     network: 'homestead',
     name: 'Ethereum',
     nativeCurrency: {name: 'Ether', symbol: 'ETH', decimals: 18},
-    rpcUrl: 'https://cloudflare-eth.com',
+    rpcUrl: 'https://eth.llamarpc.com',
     blockExplorer: 'https://etherscan.io',
   },
   '5': {

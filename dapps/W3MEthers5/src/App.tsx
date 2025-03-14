@@ -48,7 +48,7 @@ const mainnet = {
   name: 'Ethereum',
   currency: 'ETH',
   explorerUrl: 'https://etherscan.io',
-  rpcUrl: 'https://cloudflare-eth.com',
+  rpcUrl: 'https://eth.llamarpc.com',
 };
 
 const polygon = {
