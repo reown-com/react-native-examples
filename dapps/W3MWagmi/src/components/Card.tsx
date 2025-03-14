@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  StyleProp,
-  ViewStyle,
-  View,
-} from 'react-native';
-import {Icon, IconProps} from '@reown/appkit-ui-react-native';
+import {StyleSheet, StyleProp, ViewStyle, View} from 'react-native';
+import {Icon, IconProps, Pressable, Text} from '@reown/appkit-ui-react-native';
 
 import {useTheme} from '@/hooks/useTheme';
 
@@ -21,21 +14,26 @@ export interface CardProps {
 
 export function Card({title, value, onPress, icon, style}: CardProps) {
   const Theme = useTheme();
-  const backgroundColor = Theme['bg-175'];
+  const backgroundColor = Theme['gray-glass-005'];
 
   return (
-    <TouchableOpacity
+    <Pressable
       disabled={!onPress}
       style={[styles.container, {backgroundColor}, style]}
+      bounceScale={0.98}
       onPress={onPress}>
       <View>
-        <Text style={[styles.title, {color: Theme['fg-100']}]}>{title}</Text>
+        <Text variant="small-600" style={{color: Theme['fg-100']}}>
+          {title}
+        </Text>
         {value && (
-          <Text style={[styles.value, {color: Theme['fg-150']}]}>{value}</Text>
+          <Text variant="small-500" style={{color: Theme['fg-150']}}>
+            {value}
+          </Text>
         )}
       </View>
       {icon && <Icon name={icon} size="sm" color={'fg-100'} />}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -48,13 +46,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  value: {
-    fontSize: 14,
-    fontWeight: '500',
   },
 });

@@ -41,11 +41,12 @@ export function ModalHeader({
           </Text>
         </View>
       )}
-      <Image
-        source={{uri: metadata?.icons[0] ?? ''}}
-        style={[styles.logo, {borderColor: Theme['gray-glass-010']}]}
-      />
-
+      {metadata?.icons[0] && (
+        <Image
+          source={{uri: metadata?.icons[0] ?? ''}}
+          style={[styles.logo, {borderColor: Theme['gray-glass-010']}]}
+        />
+      )}
       <Text style={[styles.title, {color}]}>{metadata?.name || 'Unknown'}</Text>
       {intention && <Text style={[styles.desc, {color}]}>{intention}</Text>}
       <View style={styles.domainContainer}>

@@ -11,6 +11,7 @@ import {Card} from '@/components/Card';
 import {useTheme} from '@/hooks/useTheme';
 import {HomeTabScreenProps} from '@/utils/TypesUtil';
 import styles from './styles';
+import {WalletInfo} from './components/WalletInfo';
 
 type Props = HomeTabScreenProps<'SettingsScreen'>;
 
@@ -70,6 +71,7 @@ function SettingsScreen({navigation}: Props) {
           onPress={() => navigation.navigate('Logs')}
           icon="chevronRight"
         />
+        <WalletInfo />
       </View>
     </ScrollView>
   );

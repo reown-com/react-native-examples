@@ -1,3 +1,15 @@
 {
-  "name": "W3MWagmi"
+  "name": "W3MWagmi",
+  "slug": "w3m-wagmi-react-native",
+  "plugins": [
+    [
+      "@sentry/react-native/expo",
+      {
+        "url": "https://sentry.io/",
+        "note": "Use SENTRY_AUTH_TOKEN env to authenticate with Sentry.",
+        "project": "w3m-wagmi-react-native",
+        "organization": "walletconnect"
+      }
+    ]
+  ]
 }
