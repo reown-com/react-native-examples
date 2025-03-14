@@ -52,5 +52,17 @@
   },
   "engines": {
     "node": ">=16"
+  },
+  "resolutions": {
+    "micromatch": "^4.0.8",
+    "react-devtools-core": "^4.28.4",
+    "send": "^0.19.0",
+    "serve-static": "^1.16.0",
+    "@babel/runtime": "^7.26.10",
+    "@babel/helpers": "^7.26.10",
+    "@babel/traverse": "^7.23.2",
+    "ip": "^2.0.1",
+    "ws": "^8.18.1",
+    "braces": "^3.0.3"
   }
 }

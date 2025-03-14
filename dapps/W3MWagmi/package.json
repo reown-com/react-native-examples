@@ -29,11 +29,7 @@
     "@sentry/react-native": "^6.9.1",
     "@tanstack/react-query": "5.62.2",
     "@walletconnect/react-native-compat": "2.19.1",
-    "cross-spawn": "^7.0.5",
     "expo": "52.0.31",
-    "ip": "2.0.1",
-    "micromatch": "4.0.8",
-    "nanoid": "^3.3.8",
     "react": "18.3.1",
     "react-native": "0.77.0",
     "react-native-bootsplash": "5.5.3",
@@ -50,8 +46,7 @@
     "react-native-toast-message": "2.2.1",
     "react-native-webview": "13.13.4",
     "viem": "2.23.10",
-    "wagmi": "2.14.13",
-    "ws": "latest"
+    "wagmi": "2.14.13"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -81,10 +76,12 @@
   },
   "packageManager": "yarn@3.6.4",
   "resolutions": {
+    "ip": "2.0.1",
     "micromatch": "4.0.8",
     "@babel/helpers": "7.26.10",
     "@babel/runtime": "7.26.10",
     "cross-spawn": "7.0.5",
-    "nanoid": "3.3.8"
+    "nanoid": "3.3.8",
+    "ws": "^8.18.1"
   }
 }
