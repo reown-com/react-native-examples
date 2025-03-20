@@ -5425,100 +5425,99 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046":
+  version: 0.0.0-fix-duplicated-wallets-20250320212046
+  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-wallet-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-common-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-core-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-wallet-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
   peerDependencies:
     wagmi: ">=2"
-  checksum: 617b926f1fb1a584bd316f94e87ea985534377a1246685fa42e3f004a8129b62263fa01cae7c38a820663e963488f9a3fa95039af31f5c920aa23d6c493f4575
+  checksum: 80f05a10617799fdf225503a2dd86cceb7f1f4ef90396b42d04cd7c9330d98c855a55c97443f12ca39ed1baa6e6211275b8110cc0495ae4cb0f366017c56b89c
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046":
+  version: 0.0.0-fix-duplicated-wallets-20250320212046
+  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-common-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: e716fb72a435bb17425a38dc2e0a316341d3911e4ca08acc0993c1066e54a69ba88bc52f7e740b78c9deb26b11a3baae422e6fa64dc54bcb2b6e8a68b9b5c0c4
+  checksum: 0e31347d637ca85272c2946c3e084355633b4c73b2ca98459c586a23ca15517593b9f9033bf29c0119ccc3e2a115f14b6dedf5b729d1c1a45c1fddb4b7245933
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-common-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046":
+  version: 0.0.0-fix-duplicated-wallets-20250320212046
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: e25d1fc7e191bc84870a8c8c3b91c143116d778f315e277db77ca83f6ba982f99c2f5db1a117203f3fa17cd5cfc30e23da6d7e575dd36a2610859c9740367de1
+  checksum: 6f950c1d04493a9b65cfc518a4bdbf9a0a159564c94cf9e596a6b5eb60adb789545667adee4908a6fca3a734f8cbf54f14dabe326d292371c7802c21cb05b784
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-core-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046":
+  version: 0.0.0-fix-duplicated-wallets-20250320212046
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    countries-and-timezones: 3.7.2
+    "@reown/appkit-common-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
     valtio: 1.11.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 0d4cc97409fcf64fe4395af77e4bfea60fe8270d01859a812d343e3308a5cbaea4641a16a1c01d7cdd7392b784baccb8c0d4cf25b929a10bf2d21e7f6b60c3ef
+  checksum: d6339666931241838753d5ca54a99b8ae33b8c92913e39739f1fb2690f7c139a03eae35bbcebefbfb7d3b2c4445e30f3219bba6e4fc6209948dfea0c0fc9c4e8
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-scaffold-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-scaffold-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046":
+  version: 0.0.0-fix-duplicated-wallets-20250320212046
+  resolution: "@reown/appkit-scaffold-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-common-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-core-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-siwe-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-ui-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: d62c4ccd2397cbee0258caea8fae77233bc5ab51decd69ef5ca7247d177779a55df3baf9b10fcb2687dfb11b47a3783e4f7e0a634109e7cf8be4c938bd5deaf7
+  checksum: 04c3a667757099ec82bae58d25d8e5a24064e23564c1a42dad3540c017b0f824cb16160dc659d7b9c421538b4d0563d3935ec0ff7660402ff153914c071bef09
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046":
+  version: 0.0.0-fix-duplicated-wallets-20250320212046
+  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-scaffold-react-native": 0.0.0-feat-onramp-20250311164912
-  checksum: 2accd789289fc2d32b319f7fec4c2259f9e41ad68a84cb3825804b5f78b68817e43c8f7af2cea95ed3fcc487daa31c22f12761115849d96deff29eb0678eff48
+    "@reown/appkit-common-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-scaffold-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+  checksum: 19e98de56fa2e0bbede2e925328e2be983be4e58a42538a6066f1773a2ac128d71da85d4b90935b1bfc403032721627c545eda7ace42864e74d09f5108227394
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-siwe-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046":
+  version: 0.0.0-fix-duplicated-wallets-20250320212046
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-common-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-core-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-ui-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
     valtio: 1.11.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: ac4b7b159b91c734a58f06576556c8b4a1bc011968e97a93672a3a3022f47b0bb3bb25829559e8cf6c512e8cd8fccab4d51cb16a36a9b9e61d09e1b6c6a3d6a2
+  checksum: b091657b42641880c3c2f4e9a28a29752407f255e9b5f41e34b2bc22a68f4a666e2d40d8d4b34c5d625dc782883e62656316a885f6ced86846bc4a9fc3ff0948
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-ui-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046":
+  version: 0.0.0-fix-duplicated-wallets-20250320212046
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046"
   dependencies:
     polished: 4.3.1
     qrcode: 1.5.3
@@ -5526,18 +5525,18 @@ __metadata:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 0639b1b275fe65bd6e3a290f134602a21de47bbdc8e3e3c2f005263f5bf9bd547799d5183f71dae599f689134decbd851702d415302730fbcbb7c40db36eb425
+  checksum: c744879e378d7d700fc2c931341c1ed9510c357b5edb94ab1d75f2142dc13d9afcd293734ced1c44ad2ba8aac110da3deb1110e37bd0f8a2284b754bd65a7bb4
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046":
+  version: 0.0.0-fix-duplicated-wallets-20250320212046
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-scaffold-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-common-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-scaffold-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-scaffold-utils-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-siwe-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -5547,21 +5546,21 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: 7863b0f246e87c3366da05d4a3e92121048f640bc34075d39a512984184d8cdfc790751f09845d9a09eb099c9b3a8445969ffcf70e53b5d6a8bc2b7c028fb9b2
+  checksum: db84154db18f860b52a87e8935624ccd96362a757b527e7c87a5b816580111896b01101f2f3b0b48c1d296072f1e9e1d6e9f5fe3b502e261695209ce2f74b030
   languageName: node
   linkType: hard
 
-"@reown/appkit-wallet-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-wallet-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046":
+  version: 0.0.0-fix-duplicated-wallets-20250320212046
+  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-fix-duplicated-wallets-20250320212046"
   dependencies:
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-core-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-ui-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: 4c2e974a70168fb2581135b670c98af3e43841b36232cae241e71257c3e14b11c290f817693ffc6362504717287ee3f574dcf115d62cd89dbb139253174b21c7
+  checksum: c803f3c03945175c7bbc54ba25252df5bb3764ffebd0908ec308bb7a881a141e4c4e8bb836826c9098c3f485650523fb3d0a90cb6716339e1010360ac514ffed
   languageName: node
   linkType: hard
 
@@ -7090,9 +7089,9 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-wagmi-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-auth-wagmi-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
+    "@reown/appkit-wagmi-react-native": 0.0.0-fix-duplicated-wallets-20250320212046
     "@sentry/react-native": ^6.9.1
     "@tanstack/react-query": 5.62.2
     "@types/jest": ^29.5.13
@@ -8441,13 +8440,6 @@ __metadata:
     typescript:
       optional: true
   checksum: a30c424b53d442ea0bdd24cb1b3d0d8687c8dda4a17ab6afcdc439f8964438801619cdb66e8e79f63b9caa3e6586b60d8bab9ce203e72df6c5e80179b971fe8f
-  languageName: node
-  linkType: hard
-
-"countries-and-timezones@npm:3.7.2":
-  version: 3.7.2
-  resolution: "countries-and-timezones@npm:3.7.2"
-  checksum: 6375ea8a4b1da023d57f6a7fb6bc14ace31da686be14b941d255749471a2797f1a66e77d95d7ef9ac15a0d74e08f753f747e9240f57bece26b784be40b940a0e
   languageName: node
   linkType: hard
 
