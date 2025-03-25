@@ -52,7 +52,7 @@ export const LightTheme: {[key in ThemeKeys]: string} = {
   'gray-glass-090': 'rgba(0, 0, 0, 0.9)',
 
   'verify-unknown': '#FF800A',
-  'verify-invalid': '#ffff',
+  'verify-invalid': '#ED4747',
   'bg-verify-unknown': 'rgba(255, 128, 10, 0.10)',
   'bg-verify-invalid': 'rgba(237, 71, 71, 0.10)',
 };

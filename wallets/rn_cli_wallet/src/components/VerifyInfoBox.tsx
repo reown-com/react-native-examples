@@ -51,7 +51,9 @@ export default function VerifyInfoBox({validation, isScam, style}: Props) {
       <Icon height={24} width={24} />
       <View style={styles.textContainer}>
         <Text style={[styles.title, {color: textColor}]}>{title}</Text>
-        <Text style={[styles.description, {color: 'white'}]}>{text}</Text>
+        <Text style={[styles.description, {color: Theme['fg-100']}]}>
+          {text}
+        </Text>
       </View>
     </View>
   );
