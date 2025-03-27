@@ -30,10 +30,15 @@ import {formatJsonRpcResult} from '@json-rpc-tools/utils';
 export default function SessionSendTransactionModal() {
   const {data} = useSnapshot(ModalStore.state);
   const [payingAmount, setPayingAmount] = useState('');
-  const [fundingFrom, setFundingFrom] =
-    useState<
-      {symbol: string; chainId: string; amount: string; tokenContract: string}[]
-    >();
+  const [fundingFrom, setFundingFrom] = useState<
+    {
+      symbol: string;
+      chainId: string;
+      amount: string;
+      tokenContract: string;
+      decimals: number;
+    }[]
+  >();
   const [networkFee, setNetworkFee] = useState('');
   const [rejectLoading, setRejectLoading] = useState(false);
   const [approveLoading, setApproveLoading] = useState(false);
@@ -54,9 +59,10 @@ export default function SessionSendTransactionModal() {
   const params = requestEvent?.params;
   const chainId = params?.chainId as string;
   const request = params?.request;
+  console.log('request tx', request?.params[0]);
   const [transaction, setTransaction] = useState<FeeEstimatedTransaction>({
     ...request?.params[0],
-    input: request?.params[0].data,
+    input: request?.params[0].input || request?.params[0].data || '0x',
   });
   const isLinkMode = session?.transportType === 'link_mode';
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
@@ -79,7 +85,7 @@ export default function SessionSendTransactionModal() {
   useEffect(() => {
     const value = transaction.value;
     if (value) {
-      setPayingAmount(`${value} ETH`);
+      setPayingAmount(`${calculateFundingAmount(value, 18)} ETH`);
       return;
     }
     setFetchingTransferAmount(true);
@@ -147,6 +153,7 @@ export default function SessionSendTransactionModal() {
           // @ts-ignore - cater for both input or data
           input: transaction.input || (transaction.data as `0x${string}`),
           chainId: chainId,
+          value: transaction.value || '0x',
         },
       });
 
@@ -264,14 +271,14 @@ export default function SessionSendTransactionModal() {
     }
   }, [requestEvent, topic]);
 
-  const calculateUsdc = (amount: string) => {
+  const calculateFundingAmount = (amount: string, decimals: number = 6) => {
     console.log(
       'amount',
       amount,
       parseInt(amount, 16),
-      parseInt(amount, 16) / 10 ** 6,
+      parseInt(amount, 16) / 10 ** decimals,
     );
-    return parseInt(amount, 16) / 10 ** 6;
+    return parseInt(amount, 16) / 10 ** decimals;
   };
 
   const getChain = (chain: string) => {
@@ -322,7 +329,10 @@ export default function SessionSendTransactionModal() {
           </View>
           <View style={styles.column}>
             <Text style={[styles.textMain, styles.textSm]}>
-              {calculateUsdc(funding.amount).toFixed(2)} {funding.symbol}
+              {calculateFundingAmount(funding.amount, funding.decimals).toFixed(
+                5,
+              )}{' '}
+              {funding.symbol}
             </Text>
             <View style={styles.alignInCenter}>
               <Text style={[styles.textMuted, styles.textSm]}>
