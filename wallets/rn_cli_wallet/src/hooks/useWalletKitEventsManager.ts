@@ -14,7 +14,7 @@ export default function useWalletKitEventsManager(initialized: boolean) {
    *****************************************************************************/
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-      console.log('onSessionProposal', proposal);
+      console.log('onSessionProposal', JSON.stringify(proposal, null, 2));
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(proposal.verifyContext);
 
@@ -41,7 +41,9 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       console.log('onSessionRequest', requestEvent);
       const {topic, params, verifyContext} = requestEvent;
       const {request} = params;
+      console.log('request', JSON.stringify(requestEvent, null, 2));
       const requestSession = walletKit.engine.signClient.session.get(topic);
+      console.log('requestSession', JSON.stringify(requestSession, null, 2));
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(verifyContext);
 
@@ -97,7 +99,175 @@ export default function useWalletKitEventsManager(initialized: boolean) {
    * Set up WalletKit event listeners
    *****************************************************************************/
   useEffect(() => {
-    if (initialized) {
+    if (initialized && walletKit) {
+      // ModalStore.open('SessionSendTransactionModal', {
+      //   requestEvent: {
+      //     id: 1734448264642458,
+      //     topic:
+      //       '0a9e4131a9b8cb1b72a33bc55a659c6f5ddca006972e34bd062da6e2558fb4a9',
+      //     params: {
+      //       request: {
+      //         method: 'eth_sendTransaction',
+      //         params: [
+      //           {
+      //             data: '0xa9059cbb00000000000000000000000013a2ff792037aa2cd77fe1f4b522921ac59a9c5200000000000000000000000000000000000000000000000000000000004c4b40',
+      //             from: '0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52',
+      //             to: '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
+      //           },
+      //         ],
+      //         expiryTimestamp: 1734448564,
+      //       },
+      //       chainId: 'eip155:10',
+      //     },
+      //     verifyContext: {
+      //       verified: {
+      //         verifyUrl: 'https://verify.walletconnect.org',
+      //         validation: 'VALID',
+      //         origin: 'https://appkit-lab.reown.com',
+      //         isScam: null,
+      //       },
+      //     },
+      //   },
+      //   requestSession: {
+      //     relay: {
+      //       protocol: 'irn',
+      //     },
+      //     namespaces: {
+      //       eip155: {
+      //         chains: [
+      //           'eip155:1',
+      //           'eip155:10',
+      //           'eip155:137',
+      //           'eip155:324',
+      //           'eip155:42161',
+      //           'eip155:8453',
+      //           'eip155:100',
+      //           'eip155:1313161554',
+      //         ],
+      //         methods: [
+      //           'personal_sign',
+      //           'eth_sign',
+      //           'eth_signTransaction',
+      //           'eth_signTypedData',
+      //           'eth_signTypedData_v3',
+      //           'eth_signTypedData_v4',
+      //           'eth_sendRawTransaction',
+      //           'eth_sendTransaction',
+      //         ],
+      //         events: ['accountsChanged', 'chainChanged'],
+      //         accounts: [
+      //           'eip155:1:0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52',
+      //           'eip155:10:0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52',
+      //           'eip155:137:0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52',
+      //           'eip155:324:0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52',
+      //           'eip155:42161:0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52',
+      //           'eip155:8453:0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52',
+      //           'eip155:100:0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52',
+      //           'eip155:1313161554:0x13A2Ff792037AA2cd77fE1f4B522921ac59a9C52',
+      //         ],
+      //       },
+      //     },
+      //     controller:
+      //       'ea8f2172d22ace9801b2178a9f55b0053c9ac63d1f5a7d2bc4b79ec84d91244a',
+      //     expiry: 1734080914,
+      //     topic:
+      //       'f013d8008bf88c77d78f64548f4103d6ec677254f8a9ba89366d5368a79334b0',
+      //     requiredNamespaces: {},
+      //     optionalNamespaces: {
+      //       eip155: {
+      //         methods: [
+      //           'personal_sign',
+      //           'eth_sign',
+      //           'eth_signTransaction',
+      //           'eth_signTypedData',
+      //           'eth_signTypedData_v3',
+      //           'eth_signTypedData_v4',
+      //           'eth_sendRawTransaction',
+      //           'eth_sendTransaction',
+      //           'wallet_getCapabilities',
+      //           'wallet_sendCalls',
+      //           'wallet_showCallsStatus',
+      //           'wallet_getCallsStatus',
+      //           'wallet_grantPermissions',
+      //           'wallet_revokePermissions',
+      //           'wallet_switchEthereumChain',
+      //         ],
+      //         events: ['accountsChanged', 'chainChanged'],
+      //         chains: [
+      //           'eip155:1',
+      //           'eip155:10',
+      //           'eip155:137',
+      //           'eip155:324',
+      //           'eip155:42161',
+      //           'eip155:8453',
+      //           'eip155:84532',
+      //           'eip155:1301',
+      //           'eip155:11155111',
+      //           'eip155:100',
+      //           'eip155:295',
+      //           'eip155:1313161554',
+      //           'eip155:5000',
+      //         ],
+      //         rpcMap: {
+      //           '1': 'https://rpc.walletconnect.org/v1/?chainId=eip155%3A1&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '10': 'https://rpc.walletconnect.org/v1/?chainId=eip155%3A10&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '100':
+      //             'https://rpc.walletconnect.org/v1/?chainId=eip155%3A100&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '137':
+      //             'https://rpc.walletconnect.org/v1/?chainId=eip155%3A137&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '295': 'https://mainnet.hashio.io/api',
+      //           '324':
+      //             'https://rpc.walletconnect.org/v1/?chainId=eip155%3A324&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '1301':
+      //             'https://rpc.walletconnect.org/v1/?chainId=eip155%3A1301&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '5000':
+      //             'https://rpc.walletconnect.org/v1/?chainId=eip155%3A5000&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '8453':
+      //             'https://rpc.walletconnect.org/v1/?chainId=eip155%3A8453&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '42161':
+      //             'https://rpc.walletconnect.org/v1/?chainId=eip155%3A42161&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '84532':
+      //             'https://rpc.walletconnect.org/v1/?chainId=eip155%3A84532&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '11155111':
+      //             'https://rpc.walletconnect.org/v1/?chainId=eip155%3A11155111&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //           '1313161554':
+      //             'https://rpc.walletconnect.org/v1/?chainId=eip155%3A1313161554&projectId=702e2d45d9debca66795614cddb5c1ca',
+      //         },
+      //       },
+      //     },
+      //     pairingTopic:
+      //       'c0d67be3a41ded5ffa144e8ed6281a057e1e8e9f23003a427c1a70d04a5939f6',
+      //     acknowledged: true,
+      //     self: {
+      //       publicKey:
+      //         'ea8f2172d22ace9801b2178a9f55b0053c9ac63d1f5a7d2bc4b79ec84d91244a',
+      //       metadata: {
+      //         name: 'React Native Wallet Example',
+      //         description: 'React Native WalletKit by Reown',
+      //         url: 'https://reown.com/walletkit',
+      //         icons: ['https://avatars.githubusercontent.com/u/179229932'],
+      //         redirect: {
+      //           native: 'rn-web3wallet://',
+      //           universal: 'https://appkit-lab.reown.com/rn_walletkit',
+      //           linkMode: true,
+      //         },
+      //       },
+      //     },
+      //     peer: {
+      //       publicKey:
+      //         '9dc9524bd9f09fb0e387729354099c686086757701e417815f73a168c4f31565',
+      //       metadata: {
+      //         name: 'AppKit Lab',
+      //         description:
+      //           'Explore the AppKit Lab to test the latest AppKit features.',
+      //         url: 'https://appkit-lab.reown.com',
+      //         icons: ['https://appkit-lab.reown.com/favicon.svg'],
+      //       },
+      //     },
+      //     transportType: 'relay',
+      //   },
+      // });
+
       //sign
       walletKit.on('session_proposal', onSessionProposal);
       walletKit.on('session_request', onSessionRequest);

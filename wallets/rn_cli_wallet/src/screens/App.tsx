@@ -81,6 +81,7 @@ const App = () => {
     ({url}: {url: string}) => {
       const isLinkMode = url.includes('wc_ev');
       SettingsStore.setIsLinkModeRequest(isLinkMode);
+      SettingsStore.setConnectionViaDeepLink(true);
 
       if (isLinkMode) {
         return;

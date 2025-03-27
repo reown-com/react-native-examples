@@ -1,6 +1,7 @@
 import {Linking, Platform} from 'react-native';
 import Toast from 'react-native-toast-message';
 import Minimizer from '@kangfenmao/react-native-minimizer';
+import SettingsStore from '@/store/SettingsStore';
 
 interface redirect {
   native?: string;
@@ -18,9 +19,13 @@ const goBackOrToast = () => {
     Toast.show({
       type: 'success',
       text1: 'Success!',
-      text2: 'Redirecting to the dapp',
+      text2: SettingsStore.state.connectionViaDeepLink
+        ? 'Redirecting to the dapp'
+        : 'Please go back to the dapp',
     });
-    Minimizer.goBack();
+    if (SettingsStore.state.connectionViaDeepLink) {
+      Minimizer.goBack();
+    }
   } else {
     Toast.show({
       type: 'success',

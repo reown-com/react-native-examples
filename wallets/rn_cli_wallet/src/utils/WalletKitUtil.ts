@@ -8,14 +8,14 @@ export let walletKit: IWalletKit;
 
 export async function createWalletKit(relayerRegionURL: string) {
   const core = new Core({
-    projectId: Config.ENV_PROJECT_ID,
+    projectId: '47a263e9e957d954353cb970f024e1d3',
     relayUrl: relayerRegionURL ?? Config.ENV_RELAY_URL,
   });
   walletKit = await WalletKit.init({
     core,
     metadata: getMetadata(),
   });
-
+  console.log('walletkit created');
   try {
     const clientId =
       await walletKit.engine.signClient.core.crypto.getClientId();

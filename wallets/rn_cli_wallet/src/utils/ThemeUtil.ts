@@ -21,6 +21,7 @@ export const LightTheme: {[key in ThemeKeys]: string} = {
   'fg-250': '#8b9797',
   'fg-275': '#95a0a0',
   'fg-300': '#9ea9a9',
+  'fg-secondary': '#6e7777',
 
   'bg-100': '#ffffff',
   'bg-125': '#ffffff',
@@ -87,6 +88,7 @@ export const DarkTheme: {[key in ThemeKeys]: string} = {
   'bg-250': '#313535',
   'bg-275': '#363b3b',
   'bg-300': '#3b4040',
+  'fg-secondary': '#2A2A2A',
 
   'inverse-100': '#ffffff',
   'inverse-000': '#000000',

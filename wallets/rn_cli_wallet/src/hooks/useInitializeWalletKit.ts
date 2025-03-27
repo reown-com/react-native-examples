@@ -1,6 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useSnapshot} from 'valtio';
-
 import SettingsStore from '@/store/SettingsStore';
 import {createOrRestoreEIP155Wallet} from '@/utils/EIP155WalletUtil';
 import {createWalletKit, walletKit} from '@/utils/WalletKitUtil';
@@ -29,7 +28,7 @@ export default function useInitializeWalletKit() {
   // restart transport if relayer region changes
   const onRelayerRegionChange = useCallback(() => {
     try {
-      walletKit.core.relayer.restartTransport(relayerRegionURL);
+      walletKit?.core.relayer.restartTransport(relayerRegionURL);
       prevRelayerURLValue.current = relayerRegionURL;
     } catch (err: unknown) {
       console.log(err);
