@@ -9,7 +9,7 @@ import {
 } from '@reown/appkit-wagmi-react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
-import {coinbaseConnector} from '@reown/appkit-coinbase-wagmi-react-native';
+// import {coinbaseConnector} from '@reown/appkit-coinbase-wagmi-react-native';
 import {authConnector} from '@reown/appkit-auth-wagmi-react-native';
 import {WagmiProvider} from 'wagmi';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
@@ -51,9 +51,10 @@ const clipboardClient = {
   },
 };
 
-const _coinbaseConnector = coinbaseConnector({
-  redirect: metadata?.redirect?.universal || '',
-});
+// Removed coinbase connector for now, as it's not compatible with React Native New Architecture
+// const _coinbaseConnector = coinbaseConnector({
+//   redirect: metadata?.redirect?.universal || '',
+// });
 
 const _authConnector = authConnector({
   projectId,
@@ -64,7 +65,9 @@ const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
-  extraConnectors: [_coinbaseConnector, _authConnector],
+  extraConnectors: [
+    // _coinbaseConnector,
+    _authConnector],
 });
 
 const customWallets = getCustomWallets();
