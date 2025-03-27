@@ -7112,7 +7112,6 @@ __metadata:
     react-native-device-info: 14.0.4
     react-native-gesture-handler: 2.24.0
     react-native-get-random-values: 1.11.0
-    react-native-mmkv: 3.2.0
     react-native-modal: 14.0.0-rc.0
     react-native-reanimated: 3.17.1
     react-native-safe-area-context: 5.3.0
@@ -14664,16 +14663,6 @@ __metadata:
     react: ">=18.2.0"
     react-native: ">=0.73.0"
   checksum: 4e07c1e34c01c8d50fd7c1d0460db06f6f0515197405230386a8ffb950cb724b10743af032310d1384df0a90059bfb8992ba2d93344ce86315315f0493feccc2
-  languageName: node
-  linkType: hard
-
-"react-native-mmkv@npm:3.2.0":
-  version: 3.2.0
-  resolution: "react-native-mmkv@npm:3.2.0"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 766944a7cbf265e27b57576e51bff8604cd8f58c88eaec78bd93d4ce10ff9127d5f75f4c3bb03d6c7ce5dafa07c65e233d5363c0504db802cc88eaf1ccbffaa1
   languageName: node
   linkType: hard
 
