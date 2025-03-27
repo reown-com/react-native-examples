@@ -32,6 +32,7 @@ local.properties
 *.hprof
 .cxx/
 *.keystore
+.kotlin/
 
 # node.js
 #
@@ -79,3 +80,4 @@ web-build/
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+.env.local

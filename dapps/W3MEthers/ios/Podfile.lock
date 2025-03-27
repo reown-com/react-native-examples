@@ -1,6 +1,5 @@
 PODS:
   - boost (1.83.0)
-  - CocoaAsyncSocket (7.6.5)
   - CoinbaseWalletSDK/Client (1.0.4)
   - CoinbaseWalletSDK/CrossPlatform (1.0.4):
     - CoinbaseWalletSDK/Client
@@ -33,72 +32,15 @@ PODS:
     - React-Core (= 0.73.4)
     - React-jsi (= 0.73.4)
     - ReactCommon/turbomodule/core (= 0.73.4)
-  - Flipper (0.201.0):
-    - Flipper-Folly (~> 2.6)
-  - Flipper-Boost-iOSX (1.76.0.1.11)
-  - Flipper-DoubleConversion (3.2.0.1)
-  - Flipper-Fmt (7.1.7)
-  - Flipper-Folly (2.6.10):
-    - Flipper-Boost-iOSX
-    - Flipper-DoubleConversion
-    - Flipper-Fmt (= 7.1.7)
-    - Flipper-Glog
-    - libevent (~> 2.1.12)
-    - OpenSSL-Universal (= 1.1.1100)
-  - Flipper-Glog (0.5.0.5)
-  - Flipper-PeerTalk (0.0.4)
-  - FlipperKit (0.201.0):
-    - FlipperKit/Core (= 0.201.0)
-  - FlipperKit/Core (0.201.0):
-    - Flipper (~> 0.201.0)
-    - FlipperKit/CppBridge
-    - FlipperKit/FBCxxFollyDynamicConvert
-    - FlipperKit/FBDefines
-    - FlipperKit/FKPortForwarding
-    - SocketRocket (~> 0.6.0)
-  - FlipperKit/CppBridge (0.201.0):
-    - Flipper (~> 0.201.0)
-  - FlipperKit/FBCxxFollyDynamicConvert (0.201.0):
-    - Flipper-Folly (~> 2.6)
-  - FlipperKit/FBDefines (0.201.0)
-  - FlipperKit/FKPortForwarding (0.201.0):
-    - CocoaAsyncSocket (~> 7.6)
-    - Flipper-PeerTalk (~> 0.0.4)
-  - FlipperKit/FlipperKitHighlightOverlay (0.201.0)
-  - FlipperKit/FlipperKitLayoutHelpers (0.201.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutTextSearchable
-  - FlipperKit/FlipperKitLayoutIOSDescriptors (0.201.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutHelpers
-  - FlipperKit/FlipperKitLayoutPlugin (0.201.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitHighlightOverlay
-    - FlipperKit/FlipperKitLayoutHelpers
-    - FlipperKit/FlipperKitLayoutIOSDescriptors
-    - FlipperKit/FlipperKitLayoutTextSearchable
-  - FlipperKit/FlipperKitLayoutTextSearchable (0.201.0)
-  - FlipperKit/FlipperKitNetworkPlugin (0.201.0):
-    - FlipperKit/Core
-  - FlipperKit/FlipperKitReactPlugin (0.201.0):
-    - FlipperKit/Core
-  - FlipperKit/FlipperKitUserDefaultsPlugin (0.201.0):
-    - FlipperKit/Core
-  - FlipperKit/SKIOSNetworkPlugin (0.201.0):
-    - FlipperKit/Core
-    - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
   - hermes-engine (0.73.4):
     - hermes-engine/Pre-built (= 0.73.4)
   - hermes-engine/Pre-built (0.73.4)
   - libevent (2.1.12)
-  - MMKV (1.3.2):
-    - MMKVCore (~> 1.3.2)
-  - MMKVCore (1.3.2)
-  - OpenSSL-Universal (1.1.1100)
+  - MMKV (2.0.0):
+    - MMKVCore (~> 2.0.0)
+  - MMKVCore (2.0.0)
   - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
@@ -970,7 +912,7 @@ PODS:
   - React-Mapbuffer (0.73.4):
     - glog
     - React-debug
-  - react-native-compat (2.17.2):
+  - react-native-compat (2.18.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1173,30 +1115,9 @@ DEPENDENCIES:
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
-  - Flipper (= 0.201.0)
-  - Flipper-Boost-iOSX (= 1.76.0.1.11)
-  - Flipper-DoubleConversion (= 3.2.0.1)
-  - Flipper-Fmt (= 7.1.7)
-  - Flipper-Folly (= 2.6.10)
-  - Flipper-Glog (= 0.5.0.5)
-  - Flipper-PeerTalk (= 0.0.4)
-  - FlipperKit (= 0.201.0)
-  - FlipperKit/Core (= 0.201.0)
-  - FlipperKit/CppBridge (= 0.201.0)
-  - FlipperKit/FBCxxFollyDynamicConvert (= 0.201.0)
-  - FlipperKit/FBDefines (= 0.201.0)
-  - FlipperKit/FKPortForwarding (= 0.201.0)
-  - FlipperKit/FlipperKitHighlightOverlay (= 0.201.0)
-  - FlipperKit/FlipperKitLayoutPlugin (= 0.201.0)
-  - FlipperKit/FlipperKitLayoutTextSearchable (= 0.201.0)
-  - FlipperKit/FlipperKitNetworkPlugin (= 0.201.0)
-  - FlipperKit/FlipperKitReactPlugin (= 0.201.0)
-  - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.201.0)
-  - FlipperKit/SKIOSNetworkPlugin (= 0.201.0)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
-  - OpenSSL-Universal (= 1.1.1100)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -1205,7 +1126,6 @@ DEPENDENCIES:
   - React-callinvoker (from `../node_modules/react-native/ReactCommon/callinvoker`)
   - React-Codegen (from `build/generated/ios`)
   - React-Core (from `../node_modules/react-native/`)
-  - React-Core/DevSupport (from `../node_modules/react-native/`)
   - React-Core/RCTWebSocket (from `../node_modules/react-native/`)
   - React-CoreModules (from `../node_modules/react-native/React/CoreModules`)
   - React-cxxreact (from `../node_modules/react-native/ReactCommon/cxxreact`)
@@ -1253,21 +1173,11 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - CocoaAsyncSocket
     - CoinbaseWalletSDK
-    - Flipper
-    - Flipper-Boost-iOSX
-    - Flipper-DoubleConversion
-    - Flipper-Fmt
-    - Flipper-Folly
-    - Flipper-Glog
-    - Flipper-PeerTalk
-    - FlipperKit
     - fmt
     - libevent
     - MMKV
     - MMKVCore
-    - OpenSSL-Universal
     - SocketRocket
 
 EXTERNAL SOURCES:
@@ -1401,7 +1311,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
-  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CoinbaseWalletSDK: ea1f37512bbc69ebe07416e3b29bf840f5cc3152
   CoinbaseWalletSDKExpo: fc6cc756974827763d7a0decf7140c2902dafca2
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
@@ -1413,21 +1322,12 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 96d1751929ad10622773bb729ab28a8423f0dd0c
   FBLazyVector: 84f6edbe225f38aebd9deaf1540a4160b1f087d7
   FBReactNativeSpec: d0086a479be91c44ce4687a962956a352d2dc697
-  Flipper: c7a0093234c4bdd456e363f2f19b2e4b27652d44
-  Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
-  Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
-  Flipper-Fmt: 60cbdd92fc254826e61d669a5d87ef7015396a9b
-  Flipper-Folly: 584845625005ff068a6ebf41f857f468decd26b3
-  Flipper-Glog: 70c50ce58ddaf67dc35180db05f191692570f446
-  Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
-  FlipperKit: 37525a5d056ef9b93d1578e04bc3ea1de940094f
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: b2669ce35fc4ac14f523b307aff8896799829fe2
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  MMKV: f21593c0af4b3f2a0ceb8f820f28bb639ea22bb7
-  MMKVCore: 31b4cb83f8266467eef20a35b6d78e409a11060d
-  OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
+  MMKV: f7d1d5945c8765f97f39c3d121f353d46735d801
+  MMKVCore: c04b296010fcb1d1638f2c69405096aac12f6390
   RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
   RCTRequired: ab7f915c15569f04a49669e573e6e319a53f9faa
   RCTTypeSafety: 63b97ced7b766865057e7154db0e81ce4ee6cf1e
@@ -1449,7 +1349,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 9ac353eccf6ab54d1e0a33862ba91221d1e88460
   React-logger: 0a57b68dd2aec7ff738195f081f0520724b35dab
   React-Mapbuffer: 63913773ed7f96b814a2521e13e6d010282096ad
-  react-native-compat: 2861835380e647c6742d54af0414e54d7e24dfbf
+  react-native-compat: 643978d3c205c6bbe868871d8fb1d0e28b7b2eb8
   react-native-get-random-values: 384787fd76976f5aec9465aff6fa9e9129af1e74
   react-native-mmkv: e97c0c79403fb94577e5d902ab1ebd42b0715b43
   react-native-netinfo: 8a7fd3f7130ef4ad2fb4276d5c9f8d3f28d2df3d
@@ -1480,6 +1380,6 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 1b901a6d6eeba4e8a2e8f308f708691cdb5db312
 
-PODFILE CHECKSUM: c77627a9272c618d567b7857acdba9bc3d4c14f8
+PODFILE CHECKSUM: e61553d4ef5e8f4ddbe2b678790bbc69d50cf248
 
 COCOAPODS: 1.14.3

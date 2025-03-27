@@ -11,6 +11,7 @@ import {Methods} from '@/components/Modal/Methods';
 import {Events} from '@/components/Modal/Events';
 import SettingsStore from '@/store/SettingsStore';
 import {RootStackScreenProps} from '@/utils/TypesUtil';
+import {DappInfo} from './components/DappInfo';
 import styles from './styles';
 
 type Props = RootStackScreenProps<'SessionDetail'>;
@@ -139,6 +140,8 @@ export default function SessionDetail({route}: Props) {
             </View>
           );
         })}
+      <DappInfo session={session} />
+      <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
       <View style={styles.datesContainer}>
         <Text style={[styles.dateText, {color: Theme['fg-100']}]}>Expiry</Text>
         <Text style={{color: Theme['fg-175']}}>
