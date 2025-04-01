@@ -34,4 +34,16 @@ class AppDelegate: RCTAppDelegate {
     Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
   }
+
+  // Add this method for standard URL schemes
+  override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    return RCTLinkingManager.application(app, open: url, options: options)
+  }
+
+  // Add this method for Universal Links
+  override func application(_ application: UIApplication, continue userActivity: NSUserActivity,
+                          restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool
+  {
+    return RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
+  }
 }
