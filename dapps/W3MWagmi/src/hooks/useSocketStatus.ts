@@ -1,9 +1,9 @@
 import SettingsStore from '@/stores/SettingsStore';
 import {useEffect, useState} from 'react';
-import Toast from 'react-native-toast-message';
 import {useSnapshot} from 'valtio';
 import {useAccount} from 'wagmi';
 import {RELAYER_EVENTS} from '@walletconnect/core';
+import { ToastUtils } from '@/utils/ToastUtils';
 
 export function useSocketStatus() {
   const {connector} = useAccount();
@@ -24,36 +24,24 @@ export function useSocketStatus() {
   useEffect(() => {
     if (provider?.signer?.client?.core) {
       provider?.signer?.client?.core.relayer.on(RELAYER_EVENTS.connect, () => {
-        Toast.show({
-          type: 'success',
-          text1: 'Network connection is restored!',
-        });
+        ToastUtils.showSuccessToast('Network connection is restored!');
         SettingsStore.setSocketStatus('connected');
       });
       provider.signer.client.core.relayer.on(RELAYER_EVENTS.disconnect, () => {
-        Toast.show({
-          type: 'error',
-          text1: 'Network connection lost.',
-        });
+        ToastUtils.showErrorToast('Network connection lost.', 'Please check your internet connection.');
         SettingsStore.setSocketStatus('disconnected');
       });
       provider.signer.client.core.relayer.on(
         RELAYER_EVENTS.connection_stalled,
         () => {
-          Toast.show({
-            type: 'error',
-            text1: 'Network connection stalled.',
-          });
+          ToastUtils.showErrorToast('Network connection stalled.', 'Please check your internet connection.');
           SettingsStore.setSocketStatus('stalled');
         },
       );
       provider.signer.client.core.relayer.on(
         RELAYER_EVENTS.transport_closed,
         () => {
-          Toast.show({
-            type: 'info',
-            text1: 'Network connection closed.',
-          });
+          ToastUtils.showInfoToast('Network connection closed.');
           SettingsStore.setSocketStatus('closed');
         },
       );

@@ -16,6 +16,7 @@
     "copy:production": "./scripts/copy-variant-files.sh 'production'"
   },
   "dependencies": {
+    "@bitcoinerlab/secp256k1": "1.2.0",
     "@coinbase/wallet-mobile-sdk": "1.1.2",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-clipboard/clipboard": "1.16.2",
@@ -23,12 +24,18 @@
     "@react-navigation/bottom-tabs": "6.6.1",
     "@react-navigation/native": "6.1.18",
     "@react-navigation/native-stack": "6.10.1",
-    "@reown/appkit-auth-wagmi-react-native": "0.0.0-feat-onramp-20250401222444",
-    "@reown/appkit-coinbase-wagmi-react-native": "0.0.0-feat-onramp-20250401222444",
-    "@reown/appkit-wagmi-react-native": "0.0.0-feat-onramp-20250401222444",
+    "@reown/appkit-auth-wagmi-react-native": "0.0.0-feat-multichain-20250514142632",
+    "@reown/appkit-bitcoin-react-native": "0.0.0-feat-multichain-20250514142632",
+    "@reown/appkit-coinbase-wagmi-react-native": "0.0.0-feat-multichain-20250514142632",
+    "@reown/appkit-ethers-react-native": "0.0.0-feat-multichain-20250514142632",
+    "@reown/appkit-react-native": "0.0.0-feat-multichain-20250514142632",
+    "@reown/appkit-solana-react-native": "0.0.0-feat-multichain-20250514142632",
+    "@reown/appkit-wagmi-react-native": "0.0.0-feat-multichain-20250514142632",
     "@sentry/react-native": "^6.9.1",
     "@tanstack/react-query": "5.62.2",
     "@walletconnect/react-native-compat": "2.19.1",
+    "bitcoinjs-lib": "7.0.0-rc.0",
+    "ethers": "6.13.5",
     "expo": "52.0.31",
     "react": "18.3.1",
     "react-native": "0.77.0",
@@ -44,8 +51,8 @@
     "react-native-svg": "15.11.2",
     "react-native-toast-message": "2.2.1",
     "react-native-webview": "13.13.4",
-    "viem": "2.23.10",
-    "wagmi": "2.14.13"
+    "viem": "2.29.2",
+    "wagmi": "2.15.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -84,6 +91,7 @@
     "ws": "^8.18.1",
     "braces": "3.0.3",
     "undici": "6.21.2",
-    "serve-static": "1.16.2"
+    "serve-static": "1.16.2",
+    "valtio": "1.11.2"
   }
 }

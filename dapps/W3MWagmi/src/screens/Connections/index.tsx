@@ -1,27 +1,22 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {AppKitButton} from '@reown/appkit-wagmi-react-native';
+import {AppKitButton} from '@reown/appkit-react-native';
 import {FlexView, Text} from '@reown/appkit-ui-react-native';
 
-import {SignMessage} from './components/SignMessage';
-import {SendTransaction} from './components/SendTransaction';
-import {SignTypedDataV4} from './components/SignTypedDataV4';
-import {ReadContract} from './components/ReadContract';
-import {WriteContract} from './components/WriteContract';
-
+import {ActionsView} from './components/ActionsView';
+import { EventsView } from './components/EventsView';
+import { WalletInfoView } from './components/WalletInfoView';
 function ConnectionsScreen() {
   return (
     <FlexView flexGrow={1} justifyContent="center" alignItems="center">
       <Text style={styles.title} center variant="large-600">
-        AppKit + wagmi
+        AppKit + Multichain
       </Text>
       <View style={styles.buttonContainer}>
+        <WalletInfoView />
         <AppKitButton balance="show" />
-        <SignMessage />
-        <SendTransaction />
-        <SignTypedDataV4 />
-        <ReadContract />
-        <WriteContract />
+        <ActionsView />
+        <EventsView />
       </View>
     </FlexView>
   );
