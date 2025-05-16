@@ -5,10 +5,10 @@ import React, {useEffect} from 'react';
 import {Linking} from 'react-native';
 import BootSplash from 'react-native-bootsplash';
 import {createAppKit, AppKit, solana, bitcoin, AppKitProvider} from '@reown/appkit-react-native';
-// import {WagmiAdapter} from '@reown/appkit-wagmi-react-native';
+import {WagmiAdapter} from '@reown/appkit-wagmi-react-native';
 import {SolanaAdapter} from '@reown/appkit-solana-react-native';
 import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
-import {EthersAdapter} from '@reown/appkit-ethers-react-native';
+// import {EthersAdapter} from '@reown/appkit-ethers-react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 // import {coinbaseConnector} from '@reown/appkit-coinbase-wagmi-react-native';
@@ -73,14 +73,14 @@ const clipboardClient = {
 //   //   _authConnector],
 // });
 
-const ethersAdapter = new EthersAdapter({
-  projectId,
-});
-
-// const wagmiAdapter = new WagmiAdapter({
+// const ethersAdapter = new EthersAdapter({
 //   projectId,
-//   networks: chains as [Chain, ...Chain[]],
 // });
+
+const wagmiAdapter = new WagmiAdapter({
+  projectId,
+  networks: chains as [Chain, ...Chain[]],
+});
 
 const solanaAdapter = new SolanaAdapter({
   projectId,
@@ -90,7 +90,7 @@ const bitcoinAdapter = new BitcoinAdapter({
   projectId,
 });
 
-const adapters = [ethersAdapter, bitcoinAdapter, solanaAdapter];
+const adapters = [wagmiAdapter, bitcoinAdapter, solanaAdapter];
 
 const networks = [...chains, solana, bitcoin];
 
