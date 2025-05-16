@@ -27,6 +27,7 @@ import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 // import {siweConfig} from '@/utils/SiweUtils';
 import {chains} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
+import { WagmiProvider } from 'wagmi';
 // import { Chain } from 'viem';
 
 Sentry.init({
@@ -156,7 +157,7 @@ function App(): JSX.Element {
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <NavigationContainer>
-        {/* <WagmiProvider config={wagmiAdapter.wagmiConfig}> */}
+        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
           <AppKitProvider instance={appKit}>
             <QueryClientProvider client={queryClient}>
               <RootStackNavigator />
@@ -164,7 +165,7 @@ function App(): JSX.Element {
               <AppKit />
             </QueryClientProvider>
           </AppKitProvider>
-        {/* </WagmiProvider> */}
+        </WagmiProvider>
       </NavigationContainer>
     </GestureHandlerRootView>
   );
