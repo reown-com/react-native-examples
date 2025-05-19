@@ -28,6 +28,7 @@ import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import {chains} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
 import { WagmiProvider } from 'wagmi';
+import { Chain } from 'viem';
 // import { Chain } from 'viem';
 
 Sentry.init({
