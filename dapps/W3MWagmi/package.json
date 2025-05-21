@@ -75,6 +75,7 @@
   },
   "packageManager": "yarn@3.6.4",
   "resolutions": {
+    "tar-fs": "2.1.2",
     "ip": "2.0.1",
     "micromatch": "4.0.8",
     "@babel/helpers": "7.26.10",
