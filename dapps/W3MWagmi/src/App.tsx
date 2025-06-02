@@ -1,5 +1,5 @@
 import '@walletconnect/react-native-compat';
-import {useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {Linking} from 'react-native';
 import BootSplash from 'react-native-bootsplash';
 import {
@@ -79,6 +79,7 @@ createAppKit({
   metadata,
   siweConfig,
   clipboardClient,
+  customWallets,
   connectorImages: {
     coinbaseWallet:
       'https://play-lh.googleusercontent.com/wrgUujbq5kbn4Wd4tzyhQnxOXkjiGqq39N4zBvCHmxpIiKcZw_Pb065KTWWlnoejsg',
