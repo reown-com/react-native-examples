@@ -5425,100 +5425,99 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-auth-wagmi-react-native@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@reown/appkit-auth-wagmi-react-native@npm:1.2.4"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-wallet-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-common-react-native": 1.2.4
+    "@reown/appkit-core-react-native": 1.2.4
+    "@reown/appkit-wallet-react-native": 1.2.4
   peerDependencies:
     wagmi: ">=2"
-  checksum: 617b926f1fb1a584bd316f94e87ea985534377a1246685fa42e3f004a8129b62263fa01cae7c38a820663e963488f9a3fa95039af31f5c920aa23d6c493f4575
+  checksum: 58c60b2a6d98d4eebc9987ec5f2a401d5f73aa741acb614c56924439baff8b77253d00b8b02285a4de3dfe066b85f30c921feecfd3aec35ea483a2ff32c04161
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-coinbase-wagmi-react-native@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:1.2.4"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-common-react-native": 1.2.4
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: e716fb72a435bb17425a38dc2e0a316341d3911e4ca08acc0993c1066e54a69ba88bc52f7e740b78c9deb26b11a3baae422e6fa64dc54bcb2b6e8a68b9b5c0c4
+  checksum: 6746415876787a7ce45e62a1ad623c4bf59632399e5b4c7352a7f784cfba009e356337dfd940b370c4d6082a0371f6b849a48d8dd84099c6b1f38e7323745e37
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-common-react-native@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@reown/appkit-common-react-native@npm:1.2.4"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: e25d1fc7e191bc84870a8c8c3b91c143116d778f315e277db77ca83f6ba982f99c2f5db1a117203f3fa17cd5cfc30e23da6d7e575dd36a2610859c9740367de1
+  checksum: 59213913d5ea48ca7a0b4d4cfaf84a24df0566f9c150a150790e6be62c8a56375913371bcb33e4fb15d93ca03d77bb9b118e22876c5f9d3352f65ebc2fbdfdab
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-core-react-native@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@reown/appkit-core-react-native@npm:1.2.4"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    countries-and-timezones: 3.7.2
+    "@reown/appkit-common-react-native": 1.2.4
     valtio: 1.11.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 0d4cc97409fcf64fe4395af77e4bfea60fe8270d01859a812d343e3308a5cbaea4641a16a1c01d7cdd7392b784baccb8c0d4cf25b929a10bf2d21e7f6b60c3ef
+  checksum: a5be5baaca13f1a4970d9a0ff2b3264dd9551c62152490b694ea1e7bd7043a4c8b78a216e9e1978d834106b2f3933b4f8312ccd251701801b8b1001e4aa1b0fb
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-scaffold-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-scaffold-react-native@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@reown/appkit-scaffold-react-native@npm:1.2.4"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-common-react-native": 1.2.4
+    "@reown/appkit-core-react-native": 1.2.4
+    "@reown/appkit-siwe-react-native": 1.2.4
+    "@reown/appkit-ui-react-native": 1.2.4
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: d62c4ccd2397cbee0258caea8fae77233bc5ab51decd69ef5ca7247d177779a55df3baf9b10fcb2687dfb11b47a3783e4f7e0a634109e7cf8be4c938bd5deaf7
+  checksum: 2069f9e0943ef4d1e14d8e2113516364deaf5f0557c8d065167146e6c96fb92bdc75ee1d8251476d91daaf5d8bc021c2f307b5f6c0b68312b176a742265e3b19
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-scaffold-utils-react-native@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@reown/appkit-scaffold-utils-react-native@npm:1.2.4"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-scaffold-react-native": 0.0.0-feat-onramp-20250311164912
-  checksum: 2accd789289fc2d32b319f7fec4c2259f9e41ad68a84cb3825804b5f78b68817e43c8f7af2cea95ed3fcc487daa31c22f12761115849d96deff29eb0678eff48
+    "@reown/appkit-common-react-native": 1.2.4
+    "@reown/appkit-scaffold-react-native": 1.2.4
+  checksum: e0ae09b6bace96c14132b0aef5109afee0367b1b444a3ced817cad4b22bb5855f646a04320432d84718e6bba2bcaac59bc09ee2ab7b332e2c4be875acb2778a4
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-siwe-react-native@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@reown/appkit-siwe-react-native@npm:1.2.4"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-common-react-native": 1.2.4
+    "@reown/appkit-core-react-native": 1.2.4
+    "@reown/appkit-ui-react-native": 1.2.4
     valtio: 1.11.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: ac4b7b159b91c734a58f06576556c8b4a1bc011968e97a93672a3a3022f47b0bb3bb25829559e8cf6c512e8cd8fccab4d51cb16a36a9b9e61d09e1b6c6a3d6a2
+  checksum: 57ca4eca238d23417d5e2862e107575a99f9f84fec5e9405e6db8272e1bf1f6aea4c0a75dfa6d55426fcaab6fd1ee1b57d7b549c823fd0fb8be221219bcb2a1f
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-ui-react-native@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@reown/appkit-ui-react-native@npm:1.2.4"
   dependencies:
     polished: 4.3.1
     qrcode: 1.5.3
@@ -5526,18 +5525,18 @@ __metadata:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 0639b1b275fe65bd6e3a290f134602a21de47bbdc8e3e3c2f005263f5bf9bd547799d5183f71dae599f689134decbd851702d415302730fbcbb7c40db36eb425
+  checksum: 959c4d6046aa1250f65d024c3d2882a1283f0386214f14808200a7a819e4094b17a9fd62bc1002562eb4f8bcc472c53ada7b6d6e6365332ad9a1fabf7b6cb1c5
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-wagmi-react-native@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@reown/appkit-wagmi-react-native@npm:1.2.4"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-scaffold-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-common-react-native": 1.2.4
+    "@reown/appkit-scaffold-react-native": 1.2.4
+    "@reown/appkit-scaffold-utils-react-native": 1.2.4
+    "@reown/appkit-siwe-react-native": 1.2.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -5547,21 +5546,21 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: 7863b0f246e87c3366da05d4a3e92121048f640bc34075d39a512984184d8cdfc790751f09845d9a09eb099c9b3a8445969ffcf70e53b5d6a8bc2b7c028fb9b2
+  checksum: b3875f8663ccb333f4a2fbb7acb62068c63bc314771f91610d883703b3dfd7102d7139681dab74a5269e1dd61022d49ebb3353e85f60dd2c1a20d981e80f9b78
   languageName: node
   linkType: hard
 
-"@reown/appkit-wallet-react-native@npm:0.0.0-feat-onramp-20250311164912":
-  version: 0.0.0-feat-onramp-20250311164912
-  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-feat-onramp-20250311164912"
+"@reown/appkit-wallet-react-native@npm:1.2.4":
+  version: 1.2.4
+  resolution: "@reown/appkit-wallet-react-native@npm:1.2.4"
   dependencies:
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250311164912
+    "@reown/appkit-core-react-native": 1.2.4
+    "@reown/appkit-ui-react-native": 1.2.4
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: 4c2e974a70168fb2581135b670c98af3e43841b36232cae241e71257c3e14b11c290f817693ffc6362504717287ee3f574dcf115d62cd89dbb139253174b21c7
+  checksum: f23e47f4a5dd522ee4f10a5fa9019cd41f3b5d591736c99bd3c3c0353af62eb9690bddb5c679e6b2b46c5ac11a9463c53681b2026878920ec6ae1ee047038618
   languageName: node
   linkType: hard
 
@@ -5752,10 +5751,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/babel-plugin-component-annotate@npm:3.2.0":
-  version: 3.2.0
-  resolution: "@sentry/babel-plugin-component-annotate@npm:3.2.0"
-  checksum: 5b1a368a3e38486fde0a89d1604fe0881b2af1008354ba9337640325522e23059e7322cb3cef406a69237b9f4678afce1142f7cb320e5f14cb4ca919f423e78d
+"@sentry/babel-plugin-component-annotate@npm:3.4.0":
+  version: 3.4.0
+  resolution: "@sentry/babel-plugin-component-annotate@npm:3.4.0"
+  checksum: 670dcbe210d0dabf3b0e37899b0c2ed10d83d314b700d391de5e3f19f3cc43622977e611e86071c47e2c92db7c662ea8723c903081b92e90309e1aeda7eb2eba
   languageName: node
   linkType: hard
 
@@ -5772,66 +5771,74 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/cli-darwin@npm:2.42.1":
-  version: 2.42.1
-  resolution: "@sentry/cli-darwin@npm:2.42.1"
+"@sentry/cli-darwin@npm:2.45.0":
+  version: 2.45.0
+  resolution: "@sentry/cli-darwin@npm:2.45.0"
   conditions: os=darwin
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-arm64@npm:2.42.1":
-  version: 2.42.1
-  resolution: "@sentry/cli-linux-arm64@npm:2.42.1"
+"@sentry/cli-linux-arm64@npm:2.45.0":
+  version: 2.45.0
+  resolution: "@sentry/cli-linux-arm64@npm:2.45.0"
   conditions: (os=linux | os=freebsd) & cpu=arm64
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-arm@npm:2.42.1":
-  version: 2.42.1
-  resolution: "@sentry/cli-linux-arm@npm:2.42.1"
+"@sentry/cli-linux-arm@npm:2.45.0":
+  version: 2.45.0
+  resolution: "@sentry/cli-linux-arm@npm:2.45.0"
   conditions: (os=linux | os=freebsd) & cpu=arm
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-i686@npm:2.42.1":
-  version: 2.42.1
-  resolution: "@sentry/cli-linux-i686@npm:2.42.1"
+"@sentry/cli-linux-i686@npm:2.45.0":
+  version: 2.45.0
+  resolution: "@sentry/cli-linux-i686@npm:2.45.0"
   conditions: (os=linux | os=freebsd) & (cpu=x86 | cpu=ia32)
   languageName: node
   linkType: hard
 
-"@sentry/cli-linux-x64@npm:2.42.1":
-  version: 2.42.1
-  resolution: "@sentry/cli-linux-x64@npm:2.42.1"
+"@sentry/cli-linux-x64@npm:2.45.0":
+  version: 2.45.0
+  resolution: "@sentry/cli-linux-x64@npm:2.45.0"
   conditions: (os=linux | os=freebsd) & cpu=x64
   languageName: node
   linkType: hard
 
-"@sentry/cli-win32-i686@npm:2.42.1":
-  version: 2.42.1
-  resolution: "@sentry/cli-win32-i686@npm:2.42.1"
+"@sentry/cli-win32-arm64@npm:2.45.0":
+  version: 2.45.0
+  resolution: "@sentry/cli-win32-arm64@npm:2.45.0"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@sentry/cli-win32-i686@npm:2.45.0":
+  version: 2.45.0
+  resolution: "@sentry/cli-win32-i686@npm:2.45.0"
   conditions: os=win32 & (cpu=x86 | cpu=ia32)
   languageName: node
   linkType: hard
 
-"@sentry/cli-win32-x64@npm:2.42.1":
-  version: 2.42.1
-  resolution: "@sentry/cli-win32-x64@npm:2.42.1"
+"@sentry/cli-win32-x64@npm:2.45.0":
+  version: 2.45.0
+  resolution: "@sentry/cli-win32-x64@npm:2.45.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@sentry/cli@npm:2.42.1":
-  version: 2.42.1
-  resolution: "@sentry/cli@npm:2.42.1"
+"@sentry/cli@npm:2.45.0":
+  version: 2.45.0
+  resolution: "@sentry/cli@npm:2.45.0"
   dependencies:
-    "@sentry/cli-darwin": 2.42.1
-    "@sentry/cli-linux-arm": 2.42.1
-    "@sentry/cli-linux-arm64": 2.42.1
-    "@sentry/cli-linux-i686": 2.42.1
-    "@sentry/cli-linux-x64": 2.42.1
-    "@sentry/cli-win32-i686": 2.42.1
-    "@sentry/cli-win32-x64": 2.42.1
+    "@sentry/cli-darwin": 2.45.0
+    "@sentry/cli-linux-arm": 2.45.0
+    "@sentry/cli-linux-arm64": 2.45.0
+    "@sentry/cli-linux-i686": 2.45.0
+    "@sentry/cli-linux-x64": 2.45.0
+    "@sentry/cli-win32-arm64": 2.45.0
+    "@sentry/cli-win32-i686": 2.45.0
+    "@sentry/cli-win32-x64": 2.45.0
     https-proxy-agent: ^5.0.0
     node-fetch: ^2.6.7
     progress: ^2.0.3
@@ -5848,13 +5855,15 @@ __metadata:
       optional: true
     "@sentry/cli-linux-x64":
       optional: true
+    "@sentry/cli-win32-arm64":
+      optional: true
     "@sentry/cli-win32-i686":
       optional: true
     "@sentry/cli-win32-x64":
       optional: true
   bin:
     sentry-cli: bin/sentry-cli
-  checksum: 91a7c07041b96e18776ef7695ef74a080f5b67de67b0018a0c4b337b71a7f5f65aa98779b8db418973a4ca1df905098b9d8c1b8ec4e352fe35f752fe93232d04
+  checksum: 8f922057524c5ab59762fa7353be603cab0c17df3ef499dee3da7999296e8aaaa01e4c5c6f2880df475816cd94d76fc7f24622743c2d8aa6195dbf4e2a917d29
   languageName: node
   linkType: hard
 
@@ -5865,13 +5874,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/react-native@npm:^6.9.1":
-  version: 6.9.1
-  resolution: "@sentry/react-native@npm:6.9.1"
+"@sentry/react-native@npm:^6.14.0":
+  version: 6.14.0
+  resolution: "@sentry/react-native@npm:6.14.0"
   dependencies:
-    "@sentry/babel-plugin-component-annotate": 3.2.0
+    "@sentry/babel-plugin-component-annotate": 3.4.0
     "@sentry/browser": 8.54.0
-    "@sentry/cli": 2.42.1
+    "@sentry/cli": 2.45.0
     "@sentry/core": 8.54.0
     "@sentry/react": 8.54.0
     "@sentry/types": 8.54.0
@@ -5885,7 +5894,7 @@ __metadata:
       optional: true
   bin:
     sentry-expo-upload-sourcemaps: scripts/expo-upload-sourcemaps.js
-  checksum: f586c3783c0128707d2433a83835da9db54ebfa8cec776a9c52b9d36a4361e04e4fa31e1ef1a12c6eca58904f05590ab51bae1708800b886bcecd57b0c1c4459
+  checksum: 5d2ac344aa70a9f6b1298f824d6219b818bd743a3d4e9c15b3884d1b3d85edde440f7f32d90a2e8dbf3f6eb11fb7fe91ba761c2ad1c1d4bb05c5f73658459399
   languageName: node
   linkType: hard
 
@@ -7090,10 +7099,10 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-onramp-20250311164912
-    "@reown/appkit-wagmi-react-native": 0.0.0-feat-onramp-20250311164912
-    "@sentry/react-native": ^6.9.1
+    "@reown/appkit-auth-wagmi-react-native": 1.2.4
+    "@reown/appkit-coinbase-wagmi-react-native": 1.2.4
+    "@reown/appkit-wagmi-react-native": 1.2.4
+    "@sentry/react-native": ^6.14.0
     "@tanstack/react-query": 5.62.2
     "@types/jest": ^29.5.13
     "@types/react": ^18.2.6
@@ -8390,13 +8399,6 @@ __metadata:
     typescript:
       optional: true
   checksum: a30c424b53d442ea0bdd24cb1b3d0d8687c8dda4a17ab6afcdc439f8964438801619cdb66e8e79f63b9caa3e6586b60d8bab9ce203e72df6c5e80179b971fe8f
-  languageName: node
-  linkType: hard
-
-"countries-and-timezones@npm:3.7.2":
-  version: 3.7.2
-  resolution: "countries-and-timezones@npm:3.7.2"
-  checksum: 6375ea8a4b1da023d57f6a7fb6bc14ace31da686be14b941d255749471a2797f1a66e77d95d7ef9ac15a0d74e08f753f747e9240f57bece26b784be40b940a0e
   languageName: node
   linkType: hard
 
