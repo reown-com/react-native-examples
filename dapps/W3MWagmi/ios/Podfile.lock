@@ -1907,7 +1907,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSentry (6.9.1):
+  - RNSentry (6.14.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1928,7 +1928,7 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - Sentry/HybridSDK (= 8.45.0)
+    - Sentry/HybridSDK (= 8.50.2)
     - Yoga
   - RNSVG (15.12.0):
     - DoubleConversion
@@ -1973,7 +1973,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - Sentry/HybridSDK (8.45.0)
+  - Sentry/HybridSDK (8.50.2)
   - SocketRocket (0.7.1)
   - Yoga (0.0.0)
 
@@ -2345,9 +2345,9 @@ SPEC CHECKSUMS:
   RNGestureHandler: 9b05fab9a0b48fe48c968de7dbb9ca38a2b4f7ab
   RNReanimated: 67d8eda35002543abb656f25fa1a457ceeab6807
   RNScreens: 9a887b38fbb9c207f0d4e9694037c91e4fd6b248
-  RNSentry: 0d04887cad65675b268f17b4c45f311dc0ac3736
+  RNSentry: 8dfa66bb6eb1c7e91873965ff7d59a346bbbedac
   RNSVG: 489a8e6e22c059f183620d0f0362cddad40cb0a1
-  Sentry: f7c0c4b82e2f7e5909a660544dfaff84e35d5e03
+  Sentry: d95f5f3b32d01324b3e27d3c52747005302cc026
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 78d74e245ed67bb94275a1316cdc170b9b7fe884
 

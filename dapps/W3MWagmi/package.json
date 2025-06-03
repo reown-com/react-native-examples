@@ -31,7 +31,7 @@
     "@reown/appkit-react-native": "0.0.0-feat-multichain-20250519172433",
     "@reown/appkit-solana-react-native": "0.0.0-feat-multichain-20250519172433",
     "@reown/appkit-wagmi-react-native": "0.0.0-feat-multichain-20250519172433",
-    "@sentry/react-native": "^6.9.1",
+    "@sentry/react-native": "^6.14.0",
     "@tanstack/react-query": "5.62.2",
     "@walletconnect/react-native-compat": "2.19.1",
     "bitcoinjs-lib": "7.0.0-rc.0",
@@ -82,6 +82,7 @@
   },
   "packageManager": "yarn@3.6.4",
   "resolutions": {
+    "tar-fs": "2.1.2",
     "ip": "2.0.1",
     "micromatch": "4.0.8",
     "@babel/helpers": "7.26.10",

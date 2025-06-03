@@ -53,6 +53,7 @@
     "node": ">=18"
   },
   "resolutions": {
+    "image-size": "1.2.1",
     "cross-spawn": "^7.0.6",
     "ws": "^8.18.1",
     "ip": "^2.0.1",
