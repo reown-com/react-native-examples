@@ -4430,21 +4430,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/curves@npm:^1.4.2, @noble/curves@npm:^1.7.0":
+  version: 1.9.1
+  resolution: "@noble/curves@npm:1.9.1"
+  dependencies:
+    "@noble/hashes": 1.8.0
+  checksum: 4f3483a1001538d2f55516cdcb19319d1eaef79550633f670e7d570b989cdbc0129952868b72bb67643329746b8ffefe8e4cd791c8cc35574e05a37f873eef42
+  languageName: node
+  linkType: hard
+
 "@noble/curves@npm:^1.6.0, @noble/curves@npm:~1.7.0":
   version: 1.7.0
   resolution: "@noble/curves@npm:1.7.0"
   dependencies:
     "@noble/hashes": 1.6.0
   checksum: e220b704f1e516f326fff985e794e840a267f5542e1388737142b08177672ebc41b460b5a5bf636d7622c68e8ae719bc042ccd8aed16dc14311450a94b5f2a05
-  languageName: node
-  linkType: hard
-
-"@noble/curves@npm:^1.7.0":
-  version: 1.9.1
-  resolution: "@noble/curves@npm:1.9.1"
-  dependencies:
-    "@noble/hashes": 1.8.0
-  checksum: 4f3483a1001538d2f55516cdcb19319d1eaef79550633f670e7d570b989cdbc0129952868b72bb67643329746b8ffefe8e4cd791c8cc35574e05a37f873eef42
   languageName: node
   linkType: hard
 
@@ -5397,47 +5397,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-wallet-react-native": 0.0.0-feat-multichain-20250519172433
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-wallet-react-native": 0.0.0-feat-multichain-phantom-20250606195341
   peerDependencies:
     wagmi: ">=2"
-  checksum: 828cee301d2f8f7287e426235dfdf4c771737073873e7ce4337e548f64e99dc83a6b9c24b8c3cd3eaf017c317024637269cf4f086dd62727837bdb6aa0f9bcf3
+  checksum: d2881e289b155fb958107afbc8703cd39ff40e871625938b66f4b7a2466e69cb859c8a742429e932bd72a8390e5660a634d73aa9e00851f4f4bf0eef8232f45e
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250519172433
-  checksum: f38e1ed85c13f634ed013f6434e7d94c7a6f1819980fb53bcf1141004aa3f953100557473f0ed38597538f78d93a1e31144594a96be0b93236224ce19eee2086
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+  checksum: 2edf48cc1d736741d3735368f8f44496f1faeb7e64dc301d570cbdc71aa667590e91b39d83da618b3ad8fe2439e1a38c1eaa0b08cac552153a6ef887299715e0
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250519172433
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: 942fc31aac82b28bd7780e1b82afbf5e33962db47e802dc3d52a7e22fc6d6a612d973d58a9930d39e1c62d44af8def4394239e4173b3a450760262643a7b4c3b
+  checksum: d1a5ed3bc484e4fdf615eb59e90229469433338ac9e27a23c4e6e6849285e7495104ad39dfc37974fa193fb7f04ee4c48859d3095459872bace8fa9a5b23dff2
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: 9a76daada50584ce54c2e60ebd4014fd62e5f6aa3d7fb36c6576322f677b1c1b8bd420a08897f1a3b45bd9b5b01e47d023512a682f230f4a19d6857bb1c0c7d0
+  checksum: ae53816feffb99a20cc0cfad8a8a2bdd13eb6f60e6eaaf4ac2a8c3572b182ccac4e9b6d908a7153f109ccfe9e30a7a7a5a47bfeb627779c6afd7c207d358ac3e
   languageName: node
   linkType: hard
 
@@ -5465,11 +5465,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250519172433
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
     countries-and-timezones: 3.7.2
     valtio: 1.11.2
   peerDependencies:
@@ -5477,18 +5477,18 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 44a1696eed483cb506c0ea3745e46847d73d5090248fe2ef2a2b58eb63c6938771203209301e4fc44e2914991eb4e0143958f6df2b1e30ef8e291042d45379db
+  checksum: f5cdf152dfabc93fe5c9ea723fffa80169766aac96f5078d212b7f39edbc6bd14e844c89c0461db989f5343ed9448f4f4c1db0f97c28564d54638b539a759995
   languageName: node
   linkType: hard
 
-"@reown/appkit-ethers-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-ethers-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-ethers-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-ethers-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-20250519172433
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-phantom-20250606195341
     "@walletconnect/ethereum-provider": 2.20.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
@@ -5497,7 +5497,7 @@ __metadata:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-get-random-values: "*"
-  checksum: 4aa55a0111c7530c2cc25e1b38496406f590acc03b304302c1ebf420fa17002c9bbaf3471cce24449183fbdea7a8ebd46013fc96589494cd59434c728af5aeb6
+  checksum: e4b28be3623baba14ec900e306d0dfa64ec2c778f4e38b0914670aa2899361a0b1457b4fcc4c66a0a381e28824ddc98f0d4e2a29175cd0fe10d70f665761a14b
   languageName: node
   linkType: hard
 
@@ -5510,21 +5510,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-20250519172433
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-phantom-20250606195341
     "@walletconnect/universal-provider": 2.20.2
     valtio: ^1.13.2
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: 468de74315f1017ee8b79a11e1d9903be799ea8e627387abbc675cbee8385de6f86fedd997691f972e4c2102bd0cf28733053aab1d14c92e66128cd889fa98fe
+  checksum: 92bb1b0892480156ae952e7e82911a72e7f62ebe8e7589e5a4a18a5a960b9be1468c1e1957e32b22de29c63c7e6785d2f2d7d406f506ccec237fe19a106d73f0
   languageName: node
   linkType: hard
 
@@ -5542,50 +5542,53 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-20250519172433
-  checksum: e75fa292c66c5d90cde7d36e9f9fb59fab27e48d49f41c8e6a3999a384b39cab2085f2080ef4aeb261497f426905aa2c163d08e39d162f9bd5f8d944f29abb18
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+  checksum: e8455cd0eb0edb2dc3024c74fe805e527f74528a88bb5afcc7cc1334f6b6de9b425da6b465928673d19d2f16995b4576c9ff7253ec37c32c71ff9328309bcb5e
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-siwe-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-20250519172433
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-phantom-20250606195341
     valtio: 1.11.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: 127d099e344d40f896f9efd370ffd6ba388b6f94d31451e53f0f0d531388743bbbd45cbe5284f4e2104b56576b4d2fe8fe6e928e38fedf253ddd0a32d058c279
+  checksum: f946a428736311151533def38c593d9ba6132852c8d26dda7c535acdfb1f803c69718dc8762abaf2abebd73dcf8a83f192a5f751666c379491fce1b397b4d551
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250519172433
-  checksum: 22d10abb7c7c5571377ec06ac8ea7024436e091fa917feaad5ca94e6d1b48870f94d9d5b24d5d31a5fb161e9d914122bea31790e6de02d4ec8fee719c050b4b1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    bs58: 6.0.0
+    tweetnacl: 1.0.3
+  checksum: baf0cb0f4023985df6a6ab2f3d034ed55df9fd796a2cebc5594e68674faa482f3d9fe94cdeed3b80670d49e881c242546dedd1c31eeacb25461eb9e7d4bc6bbb
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: b973fedcbab0a9ef3ec5633887e938e856b5a26ff5ecb89bbb4135166a9c01981713cffd4f41cf11c991f6643e202fe784ac79a516e30434d75be0026c3716f1
+  checksum: 5cbac952474fb9ede657ea57ea2b97ad414615b3fd2d3fa53dc97d147b6fcbcaad8fd4fb3334e7280382f63b29809be5e06091f724f2110dd6818aed3463336c
   languageName: node
   linkType: hard
 
@@ -5620,14 +5623,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-20250519172433
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-phantom-20250606195341
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -5637,21 +5640,21 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: d80b6b17757695b2d0d441a569c6a0d37239baa06f965fe0897b4dc7512f3d14956332e7d35de4287349f394589bac9ea12ea839eaa0d298c99ec63c06f2db85
+  checksum: 40e1d26361c544b54038dbf62d25b76a9e0af0d7e48686d53311a5524851e5cdad7770b63be4c2fb735252e6238ed003fe42b56cb578e9c8c5eee85bec36f74e
   languageName: node
   linkType: hard
 
-"@reown/appkit-wallet-react-native@npm:0.0.0-feat-multichain-20250519172433":
-  version: 0.0.0-feat-multichain-20250519172433
-  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-feat-multichain-20250519172433"
+"@reown/appkit-wallet-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341":
+  version: 0.0.0-feat-multichain-phantom-20250606195341
+  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-feat-multichain-phantom-20250606195341"
   dependencies:
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-20250519172433
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-phantom-20250606195341
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: 122112a09e2e8f6bc1bb9cfe5514e88a9959674b65739d342dadf8dfa41a3aa027b3522c2888f4c8972180e31fc8a0bb065eb40d338e5c2d580163e065122ebd
+  checksum: 3527d95f6dd01e80af8b6acdcfc289c1541c77eedbe904ce65c66a73aac1b9fc5aad2e1db645c56cf3c3191d2c418ef62708df96e40fd98072b3c7ae24c0e5f4
   languageName: node
   linkType: hard
 
@@ -6107,6 +6110,84 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@solana/buffer-layout@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@solana/buffer-layout@npm:4.0.1"
+  dependencies:
+    buffer: ~6.0.3
+  checksum: bf846888e813187243d4008a7a9f58b49d16cbd995b9d7f1b72898aa510ed77b1ce5e8468e7b2fd26dd81e557a4e74a666e21fccb95f123c1f740d41138bbacd
+  languageName: node
+  linkType: hard
+
+"@solana/codecs-core@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@solana/codecs-core@npm:2.1.1"
+  dependencies:
+    "@solana/errors": 2.1.1
+  peerDependencies:
+    typescript: ">=5.3.3"
+  checksum: 7791c890bcda60326cf240a4a828c1fd6d7686cf67b92186bed11a2643b5c648fe89ec8346b37e406825da43fc5aefbf55fded6c4b0dc23b698eb84974974cf5
+  languageName: node
+  linkType: hard
+
+"@solana/codecs-numbers@npm:^2.1.0":
+  version: 2.1.1
+  resolution: "@solana/codecs-numbers@npm:2.1.1"
+  dependencies:
+    "@solana/codecs-core": 2.1.1
+    "@solana/errors": 2.1.1
+  peerDependencies:
+    typescript: ">=5.3.3"
+  checksum: 5838cd7c2eaf894addffe14d756d6ec0804fcb06fb79d3987d6cd17708b6baa729683ffd5c3c35a493cb4d2f5b7d70bc76cbcac2942656eaf81d976deb10adbe
+  languageName: node
+  linkType: hard
+
+"@solana/errors@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@solana/errors@npm:2.1.1"
+  dependencies:
+    chalk: ^5.4.1
+    commander: ^13.1.0
+  peerDependencies:
+    typescript: ">=5.3.3"
+  bin:
+    errors: bin/cli.mjs
+  checksum: 902f36a53be991d03c2733f24ba928610e834c7b43a5a54e0795872bb6b9286580a4a1af818a0fbb5fd3bc9692e583223399ea5f30476f020920acffdd4bf908
+  languageName: node
+  linkType: hard
+
+"@solana/web3.js@npm:^1.98.2":
+  version: 1.98.2
+  resolution: "@solana/web3.js@npm:1.98.2"
+  dependencies:
+    "@babel/runtime": ^7.25.0
+    "@noble/curves": ^1.4.2
+    "@noble/hashes": ^1.4.0
+    "@solana/buffer-layout": ^4.0.1
+    "@solana/codecs-numbers": ^2.1.0
+    agentkeepalive: ^4.5.0
+    bn.js: ^5.2.1
+    borsh: ^0.7.0
+    bs58: ^4.0.1
+    buffer: 6.0.3
+    fast-stable-stringify: ^1.0.0
+    jayson: ^4.1.1
+    node-fetch: ^2.7.0
+    rpc-websockets: ^9.0.2
+    superstruct: ^2.0.2
+  checksum: 23b8165cf603aeba4dd9f521eada10d1ed992ffad709298c5c7ffba6c17020e29c363e95664ecdb9a374d635060ee436c71761bee4b665308d231ab5524b2df8
+  languageName: node
+  linkType: hard
+
+"@swc/helpers@npm:^0.5.11":
+  version: 0.5.17
+  resolution: "@swc/helpers@npm:0.5.17"
+  dependencies:
+    tslib: ^2.8.0
+  checksum: 085e13b536323945dfc3a270debf270bda6dfc80a1c68fd2ed08f7cbdfcbdaeead402650b5b10722e54e4a24193afc8a3c6f63d3d6d719974e7470557fb415bd
+  languageName: node
+  linkType: hard
+
 "@tanstack/query-core@npm:5.62.2":
   version: 5.62.2
   resolution: "@tanstack/query-core@npm:5.62.2"
@@ -6163,6 +6244,15 @@ __metadata:
   dependencies:
     "@babel/types": ^7.20.7
   checksum: 981340286479524436348d32373eaa3bf993c635cbf70307b4b69463eee83406a959ac4844f683911e0db8ab8d9f0025ab630dc7a8c170fee9ee74144c2a528f
+  languageName: node
+  linkType: hard
+
+"@types/connect@npm:^3.4.33":
+  version: 3.4.38
+  resolution: "@types/connect@npm:3.4.38"
+  dependencies:
+    "@types/node": "*"
+  checksum: 7eb1bc5342a9604facd57598a6c62621e244822442976c443efb84ff745246b10d06e8b309b6e80130026a396f19bf6793b7cecd7380169f369dac3bfc46fb99
   languageName: node
   linkType: hard
 
@@ -6267,6 +6357,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^12.12.54":
+  version: 12.20.55
+  resolution: "@types/node@npm:12.20.55"
+  checksum: e4f86785f4092706e0d3b0edff8dca5a13b45627e4b36700acd8dfe6ad53db71928c8dee914d4276c7fd3b6ccd829aa919811c9eb708a2c8e4c6eb3701178c37
+  languageName: node
+  linkType: hard
+
 "@types/prop-types@npm:*":
   version: 15.7.8
   resolution: "@types/prop-types@npm:15.7.8"
@@ -6329,6 +6426,31 @@ __metadata:
   version: 2.0.4
   resolution: "@types/trusted-types@npm:2.0.4"
   checksum: 5256c4576cd1c90d33ddd9cc9cbd4f202b39c98cbe8b7f74963298f9eb2159c285ea5c25a6181b4c594d8d75641765bff85d72c2d251ad076e6529ce0eeedd1c
+  languageName: node
+  linkType: hard
+
+"@types/uuid@npm:^8.3.4":
+  version: 8.3.4
+  resolution: "@types/uuid@npm:8.3.4"
+  checksum: 6f11f3ff70f30210edaa8071422d405e9c1d4e53abbe50fdce365150d3c698fe7bbff65c1e71ae080cbfb8fded860dbb5e174da96fdbbdfcaa3fb3daa474d20f
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^7.4.4":
+  version: 7.4.7
+  resolution: "@types/ws@npm:7.4.7"
+  dependencies:
+    "@types/node": "*"
+  checksum: b4c9b8ad209620c9b21e78314ce4ff07515c0cadab9af101c1651e7bfb992d7fd933bd8b9c99d110738fd6db523ed15f82f29f50b45510288da72e964dedb1a3
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8.2.2":
+  version: 8.18.1
+  resolution: "@types/ws@npm:8.18.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: 0331b14cde388e2805af66cad3e3f51857db8e68ed91e5b99750915e96fe7572e58296dc99999331bbcf08f0ff00a227a0bb214e991f53c2a5aca7b0e71173fa
   languageName: node
   linkType: hard
 
@@ -7280,6 +7402,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"agentkeepalive@npm:^4.5.0":
+  version: 4.6.0
+  resolution: "agentkeepalive@npm:4.6.0"
+  dependencies:
+    humanize-ms: ^1.2.1
+  checksum: b3cdd10efca04876defda3c7671163523fcbce20e8ef7a8f9f30919a242e32b846791c0f1a8a0269718a585805a2cdcd031779ff7b9927a1a8dd8586f8c2e8c5
+  languageName: node
+  linkType: hard
+
 "aggregate-error@npm:^3.0.0":
   version: 3.1.0
   resolution: "aggregate-error@npm:3.1.0"
@@ -7429,14 +7560,15 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-ethers-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-solana-react-native": 0.0.0-feat-multichain-20250519172433
-    "@reown/appkit-wagmi-react-native": 0.0.0-feat-multichain-20250519172433
+    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-ethers-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-solana-react-native": 0.0.0-feat-multichain-phantom-20250606195341
+    "@reown/appkit-wagmi-react-native": 0.0.0-feat-multichain-phantom-20250606195341
     "@sentry/react-native": ^6.14.0
+    "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2
     "@types/jest": ^29.5.13
     "@types/react": ^18.2.6
@@ -7445,6 +7577,7 @@ __metadata:
     babel-jest: ^29.6.3
     babel-plugin-module-resolver: ^5.0.0
     bitcoinjs-lib: 7.0.0-rc.0
+    bs58: 6.0.0
     eslint: ^8.19.0
     ethers: 6.13.5
     expo: 52.0.31
@@ -7465,6 +7598,8 @@ __metadata:
     react-native-toast-message: 2.2.1
     react-native-webview: 13.13.4
     react-test-renderer: 18.3.1
+    text-encoding: ^0.7.0
+    tweetnacl: 1.0.3
     typescript: 5.0.4
     viem: 2.29.2
     wagmi: 2.15.2
@@ -7859,6 +7994,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"base-x@npm:^3.0.2":
+  version: 3.0.11
+  resolution: "base-x@npm:3.0.11"
+  dependencies:
+    safe-buffer: ^5.0.1
+  checksum: c2e3c443fd07cb9b9d3e179a9e9c581daa31881005841fe8d6a834e534505890fedf03465ccf14512da60e3f7be00fe66167806b159ba076d2c03952ae7460c4
+  languageName: node
+  linkType: hard
+
 "base-x@npm:^5.0.0":
   version: 5.0.1
   resolution: "base-x@npm:5.0.1"
@@ -7960,10 +8104,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bn.js@npm:^5.2.0":
+  version: 5.2.2
+  resolution: "bn.js@npm:5.2.2"
+  checksum: 4384d35fef785c757eb050bc1f13d60dd8e37662ca72392ae6678b35cfa2a2ae8f0494291086294683a7d977609c7878ac3cff08ecca7f74c3ca73f3acbadbe8
+  languageName: node
+  linkType: hard
+
 "boolbase@npm:^1.0.0":
   version: 1.0.0
   resolution: "boolbase@npm:1.0.0"
   checksum: 3e25c80ef626c3a3487c73dbfc70ac322ec830666c9ad915d11b701142fab25ec1e63eff2c450c74347acfd2de854ccde865cd79ef4db1683f7c7b046ea43bb0
+  languageName: node
+  linkType: hard
+
+"borsh@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "borsh@npm:0.7.0"
+  dependencies:
+    bn.js: ^5.2.0
+    bs58: ^4.0.0
+    text-encoding-utf-8: ^1.0.2
+  checksum: e98bfb5f7cfb820819c2870b884dac58dd4b4ce6a86c286c8fbf5c9ca582e73a8c6094df67e81a28c418ff07a309c6b118b2e27fdfea83fd92b8100c741da0b5
   languageName: node
   linkType: hard
 
@@ -8089,6 +8251,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bs58@npm:^4.0.0, bs58@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "bs58@npm:4.0.1"
+  dependencies:
+    base-x: ^3.0.2
+  checksum: b3c5365bb9e0c561e1a82f1a2d809a1a692059fae016be233a6127ad2f50a6b986467c3a50669ce4c18929dcccb297c5909314dd347a25a68c21b68eb3e95ac2
+  languageName: node
+  linkType: hard
+
 "bs58check@npm:^4.0.0":
   version: 4.0.0
   resolution: "bs58check@npm:4.0.0"
@@ -8139,7 +8310,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer@npm:6.0.3, buffer@npm:^6.0.3":
+"buffer@npm:6.0.3, buffer@npm:^6.0.3, buffer@npm:~6.0.3":
   version: 6.0.3
   resolution: "buffer@npm:6.0.3"
   dependencies:
@@ -8156,6 +8327,16 @@ __metadata:
     base64-js: ^1.3.1
     ieee754: ^1.1.13
   checksum: e2cf8429e1c4c7b8cbd30834ac09bd61da46ce35f5c22a78e6c2f04497d6d25541b16881e30a019c6fd3154150650ccee27a308eff3e26229d788bbdeb08ab84
+  languageName: node
+  linkType: hard
+
+"bufferutil@npm:^4.0.1":
+  version: 4.0.9
+  resolution: "bufferutil@npm:4.0.9"
+  dependencies:
+    node-gyp: latest
+    node-gyp-build: ^4.3.0
+  checksum: 51ce9ee19bc4b72c2eb9f9a231dd95e786ca5a00a6bdfcae83f1d5cd8169301c79245ce96913066a5a1bbe45c44e95bc5a1761a18798b835585c1a05af65b209
   languageName: node
   linkType: hard
 
@@ -8315,6 +8496,13 @@ __metadata:
     ansi-styles: ^4.1.0
     supports-color: ^7.1.0
   checksum: fe75c9d5c76a7a98d45495b91b2172fa3b7a09e0cc9370e5c8feb1c567b85c4288e2b3fded7cfdd7359ac28d6b3844feb8b82b8686842e93d23c827c417e83fc
+  languageName: node
+  linkType: hard
+
+"chalk@npm:^5.4.1":
+  version: 5.4.1
+  resolution: "chalk@npm:5.4.1"
+  checksum: 0c656f30b782fed4d99198825c0860158901f449a6b12b818b0aabad27ec970389e7e8767d0e00762175b23620c812e70c4fd92c0210e55fc2d993638b74e86e
   languageName: node
   linkType: hard
 
@@ -8623,7 +8811,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^2.20.0":
+"commander@npm:^13.1.0":
+  version: 13.1.0
+  resolution: "commander@npm:13.1.0"
+  checksum: 8ca2fcb33caf2aa06fba3722d7a9440921331d54019dabf906f3603313e7bf334b009b862257b44083ff65d5a3ab19e83ad73af282bd5319f01dc228bdf87ef0
+  languageName: node
+  linkType: hard
+
+"commander@npm:^2.20.0, commander@npm:^2.20.3":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
   checksum: ab8c07884e42c3a8dbc5dd9592c606176c7eb5c1ca5ff274bcf907039b2c41de3626f684ea75ccf4d361ba004bbaff1f577d5384c155f3871e456bdf27becf9e
@@ -9091,6 +9286,13 @@ __metadata:
     rimraf: ^3.0.2
     slash: ^3.0.0
   checksum: 563288b73b8b19a7261c47fd21a330eeab6e2acd7c6208c49790dfd369127120dd7836cdf0c1eca216b77c94782a81507eac6b4734252d3bef2795cb366996b6
+  languageName: node
+  linkType: hard
+
+"delay@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "delay@npm:5.0.0"
+  checksum: 62f151151ecfde0d9afbb8a6be37a6d103c4cb24f35a20ef3fe56f920b0d0d0bb02bc9c0a3084d0179ef669ca332b91155f2ee4d9854622cd2cdba5fc95285f9
   languageName: node
   linkType: hard
 
@@ -9588,6 +9790,22 @@ __metadata:
     prettier-plugin-sort-re-exports@0.0.1:
       unplugged: true
   checksum: 5b5bb168f9c0f46a74105d7608f441718a85f8e8fb4aae97688b6c0c37e0830b340b4f4598e861084aa3ad67c0eeb2c5ba50dc8c778268693ce75b6ad41c8b1d
+  languageName: node
+  linkType: hard
+
+"es6-promise@npm:^4.0.3":
+  version: 4.2.8
+  resolution: "es6-promise@npm:4.2.8"
+  checksum: 95614a88873611cb9165a85d36afa7268af5c03a378b35ca7bda9508e1d4f1f6f19a788d4bc755b3fd37c8ebba40782018e02034564ff24c9d6fa37e959ad57d
+  languageName: node
+  linkType: hard
+
+"es6-promisify@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "es6-promisify@npm:5.0.0"
+  dependencies:
+    es6-promise: ^4.0.3
+  checksum: fbed9d791598831413be84a5374eca8c24800ec71a16c1c528c43a98e2dadfb99331483d83ae6094ddb9b87e6f799a15d1553cebf756047e0865c753bc346b92
   languageName: node
   linkType: hard
 
@@ -10202,6 +10420,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eyes@npm:^0.1.8":
+  version: 0.1.8
+  resolution: "eyes@npm:0.1.8"
+  checksum: c31703a92bf36ba75ee8d379ee7985c24ee6149f3a6175f44cec7a05b178c38bce9836d3ca48c9acb0329a960ac2c4b2ead4e60cdd4fe6e8c92cad7cd6913687
+  languageName: node
+  linkType: hard
+
 "fast-base64-decode@npm:^1.0.0":
   version: 1.0.0
   resolution: "fast-base64-decode@npm:1.0.0"
@@ -10267,6 +10492,13 @@ __metadata:
   version: 2.1.1
   resolution: "fast-safe-stringify@npm:2.1.1"
   checksum: a851cbddc451745662f8f00ddb622d6766f9bd97642dabfd9a405fb0d646d69fc0b9a1243cbf67f5f18a39f40f6fa821737651ff1bceeba06c9992ca2dc5bd3d
+  languageName: node
+  linkType: hard
+
+"fast-stable-stringify@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "fast-stable-stringify@npm:1.0.0"
+  checksum: ef1203d246a7e8ac15e2bfbda0a89fa375947bccf9f7910be0ea759856dbe8ea5024a0d8cc2cceabe18a9cb67e95927b78bb6173a3ae37ec55a518cf36e5244b
   languageName: node
   linkType: hard
 
@@ -11088,6 +11320,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"humanize-ms@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "humanize-ms@npm:1.2.1"
+  dependencies:
+    ms: ^2.0.0
+  checksum: 9c7a74a2827f9294c009266c82031030eae811ca87b0da3dceb8d6071b9bde22c9f3daef0469c3c533cc67a97d8a167cd9fc0389350e5f415f61a79b171ded16
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:^0.6.2":
   version: 0.6.3
   resolution: "iconv-lite@npm:0.6.3"
@@ -11684,6 +11925,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isomorphic-ws@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "isomorphic-ws@npm:4.0.1"
+  peerDependencies:
+    ws: "*"
+  checksum: d7190eadefdc28bdb93d67b5f0c603385aaf87724fa2974abb382ac1ec9756ed2cfb27065cbe76122879c2d452e2982bc4314317f3d6c737ddda6c047328771a
+  languageName: node
+  linkType: hard
+
 "isows@npm:1.0.4":
   version: 1.0.4
   resolution: "isows@npm:1.0.4"
@@ -11790,6 +12040,28 @@ __metadata:
     "@pkgjs/parseargs":
       optional: true
   checksum: be31027fc72e7cc726206b9f560395604b82e0fddb46c4cbf9f97d049bcef607491a5afc0699612eaa4213ca5be8fd3e1e7cd187b3040988b65c9489838a7c00
+  languageName: node
+  linkType: hard
+
+"jayson@npm:^4.1.1":
+  version: 4.2.0
+  resolution: "jayson@npm:4.2.0"
+  dependencies:
+    "@types/connect": ^3.4.33
+    "@types/node": ^12.12.54
+    "@types/ws": ^7.4.4
+    commander: ^2.20.3
+    delay: ^5.0.0
+    es6-promisify: ^5.0.0
+    eyes: ^0.1.8
+    isomorphic-ws: ^4.0.1
+    json-stringify-safe: ^5.0.1
+    stream-json: ^1.9.1
+    uuid: ^8.3.2
+    ws: ^7.5.10
+  bin:
+    jayson: bin/jayson.js
+  checksum: 674a86dd23559477f53c6ea2302209c28b48d54fbca564e22a790ec533b0519de86d95796deb828d6a52061a8ccc2670c47a28f44b7b6dfaea02f44fd1cf9ab0
   languageName: node
   linkType: hard
 
@@ -12459,6 +12731,13 @@ __metadata:
   version: 1.0.1
   resolution: "json-stable-stringify-without-jsonify@npm:1.0.1"
   checksum: cff44156ddce9c67c44386ad5cddf91925fe06b1d217f2da9c4910d01f358c6e3989c4d5a02683c7a5667f9727ff05831f7aa8ae66c8ff691c556f0884d49215
+  languageName: node
+  linkType: hard
+
+"json-stringify-safe@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "json-stringify-safe@npm:5.0.1"
+  checksum: 48ec0adad5280b8a96bb93f4563aa1667fd7a36334f79149abd42446d0989f2ddc58274b479f4819f1f00617957e6344c886c55d05a4e15ebb4ab931e4a6a8ee
   languageName: node
   linkType: hard
 
@@ -13523,7 +13802,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ms@npm:2.1.3, ms@npm:^2.1.1, ms@npm:^2.1.3":
+"ms@npm:2.1.3, ms@npm:^2.0.0, ms@npm:^2.1.1, ms@npm:^2.1.3":
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
   checksum: aa92de608021b242401676e35cfa5aa42dd70cbdc082b916da7fb925c542173e36bce97ea3e804923fe92c0ad991434e4a38327e15a1b5b5f945d66df615ae6d
@@ -13692,7 +13971,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7":
+"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -15664,6 +15943,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rpc-websockets@npm:^9.0.2":
+  version: 9.1.1
+  resolution: "rpc-websockets@npm:9.1.1"
+  dependencies:
+    "@swc/helpers": ^0.5.11
+    "@types/uuid": ^8.3.4
+    "@types/ws": ^8.2.2
+    buffer: ^6.0.3
+    bufferutil: ^4.0.1
+    eventemitter3: ^5.0.1
+    utf-8-validate: ^5.0.2
+    uuid: ^8.3.2
+    ws: ^8.5.0
+  dependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 3b0db5c93ea572240db07c41c8645b1d9f2cdd3b932f87e415300d775afdcf4443159abfa1400630aadc26a5ea5ae79e4ff9f6f5f124b3ca0698cf2eac5ba68b
+  languageName: node
+  linkType: hard
+
 "run-parallel@npm:^1.1.9":
   version: 1.2.0
   resolution: "run-parallel@npm:1.2.0"
@@ -16268,6 +16569,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"stream-chain@npm:^2.2.5":
+  version: 2.2.5
+  resolution: "stream-chain@npm:2.2.5"
+  checksum: c83cbf504bd11e2bcbe761a92801295b3decac7ffa4092ceffca2eb1b5d0763bcc511fa22cd8044e8a18c21ca66794fd10c8d9cd1292a3e6c0d83a4194c6b8ed
+  languageName: node
+  linkType: hard
+
+"stream-json@npm:^1.9.1":
+  version: 1.9.1
+  resolution: "stream-json@npm:1.9.1"
+  dependencies:
+    stream-chain: ^2.2.5
+  checksum: 2ebf0648f9ed82ee79727a9a47805231a70d5032e0c21cee3e05cd3c449d3ce49c72b371555447eeef55904bae22ac64be8ae6086fc6cce0b83b3aa617736b64
+  languageName: node
+  linkType: hard
+
 "stream-shift@npm:^1.0.0":
   version: 1.0.1
   resolution: "stream-shift@npm:1.0.1"
@@ -16511,6 +16828,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"superstruct@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "superstruct@npm:2.0.2"
+  checksum: a5f75b72cb8b14b86f4f7f750dae8c5ab0e4e1d92414b55e7625bae07bbcafad81c92486e7e32ccacd6ae1f553caff2b92a50ff42ad5093fd35b9cb7f4e5ec86
+  languageName: node
+  linkType: hard
+
 "supports-color@npm:^5.3.0":
   version: 5.5.0
   resolution: "supports-color@npm:5.5.0"
@@ -16655,6 +16979,20 @@ __metadata:
     glob: ^7.1.4
     minimatch: ^3.0.4
   checksum: 3b34a3d77165a2cb82b34014b3aba93b1c4637a5011807557dc2f3da826c59975a5ccad765721c4648b39817e3472789f9b0fa98fc854c5c1c7a1e632aacdc28
+  languageName: node
+  linkType: hard
+
+"text-encoding-utf-8@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "text-encoding-utf-8@npm:1.0.2"
+  checksum: ec4c15d50e738c5dba7327ad432ebf0725ec75d4d69c0bd55609254c5a3bc5341272d7003691084a0a73d60d981c8eb0e87603676fdb6f3fed60f4c9192309f9
+  languageName: node
+  linkType: hard
+
+"text-encoding@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "text-encoding@npm:0.7.0"
+  checksum: b6109a843fb1b8748b32e1ecd6df74d370f46c13ac136bcb6ca15db70209bb0b8ec1f296ebb4b0dd9961150e205dcc044b89f8cf7657f6faef78c7569a2a81bc
   languageName: node
   linkType: hard
 
@@ -16820,7 +17158,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.6.0":
+"tslib@npm:^2.6.0, tslib@npm:^2.8.0":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: e4aba30e632b8c8902b47587fd13345e2827fa639e7c3121074d5ee0880723282411a8838f830b55100cbe4517672f84a2472667d355b81e8af165a55dc6203a
@@ -16844,6 +17182,13 @@ __metadata:
   dependencies:
     safe-buffer: ^5.0.1
   checksum: 05f6510358f8afc62a057b8b692f05d70c1782b70db86d6a1e0d5e28a32389e52fa6e7707b6c5ecccacc031462e4bc35af85ecfe4bbc341767917b7cf6965711
+  languageName: node
+  linkType: hard
+
+"tweetnacl@npm:1.0.3":
+  version: 1.0.3
+  resolution: "tweetnacl@npm:1.0.3"
+  checksum: e4a57cac188f0c53f24c7a33279e223618a2bfb5fea426231991652a13247bea06b081fd745d71291fcae0f4428d29beba1b984b1f1ce6f66b06a6d1ab90645c
   languageName: node
   linkType: hard
 
