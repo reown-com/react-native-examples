@@ -5397,47 +5397,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-wallet-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-wallet-react-native": 0.0.0-feat-multichain-phantom-20250609201736
   peerDependencies:
     wagmi: ">=2"
-  checksum: af14ec9f04cd46b1b58ccc2992fd04979a445d5e885ee81aedb61d8d953226a154eb41ce9d3fe1ad89f76be4911a2d0529789180c5e38ed1090ea4d600ac25b8
+  checksum: c80b894405cc616e5e2e425c07a4a7c3ca2cddc567a0dfe0aa3072f81d0d1a065c6d1d2815d40d123081a9592338db0be4464f8617ac321c92018851faf9ed6a
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-  checksum: 19c39ea6565769e70b6b673d0cf429b93d7261331a61ab33ddf4637b3d8cebabdb62e1f24820c87bb1de9d3b86467fdd50d7a56fb7b77c44323e40baf9878342
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+  checksum: ac15d7c06aa1e5a53aac6a13b43ee106c744f94f12bbabe0fbbcc4697de31a70d1a202baf40fc4d1833e2c41016bc834624a62ce04ea4a29678708b6fc763682
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: b76f5e810b1ae846fcf101e41fd77deee8418c116932daab444f60c6393b8c83c6253cb306f4a934be0e0794792e831c6cfff149a31d40b5b92a3da89ce8026a
+  checksum: 101057f0def00c674b8f4c5e4c5193dfc30b1555062cb3fc16f981d40dadc114947a48b13290e83650a2d7aae4be61fd6de36dfba26daf89b6107ba32114d434
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: b9b0fee34574f9c2ed88db9a7e3e9cad81adee3c34d5db0225949fef9569f335e49bd0cfdb552a7b2921c56693d00648635f170c26f87add98d9538cf9637cc3
+  checksum: 278f12f14080d7fe1a1a2008f73a38457d12db30b661dbe4da7f88704f1b17030e46e7c5447b3b4d351511f51f3d970f565232ea766130e3dbe1009870164a94
   languageName: node
   linkType: hard
 
@@ -5465,11 +5465,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
     countries-and-timezones: 3.7.2
     valtio: 1.11.2
   peerDependencies:
@@ -5477,18 +5477,18 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: c64956c7aead3d27ef4364108c5c632190354fa8990ee02b751ccbc8227642164f468dd339a5851d4041a213161ca98e24a1520a7f9e699186369fd2f051a910
+  checksum: 8dcb737224a4935d2c6690c431fc2ccedc3769e330d5f311f1911c70cc069bba98e8e8895a170f9c9da2067aef5f005ed5f75e0e8a9cd19f5e9bef62f8d32f56
   languageName: node
   linkType: hard
 
-"@reown/appkit-ethers-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-ethers-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-ethers-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-ethers-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-phantom-20250609201736
     "@walletconnect/ethereum-provider": 2.20.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
@@ -5497,7 +5497,7 @@ __metadata:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-get-random-values: "*"
-  checksum: 50e89353f76900aa77e41425e23250a731833f38b250866cb4674b6bf0d0fdd8e4775eaf9d65e43a9ffbbf86a3a77eb0c584dccda428a2071a893d238f3a55b4
+  checksum: 412bdd6339cae39ec1de038fe03284d0b6e02ec2c9abc5cc0c6563a16a4a063ac9ac5500ef24ab50371ddf5522923caa7a1e706c1032e4c55f31718e28277576
   languageName: node
   linkType: hard
 
@@ -5510,21 +5510,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-phantom-20250609201736
     "@walletconnect/universal-provider": 2.20.2
     valtio: ^1.13.2
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: 27692626393d659d2f88cb4758f9d7912de741c115ab6bd5b399aee70a387197696a3d5d046b11fd4971bb94100265233989fd0538e32659ceb590154f72f991
+  checksum: 5a0043769b521deeec5c25ee422c088584f65607c7d9a078ceac3dfc0cb5fe752cbbc34f15e1e5a98a60d0c4dc73bd4d6b1689652e86d706bb13bce28313c67e
   languageName: node
   linkType: hard
 
@@ -5542,53 +5542,53 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-  checksum: 363e48b3559198ad1d72453f40c2220de4b03b12575fdd6488ec5bfa146a39cb497d0302289ba7cd3cb5e1331949c9e3f3cd3d450720c4f0aa4032a423565539
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+  checksum: 1e2f6f36d13128b48eafb1d48c26e98e9562c82c528012f149d37cdf1b08ee5ef116b06f5ebcb82b53b192c26d2a218a7b43f2c3c4be205de79fb84ae3a13832
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-siwe-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-phantom-20250609201736
     valtio: 1.11.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: 70ea091651599b571cd19b8dd0bee7e4000936059a9ef44bf3e27349ab290ec2280032bbadf6d0eaa356af22076cd3ed3c670b4f24e844028fedc95158205845
+  checksum: 6c7b8471f33021a4c69fb5b0c940eea3bfd4f37bed12ddc7e06e2b92e2eb70283e9b4f6645b403674ec500969048cc2d755daa68f8ad260f3bf2ddabfe673f4c
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
     bs58: 6.0.0
     tweetnacl: 1.0.3
-  checksum: 2c929a099e469110d882b72d0800d21cb9f607823be1da4782a31063612071d3d6b56a92f444f96be7b74fbab3b08808b513bec22519762b6247c6e3533eec02
+  checksum: 4c5229e4982c95cfe9d5460c3d6b6b754e746ea7f1e06ab9ed210ce44cf22e5b784a9636700124a1fe09806e7ab177729f7e0ff74bceb2b32e985c5c94172ee4
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 887d56e15755bfecc8226ce457f5107dc76586a63602f405c75e32645202c76c897d0be482ed272bfcb7cc549abe545af41a418fe583493d663c1a400a981123
+  checksum: 5a3f04eaa2026088901fedee1dd264d20feccb87fc43d45c98bf97121f8429857e9a328b84cc75f5dbd4a7dea0820e5376d5290fdd2f98fd32f9fb3a61eef753
   languageName: node
   linkType: hard
 
@@ -5623,14 +5623,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-phantom-20250609201736
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -5640,21 +5640,21 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: b964e6648bf9cc407cf3d814041fa29ca106c0f98f2effe70e6ac1709331a64c983851405ff1c6c909b5fd3e338cfe11bf1b004ac228292b84b420b4fbed8b35
+  checksum: 2d1bd46f085fce8026b69e7d555bfde1e27719b314da0d973e935463e094eff0592f1ecc4bb130a0c9afda180d1a15f3dd1b9e021a7aee20ba388f73e752afc1
   languageName: node
   linkType: hard
 
-"@reown/appkit-wallet-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606":
-  version: 0.0.0-feat-multichain-phantom-20250606201606
-  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-feat-multichain-phantom-20250606201606"
+"@reown/appkit-wallet-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736":
+  version: 0.0.0-feat-multichain-phantom-20250609201736
+  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-feat-multichain-phantom-20250609201736"
   dependencies:
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-phantom-20250609201736
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: 57dace4647d1214d037d4980691f8062776ac9d2b938874a8d5df877f40926730bdbad91b2f363e26937e81f63f7d1a16d92453af3bc0d1cb42c396362b18950
+  checksum: 3eeacdfa602f645e04a35cd3a0e5778434587702e8e5638e51410c992d10640f09fb278e6da3813d5d389754646a845aeb2873949255b0cc803416bf2c466034
   languageName: node
   linkType: hard
 
@@ -7560,13 +7560,13 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-ethers-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-solana-react-native": 0.0.0-feat-multichain-phantom-20250606201606
-    "@reown/appkit-wagmi-react-native": 0.0.0-feat-multichain-phantom-20250606201606
+    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-ethers-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-solana-react-native": 0.0.0-feat-multichain-phantom-20250609201736
+    "@reown/appkit-wagmi-react-native": 0.0.0-feat-multichain-phantom-20250609201736
     "@sentry/react-native": ^6.14.0
     "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2
