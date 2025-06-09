@@ -1,4 +1,5 @@
 
+import 'text-encoding';
 import '@walletconnect/react-native-compat';
 
 import React, {useEffect} from 'react';
