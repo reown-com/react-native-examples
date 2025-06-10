@@ -227,17 +227,17 @@ jobs:
             
             # Grant runtime permissions that might be needed
             echo "Granting permissions..."
-            adb shell pm grant com.walletconnect.web3wallet.rnsample.internal android.permission.INTERNET || true
-            adb shell pm grant com.walletconnect.web3wallet.rnsample.internal android.permission.ACCESS_NETWORK_STATE || true
-            adb shell pm grant com.walletconnect.web3wallet.rnsample.internal android.permission.ACCESS_WIFI_STATE || true
-            adb shell pm grant com.walletconnect.web3modal.rnsample.internal android.permission.INTERNET || true
-            adb shell pm grant com.walletconnect.web3modal.rnsample.internal android.permission.ACCESS_NETWORK_STATE || true
-            adb shell pm grant com.walletconnect.web3modal.rnsample.internal android.permission.ACCESS_WIFI_STATE || true
+            # adb shell pm grant com.walletconnect.web3wallet.rnsample.internal android.permission.INTERNET || true
+            # adb shell pm grant com.walletconnect.web3wallet.rnsample.internal android.permission.ACCESS_NETWORK_STATE || true
+            # adb shell pm grant com.walletconnect.web3wallet.rnsample.internal android.permission.ACCESS_WIFI_STATE || true
+            # adb shell pm grant com.walletconnect.web3modal.rnsample.internal android.permission.INTERNET || true
+            # adb shell pm grant com.walletconnect.web3modal.rnsample.internal android.permission.ACCESS_NETWORK_STATE || true
+            # adb shell pm grant com.walletconnect.web3modal.rnsample.internal android.permission.ACCESS_WIFI_STATE || true
             
             # Check if the app needs to be enabled
             echo "Checking app state..."
-            adb shell pm list packages -d | grep -q com.walletconnect.web3wallet.rnsample.internal && adb shell pm enable com.walletconnect.web3wallet.rnsample.internal || echo "Wallet app is not disabled"
-            adb shell pm list packages -d | grep -q com.walletconnect.web3modal.rnsample.internal && adb shell pm enable com.walletconnect.web3modal.rnsample.internal || echo "Dapp app is not disabled"
+            # adb shell pm list packages -d | grep -q com.walletconnect.web3wallet.rnsample.internal && adb shell pm enable com.walletconnect.web3wallet.rnsample.internal || echo "Wallet app is not disabled"
+            # adb shell pm list packages -d | grep -q com.walletconnect.web3modal.rnsample.internal && adb shell pm enable com.walletconnect.web3modal.rnsample.internal || echo "Dapp app is not disabled"
             
             # Wait for system to settle
             sleep 10
@@ -285,34 +285,34 @@ jobs:
             sleep 5
             
             # Try to launch the wallet app manually before Maestro
-            echo "Attempting manual wallet launch..."
-            adb shell monkey -p com.walletconnect.web3wallet.rnsample.internal -c android.intent.category.LAUNCHER 1
-            sleep 10
+            # echo "Attempting manual wallet launch..."
+            # adb shell monkey -p com.walletconnect.web3wallet.rnsample.internal -c android.intent.category.LAUNCHER 1
+            # sleep 10
             
             # Check if wallet app is running
-            adb shell ps | grep -q "com.walletconnect.web3wallet.rnsample.internal" || (echo "ERROR: Wallet app is not running after launch attempt" && adb shell am start -n com.walletconnect.web3wallet.rnsample.internal/com.walletconnect.web3wallet.rnsample.internal.MainActivity || true)
+            # adb shell ps | grep -q "com.walletconnect.web3wallet.rnsample.internal" || (echo "ERROR: Wallet app is not running after launch attempt" && adb shell am start -n com.walletconnect.web3wallet.rnsample.internal/com.walletconnect.web3wallet.rnsample.internal.MainActivity || true)
             
             # Try to launch the dapp app manually before Maestro
-            echo "Attempting manual dapp launch..."
-            adb shell monkey -p com.walletconnect.web3modal.rnsample.internal -c android.intent.category.LAUNCHER 1
-            sleep 10
+            # echo "Attempting manual dapp launch..."
+            # adb shell monkey -p com.walletconnect.web3modal.rnsample.internal -c android.intent.category.LAUNCHER 1
+            # sleep 10
             
             # Check if dapp app is running
-            sleep 10
+            # sleep 10
 
             # Check if dapp app is running
-            adb shell ps | grep -q "com.walletconnect.web3modal.rnsample.internal" || (echo "ERROR: Dapp app is not running after launch attempt" && adb shell am start -n com.walletconnect.web3modal.rnsample.internal/com.walletconnect.web3modal.rnsample.internal.MainActivity || true)
+            # adb shell ps | grep -q "com.walletconnect.web3modal.rnsample.internal" || (echo "ERROR: Dapp app is not running after launch attempt" && adb shell am start -n com.walletconnect.web3modal.rnsample.internal/com.walletconnect.web3modal.rnsample.internal.MainActivity || true)
             
             # Take a screenshot to see current state
-            adb shell screencap /sdcard/app_state_before_maestro.png
-            adb pull /sdcard/app_state_before_maestro.png debug-artifacts/ || true
+            # adb shell screencap /sdcard/app_state_before_maestro.png
+            # adb pull /sdcard/app_state_before_maestro.png debug-artifacts/ || true
             
             # Check current activity
-            echo "Current activity before Maestro:"
-            adb shell dumpsys activity activities | grep -E "mResumedActivity|mFocusedActivity" || true
+            # echo "Current activity before Maestro:"
+            # adb shell dumpsys activity activities | grep -E "mResumedActivity|mFocusedActivity" || true
             
             # DO NOT kill the app here - let's see if it's actually running properly
-            echo "App state check complete, proceeding with Maestro tests..."
+            # echo "App state check complete, proceeding with Maestro tests..."
             
             echo "Running Maestro native to native tests:"
             maestro test .maestro/flows/native/connect_reject.yaml
