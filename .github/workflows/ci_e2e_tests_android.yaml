@@ -9,15 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Setup Java 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -74,13 +74,13 @@ jobs:
           yarn run android:build:internal
 
       - name: Upload Wallet APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: rn_cli_wallet-internal-apk
           path: ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk
 
       - name: Upload dApp APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: W3MWagmi-internal-apk
           path: ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk
@@ -92,7 +92,7 @@ jobs:
     needs: build_apks
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Enable KVM
         run: |
@@ -101,7 +101,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -126,7 +126,7 @@ jobs:
           maestro --version
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v3
 
       - name: Start Android Emulator and Run Tests
         uses: reactivecircus/android-emulator-runner@v2
