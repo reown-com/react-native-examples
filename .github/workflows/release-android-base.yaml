@@ -50,7 +50,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
         uses: ./.github/actions/ci-setup
         with:
           root-path: ${{ inputs.root-path }}

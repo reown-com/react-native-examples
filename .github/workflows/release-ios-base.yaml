@@ -76,7 +76,12 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.match-ssh-key }}
 
-      - name: Setup
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
         uses: ./.github/actions/ci-setup
         with:
           root-path: ${{ inputs.root-path }}

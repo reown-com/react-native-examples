@@ -1,5 +1,5 @@
-name: Setup Node & Dependencies
-description: Setup Node.js and install dependencies
+name: Install Dependencies
+description: Install dependencies
 inputs:
   root-path:
     description: 'Path of the project'
@@ -8,11 +8,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 18
-
     - name: Set yarn lock path
       id: yarn-hash
       shell: bash
