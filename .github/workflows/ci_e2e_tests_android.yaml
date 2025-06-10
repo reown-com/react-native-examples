@@ -22,7 +22,16 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
           architecture: x86_64
-          cache: 'gradle'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Accept Android Licenses
         uses: SimonMarquis/android-accept-licenses@v1
@@ -84,7 +93,16 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
           architecture: x86_64
-          cache: 'gradle'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Accept Android Licenses
         uses: SimonMarquis/android-accept-licenses@v1
@@ -315,10 +333,10 @@ jobs:
             # echo "App state check complete, proceeding with Maestro tests..."
             
             echo "Running Maestro native to native tests:"
-            maestro test .maestro/flows/native/connect_reject.yaml
-            # maestro test .maestro/flows/native/connect_confirm.yaml
-            # maestro test .maestro/flows/native/personal_sign_reject.yaml
-            # maestro test .maestro/flows/native/personal_sign_confirm.yaml
+            maestro test .maestro/native/connect_reject.yaml
+            # maestro test .maestro/native/connect_confirm.yaml
+            # maestro test .maestro/native/personal_sign_confirm.yaml
+            # maestro test .maestro/native/personal_sign_reject.yaml
             
             # Stop logcat capture
             kill $LOGCAT_PID || true
