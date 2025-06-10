@@ -103,6 +103,10 @@ export default function SessionAuthenticateModal() {
             message: 'User rejected auth request',
           },
         });
+        handleRedirect({
+          peerRedirect: authRequest.params.requester?.metadata?.redirect,
+          isLinkMode: SettingsStore.state.isLinkModeRequest,
+        });
       } catch (e) {
         console.log((e as Error).message, 'error');
         return;

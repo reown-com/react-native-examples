@@ -1,0 +1,13 @@
+appId: com.walletconnect.web3modal.rnsample.internal
+name: React Native Dapp to React Native Wallet Connection Confirmed
+---
+- clearState
+- launchApp:
+    permissions:
+      all: allow
+- startRecording: "Native Connection Confirmed"
+- tapOn: "Connect"
+- tapOn: "React Native Wallet"
+- tapOn: "Approve"
+- assertVisible: "Sign message"
+- stopRecording

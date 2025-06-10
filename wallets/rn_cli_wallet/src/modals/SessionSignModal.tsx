@@ -71,6 +71,10 @@ export default function SessionSignModal() {
           topic,
           response,
         });
+        handleRedirect({
+          peerRedirect: peerMetadata?.redirect,
+          isLinkMode: isLinkMode,
+        });
       } catch (e) {
         setIsLoadingReject(false);
         console.log((e as Error).message, 'error');
@@ -79,7 +83,7 @@ export default function SessionSignModal() {
       setIsLoadingReject(false);
       ModalStore.close();
     }
-  }, [requestEvent, topic]);
+  }, [requestEvent, topic, peerMetadata, isLinkMode]);
 
   // Ensure request and wallet are defined
   if (!requestEvent || !session) {

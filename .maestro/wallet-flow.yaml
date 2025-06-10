@@ -1,8 +1,0 @@
-# flow.yaml
-appId: "com.walletconnect.web3wallet.rnsample"
----
-- launchApp
-- extendedWaitUntil:
-    visible: "Get Started"
-    timeout: 60000  
-- tapOn: "Get Started"

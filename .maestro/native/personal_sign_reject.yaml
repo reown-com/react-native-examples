@@ -1,0 +1,11 @@
+appId: com.walletconnect.web3modal.rnsample.internal
+name: React Native Dapp to React Native Wallet Personal Sign Rejected
+---
+- launchApp:
+    permissions:
+      all: allow
+- startRecording: "Native personal_sign Rejected"
+- tapOn: "Sign message"
+- tapOn: "Reject"
+- assertVisible: "Request failure"
+- stopRecording

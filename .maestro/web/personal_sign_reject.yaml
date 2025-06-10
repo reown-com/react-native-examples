@@ -1,0 +1,21 @@
+appId: com.walletconnect.web3modal.rnsample.internal
+name: AppKit Web to React Native Wallet Sign Request Rejected
+---
+- openLink:
+    link: https://appkit-lab.reown.com/library/wagmi/
+    browser: true
+- startRecording: "Web to Native Sign Request Rejected"
+- extendedWaitUntil:
+    notVisible: "Initializing..."
+    timeout: 10000
+- scroll
+- scroll
+- tapOn: "Sign Message"
+- tapOn: "Reject"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - back
+- assertVisible: "Signing Failed"
+- stopRecording
