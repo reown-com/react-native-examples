@@ -1,4 +1,3 @@
-
 name: release-ios-base
 
 on:
@@ -112,17 +111,16 @@ jobs:
       - name: Install Cocoapods
         run: gem install cocoapods
 
-      # Create env file
-      - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
-
-      # Create sentry file
-      - run: touch ${{ inputs.root-path }}/ios/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/ios/sentry.properties
-
-      - name: Create Google Services file
-        env:
+      - name: Setup iOS files
+        uses: ./.github/actions/ci-setup-ios-files
+        with:
+          root-path: ${{ inputs.root-path }}
           google-services-file: ${{ secrets.google-services-file }}
-        if: ${{ env.google-services-file != '' }}
-        run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/ios/GoogleService-Info.plist
+          sentry-file: ${{ secrets.sentry-file }}
+          project-id: ${{ secrets.project-id }}
+          relay-url: ${{ secrets.relay-url }}
+          sentry-dsn: ${{ secrets.sentry-dsn }}
+          release-type: ${{ inputs.release-type }}
 
       - name: Build and Upload to App Store
         uses: maierj/fastlane-action@v3.0.0

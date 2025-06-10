@@ -62,24 +62,20 @@ jobs:
           java-version: '17'
           architecture: x86_64
 
-      - name: Create env file
-        run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
-      
-      - name: Add Sentry file
-        run: touch ${{ inputs.root-path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/android/sentry.properties
-
-      - name: Add Secrets file
-        run: touch ${{ inputs.root-path }}/android/secrets.properties && echo "${{ secrets.secrets-file }}" >> ${{ inputs.root-path }}/android/secrets.properties
-
-      - name: Add Keystore file
-        run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
-
-      - name: Add Google Services file
-        env:
+      - name: Setup Android files
+        uses: ./.github/actions/ci-setup-android-files
+        with:
+          root-path: ${{ inputs.root-path }}
           google-services-file: ${{ secrets.google-services-file }}
-        if: ${{ env.google-services-file != '' }}
-        run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/android/app/google-services.json
-      
+          secrets-file: ${{ secrets.secrets-file }}
+          keystore: ${{ secrets.keystore }}
+          keystore-name: ${{ secrets.keystore-name }}
+          sentry-file: ${{ secrets.sentry-file }}
+          project-id: ${{ secrets.project-id }}
+          relay-url: ${{ secrets.relay-url }}
+          sentry-dsn: ${{ secrets.sentry-dsn }}
+          release-type: ${{ inputs.release-type }}
+
       - name: Build APK
         run: |
           if [ ${{ inputs.release-type }} = 'internal' ]; then

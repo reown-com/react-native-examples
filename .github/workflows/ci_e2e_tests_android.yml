@@ -1,0 +1,317 @@
+name: CI E2E Tests Android
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_apks:
+    name: Build Android APKs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          architecture: x86_64
+          cache: 'gradle'
+
+      - name: Accept Android Licenses
+        uses: SimonMarquis/android-accept-licenses@v1
+
+      - name: Setup Firebase
+        uses: w9jds/setup-firebase@main
+        with:
+          tools-version: 13.0.1
+          gcp_sa_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+
+      - name: Setup Android files for Wallet
+        uses: ./.github/actions/ci-setup-android-files
+        with:
+          root-path: 'wallets/rn_cli_wallet'
+          google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}
+          secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+          keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
+          keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
+          sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
+          project-id: ${{ secrets.ENV_PROJECT_ID }}
+          relay-url: ${{ secrets.ENV_RELAY_URL }}
+          sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
+          release-type: 'internal'
+
+      - name: Setup Android files for dApp
+        uses: ./.github/actions/ci-setup-android-files
+        with:
+          root-path: 'dapps/W3MWagmi'
+          google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}
+          secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+          keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
+          keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
+          sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
+          project-id: ${{ secrets.ENV_PROJECT_ID }}
+          relay-url: ${{ secrets.ENV_RELAY_URL }}
+          sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
+          release-type: 'internal'
+
+      - name: Build Wallet APK
+        working-directory: ./wallets/rn_cli_wallet
+        run: |
+          yarn install --frozen-lockfile
+          yarn run android:build:internal
+
+      - name: Build dApp APK
+        working-directory: ./dapps/W3MWagmi
+        run: |
+          yarn install --frozen-lockfile
+          yarn run android:build:internal
+
+      - name: Upload Wallet APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: rn_cli_wallet-internal-apk
+          path: ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk
+
+      - name: Upload dApp APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: W3MWagmi-internal-apk
+          path: ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk
+
+  run_e2e_tests:
+    name: Run E2E Tests
+    timeout-minutes: 30
+    runs-on: ubuntu-16core
+    needs: build_apks
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download all APKs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*-apk"
+          path: apks
+          merge-multiple: true
+
+      - name: List APKs
+        run: |
+          echo "Available APKs:"
+          find apks -name "*.apk" | xargs ls -la
+
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          export PATH="$PATH":"$HOME/.maestro/bin"
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+          maestro --version
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Start Android Emulator and Run Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          heap-size: 576M
+          emulator-boot-timeout: 900
+          profile: pixel_6
+          avd-name: test_device
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save -no-snapshot-load
+          disable-animations: true
+          script: |
+            # Setup debug directory
+            mkdir -p debug-artifacts
+            
+            # Wait for emulator to be fully ready
+            echo "Waiting for emulator to be ready..."
+            adb wait-for-device
+            
+            # Wait for boot completion
+            echo "Waiting for boot completion..."
+            adb shell 'while [ "$(getprop sys.boot_completed)" != "1" ]; do sleep 2; done'
+            echo "Boot completed!"
+            
+            echo "Emulator booted successfully"
+            adb devices
+            
+            # Clear logcat before we start
+            adb logcat -c
+            
+            # Start logcat capture in background
+            adb logcat > debug-artifacts/full-logcat.txt &
+            LOGCAT_PID=$!
+            
+            # Install APKs
+            echo "Installing APKs:"
+            find apks -name "*.apk" -exec echo "Installing: {}" \; -exec adb install -r {} \;
+            
+            # Verify installations
+            echo "Verifying installed apps:"
+            adb shell pm list packages | grep -E "com.walletconnect" || (echo "ERROR: Apps not installed correctly" && exit 1)
+            
+            # Check APK info
+            echo "Checking APK details:"
+            adb shell dumpsys package com.walletconnect.web3wallet.rnsample.internal | grep -A 5 "versionName"
+            adb shell dumpsys package com.walletconnect.web3modal.rnsample.internal | grep -A 5 "versionName"
+            
+            # Clear app data
+            echo "Clearing app data..."
+            adb shell pm clear com.walletconnect.web3wallet.rnsample.internal || true
+            adb shell pm clear com.walletconnect.web3modal.rnsample.internal || true
+            
+            # Grant runtime permissions that might be needed
+            echo "Granting permissions..."
+            adb shell pm grant com.walletconnect.web3wallet.rnsample.internal android.permission.INTERNET || true
+            adb shell pm grant com.walletconnect.web3wallet.rnsample.internal android.permission.ACCESS_NETWORK_STATE || true
+            adb shell pm grant com.walletconnect.web3wallet.rnsample.internal android.permission.ACCESS_WIFI_STATE || true
+            adb shell pm grant com.walletconnect.web3modal.rnsample.internal android.permission.INTERNET || true
+            adb shell pm grant com.walletconnect.web3modal.rnsample.internal android.permission.ACCESS_NETWORK_STATE || true
+            adb shell pm grant com.walletconnect.web3modal.rnsample.internal android.permission.ACCESS_WIFI_STATE || true
+            
+            # Check if the app needs to be enabled
+            echo "Checking app state..."
+            adb shell pm list packages -d | grep -q com.walletconnect.web3wallet.rnsample.internal && adb shell pm enable com.walletconnect.web3wallet.rnsample.internal || echo "Wallet app is not disabled"
+            adb shell pm list packages -d | grep -q com.walletconnect.web3modal.rnsample.internal && adb shell pm enable com.walletconnect.web3modal.rnsample.internal || echo "Dapp app is not disabled"
+            
+            # Wait for system to settle
+            sleep 10
+            
+            # Check available activities
+            echo "Checking available activities for wallet app:"
+            adb shell dumpsys package com.walletconnect.web3wallet.rnsample.internal | grep -A 10 "Activity" || true
+            adb shell dumpsys package com.walletconnect.web3modal.rnsample.internal | grep -A 10 "Activity" || true
+            
+            # Wait and capture state
+            sleep 10
+            
+            # Capture comprehensive debug info
+            echo "=== CAPTURING DEBUG INFO ==="
+            
+            # Window state
+            echo "Window state:" > debug-artifacts/window_state.txt
+            adb shell dumpsys window windows >> debug-artifacts/window_state.txt
+            
+            # Current activity
+            echo "Current activity:" > debug-artifacts/current_activity.txt
+            adb shell dumpsys activity activities | grep -E "mResumedActivity|mFocusedActivity" >> debug-artifacts/current_activity.txt
+            
+            # Check for crashes
+            echo "Checking for crashes..."
+            adb logcat -d | grep -E "FATAL EXCEPTION|AndroidRuntime|Process.*com.walletconnect" > debug-artifacts/crashes.txt || echo "No crashes found" > debug-artifacts/crashes.txt
+            
+            # ANR traces
+            adb shell ls /data/anr/ > debug-artifacts/anr_list.txt 2>&1 || true
+            
+            # Memory info
+            adb shell dumpsys meminfo com.walletconnect.web3wallet.rnsample.internal > debug-artifacts/meminfo.txt || true
+            
+            # App process info
+            adb shell ps | grep walletconnect > debug-artifacts/processes.txt || true
+            
+            # Network state (important for WalletConnect)
+            echo "Network state:" > debug-artifacts/network_state.txt
+            adb shell dumpsys connectivity >> debug-artifacts/network_state.txt
+            adb shell settings get global airplane_mode_on >> debug-artifacts/network_state.txt
+            
+            # Force stop before Maestro tests
+            adb shell am force-stop com.walletconnect.web3wallet.rnsample.internal
+            adb shell am force-stop com.walletconnect.web3modal.rnsample.internal
+            sleep 5
+            
+            # Try to launch the wallet app manually before Maestro
+            echo "Attempting manual wallet launch..."
+            adb shell monkey -p com.walletconnect.web3wallet.rnsample.internal -c android.intent.category.LAUNCHER 1
+            sleep 10
+            
+            # Check if wallet app is running
+            adb shell ps | grep -q "com.walletconnect.web3wallet.rnsample.internal" || (echo "ERROR: Wallet app is not running after launch attempt" && adb shell am start -n com.walletconnect.web3wallet.rnsample.internal/com.walletconnect.web3wallet.rnsample.internal.MainActivity || true)
+            
+            # Try to launch the dapp app manually before Maestro
+            echo "Attempting manual dapp launch..."
+            adb shell monkey -p com.walletconnect.web3modal.rnsample.internal -c android.intent.category.LAUNCHER 1
+            sleep 10
+            
+            # Check if dapp app is running
+            sleep 10
+
+            # Check if dapp app is running
+            adb shell ps | grep -q "com.walletconnect.web3modal.rnsample.internal" || (echo "ERROR: Dapp app is not running after launch attempt" && adb shell am start -n com.walletconnect.web3modal.rnsample.internal/com.walletconnect.web3modal.rnsample.internal.MainActivity || true)
+            
+            # Take a screenshot to see current state
+            adb shell screencap /sdcard/app_state_before_maestro.png
+            adb pull /sdcard/app_state_before_maestro.png debug-artifacts/ || true
+            
+            # Check current activity
+            echo "Current activity before Maestro:"
+            adb shell dumpsys activity activities | grep -E "mResumedActivity|mFocusedActivity" || true
+            
+            # DO NOT kill the app here - let's see if it's actually running properly
+            echo "App state check complete, proceeding with Maestro tests..."
+            
+            echo "Running Maestro native to native tests:"
+            maestro test .maestro/flows/native/connect_reject.yaml
+            # maestro test .maestro/flows/native/connect_confirm.yaml
+            # maestro test .maestro/flows/native/personal_sign_reject.yaml
+            # maestro test .maestro/flows/native/personal_sign_confirm.yaml
+            
+            # Stop logcat capture
+            kill $LOGCAT_PID || true
+            
+            # Filter logcat for relevant info
+            grep -E "walletconnect|WalletConnect|AndroidRuntime|System.err|ActivityManager" debug-artifacts/full-logcat.txt > debug-artifacts/filtered-logcat.txt || true
+
+      - name: Analyze crash logs
+        if: always()
+        run: |
+          if [ -f debug-artifacts/crashes.txt ] && [ -s debug-artifacts/crashes.txt ]; then
+            echo "::error::App crashes detected:"
+            cat debug-artifacts/crashes.txt
+          fi
+          
+          if [ -f debug-artifacts/filtered-logcat.txt ]; then
+            echo "Relevant log entries:"
+            tail -n 100 debug-artifacts/filtered-logcat.txt
+          fi
+
+      - name: Upload debug artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-artifacts
+          path: debug-artifacts/
+          if-no-files-found: warn
+
+      - name: Upload Maestro artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-artifacts
+          path: |
+            .maestro/
+            videos/
+            *.mp4
+            *.mov
+          if-no-files-found: warn 
