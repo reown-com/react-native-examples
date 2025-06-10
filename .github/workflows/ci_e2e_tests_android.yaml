@@ -57,11 +57,14 @@ jobs:
         run: |
           yarn run android:build:internal
 
+      - name: Rename Wallet APK for upload
+        run: mv ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/wallet-internal.apk
+
       - name: Upload Wallet APK
         uses: actions/upload-artifact@v4
         with:
           name: rn_cli_wallet-internal-apk
-          path: ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk
+          path: ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/wallet-internal.apk
 
   build_dapp_apk:
     name: Build dApp APK
@@ -116,11 +119,14 @@ jobs:
         run: |
           yarn run android:build:internal
 
+      - name: Rename dApp APK for upload
+        run: mv ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/dapp-internal.apk
+
       - name: Upload dApp APK
         uses: actions/upload-artifact@v4
         with:
           name: W3MWagmi-internal-apk
-          path: ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk
+          path: ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/dapp-internal.apk
 
   run_e2e_tests:
     name: Run E2E Tests
