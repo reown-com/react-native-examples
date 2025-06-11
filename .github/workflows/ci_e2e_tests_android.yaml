@@ -56,10 +56,10 @@ jobs:
           sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
           release-type: 'internal'
       
-      - name: Install Dependencies
-        uses: ./.github/actions/ci-setup
-        with:
-          root-path: 'wallets/rn_cli_wallet'
+      - name: Install dependencies
+        working-directory: ./wallets/rn_cli_wallet
+        run: |
+          yarn install --immutable
 
       - name: Build Wallet APK
         working-directory: ./wallets/rn_cli_wallet
@@ -127,10 +127,10 @@ jobs:
           sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
           release-type: 'internal'
 
-      - name: Setup Node & Dependencies
-        uses: ./.github/actions/ci-setup
-        with:
-          root-path: 'dapps/W3MWagmi'
+      - name: Install dependencies
+        working-directory: ./dapps/W3MWagmi
+        run: |
+          yarn install --immutable
 
       - name: Build dApp APK
         working-directory: ./dapps/W3MWagmi
