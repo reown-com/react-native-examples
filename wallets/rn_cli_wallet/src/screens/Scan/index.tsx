@@ -64,7 +64,7 @@ export default function Scan({navigation}: Props) {
         />
       </TouchableOpacity>
 
-      {showCamera && device ? (
+      {showCamera && device != null ? (
         <Camera
           style={StyleSheet.absoluteFill}
           device={device}

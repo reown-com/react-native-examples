@@ -198,7 +198,7 @@ jobs:
           ram-size: 4096M
           heap-size: 576M
           emulator-boot-timeout: 900
-          profile: pixel_6
+          profile: Nexus 6
           avd-name: test_device
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save -no-snapshot-load
           script: |
