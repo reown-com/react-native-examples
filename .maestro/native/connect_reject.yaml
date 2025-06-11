@@ -5,7 +5,9 @@ name: React Native Dapp to React Native Wallet Connection Confirmed
 - launchApp:
     permissions:
       all: allow
+- startRecording: "Native to Native Connection Rejected"
 - tapOn: "Connect"
 - tapOn: "React Native Wallet"
 - tapOn: "Reject"
 - assertVisible: "Connection declined"
+- stopRecording
