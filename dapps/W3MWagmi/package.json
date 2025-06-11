@@ -85,6 +85,7 @@
     "ws": "^8.18.1",
     "braces": "3.0.3",
     "undici": "6.21.2",
-    "serve-static": "1.16.2"
+    "serve-static": "1.16.2",
+    "valtio": "1.11.2"
   }
 }
