@@ -5,7 +5,9 @@ name: React Native Dapp to React Native Wallet Personal Sign Confirmed
     permissions:
       all: allow
 - startRecording: "Native personal_sign Confirmed"
+- waitForAnimationToEnd
 - tapOn: "Sign message"
-- tapOn: "Approve"
+- tapOn:
+    id: "approve-button"
 - assertVisible: "Request response"
 - stopRecording

@@ -11,11 +11,14 @@ name: AppKit Web to React Native Wallet Sign Request Confirmed
 - scroll
 - scroll
 - tapOn: "Sign Message"
-- tapOn: "Approve"
+- waitForAnimationToEnd
+- tapOn:
+    id: "approve-button"
 - runFlow:
     when:
       platform: iOS
     commands:
       - back
+- waitForAnimationToEnd
 - assertVisible: "Signing Succeeded"
 - stopRecording

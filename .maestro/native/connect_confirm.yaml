@@ -6,8 +6,15 @@ name: React Native Dapp to React Native Wallet Connection Confirmed
     permissions:
       all: allow
 - startRecording: "Native Connection Confirmed"
-- tapOn: "Connect"
-- tapOn: "React Native Wallet"
-- tapOn: "Approve"
+- tapOn:
+    id: "connect-button"
+- tapOn:
+    id: "all-wallets"
+- waitForAnimationToEnd
+- tapOn: "React"
+- waitForAnimationToEnd
+- tapOn:
+    id: "approve-button"
+- waitForAnimationToEnd
 - assertVisible: "Sign message"
 - stopRecording

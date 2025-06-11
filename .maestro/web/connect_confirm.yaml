@@ -18,6 +18,7 @@ name: AppKit Web to React Native Wallet Connection Confirmed
       platform: iOS
     commands:
       - back
-- tapOn: "Approve"
+- tapOn:
+    id: "approve-button"
 - assertVisible: "AppKit Interactions"
 - stopRecording

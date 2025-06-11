@@ -13,7 +13,8 @@ name: AppKit Web to React Native Wallet Connection Rejected
 - scroll
 - scroll
 - tapOn: "React Native Sample Wallet React Native Sample Wallet"
-- tapOn: "Reject"
+- tapOn:
+    id: "reject-button"
 - runFlow:
     when:
       platform: iOS
