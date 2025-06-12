@@ -1,0 +1,257 @@
+name: CI E2E Tests iOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_wallet_app:
+    name: Build Wallet App
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup iOS files for Wallet
+        uses: ./.github/actions/ci-setup-ios-files
+        with:
+          root-path: 'wallets/rn_cli_wallet'
+          google-services-file: ${{ secrets.W3W_IOS_INTERNAL_GOOGLE_SERVICES_FILE }}
+          sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
+          project-id: ${{ secrets.ENV_PROJECT_ID }}
+          relay-url: ${{ secrets.ENV_RELAY_URL }}
+          sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
+          release-type: 'internal'
+
+      - name: Set Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+      
+      - name: Install dependencies
+        working-directory: ./wallets/rn_cli_wallet
+        run: |
+          yarn install --immutable
+          
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.0
+          bundler-cache: true
+
+      - name: Install Cocoapods
+        run: gem install cocoapods
+          
+      - name: Cache pods
+        id: pods-cache-wallet
+        uses: actions/cache@v4
+        with:
+          path: wallets/rn_cli_wallet/ios/Pods
+          key: ${{ runner.os }}-pods-wallet-${{ hashFiles('wallets/rn_cli_wallet/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-wallet-
+          
+      - name: Install Pods
+        if: steps.pods-cache-wallet.outputs.cache-hit != 'true'
+        working-directory: ./wallets/rn_cli_wallet/ios
+        run: pod install
+
+      - name: Build Wallet App for Simulator
+        working-directory: ./wallets/rn_cli_wallet/ios
+        run: |
+          set -o pipefail && xcodebuild -workspace RNWeb3Wallet.xcworkspace -scheme "RNWallet-Internal" -sdk iphonesimulator -derivedDataPath ./build -quiet
+      
+      - name: Create app package
+        working-directory: ./wallets/rn_cli_wallet/ios
+        run: |
+          cd build/Build/Products/Debug-iphonesimulator
+          zip -r ../../../../wallet.zip . -i "RNWallet-Internal.app"
+
+      - name: Upload Wallet App
+        uses: actions/upload-artifact@v4
+        with:
+          name: rn_cli_wallet-internal-app
+          path: ./wallets/rn_cli_wallet/wallet.zip
+
+  build_dapp_app:
+    name: Build dApp App
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup iOS files for dApp
+        uses: ./.github/actions/ci-setup-ios-files
+        with:
+          root-path: 'dapps/W3MWagmi'
+          sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
+          project-id: ${{ secrets.ENV_PROJECT_ID }}
+          relay-url: ${{ secrets.ENV_RELAY_URL }}
+          sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
+          release-type: 'internal'
+
+      - name: Set Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+
+      - name: Install dependencies
+        working-directory: ./dapps/W3MWagmi
+        run: |
+          yarn install --immutable
+          
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.0
+          bundler-cache: true
+
+      - name: Install Cocoapods
+        run: gem install cocoapods
+          
+      - name: Cache pods
+        id: pods-cache-dapp
+        uses: actions/cache@v4
+        with:
+          path: dapps/W3MWagmi/ios/Pods
+          key: ${{ runner.os }}-pods-dapp-${{ hashFiles('dapps/W3MWagmi/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-dapp-
+          
+      - name: Install Pods
+        if: steps.pods-cache-dapp.outputs.cache-hit != 'true'
+        working-directory: ./dapps/W3MWagmi/ios
+        run: pod install
+
+      - name: Build dApp App for Simulator
+        working-directory: ./dapps/W3MWagmi/ios
+        run: |
+          set -o pipefail && xcodebuild -workspace W3MWagmi.xcworkspace -scheme "W3MWagmi Internal" -sdk iphonesimulator -derivedDataPath ./build -quiet
+
+      - name: Create app package
+        working-directory: ./dapps/W3MWagmi/ios
+        run: |
+          cd build/Build/Products/Debug-iphonesimulator
+          zip -r ../../../../dapp.zip . -i "W3MWagmi Internal.app"
+
+      - name: Upload dApp App
+        uses: actions/upload-artifact@v4
+        with:
+          name: W3MWagmi-internal-app
+          path: ./dapps/W3MWagmi/dapp.zip
+
+  run_e2e_tests:
+    name: Run E2E Tests
+    timeout-minutes: 60
+    runs-on: macos-14-xlarge
+    needs: [build_wallet_app, build_dapp_app]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+
+      - name: Download all Apps
+        uses: actions/download-artifact@v4
+        with:
+          path: apps
+          merge-multiple: true
+
+      - name: List Apps
+        run: |
+          echo "Available apps:"
+          find apps -name "*.zip" | xargs ls -la
+          
+      - name: Unzip apps
+        run: |
+          mkdir -p apps/wallet
+          unzip apps/rn_cli_wallet-internal-app/wallet.zip -d apps/wallet
+          mkdir -p apps/dapp
+          unzip apps/W3MWagmi-internal-app/dapp.zip -d apps/dapp
+          
+      - name: List extracted apps
+        run: |
+          echo "Available apps:"
+          find apps -name "*.app" | xargs ls -la
+
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          export PATH="$PATH":"$HOME/.maestro/bin"
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+          maestro --version
+          
+      - name: Run iOS Simulator and Tests
+        run: |
+          set -x
+          
+          # Setup debug directory
+          mkdir -p debug-artifacts
+
+          # Start simulator
+          SIM_DEVICE_NAME="iPhone-13-E2E"
+          SIM_DEVICE_TYPE="iPhone 13"
+          SIM_RUNTIME_ID=$(xcrun simctl list runtimes | grep "iOS 18" | awk '{print $NF}' | head -n 1)
+          if [ -z "$SIM_RUNTIME_ID" ]; then
+            echo "No iOS 18 runtime found. Please check installed simulators."
+            exit 1
+          fi
+          
+          # Create a new simulator instance
+          UDID=$(xcrun simctl create "$SIM_DEVICE_NAME" "$SIM_DEVICE_TYPE" "$SIM_RUNTIME_ID" || xcrun simctl list devices | grep "$SIM_DEVICE_NAME" | awk -F'[()]' '{print $2}')
+          
+          # Boot the simulator
+          xcrun simctl boot "$UDID"
+          
+          # Wait for boot completion
+          echo "Waiting for boot completion..."
+          xcrun simctl wait "$UDID" boot
+          echo "Boot completed!"
+          
+          # Expose UDID for maestro
+          export MAESTRO_IOS_DEVICE="$UDID"
+          
+          # Install Apps
+          WALLET_APP_PATH=$(find apps/wallet -name "*.app" | head -n 1)
+          DAPP_APP_PATH=$(find apps/dapp -name "*.app" | head -n 1)
+          
+          # Install apps
+          echo "Installing apps:"
+          xcrun simctl install "$UDID" "$WALLET_APP_PATH"
+          xcrun simctl install "$UDID" "$DAPP_APP_PATH"
+          
+          # Verify installations
+          echo "Verifying installed apps:"
+          xcrun simctl listapps "$UDID" | grep -E "com.walletconnect" || (echo "ERROR: Apps not installed correctly" && exit 1)
+
+          echo "Running Maestro native to native tests:"
+          maestro test .maestro/native/connect_reject.yaml
+          maestro test .maestro/native/connect_confirm.yaml
+          maestro test .maestro/native/personal_sign_confirm.yaml
+          maestro test .maestro/native/personal_sign_reject.yaml
+
+      - name: Upload debug artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-artifacts
+          path: debug-artifacts/
+          if-no-files-found: warn
+
+      - name: Upload Maestro artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-artifacts
+          path: |
+            .maestro/
+            videos/
+            *.mp4
+            *.mov
+          if-no-files-found: warn 
