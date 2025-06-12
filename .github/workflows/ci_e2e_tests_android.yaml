@@ -200,7 +200,7 @@ jobs:
           emulator-boot-timeout: 900
           profile: pixel_6
           avd-name: test_device
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot-save -no-snapshot-load
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save -no-snapshot-load
           script: |
             # Setup debug directory
             mkdir -p debug-artifacts
@@ -275,12 +275,12 @@ jobs:
             adb shell dumpsys window windows >> debug-artifacts/window_state.txt
             
             # Current activity
-            echo "Current activity:" > debug-artifacts/current_activity.txt
-            adb shell dumpsys activity activities | grep -E "mResumedActivity|mFocusedActivity" >> debug-artifacts/current_activity.txt
+            # echo "Current activity:" > debug-artifacts/current_activity.txt
+            # adb shell dumpsys activity activities | grep -E "mResumedActivity|mFocusedActivity" >> debug-artifacts/current_activity.txt
             
             # Check for crashes
             echo "Checking for crashes..."
-            adb logcat -d | grep -E "FATAL EXCEPTION|AndroidRuntime|Process.*com.walletconnect" > debug-artifacts/crashes.txt || echo "No crashes found" > debug-artifacts/crashes.txt
+            adb logcat -d | grep -E "FATAL EXCEPTION|AndroidRuntime|Process:*com.walletconnect" > debug-artifacts/crashes.txt || echo "No crashes found" > debug-artifacts/crashes.txt
             
             # ANR traces
             adb shell ls /data/anr/ > debug-artifacts/anr_list.txt 2>&1 || true
