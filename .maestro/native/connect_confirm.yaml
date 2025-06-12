@@ -8,12 +8,15 @@ name: React Native Dapp to React Native Wallet Connection Confirmed
 - startRecording: "Native Connection Confirmed"
 - tapOn:
     id: "connect-button"
-- scroll
 - tapOn:
     id: "all-wallets"
 - waitForAnimationToEnd
 - tapOn: "React"
 - waitForAnimationToEnd
+- extendedWaitUntil:
+    visible: 
+        id: "approve-button"
+    timeout: 10000
 - tapOn:
     id: "approve-button"
 - waitForAnimationToEnd

@@ -5,8 +5,14 @@ name: React Native Dapp to React Native Wallet Personal Sign Rejected
     permissions:
       all: allow
 - startRecording: "Native personal_sign Rejected"
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible: "Sign message"
+    timeout: 10000
 - tapOn: "Sign message"
+- extendedWaitUntil:
+    visible: 
+        id: "reject-button"
+    timeout: 10000
 - tapOn:
     id: "reject-button"
 - assertVisible: "Request failure"

@@ -13,6 +13,10 @@ name: AppKit Web to React Native Wallet Connection Rejected
 - scroll
 - scroll
 - tapOn: "React Native Sample Wallet React Native Sample Wallet"
+- extendedWaitUntil:
+    visible: 
+        id: "reject-button"
+    timeout: 10000
 - tapOn:
     id: "reject-button"
 - runFlow:

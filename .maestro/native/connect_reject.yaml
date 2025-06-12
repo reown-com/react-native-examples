@@ -8,12 +8,14 @@ name: React Native Dapp to React Native Wallet Connection Rejected
 - startRecording: "Native to Native Connection Rejected"
 - tapOn:
     id: "connect-button"
-- scroll
 - tapOn:
     id: "all-wallets"
 - waitForAnimationToEnd
 - tapOn: "React"
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible: 
+        id: "reject-button"
+    timeout: 10000
 - tapOn:
     id: "reject-button"
 - waitForAnimationToEnd

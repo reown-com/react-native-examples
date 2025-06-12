@@ -11,7 +11,10 @@ name: AppKit Web to React Native Wallet Sign Request Rejected
 - scroll
 - scroll
 - tapOn: "Sign Message"
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible: 
+        id: "reject-button"
+    timeout: 10000
 - tapOn:
     id: "reject-button"
 - runFlow:

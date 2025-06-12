@@ -18,6 +18,10 @@ name: AppKit Web to React Native Wallet Connection Confirmed
       platform: iOS
     commands:
       - back
+- extendedWaitUntil:
+    visible: 
+        id: "approve-button"
+    timeout: 10000
 - tapOn:
     id: "approve-button"
 - assertVisible: "AppKit Interactions"
