@@ -6,6 +6,7 @@
     "android": "yarn run copy:debug && react-native run-android --appId com.walletconnect.web3modal.rnsample.debug",
     "android:build": "yarn run copy:production && cd android && ./gradlew clean && ./gradlew assembleRelease",
     "android:build:internal": "yarn run copy:internal && cd android && ./gradlew clean && ./gradlew assembleInternal",
+    "android:build:debug": "yarn run copy:debug && cd android && ./gradlew assembleDebug",
     "ios": "react-native run-ios",
     "ios:internal": "react-native run-ios --scheme 'W3MWagmi Internal' ",
     "lint": "eslint .",

@@ -1,4 +1,4 @@
-appId: com.walletconnect.web3modal.rnsample.internal
+appId: com.walletconnect.web3modal.rnsample.debug
 name: React Native Dapp to React Native Wallet Connection Confirmed
 ---
 - clearState

@@ -24,7 +24,7 @@ jobs:
           architecture: x86_64
 
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -89,7 +89,7 @@ jobs:
           architecture: x86_64
 
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -107,13 +107,13 @@ jobs:
           root-path: 'dapps/W3MWagmi'
           google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}
           secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
-          keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
-          keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
+          keystore: ${{ secrets.WC_DEBUG_KEYSTORE }}
+          keystore-name: ${{ secrets.WC_DEBUG_KEYSTORE_NAME }}
           sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
           project-id: ${{ secrets.ENV_PROJECT_ID }}
           relay-url: ${{ secrets.ENV_RELAY_URL }}
           sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
-          release-type: 'internal'
+          release-type: 'debug'
 
       - name: Install dependencies
         working-directory: ./dapps/W3MWagmi
@@ -123,16 +123,16 @@ jobs:
       - name: Build dApp APK
         working-directory: ./dapps/W3MWagmi
         run: |
-          export SENTRY_DISABLE_AUTO_UPLOAD=true && yarn run android:build:internal
+          export SENTRY_DISABLE_AUTO_UPLOAD=true && yarn run android:build:debug
 
       - name: Rename dApp APK for upload
-        run: mv ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/dapp-internal.apk
+        run: mv ./dapps/W3MWagmi/android/app/build/outputs/apk/debug/app-debug.apk ./dapps/W3MWagmi/android/app/build/outputs/apk/debug/dapp.apk
 
       - name: Upload dApp APK
         uses: actions/upload-artifact@v4
         with:
           name: W3MWagmi-internal-apk
-          path: ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/dapp-internal.apk
+          path: ./dapps/W3MWagmi/android/app/build/outputs/apk/debug/dapp.apk
 
   run_e2e_tests:
     name: Run E2E Tests
