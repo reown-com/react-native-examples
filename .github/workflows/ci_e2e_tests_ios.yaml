@@ -4,9 +4,37 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_wallet_app:
-    name: Build Wallet App
-    runs-on: macos-latest
+  build_apps:
+    name: Build ${{ matrix.app.name }} App
+    runs-on: macos-latest-xlarge
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - name: 'Wallet'
+            root_path: 'wallets/rn_cli_wallet'
+            google_services_secret: 'W3W_IOS_INTERNAL_GOOGLE_SERVICES_FILE'
+            sentry_file_secret: 'W3W_SENTRY_FILE'
+            sentry_dsn_secret: 'W3W_SENTRY_DSN'
+            pod_cache_key_suffix: 'wallet'
+            workspace: 'RNWeb3Wallet.xcworkspace'
+            scheme: 'RNWallet-Internal'
+            app_name_in_zip: 'RNWallet-Internal.app'
+            zip_name: 'wallet.zip'
+            artifact_name: 'rn_cli_wallet-internal-app'
+            artifact_path: 'wallets/rn_cli_wallet/wallet.zip'
+          - name: 'dApp'
+            root_path: 'dapps/W3MWagmi'
+            google_services_secret: 'EMPTY_SECRET' # This does not exist, so it will be an empty string
+            sentry_file_secret: 'W3M_WAGMI_SENTRY_FILE'
+            sentry_dsn_secret: 'W3M_WAGMI_SENTRY_DSN'
+            pod_cache_key_suffix: 'dapp'
+            workspace: 'W3MWagmi.xcworkspace'
+            scheme: 'W3MWagmi Internal'
+            app_name_in_zip: 'W3MWagmi Internal.app'
+            zip_name: 'dapp.zip'
+            artifact_name: 'W3MWagmi-internal-app'
+            artifact_path: 'dapps/W3MWagmi/dapp.zip'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,22 +44,22 @@ jobs:
         with:
           node-version: 18
 
-      - name: Setup iOS files for Wallet
+      - name: Setup iOS files for ${{ matrix.app.name }}
         uses: ./.github/actions/ci-setup-ios-files
         with:
-          root-path: 'wallets/rn_cli_wallet'
-          google-services-file: ${{ secrets.W3W_IOS_INTERNAL_GOOGLE_SERVICES_FILE }}
-          sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
+          root-path: ${{ matrix.app.root_path }}
+          google-services-file: ${{ secrets[matrix.app.google_services_secret] }}
+          sentry-file: ${{ secrets[matrix.app.sentry_file_secret] }}
           project-id: ${{ secrets.ENV_PROJECT_ID }}
           relay-url: ${{ secrets.ENV_RELAY_URL }}
-          sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
+          sentry-dsn: ${{ secrets[matrix.app.sentry_dsn_secret] }}
           release-type: 'internal'
 
       - name: Set Xcode Version
         run: sudo xcode-select -s /Applications/Xcode_16.2.app
       
       - name: Install dependencies
-        working-directory: ./wallets/rn_cli_wallet
+        working-directory: ./${{ matrix.app.root_path }}
         run: |
           yarn install --immutable
           
@@ -48,108 +76,43 @@ jobs:
         id: pods-cache-wallet
         uses: actions/cache@v4
         with:
-          path: wallets/rn_cli_wallet/ios/Pods
-          key: ${{ runner.os }}-pods-wallet-${{ hashFiles('wallets/rn_cli_wallet/ios/Podfile.lock') }}
+          path: ${{ matrix.app.root_path }}/ios/Pods
+          key: ${{ runner.os }}-pods-${{ matrix.app.pod_cache_key_suffix }}-${{ hashFiles(format('{0}/ios/Podfile.lock', matrix.app.root_path)) }}
           restore-keys: |
-            ${{ runner.os }}-pods-wallet-
+            ${{ runner.os }}-pods-${{ matrix.app.pod_cache_key_suffix }}-
           
       - name: Install Pods
         if: steps.pods-cache-wallet.outputs.cache-hit != 'true'
-        working-directory: ./wallets/rn_cli_wallet/ios
+        working-directory: ./${{ matrix.app.root_path }}/ios
         run: pod install
 
-      - name: Build Wallet App for Simulator
-        working-directory: ./wallets/rn_cli_wallet/ios
+      - name: Build ${{ matrix.app.name }} App for Simulator
+        working-directory: ./${{ matrix.app.root_path }}/ios
         run: |
-          set -o pipefail && xcodebuild -workspace RNWeb3Wallet.xcworkspace -scheme "RNWallet-Internal" -sdk iphonesimulator -derivedDataPath ./build -quiet
+          export SENTRY_DISABLE_AUTO_UPLOAD=true && set -o pipefail && xcodebuild -workspace ${{ matrix.app.workspace }} -scheme "${{ matrix.app.scheme }}" -configuration Release -sdk iphonesimulator -derivedDataPath ./build
+
+      - name: List build products
+        if: always()
+        working-directory: ./${{ matrix.app.root_path }}/ios
+        run: ls -R build
       
       - name: Create app package
-        working-directory: ./wallets/rn_cli_wallet/ios
+        working-directory: ./${{ matrix.app.root_path }}/ios
         run: |
-          cd build/Build/Products/Debug-iphonesimulator
-          zip -r ../../../../wallet.zip . -i "RNWallet-Internal.app"
+          cd build/Build/Products/Release-iphonesimulator
+          zip -r ../../../../${{ matrix.app.zip_name }} . -i "${{ matrix.app.app_name_in_zip }}"
 
-      - name: Upload Wallet App
+      - name: Upload ${{ matrix.app.name }} App
         uses: actions/upload-artifact@v4
         with:
-          name: rn_cli_wallet-internal-app
-          path: ./wallets/rn_cli_wallet/wallet.zip
-
-  build_dapp_app:
-    name: Build dApp App
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Setup iOS files for dApp
-        uses: ./.github/actions/ci-setup-ios-files
-        with:
-          root-path: 'dapps/W3MWagmi'
-          sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
-          project-id: ${{ secrets.ENV_PROJECT_ID }}
-          relay-url: ${{ secrets.ENV_RELAY_URL }}
-          sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
-          release-type: 'internal'
-
-      - name: Set Xcode Version
-        run: sudo xcode-select -s /Applications/Xcode_16.2.app
-
-      - name: Install dependencies
-        working-directory: ./dapps/W3MWagmi
-        run: |
-          yarn install --immutable
-          
-      - name: Install Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.1.0
-          bundler-cache: true
-
-      - name: Install Cocoapods
-        run: gem install cocoapods
-          
-      - name: Cache pods
-        id: pods-cache-dapp
-        uses: actions/cache@v4
-        with:
-          path: dapps/W3MWagmi/ios/Pods
-          key: ${{ runner.os }}-pods-dapp-${{ hashFiles('dapps/W3MWagmi/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-dapp-
-          
-      - name: Install Pods
-        if: steps.pods-cache-dapp.outputs.cache-hit != 'true'
-        working-directory: ./dapps/W3MWagmi/ios
-        run: pod install
-
-      - name: Build dApp App for Simulator
-        working-directory: ./dapps/W3MWagmi/ios
-        run: |
-          set -o pipefail && xcodebuild -workspace W3MWagmi.xcworkspace -scheme "W3MWagmi Internal" -sdk iphonesimulator -derivedDataPath ./build -quiet
-
-      - name: Create app package
-        working-directory: ./dapps/W3MWagmi/ios
-        run: |
-          cd build/Build/Products/Debug-iphonesimulator
-          zip -r ../../../../dapp.zip . -i "W3MWagmi Internal.app"
-
-      - name: Upload dApp App
-        uses: actions/upload-artifact@v4
-        with:
-          name: W3MWagmi-internal-app
-          path: ./dapps/W3MWagmi/dapp.zip
+          name: ${{ matrix.app.artifact_name }}
+          path: ${{ matrix.app.artifact_path }}
 
   run_e2e_tests:
     name: Run E2E Tests
     timeout-minutes: 60
     runs-on: macos-14-xlarge
-    needs: [build_wallet_app, build_dapp_app]
+    needs: [build_apps]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -181,11 +144,7 @@ jobs:
           find apps -name "*.app" | xargs ls -la
 
       - name: Install Maestro
-        run: |
-          curl -Ls "https://get.maestro.mobile.dev" | bash
-          export PATH="$PATH":"$HOME/.maestro/bin"
-          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
-          maestro --version
+        uses: ./.github/actions/ci-setup-maestro
           
       - name: Run iOS Simulator and Tests
         run: |
