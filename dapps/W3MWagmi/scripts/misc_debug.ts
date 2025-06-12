@@ -15,8 +15,15 @@ export const getMetadata = () => {
 export const getCustomWallets = () => {
   const wallets = [
     {
-      id: 'rn-wallet',
-      name: 'React Native Wallet',
+      id: 'rn-wallet-debug',
+      name: 'React Native Wallet (debug)',
+      image_url: 'https://avatars.githubusercontent.com/u/179229932',
+      mobile_link: 'rn-web3wallet-debug://',
+      link_mode: 'https://appkit-lab.reown.com/rn_walletkit_debug',
+    },
+    {
+      id: 'rn-wallet-internal',
+      name: 'React Native Wallet (internal)',
       image_url: 'https://avatars.githubusercontent.com/u/179229932',
       mobile_link: 'rn-web3wallet-internal://',
       link_mode: 'https://appkit-lab.reown.com/rn_walletkit_internal',

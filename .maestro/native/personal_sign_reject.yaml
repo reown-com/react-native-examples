@@ -1,4 +1,4 @@
-appId: com.walletconnect.web3modal.rnsample.debug
+appId: com.walletconnect.web3modal.rnsample.internal
 name: React Native Dapp to React Native Wallet Personal Sign Rejected
 ---
 - launchApp:
