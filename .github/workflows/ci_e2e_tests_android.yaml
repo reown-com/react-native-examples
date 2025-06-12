@@ -36,12 +36,6 @@ jobs:
       - name: Accept Android Licenses
         uses: SimonMarquis/android-accept-licenses@v1
 
-      - name: Setup Firebase
-        uses: w9jds/setup-firebase@main
-        with:
-          tools-version: 13.0.1
-          gcp_sa_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-
       - name: Setup Android files for Wallet
         uses: ./.github/actions/ci-setup-android-files
         with:
@@ -64,7 +58,7 @@ jobs:
       - name: Build Wallet APK
         working-directory: ./wallets/rn_cli_wallet
         run: |
-          yarn run android:build:internal
+          export SENTRY_DISABLE_AUTO_UPLOAD=true && yarn run android:build:internal
 
       - name: Rename Wallet APK for upload
         run: mv ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/wallet-internal.apk
@@ -107,12 +101,6 @@ jobs:
       - name: Accept Android Licenses
         uses: SimonMarquis/android-accept-licenses@v1
 
-      - name: Setup Firebase
-        uses: w9jds/setup-firebase@main
-        with:
-          tools-version: 13.0.1
-          gcp_sa_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-
       - name: Setup Android files for dApp
         uses: ./.github/actions/ci-setup-android-files
         with:
@@ -135,7 +123,7 @@ jobs:
       - name: Build dApp APK
         working-directory: ./dapps/W3MWagmi
         run: |
-          yarn run android:build:internal
+          export SENTRY_DISABLE_AUTO_UPLOAD=true && yarn run android:build:internal
 
       - name: Rename dApp APK for upload
         run: mv ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/dapp-internal.apk
