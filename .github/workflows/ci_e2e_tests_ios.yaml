@@ -173,11 +173,6 @@ jobs:
           mkdir -p apps/dapp
           unzip apps/dapp.zip -d apps/dapp
           
-      - name: List extracted apps
-        run: |
-          echo "Available apps:"
-          find apps -name "*.app" | xargs ls -la
-
       - name: Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
