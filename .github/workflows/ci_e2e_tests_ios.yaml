@@ -71,7 +71,7 @@ jobs:
       - name: Upload Wallet App
         uses: actions/upload-artifact@v4
         with:
-          name: rn_cli_wallet-internal-app
+          name: wallet-internal
           path: ./wallets/rn_cli_wallet/ios/wallet.zip
 
   build_dapp_app:
@@ -140,7 +140,7 @@ jobs:
       - name: Upload dApp App
         uses: actions/upload-artifact@v4
         with:
-          name: W3MWagmi-internal-app
+          name: dapp-internal
           path: ./dapps/W3MWagmi/ios/dapp.zip
 
   run_e2e_tests:
@@ -169,9 +169,9 @@ jobs:
       - name: Unzip apps
         run: |
           mkdir -p apps/wallet
-          unzip apps/rn_cli_wallet-internal-app/wallet.zip -d apps/wallet
+          unzip apps/wallet-internal/wallet.zip -d apps/wallet
           mkdir -p apps/dapp
-          unzip apps/W3MWagmi-internal-app/dapp.zip -d apps/dapp
+          unzip apps/dapp-internal/dapp.zip -d apps/dapp
           
       - name: List extracted apps
         run: |
