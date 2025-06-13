@@ -66,7 +66,7 @@ jobs:
         working-directory: ./wallets/rn_cli_wallet/ios
         run: |
           cd build/Build/Products/Release-iphonesimulator
-          zip -r ../../../../wallet.zip RNWallet-Internal.app
+          zip -r ../../../../wallet.zip RNWallet\ Internal.app
 
       - name: Upload Wallet App
         uses: actions/upload-artifact@v4
