@@ -66,13 +66,13 @@ jobs:
         working-directory: ./wallets/rn_cli_wallet/ios
         run: |
           cd build/Build/Products/Release-iphonesimulator
-          zip -r ../../../../wallet.zip . -i "RNWallet-Internal.app"
+          zip -r ../../../../wallet.zip RNWallet-Internal.app
 
       - name: Upload Wallet App
         uses: actions/upload-artifact@v4
         with:
           name: rn_cli_wallet-internal-app
-          path: ./wallets/rn_cli_wallet/wallet.zip
+          path: ./wallets/rn_cli_wallet/ios/wallet.zip
 
   build_dapp_app:
     name: Build dApp App
@@ -135,13 +135,13 @@ jobs:
         working-directory: ./dapps/W3MWagmi/ios
         run: |
           cd build/Build/Products/Release-iphonesimulator
-          zip -r ../../../../dapp.zip . -i "W3MWagmi Internal.app"
+          zip -r ../../../../dapp.zip W3MWagmi\ Internal.app
 
       - name: Upload dApp App
         uses: actions/upload-artifact@v4
         with:
           name: W3MWagmi-internal-app
-          path: ./dapps/W3MWagmi/dapp.zip
+          path: ./dapps/W3MWagmi/ios/dapp.zip
 
   run_e2e_tests:
     name: Run E2E Tests
