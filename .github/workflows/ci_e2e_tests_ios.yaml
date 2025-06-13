@@ -66,7 +66,7 @@ jobs:
       - name: Create app package
         working-directory: ./wallets/rn_cli_wallet/ios
         run: |
-          cd build/Build/Products/Debug-iphonesimulator
+          cd build/Build/Products/Release-iphonesimulator
           zip -r ../../../../wallet.zip . -i "RNWallet-Internal.app"
 
       - name: Upload Wallet App
@@ -136,7 +136,7 @@ jobs:
       - name: Create app package
         working-directory: ./dapps/W3MWagmi/ios
         run: |
-          cd build/Build/Products/Debug-iphonesimulator
+          cd build/Build/Products/Release-iphonesimulator
           zip -r ../../../../dapp.zip . -i "W3MWagmi Internal.app"
 
       - name: Upload dApp App
@@ -191,8 +191,8 @@ jobs:
         run: |
           set -x
           
-          # Setup debug directory
-          mkdir -p debug-artifacts
+          # Setup artifacts directory
+          mkdir -p e2e-test-artifacts
 
           # Start simulator
           SIM_DEVICE_NAME="iPhone-13-E2E"
@@ -240,8 +240,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: debug-artifacts
-          path: debug-artifacts/
+          name: e2e-test-artifacts
+          path: e2e-test-artifacts/
           if-no-files-found: warn
 
       - name: Upload Maestro artifacts
