@@ -54,7 +54,7 @@ jobs:
             ${{ runner.os }}-pods-wallet-
           
       - name: Install Pods
-        if: steps.pods-cache-wallet.outputs.cache-hit != 'true'
+        # if: steps.pods-cache-wallet.outputs.cache-hit != 'true'
         working-directory: ./wallets/rn_cli_wallet/ios
         run: pod install
 
@@ -124,7 +124,7 @@ jobs:
             ${{ runner.os }}-pods-dapp-
           
       - name: Install Pods
-        if: steps.pods-cache-dapp.outputs.cache-hit != 'true'
+        # if: steps.pods-cache-dapp.outputs.cache-hit != 'true'
         working-directory: ./dapps/W3MWagmi/ios
         run: pod install
 
