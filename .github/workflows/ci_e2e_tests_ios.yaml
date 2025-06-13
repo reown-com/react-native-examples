@@ -54,14 +54,13 @@ jobs:
             ${{ runner.os }}-pods-wallet-
           
       - name: Install Pods
-        # if: steps.pods-cache-wallet.outputs.cache-hit != 'true'
         working-directory: ./wallets/rn_cli_wallet/ios
         run: pod install
 
       - name: Build Wallet App for Simulator
         working-directory: ./wallets/rn_cli_wallet/ios
         run: |
-          set -o pipefail && xcodebuild -workspace RNWeb3Wallet.xcworkspace -scheme "RNWallet-Internal" -sdk iphonesimulator -derivedDataPath ./build -quiet
+          set -o pipefail && xcodebuild -workspace RNWeb3Wallet.xcworkspace -scheme "RNWallet-Internal" -config Release -sdk iphonesimulator -derivedDataPath ./build
       
       - name: Create app package
         working-directory: ./wallets/rn_cli_wallet/ios
@@ -124,14 +123,13 @@ jobs:
             ${{ runner.os }}-pods-dapp-
           
       - name: Install Pods
-        # if: steps.pods-cache-dapp.outputs.cache-hit != 'true'
         working-directory: ./dapps/W3MWagmi/ios
         run: pod install
 
       - name: Build dApp App for Simulator
         working-directory: ./dapps/W3MWagmi/ios
         run: |
-          set -o pipefail && xcodebuild -workspace W3MWagmi.xcworkspace -scheme "W3MWagmi Internal" -sdk iphonesimulator -derivedDataPath ./build -quiet
+          set -o pipefail && xcodebuild -workspace W3MWagmi.xcworkspace -scheme "W3MWagmi Internal" -config Release -sdk iphonesimulator -derivedDataPath ./build
 
       - name: Create app package
         working-directory: ./dapps/W3MWagmi/ios
