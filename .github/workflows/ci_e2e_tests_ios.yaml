@@ -201,10 +201,6 @@ jobs:
           
           # Boot the simulator
           xcrun simctl boot "$UDID"
-          
-          # Wait for boot completion
-          echo "Waiting for boot completion..."
-          xcrun simctl wait "$UDID" boot
           echo "Boot completed!"
           
           # Expose UDID for maestro
