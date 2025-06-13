@@ -169,9 +169,9 @@ jobs:
       - name: Unzip apps
         run: |
           mkdir -p apps/wallet
-          unzip apps/wallet-internal/wallet.zip -d apps/wallet
+          unzip apps/wallet.zip -d apps/wallet
           mkdir -p apps/dapp
-          unzip apps/dapp-internal/dapp.zip -d apps/dapp
+          unzip apps/dapp.zip -d apps/dapp
           
       - name: List extracted apps
         run: |
