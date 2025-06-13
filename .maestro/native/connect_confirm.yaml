@@ -12,7 +12,12 @@ name: React Native Dapp to React Native Wallet Connection Confirmed
     id: "all-wallets"
 - waitForAnimationToEnd
 - tapOn: "React"
-- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Open"
+      platform: iOS
+    commands:
+      - tapOn: "Open"
 - extendedWaitUntil:
     visible: 
         id: "approve-button"

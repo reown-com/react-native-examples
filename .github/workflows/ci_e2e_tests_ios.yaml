@@ -201,7 +201,6 @@ jobs:
           
           # Boot the simulator
           xcrun simctl boot "$UDID"
-          echo "Boot completed!"
           
           # Expose UDID for maestro
           export MAESTRO_IOS_DEVICE="$UDID"

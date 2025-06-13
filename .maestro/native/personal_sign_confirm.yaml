@@ -9,6 +9,12 @@ name: React Native Dapp to React Native Wallet Personal Sign Confirmed
     visible: "Sign message"
     timeout: 10000
 - tapOn: "Sign message"
+- runFlow:
+    when:
+      visible: "Open"
+      platform: iOS
+    commands:
+      - tapOn: "Open"
 - extendedWaitUntil:
     visible: 
         id: "approve-button"

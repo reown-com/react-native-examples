@@ -12,6 +12,12 @@ name: React Native Dapp to React Native Wallet Connection Rejected
     id: "all-wallets"
 - waitForAnimationToEnd
 - tapOn: "React"
+- runFlow:
+    when:
+      visible: "Open"
+      platform: iOS
+    commands:
+      - tapOn: "Open"
 - extendedWaitUntil:
     visible: 
         id: "reject-button"
