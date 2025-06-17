@@ -224,6 +224,12 @@ jobs:
           maestro test .maestro/native/personal_sign_confirm.yaml
           maestro test .maestro/native/personal_sign_reject.yaml
 
+          echo "Running Maestro native to web tests:"
+          maestro test .maestro/web/connect_reject.yaml
+          maestro test .maestro/web/connect_confirm.yaml
+          maestro test .maestro/web/personal_sign_confirm.yaml
+          maestro test .maestro/web/personal_sign_reject.yaml
+
       - name: Upload debug artifacts
         if: always()
         uses: actions/upload-artifact@v4
