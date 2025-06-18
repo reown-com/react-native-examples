@@ -3,6 +3,9 @@ name: CI E2E Tests Android
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build_wallet_apk:
     name: Build Wallet APK

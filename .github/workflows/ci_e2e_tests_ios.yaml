@@ -3,6 +3,9 @@ name: CI E2E Tests iOS
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build_wallet_app:
     name: Build Wallet App
