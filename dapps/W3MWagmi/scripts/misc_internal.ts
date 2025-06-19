@@ -7,7 +7,7 @@ export const getMetadata = () => {
     redirect: {
       native: 'w3mwagmisample-internal://',
       universal: 'https://appkit-lab.reown.com/rn_appkit_internal',
-      linkMode: true,
+      linkMode: false, //TODO: turn it on
     },
   };
 };

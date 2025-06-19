@@ -1,0 +1,58 @@
+name: 'Setup Android Files'
+description: 'Setup required files for building an Android project'
+
+inputs:
+  root-path:
+    description: 'Path of the react-native project'
+    required: true
+  google-services-file:
+    description: 'Google Services Json file content, base64 encoded'
+    required: false
+  secrets-file:
+    description: 'Secrets properties file content'
+    required: true
+  keystore:
+    description: 'Keystore file content, base64 encoded'
+    required: true
+  keystore-name:
+    description: 'Keystore file name'
+    required: true
+  sentry-file:
+    description: 'Sentry file content'
+    required: true
+  project-id:
+    description: 'Reown Cloud ID'
+    required: true
+  relay-url:
+    description: 'Relay URL'
+    required: true
+  sentry-dsn:
+    description: 'Sentry DSN'
+    required: true
+  release-type:
+    description: 'Release type of the project (debug/internal/production)'
+    default: 'debug'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create Google Services Json File
+      if: ${{ inputs.google-services-file != '' }}
+      shell: bash
+      run: echo "${{ inputs.google-services-file }}" | base64 --decode > ${{ inputs.root-path }}/android/app/google-services.json
+    
+    - name: Create secrets.properties File
+      shell: bash
+      run: echo "${{ inputs.secrets-file }}" > ${{ inputs.root-path }}/android/secrets.properties
+
+    - name: Decode Keystore
+      shell: bash
+      run: echo "${{ inputs.keystore }}" | base64 --decode > ${{ inputs.root-path }}/android/app/${{ inputs.keystore-name }}.keystore
+
+    - name: Create Sentry File
+      shell: bash
+      run: echo "${{ inputs.sentry-file }}" > ${{ inputs.root-path }}/android/sentry.properties
+
+    - name: Create Env File
+      shell: bash
+      run: echo -e "ENV_PROJECT_ID=${{ inputs.project-id }}\nENV_RELAY_URL=${{ inputs.relay-url }}\nENV_SENTRY_DSN=${{ inputs.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }} 

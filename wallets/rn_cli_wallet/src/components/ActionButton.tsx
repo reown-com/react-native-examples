@@ -17,6 +17,7 @@ export interface ActionButtonProps {
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  testID?: string;
 }
 
 export function ActionButton({
@@ -27,6 +28,7 @@ export function ActionButton({
   disabled,
   style,
   textStyle,
+  testID,
 }: ActionButtonProps) {
   const Theme = useTheme();
   const backgroundColor = secondary ? Theme['bg-200'] : Theme['accent-100'];
@@ -35,6 +37,7 @@ export function ActionButton({
   return (
     <TouchableOpacity
       onPress={onPress}
+      testID={testID}
       disabled={disabled || loading}
       style={[styles.container, {backgroundColor}, style]}>
       {loading ? (
