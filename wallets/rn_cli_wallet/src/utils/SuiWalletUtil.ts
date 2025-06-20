@@ -9,8 +9,7 @@ export let suiAddresses: string[];
  */
 export async function createOrRestoreSuiWallet() {
   const mnemonic1 = await AsyncStorage.getItem('SUI_MNEMONIC_1');
-  // const mnemonic1 =
-  //   'popular miracle december plunge weekend more canvas lecture lawn enlist space found';
+
   if (mnemonic1) {
     wallet1 = await SuiLib.init({mnemonic: mnemonic1});
   } else {
