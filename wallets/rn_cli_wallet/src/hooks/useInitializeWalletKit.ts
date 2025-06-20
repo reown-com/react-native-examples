@@ -3,6 +3,7 @@ import {useSnapshot} from 'valtio';
 
 import SettingsStore from '@/store/SettingsStore';
 import {createOrRestoreEIP155Wallet} from '@/utils/EIP155WalletUtil';
+import {createOrRestoreSuiWallet} from '@/utils/SuiWalletUtil';
 import {createWalletKit, walletKit} from '@/utils/WalletKitUtil';
 
 export default function useInitializeWalletKit() {
@@ -15,9 +16,12 @@ export default function useInitializeWalletKit() {
     try {
       const {eip155Addresses, eip155Wallets} =
         await createOrRestoreEIP155Wallet();
+      const {suiAddresses, suiWallet} = await createOrRestoreSuiWallet();
 
       SettingsStore.setEIP155Address(eip155Addresses[0]);
       SettingsStore.setWallet(eip155Wallets[eip155Addresses[0]]);
+      SettingsStore.setSuiAddress(suiAddresses[0]);
+      SettingsStore.setSuiWallet(suiWallet);
       await createWalletKit(relayerRegionURL);
       setInitialized(true);
       SettingsStore.state.initPromiseResolver?.resolve(undefined);
