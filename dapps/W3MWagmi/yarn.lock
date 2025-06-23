@@ -5397,22 +5397,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-bitcoin-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multi-siwe-20250623145640":
+  version: 0.0.0-feat-multi-siwe-20250623145640
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multi-siwe-20250623145640"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-  checksum: 41281ff72585041ed69efdcdd1d17e9c36a67a181937c37da4bd14835291d0563239feb3cd737ecaeef435c6755ec2cdb42f4edcfc74553412734b7b7c69d243
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-siwe-20250623145640
+  checksum: aeb370639512b1d071a65fd121a8a911d69427a20f2ec881825bb61b168132d5b4b5d39adb8e5828e1354ca7e263cbeaf4b1ba7bc034dfb562b7debe137c74b4
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-common-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-common-react-native@npm:0.0.0-feat-multi-siwe-20250623145640":
+  version: 0.0.0-feat-multi-siwe-20250623145640
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-multi-siwe-20250623145640"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: c44e3616f503f233a3bcd77417414a618e89c934a3943393342a054a8debcec34be5c67b6a615cd173a7f065fb6a46051dedf846d2885e8a8e0c51c8804679af
+  checksum: 7a7c65b5894cecb820508db6fea3483cf9ba186ea317ce2d82f1f8b1d9f5985e3b37d37bc963af8b67e76aa5008a92df8225cd5af41ebbb24c974f9545411b1b
   languageName: node
   linkType: hard
 
@@ -5440,11 +5440,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-core-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-core-react-native@npm:0.0.0-feat-multi-siwe-20250623145640":
+  version: 0.0.0-feat-multi-siwe-20250623145640
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-multi-siwe-20250623145640"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-siwe-20250623145640
     countries-and-timezones: 3.7.2
     valtio: 1.11.2
   peerDependencies:
@@ -5452,18 +5452,18 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 2d81d2858c8087cf5f4205b34077a77abd0b5e5bf263c442d1685564fb553911a68aab38bdbcbaca9d0c852a0dd03ff16d85668a28266fb50f8ce194619b8fe7
+  checksum: ffc1245c93e7de81ef7f738e04112173a679a0c2fef6d78b6c0ece2edcb4958944bc147c0ed7709656852f72d696772b0975794163b599ad274803f213380cff
   languageName: node
   linkType: hard
 
-"@reown/appkit-ethers-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-ethers-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-ethers-react-native@npm:0.0.0-feat-multi-siwe-20250623145640":
+  version: 0.0.0-feat-multi-siwe-20250623145640
+  resolution: "@reown/appkit-ethers-react-native@npm:0.0.0-feat-multi-siwe-20250623145640"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-    "@reown/appkit-react-native": 2.0.0-alpha.1
-    "@reown/appkit-scaffold-utils-react-native": 2.0.0-alpha.1
-    "@reown/appkit-siwe-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multi-siwe-20250623145640
     "@walletconnect/ethereum-provider": 2.20.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
@@ -5472,7 +5472,7 @@ __metadata:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-get-random-values: "*"
-  checksum: 45263839daadc73f8042760e4d653fd0fd0443f3ad4e1f4179cbbe1193e7e2e7382e115444145d00d26e1fdaff159dadf46b2c5cddcbac0ff41183adec0f22e3
+  checksum: 8db6d85397ff27d44db173bc9f4c3d425ec454e4c5a9d24487b6d41be91c57b2c96b7dd205665bc18bbe87957e5ddf0cae7e50cfb51606362666598e4c834d3f
   languageName: node
   linkType: hard
 
@@ -5485,21 +5485,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-react-native@npm:0.0.0-feat-multi-siwe-20250623145640":
+  version: 0.0.0-feat-multi-siwe-20250623145640
+  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-multi-siwe-20250623145640"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-    "@reown/appkit-core-react-native": 2.0.0-alpha.1
-    "@reown/appkit-siwe-react-native": 2.0.0-alpha.1
-    "@reown/appkit-ui-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-core-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multi-siwe-20250623145640
     "@walletconnect/universal-provider": 2.20.2
     valtio: ^1.13.2
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: 564ca7d44d170ef3e070ffe4885f8d76cb21cde8c9eca1f6f346d94ce5025ec08b94f6e9490742a2eb6ce1ec84fb01b9ccd05453bec0eaa008450503bd93673a
+  checksum: 2c41202b6172c100140cb9515d3323a9bbe9aa4cfd6954467c6b49597f721ba79c9bc9825a42519ec8e70f6218d3d7f66932aee23c1e8014a8361ecd11417447
   languageName: node
   linkType: hard
 
@@ -5517,53 +5517,53 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-multi-siwe-20250623145640":
+  version: 0.0.0-feat-multi-siwe-20250623145640
+  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-multi-siwe-20250623145640"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-    "@reown/appkit-core-react-native": 2.0.0-alpha.1
-  checksum: 58c59ee2f228017e311d8d0a79c3ee8c7ae748c6e3d70a1a7395d5fdab2d17314da61440fdc4a711d57375d49743efc3e6e5c2f69cfb640898865427e1dc6398
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-core-react-native": 0.0.0-feat-multi-siwe-20250623145640
+  checksum: 2567d5fe9642b48e8d8f6af7dfe763d523e4147e71c5cbf72500497f5c5174a15a42e1e6b195d82ae805a56e1cc87624730f1b8d1158d75eddb7f7cc33bcc714
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-siwe-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-siwe-react-native@npm:0.0.0-feat-multi-siwe-20250623145640":
+  version: 0.0.0-feat-multi-siwe-20250623145640
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-multi-siwe-20250623145640"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-    "@reown/appkit-core-react-native": 2.0.0-alpha.1
-    "@reown/appkit-ui-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-core-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multi-siwe-20250623145640
     valtio: 1.11.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: 277187ec256ff6908cb2129f5a6c0f76314f3f499f5bef83ea95c8d7dacf1e59ea226cdd4052384bdb9d67a0e8a7a383683ba3bdfee99714e5e3f0063fffbb2f
+  checksum: 8488a4b154b6b60b1dd068f189b576c64f113034dc79e3028d654088195014d401dc355b84ba5cb0c6dae68b78a3cc9282b61720aee95b931ccf1564fece072c
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-solana-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-solana-react-native@npm:0.0.0-feat-multi-siwe-20250623145640":
+  version: 0.0.0-feat-multi-siwe-20250623145640
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-multi-siwe-20250623145640"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-siwe-20250623145640
     bs58: 6.0.0
     tweetnacl: 1.0.3
-  checksum: 5753a899e197561c24731f3afeff2f20774c1de7251f44658a58ade519cb407cf393333398a8fce34d375c35b033d09d7f1f39ad7cc59cacf2006db1d5bfca35
+  checksum: 285e6ede98225b83ad18290ad398953a10df9f804940b6a3c0cd3cbbcfeb19a8c6351458469fd16545928d2578b7d1380fc3634e017c0a298e3ca87aae33c956
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-ui-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-ui-react-native@npm:0.0.0-feat-multi-siwe-20250623145640":
+  version: 0.0.0-feat-multi-siwe-20250623145640
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-multi-siwe-20250623145640"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-siwe-20250623145640
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 36237212f688ea9ca857bf0a1a34b0e54da4d9f9f2a172820b673952ed4fbfe30017b2a5eb508f40d98c0a6b932cff8d06c80d8166ea222fe39ce2d6a701b339
+  checksum: eef175863dd037b5382d4e447698fc7f3a03f41bf7c9f1d1f00f8cf3dab67e2dd773250549f231b99501d31df2c660a87ef92f732843bc9280199e3c8587ef11
   languageName: node
   linkType: hard
 
@@ -5598,14 +5598,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-wagmi-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multi-siwe-20250623145640":
+  version: 0.0.0-feat-multi-siwe-20250623145640
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multi-siwe-20250623145640"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-    "@reown/appkit-react-native": 2.0.0-alpha.1
-    "@reown/appkit-scaffold-utils-react-native": 2.0.0-alpha.1
-    "@reown/appkit-siwe-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multi-siwe-20250623145640
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -5615,7 +5615,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: c6134c522810c7905f2d51e25c72fe12e0f6cedf66f53fc07a1375e64fb3953cbfb1bd6229889ba39287cda1e57074dbecea1eed8f2be6c3f14f6c512c074bee
+  checksum: 61b51e79cc34561dce7fa128726a54feef50c605ff5069fbb782ab57d1c76fe4b7b2fed14e9fa5a40872a15290da3d1a1d752800101b98a69fb9b9c07ecdc380
   languageName: node
   linkType: hard
 
@@ -7521,11 +7521,11 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-bitcoin-react-native": 2.0.0-alpha.1
-    "@reown/appkit-ethers-react-native": 2.0.0-alpha.1
-    "@reown/appkit-react-native": 2.0.0-alpha.1
-    "@reown/appkit-solana-react-native": 2.0.0-alpha.1
-    "@reown/appkit-wagmi-react-native": 2.0.0-alpha.1
+    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-ethers-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-solana-react-native": 0.0.0-feat-multi-siwe-20250623145640
+    "@reown/appkit-wagmi-react-native": 0.0.0-feat-multi-siwe-20250623145640
     "@sentry/react-native": ^6.14.0
     "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2
