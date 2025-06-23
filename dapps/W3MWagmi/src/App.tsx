@@ -77,7 +77,6 @@ const networks = [...chains, solana, bitcoin];
 // 3. Create modal
 const appKit = createAppKit({
   projectId,
-  // wagmiConfig,
   adapters,
   metadata,
   networks,
