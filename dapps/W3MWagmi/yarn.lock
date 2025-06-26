@@ -5425,100 +5425,99 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-onramp-20250602154313":
-  version: 0.0.0-feat-onramp-20250602154313
-  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-onramp-20250602154313"
+"@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-onramp-20250626173252":
+  version: 0.0.0-feat-onramp-20250626173252
+  resolution: "@reown/appkit-auth-wagmi-react-native@npm:0.0.0-feat-onramp-20250626173252"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-wallet-react-native": 0.0.0-feat-onramp-20250602154313
+    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-wallet-react-native": 0.0.0-feat-onramp-20250626173252
   peerDependencies:
     wagmi: ">=2"
-  checksum: f6bcd27e1c1bc9023636c6b183c031efaf21257a5951343162f14b54ae88b6a5d56806f1e2ec423daf89514ebbcff5fb34dfcb5ec32acf08d20461a9030bf195
+  checksum: 385442c27d54202f36a2438c5e23639a4da24b0b6a9e70b728ceb35ccd4a405e9012c23053f8593d598a7aae8318d1f978d9251f768319129e869ae73e8f4e70
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-onramp-20250602154313":
-  version: 0.0.0-feat-onramp-20250602154313
-  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-onramp-20250602154313"
+"@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-onramp-20250626173252":
+  version: 0.0.0-feat-onramp-20250626173252
+  resolution: "@reown/appkit-coinbase-wagmi-react-native@npm:0.0.0-feat-onramp-20250626173252"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250602154313
+    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250626173252
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.0.10"
     wagmi: ">=2"
-  checksum: cbfee9f039be57c5ffdf054db8996004037dec13efc4431d3653d20eea0461674f5606cc9b83c09c281ece4a2bd444d3b1c561c92391e4dd26450078166fc223
+  checksum: 2efac22dffa54216cfadbd76aceb42b56d161c34626bf5780e690744bf103a63e7118ce6ea5414f6c4b5a6ceb74bea0dcb9dfb0f6c1df8ce8c3080435cbb9cef
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-feat-onramp-20250602154313":
-  version: 0.0.0-feat-onramp-20250602154313
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-onramp-20250602154313"
+"@reown/appkit-common-react-native@npm:0.0.0-feat-onramp-20250626173252":
+  version: 0.0.0-feat-onramp-20250626173252
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-onramp-20250626173252"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: 1dd0ba297326b0cd58921cd60589f6d8846788ff5ee0677e0c69dc1c1554bc6a62f92c482f323bdad4baaf4a17df0563a4861c434363ba87cf4a32cc7dc31295
+  checksum: d3da5a0900ebe0d4c45e8e9269eabe8310a18000355a68058c6033f4b67d859de6af3cf147d92df9eb5a49828d7417fbd81f496ac1c747a9863cbfd9bc3d3f83
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-feat-onramp-20250602154313":
-  version: 0.0.0-feat-onramp-20250602154313
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-onramp-20250602154313"
+"@reown/appkit-core-react-native@npm:0.0.0-feat-onramp-20250626173252":
+  version: 0.0.0-feat-onramp-20250626173252
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-onramp-20250626173252"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250602154313
+    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250626173252
     countries-and-timezones: 3.7.2
-    valtio: 1.11.2
+    valtio: 1.13.2
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 4f60dfd9c0204e67a830e60f60b6df4d559804d26b651c4c9aefb56a597d758bbbe3111c0eb795d9a776bb6b4b8a3fefc3699ef6a8b6ad83ef1f901797097723
+  checksum: 28977aaf624bb619f1af29bdce7a04ce9fd38b4b3f2a8d42dda03af7b9d0d6a3cba8f62f297e95e9afe9646a71b6491418a1e006fbfa2dff4600855489d799ab
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-react-native@npm:0.0.0-feat-onramp-20250602154313":
-  version: 0.0.0-feat-onramp-20250602154313
-  resolution: "@reown/appkit-scaffold-react-native@npm:0.0.0-feat-onramp-20250602154313"
+"@reown/appkit-scaffold-react-native@npm:0.0.0-feat-onramp-20250626173252":
+  version: 0.0.0-feat-onramp-20250626173252
+  resolution: "@reown/appkit-scaffold-react-native@npm:0.0.0-feat-onramp-20250626173252"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250602154313
+    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250626173252
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
-    react-native-modal: ">=13"
-  checksum: 49a5a517d5aa7a3956ea637f0f95007ec70c9808592fdfd7e72e2bd5ad4a0afcc8faa3818b704e675dd6a104a6632252163b155d341448972af8687b9249f958
+  checksum: 1a6d860a320e20f53ee42a74139f9f30cc92b3c737b5512d64e9f75e2e282373592bac5455d5e116ef8c30004341d61845f4c28d388b9368d1b13c5eb747fbc7
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-onramp-20250602154313":
-  version: 0.0.0-feat-onramp-20250602154313
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-onramp-20250602154313"
+"@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-onramp-20250626173252":
+  version: 0.0.0-feat-onramp-20250626173252
+  resolution: "@reown/appkit-scaffold-utils-react-native@npm:0.0.0-feat-onramp-20250626173252"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-scaffold-react-native": 0.0.0-feat-onramp-20250602154313
-  checksum: 76b618391276c5795a27fd606526f82bc0531cd0dd6897d452c2a4302b9aafe23068a4a17d6ae2b928211c41c472a58153624d4234bd537b7df5ad1ead07c209
+    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-scaffold-react-native": 0.0.0-feat-onramp-20250626173252
+  checksum: c71551e5ece64088b98ade294a610f37337f6520b1a896d4d50513e066b2da1b1d4f5776367a058bde3869c9d58bc9107402666e6ea388d1970e4f7aa6430de1
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-feat-onramp-20250602154313":
-  version: 0.0.0-feat-onramp-20250602154313
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-onramp-20250602154313"
+"@reown/appkit-siwe-react-native@npm:0.0.0-feat-onramp-20250626173252":
+  version: 0.0.0-feat-onramp-20250626173252
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-onramp-20250626173252"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250602154313
-    valtio: 1.11.2
+    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250626173252
+    valtio: 1.13.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: bc0e8b433e6d0cbd41c70a9c99f7c16d01ba36c7f1a62d5dda08f8d6bddae1cafe3387d67f76b93923a6e9cda878e45c31429b714d138ddccfe68217b4c054b0
+  checksum: ac8fe31a9737e358efe5181c162f039f113e5f1baa83d430bb1b3d7cfb6eab70041251a9e6137d4592b6b151fd5a4edab42b19ba141a9fc9abce662432978cf2
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-feat-onramp-20250602154313":
-  version: 0.0.0-feat-onramp-20250602154313
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-onramp-20250602154313"
+"@reown/appkit-ui-react-native@npm:0.0.0-feat-onramp-20250626173252":
+  version: 0.0.0-feat-onramp-20250626173252
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-onramp-20250626173252"
   dependencies:
     polished: 4.3.1
     qrcode: 1.5.3
@@ -5526,18 +5525,18 @@ __metadata:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 63f7d9903a68804dd9aa4d754263df322a931f68e2f00b48ac1deaf62bacb24cfd6857a794c93152be40fe6252c16fe4e5036cbf843c517b5ea0d81509ebb6d2
+  checksum: eea05e00098aa41673b7f7a48a13889ab1936743871a0c9c14fa9b6a24d9579edb1c88bb77c49a3dc32e0182b19da8d9ff11d50ff1dba8901065a73a84bf61e8
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-onramp-20250602154313":
-  version: 0.0.0-feat-onramp-20250602154313
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-onramp-20250602154313"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-onramp-20250626173252":
+  version: 0.0.0-feat-onramp-20250626173252
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-onramp-20250626173252"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-scaffold-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-onramp-20250602154313
+    "@reown/appkit-common-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-scaffold-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-scaffold-utils-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-onramp-20250626173252
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -5547,21 +5546,21 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: e8df473e86c235a6ec992cae36a6a22300eb64df96d2d7a15cbe280ad442b4422c3190f3a13bb506679055352b79352c9b640da9f313f8e07632061773618b30
+  checksum: ff24bd645bdb94b7ae94e3e3eb85ba0611db3f6724c0e34d623802945e01048d9a7e3e45e174206249e662d20037a927310225b2ff9cd6c5fe48d5f61a9a6b9a
   languageName: node
   linkType: hard
 
-"@reown/appkit-wallet-react-native@npm:0.0.0-feat-onramp-20250602154313":
-  version: 0.0.0-feat-onramp-20250602154313
-  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-feat-onramp-20250602154313"
+"@reown/appkit-wallet-react-native@npm:0.0.0-feat-onramp-20250626173252":
+  version: 0.0.0-feat-onramp-20250626173252
+  resolution: "@reown/appkit-wallet-react-native@npm:0.0.0-feat-onramp-20250626173252"
   dependencies:
-    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250602154313
+    "@reown/appkit-core-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-ui-react-native": 0.0.0-feat-onramp-20250626173252
     zod: 3.22.4
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     react-native-webview: ">=11"
-  checksum: 1cdf85136fc88b5b0d208d8182746c97de37eeceb4831d9ee841464e2a19beaa4c9fa9c3ba7a9193d9d221fea377032e81c1c6e9b02117b1ce832ed8d7ac7753
+  checksum: 111493e5995195030daeea94feffe67b570ed136dc839d7158fb7202a45ede1171e37d0cc6b035bc95457ebf0612ae2e1381e76b0cf10be211510247f96bef76
   languageName: node
   linkType: hard
 
@@ -7100,9 +7099,9 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-onramp-20250602154313
-    "@reown/appkit-wagmi-react-native": 0.0.0-feat-onramp-20250602154313
+    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-wagmi-react-native": 0.0.0-feat-onramp-20250626173252
     "@sentry/react-native": ^6.14.0
     "@tanstack/react-query": 5.62.2
     "@types/jest": ^29.5.13
@@ -8726,6 +8725,15 @@ __metadata:
   version: 2.0.0
   resolution: "depd@npm:2.0.0"
   checksum: abbe19c768c97ee2eed6282d8ce3031126662252c58d711f646921c9623f9052e3e1906443066beec1095832f534e57c523b7333f8e7e0d93051ab6baef5ab3a
+  languageName: node
+  linkType: hard
+
+"derive-valtio@npm:0.1.0":
+  version: 0.1.0
+  resolution: "derive-valtio@npm:0.1.0"
+  peerDependencies:
+    valtio: "*"
+  checksum: 5266a53bbf4795c72f76922a19e8737e9ecfcbe738e7814108abc13fe048c8b82c48c40f5727c134681caec6f20a8a9d0713c9e1d33b84f755138e032c2d0bce
   languageName: node
   linkType: hard
 
@@ -14363,6 +14371,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"proxy-compare@npm:2.6.0":
+  version: 2.6.0
+  resolution: "proxy-compare@npm:2.6.0"
+  checksum: 244dc49b45749ebf9dd2c6890e600c16a7d7432a8f535be9dc72db616469685bb5db4bbdb61f211b14c59034b601508f826007715df441d6e3f089b880e265d8
+  languageName: node
+  linkType: hard
+
 "proxy-from-env@npm:^1.1.0":
   version: 1.1.0
   resolution: "proxy-from-env@npm:1.1.0"
@@ -17011,6 +17026,25 @@ __metadata:
     react:
       optional: true
   checksum: cce2d9212aac9fc4bdeba2d381188cc831cfe8d2d03039024cfcd58ba1801f2a5b14d01c2bb21a2c9f12046d2ede64f1dd887175185f39bee553677a35592c30
+  languageName: node
+  linkType: hard
+
+"valtio@npm:1.13.2":
+  version: 1.13.2
+  resolution: "valtio@npm:1.13.2"
+  dependencies:
+    derive-valtio: 0.1.0
+    proxy-compare: 2.6.0
+    use-sync-external-store: 1.2.0
+  peerDependencies:
+    "@types/react": ">=16.8"
+    react: ">=16.8"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    react:
+      optional: true
+  checksum: eb0f12d85c90bd808379b30430cabb1a224749343d8b750bb88f69072825b3e2d6be057ef1d3952253357713871ff079ac9a3aa4f48265bc49c6e3949d8c0919
   languageName: node
   linkType: hard
 
