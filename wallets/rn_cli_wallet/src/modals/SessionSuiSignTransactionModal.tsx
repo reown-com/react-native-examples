@@ -1,5 +1,5 @@
 import {useSnapshot} from 'valtio';
-import {useCallback, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
 
@@ -16,6 +16,7 @@ import {
   approveSuiRequest,
   rejectSuiRequest,
 } from '@/utils/SuiRequestHandlerUtil';
+import {getWallet} from '@/utils/SuiWalletUtil';
 
 export default function SessionSignSuiPersonalMessageModal() {
   // Get request and wallet data from store
@@ -26,6 +27,7 @@ export default function SessionSignSuiPersonalMessageModal() {
 
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
+  const [transaction, setTransaction] = useState<string>('');
 
   // Get required request data
   const {topic, params} = requestEvent!;
@@ -34,10 +36,17 @@ export default function SessionSignSuiPersonalMessageModal() {
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
   const method = requestEvent?.params?.request?.method!;
 
-  // Get message, convert it to UTF8 string if it is valid hex
-  const transaction = request.params?.transaction
-    ? Buffer.from(request.params.transaction, 'base64').toString('utf8')
-    : '';
+  // transaction is a base64 encoded BCS transaction
+  useMemo(async () => {
+    if (transaction) {
+      return;
+    }
+    const wallet = await getWallet();
+    const jsonTx = await wallet.getJsonTransactionFromBase64(
+      request.params.transaction,
+    );
+    setTransaction(jsonTx?.toString() ?? '');
+  }, [request.params, transaction]);
   // Handle approve action (logic varies based on request method)
   const onApprove = useCallback(async () => {
     if (requestEvent) {
