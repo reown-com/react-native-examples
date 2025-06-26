@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Verify, SessionTypes} from '@walletconnect/types';
 
 import EIP155Lib from '../lib/EIP155Lib';
+import SuiLib from '../lib/SuiLib';
 
 /**
  * Types
@@ -11,6 +12,8 @@ interface State {
   testNets: boolean;
   account: number;
   eip155Address: string;
+  suiAddress: string;
+  suiWallet: SuiLib | null;
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -34,6 +37,8 @@ const state = proxy<State>({
   account: 0,
   activeChainId: '1',
   eip155Address: '',
+  suiAddress: '',
+  suiWallet: null,
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
@@ -97,6 +102,14 @@ const SettingsStore = {
     } else {
       AsyncStorage.removeItem('TEST_NETS');
     }
+  },
+
+  setSuiAddress(suiAddress: string) {
+    state.suiAddress = suiAddress;
+  },
+
+  setSuiWallet(suiWallet: SuiLib) {
+    state.suiWallet = suiWallet;
   },
 };
 

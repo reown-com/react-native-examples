@@ -10,6 +10,9 @@ import SessionSendTransactionModal from '@/modals/SessionSendTransactionModal';
 import SessionSignTypedDataModal from '@/modals/SessionSignTypedDataModal';
 import {LoadingModal} from '@/modals/LoadingModal';
 import SessionAuthenticateModal from '@/modals/SessionAuthenticateModal';
+import SessionSignSuiPersonalMessageModal from '@/modals/SessionSuiSignPersonalMessageModal';
+import SessionSignSuiTransactionModal from '@/modals/SessionSuiSignTransactionModal';
+import SessionSignAndExecuteSuiTransactionModal from '@/modals/SessionSuiSignAndExecuteTransactionModal';
 
 export default function Modal() {
   const {open, view} = useSnapshot(ModalStore.state);
@@ -34,6 +37,12 @@ export default function Modal() {
         return <SessionAuthenticateModal />;
       case 'LoadingModal':
         return <LoadingModal />;
+      case 'SessionSuiSignTransactionModal':
+        return <SessionSignSuiTransactionModal />;
+      case 'SessionSuiSignPersonalMessageModal':
+        return <SessionSignSuiPersonalMessageModal />;
+      case 'SessionSuiSignAndExecuteTransactionModal':
+        return <SessionSignAndExecuteSuiTransactionModal />;
       default:
         return <View />;
     }

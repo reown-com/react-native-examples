@@ -104,7 +104,8 @@ export type SettingsStackScreenProps<T extends keyof SettingsStackParamList> =
   >;
 
 export type Chain = {
-  id: number;
+  id: number | string;
+  caip2: string;
   network: string;
   name: string;
   nativeCurrency: {name: string; symbol: string; decimals: number};

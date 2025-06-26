@@ -29,7 +29,7 @@ export default function SessionSignTypedDataModal() {
   // Get required request data
   const {topic, params} = requestEvent!;
   const {request, chainId} = params;
-  const chain = PresetsUtil.getChainData(chainId.split(':')[1]);
+  const chain = PresetsUtil.getChainData(chainId);
 
   const method = request?.method;
   const message = getSignParamsMessage(request?.params);

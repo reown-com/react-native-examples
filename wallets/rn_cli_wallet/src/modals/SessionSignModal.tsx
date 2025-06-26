@@ -30,7 +30,7 @@ export default function SessionSignModal() {
   // Get required request data
   const {topic, params} = requestEvent!;
   const {request, chainId} = params;
-  const chain = PresetsUtil.getChainData(chainId.split(':')[1]);
+  const chain = PresetsUtil.getChainData(chainId);
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
   const method = requestEvent?.params?.request?.method!;
 

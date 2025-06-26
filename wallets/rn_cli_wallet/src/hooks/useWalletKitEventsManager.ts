@@ -2,7 +2,11 @@ import {useCallback, useEffect} from 'react';
 import {SignClientTypes} from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
-import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
+import {
+  EIP155_CHAINS,
+  EIP155_SIGNING_METHODS,
+  SUI_SIGNING_METHODS,
+} from '@/utils/PresetsUtil';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import {walletKit} from '@/utils/WalletKitUtil';
@@ -64,6 +68,22 @@ export default function useWalletKitEventsManager(initialized: boolean) {
         case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
         case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
           return ModalStore.open('SessionSendTransactionModal', {
+            requestEvent,
+            requestSession,
+          });
+        case SUI_SIGNING_METHODS.SUI_SIGN_TRANSACTION:
+          return ModalStore.open('SessionSuiSignTransactionModal', {
+            requestEvent,
+            requestSession,
+          });
+        case SUI_SIGNING_METHODS.SUI_SIGN_PERSONAL_MESSAGE:
+          console.log('SessionSignSuiPersonalMessageModal req');
+          return ModalStore.open('SessionSuiSignPersonalMessageModal', {
+            requestEvent,
+            requestSession,
+          });
+        case SUI_SIGNING_METHODS.SUI_SIGN_AND_EXECUTE_TRANSACTION:
+          return ModalStore.open('SessionSuiSignAndExecuteTransactionModal', {
             requestEvent,
             requestSession,
           });

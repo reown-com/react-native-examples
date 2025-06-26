@@ -58,7 +58,7 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
 
     case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
       try {
-        const chainData = PresetsUtil.getChainData(chainId.split(':')[1]);
+        const chainData = PresetsUtil.getChainData(chainId);
         const provider = new providers.JsonRpcProvider(chainData.rpcUrl);
         const sendTransaction = request.params[0];
         const connectedWallet = wallet.connect(provider);
