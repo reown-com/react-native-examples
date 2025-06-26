@@ -107,6 +107,10 @@ export default function SessionProposalModal() {
           id: proposal.id,
           reason: getSdkError('USER_REJECTED_METHODS'),
         });
+        handleRedirect({
+          peerRedirect: proposal.params.proposer.metadata.redirect,
+          isLinkMode: false,
+        });
       } catch (e) {
         console.log((e as Error).message, 'error');
         return;
