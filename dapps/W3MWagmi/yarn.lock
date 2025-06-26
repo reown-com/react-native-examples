@@ -7077,64 +7077,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"appkit-rn-wagmi@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "appkit-rn-wagmi@workspace:."
-  dependencies:
-    "@babel/core": ^7.25.2
-    "@babel/helpers": ^7.26.10
-    "@babel/preset-env": ^7.25.3
-    "@babel/runtime": ^7.26.10
-    "@coinbase/wallet-mobile-sdk": 1.1.2
-    "@react-native-async-storage/async-storage": 2.1.2
-    "@react-native-clipboard/clipboard": 1.16.2
-    "@react-native-community/cli": 15.0.1
-    "@react-native-community/cli-platform-android": 15.0.1
-    "@react-native-community/cli-platform-ios": 15.0.1
-    "@react-native-community/netinfo": 11.4.1
-    "@react-native/babel-preset": 0.77.0
-    "@react-native/eslint-config": 0.77.0
-    "@react-native/metro-config": 0.77.0
-    "@react-native/typescript-config": 0.77.0
-    "@react-navigation/bottom-tabs": 6.6.1
-    "@react-navigation/native": 6.1.18
-    "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-onramp-20250626173252
-    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-onramp-20250626173252
-    "@reown/appkit-wagmi-react-native": 0.0.0-feat-onramp-20250626173252
-    "@sentry/react-native": ^6.14.0
-    "@tanstack/react-query": 5.62.2
-    "@types/jest": ^29.5.13
-    "@types/react": ^18.2.6
-    "@types/react-test-renderer": ^18.0.0
-    "@walletconnect/react-native-compat": 2.19.1
-    babel-jest: ^29.6.3
-    babel-plugin-module-resolver: ^5.0.0
-    eslint: ^8.19.0
-    expo: 52.0.31
-    jest: ^29.6.3
-    prettier: 2.8.8
-    react: 18.3.1
-    react-native: 0.77.0
-    react-native-bootsplash: 5.5.3
-    react-native-config: 1.5.5
-    react-native-device-info: 14.0.4
-    react-native-gesture-handler: 2.24.0
-    react-native-get-random-values: 1.11.0
-    react-native-modal: 14.0.0-rc.0
-    react-native-reanimated: 3.17.1
-    react-native-safe-area-context: 5.3.0
-    react-native-screens: 4.9.2
-    react-native-svg: 15.11.2
-    react-native-toast-message: 2.2.1
-    react-native-webview: 13.13.4
-    react-test-renderer: 18.3.1
-    typescript: 5.0.4
-    viem: 2.23.10
-    wagmi: 2.14.13
-  languageName: unknown
-  linkType: soft
-
 "application-config-path@npm:^0.1.0":
   version: 0.1.1
   resolution: "application-config-path@npm:0.1.1"
@@ -15336,6 +15278,64 @@ __metadata:
   checksum: 3ea587b981a19016297edb96d1ffe48af7e6af69660e3b371dbfc73722a73a0b0e9be5c88089fbeeb866c389c1098e07f64929c7414290504b855f54f901ab10
   languageName: node
   linkType: hard
+
+"root-workspace-0b6124@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "root-workspace-0b6124@workspace:."
+  dependencies:
+    "@babel/core": ^7.25.2
+    "@babel/helpers": ^7.26.10
+    "@babel/preset-env": ^7.25.3
+    "@babel/runtime": ^7.26.10
+    "@coinbase/wallet-mobile-sdk": 1.1.2
+    "@react-native-async-storage/async-storage": 2.1.2
+    "@react-native-clipboard/clipboard": 1.16.2
+    "@react-native-community/cli": 15.0.1
+    "@react-native-community/cli-platform-android": 15.0.1
+    "@react-native-community/cli-platform-ios": 15.0.1
+    "@react-native-community/netinfo": 11.4.1
+    "@react-native/babel-preset": 0.77.0
+    "@react-native/eslint-config": 0.77.0
+    "@react-native/metro-config": 0.77.0
+    "@react-native/typescript-config": 0.77.0
+    "@react-navigation/bottom-tabs": 6.6.1
+    "@react-navigation/native": 6.1.18
+    "@react-navigation/native-stack": 6.10.1
+    "@reown/appkit-auth-wagmi-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-coinbase-wagmi-react-native": 0.0.0-feat-onramp-20250626173252
+    "@reown/appkit-wagmi-react-native": 0.0.0-feat-onramp-20250626173252
+    "@sentry/react-native": ^6.14.0
+    "@tanstack/react-query": 5.62.2
+    "@types/jest": ^29.5.13
+    "@types/react": ^18.2.6
+    "@types/react-test-renderer": ^18.0.0
+    "@walletconnect/react-native-compat": 2.19.1
+    babel-jest: ^29.6.3
+    babel-plugin-module-resolver: ^5.0.0
+    eslint: ^8.19.0
+    expo: 52.0.31
+    jest: ^29.6.3
+    prettier: 2.8.8
+    react: 18.3.1
+    react-native: 0.77.0
+    react-native-bootsplash: 5.5.3
+    react-native-config: 1.5.5
+    react-native-device-info: 14.0.4
+    react-native-gesture-handler: 2.24.0
+    react-native-get-random-values: 1.11.0
+    react-native-modal: 14.0.0-rc.0
+    react-native-reanimated: 3.17.1
+    react-native-safe-area-context: 5.3.0
+    react-native-screens: 4.9.2
+    react-native-svg: 15.11.2
+    react-native-toast-message: 2.2.1
+    react-native-webview: 13.13.4
+    react-test-renderer: 18.3.1
+    typescript: 5.0.4
+    viem: 2.23.10
+    wagmi: 2.14.13
+  languageName: unknown
+  linkType: soft
 
 "run-parallel@npm:^1.1.9":
   version: 1.2.0
