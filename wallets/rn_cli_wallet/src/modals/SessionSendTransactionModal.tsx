@@ -28,7 +28,7 @@ export default function SessionSendTransactionModal() {
   const topic = requestEvent?.topic;
   const params = requestEvent?.params;
   const chainId = params?.chainId;
-  const chain = PresetsUtil.getChainData(chainId?.split(':')[1] || '');
+  const chain = PresetsUtil.getChainData(chainId || '');
   const request = params?.request;
   const transaction = request?.params[0];
   const method = requestEvent?.params?.request?.method!;
