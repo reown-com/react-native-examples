@@ -23,7 +23,10 @@ interface State {
     | 'SessionUnsuportedMethodModal'
     | 'AuthRequestModal'
     | 'SessionAuthenticateModal'
-    | 'LoadingModal';
+    | 'LoadingModal'
+    | 'SessionSuiSignTransactionModal'
+    | 'SessionSuiSignPersonalMessageModal'
+    | 'SessionSuiSignAndExecuteTransactionModal';
   data?: ModalData;
 }
 

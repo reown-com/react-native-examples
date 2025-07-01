@@ -125,6 +125,6 @@ export function getSupportedChains(
   const chains = [...required.flat(), ...optional.flat()];
 
   return chains
-    .map(chain => PresetsUtil.getChainData(chain.split(':')[1]))
+    .map(chain => PresetsUtil.getChainData(chain))
     .filter(chain => chain !== undefined);
 }
