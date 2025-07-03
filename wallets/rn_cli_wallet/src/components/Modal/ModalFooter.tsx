@@ -41,6 +41,7 @@ export function ModalFooter({
           style={styles.button}
           textStyle={styles.rejectText}
           onPress={onReject}
+          testID="reject-button"
           secondary>
           Reject
         </ActionButton>
@@ -49,7 +50,8 @@ export function ModalFooter({
           disabled={approveLoader || rejectLoader}
           style={[styles.button, {backgroundColor: bgColor}]}
           textStyle={styles.approveText}
-          onPress={onApprove}>
+          onPress={onApprove}
+          testID="approve-button">
           Approve
         </ActionButton>
       </View>
