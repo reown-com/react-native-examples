@@ -18,3 +18,7 @@ sentry.properties
 
 # Fastlane
 fastlane/report.xml
+
+
+# Cursor
+.cursor

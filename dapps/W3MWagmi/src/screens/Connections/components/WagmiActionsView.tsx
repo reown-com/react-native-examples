@@ -8,8 +8,7 @@ import { ToastUtils } from '@/utils/ToastUtils';
 import { eip712 } from '@/utils/eip712';
 
 export function WagmiActionsView() {
-  const { isConnected, chainId } = useAccount();
-  console.warn('chainId', chainId);
+  const { isConnected } = useAccount();
 
   const onSignSuccess = (data: SignMessageData) => {
     ToastUtils.showSuccessToast('Signature successful', data);
