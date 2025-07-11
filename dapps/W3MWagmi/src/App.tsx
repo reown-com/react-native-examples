@@ -26,7 +26,7 @@ import SettingsStore from '@/stores/SettingsStore';
 import { WagmiProvider } from 'wagmi';
 import { Chain } from 'viem';
 import { storage } from './utils/StorageUtil';
-// import { siweConfig } from './utils/SiweUtils';
+import { siweConfig } from './utils/SiweUtils';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
@@ -80,10 +80,10 @@ const appKit = createAppKit({
   adapters,
   metadata,
   networks,
-  // siweConfig,
+  siweConfig,
   clipboardClient,
   storage,
-  extraConnectors: [new PhantomConnector({})],
+  extraConnectors: [new PhantomConnector({ cluster: 'mainnet-beta' })],
   customWallets: getCustomWallets(),
 });
 

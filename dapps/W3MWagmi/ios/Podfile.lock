@@ -1,11 +1,5 @@
 PODS:
   - boost (1.84.0)
-  - CoinbaseWalletSDK/Client (1.1.2)
-  - CoinbaseWalletSDK/CrossPlatform (1.1.2):
-    - CoinbaseWalletSDK/Client
-  - CoinbaseWalletSDKExpo (1.1.2):
-    - CoinbaseWalletSDK/CrossPlatform (= 1.1.2)
-    - ExpoModulesCore
   - DoubleConversion (1.1.6)
   - EXConstants (17.0.8):
     - ExpoModulesCore
@@ -1252,7 +1246,7 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
-  - react-native-compat (2.19.1):
+  - react-native-compat (2.21.4):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1979,7 +1973,6 @@ PODS:
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
-  - "CoinbaseWalletSDKExpo (from `../node_modules/@coinbase/wallet-mobile-sdk/ios`)"
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - Expo (from `../node_modules/expo`)
@@ -2072,15 +2065,12 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - CoinbaseWalletSDK
     - Sentry
     - SocketRocket
 
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
-  CoinbaseWalletSDKExpo:
-    :path: "../node_modules/@coinbase/wallet-mobile-sdk/ios"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXConstants:
@@ -2259,8 +2249,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
-  CoinbaseWalletSDK: f8cef9d72e86d6ac4782e4d0054baf9302cf05bb
-  CoinbaseWalletSDKExpo: ca2f2a1e307701a04f06ffc746192ba797ba5b32
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EXConstants: fcfc75800824ac2d5c592b5bc74130bad17b146b
   Expo: 00d0b7e489e495472fa3d5ac20e267d174fe0c72
@@ -2303,7 +2291,7 @@ SPEC CHECKSUMS:
   React-logger: 02e5802824aa9b15cb7df42e10a91abead83cd8d
   React-Mapbuffer: 99bd566147aaa78e872568be53ebca8a4449ddae
   React-microtasksnativemodule: 51e7813abf875408a0f367e473a65bbab6aa8481
-  react-native-compat: c8dd6720c2e688d1cf2dd68bef76531cdb8e5cf9
+  react-native-compat: 7756fe07924b6d59c0c8ad03afff83ad5473b434
   react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
