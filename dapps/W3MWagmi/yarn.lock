@@ -5363,22 +5363,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-bitcoin-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multi-social-20250715153550":
+  version: 0.0.0-feat-multi-social-20250715153550
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multi-social-20250715153550"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-  checksum: 41281ff72585041ed69efdcdd1d17e9c36a67a181937c37da4bd14835291d0563239feb3cd737ecaeef435c6755ec2cdb42f4edcfc74553412734b7b7c69d243
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-social-20250715153550
+  checksum: 6ec778bc79e7677fdb4161f63aa69f34369a7280a2476b07522e7cc42839189c5f96441bdec0894ba062f4699c283b455cf71535dcd7d5180e17e615a7462955
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-common-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-common-react-native@npm:0.0.0-feat-multi-social-20250715153550":
+  version: 0.0.0-feat-multi-social-20250715153550
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-multi-social-20250715153550"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: c44e3616f503f233a3bcd77417414a618e89c934a3943393342a054a8debcec34be5c67b6a615cd173a7f065fb6a46051dedf846d2885e8a8e0c51c8804679af
+  checksum: e9b3478cf25640a27190705316971f91458c998743b4e2499961f2264421b543fccf0086b40d11b37bb02541b53064f829c3d18df735957a6123c22635b65071
   languageName: node
   linkType: hard
 
@@ -5406,11 +5406,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-core-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-core-react-native@npm:0.0.0-feat-multi-social-20250715153550":
+  version: 0.0.0-feat-multi-social-20250715153550
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-multi-social-20250715153550"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-social-20250715153550
     countries-and-timezones: 3.7.2
     valtio: 1.11.2
   peerDependencies:
@@ -5418,7 +5418,7 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: 2d81d2858c8087cf5f4205b34077a77abd0b5e5bf263c442d1685564fb553911a68aab38bdbcbaca9d0c852a0dd03ff16d85668a28266fb50f8ce194619b8fe7
+  checksum: 59450d1f81b6294ea345be46c7507c3d8029c2d7acf1fc65e52bbf4a9c87948fa513489ca472c7f63fa17d3e2bb527cc4cba7743f2dfd10d9e3ee64d9689c663
   languageName: node
   linkType: hard
 
@@ -5431,21 +5431,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-react-native@npm:0.0.0-feat-multi-social-20250715153550":
+  version: 0.0.0-feat-multi-social-20250715153550
+  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-multi-social-20250715153550"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-    "@reown/appkit-core-react-native": 2.0.0-alpha.1
-    "@reown/appkit-siwe-react-native": 2.0.0-alpha.1
-    "@reown/appkit-ui-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-social-20250715153550
+    "@reown/appkit-core-react-native": 0.0.0-feat-multi-social-20250715153550
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multi-social-20250715153550
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multi-social-20250715153550
     "@walletconnect/universal-provider": 2.20.2
     valtio: ^1.13.2
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: 564ca7d44d170ef3e070ffe4885f8d76cb21cde8c9eca1f6f346d94ce5025ec08b94f6e9490742a2eb6ce1ec84fb01b9ccd05453bec0eaa008450503bd93673a
+  checksum: 5c237e220e510c2981d08e09768af0c46be2c2b5b9dec53edc35b0affdc065115d3977341cb14e39a6bd333eeda3cc4b2d12d293f7b3f90fe54974503836f44c
   languageName: node
   linkType: hard
 
@@ -5463,53 +5463,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-scaffold-utils-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-scaffold-utils-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-siwe-react-native@npm:0.0.0-feat-multi-social-20250715153550":
+  version: 0.0.0-feat-multi-social-20250715153550
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-multi-social-20250715153550"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-    "@reown/appkit-core-react-native": 2.0.0-alpha.1
-  checksum: 58c59ee2f228017e311d8d0a79c3ee8c7ae748c6e3d70a1a7395d5fdab2d17314da61440fdc4a711d57375d49743efc3e6e5c2f69cfb640898865427e1dc6398
-  languageName: node
-  linkType: hard
-
-"@reown/appkit-siwe-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-siwe-react-native@npm:2.0.0-alpha.1"
-  dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-    "@reown/appkit-core-react-native": 2.0.0-alpha.1
-    "@reown/appkit-ui-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-social-20250715153550
+    "@reown/appkit-core-react-native": 0.0.0-feat-multi-social-20250715153550
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multi-social-20250715153550
     valtio: 1.11.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: 277187ec256ff6908cb2129f5a6c0f76314f3f499f5bef83ea95c8d7dacf1e59ea226cdd4052384bdb9d67a0e8a7a383683ba3bdfee99714e5e3f0063fffbb2f
+  checksum: b1c4263f8d33e65a02a5fbcc9ba57fdd80c2c9528de69500453f79d5faea99aacd99bde349b95d2ece3a8f13376ea4ff231dcd57cacd9fdd84cc00145285253c
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-solana-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-solana-react-native@npm:0.0.0-feat-multi-social-20250715153550":
+  version: 0.0.0-feat-multi-social-20250715153550
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-multi-social-20250715153550"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-social-20250715153550
     bs58: 6.0.0
     tweetnacl: 1.0.3
-  checksum: 5753a899e197561c24731f3afeff2f20774c1de7251f44658a58ade519cb407cf393333398a8fce34d375c35b033d09d7f1f39ad7cc59cacf2006db1d5bfca35
+  checksum: 44f0c71884b2d115a21b6a07320a100f744cd730432e9286487797af5dae2efede0a981fad4175e484d0397f5c58079fccf800c0424e0cc1bcb3e7ca98462d98
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-ui-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-ui-react-native@npm:0.0.0-feat-multi-social-20250715153550":
+  version: 0.0.0-feat-multi-social-20250715153550
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-multi-social-20250715153550"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-social-20250715153550
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 36237212f688ea9ca857bf0a1a34b0e54da4d9f9f2a172820b673952ed4fbfe30017b2a5eb508f40d98c0a6b932cff8d06c80d8166ea222fe39ce2d6a701b339
+  checksum: cc73dfaa42a6536480cbd3523763c49d1910f92b55d02df7739f89328caddbc8fdb3f5613449f3ca48a8d1dcccecae878bd353c457ada70fe849eb4ddc47d241
   languageName: node
   linkType: hard
 
@@ -5544,14 +5534,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:2.0.0-alpha.1":
-  version: 2.0.0-alpha.1
-  resolution: "@reown/appkit-wagmi-react-native@npm:2.0.0-alpha.1"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multi-social-20250715153550":
+  version: 0.0.0-feat-multi-social-20250715153550
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multi-social-20250715153550"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.0-alpha.1
-    "@reown/appkit-react-native": 2.0.0-alpha.1
-    "@reown/appkit-scaffold-utils-react-native": 2.0.0-alpha.1
-    "@reown/appkit-siwe-react-native": 2.0.0-alpha.1
+    "@reown/appkit-common-react-native": 0.0.0-feat-multi-social-20250715153550
+    "@reown/appkit-react-native": 0.0.0-feat-multi-social-20250715153550
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-multi-social-20250715153550
   peerDependencies:
     "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
@@ -5561,7 +5550,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: c6134c522810c7905f2d51e25c72fe12e0f6cedf66f53fc07a1375e64fb3953cbfb1bd6229889ba39287cda1e57074dbecea1eed8f2be6c3f14f6c512c074bee
+  checksum: ad6824ebddfd22615077243a8fa4839d806376a4ecbb3b7ede642fb73ab06c102ff56c92293135bde3efd3d2d262671e6703f3ed8bf65c23a5a384e87c859c66
   languageName: node
   linkType: hard
 
@@ -7431,10 +7420,10 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-bitcoin-react-native": 2.0.0-alpha.1
-    "@reown/appkit-react-native": 2.0.0-alpha.1
-    "@reown/appkit-solana-react-native": 2.0.0-alpha.1
-    "@reown/appkit-wagmi-react-native": 2.0.0-alpha.1
+    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-multi-social-20250715153550
+    "@reown/appkit-react-native": 0.0.0-feat-multi-social-20250715153550
+    "@reown/appkit-solana-react-native": 0.0.0-feat-multi-social-20250715153550
+    "@reown/appkit-wagmi-react-native": 0.0.0-feat-multi-social-20250715153550
     "@sentry/react-native": ^6.14.0
     "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2
