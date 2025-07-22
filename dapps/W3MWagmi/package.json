@@ -22,12 +22,12 @@
     "@react-navigation/bottom-tabs": "6.6.1",
     "@react-navigation/native": "6.1.18",
     "@react-navigation/native-stack": "6.10.1",
-    "@reown/appkit-auth-wagmi-react-native": "0.0.0-feat-onramp-20250718200617",
-    "@reown/appkit-coinbase-wagmi-react-native": "0.0.0-feat-onramp-20250718200617",
-    "@reown/appkit-wagmi-react-native": "0.0.0-feat-onramp-20250718200617",
+    "@reown/appkit-auth-wagmi-react-native": "0.0.0-feat-onramp-20250722205908",
+    "@reown/appkit-coinbase-wagmi-react-native": "0.0.0-feat-onramp-20250722205908",
+    "@reown/appkit-wagmi-react-native": "0.0.0-feat-onramp-20250722205908",
     "@sentry/react-native": "^6.14.0",
     "@tanstack/react-query": "5.62.2",
-    "@walletconnect/react-native-compat": "2.19.1",
+    "@walletconnect/react-native-compat": "2.21.5",
     "expo": "52.0.31",
     "react": "18.3.1",
     "react-native": "0.77.0",
@@ -43,8 +43,8 @@
     "react-native-svg": "15.11.2",
     "react-native-toast-message": "2.2.1",
     "react-native-webview": "13.13.4",
-    "viem": "2.23.10",
-    "wagmi": "2.14.13"
+    "viem": "2.33.0",
+    "wagmi": "2.16.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
