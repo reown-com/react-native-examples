@@ -9,13 +9,13 @@ import { ToastUtils } from '@/utils/ToastUtils';
 export function EthersActionsView() {
   const isConnected = true;
   const { address, chainId } = useAccount();
-  const provider = useProvider('eip155');
+  const {provider} = useProvider('eip155');
 
-  const onSignSuccess = (data: any) => {
+  const onSuccess = (data: any) => {
     ToastUtils.showSuccessToast('Sign successful', data);
   };
 
-  const onSignError = (error: Error) => {
+  const onError = (error: Error) => {
     ToastUtils.showErrorToast('Sign failed', error.message);
   };
 
@@ -44,11 +44,30 @@ export function EthersActionsView() {
         chainId
       );
 
-      onSignSuccess(signature);
+      onSuccess(signature);
     } catch (error) {
 
       console.log('error', error);
-      onSignError(error as Error);
+      onError(error as Error);
+    }
+  };
+
+  const sendTransaction = async () => {
+    try {
+      if (!provider) {
+        ToastUtils.showErrorToast('Send Transaction failed', 'No provider found');
+        return;
+      }
+
+      const tx = await provider.request({
+        method: 'eth_sendTransaction',
+        params: [{ from: address, to: address, value: '0x1' }],
+      });
+
+      onSuccess(tx);
+    } catch (error) {
+      console.log('error', error);
+      onError(error as Error);
     }
   };
 
@@ -57,6 +76,9 @@ export function EthersActionsView() {
       <Text variant="medium-600">Ethers Actions</Text>
       <Button testID="sign-message-button" onPress={signMessage}>
         Sign
+      </Button>
+      <Button testID="send-transaction-button" onPress={sendTransaction}>
+        Send Transaction
       </Button>
     </FlexView>
   ) : null;

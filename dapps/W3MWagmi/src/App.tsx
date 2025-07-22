@@ -9,8 +9,13 @@ import {createAppKit, AppKit, bitcoin, AppKitProvider, solana} from '@reown/appk
 import {WagmiAdapter} from '@reown/appkit-wagmi-react-native';
 import {SolanaAdapter, PhantomConnector} from '@reown/appkit-solana-react-native';
 import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
+import {CoinbaseConnector} from '@reown/appkit-coinbase-react-native';
 // import {EthersAdapter} from '@reown/appkit-ethers-react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {handleResponse} from '@coinbase/wallet-mobile-sdk';
+import { WagmiProvider } from 'wagmi';
+import { Chain } from 'viem';
+import { MMKV } from 'react-native-mmkv';
 
 import Toast from 'react-native-toast-message';
 import Config from 'react-native-config';
@@ -19,14 +24,12 @@ import * as Sentry from '@sentry/react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import {getCustomWallets, getMetadata} from '@/utils/misc';
+import {getMetadata} from '@/utils/misc';
 import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import {chains} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
-import { WagmiProvider } from 'wagmi';
-import { Chain } from 'viem';
 import { storage } from './utils/StorageUtil';
-// import { siweConfig } from './utils/SiweUtils';
+import { siweConfig } from './utils/SiweUtils';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
@@ -80,11 +83,10 @@ const appKit = createAppKit({
   adapters,
   metadata,
   networks,
-  // siweConfig,
+  siweConfig,
   clipboardClient,
   storage,
-  extraConnectors: [new PhantomConnector({ cluster: 'mainnet-beta' })],
-  customWallets: getCustomWallets(),
+  extraConnectors: [new PhantomConnector({ cluster: 'mainnet-beta' }), new CoinbaseConnector({ storage: new MMKV()})],
 });
 
 const queryClient = new QueryClient();
@@ -93,8 +95,7 @@ function App(): JSX.Element {
   // 4. Handle deeplinks for Coinbase SDK + WalletConnect Link Mode
   useEffect(() => {
     const sub = Linking.addEventListener('url', ({url}) => {
-      // const handledBySdk = handleResponse(new URL(url));
-      const handledBySdk = false;
+      const handledBySdk = handleResponse(new URL(url));
       if (!handledBySdk) {
         // Handle WalletConnect Link Mode
         if (url.includes('wc_ev')) {

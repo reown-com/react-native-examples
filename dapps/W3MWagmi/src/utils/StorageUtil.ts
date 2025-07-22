@@ -16,7 +16,7 @@ export const storage: Storage = {
 
     return entries.map(parseEntry);
   },
-  setItem: async (key: string, value: any) => {
+  setItem: async <T = any>(key: string, value: T) => {
     return await AsyncStorage.setItem(key, safeJsonStringify(value));
   },
   getItem: async <T = any>(key: string): Promise<T | undefined> => {
@@ -29,5 +29,5 @@ export const storage: Storage = {
   },
   removeItem: async (key: string) => {
     return await AsyncStorage.removeItem(key);
-  }
+  },
 };
