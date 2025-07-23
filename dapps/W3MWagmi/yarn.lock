@@ -5436,33 +5436,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-coinbase-20250722202925":
-  version: 0.0.0-feat-coinbase-20250722202925
-  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-coinbase-20250722202925"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-coinbase-20250723185200":
+  version: 0.0.0-feat-coinbase-20250723185200
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-coinbase-20250723185200"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250722202925
-  checksum: 66994bb20611e22b890a852b9205aa90c760f4c061a76f0f8036ba98e51a8230d8dd1a32041b648123f056cdf2364d23bb0c388922cee36393078a470793e3c0
+    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250723185200
+  checksum: b98bd6bc183c11b9cde072c0cc987cf5ff1bb154d5ed3ccb9833cd4287bf50efa54a574bd1abbcc2ee543c48331fd5569110f772b5f783421b2c1e921d7c8124
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-react-native@npm:0.0.0-feat-coinbase-20250722202925":
-  version: 0.0.0-feat-coinbase-20250722202925
-  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-feat-coinbase-20250722202925"
+"@reown/appkit-coinbase-react-native@npm:0.0.0-feat-coinbase-20250723185200":
+  version: 0.0.0-feat-coinbase-20250723185200
+  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-feat-coinbase-20250723185200"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250722202925
+    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250723185200
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.1.2"
-  checksum: 0852aa994749c6a1660054ec8adba214f0b4f7b0670c025a09335ce57da105730df96136196462e1f5d72806bb21275c3ce018cad8ad12a6b579484c59716e64
+  checksum: e0005c0092c0d2a6d71e537333811be38f5de27df6d9d49f0f04db7a66916ecfd1c514c7503398a13e1f7c943fe0c3013745cc8eb0133bcbedfc299a984b78f4
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-feat-coinbase-20250722202925":
-  version: 0.0.0-feat-coinbase-20250722202925
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-coinbase-20250722202925"
+"@reown/appkit-common-react-native@npm:0.0.0-feat-coinbase-20250723185200":
+  version: 0.0.0-feat-coinbase-20250723185200
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-coinbase-20250723185200"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
-  checksum: 0331b7bce25f96445237fc8ea185f5199605ef55dbe34bc3deabc14ef06202d7e8ce77c4a4289fefa0927ba585da7fe1d8a274d0b89f17306e689b92b7b34032
+  checksum: 2b6c9ae70d3f886e1856a05cdf45243f35899e0d922f16189513e28e1e9da775697e73620173fa051ccfd90d058c2d21a9947b3b7954ce3b5824ccdf324b8b90
   languageName: node
   linkType: hard
 
@@ -5514,38 +5514,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-feat-coinbase-20250722202925":
-  version: 0.0.0-feat-coinbase-20250722202925
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-coinbase-20250722202925"
+"@reown/appkit-core-react-native@npm:0.0.0-feat-coinbase-20250723185200":
+  version: 0.0.0-feat-coinbase-20250723185200
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-coinbase-20250723185200"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250722202925
+    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250723185200
     countries-and-timezones: 3.7.2
     valtio: 1.11.2
   peerDependencies:
-    "@react-native-async-storage/async-storage": ">=1.17.0"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
-  checksum: ab8886368e171c3d462eaef60f24803711dec66a9d1b23a35cb02e33896cd0374cbc552f85ade1b63e36c6ffad6d8ae6c587781ad147435ad05512fb87e73413
+  checksum: d3249c011a21fe8b825ddd90c992e3d888f079adf4dcb366547057a5ce14d9b25e7509ddb56d1cf9a4af81aa4d9a5b965612dc9abdf6d568dc9e7e5adc0020e4
   languageName: node
   linkType: hard
 
-"@reown/appkit-ethers-react-native@npm:0.0.0-feat-coinbase-20250722202925":
-  version: 0.0.0-feat-coinbase-20250722202925
-  resolution: "@reown/appkit-ethers-react-native@npm:0.0.0-feat-coinbase-20250722202925"
+"@reown/appkit-ethers-react-native@npm:0.0.0-feat-coinbase-20250723185200":
+  version: 0.0.0-feat-coinbase-20250723185200
+  resolution: "@reown/appkit-ethers-react-native@npm:0.0.0-feat-coinbase-20250723185200"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-coinbase-20250722202925
+    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-coinbase-20250723185200
     "@walletconnect/ethereum-provider": 2.21.5
   peerDependencies:
-    "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-get-random-values: "*"
-  checksum: 44cf7d46d4e31015376d710b5237293c478ec2d1c94e8772f4844059fda2ae39c62c56a36f55bd84f2a2e7dcd31fde0b72ad15d7ee7fb997aceaa9d159b6f0c6
+  checksum: 138d89c1ea23140a34c69d7926551f9a15bc58cfd19a5e11f4575bd160bc9a634a13f0c92b59ae171f6fab2395122062303d0369ee782eae28641e201a3ac34e
   languageName: node
   linkType: hard
 
@@ -5581,21 +5579,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:0.0.0-feat-coinbase-20250722202925":
-  version: 0.0.0-feat-coinbase-20250722202925
-  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-coinbase-20250722202925"
+"@reown/appkit-react-native@npm:0.0.0-feat-coinbase-20250723185200":
+  version: 0.0.0-feat-coinbase-20250723185200
+  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-coinbase-20250723185200"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-core-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-ui-react-native": 0.0.0-feat-coinbase-20250722202925
+    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-core-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-ui-react-native": 0.0.0-feat-coinbase-20250723185200
     "@walletconnect/universal-provider": 2.21.5
     valtio: ^1.13.2
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-modal: ">=13"
-  checksum: 61cb3c33a2a94faae35207250142d99f3fda781cbfbd2d5dc394fe7e16a3f4a33eeb5c61546bff791ff897975bad21be29f608b983b75bfb2af9e479a0ddf212
+  checksum: 401c45a22c7de1514c64727618336466c2384bd8430ca672da578894411f3fea44a06580ec5e1b574311b58dd9937636b1f3c9d9752629a6300b1e31df640f81
   languageName: node
   linkType: hard
 
@@ -5627,44 +5625,44 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-feat-coinbase-20250722202925":
-  version: 0.0.0-feat-coinbase-20250722202925
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-coinbase-20250722202925"
+"@reown/appkit-siwe-react-native@npm:0.0.0-feat-coinbase-20250723185200":
+  version: 0.0.0-feat-coinbase-20250723185200
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-coinbase-20250723185200"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-core-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-ui-react-native": 0.0.0-feat-coinbase-20250722202925
+    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-core-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-ui-react-native": 0.0.0-feat-coinbase-20250723185200
     valtio: 1.11.2
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: 2dd5a89429cb05ee4b1de0a1e4755b7672eeabb9f67bb37118592c75f9cf9d3f61acd078bf8ae903695737f2592c3dca75b84e97b67364b263a731fde2e81e25
+  checksum: 353722eb8af6a10e563a26f004a942b2a2d44f50963c5c0cbaff79b4c79fad719704971da022826526cfdb51e2cf86df324357cc4c48e1e1163a487a987817d3
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:0.0.0-feat-coinbase-20250722202925":
-  version: 0.0.0-feat-coinbase-20250722202925
-  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-coinbase-20250722202925"
+"@reown/appkit-solana-react-native@npm:0.0.0-feat-coinbase-20250723185200":
+  version: 0.0.0-feat-coinbase-20250723185200
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-coinbase-20250723185200"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250722202925
+    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250723185200
     "@solana/web3.js": 1.98.2
     bs58: 6.0.0
     tweetnacl: 1.0.3
-  checksum: a6fc633a5e232b4e480b1184b2cfd86aa325e8e58d4c482bf321dcd756fc7d1aa24bd7e4894fe6523ee10af7f70c9009f98adde96a36edbdf2281b997a2d6656
+  checksum: 9a7432da7dbddddf9bfe4033d39c172cad8ece05db68e85ffb9c609607eb0e30340f48cbce786b36998dd910dd974f0e54d3bbab0634d0861eda203a1e2d697b
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-feat-coinbase-20250722202925":
-  version: 0.0.0-feat-coinbase-20250722202925
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-coinbase-20250722202925"
+"@reown/appkit-ui-react-native@npm:0.0.0-feat-coinbase-20250723185200":
+  version: 0.0.0-feat-coinbase-20250723185200
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-coinbase-20250723185200"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250722202925
+    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250723185200
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=17"
     react-native: ">=0.68.5"
     react-native-svg: ">=13"
-  checksum: 0f10c0b89a1aefc8c2047470bbbb74efdfaf30d98ba1d82aa2b9193f153b13da34b7fae8fe2142704a05839ce9344da68fca0446b44cd5080061a75b6bc7308d
+  checksum: b3a1d4308796482508814a243da5de8da4bf9943b528e83842c0f321ae1669de7db91fa6974bd3b50b049bc84a9ecda52d2ad76791157cef466e64e230aea815
   languageName: node
   linkType: hard
 
@@ -5730,15 +5728,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-coinbase-20250722202925":
-  version: 0.0.0-feat-coinbase-20250722202925
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-coinbase-20250722202925"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-coinbase-20250723185200":
+  version: 0.0.0-feat-coinbase-20250723185200
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-coinbase-20250723185200"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-coinbase-20250722202925
+    "@reown/appkit-common-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-siwe-react-native": 0.0.0-feat-coinbase-20250723185200
   peerDependencies:
-    "@react-native-async-storage/async-storage": ">=1.17.0"
     "@react-native-community/netinfo": "*"
     "@walletconnect/react-native-compat": ">=2.13.1"
     react: ">=17"
@@ -5746,7 +5743,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: e959666bf8fe314e629294d931d932be8e4b5dd627646cb2bb4e28fdd9a9757840710e85e4ac2a114faab68163c3f10a6015b69535978bb2414fd7636e9ce547
+  checksum: b7c1462bc2a35475ceb36157a69431831e26250381a162eed0b4d7b474d1ebe38d27190bd44e2e448c03b0c0b98c5c04a6d189a57d0ea7eb0a3ed6e254705a64
   languageName: node
   linkType: hard
 
@@ -7817,12 +7814,12 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-coinbase-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-ethers-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-solana-react-native": 0.0.0-feat-coinbase-20250722202925
-    "@reown/appkit-wagmi-react-native": 0.0.0-feat-coinbase-20250722202925
+    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-coinbase-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-ethers-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-solana-react-native": 0.0.0-feat-coinbase-20250723185200
+    "@reown/appkit-wagmi-react-native": 0.0.0-feat-coinbase-20250723185200
     "@sentry/react-native": ^6.14.0
     "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2
