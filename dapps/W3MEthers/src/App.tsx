@@ -6,14 +6,17 @@ import Clipboard from '@react-native-clipboard/clipboard';
 
 import {
   createAppKit,
-  defaultConfig,
   AppKitButton,
   AppKit,
-} from '@reown/appkit-ethers-react-native';
+  AppKitProvider,
+} from '@reown/appkit-react-native';
+import {
+  SolanaAdapter,
+  PhantomConnector,
+} from '@reown/appkit-solana-react-native';
+import {CoinbaseConnector} from '@reown/appkit-coinbase-react-native';
 import {FlexView, Text} from '@reown/appkit-ui-react-native';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
-import {CoinbaseProvider} from '@reown/appkit-coinbase-ethers-react-native';
-import {AuthProvider} from '@reown/appkit-auth-ethers-react-native';
 import {ENV_PROJECT_ID} from '@env';
 
 import {SignMessage} from './views/SignMessage';
@@ -23,12 +26,15 @@ import {WriteContract} from './views/WriteContract';
 import {SignTypedDataV4} from './views/SignTypedDataV4';
 import {mainnet, polygon} from './utils/ChainUtils';
 import {siweConfig} from './utils/SiweUtils';
+import {EthersAdapter} from '@reown/appkit-ethers-react-native';
+import {MMKV} from 'react-native-mmkv';
+import {storage} from './utils/StorageUtil';
 
 // 1. Get projectId at https://cloud.reown.com
 const projectId = ENV_PROJECT_ID;
 
 // 2. Define your chains
-const chains = [mainnet, polygon];
+const networks = [mainnet, polygon];
 
 // 3. Create config
 const metadata = {
@@ -41,43 +47,36 @@ const metadata = {
   },
 };
 
-const coinbaseProvider = new CoinbaseProvider({
-  redirect: 'rn-w3m-ethers-sample://',
-  rpcUrl: mainnet.rpcUrl,
-});
-
-const auth = new AuthProvider({projectId, metadata});
-
-const config = defaultConfig({
-  metadata,
-  extraConnectors: [coinbaseProvider, auth],
-});
-
 const clipboardClient = {
   setString: async (value: string) => {
     Clipboard.setString(value);
   },
 };
 
-const customWallets = [
-  {
-    id: 'rn-wallet',
-    name: 'RN Wallet',
-    image_url:
-      'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
-    mobile_link: 'rn-web3wallet://',
-  },
-];
+const ethersAdapter = new EthersAdapter({
+  projectId,
+});
+
+const solanaAdapter = new SolanaAdapter({
+  projectId,
+});
+
+const adapters = [ethersAdapter, solanaAdapter];
 
 // 3. Create modal
-createAppKit({
+const appKit = createAppKit({
   projectId,
-  chains,
-  config,
+  metadata,
+  networks,
+  adapters,
+  storage,
   siweConfig,
-  customWallets,
   clipboardClient,
   enableAnalytics: true,
+  extraConnectors: [
+    new PhantomConnector({cluster: 'mainnet-beta'}),
+    new CoinbaseConnector({storage: new MMKV()}),
+  ],
   features: {
     swaps: true,
   },
@@ -98,18 +97,20 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title} variant="large-600">
-        AppKit + ethers
-      </Text>
-      <FlexView style={styles.buttonContainer}>
-        <AppKitButton balance="show" />
-        <SignMessage />
-        <SendTransaction />
-        <SignTypedDataV4 />
-        <ReadContract />
-        <WriteContract />
-      </FlexView>
-      <AppKit />
+      <AppKitProvider instance={appKit}>
+        <Text style={styles.title} variant="large-600">
+          AppKit + ethers
+        </Text>
+        <FlexView style={styles.buttonContainer}>
+          <AppKitButton balance="show" />
+          <SignMessage />
+          <SendTransaction />
+          <SignTypedDataV4 />
+          <ReadContract />
+          <WriteContract />
+        </FlexView>
+        <AppKit />
+      </AppKitProvider>
     </SafeAreaView>
   );
 }

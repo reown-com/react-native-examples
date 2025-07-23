@@ -11,13 +11,14 @@
     "test": "jest"
   },
   "dependencies": {
-    "@coinbase/wallet-mobile-sdk": "1.0.13",
+    "@coinbase/wallet-mobile-sdk": "1.1.2",
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-clipboard/clipboard": "1.13.2",
     "@react-native-community/netinfo": "11.2.1",
-    "@reown/appkit-auth-ethers-react-native": "1.2.2",
-    "@reown/appkit-coinbase-ethers-react-native": "1.2.2",
-    "@reown/appkit-ethers-react-native": "1.2.2",
+    "@reown/appkit-coinbase-react-native": "0.0.0-feat-coinbase-20250723185200",
+    "@reown/appkit-ethers-react-native": "0.0.0-feat-coinbase-20250723185200",
+    "@reown/appkit-react-native": "0.0.0-feat-coinbase-20250723185200",
+    "@reown/appkit-solana-react-native": "0.0.0-feat-coinbase-20250723185200",
     "@walletconnect/react-native-compat": "2.18.1",
     "ethers": "6.10.0",
     "expo": "^50.0.0",
