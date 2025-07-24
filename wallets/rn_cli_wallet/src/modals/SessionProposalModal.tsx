@@ -3,6 +3,7 @@ import {useCallback, useMemo, useState} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {SignClientTypes} from '@walletconnect/types';
 import {buildApprovedNamespaces, getSdkError} from '@walletconnect/utils';
+import Toast from 'react-native-toast-message';
 
 import {Events} from '@/components/Modal/Events';
 import {Methods} from '@/components/Modal/Methods';
@@ -13,10 +14,16 @@ import SettingsStore from '@/store/SettingsStore';
 import {handleRedirect} from '@/utils/LinkingUtils';
 import {useTheme} from '@/hooks/useTheme';
 import {Chains} from '@/components/Modal/Chains';
-import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
+import {
+  EIP155_CHAINS,
+  EIP155_SIGNING_METHODS,
+  SUI_CHAINS,
+  SUI_EVENTS,
+  SUI_SIGNING_METHODS,
+} from '@/utils/PresetsUtil';
 import {RequestModal} from './RequestModal';
 import {getSupportedChains} from '@/utils/HelperUtil';
-import Toast from 'react-native-toast-message';
+import {suiAddresses} from '@/utils/SuiWalletUtil';
 
 export default function SessionProposalModal() {
   const Theme = useTheme();
@@ -36,11 +43,13 @@ export default function SessionProposalModal() {
 
   const supportedNamespaces = useMemo(() => {
     // eip155
-    const eip155Chains = Object.keys(EIP155_CHAINS).map(
-      chain => `eip155:${chain}`,
-    );
-
+    const eip155Chains = Object.keys(EIP155_CHAINS);
     const eip155Methods = Object.values(EIP155_SIGNING_METHODS);
+
+    // sui
+    const suiChains = Object.keys(SUI_CHAINS);
+    const suiMethods = Object.values(SUI_SIGNING_METHODS);
+    const suiEvents = Object.values(SUI_EVENTS);
 
     return {
       eip155: {
@@ -50,6 +59,12 @@ export default function SessionProposalModal() {
         accounts: eip155Chains
           .map(chain => `${chain}:${eip155Addresses[0]}`)
           .flat(),
+      },
+      sui: {
+        chains: suiChains,
+        methods: suiMethods,
+        events: suiEvents,
+        accounts: suiChains.map(chain => `${chain}:${suiAddresses[0]}`).flat(),
       },
     };
   }, []);
@@ -148,5 +163,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 8,
     rowGap: 8,
+    width: '100%',
   },
 });

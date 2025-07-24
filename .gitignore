@@ -21,3 +21,9 @@ fastlane/report.xml
 
 # Cursor
 .cursor
+
+# VSCode
+.vscode
+
+# Expo
+.expo

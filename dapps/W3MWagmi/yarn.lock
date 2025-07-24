@@ -4153,19 +4153,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/ssr-dom-shim@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "@lit-labs/ssr-dom-shim@npm:1.4.0"
-  checksum: e267c255763835893ae9bb58ea71533ac3d3eb6dd2b7218ef2ff8c5d99a91ad091ef255cc19992d0a9443021c2199e05a36f46135bc9c07f4982123a12e7e3dc
+"@lit-labs/ssr-dom-shim@npm:^1.2.0":
+  version: 1.3.0
+  resolution: "@lit-labs/ssr-dom-shim@npm:1.3.0"
+  checksum: c2003e8bb6d39c15b359450da0d5ea8970f7e684127c10abb26066afd8818785a6e43374fa52d25ac93e9714db670ca8a9b2befc9f3426d6e52eef4a592a79d4
   languageName: node
   linkType: hard
 
 "@lit/reactive-element@npm:^2.1.0":
-  version: 2.1.1
-  resolution: "@lit/reactive-element@npm:2.1.1"
+  version: 2.1.0
+  resolution: "@lit/reactive-element@npm:2.1.0"
   dependencies:
-    "@lit-labs/ssr-dom-shim": ^1.4.0
-  checksum: b9bbc9c089ee7db69c610ace1e5162c949535aedcca2d78ab11fe95dc555a9264380c10ffc8d3f68e56aec93d9e455937c1e065aa619fd38d80da1cb660b0cd4
+    "@lit-labs/ssr-dom-shim": ^1.2.0
+  checksum: fb36e9f64bf582358fa1efa5a80aa41b73d00974bf7e35d2f1ed5a4237b33ffa0410cfde702f785d19c29ed3026c3a900fc984016c6b1f36007197f07ca97d26
   languageName: node
   linkType: hard
 
@@ -12486,22 +12486,22 @@ __metadata:
   linkType: hard
 
 "lit-element@npm:^4.2.0":
-  version: 4.2.1
-  resolution: "lit-element@npm:4.2.1"
+  version: 4.2.0
+  resolution: "lit-element@npm:4.2.0"
   dependencies:
-    "@lit-labs/ssr-dom-shim": ^1.4.0
+    "@lit-labs/ssr-dom-shim": ^1.2.0
     "@lit/reactive-element": ^2.1.0
     lit-html: ^3.3.0
-  checksum: 59253261761efabd4eab8fd9d3753b10ce1942ff498b4a9856a52d9a402eddbb6a96cc9869d7a8becce7cf4a0bc6e1154d5772dd2a8a87656c476416d5d411ba
+  checksum: 84bfa51608c6efbf4991032f1ff64b3ae38007fb06eda93e5a2625277c8fc515ad930d4aee8069d92a8f0a969c58808af41f3025f0f5d175dfcc23d4839553f7
   languageName: node
   linkType: hard
 
 "lit-html@npm:^3.3.0":
-  version: 3.3.1
-  resolution: "lit-html@npm:3.3.1"
+  version: 3.3.0
+  resolution: "lit-html@npm:3.3.0"
   dependencies:
     "@types/trusted-types": ^2.0.2
-  checksum: de07c669453381edc69a03cccd8019ef4ddc5e94a8c5ac215f933812cbcf77a17ee909b8db22df1ef56a7eb171883ca5c4ab8cfc06d9921ea6620dbfe4fd1896
+  checksum: c7e310385d624fabaf4c3090e1787ce14ce99cb8b076dcce78b32a6dde8a91daa7afc089da3bcd3e451cd2ddeafb92c86df574939d54f0d3b7029acfb3f038f0
   languageName: node
   linkType: hard
 
@@ -14741,15 +14741,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-modal@npm:14.0.0-rc.0":
-  version: 14.0.0-rc.0
-  resolution: "react-native-modal@npm:14.0.0-rc.0"
+"react-native-mmkv@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "react-native-mmkv@npm:3.3.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 2544e4a2d37429a17fba14bc12140b45d8da3e2b4a3d4cf884c355cca8d57dd425fd45160c5552e4b725978b037f3dfadd408db05735bb21341eea92e0c2a869
+  languageName: node
+  linkType: hard
+
+"react-native-modal@npm:14.0.0-rc.1":
+  version: 14.0.0-rc.1
+  resolution: "react-native-modal@npm:14.0.0-rc.1"
   dependencies:
     react-native-animatable: 1.4.0
   peerDependencies:
     react: "*"
     react-native: ">=0.70.0"
-  checksum: 596dfec00d6f9c0bba1f2c6632cf10e307425be8ccb1de81a6bf7213cceaf6fd4204eb165d8a1450a65ea4b19b70433f3b5123fff44a13d253bd1ae774a9e085
+  checksum: 19bca96dde148c14ed4cc0e52fedd0a12ca952815e4dcbea31d0a98962d75dc3c011c677f5f9cd15f2b88f78ccd03134647b280724bc6de148c25e28eea1a7e4
   languageName: node
   linkType: hard
 
@@ -15485,7 +15495,8 @@ __metadata:
     react-native-device-info: 14.0.4
     react-native-gesture-handler: 2.24.0
     react-native-get-random-values: 1.11.0
-    react-native-modal: 14.0.0-rc.0
+    react-native-mmkv: ^3.3.0
+    react-native-modal: 14.0.0-rc.1
     react-native-reanimated: 3.17.1
     react-native-safe-area-context: 5.3.0
     react-native-screens: 4.9.2
