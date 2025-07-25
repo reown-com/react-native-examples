@@ -6,6 +6,7 @@ import type {
 } from '@reown/appkit-siwe-react-native';
 import {generateRandomBytes32} from '@walletconnect/utils';
 import {createSIWEConfig, formatMessage} from '@reown/appkit-siwe-react-native';
+import type {CaipNetworkId} from '@reown/appkit-common-react-native';
 import {mainnet, polygon} from './ChainUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -20,7 +21,7 @@ export const siweConfig = createSIWEConfig({
   getMessageParams: async () => ({
     domain: 'rn-w3m-ethers-sample://',
     uri: 'rn-w3m-ethers-sample://',
-    chains: chains.map(chain => chain.chainId),
+    chains: chains.map(chain => `eip155:${chain.id}` as CaipNetworkId),
     statement: 'Please sign with your account',
     iat: new Date().toISOString(),
   }),

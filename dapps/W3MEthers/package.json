@@ -15,10 +15,9 @@
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-clipboard/clipboard": "1.13.2",
     "@react-native-community/netinfo": "11.2.1",
-    "@reown/appkit-coinbase-react-native": "0.0.0-feat-coinbase-20250723185200",
-    "@reown/appkit-ethers-react-native": "0.0.0-feat-coinbase-20250723185200",
-    "@reown/appkit-react-native": "0.0.0-feat-coinbase-20250723185200",
-    "@reown/appkit-solana-react-native": "0.0.0-feat-coinbase-20250723185200",
+    "@reown/appkit-coinbase-react-native": "0.0.0-feat-multichain-20250725133522",
+    "@reown/appkit-ethers-react-native": "0.0.0-feat-multichain-20250725133522",
+    "@reown/appkit-react-native": "0.0.0-feat-multichain-20250725133522",
     "@walletconnect/react-native-compat": "2.18.1",
     "ethers": "6.10.0",
     "expo": "^50.0.0",
@@ -27,8 +26,7 @@
     "react-native-get-random-values": "1.10.0",
     "react-native-mmkv": "2.11.0",
     "react-native-modal": "13.0.1",
-    "react-native-svg": "14.1.0",
-    "react-native-webview": "13.8.2"
+    "react-native-svg": "14.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -68,6 +66,9 @@
     "tar": "^6.2.1",
     "send": "^0.19.0",
     "undici": "^6.21.2",
-    "serve-static": "^1.16.2"
+    "serve-static": "^1.16.2",
+    "@walletconnect/ethereum-provider": "2.21.5",
+    "@walletconnect/universal-provider": "2.21.5",
+    "@walletconnect/utils": "2.21.5"
   }
 }

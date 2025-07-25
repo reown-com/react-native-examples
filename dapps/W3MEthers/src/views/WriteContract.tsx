@@ -4,10 +4,7 @@ import {Button} from '@reown/appkit-ui-react-native';
 
 import {RequestModal} from '../components/RequestModal';
 import usdtAbi from '../utils/usdtAbi';
-import {
-  useAppKitAccount,
-  useAppKitProvider,
-} from '@reown/appkit-ethers-react-native';
+import {useAccount, useProvider} from '@reown/appkit-react-native';
 import {BrowserProvider, Contract, JsonRpcSigner} from 'ethers';
 
 export function WriteContract() {
@@ -15,11 +12,11 @@ export function WriteContract() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
-  const {walletProvider} = useAppKitProvider();
-  const {isConnected, address} = useAppKitAccount();
+  const {provider} = useProvider('eip155');
+  const {isConnected, address} = useAccount();
 
   const onPress = async () => {
-    if (!isConnected || !walletProvider) {
+    if (!isConnected || !provider) {
       return;
     }
 
@@ -28,7 +25,7 @@ export function WriteContract() {
     setIsLoading(true);
 
     try {
-      const ethersProvider = new BrowserProvider(walletProvider);
+      const ethersProvider = new BrowserProvider(provider);
       const signer = new JsonRpcSigner(ethersProvider, address!);
       const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
       const contractABI = usdtAbi;

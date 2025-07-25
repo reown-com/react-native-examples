@@ -3,10 +3,7 @@ import {View} from 'react-native';
 import {Button} from '@reown/appkit-ui-react-native';
 
 import {RequestModal} from '../components/RequestModal';
-import {
-  useAppKitAccount,
-  useAppKitProvider,
-} from '@reown/appkit-ethers-react-native';
+import {useAccount, useProvider} from '@reown/appkit-react-native';
 import {BrowserProvider, Contract, JsonRpcSigner} from 'ethers';
 import wagmigotchiABI from '../utils/wagmigotchiABI';
 
@@ -15,11 +12,11 @@ export function ReadContract() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
-  const {walletProvider} = useAppKitProvider();
-  const {isConnected, address} = useAppKitAccount();
+  const {provider} = useProvider('eip155');
+  const {isConnected, address} = useAccount();
 
   const onPress = async () => {
-    if (!isConnected || !walletProvider) {
+    if (!isConnected || !provider) {
       return;
     }
 
@@ -29,7 +26,7 @@ export function ReadContract() {
     setRequetsModalVisible(true);
 
     try {
-      const ethersProvider = new BrowserProvider(walletProvider);
+      const ethersProvider = new BrowserProvider(provider);
       const signer = new JsonRpcSigner(ethersProvider, address!);
       const contractAddress = '0xecb504d39723b0be0e3a9aa33d646642d1051ee1';
       const contractABI = wagmigotchiABI;

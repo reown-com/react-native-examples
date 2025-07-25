@@ -4,10 +4,7 @@ import {Button} from '@reown/appkit-ui-react-native';
 
 import {RequestModal} from '../components/RequestModal';
 import {BrowserProvider, JsonRpcSigner} from 'ethers';
-import {
-  useAppKitAccount,
-  useAppKitProvider,
-} from '@reown/appkit-ethers-react-native';
+import {useAccount, useProvider} from '@reown/appkit-react-native';
 import {eip712} from '../utils/eip712';
 
 export function SignTypedDataV4() {
@@ -15,11 +12,11 @@ export function SignTypedDataV4() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
-  const {walletProvider} = useAppKitProvider();
-  const {isConnected, address} = useAppKitAccount();
+  const {provider} = useProvider('eip155');
+  const {isConnected, address, chainId} = useAccount();
 
   const onPress = async () => {
-    if (!isConnected || !walletProvider) {
+    if (!isConnected || !provider) {
       return;
     }
 
@@ -28,14 +25,17 @@ export function SignTypedDataV4() {
     setIsLoading(true);
 
     try {
-      const ethersProvider = new BrowserProvider(walletProvider);
+      const ethersProvider = new BrowserProvider(provider);
       const signer = new JsonRpcSigner(ethersProvider, address!);
       const message = JSON.stringify(eip712.example);
 
-      const signature = await walletProvider.request({
-        method: 'eth_signTypedData_v4',
-        params: [signer.address, message],
-      });
+      const signature = await provider.request(
+        {
+          method: 'eth_signTypedData_v4',
+          params: [signer.address, message],
+        },
+        chainId,
+      );
 
       setData(signature?.toString());
     } catch (e) {

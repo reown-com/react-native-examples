@@ -2,10 +2,7 @@ import React, {useState} from 'react';
 import {View} from 'react-native';
 import {Button} from '@reown/appkit-ui-react-native';
 import {BrowserProvider, JsonRpcSigner, parseEther} from 'ethers';
-import {
-  useAppKitAccount,
-  useAppKitProvider,
-} from '@reown/appkit-ethers-react-native';
+import {useAccount, useProvider} from '@reown/appkit-react-native';
 
 import {RequestModal} from '../components/RequestModal';
 import {testAddress} from '../utils/misc';
@@ -15,11 +12,11 @@ export function SendTransaction() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<string | undefined>();
   const [error, setError] = useState(false);
-  const {walletProvider} = useAppKitProvider();
-  const {isConnected, address} = useAppKitAccount();
+  const {provider} = useProvider('eip155');
+  const {isConnected, address} = useAccount();
 
   const onPress = async () => {
-    if (!isConnected || !walletProvider) {
+    if (!isConnected || !provider) {
       return;
     }
 
@@ -28,7 +25,7 @@ export function SendTransaction() {
     setIsLoading(true);
 
     try {
-      const ethersProvider = new BrowserProvider(walletProvider);
+      const ethersProvider = new BrowserProvider(provider);
       const signer = new JsonRpcSigner(ethersProvider, address!);
       const tx = {
         to: testAddress,
