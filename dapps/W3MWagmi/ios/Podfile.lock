@@ -1,5 +1,11 @@
 PODS:
   - boost (1.84.0)
+  - CoinbaseWalletSDK/Client (1.1.2)
+  - CoinbaseWalletSDK/CrossPlatform (1.1.2):
+    - CoinbaseWalletSDK/Client
+  - CoinbaseWalletSDKExpo (1.1.2):
+    - CoinbaseWalletSDK/CrossPlatform (= 1.1.2)
+    - ExpoModulesCore
   - DoubleConversion (1.1.6)
   - EXConstants (17.0.8):
     - ExpoModulesCore
@@ -1273,6 +1279,27 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.11.0):
     - React-Core
+  - react-native-mmkv (3.3.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-safe-area-context (5.3.0):
@@ -1973,6 +2000,7 @@ PODS:
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
+  - "CoinbaseWalletSDKExpo (from `../node_modules/@coinbase/wallet-mobile-sdk/ios`)"
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - Expo (from `../node_modules/expo`)
@@ -2020,6 +2048,7 @@ DEPENDENCIES:
   - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
   - react-native-config (from `../node_modules/react-native-config`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
+  - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -2065,12 +2094,15 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - CoinbaseWalletSDK
     - Sentry
     - SocketRocket
 
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
+  CoinbaseWalletSDKExpo:
+    :path: "../node_modules/@coinbase/wallet-mobile-sdk/ios"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXConstants:
@@ -2162,6 +2194,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-config"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
+  react-native-mmkv:
+    :path: "../node_modules/react-native-mmkv"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
@@ -2249,6 +2283,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
+  CoinbaseWalletSDK: f8cef9d72e86d6ac4782e4d0054baf9302cf05bb
+  CoinbaseWalletSDKExpo: ca2f2a1e307701a04f06ffc746192ba797ba5b32
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EXConstants: fcfc75800824ac2d5c592b5bc74130bad17b146b
   Expo: 00d0b7e489e495472fa3d5ac20e267d174fe0c72
@@ -2262,7 +2298,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   hermes-engine: 1f783c3d53940aed0d2c84586f0b7a85ab7827ef
-  RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
+  RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: f5c19ebdb8804b53ed029123eb69914356192fc8
   RCTRequired: 6ae6cebe470486e0e0ce89c1c0eabb998e7c51f4
   RCTTypeSafety: 50d6ec72a3d13cf77e041ff43a0617050fb98e3f
@@ -2294,6 +2330,7 @@ SPEC CHECKSUMS:
   react-native-compat: 7756fe07924b6d59c0c8ad03afff83ad5473b434
   react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
+  react-native-mmkv: c969437e688f281c34d90310d5e05bbd5f8732a1
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-safe-area-context: 0f14bce545abcdfbff79ce2e3c78c109f0be283e
   react-native-webview: 44edb564b5bee25f3cdb4bfa8b45d6ae9d3dedec

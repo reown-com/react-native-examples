@@ -2610,24 +2610,24 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@reown/appkit-bitcoin-react-native@0.0.0-feat-multichain-20250725133522":
-  version "0.0.0-feat-multichain-20250725133522"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-0.0.0-feat-multichain-20250725133522.tgz#22409ca2a4865f914b60a4a0291eb8c6e9a6f1ce"
-  integrity sha512-N+F8ZKtrpLZK/o0kLuTF4mpc/u5Bcp0eFP/J7Cmv1qxz5tYxDPqHp0/YS8arjzVY+0Qr0a9IdHos+e7LhTpFUw==
+"@reown/appkit-bitcoin-react-native@0.0.0-feat-multichain-20250725183909":
+  version "0.0.0-feat-multichain-20250725183909"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-0.0.0-feat-multichain-20250725183909.tgz#fc1f936d6b6baecbc65a67bcbc3720fe1cb62910"
+  integrity sha512-WKuDH14iwM3q4pnmUe8XulXO5cTR5JVDutbsb5sZogjxYMYa2zhA21QiCwtlS7Hwar1ZKT2Oogq9EdgYS/uZMg==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725133522"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
 
-"@reown/appkit-coinbase-react-native@0.0.0-feat-multichain-20250725133522":
-  version "0.0.0-feat-multichain-20250725133522"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-0.0.0-feat-multichain-20250725133522.tgz#2b6514a15f98a2233f61e69f7b925f8f0a323f69"
-  integrity sha512-VlrsaXUXUlTtycuLnT2XkDo6XfquhJeiWvkTQ5E/jB4IgAQJGF1prkig8tMueaXSi7x6X7H+FSLEZ8huA+m8hQ==
+"@reown/appkit-coinbase-react-native@0.0.0-feat-multichain-20250725183909":
+  version "0.0.0-feat-multichain-20250725183909"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-0.0.0-feat-multichain-20250725183909.tgz#3022eecc02d6f5dbdc45e9dc7e7455fcc86158d9"
+  integrity sha512-CU1A1wwiZB9CGTyWUePS66N3XUixoaPw3YbSRpnJEjzw+LFgXZZI5AJBzgQpRpVKeDlQ5LKJuYMX37Vg1BFB1g==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725133522"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
 
-"@reown/appkit-common-react-native@0.0.0-feat-multichain-20250725133522":
-  version "0.0.0-feat-multichain-20250725133522"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-feat-multichain-20250725133522.tgz#c2123721ed3a3486b9fbc1a2b1bbd976d06bbbe7"
-  integrity sha512-BqshLIkfUzfDs2NEtKK3WzoRzHRWscrgIY3gfq2fvFCSa/UR7gH6W0wxgGBwh1ZORE0BtKTYyG91rswcIgAjwQ==
+"@reown/appkit-common-react-native@0.0.0-feat-multichain-20250725183909":
+  version "0.0.0-feat-multichain-20250725183909"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-feat-multichain-20250725183909.tgz#bc352bb33d450979d49c5f413e7f98cd8bff76b7"
+  integrity sha512-B+iQ3P4ghBGTIuI+3JfUAR0UxrMfmXe1po82JCc5Y/9L1LENBcSptTrkJJYumYyLGII6TNUoY9N1TuOIIxoduA==
   dependencies:
     bignumber.js "9.1.2"
     dayjs "1.11.10"
@@ -2652,23 +2652,24 @@
     valtio "1.13.2"
     viem ">=2.29.0"
 
-"@reown/appkit-core-react-native@0.0.0-feat-multichain-20250725133522":
-  version "0.0.0-feat-multichain-20250725133522"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-feat-multichain-20250725133522.tgz#9a1a0be45a264e1593f53fb07ccec84268a0165d"
-  integrity sha512-x2QGfFS1s9OatYFecCIdeY0l+W510LEdXgOo3igq5OuUtVrTo2RN4GIBN/UPv3j1F9UTfKt518w65EdO63Fpdw==
+"@reown/appkit-core-react-native@0.0.0-feat-multichain-20250725183909":
+  version "0.0.0-feat-multichain-20250725183909"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-feat-multichain-20250725183909.tgz#9271844b08b5e78777e8248034e5c86c7bdd0c7a"
+  integrity sha512-7gW8vKjnatZogKLKMa1+9/EKOgLZdVUuzM90OzjpKerndkx+1LfuwQYfxrduQWidyovDCwkgTNtNvujeh3Recw==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725133522"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
     countries-and-timezones "3.7.2"
-    valtio "1.13.2"
+    derive-valtio "0.2.0"
+    valtio "2.1.5"
 
-"@reown/appkit-ethers-react-native@0.0.0-feat-multichain-20250725133522":
-  version "0.0.0-feat-multichain-20250725133522"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-0.0.0-feat-multichain-20250725133522.tgz#f4a3d3f66d0d4cd4a3e996f71efaabff9e3511f0"
-  integrity sha512-oD1xCAZdp6MikKXysSiHY0kKhf6RI/hfXGMDVn7hK//X5v+1Z+cNSf+PipAuJFrRA+9rCUcPqKN2oAihnHmicQ==
+"@reown/appkit-ethers-react-native@0.0.0-feat-multichain-20250725183909":
+  version "0.0.0-feat-multichain-20250725183909"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-0.0.0-feat-multichain-20250725183909.tgz#8ff4b4eaa03f6a38d748f2d0e74b126d9d17366e"
+  integrity sha512-4Umd22lHA+BXVZL8aIJwXv/v9Q682GwaQQNxh52Y6osNgt4jPnCbneCsChsWC0MszTy6ba1GbT6my42w9FkR1A==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725133522"
-    "@reown/appkit-react-native" "0.0.0-feat-multichain-20250725133522"
-    "@reown/appkit-siwe-react-native" "0.0.0-feat-multichain-20250725133522"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-siwe-react-native" "0.0.0-feat-multichain-20250725183909"
     "@walletconnect/ethereum-provider" "2.21.5"
 
 "@reown/appkit-pay@1.7.8":
@@ -2690,18 +2691,18 @@
   dependencies:
     buffer "6.0.3"
 
-"@reown/appkit-react-native@0.0.0-feat-multichain-20250725133522":
-  version "0.0.0-feat-multichain-20250725133522"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-0.0.0-feat-multichain-20250725133522.tgz#f96d9e420091d0f922f74a2ed1c5842a9aece9f0"
-  integrity sha512-LdGWAKc4MG83Wyt8gBf1wh7bCGEWwsRLj284E3VCjqv7htIBzTVgUBNVN/gj/QdZDvsk4LlEvLWNZaVC3Y/qOg==
+"@reown/appkit-react-native@0.0.0-feat-multichain-20250725183909":
+  version "0.0.0-feat-multichain-20250725183909"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-0.0.0-feat-multichain-20250725183909.tgz#6a9589bc69622cfa95bf2d1f0d23a4ad544f9685"
+  integrity sha512-smCFSyz5AdmJ77qIZH5Xvx4ZwwyjMOmTbRNjPWDnAb3reoIFb0VC5IpssZBaf0Sm4T89TINCxkBPDblTSi/ivA==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725133522"
-    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250725133522"
-    "@reown/appkit-siwe-react-native" "0.0.0-feat-multichain-20250725133522"
-    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250725133522"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-siwe-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250725183909"
     "@walletconnect/universal-provider" "2.21.5"
     react-native-modal ">=13"
-    valtio "1.13.2"
+    valtio "2.1.5"
 
 "@reown/appkit-scaffold-ui@1.7.8":
   version "1.7.8"
@@ -2715,32 +2716,32 @@
     "@reown/appkit-wallet" "1.7.8"
     lit "3.3.0"
 
-"@reown/appkit-siwe-react-native@0.0.0-feat-multichain-20250725133522":
-  version "0.0.0-feat-multichain-20250725133522"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-0.0.0-feat-multichain-20250725133522.tgz#424b6f32b04c98befc7fc70fc17237d336b264e1"
-  integrity sha512-/rpvjSJHskghhW45X3LbUcd+OxbzwVahdEOHhozaUccBnK3eJCUWC5IZ4WD6iRXaQWCRIvaYrv4mHp9CkwVIqQ==
+"@reown/appkit-siwe-react-native@0.0.0-feat-multichain-20250725183909":
+  version "0.0.0-feat-multichain-20250725183909"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-0.0.0-feat-multichain-20250725183909.tgz#2c7d6bd83b5ddb3bca2850cfde8d03b48618af85"
+  integrity sha512-jp+Rd3OqTbA0b7FQBHKR4U76s+HSy8FfO5ygdT5mtJXip7y8GKlRx4NFpGNtoqiWiqp+Dg39CtoVatR3nbXu0g==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725133522"
-    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250725133522"
-    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250725133522"
-    valtio "1.13.2"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250725183909"
+    valtio "2.1.5"
 
-"@reown/appkit-solana-react-native@0.0.0-feat-multichain-20250725133522":
-  version "0.0.0-feat-multichain-20250725133522"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-0.0.0-feat-multichain-20250725133522.tgz#dc5ca9653cc6a0d0abb0253c58f7f4b4e81d999f"
-  integrity sha512-O8nSEA0K+BaRoE87z+VKsb2+I++lzqC7iS33k7IcTGbA00pbszf2v/pSUowV9R8aEwlTk8W9lvUPqK5txHDyVA==
+"@reown/appkit-solana-react-native@0.0.0-feat-multichain-20250725183909":
+  version "0.0.0-feat-multichain-20250725183909"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-0.0.0-feat-multichain-20250725183909.tgz#05f0b52abcf8049ba3c105f6cd9be84fc1724244"
+  integrity sha512-ZPn9+QF/JhAJMZYF9PyNX1Ip+6lJNqMBSTJoBTJaSQvm3FIKDaq/byrPj+/iSRpWMwPcwwbUPXFfeWAkgbTw4A==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725133522"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
     "@solana/web3.js" "1.98.2"
     bs58 "6.0.0"
     tweetnacl "1.0.3"
 
-"@reown/appkit-ui-react-native@0.0.0-feat-multichain-20250725133522":
-  version "0.0.0-feat-multichain-20250725133522"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-feat-multichain-20250725133522.tgz#d8867d9531cbfcb73d24126a0152203b873a2de3"
-  integrity sha512-ZazRvxB7zhBgsygku2PNcv51OdNq5Vy4Oam3+pP3j0pJlgRX+jMi1nw9Suwm/9JHwrnKb3M4A/Pmp8NdlYLuFQ==
+"@reown/appkit-ui-react-native@0.0.0-feat-multichain-20250725183909":
+  version "0.0.0-feat-multichain-20250725183909"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-feat-multichain-20250725183909.tgz#beaa918d39aa9ef48f251831d7fbe7900ff68c2b"
+  integrity sha512-JmhWuZsQGgY9Yl2M26ES0z63ZajuaV1jF5nAMtUS/dAEiABr9g2delQFMEa7U2SUif3Nk946OXwbcvHICT8HaA==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725133522"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
     polished "4.3.1"
     qrcode "1.5.3"
 
@@ -4878,6 +4879,11 @@ derive-valtio@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/derive-valtio/-/derive-valtio-0.1.0.tgz#4b9fb393dfefccfef15fcbbddd745dd22d5d63d7"
   integrity sha512-OCg2UsLbXK7GmmpzMXhYkdO64vhJ1ROUUGaTFyHjVwEdMEcTTRj7W1TxLbSBxdY8QLBPCcp66MTyaSy0RpO17A==
+
+derive-valtio@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/derive-valtio/-/derive-valtio-0.2.0.tgz#0d824101ca58b2158a84c5bd34c051d2bfe88668"
+  integrity sha512-6slhaFHtfaL3t5dLYaQt6s4G2xZymhu0Ktdl7OMeVk8+46RgR8ft6FL0Tr4F31W+yPH03nJe1SSP4JFy2hSMRA==
 
 destr@^2.0.1, destr@^2.0.2:
   version "2.0.2"
@@ -8800,6 +8806,11 @@ proxy-compare@2.6.0:
   resolved "https://registry.yarnpkg.com/proxy-compare/-/proxy-compare-2.6.0.tgz#5e8c8b5c3af7e7f17e839bf6cf1435bcc4d315b0"
   integrity sha512-8xuCeM3l8yqdmbPoYeLbrAXCBWu19XEYc5/F28f5qOaoAIMyfmBUkl5axiK+x9olUvRlcekvnm98AP9RDngOIw==
 
+proxy-compare@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/proxy-compare/-/proxy-compare-3.0.1.tgz#3262cff3a25a6dedeaa299f6cf2369d6f7588a94"
+  integrity sha512-V9plBAt3qjMlS1+nC8771KNf6oJ12gExvaxnNzN/9yVRLdTv/lc+oJlnSzrdYDAvBfTStPCoiaCOTmTs0adv7Q==
+
 pump@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/pump/-/pump-3.0.0.tgz#b4a2116815bde2f4e1ea602354e8c75565107a64"
@@ -10412,6 +10423,13 @@ valtio@1.13.2:
     derive-valtio "0.1.0"
     proxy-compare "2.6.0"
     use-sync-external-store "1.2.0"
+
+valtio@2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/valtio/-/valtio-2.1.5.tgz#3bd19a39a174d4f427553654d6e54581fd403c79"
+  integrity sha512-vsh1Ixu5mT0pJFZm+Jspvhga5GzHUTYv0/+Th203pLfh3/wbHwxhu/Z2OkZDXIgHfjnjBns7SN9HNcbDvPmaGw==
+  dependencies:
+    proxy-compare "^3.0.1"
 
 vary@~1.1.2:
   version "1.1.2"
