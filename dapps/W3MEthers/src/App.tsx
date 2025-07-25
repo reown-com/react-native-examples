@@ -13,6 +13,7 @@ import {
   AppKitProvider,
   solana,
   bitcoin,
+  NetworkButton,
 } from '@reown/appkit-react-native';
 import {
   SolanaAdapter,
@@ -107,6 +108,7 @@ function App(): React.JSX.Element {
         </Text>
         <FlexView style={styles.buttonContainer}>
           <AppKitButton balance="show" />
+          <NetworkButton />
           <ActionsView />
         </FlexView>
         <AppKit />
