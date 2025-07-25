@@ -1,3 +1,4 @@
+import 'text-encoding'; //needed for solana web3js
 import '@walletconnect/react-native-compat';
 
 import React, {useEffect} from 'react';
@@ -11,32 +12,29 @@ import {
   AppKit,
   AppKitProvider,
   solana,
+  bitcoin,
 } from '@reown/appkit-react-native';
-// import {
-//   SolanaAdapter,
-//   PhantomConnector,
-// } from '@reown/appkit-solana-react-native';
+import {
+  SolanaAdapter,
+  PhantomConnector,
+} from '@reown/appkit-solana-react-native';
+import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
 import {CoinbaseConnector} from '@reown/appkit-coinbase-react-native';
 import {FlexView, Text} from '@reown/appkit-ui-react-native';
 import {EthersAdapter} from '@reown/appkit-ethers-react-native';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {ENV_PROJECT_ID} from '@env';
-// import {mainnet, polygon} from 'viem/chains';
 
-import {SignMessage} from './views/SignMessage';
-import {SendTransaction} from './views/SendTransaction';
-import {ReadContract} from './views/ReadContract';
-import {WriteContract} from './views/WriteContract';
-import {SignTypedDataV4} from './views/SignTypedDataV4';
 import {mainnet, polygon} from './utils/ChainUtils';
 import {siweConfig} from './utils/SiweUtils';
 import {storage} from './utils/StorageUtil';
+import {ActionsView} from './views/ActionsView';
 
 // 1. Get projectId at https://cloud.reown.com
 const projectId = ENV_PROJECT_ID;
 
 // 2. Define your chains
-const networks = [mainnet, polygon, solana];
+const networks = [mainnet, polygon, solana, bitcoin];
 
 // 3. Create config
 const metadata = {
@@ -59,11 +57,15 @@ const ethersAdapter = new EthersAdapter({
   projectId,
 });
 
-// const solanaAdapter = new SolanaAdapter({
-//   projectId,
-// });
+const solanaAdapter = new SolanaAdapter({
+  projectId,
+});
 
-const adapters = [ethersAdapter];
+const bitcoinAdapter = new BitcoinAdapter({
+  projectId,
+});
+
+const adapters = [ethersAdapter, solanaAdapter, bitcoinAdapter];
 
 // 3. Create modal
 const appKit = createAppKit({
@@ -76,7 +78,7 @@ const appKit = createAppKit({
   clipboardClient,
   enableAnalytics: true,
   extraConnectors: [
-    // new PhantomConnector({cluster: 'mainnet-beta'}),
+    new PhantomConnector({cluster: 'mainnet-beta'}),
     new CoinbaseConnector({storage: new MMKV()}),
   ],
   features: {
@@ -105,11 +107,7 @@ function App(): React.JSX.Element {
         </Text>
         <FlexView style={styles.buttonContainer}>
           <AppKitButton balance="show" />
-          <SignMessage />
-          <SendTransaction />
-          <SignTypedDataV4 />
-          <ReadContract />
-          <WriteContract />
+          <ActionsView />
         </FlexView>
         <AppKit />
       </AppKitProvider>
