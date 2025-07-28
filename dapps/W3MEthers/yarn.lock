@@ -2610,24 +2610,24 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@reown/appkit-bitcoin-react-native@0.0.0-feat-multichain-20250725183909":
-  version "0.0.0-feat-multichain-20250725183909"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-0.0.0-feat-multichain-20250725183909.tgz#fc1f936d6b6baecbc65a67bcbc3720fe1cb62910"
-  integrity sha512-WKuDH14iwM3q4pnmUe8XulXO5cTR5JVDutbsb5sZogjxYMYa2zhA21QiCwtlS7Hwar1ZKT2Oogq9EdgYS/uZMg==
+"@reown/appkit-bitcoin-react-native@0.0.0-chore-bump-builder-20250728195048":
+  version "0.0.0-chore-bump-builder-20250728195048"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-0.0.0-chore-bump-builder-20250728195048.tgz#3985779b408fe6c93c9e479171a52b376f772fe7"
+  integrity sha512-UrjIBsG66cIliuoEuHTrFM0PmOLn1tBw+GTJN2eyxM3Oo1l55OFvazvbucVFrRCa/LoIoJ2hfGOf3ccOXpbQgA==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-common-react-native" "0.0.0-chore-bump-builder-20250728195048"
 
-"@reown/appkit-coinbase-react-native@0.0.0-feat-multichain-20250725183909":
-  version "0.0.0-feat-multichain-20250725183909"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-0.0.0-feat-multichain-20250725183909.tgz#3022eecc02d6f5dbdc45e9dc7e7455fcc86158d9"
-  integrity sha512-CU1A1wwiZB9CGTyWUePS66N3XUixoaPw3YbSRpnJEjzw+LFgXZZI5AJBzgQpRpVKeDlQ5LKJuYMX37Vg1BFB1g==
+"@reown/appkit-coinbase-react-native@0.0.0-chore-bump-builder-20250728195048":
+  version "0.0.0-chore-bump-builder-20250728195048"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-0.0.0-chore-bump-builder-20250728195048.tgz#8e28a64e13b44c75b1ec9dd74d44753fae499686"
+  integrity sha512-B2Ij1hBtPc10lZ2TQupHTs9h7/D39ZW162D6E1vcfFR8ayA/bUGojfNL5LNaakatq3HTpQmc8EzaWKMaw44vog==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-common-react-native" "0.0.0-chore-bump-builder-20250728195048"
 
-"@reown/appkit-common-react-native@0.0.0-feat-multichain-20250725183909":
-  version "0.0.0-feat-multichain-20250725183909"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-feat-multichain-20250725183909.tgz#bc352bb33d450979d49c5f413e7f98cd8bff76b7"
-  integrity sha512-B+iQ3P4ghBGTIuI+3JfUAR0UxrMfmXe1po82JCc5Y/9L1LENBcSptTrkJJYumYyLGII6TNUoY9N1TuOIIxoduA==
+"@reown/appkit-common-react-native@0.0.0-chore-bump-builder-20250728195048":
+  version "0.0.0-chore-bump-builder-20250728195048"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-chore-bump-builder-20250728195048.tgz#4b63ce1d4a7b860f3f89f52fdb7769297f7767db"
+  integrity sha512-1lLtpl3xAANmTnRKJdAzgJ/pzmF17CNd8+0f2JcMMqW3u8+ufPANywXG6ulBF4+GoFEQoXJ2XEZzRPdKj2RZSA==
   dependencies:
     bignumber.js "9.1.2"
     dayjs "1.11.10"
@@ -2652,24 +2652,24 @@
     valtio "1.13.2"
     viem ">=2.29.0"
 
-"@reown/appkit-core-react-native@0.0.0-feat-multichain-20250725183909":
-  version "0.0.0-feat-multichain-20250725183909"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-feat-multichain-20250725183909.tgz#9271844b08b5e78777e8248034e5c86c7bdd0c7a"
-  integrity sha512-7gW8vKjnatZogKLKMa1+9/EKOgLZdVUuzM90OzjpKerndkx+1LfuwQYfxrduQWidyovDCwkgTNtNvujeh3Recw==
+"@reown/appkit-core-react-native@0.0.0-chore-bump-builder-20250728195048":
+  version "0.0.0-chore-bump-builder-20250728195048"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-chore-bump-builder-20250728195048.tgz#1cc91efb2d4898254ec62b20c75d2094a9eec8cc"
+  integrity sha512-tvuluP/oAYY5FmyKh0w9Oi3a4wqzytCz0rkAdYV3sLeU6YjpqjIun4AiOLhc3fvlBLQrUV9ZMC1a6nxbCwwadA==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-common-react-native" "0.0.0-chore-bump-builder-20250728195048"
     countries-and-timezones "3.7.2"
     derive-valtio "0.2.0"
     valtio "2.1.5"
 
-"@reown/appkit-ethers-react-native@0.0.0-feat-multichain-20250725183909":
-  version "0.0.0-feat-multichain-20250725183909"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-0.0.0-feat-multichain-20250725183909.tgz#8ff4b4eaa03f6a38d748f2d0e74b126d9d17366e"
-  integrity sha512-4Umd22lHA+BXVZL8aIJwXv/v9Q682GwaQQNxh52Y6osNgt4jPnCbneCsChsWC0MszTy6ba1GbT6my42w9FkR1A==
+"@reown/appkit-ethers-react-native@0.0.0-chore-bump-builder-20250728195048":
+  version "0.0.0-chore-bump-builder-20250728195048"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-0.0.0-chore-bump-builder-20250728195048.tgz#5dd058a61f745e56d8df24b6f759164cb11bb4f7"
+  integrity sha512-Yf4tUq35KwSmvEh3yLh1qVPnVS8oCSz3R+hSjz5NTdDPSoYmenwr+lGOznZN/1PP6xIoljpU5YW7vTDJPflu8w==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
-    "@reown/appkit-react-native" "0.0.0-feat-multichain-20250725183909"
-    "@reown/appkit-siwe-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-common-react-native" "0.0.0-chore-bump-builder-20250728195048"
+    "@reown/appkit-react-native" "0.0.0-chore-bump-builder-20250728195048"
+    "@reown/appkit-siwe-react-native" "0.0.0-chore-bump-builder-20250728195048"
     "@walletconnect/ethereum-provider" "2.21.5"
 
 "@reown/appkit-pay@1.7.8":
@@ -2691,15 +2691,15 @@
   dependencies:
     buffer "6.0.3"
 
-"@reown/appkit-react-native@0.0.0-feat-multichain-20250725183909":
-  version "0.0.0-feat-multichain-20250725183909"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-0.0.0-feat-multichain-20250725183909.tgz#6a9589bc69622cfa95bf2d1f0d23a4ad544f9685"
-  integrity sha512-smCFSyz5AdmJ77qIZH5Xvx4ZwwyjMOmTbRNjPWDnAb3reoIFb0VC5IpssZBaf0Sm4T89TINCxkBPDblTSi/ivA==
+"@reown/appkit-react-native@0.0.0-chore-bump-builder-20250728195048":
+  version "0.0.0-chore-bump-builder-20250728195048"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-0.0.0-chore-bump-builder-20250728195048.tgz#6c470012a41170a1968d20af38dbba7c80ad64b7"
+  integrity sha512-PLPMSV/o9x7VT8URrX/acEI3JtLeQB5JlLdBKjxvUNIxv3GPvlrWu//qN162orc+HhFr5rULZs5oUQA2qf0KNQ==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
-    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250725183909"
-    "@reown/appkit-siwe-react-native" "0.0.0-feat-multichain-20250725183909"
-    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-common-react-native" "0.0.0-chore-bump-builder-20250728195048"
+    "@reown/appkit-core-react-native" "0.0.0-chore-bump-builder-20250728195048"
+    "@reown/appkit-siwe-react-native" "0.0.0-chore-bump-builder-20250728195048"
+    "@reown/appkit-ui-react-native" "0.0.0-chore-bump-builder-20250728195048"
     "@walletconnect/universal-provider" "2.21.5"
     react-native-modal ">=13"
     valtio "2.1.5"
@@ -2716,32 +2716,32 @@
     "@reown/appkit-wallet" "1.7.8"
     lit "3.3.0"
 
-"@reown/appkit-siwe-react-native@0.0.0-feat-multichain-20250725183909":
-  version "0.0.0-feat-multichain-20250725183909"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-0.0.0-feat-multichain-20250725183909.tgz#2c7d6bd83b5ddb3bca2850cfde8d03b48618af85"
-  integrity sha512-jp+Rd3OqTbA0b7FQBHKR4U76s+HSy8FfO5ygdT5mtJXip7y8GKlRx4NFpGNtoqiWiqp+Dg39CtoVatR3nbXu0g==
+"@reown/appkit-siwe-react-native@0.0.0-chore-bump-builder-20250728195048":
+  version "0.0.0-chore-bump-builder-20250728195048"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-0.0.0-chore-bump-builder-20250728195048.tgz#52894443c0ca51e4baaed861a43031617bfe84ec"
+  integrity sha512-QuHj/xTBn5LXBWR8juzIkA1M7OAfib2LW8JV6c0CbgpCJYQjKipPqLlc8Cvfyf0NshC3POYWMPrtgHNKgTYvVg==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
-    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250725183909"
-    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-common-react-native" "0.0.0-chore-bump-builder-20250728195048"
+    "@reown/appkit-core-react-native" "0.0.0-chore-bump-builder-20250728195048"
+    "@reown/appkit-ui-react-native" "0.0.0-chore-bump-builder-20250728195048"
     valtio "2.1.5"
 
-"@reown/appkit-solana-react-native@0.0.0-feat-multichain-20250725183909":
-  version "0.0.0-feat-multichain-20250725183909"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-0.0.0-feat-multichain-20250725183909.tgz#05f0b52abcf8049ba3c105f6cd9be84fc1724244"
-  integrity sha512-ZPn9+QF/JhAJMZYF9PyNX1Ip+6lJNqMBSTJoBTJaSQvm3FIKDaq/byrPj+/iSRpWMwPcwwbUPXFfeWAkgbTw4A==
+"@reown/appkit-solana-react-native@0.0.0-chore-bump-builder-20250728195048":
+  version "0.0.0-chore-bump-builder-20250728195048"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-0.0.0-chore-bump-builder-20250728195048.tgz#26c83ebe1c2b45bc87cb69c18dd4123f436dc3e9"
+  integrity sha512-nAyR87XoxJEyTTaPYjR46W1ZinCgASn7uowL6X7u0oaWfHYCQ1wvI7heeIMJqijIjql3+4ZOOYP3nTita6odzA==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-common-react-native" "0.0.0-chore-bump-builder-20250728195048"
     "@solana/web3.js" "1.98.2"
     bs58 "6.0.0"
     tweetnacl "1.0.3"
 
-"@reown/appkit-ui-react-native@0.0.0-feat-multichain-20250725183909":
-  version "0.0.0-feat-multichain-20250725183909"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-feat-multichain-20250725183909.tgz#beaa918d39aa9ef48f251831d7fbe7900ff68c2b"
-  integrity sha512-JmhWuZsQGgY9Yl2M26ES0z63ZajuaV1jF5nAMtUS/dAEiABr9g2delQFMEa7U2SUif3Nk946OXwbcvHICT8HaA==
+"@reown/appkit-ui-react-native@0.0.0-chore-bump-builder-20250728195048":
+  version "0.0.0-chore-bump-builder-20250728195048"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-chore-bump-builder-20250728195048.tgz#13a28aa2bd2b19309751f5c82adfaae2502b284c"
+  integrity sha512-ZrVDn7XfY/CQ9ZnBC5K0Zt0l/Orin7HJaV8e+7Jw2Q9FbiR6Xb8p/OOqJ3hoaPIM47WndLKSud0rV+Hb8WWOEg==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250725183909"
+    "@reown/appkit-common-react-native" "0.0.0-chore-bump-builder-20250728195048"
     polished "4.3.1"
     qrcode "1.5.3"
 
@@ -3378,10 +3378,10 @@
     "@walletconnect/safe-json" "^1.0.2"
     pino "7.11.0"
 
-"@walletconnect/react-native-compat@2.18.1":
-  version "2.18.1"
-  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.18.1.tgz#c40e7dd7fc32c4f01fd44c237907d1c2581bcf4b"
-  integrity sha512-S4lbtH4loRNnNErrS6ZOk+Ixl4yqtOO4HLLJ9tdi9o9Q7if5efcgpoFMb69WaKf+pMdUPJ1JjFmKTxIPNJCBUw==
+"@walletconnect/react-native-compat@2.21.5":
+  version "2.21.5"
+  resolved "https://registry.yarnpkg.com/@walletconnect/react-native-compat/-/react-native-compat-2.21.5.tgz#ec73f4f9d4db41dad52a830123bf0a16db605e8d"
+  integrity sha512-FbL33ZoBUrTupsKGmOyXUSia4rMV6dasw6x+sUZq4qlYcn2r5ebnBc84VoIeQYzWOgEtFIxQzJijgBOHeRwzww==
   dependencies:
     events "3.3.0"
     fast-text-encoding "1.0.6"
