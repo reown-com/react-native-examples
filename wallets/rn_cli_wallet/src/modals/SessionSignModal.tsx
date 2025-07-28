@@ -30,7 +30,7 @@ export default function SessionSignModal() {
   // Get required request data
   const {topic, params} = requestEvent!;
   const {request, chainId} = params;
-  const chain = PresetsUtil.getChainData(chainId.split(':')[1]);
+  const chain = PresetsUtil.getChainData(chainId);
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
   const method = requestEvent?.params?.request?.method!;
 
@@ -71,6 +71,10 @@ export default function SessionSignModal() {
           topic,
           response,
         });
+        handleRedirect({
+          peerRedirect: peerMetadata?.redirect,
+          isLinkMode: isLinkMode,
+        });
       } catch (e) {
         setIsLoadingReject(false);
         console.log((e as Error).message, 'error');
@@ -79,7 +83,7 @@ export default function SessionSignModal() {
       setIsLoadingReject(false);
       ModalStore.close();
     }
-  }, [requestEvent, topic]);
+  }, [requestEvent, topic, peerMetadata, isLinkMode]);
 
   // Ensure request and wallet are defined
   if (!requestEvent || !session) {

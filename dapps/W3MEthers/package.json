@@ -1,5 +1,4 @@
 {
-  "name": "web3modal-ethers",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -21,13 +20,13 @@
     "@reown/appkit-bitcoin-react-native": "2.0.0-alpha.2",
     "@reown/appkit-react-native": "2.0.0-alpha.2",
     "@walletconnect/react-native-compat": "2.21.5",
-    "ethers": "6.10.0",
+    "ethers": "6.15.0",
     "expo": "^50.0.0",
     "react": "18.2.0",
     "react-native": "0.73.4",
     "react-native-get-random-values": "1.10.0",
     "react-native-mmkv": "2.11.0",
-    "react-native-modal": "13.0.1",
+    "react-native-modal": "14.0.0-rc.1",
     "react-native-svg": "14.1.0",
     "text-encoding": "^0.7.0"
   },

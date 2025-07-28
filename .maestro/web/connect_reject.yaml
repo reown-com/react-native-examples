@@ -1,0 +1,23 @@
+appId: com.walletconnect.web3modal.rnsample.internal
+name: AppKit Web to React Native Wallet Connection Rejected
+---
+- clearState
+- openLink:
+    link: https://appkit-lab.reown.com/library/wagmi/
+    browser: true
+- startRecording: "Web to Native Connection Rejected"
+- extendedWaitUntil:
+    notVisible: "Initializing..."
+    timeout: 10000
+- tapOn: "Connect Wallet"
+- scroll
+- scroll
+- tapOn: "React Native Sample Wallet React Native Sample Wallet"
+- tapOn: "Reject"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - back
+- assertVisible: "Connect Wallet"
+- stopRecording

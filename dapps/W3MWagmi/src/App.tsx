@@ -10,7 +10,6 @@ import {WagmiAdapter} from '@reown/appkit-wagmi-react-native';
 import {SolanaAdapter, PhantomConnector} from '@reown/appkit-solana-react-native';
 import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
 import {CoinbaseConnector} from '@reown/appkit-coinbase-react-native';
-// import {EthersAdapter} from '@reown/appkit-ethers-react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import { WagmiProvider } from 'wagmi';
@@ -55,10 +54,6 @@ const clipboardClient = {
     Clipboard.setString(value);
   },
 };
-
-// const ethersAdapter = new EthersAdapter({
-//   projectId,
-// });
 
 const wagmiAdapter = new WagmiAdapter({
   projectId,

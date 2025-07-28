@@ -84,6 +84,7 @@ const appKit = createAppKit({
   ],
   features: {
     swaps: true,
+    onramp: true,
   },
 });
 

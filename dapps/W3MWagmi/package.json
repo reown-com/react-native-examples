@@ -1,5 +1,4 @@
 {
-  "name": "appkit-rn-wagmi",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -55,8 +54,8 @@
     "react-native-webview": "13.13.4",
     "text-encoding": "^0.7.0",
     "tweetnacl": "1.0.3",
-    "viem": "2.29.2",
-    "wagmi": "2.15.2"
+    "viem": "2.33.1",
+    "wagmi": "2.16.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
