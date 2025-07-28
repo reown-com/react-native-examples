@@ -5436,42 +5436,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:0.0.0-chore-bump-builder-20250728195048":
-  version: 0.0.0-chore-bump-builder-20250728195048
-  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-chore-bump-builder-20250728195048"
+"@reown/appkit-bitcoin-react-native@npm:2.0.0-alpha.2":
+  version: 2.0.0-alpha.2
+  resolution: "@reown/appkit-bitcoin-react-native@npm:2.0.0-alpha.2"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-chore-bump-builder-20250728195048
+    "@reown/appkit-common-react-native": 2.0.0-alpha.2
   peerDependencies:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 1207fd2513ee078838b67a3f9451c592e036515123d1c333fc8c39659daddffbc54558f77a72474055cdf9871b94cd2f0dcb29bc5ea6fc63cda49e90330af925
+  checksum: 503e8b6e5c4216448fd4ec82d79330afd13a94e6dff8d9581244d9238bb851b3e331ae363e0a2bbc99e0c7c7d4d2d0953d6eb680d5a4cf2a9f5e1cd019577049
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-react-native@npm:0.0.0-chore-bump-builder-20250728195048":
-  version: 0.0.0-chore-bump-builder-20250728195048
-  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-chore-bump-builder-20250728195048"
+"@reown/appkit-coinbase-react-native@npm:2.0.0-alpha.2":
+  version: 2.0.0-alpha.2
+  resolution: "@reown/appkit-coinbase-react-native@npm:2.0.0-alpha.2"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-chore-bump-builder-20250728195048
+    "@reown/appkit-common-react-native": 2.0.0-alpha.2
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.1.2"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: b4210d9c9a022ffae427d2cb90fd0b96f1c90daacf1b9fb84e49a37ab0117f065694dcc08c31c2495a35c5674d01f437bb11ef396f1f0b6d5d8789ef805e428b
+  checksum: a5c0f2d6c675f234e4cb1915190cac9cb6cbb26627269d64d3a5f5a4dc27b53394dcc23f974ca4ab94aa37b56ed104afa3cc9eda649521aced33e287e85d1c7d
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-chore-bump-builder-20250728195048":
-  version: 0.0.0-chore-bump-builder-20250728195048
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-chore-bump-builder-20250728195048"
+"@reown/appkit-common-react-native@npm:2.0.0-alpha.2":
+  version: 2.0.0-alpha.2
+  resolution: "@reown/appkit-common-react-native@npm:2.0.0-alpha.2"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
-  checksum: cc33b26162bdb74319ea59f37eb37d2c6928c83aaa0231b12b0ed3120a349e4872272e6cb983d7ab3178268fbd2ea4b63a65638aedc4abdfe46ad444b028bb09
+  checksum: d7126d33cf412dbd2d61708992ccc02daeacbb3b94a00d9a9332dbcac9e439f1ae501baba1b796e694eb81079f526967e21c7d92a94cdcc932caaf937ffb1cec
   languageName: node
   linkType: hard
 
@@ -5523,11 +5523,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-chore-bump-builder-20250728195048":
-  version: 0.0.0-chore-bump-builder-20250728195048
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-chore-bump-builder-20250728195048"
+"@reown/appkit-core-react-native@npm:2.0.0-alpha.2":
+  version: 2.0.0-alpha.2
+  resolution: "@reown/appkit-core-react-native@npm:2.0.0-alpha.2"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-chore-bump-builder-20250728195048
+    "@reown/appkit-common-react-native": 2.0.0-alpha.2
     countries-and-timezones: 3.7.2
     derive-valtio: 0.2.0
     valtio: 2.1.5
@@ -5535,17 +5535,17 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: d22a52cb19b432051914c465224676d3e23609d44ee4c743bb294efac2dc25c788aac41e61e7acf42f9e7b9a70561a843f152c80e42626d643d1688686c795db
+  checksum: cf056aa3611dece3bd2598ddd0ee22ec37c802ae54408272022b983934306f6f1ee6c3c4ad9731387826ce5075d2efe95895235a813dd34d2ca7bb09753cd6ff
   languageName: node
   linkType: hard
 
-"@reown/appkit-ethers-react-native@npm:0.0.0-chore-bump-builder-20250728195048":
-  version: 0.0.0-chore-bump-builder-20250728195048
-  resolution: "@reown/appkit-ethers-react-native@npm:0.0.0-chore-bump-builder-20250728195048"
+"@reown/appkit-ethers-react-native@npm:2.0.0-alpha.2":
+  version: 2.0.0-alpha.2
+  resolution: "@reown/appkit-ethers-react-native@npm:2.0.0-alpha.2"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-siwe-react-native": 0.0.0-chore-bump-builder-20250728195048
+    "@reown/appkit-common-react-native": 2.0.0-alpha.2
+    "@reown/appkit-react-native": 2.0.0-alpha.2
+    "@reown/appkit-siwe-react-native": 2.0.0-alpha.2
     "@walletconnect/ethereum-provider": 2.21.5
   peerDependencies:
     "@react-native-community/netinfo": "*"
@@ -5553,7 +5553,7 @@ __metadata:
     react: ">=18"
     react-native: ">=0.72"
     react-native-get-random-values: "*"
-  checksum: d7a55f3c7aa4a627ac3f4925513206d299767b2550e168182a3da2e8e86320196544d50c0d0a4f95029401d01d7d7a77f4427f9e60ab0610d0539355539dc670
+  checksum: c2c5861956db09aa404297c2095fdac5839ae0bd68c577726eeb74b9e5a211aa85fb875ca74b56648649838d8d9573434899addc3307c4e3266ad9a08a61e319
   languageName: node
   linkType: hard
 
@@ -5589,14 +5589,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:0.0.0-chore-bump-builder-20250728195048":
-  version: 0.0.0-chore-bump-builder-20250728195048
-  resolution: "@reown/appkit-react-native@npm:0.0.0-chore-bump-builder-20250728195048"
+"@reown/appkit-react-native@npm:2.0.0-alpha.2":
+  version: 2.0.0-alpha.2
+  resolution: "@reown/appkit-react-native@npm:2.0.0-alpha.2"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-core-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-siwe-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-ui-react-native": 0.0.0-chore-bump-builder-20250728195048
+    "@reown/appkit-common-react-native": 2.0.0-alpha.2
+    "@reown/appkit-core-react-native": 2.0.0-alpha.2
+    "@reown/appkit-siwe-react-native": 2.0.0-alpha.2
+    "@reown/appkit-ui-react-native": 2.0.0-alpha.2
     "@walletconnect/universal-provider": 2.21.5
     react-native-modal: ">=13"
     valtio: 2.1.5
@@ -5606,7 +5606,7 @@ __metadata:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: 2a30d2422673b3aebc5fab744aab2987bff338ec11a4638980ba1ef05693785d5e914fb0c5239ccce98fbe7e514b4c5f434f370fdcd85872c5bf42d7b77f0b47
+  checksum: a9dc4eeb26157ed586f57793201dae4c9b25934135629d0ee8a371b93b342de4c0d91c022c652e11ac79a5d699dc355041135f93624b5f32da61f4354e52ff88
   languageName: node
   linkType: hard
 
@@ -5638,25 +5638,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-chore-bump-builder-20250728195048":
-  version: 0.0.0-chore-bump-builder-20250728195048
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-chore-bump-builder-20250728195048"
+"@reown/appkit-siwe-react-native@npm:2.0.0-alpha.2":
+  version: 2.0.0-alpha.2
+  resolution: "@reown/appkit-siwe-react-native@npm:2.0.0-alpha.2"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-core-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-ui-react-native": 0.0.0-chore-bump-builder-20250728195048
+    "@reown/appkit-common-react-native": 2.0.0-alpha.2
+    "@reown/appkit-core-react-native": 2.0.0-alpha.2
+    "@reown/appkit-ui-react-native": 2.0.0-alpha.2
     valtio: 2.1.5
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: 57b8df604bf00b1cff8fe90a865a785c3aee42ec1bb86cdd0ab95d06b0bd10d98403ab62425b3441dd458f6336aa0c944b13a097ec757f0300ed21d011c1c38e
+  checksum: 557d68b90b758ca95c9e3ec90f7272844866ffddcf078a9e5c472cae98140212d3f66fee52f07f4dc5f9b9d22598b93f771e18708244f7dd26a2b93e30bccd14
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:0.0.0-chore-bump-builder-20250728195048":
-  version: 0.0.0-chore-bump-builder-20250728195048
-  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-chore-bump-builder-20250728195048"
+"@reown/appkit-solana-react-native@npm:2.0.0-alpha.2":
+  version: 2.0.0-alpha.2
+  resolution: "@reown/appkit-solana-react-native@npm:2.0.0-alpha.2"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-chore-bump-builder-20250728195048
+    "@reown/appkit-common-react-native": 2.0.0-alpha.2
     "@solana/web3.js": 1.98.2
     bs58: 6.0.0
     tweetnacl: 1.0.3
@@ -5664,22 +5664,22 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 7af0b99a25a1e481e9e6edfb6410df7eb257e4cacf8e0183827148d7f4294bd24fb4cfcbed31d6a2adce1e62078bca386167acb35b0ae645dae292d9531d08f2
+  checksum: f3000a5627100e18d1c0e7d852110bb5218a25b6cf378c180f1fb5ab4c6f30024a0a1cb6ee19da336407c95c27587b0512668f2606c8ade47d165898432b629a
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-chore-bump-builder-20250728195048":
-  version: 0.0.0-chore-bump-builder-20250728195048
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-chore-bump-builder-20250728195048"
+"@reown/appkit-ui-react-native@npm:2.0.0-alpha.2":
+  version: 2.0.0-alpha.2
+  resolution: "@reown/appkit-ui-react-native@npm:2.0.0-alpha.2"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-chore-bump-builder-20250728195048
+    "@reown/appkit-common-react-native": 2.0.0-alpha.2
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: be1e0b2cef92567c937606481b82559c4b80230ab2651e34e640c927d029eb565088764c0007f4289dd2f5038630ff02fae46e9d25743bb6948c583d6589aa14
+  checksum: 32fcf6745027284314404a39e77ce9825e5fac1eefb09cad4543561b4e9b103c834fb429d63a081aec1b8d02a99d744095153f7621d8d8f5d5fe708dc0437a4d
   languageName: node
   linkType: hard
 
@@ -5745,13 +5745,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-chore-bump-builder-20250728195048":
-  version: 0.0.0-chore-bump-builder-20250728195048
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-chore-bump-builder-20250728195048"
+"@reown/appkit-wagmi-react-native@npm:2.0.0-alpha.2":
+  version: 2.0.0-alpha.2
+  resolution: "@reown/appkit-wagmi-react-native@npm:2.0.0-alpha.2"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-siwe-react-native": 0.0.0-chore-bump-builder-20250728195048
+    "@reown/appkit-common-react-native": 2.0.0-alpha.2
+    "@reown/appkit-react-native": 2.0.0-alpha.2
+    "@reown/appkit-siwe-react-native": 2.0.0-alpha.2
   peerDependencies:
     "@react-native-community/netinfo": "*"
     "@walletconnect/react-native-compat": ">=2.16.1"
@@ -5760,7 +5760,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: 51808188e7ec75425b6557eb5e8b7ebc65fe21350289dec8f8564c04aa36acb2b0dbe32a2daf18d675e7f894201ba9711cf2dd92ba68d8c7d89ee6c19b814bf2
+  checksum: 1c6e76524fb49c9f8aac8262d2fe550eb4bac4152b7c2bbaa64a9ddd9c63d47eb5434118fe5de2fea05ff7299ea365a9154ab6a26b51db1bd7cd12c86cd26c6f
   languageName: node
   linkType: hard
 
@@ -7831,12 +7831,12 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-bitcoin-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-coinbase-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-ethers-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-solana-react-native": 0.0.0-chore-bump-builder-20250728195048
-    "@reown/appkit-wagmi-react-native": 0.0.0-chore-bump-builder-20250728195048
+    "@reown/appkit-bitcoin-react-native": 2.0.0-alpha.2
+    "@reown/appkit-coinbase-react-native": 2.0.0-alpha.2
+    "@reown/appkit-ethers-react-native": 2.0.0-alpha.2
+    "@reown/appkit-react-native": 2.0.0-alpha.2
+    "@reown/appkit-solana-react-native": 2.0.0-alpha.2
+    "@reown/appkit-wagmi-react-native": 2.0.0-alpha.2
     "@sentry/react-native": ^6.14.0
     "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2
