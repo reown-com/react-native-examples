@@ -1252,7 +1252,7 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
-  - react-native-compat (2.21.4):
+  - react-native-compat (2.21.5):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2327,7 +2327,7 @@ SPEC CHECKSUMS:
   React-logger: 02e5802824aa9b15cb7df42e10a91abead83cd8d
   React-Mapbuffer: 99bd566147aaa78e872568be53ebca8a4449ddae
   React-microtasksnativemodule: 51e7813abf875408a0f367e473a65bbab6aa8481
-  react-native-compat: 7756fe07924b6d59c0c8ad03afff83ad5473b434
+  react-native-compat: 43036a27fb9e8f9efd0fd833264694342b4bcfda
   react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-mmkv: c969437e688f281c34d90310d5e05bbd5f8732a1

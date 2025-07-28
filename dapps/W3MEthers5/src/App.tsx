@@ -80,6 +80,7 @@ const customWallets = [
 // 3. Create modal
 createAppKit({
   projectId,
+  metadata,
   chains,
   config,
   siweConfig,
@@ -88,6 +89,7 @@ createAppKit({
   enableAnalytics: true,
   features: {
     swaps: true,
+    onramp: true,
   },
 });
 

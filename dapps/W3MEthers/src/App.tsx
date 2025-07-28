@@ -15,6 +15,7 @@ import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {CoinbaseProvider} from '@reown/appkit-coinbase-ethers-react-native';
 import {AuthProvider} from '@reown/appkit-auth-ethers-react-native';
 import {ENV_PROJECT_ID} from '@env';
+import {MMKV} from 'react-native-mmkv';
 
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
@@ -44,6 +45,7 @@ const metadata = {
 const coinbaseProvider = new CoinbaseProvider({
   redirect: 'rn-w3m-ethers-sample://',
   rpcUrl: mainnet.rpcUrl,
+  storage: new MMKV(),
 });
 
 const auth = new AuthProvider({projectId, metadata});
@@ -72,6 +74,7 @@ const customWallets = [
 // 3. Create modal
 createAppKit({
   projectId,
+  metadata,
   chains,
   config,
   siweConfig,
@@ -80,6 +83,7 @@ createAppKit({
   enableAnalytics: true,
   features: {
     swaps: true,
+    onramp: true,
   },
 });
 
