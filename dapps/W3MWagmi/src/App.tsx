@@ -7,7 +7,7 @@ import {Linking} from 'react-native';
 import BootSplash from 'react-native-bootsplash';
 import {createAppKit, AppKit, bitcoin, AppKitProvider, solana} from '@reown/appkit-react-native';
 import {WagmiAdapter} from '@reown/appkit-wagmi-react-native';
-import {SolanaAdapter, PhantomConnector} from '@reown/appkit-solana-react-native';
+import {SolanaAdapter, PhantomConnector, SolflareConnector} from '@reown/appkit-solana-react-native';
 import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
 import {CoinbaseConnector} from '@reown/appkit-coinbase-react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -81,7 +81,7 @@ const appKit = createAppKit({
   siweConfig,
   clipboardClient,
   storage,
-  extraConnectors: [new PhantomConnector({ cluster: 'mainnet-beta' }), new CoinbaseConnector({ storage: new MMKV()})],
+  extraConnectors: [new PhantomConnector(), new SolflareConnector(), new CoinbaseConnector({ storage: new MMKV()})],
 });
 
 const queryClient = new QueryClient();
