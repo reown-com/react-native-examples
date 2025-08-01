@@ -60,13 +60,9 @@ const wagmiAdapter = new WagmiAdapter({
   networks: chains as [Chain, ...Chain[]],
 });
 
-const solanaAdapter = new SolanaAdapter({
-  projectId,
-});
+const solanaAdapter = new SolanaAdapter();
 
-const bitcoinAdapter = new BitcoinAdapter({
-  projectId,
-});
+const bitcoinAdapter = new BitcoinAdapter();
 
 const adapters = [wagmiAdapter, bitcoinAdapter, solanaAdapter];
 
