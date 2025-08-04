@@ -1,7 +1,6 @@
 import 'text-encoding';
 import "@walletconnect/react-native-compat";
 import {
-  AppKit,
   AppKitProvider,
   bitcoin,
   createAppKit,
@@ -27,7 +26,7 @@ import { storage } from "@/utils/StorageUtil";
 const queryClient = new QueryClient();
 
 // 1. Get projectId at https://dashboard.reown.com
-const projectId = "YOUR_PROJECT_ID";
+const projectId = "034b2461569caa7547067afc8288159d";
 
 // 2. Create config
 const metadata = {
@@ -82,7 +81,6 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
-          <AppKit />
           <StatusBar style="auto" />
           </AppKitProvider>
         </QueryClientProvider>

@@ -31,6 +31,7 @@ import {mainnet, polygon} from './utils/ChainUtils';
 import {siweConfig} from './utils/SiweUtils';
 import {storage} from './utils/StorageUtil';
 import {ActionsView} from './views/ActionsView';
+import {WalletInfoView} from './views/WalletInfoView';
 
 // 1. Get projectId at https://dashboard.reown.com
 const projectId = ENV_PROJECT_ID;
@@ -101,6 +102,7 @@ function App(): React.JSX.Element {
           AppKit + ethers
         </Text>
         <FlexView style={styles.buttonContainer}>
+          <WalletInfoView />
           <AppKitButton balance="show" />
           <NetworkButton />
           <ActionsView />

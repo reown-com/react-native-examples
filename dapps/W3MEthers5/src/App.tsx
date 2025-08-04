@@ -24,6 +24,7 @@ import {SolanaAdapter} from '@reown/appkit-solana-react-native';
 import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
 import {ActionsView} from './views/ActionsView';
 import Toast from 'react-native-toast-message';
+import {WalletInfoView} from './views/WalletInfoView';
 
 // 1. Get projectId at https://dashboard.reown.com
 const projectId = ENV_PROJECT_ID;
@@ -76,6 +77,7 @@ function App(): React.JSX.Element {
           AppKit + ethers 5
         </Text>
         <FlexView style={styles.buttonContainer}>
+          <WalletInfoView />
           <AppKitButton balance="show" />
           <ActionsView />
         </FlexView>
