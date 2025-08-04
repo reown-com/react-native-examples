@@ -5,6 +5,7 @@ import React, {useEffect} from 'react';
 import {Linking, SafeAreaView, StyleSheet} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {MMKV} from 'react-native-mmkv';
+import Toast from 'react-native-toast-message';
 
 import {
   createAppKit,
@@ -31,7 +32,7 @@ import {siweConfig} from './utils/SiweUtils';
 import {storage} from './utils/StorageUtil';
 import {ActionsView} from './views/ActionsView';
 
-// 1. Get projectId at https://cloud.reown.com
+// 1. Get projectId at https://dashboard.reown.com
 const projectId = ENV_PROJECT_ID;
 
 // 2. Define your chains
@@ -54,19 +55,11 @@ const clipboardClient = {
   },
 };
 
-const ethersAdapter = new EthersAdapter({
-  projectId,
-});
-
-const solanaAdapter = new SolanaAdapter({
-  projectId,
-});
-
-const bitcoinAdapter = new BitcoinAdapter({
-  projectId,
-});
-
-const adapters = [ethersAdapter, solanaAdapter, bitcoinAdapter];
+const adapters = [
+  new EthersAdapter(),
+  new SolanaAdapter(),
+  new BitcoinAdapter(),
+];
 
 // 3. Create modal
 const appKit = createAppKit({
@@ -79,7 +72,7 @@ const appKit = createAppKit({
   clipboardClient,
   enableAnalytics: true,
   extraConnectors: [
-    new PhantomConnector({cluster: 'mainnet-beta'}),
+    new PhantomConnector(),
     new CoinbaseConnector({storage: new MMKV()}),
   ],
   features: {
@@ -112,6 +105,7 @@ function App(): React.JSX.Element {
           <NetworkButton />
           <ActionsView />
         </FlexView>
+        <Toast />
         <AppKit />
       </AppKitProvider>
     </SafeAreaView>

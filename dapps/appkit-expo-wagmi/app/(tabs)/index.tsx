@@ -1,4 +1,5 @@
-import { AppKitButton } from '@reown/appkit-wagmi-react-native';
+import '@walletconnect/react-native-compat';
+import { AppKitButton } from '@reown/appkit-react-native';
 import { Image } from 'expo-image';
 import React from 'react';
 import { StyleSheet } from 'react-native';

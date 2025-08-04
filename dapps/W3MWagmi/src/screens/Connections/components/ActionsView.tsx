@@ -7,7 +7,6 @@ import { useAccount } from '@reown/appkit-react-native';
 import { SolanaActionsView } from './SolanaActionsView';
 import { BitcoinActionsView } from './BitcoinActionsView';
 import { WagmiActionsView } from './WagmiActionsView';
-// import { EthersActionsView } from './EthersActionsView';
 
 export function ActionsView() {
   const { chainId } = useAccount();

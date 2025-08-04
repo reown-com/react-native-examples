@@ -1,15 +1,15 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Button, Text, FlexView } from '@reown/appkit-ui-react-native';
-import { useAccount, useProvider } from '@reown/appkit-react-native';
+import {StyleSheet} from 'react-native';
+import {Button, Text, FlexView} from '@reown/appkit-ui-react-native';
+import {useAccount, useProvider} from '@reown/appkit-react-native';
 
-import { ToastUtils } from '@/utils/ToastUtils';
-import { BitcoinUtil, SignPSBTResponse } from '@/utils/BitcoinUtil';
+import {ToastUtils} from '../utils/ToastUtils';
+import {BitcoinUtil, SignPSBTResponse} from '../utils/BitcoinUtil';
 
 export function BitcoinActionsView() {
   const isConnected = true;
-  const { address, chainId } = useAccount();
-  const { provider } = useProvider();
+  const {address, chainId} = useAccount();
+  const {provider} = useProvider();
 
   const onSignSuccess = (data: string) => {
     ToastUtils.showSuccessToast('Sign successful', data);
@@ -35,15 +35,17 @@ export function BitcoinActionsView() {
 
       const message = 'Hello from AppKit Bitcoin';
 
-      const { signature } = (await provider.request(
+      const {signature} = (await provider.request(
         {
           method: 'signMessage',
-          params: { message, account: address, address, protocol: 'ecdsa' },
+          params: {message, account: address, address, protocol: 'ecdsa'},
         },
-        chainId
-      )) as { address: string; signature: string };
+        chainId,
+      )) as {address: string; signature: string};
 
-      const formattedSignature = Buffer.from(signature, 'hex').toString('base64');
+      const formattedSignature = Buffer.from(signature, 'hex').toString(
+        'base64',
+      );
 
       onSignSuccess(formattedSignature);
     } catch (error) {
@@ -66,12 +68,18 @@ export function BitcoinActionsView() {
       }
 
       if (chainId?.split(':')[0] !== 'bip122') {
-        ToastUtils.showErrorToast('Sign failed', 'The selected chain is not bip122');
+        ToastUtils.showErrorToast(
+          'Sign failed',
+          'The selected chain is not bip122',
+        );
 
         return;
       }
 
-      const utxos = await BitcoinUtil.getUTXOs(address, chainId as `bip122:${string}`);
+      const utxos = await BitcoinUtil.getUTXOs(
+        address,
+        chainId as `bip122:${string}`,
+      );
       const feeRate = await BitcoinUtil.getFeeRate();
 
       const params = BitcoinUtil.createSignPSBTParams({
@@ -95,12 +103,11 @@ export function BitcoinActionsView() {
             broadcast: params.broadcast,
           },
         },
-        chainId
+        chainId,
       )) as SignPSBTResponse;
 
       onSignSuccess(`${response.psbt}-${response.txid}`);
     } catch (error) {
-
       console.log('error', error);
       onSignError(error as Error);
     }
