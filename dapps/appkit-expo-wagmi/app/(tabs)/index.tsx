@@ -1,12 +1,14 @@
-import { AppKitButton } from '@reown/appkit-wagmi-react-native';
+import '@walletconnect/react-native-compat';
+import { AppKit, AppKitButton } from '@reown/appkit-react-native';
 import { Image } from 'expo-image';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { WalletInfoView } from '@/components/WalletInfoView';
 
 export default function HomeScreen() {
   return (
@@ -23,9 +25,13 @@ export default function HomeScreen() {
           <ThemedText type="title">Welcome!</ThemedText>
           <HelloWave />
         </ThemedView>
+        <WalletInfoView />
         <AppKitButton />
       </ParallaxScrollView>
-
+      {/* This is a workaround for the Android modal issue. https://github.com/expo/expo/issues/32991#issuecomment-2489620459 */}
+      <View style={{ position: "absolute", height: "100%", width: "100%" }}>
+        <AppKit />
+      </View>
     </>
   );
 }

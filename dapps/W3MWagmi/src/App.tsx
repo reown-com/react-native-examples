@@ -28,7 +28,7 @@ import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import {chains} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
 import { storage } from './utils/StorageUtil';
-import { siweConfig } from './utils/SiweUtils';
+// import { siweConfig } from './utils/SiweUtils';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
@@ -60,15 +60,7 @@ const wagmiAdapter = new WagmiAdapter({
   networks: chains as [Chain, ...Chain[]],
 });
 
-const solanaAdapter = new SolanaAdapter({
-  projectId,
-});
-
-const bitcoinAdapter = new BitcoinAdapter({
-  projectId,
-});
-
-const adapters = [wagmiAdapter, bitcoinAdapter, solanaAdapter];
+const adapters = [wagmiAdapter, new SolanaAdapter(), new BitcoinAdapter()];
 
 const networks = [...chains, solana, bitcoin];
 
@@ -78,10 +70,10 @@ const appKit = createAppKit({
   adapters,
   metadata,
   networks,
-  siweConfig,
+  // siweConfig,
   clipboardClient,
   storage,
-  extraConnectors: [new PhantomConnector({ cluster: 'mainnet-beta' }), new CoinbaseConnector({ storage: new MMKV()})],
+  extraConnectors: [new PhantomConnector(), new CoinbaseConnector({ storage: new MMKV()})],
 });
 
 const queryClient = new QueryClient();

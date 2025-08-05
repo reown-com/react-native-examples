@@ -1,3 +1,4 @@
+import 'text-encoding';
 import '@walletconnect/react-native-compat';
 
 import React from 'react';
@@ -6,22 +7,26 @@ import Clipboard from '@react-native-clipboard/clipboard';
 
 import {
   createAppKit,
-  defaultConfig,
   AppKitButton,
   AppKit,
-} from '@reown/appkit-ethers5-react-native';
+  solana,
+  bitcoin,
+  AppKitProvider,
+} from '@reown/appkit-react-native';
+import {EthersAdapter} from '@reown/appkit-ethers-react-native';
 import {FlexView, Text} from '@reown/appkit-ui-react-native';
-import {AuthProvider} from '@reown/appkit-auth-ethers-react-native';
 import {ENV_PROJECT_ID} from '@env';
 
-import {SignMessage} from './views/SignMessage';
-import {SendTransaction} from './views/SendTransaction';
-import {ReadContract} from './views/ReadContract';
-import {WriteContract} from './views/WriteContract';
-import {SignTypedDataV4} from './views/SignTypedDataV4';
 import {siweConfig} from './utils/SiweUtils';
+import {mainnet, polygon} from './utils/ChainUtils';
+import {storage} from './utils/StorageUtil';
+import {SolanaAdapter} from '@reown/appkit-solana-react-native';
+import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
+import {ActionsView} from './views/ActionsView';
+import Toast from 'react-native-toast-message';
+import {WalletInfoView} from './views/WalletInfoView';
 
-// 1. Get projectId at https://cloud.reown.com
+// 1. Get projectId at https://dashboard.reown.com
 const projectId = ENV_PROJECT_ID;
 
 // 2. Create config
@@ -35,31 +40,12 @@ const metadata = {
   },
 };
 
-const auth = new AuthProvider({projectId, metadata});
-
-const config = defaultConfig({
-  metadata,
-  extraConnectors: [auth],
-});
-
 // 3. Define your chains
-const mainnet = {
-  chainId: 1,
-  name: 'Ethereum',
-  currency: 'ETH',
-  explorerUrl: 'https://etherscan.io',
-  rpcUrl: 'https://eth.llamarpc.com',
-};
+const networks = [mainnet, polygon, solana, bitcoin];
 
-const polygon = {
-  chainId: 137,
-  name: 'Polygon',
-  currency: 'MATIC',
-  explorerUrl: 'https://polygonscan.com',
-  rpcUrl: 'https://polygon-rpc.com',
-};
-
-const chains = [mainnet, polygon];
+const ethersAdapter = new EthersAdapter();
+const solanaAdapter = new SolanaAdapter();
+const bitcoinAdapter = new BitcoinAdapter();
 
 const clipboardClient = {
   setString: async (value: string) => {
@@ -67,24 +53,14 @@ const clipboardClient = {
   },
 };
 
-const customWallets = [
-  {
-    id: 'rn-wallet',
-    name: 'RN Wallet',
-    image_url:
-      'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
-    mobile_link: 'rn-web3wallet://',
-  },
-];
-
 // 3. Create modal
-createAppKit({
+const appkit = createAppKit({
   projectId,
   metadata,
-  chains,
-  config,
+  networks,
+  storage,
+  adapters: [ethersAdapter, solanaAdapter, bitcoinAdapter],
   siweConfig,
-  customWallets,
   clipboardClient,
   enableAnalytics: true,
   features: {
@@ -95,20 +71,20 @@ createAppKit({
 
 function App(): React.JSX.Element {
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title} variant="large-600">
-        AppKit + ethers 5
-      </Text>
-      <FlexView style={styles.buttonContainer}>
-        <AppKitButton balance="show" />
-        <SignMessage />
-        <SendTransaction />
-        <SignTypedDataV4 />
-        <ReadContract />
-        <WriteContract />
-      </FlexView>
-      <AppKit />
-    </SafeAreaView>
+    <AppKitProvider instance={appkit}>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.title} variant="large-600">
+          AppKit + ethers 5
+        </Text>
+        <FlexView style={styles.buttonContainer}>
+          <WalletInfoView />
+          <AppKitButton balance="show" />
+          <ActionsView />
+        </FlexView>
+        <Toast />
+        <AppKit />
+      </SafeAreaView>
+    </AppKitProvider>
   );
 }
 

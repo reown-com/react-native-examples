@@ -1,11 +1,16 @@
+import 'text-encoding';
+import "@walletconnect/react-native-compat";
 import {
-  AppKit,
+  AppKitProvider,
+  bitcoin,
   createAppKit,
-  defaultWagmiConfig
-} from "@reown/appkit-wagmi-react-native";
+  solana,
+} from "@reown/appkit-react-native";
+import { WagmiAdapter } from "@reown/appkit-wagmi-react-native";
+import { SolanaAdapter } from "@reown/appkit-solana-react-native";
+import { BitcoinAdapter } from "@reown/appkit-bitcoin-react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { arbitrum, mainnet, polygon } from "@wagmi/core/chains";
-import "@walletconnect/react-native-compat";
 import { WagmiProvider } from "wagmi";
 
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
@@ -15,11 +20,12 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { storage } from "@/utils/StorageUtil";
 
 // 0. Setup queryClient
 const queryClient = new QueryClient();
 
-// 1. Get projectId at https://cloud.reown.com
+// 1. Get projectId at https://dashboard.reown.com
 const projectId = "YOUR_PROJECT_ID";
 
 // 2. Create config
@@ -34,15 +40,24 @@ const metadata = {
   },
 };
 
-const chains = [mainnet, polygon, arbitrum] as const;
+const networks = [mainnet, polygon, arbitrum];
 
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
+const wagmiAdapter = new WagmiAdapter({
+  projectId,
+  networks: networks as any,
+});
+
+const solanaAdapter = new SolanaAdapter();
+const bitcoinAdapter = new BitcoinAdapter();
 
 // 3. Create modal
-createAppKit({
+const appkit =createAppKit({
   projectId,
-  wagmiConfig,
-  defaultChain: mainnet, // Optional
+  networks: [...networks, solana, bitcoin],
+  adapters: [wagmiAdapter, solanaAdapter, bitcoinAdapter],
+  metadata,
+  storage,
+  defaultNetwork: mainnet, // Optional
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
 });
 
@@ -59,14 +74,15 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <WagmiProvider config={wagmiConfig}>
+      <WagmiProvider config={wagmiAdapter.wagmiConfig}>
         <QueryClientProvider client={queryClient}>
+          <AppKitProvider instance={appkit}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
-          <AppKit />
           <StatusBar style="auto" />
+          </AppKitProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </ThemeProvider>

@@ -894,10 +894,6 @@ PODS:
     - React-Core
   - react-native-netinfo (11.2.1):
     - React-Core
-  - react-native-webview (13.8.4):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
-    - React-Core
   - React-nativeconfig (0.73.4)
   - React-NativeModulesApple (0.73.4):
     - glog
@@ -1108,7 +1104,6 @@ DEPENDENCIES:
   - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
-  - react-native-webview (from `../node_modules/react-native-webview`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -1202,8 +1197,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-get-random-values"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
-  react-native-webview:
-    :path: "../node_modules/react-native-webview"
   React-nativeconfig:
     :path: "../node_modules/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -1286,7 +1279,6 @@ SPEC CHECKSUMS:
   react-native-compat: 74a583d6cb1dafc47495da8bb0a9fb0539f046d9
   react-native-get-random-values: ce0b8796c99e2b85e3202bd500b1ef286a17a02e
   react-native-netinfo: f084f2324cb11b986503a39a3ccbb5d15e2a56d3
-  react-native-webview: 261be0a2c5623c96dbb6fc1aa2eea77666c9e7f0
   React-nativeconfig: d7af5bae6da70fa15ce44f045621cf99ed24087c
   React-NativeModulesApple: 7a561c2792b0a2b74aff6c58d2554dcf824372aa
   React-perflogger: 8a1e1af5733004bdd91258dcefbde21e0d1faccd

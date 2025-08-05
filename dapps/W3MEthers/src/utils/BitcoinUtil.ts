@@ -5,7 +5,7 @@ import * as bitcoin from 'bitcoinjs-lib';
 import * as bitcoinPSBTUtils from 'bitcoinjs-lib/src/cjs/psbt/psbtutils';
 
 import type {CaipNetworkId} from '@reown/appkit-common-react-native';
-import { bitcoinTestnet as bitcoinTestnetNetwork } from '@reown/appkit-react-native';
+import {bitcoinTestnet as bitcoinTestnetNetwork} from '@reown/appkit-react-native';
 
 bitcoin.initEccLib(ecc);
 
@@ -46,16 +46,22 @@ type SignPSBTParams = {
 };
 
 export const BitcoinUtil = {
-  createSignPSBTParams(params: BitcoinUtil.CreateSignPSBTParams): SignPSBTParams {
+  createSignPSBTParams(
+    params: BitcoinUtil.CreateSignPSBTParams,
+  ): SignPSBTParams {
     const network = this.getBitcoinNetwork(params.caipNetworkId);
     const payment = this.getPaymentByAddress(params.senderAddress, network);
-    const psbt = new bitcoin.Psbt({ network });
+    const psbt = new bitcoin.Psbt({network});
 
     if (!payment.output) {
       throw new Error('Invalid payment output');
     }
 
-    const change = this.calculateChange(params.utxos, params.amount, params.feeRate);
+    const change = this.calculateChange(
+      params.utxos,
+      params.amount,
+      params.feeRate,
+    );
 
     if (change < 0) {
       throw new Error('Insufficient funds');
@@ -84,7 +90,7 @@ export const BitcoinUtil = {
 
     if (params.memo) {
       const data = Buffer.from(params.memo, 'utf8');
-      const embed = bitcoin.payments.embed({ data: [data] });
+      const embed = bitcoin.payments.embed({data: [data]});
 
       if (!embed.output) {
         throw new Error('Invalid embed output');
@@ -103,12 +109,17 @@ export const BitcoinUtil = {
     };
   },
 
-  async getUTXOs(address: string, networkId: CaipNetworkId): Promise<BitcoinUtil.UTXO[]> {
+  async getUTXOs(
+    address: string,
+    networkId: CaipNetworkId,
+  ): Promise<BitcoinUtil.UTXO[]> {
     const isTestnet = this.isTestnet(networkId);
     // Make chain dynamic
 
     const response = await fetch(
-      `https://mempool.space${isTestnet ? '/testnet' : ''}/api/address/${address}/utxo`
+      `https://mempool.space${
+        isTestnet ? '/testnet' : ''
+      }/api/address/${address}/utxo`,
     );
 
     return await response.json();
@@ -117,7 +128,9 @@ export const BitcoinUtil = {
   async getFeeRate() {
     const defaultFeeRate = 2;
     try {
-      const response = await fetch('https://mempool.space/api/v1/fees/recommended');
+      const response = await fetch(
+        'https://mempool.space/api/v1/fees/recommended',
+      );
       if (response.ok) {
         const data = await response.json();
 
@@ -126,14 +139,17 @@ export const BitcoinUtil = {
         }
       }
     } catch (e) {
-
       console.error('Error fetching fee rate', e);
     }
 
     return defaultFeeRate;
   },
 
-  calculateChange(utxos: BitcoinUtil.UTXO[], amount: number, feeRate: number): number {
+  calculateChange(
+    utxos: BitcoinUtil.UTXO[],
+    amount: number,
+    feeRate: number,
+  ): number {
     const inputSum = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
     /**
      * 10 bytes: This is an estimated fixed overhead for the transaction.
@@ -153,29 +169,31 @@ export const BitcoinUtil = {
   },
 
   getBitcoinNetwork(networkId: CaipNetworkId): bitcoin.Network {
-    return this.isTestnet(networkId) ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
+    return this.isTestnet(networkId)
+      ? bitcoin.networks.testnet
+      : bitcoin.networks.bitcoin;
   },
 
   getPaymentByAddress(
     address: string,
-    network: bitcoin.networks.Network
+    network: bitcoin.networks.Network,
   ): bitcoin.payments.Payment {
     const output = bitcoin.address.toOutputScript(address, network);
 
     if (bitcoinPSBTUtils.isP2MS(output)) {
-      return bitcoin.payments.p2ms({ output, network });
+      return bitcoin.payments.p2ms({output, network});
     } else if (bitcoinPSBTUtils.isP2PK(output)) {
-      return bitcoin.payments.p2pk({ output, network });
+      return bitcoin.payments.p2pk({output, network});
     } else if (bitcoinPSBTUtils.isP2PKH(output)) {
-      return bitcoin.payments.p2pkh({ output, network });
+      return bitcoin.payments.p2pkh({output, network});
     } else if (bitcoinPSBTUtils.isP2WPKH(output)) {
-      return bitcoin.payments.p2wpkh({ output, network });
+      return bitcoin.payments.p2wpkh({output, network});
     } else if (bitcoinPSBTUtils.isP2WSHScript(output)) {
-      return bitcoin.payments.p2wsh({ output, network });
+      return bitcoin.payments.p2wsh({output, network});
     } else if (bitcoinPSBTUtils.isP2SHScript(output)) {
-      return bitcoin.payments.p2sh({ output, network });
+      return bitcoin.payments.p2sh({output, network});
     } else if (bitcoinPSBTUtils.isP2TR(output)) {
-      return bitcoin.payments.p2tr({ output, network });
+      return bitcoin.payments.p2tr({output, network});
     }
 
     throw new Error('Unsupported payment type');

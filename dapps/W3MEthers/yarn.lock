@@ -1290,6 +1290,13 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bitcoinerlab/secp256k1@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@bitcoinerlab/secp256k1/-/secp256k1-1.2.0.tgz#429d043ef4218b9c71915b50172e9aa4a2a8fea4"
+  integrity sha512-jeujZSzb3JOZfmJYI0ph1PVpCRV5oaexCgy+RvCXV8XlY+XFB/2n3WOcvBsKLsOw78KYgnQrQWb2HrKE4be88Q==
+  dependencies:
+    "@noble/curves" "^1.7.0"
+
 "@coinbase/wallet-mobile-sdk@1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@coinbase/wallet-mobile-sdk/-/wallet-mobile-sdk-1.1.2.tgz#58ff568e2cfefad9b97bd0a0ef8acfb804aff296"
@@ -2091,6 +2098,13 @@
   dependencies:
     "@noble/hashes" "1.8.0"
 
+"@noble/curves@^1.7.0":
+  version "1.9.6"
+  resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.9.6.tgz#b45ebedca85bb75782f6be7e7f120f0c423c99e0"
+  integrity sha512-GIKz/j99FRthB8icyJQA51E8Uk5hXmdyThjgQXRKiv9h0zeRlzSCLIzFw6K1LotZ3XuB7yzlf76qk7uBmTdFqA==
+  dependencies:
+    "@noble/hashes" "1.8.0"
+
 "@noble/curves@~1.8.1":
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.8.2.tgz#8f24c037795e22b90ae29e222a856294c1d9ffc7"
@@ -2118,7 +2132,7 @@
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.7.2.tgz#d53c65a21658fb02f3303e7ee3ba89d6754c64b4"
   integrity sha512-biZ0NUSxyjLLqo6KxEJ1b+C2NAx0wtDoFvCaXHGgUkeHzf3Xc1xKumFKREuT7f7DARNZ/slvYUwFG6B0f2b6hQ==
 
-"@noble/hashes@1.8.0", "@noble/hashes@^1.4.0", "@noble/hashes@^1.5.0", "@noble/hashes@^1.8.0", "@noble/hashes@~1.8.0":
+"@noble/hashes@1.8.0", "@noble/hashes@^1.2.0", "@noble/hashes@^1.4.0", "@noble/hashes@^1.5.0", "@noble/hashes@^1.8.0", "@noble/hashes@~1.8.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.8.0.tgz#cee43d801fcef9644b11b8194857695acd5f815a"
   integrity sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==
@@ -2610,24 +2624,24 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@reown/appkit-bitcoin-react-native@2.0.0-alpha.2":
-  version "2.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-2.0.0-alpha.2.tgz#c1bc5dba2d439cb5ac22151e85582ac4a12ca3d9"
-  integrity sha512-aTMvjv3Gfu4pbhQijdI4ngjY1Q1uk2rdIxodBotl0CE7Pov/Z5mzxZGQZSla7yNj6J8GAd0EfXa4nZzTsfp4OQ==
+"@reown/appkit-bitcoin-react-native@2.0.0-alpha.3":
+  version "2.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-2.0.0-alpha.3.tgz#de9111cf5c171d1477d93875962e33afd2bb872b"
+  integrity sha512-GwKjxFl2wKFyDn7exlPGyAPpDIl/ldz9223z4Gft3ziO3y6xBkXzVpDcxrDNE1QhiR1K6FiwhA7KvnyFDBTmxA==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.2"
+    "@reown/appkit-common-react-native" "2.0.0-alpha.3"
 
-"@reown/appkit-coinbase-react-native@2.0.0-alpha.2":
-  version "2.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-2.0.0-alpha.2.tgz#6a88fb86b5805116e55421a9f81c78802fbe9639"
-  integrity sha512-43GefVtPFiKP0HhUMMgRbYQIqoHB69v00OHBlCqWeXHDoBGRs0oQwquMHE6DRLXe1PTBwerRk9zRsmWo6mTp0Q==
+"@reown/appkit-coinbase-react-native@2.0.0-alpha.3":
+  version "2.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-2.0.0-alpha.3.tgz#024674a150d3aed2538c977dcbe317a6b82154ff"
+  integrity sha512-FlOPFgxThIxzWpRqXKZoGvGCDW7/pFWEwTEXzK0Mx0K1XXT+GSRvMD57n06x2v+VLf78++ExjX3KHGdXkiI6FQ==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.2"
+    "@reown/appkit-common-react-native" "2.0.0-alpha.3"
 
-"@reown/appkit-common-react-native@2.0.0-alpha.2":
-  version "2.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-2.0.0-alpha.2.tgz#efa3ecb85fb4e9001e860869cec03d20b75d578f"
-  integrity sha512-ER4d4pQnUIztqLgIK29TwPreT5+Y2f3359/38nj1xS+Q9t4CK8oIPlXp0YxS+x69vrrElCBHSQnSnjrTXQ3b+g==
+"@reown/appkit-common-react-native@2.0.0-alpha.3":
+  version "2.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-2.0.0-alpha.3.tgz#5897e8e086431600c94fe52771f2f45b14a03557"
+  integrity sha512-J6hU+VCQbehy1/le77YLear7gtnJktbmx2kNJqR4C8o1NamsZQMNe31E+uh7YPl1Q6xpjszgGI58FHnpwVafvA==
   dependencies:
     bignumber.js "9.1.2"
     dayjs "1.11.10"
@@ -2652,24 +2666,24 @@
     valtio "1.13.2"
     viem ">=2.29.0"
 
-"@reown/appkit-core-react-native@2.0.0-alpha.2":
-  version "2.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-2.0.0-alpha.2.tgz#0f1021c46995a877e0e96582ba590c0c0df10c4a"
-  integrity sha512-giB3Y3DR93u2NWmwV2QysZpYFZolABAg8XrEHvGVaV0gwrh7g1dkohQyI/UJr6usBCx/g7Vs7VtcQoQiHvPwlw==
+"@reown/appkit-core-react-native@2.0.0-alpha.3":
+  version "2.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-2.0.0-alpha.3.tgz#f016a39f8663cf5e1534ab6660b0b3dc8bc1d7b2"
+  integrity sha512-0x8w8exO9zONmkIS8Lt6MXPCir/Sdfy8kRbJ/lSrdgHk/gGHVhS/TnTJipuvJ3uTMUN9JAP1Htcsrb+xeHDjwg==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.2"
+    "@reown/appkit-common-react-native" "2.0.0-alpha.3"
     countries-and-timezones "3.7.2"
     derive-valtio "0.2.0"
     valtio "2.1.5"
 
-"@reown/appkit-ethers-react-native@2.0.0-alpha.2":
-  version "2.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-2.0.0-alpha.2.tgz#a3c387f7252f021ac3c4ff8d57e388094e532491"
-  integrity sha512-ugm7XZ/azaCblsF+2il1k/7Z4WWkHuYU7fnjDasULIDOgWmsFFkOf0YUY/i6Kc2a23rM4bswuHiJMTl3Zwdu6g==
+"@reown/appkit-ethers-react-native@2.0.0-alpha.3":
+  version "2.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-2.0.0-alpha.3.tgz#783792c446bca2a833339f6841c192f87a3ec982"
+  integrity sha512-6kePlZ43E4qulDpDDQv0AF0q2RABfqpwaPz7wh0vBeEzdezeTCrtHEpcIm/oaV3HDlyOgWTamNm0XRJFMKAQTQ==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.2"
-    "@reown/appkit-react-native" "2.0.0-alpha.2"
-    "@reown/appkit-siwe-react-native" "2.0.0-alpha.2"
+    "@reown/appkit-common-react-native" "2.0.0-alpha.3"
+    "@reown/appkit-react-native" "2.0.0-alpha.3"
+    "@reown/appkit-siwe-react-native" "2.0.0-alpha.3"
     "@walletconnect/ethereum-provider" "2.21.5"
 
 "@reown/appkit-pay@1.7.8":
@@ -2691,17 +2705,16 @@
   dependencies:
     buffer "6.0.3"
 
-"@reown/appkit-react-native@2.0.0-alpha.2":
-  version "2.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-2.0.0-alpha.2.tgz#1642b3b040a161c9e9fc368c3f90f7909e35e00a"
-  integrity sha512-z7M8fJ2naP+0kixt5lYlha57U3GLDFPLXFxTkfrOL6jCKoH3/nivXy07ZjjbnlYjtPxpMn9t+Tbq/LI0Sw0kBQ==
+"@reown/appkit-react-native@2.0.0-alpha.3":
+  version "2.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-2.0.0-alpha.3.tgz#de4c22609512727aaa89c315b7747fe6b76c2677"
+  integrity sha512-HiL+dieKA/Ma7sLznlwWP0p0l7YIIP3GrJBhlwVBJgeAwuYyV9KSRPKTrPzsQw7kn9pDJRq8nEv14BMYooAFxw==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.2"
-    "@reown/appkit-core-react-native" "2.0.0-alpha.2"
-    "@reown/appkit-siwe-react-native" "2.0.0-alpha.2"
-    "@reown/appkit-ui-react-native" "2.0.0-alpha.2"
+    "@reown/appkit-common-react-native" "2.0.0-alpha.3"
+    "@reown/appkit-core-react-native" "2.0.0-alpha.3"
+    "@reown/appkit-siwe-react-native" "2.0.0-alpha.3"
+    "@reown/appkit-ui-react-native" "2.0.0-alpha.3"
     "@walletconnect/universal-provider" "2.21.5"
-    react-native-modal ">=13"
     valtio "2.1.5"
 
 "@reown/appkit-scaffold-ui@1.7.8":
@@ -2716,32 +2729,32 @@
     "@reown/appkit-wallet" "1.7.8"
     lit "3.3.0"
 
-"@reown/appkit-siwe-react-native@2.0.0-alpha.2":
-  version "2.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-2.0.0-alpha.2.tgz#fc31c97fb1e8e382dd8b95d56638d9d93ca9c79e"
-  integrity sha512-gLTY4h4Frt2+IQDQ/TChy82itB7wleLOB5cUCUCkYVyW2Wqd+PxJP0DMnh26NjPmo+qWLqtyEEp8YQJ/FlrOUg==
+"@reown/appkit-siwe-react-native@2.0.0-alpha.3":
+  version "2.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-2.0.0-alpha.3.tgz#fc7041270c1f0d55f36a05fbe3c9173477bc2e2d"
+  integrity sha512-tCdHsaY4XG63dMoeXzFyMRJcFYGE/vkUI41List4zKUvF18uTmcuAZqerJSy1uA1mr3Rf/mEpdwNODaZPdJ2YQ==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.2"
-    "@reown/appkit-core-react-native" "2.0.0-alpha.2"
-    "@reown/appkit-ui-react-native" "2.0.0-alpha.2"
+    "@reown/appkit-common-react-native" "2.0.0-alpha.3"
+    "@reown/appkit-core-react-native" "2.0.0-alpha.3"
+    "@reown/appkit-ui-react-native" "2.0.0-alpha.3"
     valtio "2.1.5"
 
-"@reown/appkit-solana-react-native@2.0.0-alpha.2":
-  version "2.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-2.0.0-alpha.2.tgz#3dc93357384d91ca721fb430c55a0e3c58623628"
-  integrity sha512-oRaa0DLl/76es76dqGeKWMlg9YKMRstsc/Kxz+OftQktDnzn/y1ZgWfTjHj9r2/82LUtyyLE6f6kjs/wg7Kl0g==
+"@reown/appkit-solana-react-native@2.0.0-alpha.3":
+  version "2.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-2.0.0-alpha.3.tgz#e11fbe2271998853dd53fe8a5c6c5910d3ae3943"
+  integrity sha512-ciFRePxfCYsJHY4ij5hOqZg54d2S5Pmp6tNcRW8TqVv74a6Wz/py5jaFC9silJpcJ5ShvgfvNmYVdsa/kiCUNg==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.2"
+    "@reown/appkit-common-react-native" "2.0.0-alpha.3"
     "@solana/web3.js" "1.98.2"
     bs58 "6.0.0"
     tweetnacl "1.0.3"
 
-"@reown/appkit-ui-react-native@2.0.0-alpha.2":
-  version "2.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-2.0.0-alpha.2.tgz#98680857010a2373a5742c144719e79e22f1e279"
-  integrity sha512-9pqrp7/i8nM8YHMyKUI1Pq9uYwVe02UNOkVcmUy0kZRJCvTikyFRzqbT4i4Jj3XGCIaHH9cFSFuVklg0AIgnfw==
+"@reown/appkit-ui-react-native@2.0.0-alpha.3":
+  version "2.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-2.0.0-alpha.3.tgz#9fbeb6e46fed59d0a109efabf68c8485f99eb422"
+  integrity sha512-3oc6vfzaNL/9ZCC2B+cMXdVcm5i31Ayj0YOiht/qNjayBxJpP4gn+GWxZJ1svdIiDLqDDJU4R6iekgqzgefyrg==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.2"
+    "@reown/appkit-common-react-native" "2.0.0-alpha.3"
     polished "4.3.1"
     qrcode "1.5.3"
 
@@ -4031,6 +4044,11 @@ base64-js@^1.2.3, base64-js@^1.3.1, base64-js@^1.5.1:
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
 
+bech32@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/bech32/-/bech32-2.0.0.tgz#078d3686535075c8c79709f054b1b226a133b355"
+  integrity sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==
+
 better-opn@~3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/better-opn/-/better-opn-3.0.2.tgz#f96f35deaaf8f34144a4102651babcf00d1d8817"
@@ -4057,6 +4075,27 @@ binary-extensions@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
+
+bip174@^3.0.0-rc.0:
+  version "3.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/bip174/-/bip174-3.0.0-rc.1.tgz#08c41d5a4cbfa0790075335b64b9a16630fcd73f"
+  integrity sha512-+8P3BpSairVNF2Nee6Ksdc1etIjWjBOi/MH0MwKtq9YaYp+S2Hk2uvup0e8hCT4IKlS58nXJyyQVmW92zPoD4Q==
+  dependencies:
+    uint8array-tools "^0.0.9"
+    varuint-bitcoin "^2.0.0"
+
+bitcoinjs-lib@7.0.0-rc.0:
+  version "7.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/bitcoinjs-lib/-/bitcoinjs-lib-7.0.0-rc.0.tgz#841a7e3a00d4fd719ab7f85f691b2e0455494786"
+  integrity sha512-7CQgOIbREemKR/NT2uc3uO/fkEy+6CM0sLxboVVY6bv6DbZmPt3gg5Y/hhWgQFeZu5lfTbtVAv32MIxf7lMh4g==
+  dependencies:
+    "@noble/hashes" "^1.2.0"
+    bech32 "^2.0.0"
+    bip174 "^3.0.0-rc.0"
+    bs58check "^4.0.0"
+    uint8array-tools "^0.0.9"
+    valibot "^0.38.0"
+    varuint-bitcoin "^2.0.0"
 
 bl@^4.1.0:
   version "4.1.0"
@@ -4157,7 +4196,7 @@ browserslist@^4.22.2:
     node-releases "^2.0.14"
     update-browserslist-db "^1.0.13"
 
-bs58@6.0.0:
+bs58@6.0.0, bs58@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/bs58/-/bs58-6.0.0.tgz#a2cda0130558535dd281a2f8697df79caaf425d8"
   integrity sha512-PD0wEnEYg6ijszw/u8s+iI3H17cTymlrwkKhDhPZq+Sokl3AU4htyBFTjAeNAlCCmg0f53g6ih3jATyCKftTfw==
@@ -4170,6 +4209,14 @@ bs58@^4.0.0, bs58@^4.0.1:
   integrity sha512-Ok3Wdf5vOIlBrgCvTq96gBkJw+JUEzdBgyaza5HLtPm7yTHkjRy8+JzNyHF7BHa0bNWOQIp3m5YF0nnFcOIKLw==
   dependencies:
     base-x "^3.0.2"
+
+bs58check@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/bs58check/-/bs58check-4.0.0.tgz#46cda52a5713b7542dcb78ec2efdf78f5bf1d23c"
+  integrity sha512-FsGDOnFg9aVI9erdriULkd/JjEWONV/lQE5aYziB5PoBsXRind56lh8doIZIc9X4HoxT5x4bLjMWN1/NB8Zp5g==
+  dependencies:
+    "@noble/hashes" "^1.2.0"
+    bs58 "^6.0.0"
 
 bser@2.1.1:
   version "2.1.1"
@@ -4876,11 +4923,6 @@ deprecated-react-native-prop-types@^5.0.0:
     "@react-native/normalize-colors" "^0.73.0"
     invariant "^2.2.4"
     prop-types "^15.8.1"
-
-derive-valtio@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/derive-valtio/-/derive-valtio-0.1.0.tgz#4b9fb393dfefccfef15fcbbddd745dd22d5d63d7"
-  integrity sha512-OCg2UsLbXK7GmmpzMXhYkdO64vhJ1ROUUGaTFyHjVwEdMEcTTRj7W1TxLbSBxdY8QLBPCcp66MTyaSy0RpO17A==
 
 derive-valtio@0.2.0:
   version "0.2.0"
@@ -8803,11 +8845,6 @@ prop-types@^15.8.1:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
-proxy-compare@2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/proxy-compare/-/proxy-compare-2.6.0.tgz#5e8c8b5c3af7e7f17e839bf6cf1435bcc4d315b0"
-  integrity sha512-8xuCeM3l8yqdmbPoYeLbrAXCBWu19XEYc5/F28f5qOaoAIMyfmBUkl5axiK+x9olUvRlcekvnm98AP9RDngOIw==
-
 proxy-compare@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/proxy-compare/-/proxy-compare-3.0.1.tgz#3262cff3a25a6dedeaa299f6cf2369d6f7588a94"
@@ -8916,13 +8953,6 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
-react-native-animatable@1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/react-native-animatable/-/react-native-animatable-1.4.0.tgz#05a259e1566081ce7d3f6fba1e92edc65f5c6160"
-  integrity sha512-DZwaDVWm2NBvBxf7I0wXKXLKb/TxDnkV53sWhCvei1pRyTX3MVFpkvdYBknNBqPrxYuAIlPxEp7gJOidIauUkw==
-  dependencies:
-    prop-types "^15.8.1"
-
 react-native-dotenv@^3.4.9:
   version "3.4.9"
   resolved "https://registry.yarnpkg.com/react-native-dotenv/-/react-native-dotenv-3.4.9.tgz#621c5b0c1d0c5c7f569bfe5a1d804bec7885c010"
@@ -8947,20 +8977,6 @@ react-native-mmkv@^2.11.0:
   resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.12.2.tgz#4bba0f5f04e2cf222494cce3a9794ba6a4894dee"
   integrity sha512-6058Aq0p57chPrUutLGe9fYoiDVDNMU2PKV+lLFUJ3GhoHvUrLdsS1PDSCLr00yqzL4WJQ7TTzH+V8cpyrNcfg==
 
-react-native-modal@14.0.0-rc.1:
-  version "14.0.0-rc.1"
-  resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-14.0.0-rc.1.tgz#d193af884c910ec34a4953508c7656b5fc83d7d4"
-  integrity sha512-v5pvGyx1FlmBzdHyPqBsYQyS2mIJhVmuXyNo5EarIzxicKhuoul6XasXMviGcXboEUT0dTYWs88/VendojPiVw==
-  dependencies:
-    react-native-animatable "1.4.0"
-
-react-native-modal@>=13:
-  version "13.0.2"
-  resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-13.0.2.tgz#4e4d777fdb0f5af5a50003a53eebc4de9ead5695"
-  integrity sha512-jCUR2DAskuZtVIbnt2ZssX70DCbTLydkL1Glv1Fc/fqVIhq1LpwBK2hKgSf9VIINXFnDjjGIMIC9HhDXnW7Enw==
-  dependencies:
-    react-native-animatable "1.4.0"
-
 react-native-svg@14.1.0:
   version "14.1.0"
   resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-14.1.0.tgz#7903bddd3c71bf3a8a503918253c839e6edaa724"
@@ -8968,6 +8984,11 @@ react-native-svg@14.1.0:
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
+
+react-native-toast-message@2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.3.3.tgz#e301508d386a9902ff6b4559ecc6674f8cfdf97a"
+  integrity sha512-4IIUHwUPvKHu4gjD0Vj2aGQzqPATiblL1ey8tOqsxOWRPGGu52iIbL8M/mCz4uyqecvPdIcMY38AfwRuUADfQQ==
 
 react-native-url-polyfill@2.0.0:
   version "2.0.0"
@@ -10184,6 +10205,16 @@ ufo@^1.3.0, ufo@^1.3.1, ufo@^1.3.2:
   resolved "https://registry.yarnpkg.com/ufo/-/ufo-1.4.0.tgz#39845b31be81b4f319ab1d99fd20c56cac528d32"
   integrity sha512-Hhy+BhRBleFjpJ2vchUNN40qgkh0366FWJGqVLYBHev0vpHTrXSA0ryT+74UiW6KWsldNurQMKGqCm1M2zBciQ==
 
+uint8array-tools@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/uint8array-tools/-/uint8array-tools-0.0.8.tgz#712bab001f8347bd782f45bc47c76ffff32d1e0b"
+  integrity sha512-xS6+s8e0Xbx++5/0L+yyexukU7pz//Yg6IHg3BKhXotg1JcYtgxVcUctQ0HxLByiJzpAkNFawz1Nz5Xadzo82g==
+
+uint8array-tools@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/uint8array-tools/-/uint8array-tools-0.0.9.tgz#e29e6d05f3472273db1b0e370ac1d91e4a0a4e6f"
+  integrity sha512-9vqDWmoSXOoi+K14zNaf6LBV51Q8MayF0/IiQs3GlygIKUYtog603e6virExkjjFosfJUBI4LhbQK1iq8IG11A==
+
 uint8arrays@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/uint8arrays/-/uint8arrays-3.1.0.tgz#8186b8eafce68f28bd29bd29d683a311778901e2"
@@ -10361,11 +10392,6 @@ url-join@4.0.0:
   resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.0.tgz#4d3340e807d3773bda9991f8305acdcc2a665d2a"
   integrity sha512-EGXjXJZhIHiQMK2pQukuFcL303nskqIRzWvPvV5O8miOfwoUb9G+a/Cld60kUyeaybEI94wvVClT10DtfeAExA==
 
-use-sync-external-store@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz#7dbefd6ef3fe4e767a0cf5d7287aacfb5846928a"
-  integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
-
 utf-8-validate@^5.0.2:
   version "5.0.10"
   resolved "https://registry.yarnpkg.com/utf-8-validate/-/utf-8-validate-5.0.10.tgz#d7d10ea39318171ca982718b6b96a8d2442571a2"
@@ -10402,6 +10428,11 @@ v8-to-istanbul@^9.0.1:
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^2.0.0"
 
+valibot@^0.38.0:
+  version "0.38.0"
+  resolved "https://registry.yarnpkg.com/valibot/-/valibot-0.38.0.tgz#2d035d2a5bd36e8ea8b48b56d44552ace1a7616f"
+  integrity sha512-RCJa0fetnzp+h+KN9BdgYOgtsMAG9bfoJ9JSjIhFHobKWVWyzM3jjaeNTdpFK9tQtf3q1sguXeERJ/LcmdFE7w==
+
 valid-url@~1.0.9:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/valid-url/-/valid-url-1.0.9.tgz#1c14479b40f1397a75782f115e4086447433a200"
@@ -10414,21 +10445,19 @@ validate-npm-package-name@^3.0.0:
   dependencies:
     builtins "^1.0.3"
 
-valtio@1.13.2:
-  version "1.13.2"
-  resolved "https://registry.yarnpkg.com/valtio/-/valtio-1.13.2.tgz#e31d452d5da3550935417670aafd34d832dc7241"
-  integrity sha512-Qik0o+DSy741TmkqmRfjq+0xpZBXi/Y6+fXZLn0xNF1z/waFMbE3rkivv5Zcf9RrMUp6zswf2J7sbh2KBlba5A==
-  dependencies:
-    derive-valtio "0.1.0"
-    proxy-compare "2.6.0"
-    use-sync-external-store "1.2.0"
-
-valtio@2.1.5:
+valtio@1.13.2, valtio@2.1.5:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/valtio/-/valtio-2.1.5.tgz#3bd19a39a174d4f427553654d6e54581fd403c79"
   integrity sha512-vsh1Ixu5mT0pJFZm+Jspvhga5GzHUTYv0/+Th203pLfh3/wbHwxhu/Z2OkZDXIgHfjnjBns7SN9HNcbDvPmaGw==
   dependencies:
     proxy-compare "^3.0.1"
+
+varuint-bitcoin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/varuint-bitcoin/-/varuint-bitcoin-2.0.0.tgz#59a53845a87ad18c42f184a3d325074465341523"
+  integrity sha512-6QZbU/rHO2ZQYpWFDALCDSRsXbAs1VOEmXAxtbtjLtKuMJ/FQ8YbhfxlaiKv5nklci0M6lZtlZyxo9Q+qNnyog==
+  dependencies:
+    uint8array-tools "^0.0.8"
 
 vary@~1.1.2:
   version "1.1.2"
