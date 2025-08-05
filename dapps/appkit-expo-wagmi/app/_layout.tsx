@@ -26,7 +26,7 @@ import { storage } from "@/utils/StorageUtil";
 const queryClient = new QueryClient();
 
 // 1. Get projectId at https://dashboard.reown.com
-const projectId = "034b2461569caa7547067afc8288159d";
+const projectId = "YOUR_PROJECT_ID";
 
 // 2. Create config
 const metadata = {
