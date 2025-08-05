@@ -28,8 +28,8 @@ export default function HomeScreen() {
         <WalletInfoView />
         <AppKitButton />
       </ParallaxScrollView>
-      {/* This is a workaround for the Android modal issue */}
-      <View style={styles.androidViewWorkaround}>
+      {/* This is a workaround for the Android modal issue. https://github.com/expo/expo/issues/32991#issuecomment-2489620459 */}
+      <View style={{ position: "absolute", height: "100%", width: "100%" }}>
         <AppKit />
       </View>
     </>
@@ -53,10 +53,4 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
   },
-  //https://github.com/expo/expo/issues/32991#issuecomment-2489620459
-  androidViewWorkaround: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-  }
 });
