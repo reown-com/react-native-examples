@@ -28,7 +28,7 @@ import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import {chains} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
 import { storage } from './utils/StorageUtil';
-import { siweConfig } from './utils/SiweUtils';
+// import { siweConfig } from './utils/SiweUtils';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
@@ -70,7 +70,7 @@ const appKit = createAppKit({
   adapters,
   metadata,
   networks,
-  siweConfig,
+  // siweConfig,
   clipboardClient,
   storage,
   extraConnectors: [new PhantomConnector(), new CoinbaseConnector({ storage: new MMKV()})],
