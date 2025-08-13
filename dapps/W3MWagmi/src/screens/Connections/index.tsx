@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {AppKitButton} from '@reown/appkit-react-native';
+import {AppKitButton, NetworkButton} from '@reown/appkit-react-native';
 import {FlexView, Text} from '@reown/appkit-ui-react-native';
 
 import {ActionsView} from './components/ActionsView';
@@ -15,6 +15,7 @@ function ConnectionsScreen() {
       <View style={styles.buttonContainer}>
         <WalletInfoView />
         <AppKitButton balance="show" />
+        <NetworkButton />
         <ActionsView />
         <EventsView />
       </View>
