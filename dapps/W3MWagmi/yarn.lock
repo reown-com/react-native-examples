@@ -5415,42 +5415,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-height-calc-20250814203104":
-  version: 0.0.0-fix-height-calc-20250814203104
-  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-height-calc-20250814203104"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-height-calc-20250815195135":
+  version: 0.0.0-fix-height-calc-20250815195135
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-height-calc-20250815195135"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250814203104
+    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250815195135
   peerDependencies:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 7d954a213d5ca1113038a691b311877cd11f82fb53abffb1a1205631fe25662717753261eee1599ab01edb143e1c3f8ec2d848a0df9f2b0cf43d281a681be302
+  checksum: d1bd74ec7a9eb4440cc63985300e7fa896aa19203abdbc69dabfe30315a16177dae2f2b2f9e59906024052ef5fb1bd4931bf0f614ab0738c1304c158b041a669
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-react-native@npm:0.0.0-fix-height-calc-20250814203104":
-  version: 0.0.0-fix-height-calc-20250814203104
-  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-fix-height-calc-20250814203104"
+"@reown/appkit-coinbase-react-native@npm:0.0.0-fix-height-calc-20250815195135":
+  version: 0.0.0-fix-height-calc-20250815195135
+  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-fix-height-calc-20250815195135"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250814203104
+    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250815195135
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.1.2"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: e4fe9e90b095906c6c2dca150d64f036b7085c3eb16fe004fd4cc928e70f6be2ea5a30ee4ec3f9095b635aa13990f1eb16510f915f8bb284d3cd25ad9f086e49
+  checksum: 95540972df24604cc779156504a46900cb036e1034b93ffa56ec4daeecfdd7899cc15ac6c35e549deed29eb4e41d7985fe2260ddbbd68cf2f0694bc2b77c29ff
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-fix-height-calc-20250814203104":
-  version: 0.0.0-fix-height-calc-20250814203104
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-fix-height-calc-20250814203104"
+"@reown/appkit-common-react-native@npm:0.0.0-fix-height-calc-20250815195135":
+  version: 0.0.0-fix-height-calc-20250815195135
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-fix-height-calc-20250815195135"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
-  checksum: ce7a9c1e53ae7f36af25a4b86c521269290c602da95958690d38671d24d548d1af2ec7255749e5fbd2f0d9a1da4df60b900eba6c9adfd3e552d6b05804a098eb
+  checksum: 48b4640ff83dc7170282a23fd515ec5960dc8a8bd684dcf4da85b4dde797999fe01828f40663ecd155671247a648b66fdd5b0c30b6764eb08e8f841e0d7d219a
   languageName: node
   linkType: hard
 
@@ -5478,11 +5478,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-fix-height-calc-20250814203104":
-  version: 0.0.0-fix-height-calc-20250814203104
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-fix-height-calc-20250814203104"
+"@reown/appkit-core-react-native@npm:0.0.0-fix-height-calc-20250815195135":
+  version: 0.0.0-fix-height-calc-20250815195135
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-fix-height-calc-20250815195135"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250814203104
+    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250815195135
     countries-and-timezones: 3.7.2
     derive-valtio: 0.2.0
     valtio: 2.1.5
@@ -5490,7 +5490,7 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 6875ddf128a98af78cf695f04fe0b650b7ad3b8d91b93bcd9515b3ce7c4045edb074d9ebe1a4d8d4aa67da69819eeb9e2d6fb9e7ac95b4d87f526a6721cde6d5
+  checksum: daf584d54ad27085a49e54e691e53fa972ed15dc27cbc09b49a938c15cf4010fd7cc5f3ae2975821f0509ca57e884070020983fa7c510a7ce8940b13fe122708
   languageName: node
   linkType: hard
 
@@ -5517,14 +5517,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:0.0.0-fix-height-calc-20250814203104":
-  version: 0.0.0-fix-height-calc-20250814203104
-  resolution: "@reown/appkit-react-native@npm:0.0.0-fix-height-calc-20250814203104"
+"@reown/appkit-react-native@npm:0.0.0-fix-height-calc-20250815195135":
+  version: 0.0.0-fix-height-calc-20250815195135
+  resolution: "@reown/appkit-react-native@npm:0.0.0-fix-height-calc-20250815195135"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-core-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-siwe-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-ui-react-native": 0.0.0-fix-height-calc-20250814203104
+    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-core-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-siwe-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-ui-react-native": 0.0.0-fix-height-calc-20250815195135
     "@walletconnect/universal-provider": 2.21.5
     valtio: 2.1.5
   peerDependencies:
@@ -5533,7 +5533,7 @@ __metadata:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: 09738bd492735569c989e0efe511bfc359355be564555dc8e927a39b5fd7112b13af0635974d8450887cabc4af4f74a026ac5de7ce075d1ef98c1be1c6b5baab
+  checksum: 903af95cd6fb178dcc941c904a92fbdc674f5fcf598b1da3815e2b1ddc0206470a2cdf169814cf94529d4bdb71b018ddc1bc2104356d0a84b2a3ef295bc733f8
   languageName: node
   linkType: hard
 
@@ -5551,25 +5551,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-fix-height-calc-20250814203104":
-  version: 0.0.0-fix-height-calc-20250814203104
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-fix-height-calc-20250814203104"
+"@reown/appkit-siwe-react-native@npm:0.0.0-fix-height-calc-20250815195135":
+  version: 0.0.0-fix-height-calc-20250815195135
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-fix-height-calc-20250815195135"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-core-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-ui-react-native": 0.0.0-fix-height-calc-20250814203104
+    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-core-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-ui-react-native": 0.0.0-fix-height-calc-20250815195135
     valtio: 2.1.5
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: e9568158b53677fa57e77ee97dc5f23d2c91fbbbbbb6ef1eb27cb59d6589e2b9752178255a6c76260f7412f4da094920eb50cead9874f4c85e907c5b6839106b
+  checksum: 75d8560322a0720fced1c323cc4ccd1cf8087da03ef2d2ace3e0ab6185ee7a9e2762c5d61f6d0630e032d9f33ad6e56ec1ba9d98cd12e29578acad0ca9903c86
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:0.0.0-fix-height-calc-20250814203104":
-  version: 0.0.0-fix-height-calc-20250814203104
-  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-fix-height-calc-20250814203104"
+"@reown/appkit-solana-react-native@npm:0.0.0-fix-height-calc-20250815195135":
+  version: 0.0.0-fix-height-calc-20250815195135
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-fix-height-calc-20250815195135"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250814203104
+    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250815195135
     "@solana/web3.js": 1.98.2
     bs58: 6.0.0
     tweetnacl: 1.0.3
@@ -5577,22 +5577,22 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: c89cfe204edba018421b25033267c2207f8fec5aa82238504a6fbf6c48a3daa29509a78c63cc38380a75e1f66d4d819144e1d32e1d8d2594514200f2369a8e10
+  checksum: 9cbfba646d28aac53f570da0210ae86337b7f8cd260b17945d7bed184f4cbb6960991f1f1c5714374242fadc9ac086aa83559b61cc4ae30783ad6c3351f83fc1
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-fix-height-calc-20250814203104":
-  version: 0.0.0-fix-height-calc-20250814203104
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-fix-height-calc-20250814203104"
+"@reown/appkit-ui-react-native@npm:0.0.0-fix-height-calc-20250815195135":
+  version: 0.0.0-fix-height-calc-20250815195135
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-fix-height-calc-20250815195135"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250814203104
+    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250815195135
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: 21539669a37a72a65386fbc2abb366cfe9847cbb5af6e958483b02ddfd300a95f7776a22cf99528fca86d01e25c8708d7ca7441078b8f5f0c263e4ff064fd6c6
+  checksum: 0a3a685018743118a3233f848cee7b6caf89e22647301afdc5f1e11072d07e94a27ac5ef7ec96065ad0edcb83c7434e28274d8f0f7d9a04a4a35025af3759707
   languageName: node
   linkType: hard
 
@@ -5627,13 +5627,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-fix-height-calc-20250814203104":
-  version: 0.0.0-fix-height-calc-20250814203104
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-fix-height-calc-20250814203104"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-fix-height-calc-20250815195135":
+  version: 0.0.0-fix-height-calc-20250815195135
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-fix-height-calc-20250815195135"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-siwe-react-native": 0.0.0-fix-height-calc-20250814203104
+    "@reown/appkit-common-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-siwe-react-native": 0.0.0-fix-height-calc-20250815195135
   peerDependencies:
     "@react-native-community/netinfo": "*"
     "@walletconnect/react-native-compat": ">=2.16.1"
@@ -5642,7 +5642,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: 6bf522ff6f39e9a1b7f7c791a508a244be172e9348a92c8c53aca9a7c96c09acfdc7de32d995f6802715a3b28289bb88761fa970ce30a4d0a28c6271341f43bc
+  checksum: 157886c24b2faa61df2fa499aa42c2053d793911df0f2e1d64f9700861784b2e9029fcdd0e5e91913d4bfae857167ef92c440b0a68c547a275b7221f24cd2b02
   languageName: node
   linkType: hard
 
@@ -15923,11 +15923,11 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-bitcoin-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-coinbase-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-solana-react-native": 0.0.0-fix-height-calc-20250814203104
-    "@reown/appkit-wagmi-react-native": 0.0.0-fix-height-calc-20250814203104
+    "@reown/appkit-bitcoin-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-coinbase-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-solana-react-native": 0.0.0-fix-height-calc-20250815195135
+    "@reown/appkit-wagmi-react-native": 0.0.0-fix-height-calc-20250815195135
     "@sentry/react-native": ^6.14.0
     "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2
