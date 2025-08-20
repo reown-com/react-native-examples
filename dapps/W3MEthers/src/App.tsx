@@ -19,6 +19,7 @@ import {
 import {
   SolanaAdapter,
   PhantomConnector,
+  SolflareConnector,
 } from '@reown/appkit-solana-react-native';
 import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
 import {CoinbaseConnector} from '@reown/appkit-coinbase-react-native';
@@ -74,6 +75,7 @@ const appKit = createAppKit({
   enableAnalytics: true,
   extraConnectors: [
     new PhantomConnector(),
+    new SolflareConnector(),
     new CoinbaseConnector({storage: new MMKV()}),
   ],
   features: {

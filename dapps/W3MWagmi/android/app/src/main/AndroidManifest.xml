@@ -46,6 +46,8 @@
       <package android:name="kh.com.sabay.sabaywallet"/>
       <package android:name="com.tokoin.wallet"/>
       <package android:name="org.toshi" />
+      <package android:name="com.solflare.mobile"/>
+      <package android:name="app.phantom"/>
     </queries>
 
     <application
