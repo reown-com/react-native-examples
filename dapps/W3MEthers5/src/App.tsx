@@ -20,7 +20,11 @@ import {ENV_PROJECT_ID} from '@env';
 import {siweConfig} from './utils/SiweUtils';
 import {mainnet, polygon} from './utils/ChainUtils';
 import {storage} from './utils/StorageUtil';
-import {SolanaAdapter} from '@reown/appkit-solana-react-native';
+import {
+  SolanaAdapter,
+  PhantomConnector,
+  SolflareConnector,
+} from '@reown/appkit-solana-react-native';
 import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
 import {ActionsView} from './views/ActionsView';
 import Toast from 'react-native-toast-message';
@@ -61,6 +65,7 @@ const appkit = createAppKit({
   storage,
   adapters: [ethersAdapter, solanaAdapter, bitcoinAdapter],
   siweConfig,
+  extraConnectors: [new PhantomConnector(), new SolflareConnector()],
   clipboardClient,
   enableAnalytics: true,
   features: {
