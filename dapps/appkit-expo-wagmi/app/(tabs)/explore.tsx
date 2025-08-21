@@ -153,12 +153,4 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
-  codeBlock: {
-    fontFamily: 'SpaceMono',
-    backgroundColor: '#f5f5f5',
-    padding: 8,
-    borderRadius: 4,
-    marginVertical: 4,
-    fontSize: 12,
-  },
 });
