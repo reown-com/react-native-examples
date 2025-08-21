@@ -21,76 +21,122 @@ export default function TabTwoScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
+        <ThemedText type="title">AppKit React Native</ThemedText>
       </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
+      <ThemedText>Discover the powerful features of AppKit for React Native development.</ThemedText>
+      
+      <Collapsible title="What is AppKit?">
         <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
+          AppKit is a comprehensive React Native SDK that provides seamless wallet connectivity and 
+          blockchain interactions. It supports both Wagmi and Ethers libraries, making it flexible 
+          for different development preferences.
         </ThemedText>
         <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
+          With AppKit, you can easily integrate 430+ wallets into your React Native app using the 
+          WalletConnect protocol, providing users with a familiar and secure connection experience.
         </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
+        <ExternalLink href="https://docs.reown.com/appkit/react-native/">
+          <ThemedText type="link">View Documentation</ThemedText>
         </ExternalLink>
       </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
+
+      <Collapsible title="Core Features">
         <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
+          <ThemedText type="defaultSemiBold">Multi-Wallet Support:</ThemedText> Connect to 430+ wallets 
+          including MetaMask, Trust Wallet, Rainbow, and more.
+        </ThemedText>
+        <ThemedText>
+          <ThemedText type="defaultSemiBold">Cross-Platform:</ThemedText> Works seamlessly on iOS, 
+          Android, and web platforms with consistent behavior.
+        </ThemedText>
+        <ThemedText>
+          <ThemedText type="defaultSemiBold">Multiple Chains:</ThemedText> Support for Ethereum, 
+          Polygon, Arbitrum, and other popular blockchain networks.
+        </ThemedText>
+        <ThemedText>
+          <ThemedText type="defaultSemiBold">WalletConnect Protocol:</ThemedText> Secure, decentralized 
+          connections without sharing private keys.
         </ThemedText>
       </Collapsible>
-      <Collapsible title="Images">
+
+      <Collapsible title="Authentication">
         <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
+          AppKit supports multiple authentication methods for seamless user onboarding:
         </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
+        <ThemedText>• Traditional wallet connections via WalletConnect</ThemedText>
+        <ThemedText>• Email-based authentication with magic links</ThemedText>
+        <ThemedText>• Social login integration (Apple, Twitter, Discord)</ThemedText>
+        <ThemedText>• One-click authentication with Sign-In with Ethereum (SIWE)</ThemedText>
+        <ThemedText>
+          These authentication methods make Web3 accessible to everyone, regardless of their 
+          crypto experience level.
+        </ThemedText>
+        <ExternalLink href="https://docs.reown.com/appkit/authentication/socials.md">
+          <ThemedText type="link">Learn about Authentication</ThemedText>
         </ExternalLink>
       </Collapsible>
-      <Collapsible title="Custom fonts">
+
+      <Collapsible title="Optional Features">
         <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
+          <ThemedText type="defaultSemiBold">Wallet Detection:</ThemedText> Enhance UX by detecting 
+          installed wallets and showing green checkmarks. Configure in Info.plist for iOS.
         </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
+        <ThemedText>
+          <ThemedText type="defaultSemiBold">Coinbase Wallet:</ThemedText> Special integration for 
+          Coinbase Wallet using their proprietary SDK. Requires additional setup but provides 
+          native Coinbase Wallet experience.
+        </ThemedText>
+        <ThemedText>
+          <ThemedText type="defaultSemiBold">Analytics:</ThemedText> Built-in analytics support 
+          to track user interactions and wallet connections.
+        </ThemedText>
+        <ExternalLink href="https://docs.reown.com/appkit/react-native/#enable-wallet-detection-optional">
+          <ThemedText type="link">Configure Optional Features</ThemedText>
         </ExternalLink>
       </Collapsible>
-      <Collapsible title="Light and dark mode components">
+
+      <Collapsible title="Supported Chains">
         <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
+          AppKit supports multiple blockchain networks out of the box:
         </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
+        <ThemedText>• Ethereum Mainnet</ThemedText>
+        <ThemedText>• Polygon</ThemedText>
+        <ThemedText>• Arbitrum</ThemedText>
+        <ThemedText>• And many more through custom configuration</ThemedText>
+        <ThemedText>
+          You can configure which chains to support in your wagmiConfig, allowing users to 
+          switch between networks seamlessly.
+        </ThemedText>
+      </Collapsible>
+
+      <Collapsible title="Getting Started">
+        <ThemedText>
+          To get started with AppKit React Native:
+        </ThemedText>
+        <ThemedText>1. Get a project ID from the Reown Dashboard</ThemedText>
+        <ThemedText>2. Install the required packages</ThemedText>
+        <ThemedText>3. Configure your wagmiConfig with chains and metadata</ThemedText>
+        <ThemedText>4. Initialize AppKit with createAppKit()</ThemedText>
+        <ThemedText>5. Add the AppKit component to your app</ThemedText>
+        <ThemedText>
+          Check out the examples and test apps to see AppKit in action!
+        </ThemedText>
+        <ExternalLink href="https://docs.reown.com/appkit/react-native/#examples">
+          <ThemedText type="link">View Examples</ThemedText>
         </ExternalLink>
       </Collapsible>
-      <Collapsible title="Animations">
+
+      <Collapsible title="Support & Community">
         <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
+          Reown is committed to delivering the best developer experience. If you have questions, 
+          feature requests, or bug reports:
         </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
+        <ThemedText>• Open an issue on GitHub</ThemedText>
+        <ThemedText>• Join the community discussions</ThemedText>
+        <ThemedText>• Check out the comprehensive documentation</ThemedText>
+        <ThemedText>
+          The AppKit team provides excellent support to help you build amazing Web3 experiences.
+        </ThemedText>
       </Collapsible>
     </ParallaxScrollView>
   );
