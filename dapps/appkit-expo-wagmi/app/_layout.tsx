@@ -7,7 +7,7 @@ import {
   solana,
 } from "@reown/appkit-react-native";
 import { WagmiAdapter } from "@reown/appkit-wagmi-react-native";
-import { SolanaAdapter } from "@reown/appkit-solana-react-native";
+import { SolanaAdapter, PhantomConnector, SolflareConnector } from "@reown/appkit-solana-react-native";
 import { BitcoinAdapter } from "@reown/appkit-bitcoin-react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { arbitrum, mainnet, polygon } from "@wagmi/core/chains";
@@ -26,7 +26,7 @@ import { storage } from "@/utils/StorageUtil";
 const queryClient = new QueryClient();
 
 // 1. Get projectId at https://dashboard.reown.com
-const projectId = "YOUR_PROJECT_ID";
+const projectId = "0aa3a47989fc27fb2cca0bb053caa511"; // This will only work for the example project.
 
 // 2. Create config
 const metadata = {
@@ -55,6 +55,7 @@ const appkit =createAppKit({
   projectId,
   networks: [...networks, solana, bitcoin],
   adapters: [wagmiAdapter, solanaAdapter, bitcoinAdapter],
+  extraConnectors: [new PhantomConnector(), new SolflareConnector()],
   metadata,
   storage,
   defaultNetwork: mainnet, // Optional
