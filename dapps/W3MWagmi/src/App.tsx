@@ -21,7 +21,7 @@ import * as Sentry from '@sentry/react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import {getCustomWallets, getMetadata} from '@/utils/misc';
+import {getMetadata} from '@/utils/misc';
 import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import {siweConfig} from '@/utils/SiweUtils';
 import {chains} from '@/utils/WagmiUtils';
@@ -71,8 +71,6 @@ const wagmiConfig = defaultWagmiConfig({
     _authConnector],
 });
 
-const customWallets = getCustomWallets();
-
 // 3. Create modal
 createAppKit({
   projectId,
@@ -80,7 +78,6 @@ createAppKit({
   metadata,
   siweConfig,
   clipboardClient,
-  customWallets,
   connectorImages: {
     coinbaseWallet:
       'https://play-lh.googleusercontent.com/wrgUujbq5kbn4Wd4tzyhQnxOXkjiGqq39N4zBvCHmxpIiKcZw_Pb065KTWWlnoejsg',

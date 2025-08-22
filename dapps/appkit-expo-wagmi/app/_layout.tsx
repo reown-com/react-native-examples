@@ -5,7 +5,7 @@ import {
   defaultWagmiConfig
 } from "@reown/appkit-wagmi-react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { arbitrum, mainnet, polygon } from "@wagmi/core/chains";
+import { mainnet, monadTestnet } from "@wagmi/core/chains";
 import { WagmiProvider } from "wagmi";
 
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
@@ -35,7 +35,7 @@ const metadata = {
   },
 };
 
-const chains = [mainnet, polygon, arbitrum] as const;
+const chains = [mainnet, monadTestnet] as const;
 
 const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 
@@ -43,8 +43,10 @@ const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 createAppKit({
   projectId,
   metadata,
+  chainImages: {
+    10143: "https://files.svgcdn.io/token-branded/monad.png", // Monad Testnet
+  },
   wagmiConfig,
-  defaultChain: mainnet, // Optional
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
 });
 
