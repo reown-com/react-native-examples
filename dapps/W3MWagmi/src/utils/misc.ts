@@ -11,17 +11,3 @@ export const getMetadata = () => {
     },
   };
 };
-
-export const getCustomWallets = () => {
-  const wallets = [
-    {
-      id: 'rn-wallet',
-      name: 'React Native Wallet',
-      image_url: 'https://avatars.githubusercontent.com/u/179229932',
-      mobile_link: 'rn-web3wallet://',
-      link_mode: 'https://appkit-lab.reown.com/rn_walletkit',
-    },
-  ];
-
-  return wallets;
-};
