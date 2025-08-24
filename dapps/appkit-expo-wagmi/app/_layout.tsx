@@ -4,6 +4,7 @@ import {
   createAppKit,
   defaultWagmiConfig
 } from "@reown/appkit-wagmi-react-native";
+import { authConnector } from "@reown/appkit-auth-wagmi-react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { mainnet, monadTestnet } from "@wagmi/core/chains";
 import { WagmiProvider } from "wagmi";
@@ -23,6 +24,8 @@ const queryClient = new QueryClient();
 // 1. Get projectId at https://dashboard.reown.com
 const projectId = "b8e39dfb697ba26ac5a77a4b29b35604"; // This project ID will only work for Expo Go. Use your own project ID for production.
 
+
+
 // 2. Create config
 const metadata = {
   name: "AppKit RN",
@@ -35,9 +38,12 @@ const metadata = {
   },
 };
 
+
+const auth = authConnector({ projectId, metadata });
+
 const chains = [mainnet, monadTestnet] as const;
 
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata, extraConnectors: [auth] });
 
 // 3. Create modal
 createAppKit({
