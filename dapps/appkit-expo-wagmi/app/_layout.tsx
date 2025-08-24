@@ -54,6 +54,9 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    KHTeka: require('../assets/fonts/KHTeka-Regular.otf'),
+    KHTekaMedium: require('../assets/fonts/KHTeka-Medium.otf'),
+    KHTekaMono: require('../assets/fonts/KHTekaMono-Regular.otf'),
   });
 
   if (!loaded) {

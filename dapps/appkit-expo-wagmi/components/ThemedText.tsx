@@ -44,11 +44,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   title: {
+    fontFamily: 'KHTeka-Medium',
     fontSize: 32,
     fontWeight: 'bold',
     lineHeight: 32,
   },
   subtitle: {
+    fontFamily: 'KHTeka-Regular',
     fontSize: 20,
     fontWeight: 'bold',
   },
