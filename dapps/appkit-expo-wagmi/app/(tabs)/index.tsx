@@ -1,32 +1,43 @@
 import { AppKitButton } from '@reown/appkit-wagmi-react-native';
 import { Image } from 'expo-image';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
+import { MobileWave } from '@/components/MobileWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import ReownFigures from '@/components/ReownFigures';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { reownDarkGray, reownOrange } from '@/constants/Colors';
 
 export default function HomeScreen() {
   return (
     <>
       <ParallaxScrollView
-        headerBackgroundColor={{ light: '#202020', dark: '#202020' }}
+        headerBackgroundColor={{ light: reownDarkGray, dark: reownDarkGray }}
         headerImage={
-          <Image
-            source={require('@/assets/images/reown-header.png')}
-            style={styles.reownLogo}
-          />
+          <View style={styles.headerContainer}>
+            <View style={styles.leftColumn}>
+              <Image
+                source={require('@/assets/images/reown-logo.png')}
+                style={styles.reownLogo}
+              />
+              <Text style={styles.headerText}>
+                Powering the future of the financial internet
+              </Text>
+            </View>
+            <ReownFigures />
+          </View>
         }>
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">AppKit</ThemedText>
           <ThemedText type="subtitle">for React Native</ThemedText>
-          <HelloWave />
+          <MobileWave />
         </ThemedView>
-        <AppKitButton connectStyle={styles.appKitButton} label='Connect Wallet' />
+        <View style={styles.appKitButtonContainer}>
+          <AppKitButton connectStyle={styles.appKitButton} label='Connect Wallet' />
+        </View>
       </ParallaxScrollView>
-
     </>
   );
 }
@@ -39,13 +50,37 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   reownLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+    height: 48,
+    width: 180,
+  },
+  appKitButtonContainer: {
+    marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   appKitButton: {
     marginTop: 20,
+    backgroundColor: reownOrange,
+  },
+  headerText: {
+    fontFamily: 'KHTekaMono',
+    fontSize: 14,
+    lineHeight: 24,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  headerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  leftColumn: {
+    flexDirection: 'column',
+    width: '50%',
+    height: '100%',
+    justifyContent: 'flex-end',
+    gap: 10,
   },
 });
