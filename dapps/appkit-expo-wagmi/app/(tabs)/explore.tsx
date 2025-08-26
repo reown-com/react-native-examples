@@ -5,12 +5,12 @@ import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { reownOrange } from '@/constants/Colors';
+import { reownGray } from '@/constants/Colors';
 
 export default function TabTwoScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: reownOrange, dark: reownOrange }}
+      headerBackgroundColor={{ light: reownGray, dark: reownGray }}
       headerImage={
         <Image
           source={require('@/assets/images/explore-appkit.png')}
