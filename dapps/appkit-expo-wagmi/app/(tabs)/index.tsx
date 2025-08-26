@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: reownOrange,
   },
   headerText: {
-    fontFamily: 'KHTekaMono-Regular',
+    fontFamily: 'KHTekaMono',
     fontSize: 14,
     lineHeight: 24,
     fontWeight: '600',
