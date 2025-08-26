@@ -1,26 +1,24 @@
 import { StyleSheet } from 'react-native';
-
+import { Image } from 'expo-image';
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { reownOrange } from '@/constants/Colors';
 
 export default function TabTwoScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+      headerBackgroundColor={{ light: reownOrange, dark: reownOrange }}
       headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
+        <Image
+          source={require('@/assets/images/explore-appkit.png')}
           style={styles.headerImage}
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">AppKit React Native</ThemedText>
+        <ThemedText type="title">AppKit</ThemedText>
       </ThemedView>
       <ThemedText>Discover the powerful features of AppKit for React Native development.</ThemedText>
       
@@ -143,9 +141,9 @@ export default function TabTwoScreen() {
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
+    bottom: 0,
+    height: '100%',
+    width: '100%',
     position: 'absolute',
   },
   titleContainer: {
