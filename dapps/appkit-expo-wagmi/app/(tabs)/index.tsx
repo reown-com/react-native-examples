@@ -1,5 +1,5 @@
 import '@walletconnect/react-native-compat';
-import { AppKit, AppKitButton } from '@reown/appkit-react-native';
+import { AppKitButton } from '@reown/appkit-react-native';
 import { Image } from 'expo-image';
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
@@ -37,10 +37,7 @@ export default function HomeScreen() {
           <MobileWave />
         </ThemedView>
         <WalletInfoView />
-        {/* This is a workaround for the Android modal issue. https://github.com/expo/expo/issues/32991#issuecomment-2489620459 */}
-        <View style={{ position: "absolute", height: "100%", width: "100%" }}>
-          <AppKit />
-        </View>
+        
         <View style={styles.appKitButtonContainer}>
           <AppKitButton connectStyle={styles.appKitButton} label='Connect Wallet' />
         </View>

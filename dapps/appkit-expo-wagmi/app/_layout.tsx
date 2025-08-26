@@ -1,6 +1,7 @@
 import 'text-encoding';
 import "@walletconnect/react-native-compat";
 import {
+  AppKit,
   AppKitProvider,
   bitcoin,
   createAppKit,
@@ -21,6 +22,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { storage } from "@/utils/StorageUtil";
+import { View } from 'react-native';
 
 // 0. Setup queryClient
 const queryClient = new QueryClient();
@@ -88,6 +90,10 @@ export default function RootLayout() {
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
+          {/* This is a workaround for the Android modal issue. https://github.com/expo/expo/issues/32991#issuecomment-2489620459 */}
+          <View style={{ position: "absolute", height: "100%", width: "100%" }}>
+            <AppKit />
+          </View>
           </AppKitProvider>
         </QueryClientProvider>
       </WagmiProvider>
