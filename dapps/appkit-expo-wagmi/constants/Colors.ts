@@ -9,6 +9,7 @@ export const reownGreen = '#008847';
 export const reownOrange = '#FF573B';
 export const reownBlue = '#0988F0';
 export const reownGray = '#6C6C6C';
+export const reownDarkGray = '#202020';
 export const reownWhite = '#E9E9E9';
 
 export const Colors = {

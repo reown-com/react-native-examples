@@ -8,12 +8,13 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import ReownFigures from '@/components/ReownFigures';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { reownDarkGray, reownOrange } from '@/constants/Colors';
 
 export default function HomeScreen() {
   return (
     <>
       <ParallaxScrollView
-        headerBackgroundColor={{ light: '#202020', dark: '#202020' }}
+        headerBackgroundColor={{ light: reownDarkGray, dark: reownDarkGray }}
         headerImage={
           <View style={styles.headerContainer}>
             <View style={styles.leftColumn}>
@@ -33,7 +34,9 @@ export default function HomeScreen() {
           <ThemedText type="subtitle">for React Native</ThemedText>
           <MobileWave />
         </ThemedView>
-        <AppKitButton connectStyle={styles.appKitButton} label='Connect Wallet' />
+        <View style={styles.appKitButtonContainer}>
+          <AppKitButton connectStyle={styles.appKitButton} label='Connect Wallet' />
+        </View>
       </ParallaxScrollView>
     </>
   );
@@ -50,8 +53,14 @@ const styles = StyleSheet.create({
     height: 48,
     width: 180,
   },
+  appKitButtonContainer: {
+    marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   appKitButton: {
     marginTop: 20,
+    backgroundColor: reownOrange,
   },
   headerText: {
     fontFamily: 'KHTekaMono-Regular',
