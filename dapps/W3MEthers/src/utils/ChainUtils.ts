@@ -4,7 +4,7 @@ export const mainnet = {
   nativeCurrency: {name: 'Ether', symbol: 'ETH', decimals: 18},
   rpcUrls: {
     default: {
-      http: ['https://eth.merkle.io'],
+      http: ['https://eth.llamarpc.com],
     },
   },
   blockExplorers: {
