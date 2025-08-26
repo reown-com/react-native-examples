@@ -92,6 +92,9 @@
     "braces": "3.0.3",
     "undici": "6.21.2",
     "serve-static": "1.16.2",
-    "valtio": "2.1.5"
+    "valtio": "2.1.5",
+    "form-data": "3.0.4",
+    "sha.js": "2.4.12",
+    "brace-expansion": "1.1.12"
   }
 }

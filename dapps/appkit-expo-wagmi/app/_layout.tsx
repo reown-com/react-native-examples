@@ -26,7 +26,9 @@ import { storage } from "@/utils/StorageUtil";
 const queryClient = new QueryClient();
 
 // 1. Get projectId at https://dashboard.reown.com
-const projectId = "0aa3a47989fc27fb2cca0bb053caa511"; // This will only work for the example project.
+const projectId = "b8e39dfb697ba26ac5a77a4b29b35604"; // This project ID will only work for Expo Go. Use your own project ID for production.
+
+
 
 // 2. Create config
 const metadata = {
@@ -51,7 +53,7 @@ const solanaAdapter = new SolanaAdapter();
 const bitcoinAdapter = new BitcoinAdapter();
 
 // 3. Create modal
-const appkit =createAppKit({
+const appkit = createAppKit({
   projectId,
   networks: [...networks, solana, bitcoin],
   adapters: [wagmiAdapter, solanaAdapter, bitcoinAdapter],
@@ -66,6 +68,9 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    KHTeka: require('../assets/fonts/KHTeka-Regular.otf'),
+    KHTekaMedium: require('../assets/fonts/KHTeka-Medium.otf'),
+    KHTekaMono: require('../assets/fonts/KHTekaMono-Regular.otf'),
   });
 
   if (!loaded) {
