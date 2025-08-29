@@ -5415,42 +5415,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-ui-changes-20250829161224":
-  version: 0.0.0-fix-ui-changes-20250829161224
-  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-ui-changes-20250829161224"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-ui-changes-20250829182619":
+  version: 0.0.0-fix-ui-changes-20250829182619
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-ui-changes-20250829182619"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829161224
+    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829182619
   peerDependencies:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: d39633c9a6862be4167f4e033bbe6fa55b398c6d1605f90512aba5e3b1fa892699499c2987158e0a5e6a0693c84083b05867952d7f2d28dbaffa1ccbd540014a
+  checksum: c12bd1c9e9366993519fc7f784d1f972c2cc54dd57e47df6db385a6f6ac53243ab76dbe4af2574c4a638698690233953fca9a685d852d26b27ea56a0c974ea8f
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-react-native@npm:0.0.0-fix-ui-changes-20250829161224":
-  version: 0.0.0-fix-ui-changes-20250829161224
-  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-fix-ui-changes-20250829161224"
+"@reown/appkit-coinbase-react-native@npm:0.0.0-fix-ui-changes-20250829182619":
+  version: 0.0.0-fix-ui-changes-20250829182619
+  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-fix-ui-changes-20250829182619"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829161224
+    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829182619
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.1.2"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 274f64a745b3c85ea0c4a55208a80886aaa1bdb1339c09002a9957e413e9b43567d19d73f1b14e5ca8f092e122c5ef63743b142b4a669a48aac2e932b13d4235
+  checksum: 02c6ff34d8557d7498daca2cd29d90788f7afe5812572ed8f08684ba9defd13e62bb7f34c95a627f1ff448980a7734420fc8b76328f99f69ff6f3cf91cf8e84e
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-fix-ui-changes-20250829161224":
-  version: 0.0.0-fix-ui-changes-20250829161224
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-fix-ui-changes-20250829161224"
+"@reown/appkit-common-react-native@npm:0.0.0-fix-ui-changes-20250829182619":
+  version: 0.0.0-fix-ui-changes-20250829182619
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-fix-ui-changes-20250829182619"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 30e9839f8cd4f3561d1d031b60fce2cde138d56bbd9c08044497faed5a868aacc4da3ff9227b5c95b63ae9e85c8a05c4035e3643a7f66c2501da4fa981fdef25
+  checksum: c66380c63971a55020a00288b3f4a2d2b131da24ec045af56a5a9a8066627e7bd7996dd05d2a7103493717b93e5e5e2a13b15a7c8fb73591ccf2ec19aeea5e2e
   languageName: node
   linkType: hard
 
@@ -5478,11 +5478,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-fix-ui-changes-20250829161224":
-  version: 0.0.0-fix-ui-changes-20250829161224
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-fix-ui-changes-20250829161224"
+"@reown/appkit-core-react-native@npm:0.0.0-fix-ui-changes-20250829182619":
+  version: 0.0.0-fix-ui-changes-20250829182619
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-fix-ui-changes-20250829182619"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829161224
+    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829182619
     countries-and-timezones: 3.7.2
     derive-valtio: 0.2.0
     valtio: 2.1.5
@@ -5490,7 +5490,7 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: c4a96248a6eb5b48e253bf1e0863441bc7419ec6faf07a10df01cb0c5b0057ffc85a67772573065ddbd16050d8905e6372b0a7e62ea5ba5a861695e2cac8f9a6
+  checksum: 85d794b7bba2013eede15c144757c4d84ac6ec1ffeaf330171ca3bec42b0607f760dec800792aebc9c71619ecca26fca72987d71ed14cf86b0ca8ebb49ec26d9
   languageName: node
   linkType: hard
 
@@ -5517,14 +5517,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:0.0.0-fix-ui-changes-20250829161224":
-  version: 0.0.0-fix-ui-changes-20250829161224
-  resolution: "@reown/appkit-react-native@npm:0.0.0-fix-ui-changes-20250829161224"
+"@reown/appkit-react-native@npm:0.0.0-fix-ui-changes-20250829182619":
+  version: 0.0.0-fix-ui-changes-20250829182619
+  resolution: "@reown/appkit-react-native@npm:0.0.0-fix-ui-changes-20250829182619"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-core-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-siwe-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-ui-react-native": 0.0.0-fix-ui-changes-20250829161224
+    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-core-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-siwe-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-ui-react-native": 0.0.0-fix-ui-changes-20250829182619
     "@walletconnect/universal-provider": 2.21.5
     valtio: 2.1.5
   peerDependencies:
@@ -5533,7 +5533,7 @@ __metadata:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: 6abb5377a509201bebfa1bc3d9055c6d790324df3fa7e207f8085e26882b1f015472e30451a565e679b8ee455ede085cea8fa559a6d1aead5d9264498e1981be
+  checksum: 5bbca943e532bf4cb4c7a559856c730672abef317ebca20320caf8c5295d1f7eab5939c9d8cb20532018ee7a48e7c13fa8f36347105a94dc15482aadd10e1e2d
   languageName: node
   linkType: hard
 
@@ -5551,25 +5551,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-fix-ui-changes-20250829161224":
-  version: 0.0.0-fix-ui-changes-20250829161224
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-fix-ui-changes-20250829161224"
+"@reown/appkit-siwe-react-native@npm:0.0.0-fix-ui-changes-20250829182619":
+  version: 0.0.0-fix-ui-changes-20250829182619
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-fix-ui-changes-20250829182619"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-core-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-ui-react-native": 0.0.0-fix-ui-changes-20250829161224
+    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-core-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-ui-react-native": 0.0.0-fix-ui-changes-20250829182619
     valtio: 2.1.5
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: ed023ca691fd3264642aa63af83671b9249863a8d40515b0fdf910fa112633e93a1d684ffdc16b96cfa9e3e66596aa670b9b5d0cbf496805dd0975ed707cce87
+  checksum: c27b24e34571303e338b4f46223491841a3b8b6a822a3089c091f8b56bb1f27bcc36a6c7c6713302d920a1428341b4323b8cba7e83438932ee488db01ebca0b7
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:0.0.0-fix-ui-changes-20250829161224":
-  version: 0.0.0-fix-ui-changes-20250829161224
-  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-fix-ui-changes-20250829161224"
+"@reown/appkit-solana-react-native@npm:0.0.0-fix-ui-changes-20250829182619":
+  version: 0.0.0-fix-ui-changes-20250829182619
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-fix-ui-changes-20250829182619"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829161224
+    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829182619
     "@solana/web3.js": 1.98.2
     bs58: 6.0.0
     tweetnacl: 1.0.3
@@ -5577,22 +5577,22 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 14ada8e5d15214e336dbde45d98ac00aea183bba47fa953918be0b21349bc60b371eae8314cd387546dddf5e1c868e3b0703126715dd59829119b4b907d38426
+  checksum: 9e143c65910cd4415fc76f68f9342e6b8073502ace4a1d155a98533b48d3384e1a9974be660613dd4e8c2e3bfa262adaa170d860d1db8e39ec0e0d38bfb37931
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-fix-ui-changes-20250829161224":
-  version: 0.0.0-fix-ui-changes-20250829161224
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-fix-ui-changes-20250829161224"
+"@reown/appkit-ui-react-native@npm:0.0.0-fix-ui-changes-20250829182619":
+  version: 0.0.0-fix-ui-changes-20250829182619
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-fix-ui-changes-20250829182619"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829161224
+    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829182619
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: b129d6094ab2b1de0d7b6ad08e5f45fecc5f0a5e9ab287567ef9c28446e91a0286ae2d5e5400f98096f66cc1e01e6caada056f58f739a782a8c31a48225428e5
+  checksum: bb1bef5181c177da8432956810815fc6990458e084c2e30a6d538acc381233ff47ffe6fc3bf505b305038ed803095d28e68e3ef5884e3b848b8957997a23e8b3
   languageName: node
   linkType: hard
 
@@ -5627,13 +5627,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-fix-ui-changes-20250829161224":
-  version: 0.0.0-fix-ui-changes-20250829161224
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-fix-ui-changes-20250829161224"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-fix-ui-changes-20250829182619":
+  version: 0.0.0-fix-ui-changes-20250829182619
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-fix-ui-changes-20250829182619"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-siwe-react-native": 0.0.0-fix-ui-changes-20250829161224
+    "@reown/appkit-common-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-siwe-react-native": 0.0.0-fix-ui-changes-20250829182619
   peerDependencies:
     "@react-native-community/netinfo": "*"
     "@walletconnect/react-native-compat": ">=2.16.1"
@@ -5642,7 +5642,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: 8728fd9c0da648b4b0d2ca4fc7b5f395ce15c28b660f5a83e6709465dc4e569f20769edf4077917ee0d75b65349ea5f291ab52570c7a3250aa6fe059d0fbcab8
+  checksum: 22355fee4d6f54b3b74b564ed97c549bafdad45bb091fa3ce499c27054dc167f38c76c10c7f289720828a2b19fe8b665d74c6b9250f2faa2a989629658b7898a
   languageName: node
   linkType: hard
 
@@ -16115,11 +16115,11 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-bitcoin-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-coinbase-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-solana-react-native": 0.0.0-fix-ui-changes-20250829161224
-    "@reown/appkit-wagmi-react-native": 0.0.0-fix-ui-changes-20250829161224
+    "@reown/appkit-bitcoin-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-coinbase-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-solana-react-native": 0.0.0-fix-ui-changes-20250829182619
+    "@reown/appkit-wagmi-react-native": 0.0.0-fix-ui-changes-20250829182619
     "@sentry/react-native": ^6.14.0
     "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2
