@@ -1,10 +1,10 @@
 PODS:
   - boost (1.83.0)
-  - CoinbaseWalletSDK/Client (1.0.4)
-  - CoinbaseWalletSDK/CrossPlatform (1.0.4):
+  - CoinbaseWalletSDK/Client (1.1.2)
+  - CoinbaseWalletSDK/CrossPlatform (1.1.2):
     - CoinbaseWalletSDK/Client
-  - CoinbaseWalletSDKExpo (1.0.13):
-    - CoinbaseWalletSDK/CrossPlatform (= 1.0.4)
+  - CoinbaseWalletSDKExpo (1.1.2):
+    - CoinbaseWalletSDK/CrossPlatform (= 1.1.2)
     - ExpoModulesCore
   - DoubleConversion (1.1.6)
   - EXConstants (15.4.5):
@@ -38,9 +38,9 @@ PODS:
     - hermes-engine/Pre-built (= 0.73.4)
   - hermes-engine/Pre-built (0.73.4)
   - libevent (2.1.12)
-  - MMKV (2.0.0):
-    - MMKVCore (~> 2.0.0)
-  - MMKVCore (2.0.0)
+  - MMKV (2.2.2):
+    - MMKVCore (~> 2.2.2)
+  - MMKVCore (2.2.2)
   - RCT-Folly (2022.05.16.00):
     - boost
     - DoubleConversion
@@ -912,7 +912,7 @@ PODS:
   - React-Mapbuffer (0.73.4):
     - glog
     - React-debug
-  - react-native-compat (2.21.4):
+  - react-native-compat (2.21.5):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -1311,8 +1311,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
-  CoinbaseWalletSDK: ea1f37512bbc69ebe07416e3b29bf840f5cc3152
-  CoinbaseWalletSDKExpo: 7488819c860868cd5fe117f6be43dd42c2e65919
+  CoinbaseWalletSDK: f8cef9d72e86d6ac4782e4d0054baf9302cf05bb
+  CoinbaseWalletSDKExpo: ca2f2a1e307701a04f06ffc746192ba797ba5b32
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
   EXConstants: 348adb88fb0d65892f16732ec5e02e1365c31588
   EXFont: db0560db6676fce70dcc7656483d6560be02cbf0
@@ -1326,9 +1326,9 @@ SPEC CHECKSUMS:
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
   hermes-engine: b2669ce35fc4ac14f523b307aff8896799829fe2
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  MMKV: f7d1d5945c8765f97f39c3d121f353d46735d801
-  MMKVCore: c04b296010fcb1d1638f2c69405096aac12f6390
-  RCT-Folly: 7169b2b1c44399c76a47b5deaaba715eeeb476c0
+  MMKV: b4802ebd5a7c68fc0c4a5ccb4926fbdfb62d68e0
+  MMKVCore: a255341a3746955f50da2ad9121b18cb2b346e61
+  RCT-Folly: cd21f1661364f975ae76b3308167ad66b09f53f5
   RCTRequired: ab7f915c15569f04a49669e573e6e319a53f9faa
   RCTTypeSafety: 63b97ced7b766865057e7154db0e81ce4ee6cf1e
   React: 1c87497e50fa40ba9c54e5ea5e53483a0f8eecc0
@@ -1349,7 +1349,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 9ac353eccf6ab54d1e0a33862ba91221d1e88460
   React-logger: 5295f5eac9d7624fe9a33a473442d8f4c1074197
   React-Mapbuffer: f7ba4d5459e546d741791a55664388e97b31df7c
-  react-native-compat: 9edc5862a88c50e1158549ddbff6df80c5509a11
+  react-native-compat: 74a583d6cb1dafc47495da8bb0a9fb0539f046d9
   react-native-get-random-values: ce0b8796c99e2b85e3202bd500b1ef286a17a02e
   react-native-mmkv: 5a46c73e3e12aa872c4485ae0e4414b4040af79a
   react-native-netinfo: f084f2324cb11b986503a39a3ccbb5d15e2a56d3

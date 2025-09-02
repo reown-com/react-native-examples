@@ -67,27 +67,18 @@ const clipboardClient = {
   },
 };
 
-const customWallets = [
-  {
-    id: 'rn-wallet',
-    name: 'RN Wallet',
-    image_url:
-      'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
-    mobile_link: 'rn-web3wallet://',
-  },
-];
-
 // 3. Create modal
 createAppKit({
   projectId,
+  metadata,
   chains,
   config,
   siweConfig,
-  customWallets,
   clipboardClient,
   enableAnalytics: true,
   features: {
     swaps: true,
+    onramp: true,
   },
 });
 

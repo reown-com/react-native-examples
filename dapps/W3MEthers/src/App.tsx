@@ -15,6 +15,7 @@ import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {CoinbaseProvider} from '@reown/appkit-coinbase-ethers-react-native';
 import {AuthProvider} from '@reown/appkit-auth-ethers-react-native';
 import {ENV_PROJECT_ID} from '@env';
+import {MMKV} from 'react-native-mmkv';
 
 import {SignMessage} from './views/SignMessage';
 import {SendTransaction} from './views/SendTransaction';
@@ -44,6 +45,7 @@ const metadata = {
 const coinbaseProvider = new CoinbaseProvider({
   redirect: 'rn-w3m-ethers-sample://',
   rpcUrl: mainnet.rpcUrl,
+  storage: new MMKV(),
 });
 
 const auth = new AuthProvider({projectId, metadata});
@@ -59,27 +61,18 @@ const clipboardClient = {
   },
 };
 
-const customWallets = [
-  {
-    id: 'rn-wallet',
-    name: 'RN Wallet',
-    image_url:
-      'https://github.com/reown-com/reown-docs/blob/main/static/assets/home/walletkitLogo.png?raw=true',
-    mobile_link: 'rn-web3wallet://',
-  },
-];
-
 // 3. Create modal
 createAppKit({
   projectId,
+  metadata,
   chains,
   config,
   siweConfig,
-  customWallets,
   clipboardClient,
   enableAnalytics: true,
   features: {
     swaps: true,
+    onramp: true,
   },
 });
 

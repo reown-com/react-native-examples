@@ -3,7 +3,7 @@ export const mainnet = {
   name: 'Ethereum',
   currency: 'ETH',
   explorerUrl: 'https://etherscan.io',
-  rpcUrl: 'https://eth.llamarpc.com',
+  rpcUrl: 'https://eth.merkle.io',
 };
 
 export const polygon = {

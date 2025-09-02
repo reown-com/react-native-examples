@@ -2,7 +2,6 @@ import {useCallback, useMemo, useState} from 'react';
 import {View, Text, ScrollView} from 'react-native';
 import {getSdkError} from '@walletconnect/utils';
 import {useNavigation} from '@react-navigation/native';
-
 import {walletKit} from '@/utils/WalletKitUtil';
 import {ModalHeader} from '@/components/Modal/ModalHeader';
 import {useTheme} from '@/hooks/useTheme';

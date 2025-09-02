@@ -1,4 +1,8 @@
 name: release-ios-appkit-internal
+
+permissions:
+  contents: read
+
 on: workflow_dispatch
 
 jobs:

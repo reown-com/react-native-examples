@@ -1,5 +1,8 @@
 name: CI E2E Tests Android
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
 

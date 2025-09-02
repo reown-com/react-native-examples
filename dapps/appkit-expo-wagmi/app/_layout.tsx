@@ -1,11 +1,12 @@
+import "@walletconnect/react-native-compat";
 import {
   AppKit,
   createAppKit,
   defaultWagmiConfig
 } from "@reown/appkit-wagmi-react-native";
+import { authConnector } from "@reown/appkit-auth-wagmi-react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { arbitrum, mainnet, polygon } from "@wagmi/core/chains";
-import "@walletconnect/react-native-compat";
+import { mainnet, monadTestnet } from "@wagmi/core/chains";
 import { WagmiProvider } from "wagmi";
 
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
@@ -15,12 +16,15 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { View } from "react-native";
 
 // 0. Setup queryClient
 const queryClient = new QueryClient();
 
-// 1. Get projectId at https://cloud.reown.com
-const projectId = "YOUR_PROJECT_ID";
+// 1. Get projectId at https://dashboard.reown.com
+const projectId = "b8e39dfb697ba26ac5a77a4b29b35604"; // This project ID will only work for Expo Go. Use your own project ID for production.
+
+
 
 // 2. Create config
 const metadata = {
@@ -34,15 +38,21 @@ const metadata = {
   },
 };
 
-const chains = [mainnet, polygon, arbitrum] as const;
 
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
+const auth = authConnector({ projectId, metadata });
+
+const chains = [mainnet, monadTestnet] as const;
+
+const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata, extraConnectors: [auth] });
 
 // 3. Create modal
 createAppKit({
   projectId,
+  metadata,
+  chainImages: {
+    10143: "https://files.svgcdn.io/token-branded/monad.png", // Monad Testnet
+  },
   wagmiConfig,
-  defaultChain: mainnet, // Optional
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
 });
 
@@ -50,6 +60,9 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    KHTeka: require('../assets/fonts/KHTeka-Regular.otf'),
+    KHTekaMedium: require('../assets/fonts/KHTeka-Medium.otf'),
+    KHTekaMono: require('../assets/fonts/KHTekaMono-Regular.otf'),
   });
 
   if (!loaded) {
@@ -65,7 +78,10 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
-          <AppKit />
+          {/* This is a workaround for the Android modal issue. https://github.com/expo/expo/issues/32991#issuecomment-2489620459 */}
+          <View style={{ position: "absolute", height: "100%", width: "100%" }}>
+            <AppKit />
+          </View>
           <StatusBar style="auto" />
         </QueryClientProvider>
       </WagmiProvider>
