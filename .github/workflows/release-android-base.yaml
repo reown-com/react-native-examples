@@ -1,5 +1,8 @@
 name: release-android-base
 
+permissions:
+  contents: read
+
 on:
   workflow_call:
     inputs:

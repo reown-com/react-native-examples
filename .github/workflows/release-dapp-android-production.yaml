@@ -1,4 +1,8 @@
 name: release-android-appkit-production
+
+permissions:
+  contents: read
+
 on: workflow_dispatch
 
 jobs:
