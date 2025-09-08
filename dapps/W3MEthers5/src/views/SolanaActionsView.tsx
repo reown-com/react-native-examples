@@ -16,7 +16,7 @@ import {ToastUtils} from '../utils/ToastUtils';
 
 export function SolanaActionsView() {
   const isConnected = true;
-  const {address, chainId} = useAccount();
+  const {address} = useAccount();
   const {provider} = useProvider();
 
   const onSignSuccess = (data: any, title = 'Sign successful') => {
@@ -46,13 +46,10 @@ export function SolanaActionsView() {
         message: base58.encode(encodedMessage),
         pubkey: address,
       };
-      const {signature} = (await provider.request(
-        {
-          method: 'solana_signMessage',
-          params,
-        },
-        chainId,
-      )) as {signature: string};
+      const {signature} = (await provider.request({
+        method: 'solana_signMessage',
+        params,
+      })) as {signature: string};
       onSignSuccess(signature, 'Sign Message successful');
     } catch (error) {
       onSignError(error as Error, 'Sign Message failed');
@@ -101,13 +98,10 @@ export function SolanaActionsView() {
       });
       const base58EncodedTransaction = base58.encode(serializedTransaction);
       const params = {transaction: base58EncodedTransaction};
-      const result = (await provider.request(
-        {
-          method: 'solana_signTransaction',
-          params,
-        },
-        chainId,
-      )) as {signature?: string; transaction?: string};
+      const result = (await provider.request({
+        method: 'solana_signTransaction',
+        params,
+      })) as {signature?: string; transaction?: string};
       if (result.signature) {
         onSignSuccess(
           `Signature: ${result.signature}`,
@@ -166,13 +160,10 @@ export function SolanaActionsView() {
       const base58EncodedTransaction = base58.encode(serializedTransaction);
       const params = {transaction: base58EncodedTransaction};
       // The result for signAndSendTransaction is typically the transaction signature
-      const {signature} = (await provider.request(
-        {
-          method: 'solana_signAndSendTransaction',
-          params,
-        },
-        chainId,
-      )) as {signature: string};
+      const {signature} = (await provider.request({
+        method: 'solana_signAndSendTransaction',
+        params,
+      })) as {signature: string};
       onSignSuccess(`Tx Signature: ${signature}`, 'Sign & Send Tx successful');
       // Optionally, you can confirm the transaction here using the signature and connection
       // await connection.confirmTransaction(signature, 'confirmed');
@@ -238,13 +229,10 @@ export function SolanaActionsView() {
       const params = {transactions: [serializedTx1, serializedTx2]};
 
       // The result for signAllTransactions is typically an array of signed transactions or signatures
-      const result = (await provider.request(
-        {
-          method: 'solana_signAllTransactions',
-          params,
-        },
-        chainId,
-      )) as {transactions?: string[]; signatures?: string[]}; // Adjust based on provider's typical response
+      const result = (await provider.request({
+        method: 'solana_signAllTransactions',
+        params,
+      })) as {transactions?: string[]; signatures?: string[]}; // Adjust based on provider's typical response
 
       if (result.transactions) {
         onSignSuccess(

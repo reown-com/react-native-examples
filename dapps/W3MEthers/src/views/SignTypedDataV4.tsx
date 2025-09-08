@@ -9,7 +9,7 @@ import {ToastUtils} from '../utils/ToastUtils';
 export function SignTypedDataV4() {
   const [isLoading, setIsLoading] = useState(false);
   const {provider} = useProvider();
-  const {isConnected, address, chainId} = useAccount();
+  const {isConnected, address} = useAccount();
 
   const onSuccess = (data: any) => {
     ToastUtils.showSuccessToast('Sign successful', data);
@@ -31,16 +31,14 @@ export function SignTypedDataV4() {
       const signer = new JsonRpcSigner(ethersProvider, address!);
       const message = JSON.stringify(eip712.example);
 
-      const signature = await provider.request(
-        {
-          method: 'eth_signTypedData_v4',
-          params: [signer.address, message],
-        },
-        chainId,
-      );
+      const signature = await provider.request({
+        method: 'eth_signTypedData_v4',
+        params: [signer.address, message],
+      });
 
       onSuccess(signature?.toString());
     } catch (e) {
+      console.log(e);
       onError(new Error('Error signing typed data'));
     } finally {
       setIsLoading(false);

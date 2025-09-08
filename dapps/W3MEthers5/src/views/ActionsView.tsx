@@ -7,14 +7,14 @@ import {SolanaActionsView} from './SolanaActionsView';
 import {EthersActionsView} from './EthersActionsView';
 
 export function ActionsView() {
-  const {chainId} = useAccount();
+  const {chainId, namespace} = useAccount();
   const isConnected = !!chainId;
 
   return isConnected ? (
     <FlexView style={styles.container}>
-      {chainId?.startsWith('eip155') ? (
+      {namespace === 'eip155' ? (
         <EthersActionsView />
-      ) : chainId?.startsWith('solana') ? (
+      ) : namespace === 'solana' ? (
         <SolanaActionsView />
       ) : null}
     </FlexView>

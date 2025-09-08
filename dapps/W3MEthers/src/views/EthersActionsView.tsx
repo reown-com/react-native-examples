@@ -7,8 +7,8 @@ import {ReadContract} from './ReadContract';
 import {WriteContract} from './WriteContract';
 
 export function EthersActionsView() {
-  const {chainId} = useAccount();
-  const isEip = chainId?.startsWith('eip155');
+  const {namespace} = useAccount();
+  const isEip = namespace === 'eip155';
 
   return isEip ? (
     <>
