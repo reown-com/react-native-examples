@@ -5415,42 +5415,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-20250909201659":
-  version: 0.0.0-feat-multichain-20250909201659
-  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-20250909201659"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-chore-spring-effect-20250909214820":
+  version: 0.0.0-chore-spring-effect-20250909214820
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-chore-spring-effect-20250909214820"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250909201659
+    "@reown/appkit-common-react-native": 0.0.0-chore-spring-effect-20250909214820
   peerDependencies:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: d9a2d9da317e89d79791d5a6de5e1f16de42b43fbcd18e103db4624110e95a91787c0be66b0efbdd0887ae52f92f47a72476376ef6c79c14b264dbefa2416f1d
+  checksum: 91cc17acb7f9e2d2031dbfc2319afe2b267532ae61921c66e4cb754dfc31954f7c8d2490a1e8066210ecbcc2dfa7df8c6b3575128828b12cb5a30e2d683199bb
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-react-native@npm:0.0.0-feat-multichain-20250909201659":
-  version: 0.0.0-feat-multichain-20250909201659
-  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-feat-multichain-20250909201659"
+"@reown/appkit-coinbase-react-native@npm:0.0.0-chore-spring-effect-20250909214820":
+  version: 0.0.0-chore-spring-effect-20250909214820
+  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-chore-spring-effect-20250909214820"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250909201659
+    "@reown/appkit-common-react-native": 0.0.0-chore-spring-effect-20250909214820
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.1.2"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: e11a606b9668b35f228c45f4649f0a5d9bcfe50b0ded77b69f12c9901f0a2a3be021df1832c4a6d8193696c686a6b224e7fc6a83b84893d04e9db6e0e4931d79
+  checksum: fc8ab2766b05d6d8a9ef5a9ea67d89314751df4a92363d8090d0eede8d6bc4ea41f359c4501a344ca407a51efd56abb7ae9a013a0ce63362f8d514b7a1d97f08
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-20250909201659":
-  version: 0.0.0-feat-multichain-20250909201659
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-20250909201659"
+"@reown/appkit-common-react-native@npm:0.0.0-chore-spring-effect-20250909214820":
+  version: 0.0.0-chore-spring-effect-20250909214820
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-chore-spring-effect-20250909214820"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 9a953bb0492f86987cc291894166d081a3aa84f1cbf816918592d5e21ccb5c756ca927bb530628056c1e0e0919f1adfc2dbb4e9cfbf72e0516fd99e1e963d53b
+  checksum: 2e1ae8a9096fb2424a167a5c93ca522d2bceb118a24f16fd44040737d4b0bb60cb1472d0bd91a559a64564c77766b21c13e3d72e2b4bf1bea19e8a0a60404537
   languageName: node
   linkType: hard
 
@@ -5478,11 +5478,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-20250909201659":
-  version: 0.0.0-feat-multichain-20250909201659
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-20250909201659"
+"@reown/appkit-core-react-native@npm:0.0.0-chore-spring-effect-20250909214820":
+  version: 0.0.0-chore-spring-effect-20250909214820
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-chore-spring-effect-20250909214820"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250909201659
+    "@reown/appkit-common-react-native": 0.0.0-chore-spring-effect-20250909214820
     countries-and-timezones: 3.7.2
     derive-valtio: 0.2.0
     valtio: 2.1.5
@@ -5490,7 +5490,7 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: f1bca3ef46be35eac00add75ede0677f9def0affea88112b0da43c212e1d5c155a9648c5a2ce65455f4c907e2d93360146f06e25536162606f35a9fe3438a54b
+  checksum: de889810e1be0abf1a4130476c397a13f9a7ecfcdc45fb0780211be33c73bd41c017c74ce79ded8eabee463a0ad31c9899c63763b0c95e5ba87732f0532ec807
   languageName: node
   linkType: hard
 
@@ -5517,14 +5517,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:0.0.0-feat-multichain-20250909201659":
-  version: 0.0.0-feat-multichain-20250909201659
-  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-multichain-20250909201659"
+"@reown/appkit-react-native@npm:0.0.0-chore-spring-effect-20250909214820":
+  version: 0.0.0-chore-spring-effect-20250909214820
+  resolution: "@reown/appkit-react-native@npm:0.0.0-chore-spring-effect-20250909214820"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-20250909201659
+    "@reown/appkit-common-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-core-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-siwe-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-ui-react-native": 0.0.0-chore-spring-effect-20250909214820
     "@walletconnect/universal-provider": 2.21.8
     valtio: 2.1.5
   peerDependencies:
@@ -5534,7 +5534,7 @@ __metadata:
     react-native: ">=0.72"
     react-native-safe-area-context: ">=4.4.0"
     react-native-svg: ">=13.10"
-  checksum: 84593e64797c34b74a2f464fc4a7e5fc0554b80712852cc10162ee08cb85d25b3ddd79d9da9fa8013510cb461fcdf753344ea0c625d525e82a23698f2e54df1f
+  checksum: 141061b14843bad0ecf45f3613e2c248607170faf31ffbcae6156ec941f6e01d9bea6437b93e41eb7a50edc0883fbcef015d5a799716c2ad7c6d281752cc3742
   languageName: node
   linkType: hard
 
@@ -5552,25 +5552,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-siwe-react-native@npm:0.0.0-feat-multichain-20250909201659":
-  version: 0.0.0-feat-multichain-20250909201659
-  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-feat-multichain-20250909201659"
+"@reown/appkit-siwe-react-native@npm:0.0.0-chore-spring-effect-20250909214820":
+  version: 0.0.0-chore-spring-effect-20250909214820
+  resolution: "@reown/appkit-siwe-react-native@npm:0.0.0-chore-spring-effect-20250909214820"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-20250909201659
+    "@reown/appkit-common-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-core-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-ui-react-native": 0.0.0-chore-spring-effect-20250909214820
     valtio: 2.1.5
   peerDependencies:
     "@walletconnect/utils": ">=2.16.1"
-  checksum: 9086687803dfaaf03994ba52269685ceeee0bf174f3e5646ec7cc9617198c166f36bc7c0820d0f3b50d59c2799be5b1ebfd1927cfc1990e9c0da709d0b2ce469
+  checksum: 24ee62b807285c04f1e4f5f172cbf0a960e97a5b5f5fe7a26cf03241ad86ed29237f16971e3ea0859bd62d5708338c4bcd4b9d7499192fda5a3d843b0791bf94
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-20250909201659":
-  version: 0.0.0-feat-multichain-20250909201659
-  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-20250909201659"
+"@reown/appkit-solana-react-native@npm:0.0.0-chore-spring-effect-20250909214820":
+  version: 0.0.0-chore-spring-effect-20250909214820
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-chore-spring-effect-20250909214820"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250909201659
+    "@reown/appkit-common-react-native": 0.0.0-chore-spring-effect-20250909214820
     "@solana/web3.js": 1.98.2
     bs58: 6.0.0
     tweetnacl: 1.0.3
@@ -5578,22 +5578,22 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: ac44f308c950cf25095e834e15051f990eb9861c694ceb418499b151f9bd7d8e9336dfd0d85f29bb8737a3e7f7dcdbfd39335ef10c6998730840d1fd8a44f996
+  checksum: 807b11c507e07be2d1e07bf7f906a2f263099ededb1d0d30e0714ed0e4c1ad5c777b791e6ccff5acdcf6b70d664dc75f6690eed3338ce53546e1102f863b585f
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-20250909201659":
-  version: 0.0.0-feat-multichain-20250909201659
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-20250909201659"
+"@reown/appkit-ui-react-native@npm:0.0.0-chore-spring-effect-20250909214820":
+  version: 0.0.0-chore-spring-effect-20250909214820
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-chore-spring-effect-20250909214820"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250909201659
+    "@reown/appkit-common-react-native": 0.0.0-chore-spring-effect-20250909214820
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: 1242a9af6c4c4ed178ca52d4bcbfebc73f30c20f187187dc0a8ea9157afb938a9b88ab5264d5a09f4b5fc8a74a1d7e3ece8a44953f26d9b504acbb0900284f55
+  checksum: 53718ac51b9661415948f22c57024d6d61f699f4a4c16e8233382f93fd9a4469a830061b6a9f40b335cb6b01c283aa84acff1f94ae2c1209c3a7bd1e48e91cf4
   languageName: node
   linkType: hard
 
@@ -5628,13 +5628,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-20250909201659":
-  version: 0.0.0-feat-multichain-20250909201659
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-20250909201659"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-chore-spring-effect-20250909214820":
+  version: 0.0.0-chore-spring-effect-20250909214820
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-chore-spring-effect-20250909214820"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-siwe-react-native": 0.0.0-feat-multichain-20250909201659
+    "@reown/appkit-common-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-siwe-react-native": 0.0.0-chore-spring-effect-20250909214820
   peerDependencies:
     "@react-native-community/netinfo": "*"
     "@walletconnect/react-native-compat": ">=2.16.1"
@@ -5643,7 +5643,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2.21.4"
     wagmi: ">=2.12.10"
-  checksum: 1333ff20ed9c7a6d1230bc8b13a917aa6e6f18e0ed74920131080e67bd8ce50c2699252f14cef56f5e178db3c569174119f53447837535eb1f839d35f2bbc694
+  checksum: 697d5293fcf97bc11647522a9eab2dbdc5b4fd288f74720c2717cf300cde084b66cc11d894e9702ab7fbb899b89512144d18fa1b916a3fcfe5afb387b7380131
   languageName: node
   linkType: hard
 
@@ -16116,11 +16116,11 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-coinbase-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-solana-react-native": 0.0.0-feat-multichain-20250909201659
-    "@reown/appkit-wagmi-react-native": 0.0.0-feat-multichain-20250909201659
+    "@reown/appkit-bitcoin-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-coinbase-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-solana-react-native": 0.0.0-chore-spring-effect-20250909214820
+    "@reown/appkit-wagmi-react-native": 0.0.0-chore-spring-effect-20250909214820
     "@sentry/react-native": ^6.14.0
     "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2
