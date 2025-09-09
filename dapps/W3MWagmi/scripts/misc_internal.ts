@@ -1,7 +1,7 @@
 export const getMetadata = () => {
   return {
-    name: 'AppKit + wagmi (internal)',
-    description: 'AppKit + wagmi (internal)',
+    name: 'AppKit + Multichain (internal)',
+    description: 'AppKit + Multichain (internal)',
     url: 'https://reown.com/appkit',
     icons: ['https://avatars.githubusercontent.com/u/179229932'],
     redirect: {

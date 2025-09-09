@@ -1,4 +1,4 @@
-# AppKit + Wagmi example
+# AppKit + Multichain example
 
 ## Getting Started
 
