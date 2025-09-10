@@ -17,10 +17,10 @@
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
-    "@reown/appkit-bitcoin-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-solana-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-wagmi-react-native": "2.0.0-alpha.4",
+    "@reown/appkit-bitcoin-react-native": "0.0.0-feat-multichain-20250910182919",
+    "@reown/appkit-solana-react-native": "0.0.0-feat-multichain-20250910182919",
+    "@reown/appkit-react-native": "0.0.0-feat-multichain-20250910182919",
+    "@reown/appkit-wagmi-react-native": "0.0.0-feat-multichain-20250910182919",
     "@tanstack/react-query": "^5.81.5",
     "@walletconnect/react-native-compat": "2.21.5",
     "expo": "53.0.20",
@@ -48,8 +48,8 @@
     "react-native-screens": "~4.11.1",
     "react-native-svg": "15.11.2",
     "react-native-web": "~0.20.0",
-    "viem": "2.34.0",
-    "wagmi": "2.16.4"
+    "viem": "2.37.4",
+    "wagmi": "2.16.9"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -59,8 +59,8 @@
     "typescript": "~5.8.3"
   },
   "overrides": {
-    "@walletconnect/ethereum-provider": "2.21.5",
-    "@walletconnect/universal-provider": "2.21.5",
+    "@walletconnect/ethereum-provider": "2.21.8",
+    "@walletconnect/universal-provider": "2.21.8",
     "valtio": "2.1.5"
   },
   "private": true

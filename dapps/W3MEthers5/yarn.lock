@@ -2454,85 +2454,85 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@reown/appkit-bitcoin-react-native@0.0.0-feat-multichain-20250908172803":
-  version "0.0.0-feat-multichain-20250908172803"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-0.0.0-feat-multichain-20250908172803.tgz#7491e93efe02dff975d8a0882be93a946c460e09"
-  integrity sha512-lIK37TgwaKae3iZ5t4FuMp3z1118DNPeEEdeQQqci/+c268tCWkHUCCcqwAMsP4brBngzeN6puR7KALNbRColg==
+"@reown/appkit-bitcoin-react-native@0.0.0-feat-multichain-20250910182919":
+  version "0.0.0-feat-multichain-20250910182919"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-0.0.0-feat-multichain-20250910182919.tgz#f842952c0420e03e62211021783417abaf861260"
+  integrity sha512-8dfvUS6Xnn2l1bp9Dt7kLeOI0fuE+3dXrSJ5y02AF8pSL5HM+i62NxXpWAgiOf7R+NuPZ7QHi4NLRc/KK5Iu3A==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250908172803"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250910182919"
 
-"@reown/appkit-coinbase-react-native@0.0.0-feat-multichain-20250908172803":
-  version "0.0.0-feat-multichain-20250908172803"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-0.0.0-feat-multichain-20250908172803.tgz#2021e27b9282a5e7982a2cb9cb456281222dbf4f"
-  integrity sha512-dBY9D0+OgQih1F4oF5JHoSODkGV2ADHH0W/Y2O7tfxKjPoQJ2VT66k/mFCTmJy39jlAsDpNiEvTn5FdyYsJDtQ==
+"@reown/appkit-coinbase-react-native@0.0.0-feat-multichain-20250910182919":
+  version "0.0.0-feat-multichain-20250910182919"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-0.0.0-feat-multichain-20250910182919.tgz#8dbd162fcab79ce6d7496e85ee91770367031c8e"
+  integrity sha512-y8CGfvMoNR1+yhH9cD97H4dmrmqdLB0FYVj7sJQnLBA0PemtSKsqnIGk068Db+AllQwT+N+QyVB7IIcE3Nc4rw==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250908172803"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250910182919"
 
-"@reown/appkit-common-react-native@0.0.0-feat-multichain-20250908172803":
-  version "0.0.0-feat-multichain-20250908172803"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-feat-multichain-20250908172803.tgz#2893dc31efc2bafa8d0eac39b40b450d596c845f"
-  integrity sha512-gfTuMGNZDDECJgpCt6AN5JIfi1eQ2yPhh5uaDrYazDa+xGcrGXyoXGW9G2Yi9tbUiIOvsbRbefFwEVRhk/EhfA==
+"@reown/appkit-common-react-native@0.0.0-feat-multichain-20250910182919":
+  version "0.0.0-feat-multichain-20250910182919"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-feat-multichain-20250910182919.tgz#55d5cb859fffa9c6aec3a3b1b06cd70c852b0c93"
+  integrity sha512-RFym5a5DppH7iFQW5ZAp4+6L+1qIWdrOLidsY3PnI9yYQq/1zliQr6ExjO7pWvhbWOuEoO9aUismVG9IG44m3A==
   dependencies:
     bignumber.js "9.1.2"
     dayjs "1.11.10"
 
-"@reown/appkit-core-react-native@0.0.0-feat-multichain-20250908172803":
-  version "0.0.0-feat-multichain-20250908172803"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-feat-multichain-20250908172803.tgz#75907971549c6b984da9a43b546c1ef15e0c21d1"
-  integrity sha512-Y2lkcv9RXkECR1TugS9QG3eqt5Vm86H9pmmAGVMlKBOc0UMgi0Z2OY8wWv/I/sYW5cnxrZTaMkuBag+YeyP6oA==
+"@reown/appkit-core-react-native@0.0.0-feat-multichain-20250910182919":
+  version "0.0.0-feat-multichain-20250910182919"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-feat-multichain-20250910182919.tgz#01025200c6e01f659834177d6d0393f141964d8e"
+  integrity sha512-feqMyYqhZYQy5dGdTNh4CUj5n93c9Zw9klwDjTlDL6JwfnqQ53kBZFkocNeL7bDyjPA43TsD8MKl7Cj71o+nmA==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250908172803"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250910182919"
     countries-and-timezones "3.7.2"
     derive-valtio "0.2.0"
     valtio "2.1.5"
 
-"@reown/appkit-ethers-react-native@0.0.0-feat-multichain-20250908172803":
-  version "0.0.0-feat-multichain-20250908172803"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-0.0.0-feat-multichain-20250908172803.tgz#4ee0d0acb953245dd05075256c317de7de72b9a6"
-  integrity sha512-6cK0BOjOllxtoG4KLV8OdanMWlzwPwZDiPuFaiUsPUxlWIlPS84WxvIpUD6jyBvGRhVEG4BW0H26duY1dKBM2A==
+"@reown/appkit-ethers-react-native@0.0.0-feat-multichain-20250910182919":
+  version "0.0.0-feat-multichain-20250910182919"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-0.0.0-feat-multichain-20250910182919.tgz#c3f4d450cc443e3bfd040d6c2894cc81015c694c"
+  integrity sha512-TJ9U5Etz0Z/ERzwDh7iaRl50Q82NOhFkaFR2NF5gfu0WPepiYqIUZoQ5EnRpgbAvj6eGSG4oPCmkRocOB4Znag==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250908172803"
-    "@reown/appkit-react-native" "0.0.0-feat-multichain-20250908172803"
-    "@reown/appkit-siwe-react-native" "0.0.0-feat-multichain-20250908172803"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250910182919"
+    "@reown/appkit-react-native" "0.0.0-feat-multichain-20250910182919"
+    "@reown/appkit-siwe-react-native" "0.0.0-feat-multichain-20250910182919"
 
-"@reown/appkit-react-native@0.0.0-feat-multichain-20250908172803":
-  version "0.0.0-feat-multichain-20250908172803"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-0.0.0-feat-multichain-20250908172803.tgz#95786cb25499d2f23d39196923bff94ae36781af"
-  integrity sha512-reapxWA2Ne4qlzwgYh62BHK06mZCBW4jxlNP5pE0g5RAiiOcx3aiCY2PYAgE/CF7007McK/3lqIz8dR5phW2cQ==
+"@reown/appkit-react-native@0.0.0-feat-multichain-20250910182919":
+  version "0.0.0-feat-multichain-20250910182919"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-0.0.0-feat-multichain-20250910182919.tgz#c672fcfc71c6727a83f20baad44cea340cfdcbfd"
+  integrity sha512-HE0p4Tz9t+52uVTeZJ9nQOjb4/xI19aOllaADs/cv+IMTYAKClwl4cDMnuxBbJVRpDzWavAY08u8fsBg//hJwQ==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250908172803"
-    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250908172803"
-    "@reown/appkit-siwe-react-native" "0.0.0-feat-multichain-20250908172803"
-    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250908172803"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250910182919"
+    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250910182919"
+    "@reown/appkit-siwe-react-native" "0.0.0-feat-multichain-20250910182919"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250910182919"
     "@walletconnect/universal-provider" "2.21.8"
     valtio "2.1.5"
 
-"@reown/appkit-siwe-react-native@0.0.0-feat-multichain-20250908172803":
-  version "0.0.0-feat-multichain-20250908172803"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-0.0.0-feat-multichain-20250908172803.tgz#c4861beecd33b9665dfb57a988b3f67dfee65090"
-  integrity sha512-8zwMeCwjCZMYueAJtH8fJ+0WpiQkxyLOGk4p9UWL9u2loZ0cgoLepziWSUAqM1cUwvm3GG0L/CZA8H8TCVTJLg==
+"@reown/appkit-siwe-react-native@0.0.0-feat-multichain-20250910182919":
+  version "0.0.0-feat-multichain-20250910182919"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-0.0.0-feat-multichain-20250910182919.tgz#a237da032f534553f97bce27c31544d39f503b5c"
+  integrity sha512-Gj9z0EplrqfG2+5XzIIQQZ/hFBisw4If7yndusCHUaunv49kAUsCbmPEq/4n0BM6DScCpLj3gA0719dzMsxsng==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250908172803"
-    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250908172803"
-    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250908172803"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250910182919"
+    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250910182919"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250910182919"
     valtio "2.1.5"
 
-"@reown/appkit-solana-react-native@0.0.0-feat-multichain-20250908172803":
-  version "0.0.0-feat-multichain-20250908172803"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-0.0.0-feat-multichain-20250908172803.tgz#ccfaf8898d05ced4be5525e0e7f309ca8713eda3"
-  integrity sha512-w7hUPpiGloUatCe6jp7sh/hgvTrFgvs1q4RzsXxne6727jV/YrvLK/hcR/VAc7AhWp8D2Bztr9+goVxz4D8OsA==
+"@reown/appkit-solana-react-native@0.0.0-feat-multichain-20250910182919":
+  version "0.0.0-feat-multichain-20250910182919"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-0.0.0-feat-multichain-20250910182919.tgz#f467aa9ab1033f591dea9ce0524667213e6dc29d"
+  integrity sha512-B45eNpxO1Nybk21wlzIYZwRAugKV+l7oG1Hxiv+0d0xymZ5mUyBV9l2NJmX/emxZlnvEMkZXUD2yizFaYszKwA==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250908172803"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250910182919"
     "@solana/web3.js" "1.98.2"
     bs58 "6.0.0"
     tweetnacl "1.0.3"
 
-"@reown/appkit-ui-react-native@0.0.0-feat-multichain-20250908172803":
-  version "0.0.0-feat-multichain-20250908172803"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-feat-multichain-20250908172803.tgz#d4fd0925cedab4f82ddbcb454e45a33f109231bb"
-  integrity sha512-//RU4wM5PQoSThG13jJQyX+ZpktN9h1uHhIP3GklA0xbsQZ2F7q1p2y4nIMV3WQwzckrI5THQdB651FwUN3aAw==
+"@reown/appkit-ui-react-native@0.0.0-feat-multichain-20250910182919":
+  version "0.0.0-feat-multichain-20250910182919"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-feat-multichain-20250910182919.tgz#2c0a68ac288e572235e3ebe9c8c376747098700c"
+  integrity sha512-X7tEoVNcJqrTnRzry/hhFaxaNPUGzmJrXjyu2muykhImJnbma0WL+2+nDaPu9DOQ60/dDT2vn8n66ZVIzoT/vQ==
   dependencies:
-    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250908172803"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250910182919"
     polished "4.3.1"
     qrcode "1.5.3"
 
@@ -7411,6 +7411,11 @@ react-native-get-random-values@1.10.0:
   integrity sha512-gZ1zbXhbb8+Jy9qYTV8c4Nf45/VB4g1jmXuavY5rPfUn7x3ok9Vl3FTl0dnE92Z4FFtfbUNNwtSfcmomdtWg+A==
   dependencies:
     fast-base64-decode "^1.0.0"
+
+react-native-safe-area-context@5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-5.3.0.tgz#272e6786a58aafe3362fde4d3233713b66158179"
+  integrity sha512-glV9bwuozTjf/JDBIBm+ITnukHNaUT3nucgdeADwjtHsfEN3RL5UO6nq99vvdWv5j/O9yCZBvFncM1BBQ+UvpQ==
 
 react-native-svg@14.1.0:
   version "14.1.0"

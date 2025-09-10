@@ -6,6 +6,7 @@ import {Linking, SafeAreaView, StyleSheet} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {MMKV} from 'react-native-mmkv';
 import Toast from 'react-native-toast-message';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 import {
   createAppKit,
@@ -98,21 +99,23 @@ function App(): React.JSX.Element {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <AppKitProvider instance={appKit}>
-        <Text style={styles.title} variant="large-600">
-          AppKit + ethers
-        </Text>
-        <FlexView style={styles.buttonContainer}>
-          <WalletInfoView />
-          <AppKitButton balance="show" />
-          <NetworkButton />
-          <ActionsView />
-        </FlexView>
-        <Toast />
-        <AppKit />
-      </AppKitProvider>
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <AppKitProvider instance={appKit}>
+          <Text style={styles.title} variant="large-600">
+            AppKit + ethers
+          </Text>
+          <FlexView style={styles.buttonContainer}>
+            <WalletInfoView />
+            <AppKitButton balance="show" />
+            <NetworkButton />
+            <ActionsView />
+          </FlexView>
+          <Toast />
+          <AppKit />
+        </AppKitProvider>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

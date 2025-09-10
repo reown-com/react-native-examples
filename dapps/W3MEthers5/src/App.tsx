@@ -3,6 +3,7 @@ import '@walletconnect/react-native-compat';
 
 import React from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import {
@@ -76,20 +77,22 @@ const appkit = createAppKit({
 
 function App(): React.JSX.Element {
   return (
-    <AppKitProvider instance={appkit}>
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.title} variant="large-600">
-          AppKit + ethers 5
-        </Text>
-        <FlexView style={styles.buttonContainer}>
-          <WalletInfoView />
-          <AppKitButton balance="show" />
-          <ActionsView />
-        </FlexView>
-        <Toast />
-        <AppKit />
-      </SafeAreaView>
-    </AppKitProvider>
+    <SafeAreaProvider>
+      <AppKitProvider instance={appkit}>
+        <SafeAreaView style={styles.container}>
+          <Text style={styles.title} variant="large-600">
+            AppKit + ethers 5
+          </Text>
+          <FlexView style={styles.buttonContainer}>
+            <WalletInfoView />
+            <AppKitButton balance="show" />
+            <ActionsView />
+          </FlexView>
+          <Toast />
+          <AppKit />
+        </SafeAreaView>
+      </AppKitProvider>
+    </SafeAreaProvider>
   );
 }
 
