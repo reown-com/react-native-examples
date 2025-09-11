@@ -15,11 +15,11 @@
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-clipboard/clipboard": "1.13.2",
     "@react-native-community/netinfo": "11.2.1",
-    "@reown/appkit-coinbase-react-native": "0.0.0-feat-multichain-20250910182919",
-    "@reown/appkit-ethers-react-native": "0.0.0-feat-multichain-20250910182919",
-    "@reown/appkit-solana-react-native": "0.0.0-feat-multichain-20250910182919",
-    "@reown/appkit-bitcoin-react-native": "0.0.0-feat-multichain-20250910182919",
-    "@reown/appkit-react-native": "0.0.0-feat-multichain-20250910182919",
+    "@reown/appkit-coinbase-react-native": "0.0.0-feat-multichain-20250911152256",
+    "@reown/appkit-ethers-react-native": "0.0.0-feat-multichain-20250911152256",
+    "@reown/appkit-solana-react-native": "0.0.0-feat-multichain-20250911152256",
+    "@reown/appkit-bitcoin-react-native": "0.0.0-feat-multichain-20250911152256",
+    "@reown/appkit-react-native": "0.0.0-feat-multichain-20250911152256",
     "@walletconnect/react-native-compat": "2.21.5",
     "bitcoinjs-lib": "7.0.0-rc.0",
     "ethers": "6.15.0",
@@ -31,7 +31,7 @@
     "react-native-svg": "14.1.0",
     "react-native-toast-message": "2.3.3",
     "text-encoding": "^0.7.0",
-    "react-native-safe-area-context": "5.3.0"
+    "react-native-safe-area-context": "4.14.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
