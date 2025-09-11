@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { useWalletInfo } from '@reown/appkit-react-native';
+import { useAccount, useWalletInfo } from '@reown/appkit-react-native';
 import { FlexView, Text } from '@reown/appkit-ui-react-native';
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
 
 export function WalletInfoView({ style }: Props) {
   const { walletInfo } = useWalletInfo();
+  const { address, chain } = useAccount();
 
   return walletInfo ? (
     <FlexView style={style} alignItems="center">
@@ -21,6 +22,8 @@ export function WalletInfoView({ style }: Props) {
         )}
         {walletInfo?.name && <Text variant="small-400">{walletInfo?.name}</Text>}
       </FlexView>
+        {address && <Text variant="small-400">Address: {address}</Text>}
+        {chain?.name && <Text numberOfLines={1} variant="small-400">Chain: {chain.name}</Text>}
     </FlexView>
   ) : null;
 }

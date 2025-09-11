@@ -1,12 +1,12 @@
 export const getMetadata = () => {
   return {
-    name: 'AppKit + Multichain (debug)',
-    description: 'AppKit + Multichain (debug)',
+    name: 'AppKit + Multichain (internal)',
+    description: 'AppKit + Multichain (internal)',
     url: 'https://reown.com/appkit',
     icons: ['https://avatars.githubusercontent.com/u/179229932'],
     redirect: {
-      native: 'w3mwagmisample-debug://',
-      universal: 'https://appkit-lab.reown.com/rn_appkit_debug',
+      native: 'w3mwagmisample-internal://',
+      universal: 'https://appkit-lab.reown.com/rn_appkit_internal',
       linkMode: true,
     },
   };
