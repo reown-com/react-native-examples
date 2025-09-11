@@ -22,7 +22,7 @@ export function WalletInfoView({ style }: Props) {
         )}
         {walletInfo?.name && <Text variant="small-400">{walletInfo?.name}</Text>}
       </FlexView>
-        {address && <Text variant="small-400">Address: {address}</Text>}
+        {address && <Text numberOfLines={1} ellipsizeMode="middle" style={styles.address} variant="small-400">Address: {address}</Text>}
         {chain?.name && <Text numberOfLines={1} variant="small-400">Chain: {chain.name}</Text>}
     </FlexView>
   ) : null;
@@ -37,5 +37,8 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 5,
     marginRight: 4,
+  },
+  address: {
+    maxWidth: '70%',
   },
 });
