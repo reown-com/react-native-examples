@@ -3,8 +3,8 @@ import {Text, View, Alert, ScrollView} from 'react-native';
 import {useAccount} from 'wagmi';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {getVersion, getBuildNumber} from 'react-native-device-info';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSnapshot} from 'valtio';
+import { storage } from '@/utils/StorageUtil';
 
 import SettingsStore from '@/stores/SettingsStore';
 import {Card} from '@/components/Card';
@@ -23,7 +23,7 @@ function SettingsScreen({navigation}: Props) {
 
   useEffect(() => {
     async function getAsyncData() {
-      let _clientId = await AsyncStorage.getItem('WALLETCONNECT_CLIENT_ID');
+      let _clientId = await storage.getItem('WALLETCONNECT_CLIENT_ID');
       if (_clientId) {
         setClientId(_clientId);
       } else {
@@ -33,7 +33,7 @@ function SettingsScreen({navigation}: Props) {
           await provider?.signer?.rpcProviders?.eip155?.client?.core?.crypto?.getClientId();
 
         if (_clientId) {
-          AsyncStorage.setItem('WALLETCONNECT_CLIENT_ID', _clientId);
+          storage.setItem('WALLETCONNECT_CLIENT_ID', _clientId);
           setClientId(_clientId);
         }
       }

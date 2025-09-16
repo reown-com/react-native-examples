@@ -23,11 +23,11 @@
     "@react-navigation/bottom-tabs": "6.6.1",
     "@react-navigation/native": "6.1.18",
     "@react-navigation/native-stack": "6.10.1",
-    "@reown/appkit-bitcoin-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-coinbase-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-solana-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-wagmi-react-native": "2.0.0-alpha.4",
+    "@reown/appkit-bitcoin-react-native": "2.0.0-alpha.5",
+    "@reown/appkit-coinbase-react-native": "2.0.0-alpha.5",
+    "@reown/appkit-react-native": "2.0.0-alpha.5",
+    "@reown/appkit-solana-react-native": "2.0.0-alpha.5",
+    "@reown/appkit-wagmi-react-native": "2.0.0-alpha.5",
     "@sentry/react-native": "^6.14.0",
     "@solana/web3.js": "^1.98.2",
     "@tanstack/react-query": "5.62.2",
@@ -50,8 +50,8 @@
     "react-native-toast-message": "2.2.1",
     "text-encoding": "^0.7.0",
     "tweetnacl": "1.0.3",
-    "viem": "2.33.1",
-    "wagmi": "2.16.0"
+    "viem": "2.37.5",
+    "wagmi": "2.16.9"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -92,9 +92,12 @@
     "braces": "3.0.3",
     "undici": "6.21.2",
     "serve-static": "1.16.2",
-    "valtio": "2.1.5",
     "form-data": "3.0.4",
     "sha.js": "2.4.12",
-    "brace-expansion": "1.1.12"
+    "brace-expansion": "1.1.12",
+    "@walletconnect/ethereum-provider": "2.21.8",
+    "@walletconnect/universal-provider": "2.21.8",
+    "viem": "2.37.5",
+    "valtio": "2.1.5"
   }
 }

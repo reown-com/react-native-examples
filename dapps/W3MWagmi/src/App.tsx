@@ -15,6 +15,7 @@ import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import { WagmiProvider } from 'wagmi';
 import { Chain } from 'viem';
 import { MMKV } from 'react-native-mmkv';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import Toast from 'react-native-toast-message';
 import Config from 'react-native-config';
@@ -110,19 +111,21 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <NavigationContainer>
-        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
-          <AppKitProvider instance={appKit}>
-            <QueryClientProvider client={queryClient}>
-              <RootStackNavigator />
-              <Toast />
-              <AppKit />
-            </QueryClientProvider>
-          </AppKitProvider>
-        </WagmiProvider>
-      </NavigationContainer>
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <NavigationContainer>
+          <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+            <AppKitProvider instance={appKit}>
+              <QueryClientProvider client={queryClient}>
+                <RootStackNavigator />
+                <Toast />
+                <AppKit />
+              </QueryClientProvider>
+            </AppKitProvider>
+          </WagmiProvider>
+        </NavigationContainer>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 

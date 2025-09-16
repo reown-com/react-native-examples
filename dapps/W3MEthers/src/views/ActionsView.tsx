@@ -8,16 +8,16 @@ import {EthersActionsView} from './EthersActionsView';
 import {BitcoinActionsView} from './BitcoinActionsView';
 
 export function ActionsView() {
-  const {chainId} = useAccount();
+  const {chainId, namespace} = useAccount();
   const isConnected = !!chainId;
 
   return isConnected ? (
     <FlexView style={styles.container}>
-      {chainId?.startsWith('eip155') ? (
+      {namespace === 'eip155' ? (
         <EthersActionsView />
-      ) : chainId?.startsWith('solana') ? (
+      ) : namespace === 'solana' ? (
         <SolanaActionsView />
-      ) : chainId?.startsWith('bip122') ? (
+      ) : namespace === 'bip122' ? (
         <BitcoinActionsView />
       ) : null}
     </FlexView>

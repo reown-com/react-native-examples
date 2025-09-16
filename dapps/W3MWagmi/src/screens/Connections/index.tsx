@@ -8,7 +8,7 @@ import { EventsView } from './components/EventsView';
 import { WalletInfoView } from './components/WalletInfoView';
 function ConnectionsScreen() {
   return (
-    <FlexView flexGrow={1} justifyContent="center" alignItems="center">
+    <FlexView flexGrow={1} padding="m" justifyContent="center" alignItems="center">
       <Text style={styles.title} center variant="large-600">
         AppKit + Multichain
       </Text>

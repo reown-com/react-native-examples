@@ -15,11 +15,11 @@
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-clipboard/clipboard": "1.13.2",
     "@react-native-community/netinfo": "11.2.1",
-    "@reown/appkit-coinbase-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-ethers-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-solana-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-bitcoin-react-native": "2.0.0-alpha.4",
-    "@reown/appkit-react-native": "2.0.0-alpha.4",
+    "@reown/appkit-coinbase-react-native": "2.0.0-alpha.5",
+    "@reown/appkit-ethers-react-native": "2.0.0-alpha.5",
+    "@reown/appkit-solana-react-native": "2.0.0-alpha.5",
+    "@reown/appkit-bitcoin-react-native": "2.0.0-alpha.5",
+    "@reown/appkit-react-native": "2.0.0-alpha.5",
     "@walletconnect/react-native-compat": "2.21.5",
     "bitcoinjs-lib": "7.0.0-rc.0",
     "ethers": "6.15.0",
@@ -30,7 +30,8 @@
     "react-native-mmkv": "2.11.0",
     "react-native-svg": "14.1.0",
     "react-native-toast-message": "2.3.3",
-    "text-encoding": "^0.7.0"
+    "text-encoding": "^0.7.0",
+    "react-native-safe-area-context": "4.14.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
