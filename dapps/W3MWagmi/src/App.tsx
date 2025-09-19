@@ -5,7 +5,7 @@ import '@walletconnect/react-native-compat';
 import React, {useEffect} from 'react';
 import {Linking} from 'react-native';
 import BootSplash from 'react-native-bootsplash';
-import {createAppKit, AppKit, bitcoin, AppKitProvider, solana} from '@reown/appkit-react-native';
+import {createAppKit, AppKit, bitcoin, AppKitProvider, solana, ReownAuthentication} from '@reown/appkit-react-native';
 import {WagmiAdapter} from '@reown/appkit-wagmi-react-native';
 import {PhantomConnector, SolanaAdapter, SolflareConnector} from '@reown/appkit-solana-react-native';
 import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
@@ -29,7 +29,6 @@ import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import {chains} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
 import { storage } from './utils/StorageUtil';
-// import { siweConfig } from './utils/SiweUtils';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
@@ -71,7 +70,7 @@ const appKit = createAppKit({
   adapters,
   metadata,
   networks,
-  // siweConfig,
+  siwx: new ReownAuthentication(),
   clipboardClient,
   storage,
   extraConnectors: [new PhantomConnector(), new CoinbaseConnector({ storage: new MMKV()}), new SolflareConnector()],
