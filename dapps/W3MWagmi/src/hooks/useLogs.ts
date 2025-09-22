@@ -11,7 +11,9 @@ export function useLogs() {
       const _logs =
       // @ts-ignore
         await provider?.client?.core.logChunkController?.getLogArray();
-      SettingsStore.setLogs(_logs ? _logs.reverse() : []);
+      if(_logs){
+        SettingsStore.setLogs(_logs.reverse());
+      }
     }
   }, [provider]);
 
