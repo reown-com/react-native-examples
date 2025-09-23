@@ -8,7 +8,7 @@ import { BitcoinUtil, SignPSBTResponse } from '@/utils/BitcoinUtil';
 
 export function BitcoinActionsView() {
   const isConnected = true;
-  const { address, chainId } = useAccount();
+  const { address, chainId, namespace } = useAccount();
   const { provider } = useProvider();
 
   const onSignSuccess = (data: string) => {
@@ -40,7 +40,7 @@ export function BitcoinActionsView() {
           method: 'signMessage',
           params: { message, account: address, address, protocol: 'ecdsa' },
         },
-        chainId
+        `bip122:${chainId}`
       )) as { address: string; signature: string };
 
       const formattedSignature = Buffer.from(signature, 'hex').toString('base64');
@@ -65,7 +65,7 @@ export function BitcoinActionsView() {
         return;
       }
 
-      if (chainId?.split(':')[0] !== 'bip122') {
+      if (namespace !== 'bip122') {
         ToastUtils.showErrorToast('Sign failed', 'The selected chain is not bip122');
 
         return;
@@ -95,7 +95,7 @@ export function BitcoinActionsView() {
             broadcast: params.broadcast,
           },
         },
-        chainId
+        `bip122:${chainId}`
       )) as SignPSBTResponse;
 
       onSignSuccess(`${response.psbt}-${response.txid}`);
