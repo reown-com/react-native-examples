@@ -5,7 +5,7 @@ import '@walletconnect/react-native-compat';
 import React, {useEffect} from 'react';
 import {Linking} from 'react-native';
 import BootSplash from 'react-native-bootsplash';
-import {createAppKit, AppKit, bitcoin, AppKitProvider, solana} from '@reown/appkit-react-native';
+import {createAppKit, AppKit, bitcoin, AppKitProvider, solana, ReownAuthentication} from '@reown/appkit-react-native';
 import {WagmiAdapter} from '@reown/appkit-wagmi-react-native';
 import {PhantomConnector, SolanaAdapter, SolflareConnector} from '@reown/appkit-solana-react-native';
 import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
@@ -70,7 +70,7 @@ const appKit = createAppKit({
   adapters,
   metadata,
   networks,
-  // siwx: new ReownAuthentication(),
+  siwx: new ReownAuthentication(),
   clipboardClient,
   storage,
   extraConnectors: [new PhantomConnector(), new CoinbaseConnector({ storage: new MMKV()}), new SolflareConnector()],
