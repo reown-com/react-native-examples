@@ -43,9 +43,9 @@ export function BitcoinActionsView() {
         `bip122:${chainId}`
       )) as { address: string; signature: string };
 
-      const formattedSignature = Buffer.from(signature, 'hex').toString('base64');
+      const formattedSignature = BitcoinUtil.normalizeSignature(signature);
 
-      onSignSuccess(formattedSignature);
+      onSignSuccess(formattedSignature.base64);
     } catch (error) {
       onSignError(error as Error);
     }
