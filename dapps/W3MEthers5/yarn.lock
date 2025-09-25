@@ -2454,85 +2454,74 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@reown/appkit-bitcoin-react-native@2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-2.0.0-alpha.5.tgz#81d24cc9bbdd0f466b29b1a8125488dc8b042b6e"
-  integrity sha512-BbvrvT1O+Z4AegQUivmYVJTURmSo2pvD3zEfV+uu6knIPebz99+TT8RSDM/5KkZZPEcRtjntuhKY7KNf7qctcg==
+"@reown/appkit-bitcoin-react-native@0.0.0-feat-multichain-20250925184834":
+  version "0.0.0-feat-multichain-20250925184834"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-0.0.0-feat-multichain-20250925184834.tgz#d6bec93947d6103c1a8635d647a06cc5e5fb4dbb"
+  integrity sha512-G6N2geBexHSb5blS1NI70STnewHke+hmCqg9xVgs1uYpI7DhA/PXE61e8h+RfcjKwqo8lG63JQr2oDbf0BC4tQ==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.5"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250925184834"
 
-"@reown/appkit-coinbase-react-native@2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-2.0.0-alpha.5.tgz#99de47c7499e98ee3354d1fe75c91349f9968cf4"
-  integrity sha512-eGCSePaAAXkjR6bpwzrXurTrkfjYU9rYK5kHaAfRtgxP8wcrlDjVVQd6d/Y4GdGiw+Is4rleHNjCb/3AlvSJow==
+"@reown/appkit-coinbase-react-native@0.0.0-feat-multichain-20250925184834":
+  version "0.0.0-feat-multichain-20250925184834"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-0.0.0-feat-multichain-20250925184834.tgz#9e751cef87477f35ec4575cc819dc91b4f94e9be"
+  integrity sha512-HuLu2Lm0GldYQQt8zulEcKy5F/qoDwhbwLNM/TI2PI7lLjSrBtFQtvMwPv2VLWLjXSf8bY9G+3hjORzjjyP0rw==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.5"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250925184834"
 
-"@reown/appkit-common-react-native@2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-2.0.0-alpha.5.tgz#654dbf76361bbbe04ed566b213e4d8f9a730327f"
-  integrity sha512-9N2YTJCsbfDQJZ2IaxApD8zMoZfPZR12mAFkNCQyN9Kk/4OEOhdq92e5RzN6YdA2pAfnATXl3gDjw6gYOkkDVw==
+"@reown/appkit-common-react-native@0.0.0-feat-multichain-20250925184834":
+  version "0.0.0-feat-multichain-20250925184834"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-0.0.0-feat-multichain-20250925184834.tgz#fda83733aabe9809bb23f64c67b5806c4ff044f4"
+  integrity sha512-EaNQFxCcLzy73YE756Pqz77rw2iK/MW5gfxpKO1FNNb7mcDI5IPG7owTJ0OFxd/0rqKUag2SwS/3+0ibtqWaPg==
   dependencies:
     bignumber.js "9.1.2"
     dayjs "1.11.10"
 
-"@reown/appkit-core-react-native@2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-2.0.0-alpha.5.tgz#76294a06baa1ae77bfabbdd6e13d0b4d14e18a02"
-  integrity sha512-LlA65/cgJelmD36p2e56aahPLdZ4bQ0lszEGjJ51G+oBj6ehek3aSFM7pZ7FJfbbvvnEwIgwchB5CgWETlowzQ==
+"@reown/appkit-core-react-native@0.0.0-feat-multichain-20250925184834":
+  version "0.0.0-feat-multichain-20250925184834"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-0.0.0-feat-multichain-20250925184834.tgz#315516173ae2186d8a58ebdb910d838d9d398d89"
+  integrity sha512-FIQ3gKIRRX6h8/tDzXqlJPn2DRV1AzNiJRB14/HL5Yy78r+s8sP78ZUuSxSYfqsUPccGJcc61V4Qj9ZUIVvfmQ==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.5"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250925184834"
     countries-and-timezones "3.7.2"
     derive-valtio "0.2.0"
     valtio "2.1.5"
 
-"@reown/appkit-ethers-react-native@2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-2.0.0-alpha.5.tgz#962538ecf12ea62710f2103124d9f9f8b91cefa2"
-  integrity sha512-ei80p1/Noz57qVJSLkyB/qW3fVBez1BXBAps3ckZdTc6a/zQyO958vy/ut7yZxQe5q3ly77b+vnuCFx3Yh2kIA==
+"@reown/appkit-ethers-react-native@0.0.0-feat-multichain-20250925184834":
+  version "0.0.0-feat-multichain-20250925184834"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-0.0.0-feat-multichain-20250925184834.tgz#a3b7940cff6835f9040a86a4ce6de42bdb590659"
+  integrity sha512-kh5ckKCnqAEfmQlPbd93i21hLH9ZaPWomr9U2GrqlehQoNRk1g/JHLP1+UHbMz7IybaEXEs1ZPFmkPBcJTCBDw==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.5"
-    "@reown/appkit-react-native" "2.0.0-alpha.5"
-    "@reown/appkit-siwe-react-native" "2.0.0-alpha.5"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250925184834"
+    "@reown/appkit-react-native" "0.0.0-feat-multichain-20250925184834"
 
-"@reown/appkit-react-native@2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-2.0.0-alpha.5.tgz#f76a995f10910e03140e4931afda0681a6c4873e"
-  integrity sha512-JmzK+QTq/rk/vmNanShj9EF7RZCxKWjGZLFyuHCYGj7HAreKECYpYZ5PFlpoxFBS7RhshIOGnvb6shIlpLxwYQ==
+"@reown/appkit-react-native@0.0.0-feat-multichain-20250925184834":
+  version "0.0.0-feat-multichain-20250925184834"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-0.0.0-feat-multichain-20250925184834.tgz#b52b853af710bf262324c85c95e37ca5d342ec02"
+  integrity sha512-NM74kvH/EdoAPBXwPvwVdJH3+EGUECboHCxAHqQ4DOh4PcMoXtXK8Nooo90rE7+27LD3KzhjyBJXWzZLFSSlFA==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.5"
-    "@reown/appkit-core-react-native" "2.0.0-alpha.5"
-    "@reown/appkit-siwe-react-native" "2.0.0-alpha.5"
-    "@reown/appkit-ui-react-native" "2.0.0-alpha.5"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250925184834"
+    "@reown/appkit-core-react-native" "0.0.0-feat-multichain-20250925184834"
+    "@reown/appkit-ui-react-native" "0.0.0-feat-multichain-20250925184834"
     "@walletconnect/universal-provider" "2.21.8"
     valtio "2.1.5"
 
-"@reown/appkit-siwe-react-native@2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-siwe-react-native/-/appkit-siwe-react-native-2.0.0-alpha.5.tgz#59ca420d4cdb56e7b036fc3cf0f460404dae765f"
-  integrity sha512-I40iZE5VUmO/VXo+3yW/ULCuxQejkzRA8iMwxwas2059f4eV+o1i2NMlRjZRj6k/mDWsj/jWsdq+ja7VIp+0XQ==
+"@reown/appkit-solana-react-native@0.0.0-feat-multichain-20250925184834":
+  version "0.0.0-feat-multichain-20250925184834"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-0.0.0-feat-multichain-20250925184834.tgz#25e533ece93692532ded78dee5b2e7031a30f1bb"
+  integrity sha512-TzezpmudE5MZ5C33SrIEIpfuEP6xoCi2BBuMBVa/7+v8E9jqtgFe5TO7/gqAAH3ygxkV4zT6Y0anQLNkMjnYvQ==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.5"
-    "@reown/appkit-core-react-native" "2.0.0-alpha.5"
-    "@reown/appkit-ui-react-native" "2.0.0-alpha.5"
-    valtio "2.1.5"
-
-"@reown/appkit-solana-react-native@2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-2.0.0-alpha.5.tgz#c19afab20e18e1e43c2c09b14b00634db16e444a"
-  integrity sha512-M/TQe+g84Q4pHpwncEF6t3ZzveTCKFqvquNKjiHVaxn9mrFbLHemi26fE1nVDy4Cz5hncJsDxYabd7sKZfsfoQ==
-  dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.5"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250925184834"
+    "@solana/spl-token" "0.4.13"
     "@solana/web3.js" "1.98.2"
     bs58 "6.0.0"
     tweetnacl "1.0.3"
 
-"@reown/appkit-ui-react-native@2.0.0-alpha.5":
-  version "2.0.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-2.0.0-alpha.5.tgz#fd6439a0936cacd71a03e451c9d3aa401b17d0af"
-  integrity sha512-Fqdz46aX6PtCZp7eE7RdbBkgiDldM04NLs8Y+xfp5/uSm7feIozKR2c/GPxgE2ZU2iSs97kOlabwBZcudCtwlg==
+"@reown/appkit-ui-react-native@0.0.0-feat-multichain-20250925184834":
+  version "0.0.0-feat-multichain-20250925184834"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-0.0.0-feat-multichain-20250925184834.tgz#30f6630b4c73698ecb32e6f50dca593c40edb2e8"
+  integrity sha512-rAQ1BML4KDC/u2Vahf/ISEKnxyny1FHn1IGApWxmUZvY+6/XvRnaGeGE4SKdQvxvo32FYJCTw+am294OXCF4BQ==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.0-alpha.5"
+    "@reown/appkit-common-react-native" "0.0.0-feat-multichain-20250925184834"
     polished "4.3.1"
     qrcode "1.5.3"
 
@@ -2594,12 +2583,29 @@
   dependencies:
     "@sinonjs/commons" "^3.0.0"
 
-"@solana/buffer-layout@^4.0.1":
+"@solana/buffer-layout-utils@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@solana/buffer-layout-utils/-/buffer-layout-utils-0.2.0.tgz#b45a6cab3293a2eb7597cceb474f229889d875ca"
+  integrity sha512-szG4sxgJGktbuZYDg2FfNmkMi0DYQoVjN2h7ta1W1hPrwzarcFLBq9UpX1UjNXsNpT9dn+chgprtWGioUAr4/g==
+  dependencies:
+    "@solana/buffer-layout" "^4.0.0"
+    "@solana/web3.js" "^1.32.0"
+    bigint-buffer "^1.1.5"
+    bignumber.js "^9.0.1"
+
+"@solana/buffer-layout@^4.0.0", "@solana/buffer-layout@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@solana/buffer-layout/-/buffer-layout-4.0.1.tgz#b996235eaec15b1e0b5092a8ed6028df77fa6c15"
   integrity sha512-E1ImOIAD1tBZFRdjeM4/pzTiTApC0AOBGwyAMS4fwIodCWArzJ3DWdoh8cKxeFM2fElkxBh2Aqts1BPC373rHA==
   dependencies:
     buffer "~6.0.3"
+
+"@solana/codecs-core@2.0.0-rc.1":
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@solana/codecs-core/-/codecs-core-2.0.0-rc.1.tgz#1a2d76b9c7b9e7b7aeb3bd78be81c2ba21e3ce22"
+  integrity sha512-bauxqMfSs8EHD0JKESaNmNuNvkvHSuN3bbWAF5RjOfDu2PugxHrvRebmYauvSumZ3cTfQ4HJJX6PG5rN852qyQ==
+  dependencies:
+    "@solana/errors" "2.0.0-rc.1"
 
 "@solana/codecs-core@2.3.0":
   version "2.3.0"
@@ -2607,6 +2613,23 @@
   integrity sha512-oG+VZzN6YhBHIoSKgS5ESM9VIGzhWjEHEGNPSibiDTxFhsFWxNaz8LbMDPjBUE69r9wmdGLkrQ+wVPbnJcZPvw==
   dependencies:
     "@solana/errors" "2.3.0"
+
+"@solana/codecs-data-structures@2.0.0-rc.1":
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@solana/codecs-data-structures/-/codecs-data-structures-2.0.0-rc.1.tgz#d47b2363d99fb3d643f5677c97d64a812982b888"
+  integrity sha512-rinCv0RrAVJ9rE/rmaibWJQxMwC5lSaORSZuwjopSUE6T0nb/MVg6Z1siNCXhh/HFTOg0l8bNvZHgBcN/yvXog==
+  dependencies:
+    "@solana/codecs-core" "2.0.0-rc.1"
+    "@solana/codecs-numbers" "2.0.0-rc.1"
+    "@solana/errors" "2.0.0-rc.1"
+
+"@solana/codecs-numbers@2.0.0-rc.1":
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@solana/codecs-numbers/-/codecs-numbers-2.0.0-rc.1.tgz#f34978ddf7ea4016af3aaed5f7577c1d9869a614"
+  integrity sha512-J5i5mOkvukXn8E3Z7sGIPxsThRCgSdgTWJDQeZvucQ9PT6Y3HiVXJ0pcWiOWAoQ3RX8e/f4I3IC+wE6pZiJzDQ==
+  dependencies:
+    "@solana/codecs-core" "2.0.0-rc.1"
+    "@solana/errors" "2.0.0-rc.1"
 
 "@solana/codecs-numbers@^2.1.0":
   version "2.3.0"
@@ -2616,6 +2639,34 @@
     "@solana/codecs-core" "2.3.0"
     "@solana/errors" "2.3.0"
 
+"@solana/codecs-strings@2.0.0-rc.1":
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@solana/codecs-strings/-/codecs-strings-2.0.0-rc.1.tgz#e1d9167075b8c5b0b60849f8add69c0f24307018"
+  integrity sha512-9/wPhw8TbGRTt6mHC4Zz1RqOnuPTqq1Nb4EyuvpZ39GW6O2t2Q7Q0XxiB3+BdoEjwA2XgPw6e2iRfvYgqty44g==
+  dependencies:
+    "@solana/codecs-core" "2.0.0-rc.1"
+    "@solana/codecs-numbers" "2.0.0-rc.1"
+    "@solana/errors" "2.0.0-rc.1"
+
+"@solana/codecs@2.0.0-rc.1":
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@solana/codecs/-/codecs-2.0.0-rc.1.tgz#146dc5db58bd3c28e04b4c805e6096c2d2a0a875"
+  integrity sha512-qxoR7VybNJixV51L0G1RD2boZTcxmwUWnKCaJJExQ5qNKwbpSyDdWfFJfM5JhGyKe9DnPVOZB+JHWXnpbZBqrQ==
+  dependencies:
+    "@solana/codecs-core" "2.0.0-rc.1"
+    "@solana/codecs-data-structures" "2.0.0-rc.1"
+    "@solana/codecs-numbers" "2.0.0-rc.1"
+    "@solana/codecs-strings" "2.0.0-rc.1"
+    "@solana/options" "2.0.0-rc.1"
+
+"@solana/errors@2.0.0-rc.1":
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@solana/errors/-/errors-2.0.0-rc.1.tgz#3882120886eab98a37a595b85f81558861b29d62"
+  integrity sha512-ejNvQ2oJ7+bcFAYWj225lyRkHnixuAeb7RQCixm+5mH4n1IA4Qya/9Bmfy5RAAHQzxK43clu3kZmL5eF9VGtYQ==
+  dependencies:
+    chalk "^5.3.0"
+    commander "^12.1.0"
+
 "@solana/errors@2.3.0":
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@solana/errors/-/errors-2.3.0.tgz#4ac9380343dbeffb9dffbcb77c28d0e457c5fa31"
@@ -2624,10 +2675,67 @@
     chalk "^5.4.1"
     commander "^14.0.0"
 
+"@solana/options@2.0.0-rc.1":
+  version "2.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@solana/options/-/options-2.0.0-rc.1.tgz#06924ba316dc85791fc46726a51403144a85fc4d"
+  integrity sha512-mLUcR9mZ3qfHlmMnREdIFPf9dpMc/Bl66tLSOOWxw4ml5xMT2ohFn7WGqoKcu/UHkT9CrC6+amEdqCNvUqI7AA==
+  dependencies:
+    "@solana/codecs-core" "2.0.0-rc.1"
+    "@solana/codecs-data-structures" "2.0.0-rc.1"
+    "@solana/codecs-numbers" "2.0.0-rc.1"
+    "@solana/codecs-strings" "2.0.0-rc.1"
+    "@solana/errors" "2.0.0-rc.1"
+
+"@solana/spl-token-group@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@solana/spl-token-group/-/spl-token-group-0.0.7.tgz#83c00f0cd0bda33115468cd28b89d94f8ec1fee4"
+  integrity sha512-V1N/iX7Cr7H0uazWUT2uk27TMqlqedpXHRqqAbVO2gvmJyT0E0ummMEAVQeXZ05ZhQ/xF39DLSdBp90XebWEug==
+  dependencies:
+    "@solana/codecs" "2.0.0-rc.1"
+
+"@solana/spl-token-metadata@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@solana/spl-token-metadata/-/spl-token-metadata-0.1.6.tgz#d240947aed6e7318d637238022a7b0981b32ae80"
+  integrity sha512-7sMt1rsm/zQOQcUWllQX9mD2O6KhSAtY1hFR2hfFwgqfFWzSY9E9GDvFVNYUI1F0iQKcm6HmePU9QbKRXTEBiA==
+  dependencies:
+    "@solana/codecs" "2.0.0-rc.1"
+
+"@solana/spl-token@0.4.13":
+  version "0.4.13"
+  resolved "https://registry.yarnpkg.com/@solana/spl-token/-/spl-token-0.4.13.tgz#8f65c3c2b315e1a00a91b8d0f60922c6eb71de62"
+  integrity sha512-cite/pYWQZZVvLbg5lsodSovbetK/eA24gaR0eeUeMuBAMNrT8XFCwaygKy0N2WSg3gSyjjNpIeAGBAKZaY/1w==
+  dependencies:
+    "@solana/buffer-layout" "^4.0.0"
+    "@solana/buffer-layout-utils" "^0.2.0"
+    "@solana/spl-token-group" "^0.0.7"
+    "@solana/spl-token-metadata" "^0.1.6"
+    buffer "^6.0.3"
+
 "@solana/web3.js@1.98.2":
   version "1.98.2"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.98.2.tgz#45167a5cfb64436944bf4dc1e8be8482bd6d4c14"
   integrity sha512-BqVwEG+TaG2yCkBMbD3C4hdpustR4FpuUFRPUmqRZYYlPI9Hg4XMWxHWOWRzHE9Lkc9NDjzXFX7lDXSgzC7R1A==
+  dependencies:
+    "@babel/runtime" "^7.25.0"
+    "@noble/curves" "^1.4.2"
+    "@noble/hashes" "^1.4.0"
+    "@solana/buffer-layout" "^4.0.1"
+    "@solana/codecs-numbers" "^2.1.0"
+    agentkeepalive "^4.5.0"
+    bn.js "^5.2.1"
+    borsh "^0.7.0"
+    bs58 "^4.0.1"
+    buffer "6.0.3"
+    fast-stable-stringify "^1.0.0"
+    jayson "^4.1.1"
+    node-fetch "^2.7.0"
+    rpc-websockets "^9.0.2"
+    superstruct "^2.0.2"
+
+"@solana/web3.js@^1.32.0":
+  version "1.98.4"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.98.4.tgz#df51d78be9d865181ec5138b4e699d48e6895bbe"
+  integrity sha512-vv9lfnvjUsRiq//+j5pBdXig0IQdtzA0BRZ3bXEP4KaIyF1CcaydWqgyzQgfZMNIsWNWmG+AUHwPy4AHOD6gpw==
   dependencies:
     "@babel/runtime" "^7.25.0"
     "@noble/curves" "^1.4.2"
@@ -3495,15 +3603,34 @@ bech32@1.1.4:
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.4.tgz#e38c9f37bf179b8eb16ae3a772b40c356d4832e9"
   integrity sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==
 
+bigint-buffer@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/bigint-buffer/-/bigint-buffer-1.1.5.tgz#d038f31c8e4534c1f8d0015209bf34b4fa6dd442"
+  integrity sha512-trfYco6AoZ+rKhKnxA0hgX0HAbVP/s808/EuDSe2JDzUnCp/xAsli35Orvk67UrTEcwuxZqYZDmfA2RXJgxVvA==
+  dependencies:
+    bindings "^1.3.0"
+
 bignumber.js@9.1.2:
   version "9.1.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
   integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
 
+bignumber.js@^9.0.1:
+  version "9.3.1"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.3.1.tgz#759c5aaddf2ffdc4f154f7b493e1c8770f88c4d7"
+  integrity sha512-Ko0uX15oIUS7wJ3Rb30Fs6SkVbLmPBAKdlm7q9+ak9bbIeFf0MwuBsQV6z7+X768/cHsfg+WlysDWJcmthjsjQ==
+
 binary-extensions@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
+
+bindings@^1.3.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.5.0.tgz#10353c9e945334bc0511a6d90b38fbc7c9c504df"
+  integrity sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==
+  dependencies:
+    file-uri-to-path "1.0.0"
 
 bl@^4.1.0:
   version "4.1.0"
@@ -3697,6 +3824,11 @@ chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.2:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
+chalk@^5.3.0:
+  version "5.6.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-5.6.2.tgz#b1238b6e23ea337af71c7f8a295db5af0c158aea"
+  integrity sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA==
+
 chalk@^5.4.1:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-5.4.1.tgz#1b48bf0963ec158dce2aacf69c093ae2dd2092d8"
@@ -3867,6 +3999,11 @@ command-exists@^1.2.8:
   version "1.2.9"
   resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.9.tgz#c50725af3808c8ab0260fd60b01fbfa25b954f69"
   integrity sha512-LTQ/SGc+s0Xc0Fu5WaKnR0YiygZkm9eKFvyS+fRsU7/ZWFF8ykFM6Pc9aCVf1+xasOOZpO3BAVgVrKvsqKHV7w==
+
+commander@^12.1.0:
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-12.1.0.tgz#01423b36f501259fdaac4d0e4d60c96c991585d3"
+  integrity sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==
 
 commander@^14.0.0:
   version "14.0.0"
@@ -4828,6 +4965,11 @@ file-entry-cache@^6.0.1:
   integrity sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==
   dependencies:
     flat-cache "^3.0.4"
+
+file-uri-to-path@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz#553a7b8446ff6f684359c445f1e37a05dacc33dd"
+  integrity sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==
 
 fill-range@^7.1.1:
   version "7.1.1"
