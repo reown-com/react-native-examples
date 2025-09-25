@@ -15,11 +15,11 @@
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-clipboard/clipboard": "1.13.2",
     "@react-native-community/netinfo": "11.2.1",
-    "@reown/appkit-coinbase-react-native": "0.0.0-feat-multichain-20250925184834",
-    "@reown/appkit-ethers-react-native": "0.0.0-feat-multichain-20250925184834",
-    "@reown/appkit-solana-react-native": "0.0.0-feat-multichain-20250925184834",
-    "@reown/appkit-bitcoin-react-native": "0.0.0-feat-multichain-20250925184834",
-    "@reown/appkit-react-native": "0.0.0-feat-multichain-20250925184834",
+    "@reown/appkit-coinbase-react-native": "2.0.0-alpha.6",
+    "@reown/appkit-ethers-react-native": "2.0.0-alpha.6",
+    "@reown/appkit-solana-react-native": "2.0.0-alpha.6",
+    "@reown/appkit-bitcoin-react-native": "2.0.0-alpha.6",
+    "@reown/appkit-react-native": "2.0.0-alpha.6",
     "@walletconnect/react-native-compat": "2.21.5",
     "bitcoinjs-lib": "7.0.0-rc.0",
     "ethers": "6.15.0",
@@ -72,6 +72,6 @@
     "send": "^0.19.0",
     "undici": "^6.21.2",
     "serve-static": "^1.16.2",
-    "valtio": "2.1.5"
+    "valtio": "2.1.8"
   }
 }

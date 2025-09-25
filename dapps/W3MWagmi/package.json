@@ -23,11 +23,11 @@
     "@react-navigation/bottom-tabs": "6.6.1",
     "@react-navigation/native": "6.1.18",
     "@react-navigation/native-stack": "6.10.1",
-    "@reown/appkit-bitcoin-react-native": "0.0.0-feat-multichain-20250925192219",
-    "@reown/appkit-coinbase-react-native": "0.0.0-feat-multichain-20250925192219",
-    "@reown/appkit-react-native": "0.0.0-feat-multichain-20250925192219",
-    "@reown/appkit-solana-react-native": "0.0.0-feat-multichain-20250925192219",
-    "@reown/appkit-wagmi-react-native": "0.0.0-feat-multichain-20250925192219",
+    "@reown/appkit-bitcoin-react-native": "2.0.0-alpha.6",
+    "@reown/appkit-coinbase-react-native": "2.0.0-alpha.6",
+    "@reown/appkit-react-native": "2.0.0-alpha.6",
+    "@reown/appkit-solana-react-native": "2.0.0-alpha.6",
+    "@reown/appkit-wagmi-react-native": "2.0.0-alpha.6",
     "@sentry/react-native": "^6.14.0",
     "@solana/web3.js": "^1.98.2",
     "@tanstack/react-query": "5.62.2",
@@ -98,6 +98,6 @@
     "@walletconnect/ethereum-provider": "2.21.8",
     "@walletconnect/universal-provider": "2.21.8",
     "viem": "2.37.5",
-    "valtio": "2.1.5"
+    "valtio": "2.1.8"
   }
 }
