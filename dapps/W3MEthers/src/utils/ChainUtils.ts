@@ -1,54 +1,44 @@
-export const mainnet = {
+import {type AppKitNetwork} from '@reown/appkit-react-native';
+
+export const mainnet: AppKitNetwork = {
   id: 1,
   name: 'Ethereum',
   nativeCurrency: {name: 'Ether', symbol: 'ETH', decimals: 18},
   rpcUrls: {
-    default: {
-      http: ['https://eth.llamarpc.com'],
-    },
+    default: {http: ['https://eth.llamarpc.com']},
   },
   blockExplorers: {
-    default: {
-      name: 'Etherscan',
-      url: 'https://etherscan.io',
-      apiUrl: 'https://api.etherscan.io/api',
-    },
+    default: {name: 'Etherscan', url: 'https://etherscan.io'},
   },
-  contracts: {
-    ensRegistry: {
-      address: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e',
-    },
-    ensUniversalResolver: {
-      address: '0xce01f8eee7E479C928F8919abD53E553a36CeF67',
-      blockCreated: 19_258_213,
-    },
-    multicall3: {
-      address: '0xca11bde05977b3631167028862be2a173976ca11',
-      blockCreated: 14_353_601,
-    },
-  },
+  chainNamespace: 'eip155',
+  caipNetworkId: 'eip155:1',
 };
 
-export const polygon = {
+export const polygon: AppKitNetwork = {
   id: 137,
   name: 'Polygon',
   nativeCurrency: {name: 'POL', symbol: 'POL', decimals: 18},
   rpcUrls: {
-    default: {
-      http: ['https://polygon-rpc.com'],
-    },
+    default: {http: ['https://polygon-rpc.com']},
   },
   blockExplorers: {
-    default: {
-      name: 'PolygonScan',
-      url: 'https://polygonscan.com',
-      apiUrl: 'https://api.polygonscan.com/api',
-    },
+    default: {name: 'PolygonScan', url: 'https://polygonscan.com'},
   },
-  contracts: {
-    multicall3: {
-      address: '0xca11bde05977b3631167028862be2a173976ca11',
-      blockCreated: 25770160,
-    },
+  chainNamespace: 'eip155',
+  caipNetworkId: 'eip155:137',
+};
+
+export const solanaDevnet: AppKitNetwork = {
+  id: 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+  name: 'Solana Devnet',
+  chainNamespace: 'solana',
+  caipNetworkId: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+  nativeCurrency: {name: 'Solana', symbol: 'SOL', decimals: 9},
+  rpcUrls: {
+    default: {http: ['https://rpc.walletconnect.org/v1']},
   },
+  blockExplorers: {
+    default: {name: 'Solscan', url: 'https://solscan.io'},
+  },
+  testnet: true,
 };
