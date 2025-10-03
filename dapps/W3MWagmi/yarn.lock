@@ -3912,42 +3912,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-20251002190808":
-  version: 0.0.0-feat-multichain-20251002190808
-  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-20251002190808"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-20251003200131":
+  version: 0.0.0-feat-multichain-20251003200131
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-feat-multichain-20251003200131"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251002190808
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251003200131
   peerDependencies:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 8a7f10d0769ba04b9ceef72d95ff92eaff535df667c1b1c110c9139a0a887302df3ddc0584f14c70f0a55e1481877a8d97d08668decbf007d171ed1c3a892439
+  checksum: afd266a507651f2d9f0e30a7332d187ce6905fe73c6c51092f673dd8aabccbef720cb459a23b63a7cc017bad93b0760ca393fd8385cd8447801cdf6bb9bfd1e8
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-react-native@npm:0.0.0-feat-multichain-20251002190808":
-  version: 0.0.0-feat-multichain-20251002190808
-  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-feat-multichain-20251002190808"
+"@reown/appkit-coinbase-react-native@npm:0.0.0-feat-multichain-20251003200131":
+  version: 0.0.0-feat-multichain-20251003200131
+  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-feat-multichain-20251003200131"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251002190808
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251003200131
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.1.2"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 5cc85e072b4a94b1c92b81a5da953de7045c852640c67557959e5b3d17a78be2bf8ea6f00152f089a20c0fbcfa2f00d9b3c08d42d748baad04a96dfb6b0c5079
+  checksum: 08739e3cbf7754290703b787b0f85d47220df91c836fabbf39b2cd53eda98762459fa801c80f4ffc85508e01bf8b7e1a1ec3840ab76ffa857ef38574e15db99d
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-20251002190808":
-  version: 0.0.0-feat-multichain-20251002190808
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-20251002190808"
+"@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-20251003200131":
+  version: 0.0.0-feat-multichain-20251003200131
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-feat-multichain-20251003200131"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 7059c1bd48108d7b03751ba502adf8a0d80f96dfc012f1c27a1c0d692851b8d2810bcd7b7914a76a0fa9856a4e141edc47d06043fa2f91038ae7a2e44bb22de7
+  checksum: 5f094f35e03ea5cfaab76399605235d49abbac14a7809647c35ff79a46d15da58beec4f5630c62f8fbee013831fb70717c793d81db02df1f02314bea25f05569
   languageName: node
   linkType: hard
 
@@ -3975,11 +3975,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-20251002190808":
-  version: 0.0.0-feat-multichain-20251002190808
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-20251002190808"
+"@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-20251003200131":
+  version: 0.0.0-feat-multichain-20251003200131
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-feat-multichain-20251003200131"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251002190808
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251003200131
     countries-and-timezones: 3.7.2
     derive-valtio: 0.2.0
     valtio: 2.1.8
@@ -3987,7 +3987,7 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: d0b9d9433dd3395384bf3082fb687adb398ed9eab78cf9ff45459f5e5111232fe276c183e7f0704a329bfb0e822231fbbb7e67020d5bcac7b2e131c357613cb9
+  checksum: 52c490d401b138140a679078a38a1490b5bced46218d0c006025323132cd04759836c03dcaad97a818f930e2230a766f900312205f8c00522a606741d6acd989
   languageName: node
   linkType: hard
 
@@ -4014,13 +4014,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:0.0.0-feat-multichain-20251002190808":
-  version: 0.0.0-feat-multichain-20251002190808
-  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-multichain-20251002190808"
+"@reown/appkit-react-native@npm:0.0.0-feat-multichain-20251003200131":
+  version: 0.0.0-feat-multichain-20251003200131
+  resolution: "@reown/appkit-react-native@npm:0.0.0-feat-multichain-20251003200131"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251002190808
-    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-20251002190808
-    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-20251002190808
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251003200131
+    "@reown/appkit-core-react-native": 0.0.0-feat-multichain-20251003200131
+    "@reown/appkit-ui-react-native": 0.0.0-feat-multichain-20251003200131
     "@walletconnect/universal-provider": 2.21.10
     valtio: 2.1.8
   peerDependencies:
@@ -4030,7 +4030,7 @@ __metadata:
     react-native: ">=0.72"
     react-native-safe-area-context: ">=4.4.0"
     react-native-svg: ">=13.10"
-  checksum: 6e8d691f3454e7caf9eb330a9ef30ef10d50a5ba00daa1a1bc498ea819d1f85eabe6c5246631fbbd61685661b42fd27c483d285a5a42b7428e775791bf34dcc0
+  checksum: 4f66e3abf46a3a66766438096bcda160671c147c205d799ee16150166ebfbae576593977b2805d343241c22be37abb90a695692d57ecc9597b1d94471e3a19a4
   languageName: node
   linkType: hard
 
@@ -4048,11 +4048,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-20251002190808":
-  version: 0.0.0-feat-multichain-20251002190808
-  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-20251002190808"
+"@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-20251003200131":
+  version: 0.0.0-feat-multichain-20251003200131
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-feat-multichain-20251003200131"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251002190808
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251003200131
     "@solana/spl-token": 0.4.13
     "@solana/web3.js": 1.98.2
     bs58: 6.0.0
@@ -4061,22 +4061,22 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 2500ff5f6344c3ea59d2c52f74bedcbffb2bc31414ffe9ea3d63f12c68bbd3cf97fdcb0b9cee7f84ce377081abb577fb81f8857e4ccbb8159eae2b7b4868ae7a
+  checksum: 8662299c1950c8fb30be10c4c2be9a3808ee40ce3b3be88fa80a00e7aad5e38c2e3d32bb654f592c773f76a42319fb2279416b2e00e2a8d2e040ac50e5c7bb05
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-20251002190808":
-  version: 0.0.0-feat-multichain-20251002190808
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-20251002190808"
+"@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-20251003200131":
+  version: 0.0.0-feat-multichain-20251003200131
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-feat-multichain-20251003200131"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251002190808
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251003200131
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: f35552b64c6a90b28ce281db94dbb4c7f736bc9fbe6571c124c34e583f93e20fb49ada145bab15f5e5273d6be7ffb18d0acc72f0b8b8ebae5203856b74432dce
+  checksum: ce2924f50e327775e8563f4a59c24662c0f449ce72ab66e1b86ef689345feb7985827b166821f4719757cf8fc7ac82c42fa27662546f59a6f8a05db80decb3e0
   languageName: node
   linkType: hard
 
@@ -4113,12 +4113,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-20251002190808":
-  version: 0.0.0-feat-multichain-20251002190808
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-20251002190808"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-20251003200131":
+  version: 0.0.0-feat-multichain-20251003200131
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-feat-multichain-20251003200131"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251002190808
-    "@reown/appkit-react-native": 0.0.0-feat-multichain-20251002190808
+    "@reown/appkit-common-react-native": 0.0.0-feat-multichain-20251003200131
+    "@reown/appkit-react-native": 0.0.0-feat-multichain-20251003200131
   peerDependencies:
     "@react-native-community/netinfo": "*"
     "@walletconnect/react-native-compat": ">=2.16.1"
@@ -4127,7 +4127,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2 <3.0.0"
     wagmi: ">=2 <3.0.0"
-  checksum: 0185bf0733be4b58746242ad56e35e5297af7f07f274a456d44deb5302d15d9f9d823c95c24e67fd83a005acd543709104c7bd80d393fb33d0ac6fa364268406
+  checksum: ac4cc43e46daed2393d66f3286e508fc309a07b32660baee0277ee1ccf516fd859beda371da2c930f0cdcb48e0c30efd60424d6cbf06a75a7b7b991280989343
   languageName: node
   linkType: hard
 
@@ -14151,11 +14151,11 @@ __metadata:
     "@react-navigation/bottom-tabs": 6.6.1
     "@react-navigation/native": 6.1.18
     "@react-navigation/native-stack": 6.10.1
-    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-multichain-20251002190808
-    "@reown/appkit-coinbase-react-native": 0.0.0-feat-multichain-20251002190808
-    "@reown/appkit-react-native": 0.0.0-feat-multichain-20251002190808
-    "@reown/appkit-solana-react-native": 0.0.0-feat-multichain-20251002190808
-    "@reown/appkit-wagmi-react-native": 0.0.0-feat-multichain-20251002190808
+    "@reown/appkit-bitcoin-react-native": 0.0.0-feat-multichain-20251003200131
+    "@reown/appkit-coinbase-react-native": 0.0.0-feat-multichain-20251003200131
+    "@reown/appkit-react-native": 0.0.0-feat-multichain-20251003200131
+    "@reown/appkit-solana-react-native": 0.0.0-feat-multichain-20251003200131
+    "@reown/appkit-wagmi-react-native": 0.0.0-feat-multichain-20251003200131
     "@sentry/react-native": ^6.14.0
     "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2

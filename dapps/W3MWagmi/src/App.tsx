@@ -72,6 +72,7 @@ const appKit = createAppKit({
   networks,
   // siwx: new ReownAuthentication(),
   clipboardClient,
+  debug: true,
   storage,
   extraConnectors: [new PhantomConnector(), new CoinbaseConnector({ storage: new MMKV()}), new SolflareConnector()],
 });

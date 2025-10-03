@@ -67,8 +67,13 @@ function SettingsScreen({navigation}: Props) {
         />
         <Card title="Socket status" value={socketStatus} />
         <Card
-          title="Read full logs"
+          title="Read core logs"
           onPress={() => navigation.navigate('Logs')}
+          icon="chevronRight"
+        />
+        <Card
+          title="Read AppKit logs"
+          onPress={() => navigation.navigate('AppKitLogs')}
           icon="chevronRight"
         />
         <WalletInfo />
