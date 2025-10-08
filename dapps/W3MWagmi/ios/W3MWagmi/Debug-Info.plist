@@ -82,6 +82,8 @@
 		<string>modularwallet</string>
 		<string>coinomi</string>
 		<string>cbwallet</string>
+		<string>phantom</string>
+		<string>solflare</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

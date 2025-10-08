@@ -1,4 +1,5 @@
-import { AppKitButton } from '@reown/appkit-wagmi-react-native';
+import '@walletconnect/react-native-compat';
+import { AppKitButton } from '@reown/appkit-react-native';
 import { Image } from 'expo-image';
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
@@ -8,6 +9,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import ReownFigures from '@/components/ReownFigures';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { WalletInfoView } from '@/components/WalletInfoView';
 import { reownDarkGray, reownOrange } from '@/constants/Colors';
 
 export default function HomeScreen() {
@@ -34,6 +36,8 @@ export default function HomeScreen() {
           <ThemedText type="subtitle">for React Native</ThemedText>
           <MobileWave />
         </ThemedView>
+        <WalletInfoView />
+        
         <View style={styles.appKitButtonContainer}>
           <AppKitButton connectStyle={styles.appKitButton} label='Connect Wallet' />
         </View>

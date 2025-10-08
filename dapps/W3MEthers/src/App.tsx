@@ -1,35 +1,44 @@
+import 'text-encoding'; //needed for solana web3js
 import '@walletconnect/react-native-compat';
 
 import React, {useEffect} from 'react';
 import {Linking, SafeAreaView, StyleSheet} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
+import {MMKV} from 'react-native-mmkv';
+import Toast from 'react-native-toast-message';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 import {
   createAppKit,
-  defaultConfig,
   AppKitButton,
   AppKit,
-} from '@reown/appkit-ethers-react-native';
+  AppKitProvider,
+  solana,
+  bitcoin,
+  NetworkButton,
+} from '@reown/appkit-react-native';
+import {
+  SolanaAdapter,
+  PhantomConnector,
+  SolflareConnector,
+} from '@reown/appkit-solana-react-native';
+import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
+import {CoinbaseConnector} from '@reown/appkit-coinbase-react-native';
 import {FlexView, Text} from '@reown/appkit-ui-react-native';
+import {EthersAdapter} from '@reown/appkit-ethers-react-native';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
-import {CoinbaseProvider} from '@reown/appkit-coinbase-ethers-react-native';
-import {AuthProvider} from '@reown/appkit-auth-ethers-react-native';
 import {ENV_PROJECT_ID} from '@env';
-import {MMKV} from 'react-native-mmkv';
 
-import {SignMessage} from './views/SignMessage';
-import {SendTransaction} from './views/SendTransaction';
-import {ReadContract} from './views/ReadContract';
-import {WriteContract} from './views/WriteContract';
-import {SignTypedDataV4} from './views/SignTypedDataV4';
 import {mainnet, polygon} from './utils/ChainUtils';
-import {siweConfig} from './utils/SiweUtils';
+import {storage} from './utils/StorageUtil';
+import {ActionsView} from './views/ActionsView';
+import {WalletInfoView} from './views/WalletInfoView';
 
-// 1. Get projectId at https://cloud.reown.com
+// 1. Get projectId at https://dashboard.reown.com
 const projectId = ENV_PROJECT_ID;
 
 // 2. Define your chains
-const chains = [mainnet, polygon];
+const networks = [mainnet, polygon, solana, bitcoin];
 
 // 3. Create config
 const metadata = {
@@ -42,34 +51,32 @@ const metadata = {
   },
 };
 
-const coinbaseProvider = new CoinbaseProvider({
-  redirect: 'rn-w3m-ethers-sample://',
-  rpcUrl: mainnet.rpcUrl,
-  storage: new MMKV(),
-});
-
-const auth = new AuthProvider({projectId, metadata});
-
-const config = defaultConfig({
-  metadata,
-  extraConnectors: [coinbaseProvider, auth],
-});
-
 const clipboardClient = {
   setString: async (value: string) => {
     Clipboard.setString(value);
   },
 };
 
+const adapters = [
+  new EthersAdapter(),
+  new SolanaAdapter(),
+  new BitcoinAdapter(),
+];
+
 // 3. Create modal
-createAppKit({
+const appKit = createAppKit({
   projectId,
   metadata,
-  chains,
-  config,
-  siweConfig,
+  networks,
+  adapters,
+  storage,
   clipboardClient,
   enableAnalytics: true,
+  extraConnectors: [
+    new PhantomConnector(),
+    new SolflareConnector(),
+    new CoinbaseConnector({storage: new MMKV()}),
+  ],
   features: {
     swaps: true,
     onramp: true,
@@ -90,20 +97,23 @@ function App(): React.JSX.Element {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title} variant="large-600">
-        AppKit + ethers
-      </Text>
-      <FlexView style={styles.buttonContainer}>
-        <AppKitButton balance="show" />
-        <SignMessage />
-        <SendTransaction />
-        <SignTypedDataV4 />
-        <ReadContract />
-        <WriteContract />
-      </FlexView>
-      <AppKit />
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <AppKitProvider instance={appKit}>
+          <Text style={styles.title} variant="large-600">
+            AppKit + ethers
+          </Text>
+          <FlexView style={styles.buttonContainer}>
+            <WalletInfoView />
+            <AppKitButton balance="show" />
+            <NetworkButton />
+            <ActionsView />
+          </FlexView>
+          <Toast />
+          <AppKit />
+        </AppKitProvider>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

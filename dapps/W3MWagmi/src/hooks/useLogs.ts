@@ -1,29 +1,21 @@
-import {useCallback, useEffect, useState} from 'react';
-import {useAccount} from 'wagmi';
+import {useCallback, useEffect} from 'react';
 import SettingsStore from '@/stores/SettingsStore';
+import { useProvider } from '@reown/appkit-react-native';
 
 export function useLogs() {
-  const {connector} = useAccount();
-  const [provider, setProvider] = useState<any>(null);
+  const { provider } = useProvider();
 
   const getLogs = useCallback(async () => {
-    if (provider?.signer?.client?.core) {
+    // @ts-ignore
+    if (provider?.client?.core) {
       const _logs =
-        await provider.signer?.client.core.logChunkController?.getLogArray();
-      SettingsStore.setLogs(_logs ? _logs.reverse() : []);
+      // @ts-ignore
+        await provider?.client?.core.logChunkController?.getLogArray();
+      if(_logs){
+        SettingsStore.setLogs(_logs.reverse());
+      }
     }
   }, [provider]);
-
-  useEffect(() => {
-    const getProvider = async () => {
-      if (connector && connector?.getProvider) {
-        const _provider = await connector?.getProvider();
-        setProvider(_provider);
-      }
-    };
-
-    getProvider();
-  }, [connector]);
 
   useEffect(() => {
     const interval = setInterval(() => {

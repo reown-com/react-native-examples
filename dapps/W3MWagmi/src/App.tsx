@@ -1,19 +1,22 @@
+
+import 'text-encoding';
 import '@walletconnect/react-native-compat';
+
 import React, {useEffect} from 'react';
 import {Linking} from 'react-native';
 import BootSplash from 'react-native-bootsplash';
-import {
-  createAppKit,
-  defaultWagmiConfig,
-  AppKit,
-} from '@reown/appkit-wagmi-react-native';
+import {createAppKit, AppKit, AppKitProvider, solana, bitcoin} from '@reown/appkit-react-native';
+import {WagmiAdapter} from '@reown/appkit-wagmi-react-native';
+import {PhantomConnector, SolanaAdapter, SolflareConnector} from '@reown/appkit-solana-react-native';
+import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
+import {CoinbaseConnector} from '@reown/appkit-coinbase-react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import { MMKV } from 'react-native-mmkv';
-
-import {coinbaseConnector} from '@reown/appkit-coinbase-wagmi-react-native';
-import {authConnector} from '@reown/appkit-auth-wagmi-react-native';
-import {WagmiProvider} from 'wagmi';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
+import { WagmiProvider } from 'wagmi';
+import { Chain } from 'viem';
+import { MMKV } from 'react-native-mmkv';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import Toast from 'react-native-toast-message';
 import Config from 'react-native-config';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -23,9 +26,9 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
 import {getMetadata} from '@/utils/misc';
 import {RootStackNavigator} from '@/navigators/RootStackNavigator';
-import {siweConfig} from '@/utils/SiweUtils';
 import {chains} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
+import { storage } from './utils/StorageUtil';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
@@ -52,54 +55,37 @@ const clipboardClient = {
   },
 };
 
-const _coinbaseConnector = coinbaseConnector({
-  redirect: metadata?.redirect?.universal || '',
-  storage: new MMKV(),
+const wagmiAdapter = new WagmiAdapter({
+  projectId,
+  networks: chains as [Chain, ...Chain[]],
 });
 
-const _authConnector = authConnector({
-  projectId,
-  metadata,
-});
+const adapters = [wagmiAdapter, new SolanaAdapter(), new BitcoinAdapter()];
 
-const wagmiConfig = defaultWagmiConfig({
-  chains,
-  projectId,
-  metadata,
-  extraConnectors: [
-    _coinbaseConnector,
-    _authConnector],
-});
+const networks = [...chains, solana, bitcoin];
 
 // 3. Create modal
-createAppKit({
+const appKit = createAppKit({
   projectId,
-  wagmiConfig,
+  adapters,
   metadata,
-  siweConfig,
+  networks,
+  // siwx: new ReownAuthentication(),
   clipboardClient,
-  connectorImages: {
-    coinbaseWallet:
-      'https://play-lh.googleusercontent.com/wrgUujbq5kbn4Wd4tzyhQnxOXkjiGqq39N4zBvCHmxpIiKcZw_Pb065KTWWlnoejsg',
-    appKitAuth: 'https://avatars.githubusercontent.com/u/179229932',
-  },
-  features: {
-    email: true,
-    socials: ['x', 'discord', 'apple'],
-    emailShowWallets: true,
-    swaps: true,
-  },
+  debug: true,
+  storage,
+  extraConnectors: [new PhantomConnector(), new CoinbaseConnector({ storage: new MMKV()}), new SolflareConnector()],
 });
 
 const queryClient = new QueryClient();
 
 function App(): JSX.Element {
-  // 4. Handle deeplinks for Coinbase SDK
+  // 4. Handle deeplinks for Coinbase SDK + WalletConnect Link Mode
   useEffect(() => {
     const sub = Linking.addEventListener('url', ({url}) => {
       const handledBySdk = handleResponse(new URL(url));
       if (!handledBySdk) {
-        // Handle other deeplinks
+        // Handle WalletConnect Link Mode
         if (url.includes('wc_ev')) {
           SettingsStore.setCurrentRequestLinkMode(true);
         }
@@ -125,17 +111,21 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <NavigationContainer>
-        <WagmiProvider config={wagmiConfig}>
-          <QueryClientProvider client={queryClient}>
-            <RootStackNavigator />
-            <Toast />
-            <AppKit />
-          </QueryClientProvider>
-        </WagmiProvider>
-      </NavigationContainer>
-    </GestureHandlerRootView>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <NavigationContainer>
+          <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+            <AppKitProvider instance={appKit}>
+              <QueryClientProvider client={queryClient}>
+                <RootStackNavigator />
+                <Toast />
+                <AppKit />
+              </QueryClientProvider>
+            </AppKitProvider>
+          </WagmiProvider>
+        </NavigationContainer>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }
 

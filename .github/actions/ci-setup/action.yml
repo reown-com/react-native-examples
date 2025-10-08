@@ -4,7 +4,6 @@ inputs:
   root-path:
     description: 'Path of the project'
     required: true
-    type: string
 
 runs:
   using: composite
@@ -12,28 +11,12 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 18
-
-    - name: Set yarn lock path
-      id: yarn-hash
-      shell: bash
-      run: |
-        echo "Root path: ${{ inputs.root-path }}"
-        echo "yarn.lock path: ${{ inputs.root-path }}/yarn.lock"
-        echo "File exists: $(test -f "${{ inputs.root-path }}/yarn.lock" && echo "yes" || echo "no")"
-        echo "yarnlock_path=${{ inputs.root-path }}/yarn.lock" >> "$GITHUB_ENV"
-
-    - name: Cache dependencies
-      id: yarn-cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          ${{ inputs.root-path }}/node_modules
-        key: ${{ runner.os }}-yarn-${{ hashFiles(env.yarnlock_path) }}
+        node-version: 22
+        cache: 'yarn'
+        cache-dependency-path: ${{ inputs.root-path }}/yarn.lock
 
     - name: Install dependencies
       shell: bash
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: |
         cd ${{ inputs.root-path }}
         yarn install --immutable

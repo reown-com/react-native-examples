@@ -1,12 +1,17 @@
+import 'text-encoding';
 import "@walletconnect/react-native-compat";
 import {
   AppKit,
+  AppKitProvider,
+  bitcoin,
   createAppKit,
-  defaultWagmiConfig
-} from "@reown/appkit-wagmi-react-native";
-import { authConnector } from "@reown/appkit-auth-wagmi-react-native";
+  solana,
+} from "@reown/appkit-react-native";
+import { WagmiAdapter } from "@reown/appkit-wagmi-react-native";
+import { SolanaAdapter, PhantomConnector, SolflareConnector } from "@reown/appkit-solana-react-native";
+import { BitcoinAdapter } from "@reown/appkit-bitcoin-react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { mainnet, monadTestnet } from "@wagmi/core/chains";
+import { arbitrum, mainnet, polygon } from "@wagmi/core/chains";
 import { WagmiProvider } from "wagmi";
 
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
@@ -14,9 +19,17 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import * as Clipboard from 'expo-clipboard';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { View } from "react-native";
+import { storage } from "@/utils/StorageUtil";
+import { View } from 'react-native';
+
+const clipboardClient = {
+  setString: async (value: string) => {
+    Clipboard.setStringAsync(value);
+  },
+};
 
 // 0. Setup queryClient
 const queryClient = new QueryClient();
@@ -38,21 +51,26 @@ const metadata = {
   },
 };
 
+const networks = [mainnet, polygon, arbitrum];
 
-const auth = authConnector({ projectId, metadata });
+const wagmiAdapter = new WagmiAdapter({
+  projectId,
+  networks: networks as any,
+});
 
-const chains = [mainnet, monadTestnet] as const;
-
-const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata, extraConnectors: [auth] });
+const solanaAdapter = new SolanaAdapter();
+const bitcoinAdapter = new BitcoinAdapter();
 
 // 3. Create modal
-createAppKit({
+const appkit = createAppKit({
   projectId,
+  networks: [...networks, solana, bitcoin],
+  adapters: [wagmiAdapter, solanaAdapter, bitcoinAdapter],
+  extraConnectors: [new PhantomConnector(), new SolflareConnector()],
   metadata,
-  chainImages: {
-    10143: "https://files.svgcdn.io/token-branded/monad.png", // Monad Testnet
-  },
-  wagmiConfig,
+  clipboardClient,
+  storage,
+  defaultNetwork: mainnet, // Optional
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
 });
 
@@ -72,17 +90,19 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <WagmiProvider config={wagmiConfig}>
+      <WagmiProvider config={wagmiAdapter.wagmiConfig}>
         <QueryClientProvider client={queryClient}>
+          <AppKitProvider instance={appkit}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
+          <StatusBar style="auto" />
           {/* This is a workaround for the Android modal issue. https://github.com/expo/expo/issues/32991#issuecomment-2489620459 */}
           <View style={{ position: "absolute", height: "100%", width: "100%" }}>
             <AppKit />
           </View>
-          <StatusBar style="auto" />
+          </AppKitProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </ThemeProvider>

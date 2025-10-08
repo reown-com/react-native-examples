@@ -993,7 +993,7 @@
 				);
 				INFOPLIST_FILE = W3MWagmi/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1008,7 +1008,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.web3modal.rnsample;
 				PRODUCT_NAME = W3MWagmi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.rnsample";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.rnsample 1757428944";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -1113,7 +1113,7 @@
 				);
 				INFOPLIST_FILE = W3MWagmi/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1128,7 +1128,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.web3modal.rnsample;
 				PRODUCT_NAME = W3MWagmi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.rnsample";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.rnsample 1757428944";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -1232,7 +1232,7 @@
 				);
 				INFOPLIST_FILE = "W3MWagmi/Debug-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1351,7 +1351,7 @@
 				);
 				INFOPLIST_FILE = "W3MWagmi/Debug-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1471,7 +1471,7 @@
 				);
 				INFOPLIST_FILE = "W3MWagmi/Internal-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1486,7 +1486,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.web3modal.rnsample.internal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.walletconnect.web3modal.rnsample.internal";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.rnsample.internal";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.rnsample.internal 1757428937";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -1591,7 +1591,7 @@
 				);
 				INFOPLIST_FILE = "W3MWagmi/Internal-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "RN AppKit";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1606,7 +1606,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.web3modal.rnsample.internal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.walletconnect.web3modal.rnsample.internal";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.rnsample.internal";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.rnsample.internal 1757428937";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;

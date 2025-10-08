@@ -912,7 +912,7 @@ PODS:
   - React-Mapbuffer (0.73.4):
     - glog
     - React-debug
-  - react-native-compat (2.21.5):
+  - react-native-compat (2.22.2):
     - glog
     - RCT-Folly (= 2022.05.16.00)
     - React-Core
@@ -923,9 +923,7 @@ PODS:
     - React-Core
   - react-native-netinfo (11.2.1):
     - React-Core
-  - react-native-webview (13.8.2):
-    - glog
-    - RCT-Folly (= 2022.05.16.00)
+  - react-native-safe-area-context (4.14.1):
     - React-Core
   - React-nativeconfig (0.73.4)
   - React-NativeModulesApple (0.73.4):
@@ -1145,7 +1143,7 @@ DEPENDENCIES:
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
-  - react-native-webview (from `../node_modules/react-native-webview`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -1258,8 +1256,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-mmkv"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
-  react-native-webview:
-    :path: "../node_modules/react-native-webview"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   React-nativeconfig:
     :path: "../node_modules/react-native/ReactCommon"
   React-NativeModulesApple:
@@ -1349,11 +1347,11 @@ SPEC CHECKSUMS:
   React-jsinspector: 9ac353eccf6ab54d1e0a33862ba91221d1e88460
   React-logger: 5295f5eac9d7624fe9a33a473442d8f4c1074197
   React-Mapbuffer: f7ba4d5459e546d741791a55664388e97b31df7c
-  react-native-compat: 74a583d6cb1dafc47495da8bb0a9fb0539f046d9
+  react-native-compat: c269156c7dad88a46303463a1f779bcbd059fc13
   react-native-get-random-values: ce0b8796c99e2b85e3202bd500b1ef286a17a02e
   react-native-mmkv: 5a46c73e3e12aa872c4485ae0e4414b4040af79a
   react-native-netinfo: f084f2324cb11b986503a39a3ccbb5d15e2a56d3
-  react-native-webview: 3ed9586de26f4aa6d0d0197677c35016d5dbb8c6
+  react-native-safe-area-context: 758e894ca5a9bd1868d2a9cfbca7326a2b6bf9dc
   React-nativeconfig: d7af5bae6da70fa15ce44f045621cf99ed24087c
   React-NativeModulesApple: 7a561c2792b0a2b74aff6c58d2554dcf824372aa
   React-perflogger: 8a1e1af5733004bdd91258dcefbde21e0d1faccd
