@@ -64,6 +64,8 @@
     "@babel/helpers": "^7.26.10",
     "elliptic": "^6.6.1",
     "braces": "^3.0.3",
-    "valtio": "2.1.8"
+    "valtio": "2.1.8",
+    "on-headers": "1.1.0",
+    "brace-expansion": "1.1.12"
   }
 }

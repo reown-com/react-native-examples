@@ -10,14 +10,14 @@
 yarn install
 ```
 
-## Step 2: Create mocked google-service files
+## Step 2: Create mocked files
 In order to build the app successfuly, you'll need some extra files
 
 ```bash
 chmod +x ./scripts/copy-sample-files.sh && ./scripts/copy-sample-files.sh
 ```
 
-## Step 3: Open .env.debug file and replace **ENV_PROJECT_ID with your [Cloud Project ID](https://cloud.reown.com/)
+## Step 3: Open .env.debug file and replace **ENV_PROJECT_ID with your [Project ID](https://dashboard.reown.com/)
 
 ## Step 4: Start your Application
 

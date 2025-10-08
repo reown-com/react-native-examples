@@ -1,4 +1,8 @@
 name: release-ios-walletkit-production
+
+permissions:
+  contents: read
+
 on: workflow_dispatch
 
 jobs:
