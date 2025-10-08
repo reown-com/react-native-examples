@@ -30,7 +30,6 @@ import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import {ENV_PROJECT_ID} from '@env';
 
 import {mainnet, polygon} from './utils/ChainUtils';
-import {siweConfig} from './utils/SiweUtils';
 import {storage} from './utils/StorageUtil';
 import {ActionsView} from './views/ActionsView';
 import {WalletInfoView} from './views/WalletInfoView';
@@ -71,7 +70,6 @@ const appKit = createAppKit({
   networks,
   adapters,
   storage,
-  siweConfig,
   clipboardClient,
   enableAnalytics: true,
   extraConnectors: [

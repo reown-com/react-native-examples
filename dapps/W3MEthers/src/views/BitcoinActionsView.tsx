@@ -8,7 +8,7 @@ import {BitcoinUtil, SignPSBTResponse} from '../utils/BitcoinUtil';
 
 export function BitcoinActionsView() {
   const isConnected = true;
-  const {address, chainId} = useAccount();
+  const {address, namespace, chainId} = useAccount();
   const {provider} = useProvider();
 
   const onSignSuccess = (data: string) => {
@@ -35,13 +35,10 @@ export function BitcoinActionsView() {
 
       const message = 'Hello from AppKit Bitcoin';
 
-      const {signature} = (await provider.request(
-        {
-          method: 'signMessage',
-          params: {message, account: address, address, protocol: 'ecdsa'},
-        },
-        chainId,
-      )) as {address: string; signature: string};
+      const {signature} = (await provider.request({
+        method: 'signMessage',
+        params: {message, account: address, address, protocol: 'ecdsa'},
+      })) as {address: string; signature: string};
 
       const formattedSignature = Buffer.from(signature, 'hex').toString(
         'base64',
@@ -67,7 +64,7 @@ export function BitcoinActionsView() {
         return;
       }
 
-      if (chainId?.split(':')[0] !== 'bip122') {
+      if (namespace !== 'bip122') {
         ToastUtils.showErrorToast(
           'Sign failed',
           'The selected chain is not bip122',
@@ -78,14 +75,14 @@ export function BitcoinActionsView() {
 
       const utxos = await BitcoinUtil.getUTXOs(
         address,
-        chainId as `bip122:${string}`,
+        `${namespace}:${chainId}`,
       );
       const feeRate = await BitcoinUtil.getFeeRate();
 
       const params = BitcoinUtil.createSignPSBTParams({
         amount: 1500,
         feeRate,
-        caipNetworkId: chainId as `bip122:${string}`,
+        caipNetworkId: `${namespace}:${chainId}`,
         recipientAddress: address,
         senderAddress: address,
         utxos,
@@ -93,18 +90,15 @@ export function BitcoinActionsView() {
 
       params.broadcast = false;
 
-      const response = (await provider.request(
-        {
-          method: 'signPsbt',
-          params: {
-            account: address,
-            psbt: params.psbt,
-            signInputs: params.signInputs,
-            broadcast: params.broadcast,
-          },
+      const response = (await provider.request({
+        method: 'signPsbt',
+        params: {
+          account: address,
+          psbt: params.psbt,
+          signInputs: params.signInputs,
+          broadcast: params.broadcast,
         },
-        chainId,
-      )) as SignPSBTResponse;
+      })) as SignPSBTResponse;
 
       onSignSuccess(`${response.psbt}-${response.txid}`);
     } catch (error) {

@@ -19,10 +19,17 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import * as Clipboard from 'expo-clipboard';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { storage } from "@/utils/StorageUtil";
 import { View } from 'react-native';
+
+const clipboardClient = {
+  setString: async (value: string) => {
+    Clipboard.setStringAsync(value);
+  },
+};
 
 // 0. Setup queryClient
 const queryClient = new QueryClient();
@@ -61,6 +68,7 @@ const appkit = createAppKit({
   adapters: [wagmiAdapter, solanaAdapter, bitcoinAdapter],
   extraConnectors: [new PhantomConnector(), new SolflareConnector()],
   metadata,
+  clipboardClient,
   storage,
   defaultNetwork: mainnet, // Optional
   enableAnalytics: true, // Optional - defaults to your Cloud configuration

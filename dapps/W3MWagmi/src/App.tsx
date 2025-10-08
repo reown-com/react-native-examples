@@ -5,7 +5,7 @@ import '@walletconnect/react-native-compat';
 import React, {useEffect} from 'react';
 import {Linking} from 'react-native';
 import BootSplash from 'react-native-bootsplash';
-import {createAppKit, AppKit, AppKitProvider, solana} from '@reown/appkit-react-native';
+import {createAppKit, AppKit, AppKitProvider, solana, bitcoin} from '@reown/appkit-react-native';
 import {WagmiAdapter} from '@reown/appkit-wagmi-react-native';
 import {PhantomConnector, SolanaAdapter, SolflareConnector} from '@reown/appkit-solana-react-native';
 import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
@@ -62,7 +62,7 @@ const wagmiAdapter = new WagmiAdapter({
 
 const adapters = [wagmiAdapter, new SolanaAdapter(), new BitcoinAdapter()];
 
-const networks = [...chains, solana];
+const networks = [...chains, solana, bitcoin];
 
 // 3. Create modal
 const appKit = createAppKit({

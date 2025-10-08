@@ -18,7 +18,6 @@ import {EthersAdapter} from '@reown/appkit-ethers-react-native';
 import {FlexView, Text} from '@reown/appkit-ui-react-native';
 import {ENV_PROJECT_ID} from '@env';
 
-import {siweConfig} from './utils/SiweUtils';
 import {mainnet, polygon} from './utils/ChainUtils';
 import {storage} from './utils/StorageUtil';
 import {
@@ -65,7 +64,6 @@ const appkit = createAppKit({
   networks,
   storage,
   adapters: [ethersAdapter, solanaAdapter, bitcoinAdapter],
-  siweConfig,
   extraConnectors: [new PhantomConnector(), new SolflareConnector()],
   clipboardClient,
   enableAnalytics: true,
