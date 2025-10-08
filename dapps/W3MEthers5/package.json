@@ -66,6 +66,7 @@
     "braces": "^3.0.3",
     "valtio": "2.1.8",
     "on-headers": "1.1.0",
-    "brace-expansion": "1.1.12"
+    "brace-expansion": "1.1.12",
+    "fast-redact": "3.5.0"
   }
 }

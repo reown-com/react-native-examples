@@ -71,6 +71,7 @@
     "react-devtools-core": "^4.28.4",
     "@sentry/browser": "^7.119.1",
     "on-headers": "1.1.0",
-    "brace-expansion": "1.1.12"
+    "brace-expansion": "1.1.12",
+    "fast-redact": "3.5.0"
   }
 }

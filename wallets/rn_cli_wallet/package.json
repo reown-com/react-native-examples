@@ -87,7 +87,7 @@
   },
   "packageManager": "yarn@3.6.4",
   "resolutions": {
-    "tar-fs": "2.1.3",
+    "tar-fs": "2.1.4",
     "image-size": "1.2.1",
     "ip": "2.0.1",
     "micromatch": "4.0.8",
