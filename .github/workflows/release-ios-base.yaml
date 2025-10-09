@@ -89,7 +89,7 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_16.2.app
           xcodebuild -version
           xcodebuild -showsdks
-          # sudo xcodebuild -downloadPlatform iOS
+          sudo xcodebuild -downloadPlatform iOS -version 18.2
 
       - name: Set podfile path
         id: podfile-hash
