@@ -123,12 +123,6 @@ jobs:
         run: bundle install
         working-directory: ${{ inputs.root-path }}
 
-      - name: Install Fastlane
-        run: gem install fastlane
-
-      - name: Install Cocoapods
-        run: gem install cocoapods
-
       # Create env file
       - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
 
