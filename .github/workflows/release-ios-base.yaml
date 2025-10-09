@@ -119,6 +119,10 @@ jobs:
           bundler-cache: false
           working-directory: ${{ inputs.root-path }}
 
+      - name: Install Gems
+        run: bundle install
+        working-directory: ${{ inputs.root-path }}
+
       - name: Install Fastlane
         run: gem install fastlane
 
