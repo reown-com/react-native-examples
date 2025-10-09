@@ -39,7 +39,6 @@ Sentry.init({
 
 const App = () => {
   const scheme = useColorScheme();
-  console.log('Config.ENV_SENTRY_DSN', Config.ENV_SENTRY_DSN);
 
   // Step 1 - Initialize wallets and wallet connect client
   const initialized = useInitializeWalletKit();
