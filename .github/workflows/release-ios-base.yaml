@@ -89,7 +89,7 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_16.2.app
           xcodebuild -version
           xcodebuild -showsdks
-          sudo xcodebuild -downloadPlatform iOS
+          # sudo xcodebuild -downloadPlatform iOS
 
       - name: Set podfile path
         id: podfile-hash
@@ -106,11 +106,18 @@ jobs:
           path: ${{ inputs.root-path }}/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles(env.podfile_path) }}
 
+      - name: Cache Bundler
+        uses: actions/cache@v3
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-bundler-${{ hashFiles('${{ inputs.root-path }}/Gemfile.lock') }}
+
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.0
-          bundler-cache: true
+          bundler-cache: false
+          working-directory: ${{ inputs.root-path }}
 
       - name: Install Fastlane
         run: gem install fastlane
