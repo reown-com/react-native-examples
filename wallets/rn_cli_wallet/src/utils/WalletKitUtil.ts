@@ -6,6 +6,9 @@ import {getMetadata} from './misc';
 
 export let walletKit: IWalletKit;
 
+/**
+ * Initializes WalletKit with the specified relayer region URL
+ */
 export async function createWalletKit(relayerRegionURL: string) {
   const core = new Core({
     projectId: Config.ENV_PROJECT_ID,
@@ -29,6 +32,9 @@ export async function createWalletKit(relayerRegionURL: string) {
   }
 }
 
+/**
+ * Updates the chain ID for active sessions and emits chain/account change events
+ */
 export async function updateSignClientChainId(
   chainId: string,
   address: string,
