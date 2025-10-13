@@ -43,7 +43,7 @@
     "react": "19.1.1",
     "react-native": "0.82.0",
     "react-native-bootsplash": "5.5.3",
-    "react-native-config": "1.5.9",
+    "react-native-config": "1.5.5",
     "react-native-device-info": "14.1.1",
     "react-native-dialog": "9.3.0",
     "react-native-gesture-handler": "2.28.0",
