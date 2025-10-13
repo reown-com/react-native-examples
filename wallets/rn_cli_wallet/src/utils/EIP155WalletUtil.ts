@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import EIP155Lib from '../lib/EIP155Lib';
+import { storage } from './storage';
 
 export let wallet1: EIP155Lib;
 export let wallet2: EIP155Lib;
@@ -13,8 +13,8 @@ let address2: string;
  * Utilities
  */
 export async function createOrRestoreEIP155Wallet() {
-  const mnemonic1 = await AsyncStorage.getItem('EIP155_MNEMONIC_1');
-  const mnemonic2 = await AsyncStorage.getItem('EIP155_MNEMONIC_2');
+  const mnemonic1 = await storage.getItem('EIP155_MNEMONIC_1');
+  const mnemonic2 = await storage.getItem('EIP155_MNEMONIC_2');
 
   if (mnemonic1 && mnemonic2) {
     wallet1 = EIP155Lib.init({mnemonic: mnemonic1});
@@ -24,8 +24,8 @@ export async function createOrRestoreEIP155Wallet() {
     wallet2 = EIP155Lib.init({});
 
     // Don't store mnemonic in local storage in a production project!
-    AsyncStorage.setItem('EIP155_MNEMONIC_1', wallet1.getMnemonic());
-    AsyncStorage.setItem('EIP155_MNEMONIC_2', wallet2.getMnemonic());
+    storage.setItem('EIP155_MNEMONIC_1', wallet1.getMnemonic());
+    storage.setItem('EIP155_MNEMONIC_2', wallet2.getMnemonic());
   }
 
   address1 = wallet1.getAddress();

@@ -1,5 +1,5 @@
 import SuiLib from '../lib/SuiLib';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { storage } from './storage';
 
 export let wallet1: SuiLib;
 export let suiAddresses: string[];
@@ -8,14 +8,14 @@ export let suiAddresses: string[];
  * Utilities
  */
 export async function createOrRestoreSuiWallet() {
-  const mnemonic1 = await AsyncStorage.getItem('SUI_MNEMONIC_1');
+  const mnemonic1 = await storage.getItem('SUI_MNEMONIC_1');
 
   if (mnemonic1) {
     wallet1 = await SuiLib.init({mnemonic: mnemonic1});
   } else {
     wallet1 = await SuiLib.init({});
     // Don't store private keys in local storage in a production project!
-    await AsyncStorage.setItem('SUI_MNEMONIC_1', wallet1.getMnemonic());
+    await storage.setItem('SUI_MNEMONIC_1', wallet1.getMnemonic());
     console.log('SUI_MNEMONIC_1', wallet1.getMnemonic());
   }
 

@@ -1,7 +1,6 @@
 import {useSnapshot} from 'valtio';
 import {useEffect, useState} from 'react';
 import {Text, View, Alert, ScrollView} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {getVersion, getBuildNumber} from 'react-native-device-info';
 
@@ -11,6 +10,7 @@ import {Card} from '@/components/Card';
 import {useTheme} from '@/hooks/useTheme';
 import styles from './styles';
 import {SettingsStackScreenProps} from '@/utils/TypesUtil';
+import { storage } from '@/utils/storage';
 
 type Props = SettingsStackScreenProps<'Settings'>;
 
@@ -21,7 +21,7 @@ export default function Settings({navigation}: Props) {
 
   useEffect(() => {
     async function getAsyncData() {
-      const _clientId = await AsyncStorage.getItem('WALLETCONNECT_CLIENT_ID');
+      const _clientId = await storage.getItem('WALLETCONNECT_CLIENT_ID');
       if (_clientId) {
         setClientId(_clientId);
       }
