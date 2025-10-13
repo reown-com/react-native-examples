@@ -1811,9 +1811,9 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-config (1.5.2):
-    - react-native-config/App (= 1.5.2)
-  - react-native-config/App (1.5.2):
+  - react-native-config (1.5.5):
+    - react-native-config/App (= 1.5.5)
+  - react-native-config/App (1.5.5):
     - React-Core
   - react-native-get-random-values (1.11.0):
     - React-Core
@@ -3101,7 +3101,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 499069c3dcd4b438a70fcc2a65e8a4185ea9170b
   React-microtasksnativemodule: f0238469cb9894fd18c419137d312665b8fc05b3
   react-native-compat: 3573295702a92c9b13cc0ee3dd47499c5aee0c32
-  react-native-config: c9a1b34b1d4edef7bea9fcfdd451bb1134c6a2b1
+  react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-quick-base64: 6568199bb2ac8e72ecdfdc73a230fbc5c1d3aac4
@@ -3155,4 +3155,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 198cfec3fad83c0e3af1672f94f8de0ffc5f2180
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3
