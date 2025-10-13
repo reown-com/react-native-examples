@@ -178,8 +178,7 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				1F4795A12E9D5C1200B52C86 /* 
-Upload Debug Symbols to Sentry */,
+				1F4795A12E9D5C1200B52C86 /* Upload Debug Symbols to Sentry */,
 				330B5F4BDC32F3AF53024071 /* [CP] Embed Pods Frameworks */,
 				42B98FB2BE62A040A5D168B5 /* [CP] Copy Pods Resources */,
 			);
@@ -202,8 +201,7 @@ Upload Debug Symbols to Sentry */,
 				1FCDA2922B9B8E6200E0BF0C /* Frameworks */,
 				1FCDA2942B9B8E6200E0BF0C /* Resources */,
 				1FCDA29A2B9B8E6200E0BF0C /* Bundle React Native code and images */,
-				1F4795A02E9D5BFE00B52C86 /* 
-Upload Debug Symbols to Sentry */,
+				1F4795A02E9D5BFE00B52C86 /* Upload Debug Symbols to Sentry */,
 				210BFE96CABEC2224D5DEA2E /* [CP] Embed Pods Frameworks */,
 				1F19C9ADE7D476C9B83CC003 /* [CP] Copy Pods Resources */,
 			);
@@ -363,8 +361,7 @@ Upload Debug Symbols to Sentry */,
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh ../node_modules/@sentry/react-native/scripts/sentry-xcode-debug-files.sh\n";
 		};
-		1F4795A02E9D5BFE00B52C86 /* 
-Upload Debug Symbols to Sentry */ = {
+		1F4795A02E9D5BFE00B52C86 /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -373,7 +370,7 @@ Upload Debug Symbols to Sentry */ = {
 			);
 			inputPaths = (
 			);
-			name = "\nUpload Debug Symbols to Sentry";
+			name = "Upload Debug Symbols to Sentry";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -382,8 +379,7 @@ Upload Debug Symbols to Sentry */ = {
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh ../node_modules/@sentry/react-native/scripts/sentry-xcode-debug-files.sh\n";
 		};
-		1F4795A12E9D5C1200B52C86 /* 
-Upload Debug Symbols to Sentry */ = {
+		1F4795A12E9D5C1200B52C86 /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -392,7 +388,7 @@ Upload Debug Symbols to Sentry */ = {
 			);
 			inputPaths = (
 			);
-			name = "\nUpload Debug Symbols to Sentry";
+			name = "Upload Debug Symbols to Sentry";
 			outputFileListPaths = (
 			);
 			outputPaths = (
