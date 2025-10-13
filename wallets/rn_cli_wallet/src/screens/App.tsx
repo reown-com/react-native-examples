@@ -1,6 +1,6 @@
 import {useCallback, useEffect} from 'react';
 import Config from 'react-native-config';
-import {Linking, Platform, StatusBar, useColorScheme} from 'react-native';
+import {Alert, Linking, Platform, StatusBar, useColorScheme} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
@@ -72,6 +72,7 @@ const App = () => {
         SettingsStore.setSocketStatus('stalled');
       });
     }
+    Alert.alert('Project ID', 'Project ID is ' + Config.ENV_PROJECT_ID);
   }, [initialized]);
 
   const pair = useCallback(async (uri: string) => {
