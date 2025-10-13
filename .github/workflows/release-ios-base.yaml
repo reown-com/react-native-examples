@@ -109,14 +109,11 @@ jobs:
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.1.0
-          bundler-cache: true
+          ruby-version: 3.3.0
+          bundler-cache: false
 
-      - name: Install Fastlane
-        run: gem install fastlane
-
-      - name: Install Cocoapods
-        run: gem install cocoapods
+      - name: Install Gems
+        run: bundle install
 
       # Create env file
       - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}

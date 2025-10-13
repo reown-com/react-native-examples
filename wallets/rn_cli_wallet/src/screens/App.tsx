@@ -18,13 +18,23 @@ Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
   dsn: Config.ENV_SENTRY_DSN,
   environment: Config.ENV_SENTRY_TAG,
-  _experiments: {
-    replaysSessionSampleRate: 0,
-    replaysOnErrorSampleRate: 1.0,
-  },
+  sendDefaultPii: true,
+  // Enable Logs
+  enableLogs: true,
+
+  // Temporarily disable native for Android, not sure why it's not working
+  enableNative: Platform.OS === 'ios',
+
+  // Configure Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+
   tracesSampleRate: 0.5,
   profilesSampleRate: 1.0,
   integrations: [Sentry.mobileReplayIntegration()],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
 });
 
 const App = () => {

@@ -1,4 +1,3 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
 def node_require(script)
   # Resolve script with node to allow for hoisting
   require Pod::Executable.execute_command('node', ['-p',
@@ -8,6 +7,7 @@ def node_require(script)
     )", __dir__]).strip
 end
 
+# Use it to require both react-native's and this package's scripts:
 node_require('react-native/scripts/react_native_pods.rb')
 node_require('react-native-permissions/scripts/setup.rb')
 
@@ -16,8 +16,7 @@ prepare_react_native_project!
 
 setup_permissions([
   'Camera',
-  'Notifications',
-
+  'Notifications'
 ])
 
 
@@ -48,13 +47,7 @@ abstract_target 'App' do
     inherit! :complete
   end
 
-  target 'RNWalletTests' do
-    inherit! :complete
-    # Pods for testing
-  end
-
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
       config[:reactNativePath],
