@@ -1,14 +1,15 @@
 import {WalletKit, IWalletKit} from '@reown/walletkit';
 import {Core} from '@walletconnect/core';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
 import {getMetadata} from './misc';
+import { storage } from './storage';
 
 export let walletKit: IWalletKit;
 
 export async function createWalletKit(relayerRegionURL: string) {
   const core = new Core({
     projectId: Config.ENV_PROJECT_ID,
+    storage,
     relayUrl: relayerRegionURL ?? Config.ENV_RELAY_URL,
   });
   walletKit = await WalletKit.init({
@@ -20,7 +21,7 @@ export async function createWalletKit(relayerRegionURL: string) {
     const clientId =
       await walletKit.engine.signClient.core.crypto.getClientId();
     console.log('WalletConnect ClientID: ', clientId);
-    AsyncStorage.setItem('WALLETCONNECT_CLIENT_ID', clientId);
+    storage.setItem('WALLETCONNECT_CLIENT_ID', clientId);
   } catch (error) {
     console.error(
       'Failed to set WalletConnect clientId in localStorage: ',

@@ -4500,6 +4500,7 @@ __metadata:
     react-native-dialog: 9.3.0
     react-native-gesture-handler: 2.28.0
     react-native-get-random-values: 1.11.0
+    react-native-mmkv: 3.3.3
     react-native-modal: 14.0.0-rc.1
     react-native-permissions: 5.4.2
     react-native-quick-base64: 2.2.2
@@ -10562,6 +10563,16 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 8fb6d8ab7b953c7d7cec8c987cef24f1c5348a293a85cb49c7c53b54ef110c0ca746736ae730e297603c8c76020df912e93915fb17518c4f2f91143757177aba
+  languageName: node
+  linkType: hard
+
+"react-native-mmkv@npm:3.3.3":
+  version: 3.3.3
+  resolution: "react-native-mmkv@npm:3.3.3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 2f4f6ba36f2c00a1374cd3c0303207e7c0a0b7b2504c4f1986a423a3d8295eb817299fc1ca11e37c425df60648c5a0d02be882f1890924167724775433dd2598
   languageName: node
   linkType: hard
 

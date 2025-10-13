@@ -1,7 +1,7 @@
 import {proxy} from 'valtio';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Verify, SessionTypes} from '@walletconnect/types';
 
+import { storage } from '@/utils/storage';
 import EIP155Lib from '../lib/EIP155Lib';
 import SuiLib from '../lib/SuiLib';
 
@@ -98,9 +98,9 @@ const SettingsStore = {
   toggleTestNets() {
     state.testNets = !state.testNets;
     if (state.testNets) {
-      AsyncStorage.setItem('TEST_NETS', 'YES');
+      storage.setItem('TEST_NETS', 'YES');
     } else {
-      AsyncStorage.removeItem('TEST_NETS');
+      storage.removeItem('TEST_NETS');
     }
   },
 
