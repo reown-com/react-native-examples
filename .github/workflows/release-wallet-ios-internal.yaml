@@ -18,7 +18,7 @@ jobs:
       bundle-id: 'com.walletconnect.web3wallet.rnsample.internal'
       apple-id: '6499165794'
     secrets:
-      project-id: ${{ secrets.ENV_PROJECT_ID }}
+      project-id: ${{ secrets.ENV_WALLET_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}
       sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3W_SENTRY_FILE }}

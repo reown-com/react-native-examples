@@ -14,7 +14,7 @@ jobs:
       release-type: 'production'
       output-path: 'wallets/rn_cli_wallet/android/app/build/outputs/apk/release/app-release.apk'
     secrets:
-      project-id: ${{ secrets.ENV_PROJECT_ID }}
+      project-id: ${{ secrets.ENV_WALLET_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}
       sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
