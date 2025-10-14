@@ -18,7 +18,7 @@ import styles from './styles';
 type Props = RootStackScreenProps<'Scan'>;
 
 export default function Scan({navigation}: Props) {
-  const device = useCameraDevice('back');
+  const device = useCameraDevice('back', {physicalDevices: ['wide-angle-camera']});
   const [showCamera, setShowCamera] = useState(false);
 
   // 2. Only activate Camera when the app is focused and this screen is currently opened

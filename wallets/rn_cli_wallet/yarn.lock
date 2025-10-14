@@ -4846,6 +4846,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bip39@patch:bip39@npm%3A3.1.0#./.yarn/patches/bip39-npm-3.1.0-03958ed434.patch::locator=RNWeb3Wallet%40workspace%3A.":
+  version: 3.1.0
+  resolution: "bip39@patch:bip39@npm%3A3.1.0#./.yarn/patches/bip39-npm-3.1.0-03958ed434.patch::version=3.1.0&hash=6ad58d&locator=RNWeb3Wallet%40workspace%3A."
+  dependencies:
+    "@noble/hashes": ^1.2.0
+  checksum: 482916c2a55755aff5e354042932c71b1f37cbe7c8ff870306ea2dc185b932db3b2e775e61175f68e3263f532fcbf8588ee7fe4422b60f55b6b208b6527b51a5
+  languageName: node
+  linkType: hard
+
 "bl@npm:^4.0.3, bl@npm:^4.1.0":
   version: 4.1.0
   resolution: "bl@npm:4.1.0"
