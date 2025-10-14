@@ -21,7 +21,7 @@ export function Chains({chains}: Props) {
       </Text>
       <View style={styles.row}>
         {chains?.map(chain => {
-          const logo = PresetsUtil.getChainLogo(chain.caip2);
+          const logo = PresetsUtil.getChainLogo(`${chain.namespace}:${chain.chainId}`);
           return (
             <View
               key={chain.name}

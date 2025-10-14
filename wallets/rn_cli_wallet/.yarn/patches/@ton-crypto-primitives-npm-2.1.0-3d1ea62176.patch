@@ -1,0 +1,33 @@
+diff --git a/dist/native/getSecureRandom.js b/dist/native/getSecureRandom.js
+index b769fd9ad676132979c406b5c77bea98838a2104..b3a153661498e349dd502295cf61075d29892fb6 100644
+--- a/dist/native/getSecureRandom.js
++++ b/dist/native/getSecureRandom.js
+@@ -8,9 +8,10 @@
+  */
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.getSecureRandomWords = exports.getSecureRandomBytes = void 0;
+-const getRandomBytes = require('expo-crypto').getRandomBytes;
+ function getSecureRandomBytes(size) {
+-    return Buffer.from(getRandomBytes(size));
++    const bytes = new Uint8Array(size);
++    crypto.getRandomValues(bytes);
++    return Buffer.from(bytes);
+ }
+ exports.getSecureRandomBytes = getSecureRandomBytes;
+ function getSecureRandomWords(size) {
+diff --git a/dist/native/pbkdf2_sha512.js b/dist/native/pbkdf2_sha512.js
+index fe733396a95b9374665953bb102cdaa0f4d69e9c..4eecb6bb5f46c796316ae3cd5a461aaa5b4862fe 100644
+--- a/dist/native/pbkdf2_sha512.js
++++ b/dist/native/pbkdf2_sha512.js
+@@ -11,7 +11,8 @@ exports.pbkdf2_sha512 = void 0;
+ async function pbkdf2_sha512(key, salt, iterations, keyLen) {
+     const keyBuffer = typeof key === 'string' ? Buffer.from(key, 'utf-8') : key;
+     const saltBuffer = typeof salt === 'string' ? Buffer.from(salt, 'utf-8') : salt;
+-    let pbkdf2 = require('react-native-fast-pbkdf2').default;
++    var crypto = require("crypto");
++    let pbkdf2 = crypto.pbkdf2Sync;
+-    let res = await pbkdf2.derive(keyBuffer.toString('base64'), saltBuffer.toString('base64'), iterations, keyLen, 'sha-512');
++    let res = crypto.pbkdf2Sync(keyBuffer, saltBuffer, iterations, keyLen, 'sha512');
+-    return Buffer.from(res, 'base64');
++    return res;
+ }

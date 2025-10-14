@@ -49,6 +49,7 @@ export default function SessionSendTransactionModal() {
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
+          error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
@@ -88,7 +89,7 @@ export default function SessionSendTransactionModal() {
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}>
       <View style={styles.container}>
-        <Chains chains={[chain]} />
+        {chain ? <Chains chains={[chain]} /> : null}
         <Methods methods={[method]} />
         <Message message={JSON.stringify(transaction, null, 2)} />
       </View>

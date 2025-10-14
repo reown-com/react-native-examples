@@ -16,7 +16,7 @@ type Props = SettingsStackScreenProps<'Settings'>;
 
 export default function Settings({navigation}: Props) {
   const Theme = useTheme();
-  const {eip155Address, socketStatus} = useSnapshot(SettingsStore.state);
+  const {eip155Address, suiAddress, tonAddress, socketStatus} = useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
 
   useEffect(() => {
@@ -42,12 +42,22 @@ export default function Settings({navigation}: Props) {
       <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Account</Text>
       <View style={styles.sectionContainer}>
         <Card
-          title="ETH Address"
+          title="EVM Address"
           value={eip155Address}
           onPress={() => copyToClipboard(eip155Address)}
         />
         <Card
-          title="Seed Phrase"
+          title="SUI Address"
+          value={suiAddress}
+          onPress={() => copyToClipboard(suiAddress)}
+        />
+        <Card
+          title="TON Address"
+          value={tonAddress}
+          onPress={() => copyToClipboard(tonAddress)}
+        />
+        <Card
+          title="EVM Seed Phrase"
           onPress={() =>
             copyToClipboard(eip155Wallets[eip155Address].getMnemonic())
           }

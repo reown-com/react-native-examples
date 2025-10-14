@@ -10,22 +10,32 @@ interface redirect {
 interface Props {
   peerRedirect?: redirect;
   isLinkMode?: boolean;
+  error?: string;
 }
 
 const showSuccessToast = () => {
     Toast.show({
       type: 'success',
-      text1: 'Success!',
+      text1: 'Success',
       text2: 'Please go back to the dapp',
     });
 };
 
-export const handleRedirect = ({peerRedirect, isLinkMode}: Props) => {
+export const handleRedirect = ({peerRedirect, isLinkMode, error}: Props) => {
   try {
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error,
+      });
+      return;
+    }
+
     if (isLinkMode) {
       Toast.show({
         type: 'success',
-        text1: 'Success!',
+        text1: 'Success',
         text2: 'Redirecting to the dapp',
       });
       return;

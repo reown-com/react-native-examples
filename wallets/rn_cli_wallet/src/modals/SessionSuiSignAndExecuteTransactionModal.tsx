@@ -85,6 +85,7 @@ export default function SessionSuiSignAndExecuteTransactionModal() {
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
+          error: 'User rejected transaction request',
         });
       } catch (e) {
         setIsLoadingReject(false);
@@ -111,7 +112,7 @@ export default function SessionSuiSignAndExecuteTransactionModal() {
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}>
       <View style={styles.container}>
-        <Chains chains={[chain]} />
+        {chain ? <Chains chains={[chain]} /> : null}
         <Methods methods={[method]} />
         <Message message={transaction} />
       </View>

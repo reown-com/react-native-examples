@@ -11,9 +11,9 @@ import SettingsStore from '@/store/SettingsStore';
 import {handleRedirect} from '@/utils/LinkingUtils';
 import {useTheme} from '@/hooks/useTheme';
 
-import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
 import {RequestModal} from './RequestModal';
 import {Message} from '@/components/Modal/Message';
+import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 
 export default function SessionAuthenticateModal() {
   const Theme = useTheme();
@@ -79,7 +79,7 @@ export default function SessionAuthenticateModal() {
 
         handleRedirect({
           peerRedirect: authRequest.params.requester?.metadata?.redirect,
-          isLinkMode: isLinkModeRequest,
+          isLinkMode: isLinkModeRequest
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
@@ -106,6 +106,7 @@ export default function SessionAuthenticateModal() {
         handleRedirect({
           peerRedirect: authRequest.params.requester?.metadata?.redirect,
           isLinkMode: SettingsStore.state.isLinkModeRequest,
+          error: 'User rejected auth request',
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
