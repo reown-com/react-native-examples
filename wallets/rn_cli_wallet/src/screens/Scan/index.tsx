@@ -1,13 +1,13 @@
-import {useEffect, useState} from 'react';
-import {Platform, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
+import {useEffect,} from 'react';
+import { StyleSheet, TouchableOpacity, View, Text} from 'react-native';
 
 import {
   Camera,
   Code,
   useCameraDevice,
   useCodeScanner,
+  useCameraPermission,  // Add this
 } from 'react-native-vision-camera';
-import {request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {useIsFocused} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
@@ -19,7 +19,7 @@ type Props = RootStackScreenProps<'Scan'>;
 
 export default function Scan({navigation}: Props) {
   const device = useCameraDevice('back', {physicalDevices: ['wide-angle-camera']});
-  const [showCamera, setShowCamera] = useState(false);
+  const {hasPermission, requestPermission} = useCameraPermission();  // Add this
 
   // 2. Only activate Camera when the app is focused and this screen is currently opened
   const isActive = useIsFocused();
@@ -42,16 +42,10 @@ export default function Scan({navigation}: Props) {
   };
 
   useEffect(() => {
-    request(
-      Platform.OS === 'ios'
-        ? PERMISSIONS.IOS.CAMERA
-        : PERMISSIONS.ANDROID.CAMERA,
-    ).then(result => {
-      if (result === RESULTS.GRANTED) {
-        setShowCamera(true);
-      }
-    });
-  }, []);
+    if (!hasPermission) {
+      requestPermission();
+    }
+  }, [hasPermission, requestPermission]);
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
@@ -64,7 +58,7 @@ export default function Scan({navigation}: Props) {
         />
       </TouchableOpacity>
 
-      {showCamera && device ? (
+      {hasPermission && device ? (
         <Camera
           style={StyleSheet.absoluteFill}
           device={device}

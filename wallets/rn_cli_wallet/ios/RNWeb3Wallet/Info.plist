@@ -58,8 +58,6 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow access to the camera to scan codes</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Our app does not request this permission or utilize this functionality but it is included in our info.plist since our app utilizes the react-native-permissions library.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UIBackgroundModes</key>

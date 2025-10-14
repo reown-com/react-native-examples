@@ -4264,7 +4264,6 @@ __metadata:
     react-native-get-random-values: 1.11.0
     react-native-mmkv: 3.3.3
     react-native-modal: 14.0.0-rc.1
-    react-native-permissions: 5.4.2
     react-native-quick-base64: 2.2.2
     react-native-quick-crypto: 0.7.17
     react-native-safe-area-context: 5.6.1
@@ -10383,20 +10382,6 @@ __metadata:
     react: "*"
     react-native: ">=0.70.0"
   checksum: 19bca96dde148c14ed4cc0e52fedd0a12ca952815e4dcbea31d0a98962d75dc3c011c677f5f9cd15f2b88f78ccd03134647b280724bc6de148c25e28eea1a7e4
-  languageName: node
-  linkType: hard
-
-"react-native-permissions@npm:5.4.2":
-  version: 5.4.2
-  resolution: "react-native-permissions@npm:5.4.2"
-  peerDependencies:
-    react: ">=18.1.0"
-    react-native: ">=0.70.0"
-    react-native-windows: ">=0.70.0"
-  peerDependenciesMeta:
-    react-native-windows:
-      optional: true
-  checksum: fac680b7d85fb979806156d6c9f90dee9c8299b83eb9d2d82bee50aec4baa71b0f5d3cf79e8bf02345e67f77d6cb0fbfbe7e54d02b6822de0ae2e0d9323a6614
   languageName: node
   linkType: hard
 
