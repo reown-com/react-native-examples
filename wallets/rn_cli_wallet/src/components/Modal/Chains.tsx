@@ -30,7 +30,7 @@ export function Chains({chains}: Props) {
                 source={logo}
                 style={[styles.chainLogo, {backgroundColor: Theme['bg-300']}]}
               />
-              <Text style={styles.chainName}>{chain.name}</Text>
+              <Text style={[styles.chainName, {color: Theme['fg-150']}]}>{chain.name}</Text>
             </View>
           );
         })}
