@@ -138,15 +138,7 @@ export default function SessionTonSignDataModal() {
         </View>
 
         {/* Payload */}
-        <Message message={getPayloadMessage()} showTitle={false} />
-        <View style={[styles.section, {backgroundColor: Theme['bg-150']}]}>
-          <Text style={[styles.sectionTitle, {color: Theme['fg-150']}]}>
-            Payload
-          </Text>
-          <Text style={[styles.sectionContent, {color: Theme['fg-175']}]}>
-            {getPayloadMessage()}
-          </Text>
-        </View>
+        <Message message={getPayloadMessage()} showTitle />
       </View>
     </RequestModal>
   );
