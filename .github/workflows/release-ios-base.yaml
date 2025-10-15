@@ -1,6 +1,7 @@
 name: release-ios-base
 
 permissions:
+  id-token: write
   contents: read
 
 on:
