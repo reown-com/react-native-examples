@@ -32,3 +32,4 @@ jobs:
       match-git-url: ${{ secrets.MATCH_GIT_URL }}
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
       google-services-file: ${{ secrets.W3W_IOS_INTERNAL_GOOGLE_SERVICES_FILE }}
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}

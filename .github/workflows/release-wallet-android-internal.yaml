@@ -25,3 +25,4 @@ jobs:
       keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
       keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
       google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
