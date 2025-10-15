@@ -124,8 +124,8 @@ jobs:
         env:
           APP_ID: ${{ secrets.firebase-app-id }}
         run: |
-          firebase appdistribution:distribute ${{ inputs.output-path }}
-            --app $APP_ID
+          firebase appdistribution:distribute ${{ inputs.output-path }} \
+            --app $APP_ID \
             --release-notes "${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }} - Branch: ${{ github.ref_name }}" \
             --groups "flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers"
     

@@ -167,5 +167,5 @@ jobs:
       - name: Upload iOS build to S3
         run: |
           aws s3 cp \
-            ./build/app.ipa \
+            ./build/${{ inputs.project-type }}-${{ inputs.release-type }}.ipa \
             s3://walletconnect.react-native-builds.prod/ios/${{ inputs.release-type }}/${{ inputs.project-type }}-${{ inputs.release-type }}.ipa
