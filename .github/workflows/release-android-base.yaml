@@ -18,6 +18,10 @@ on:
         description: 'Release type of the project (debug/internal/production)'
         default: 'internal'
         type: string
+      project-type:
+        description: 'Type of project (wallet/dapp)'
+        required: true
+        type: string
       output-path:
         description: 'Path to get the APK file'
         required: true
@@ -45,6 +49,8 @@ on:
         required: true
       google-services-file:
         required: false
+      aws-account-id:
+        required: true
 
 jobs:
   build:
@@ -90,14 +96,14 @@ jobs:
           echo "org.gradle.caching=true" >> ${{ inputs.root-path }}/android/gradle.properties
 
       - name: Cache Gradle
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-${{ github.ref_name }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-
+            ${{ runner.os }}-gradle-${{ github.ref_name }}-
 
       - name: Build APK
         run: |
@@ -113,9 +119,23 @@ jobs:
           tools-version: 13.0.1
           gcp_sa_key: ${{ secrets.gsa-key }}
       
-      - name: Upload APK
+      - name: Upload APK to Firebase
         env:
           APP_ID: ${{ secrets.firebase-app-id }}
         run: |
-          firebase appdistribution:distribute ${{ inputs.output-path }} --app $APP_ID --release-notes "${{ inputs.name }} ${{ inputs.release-type }} release" --groups "flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers"
-        
+          firebase appdistribution:distribute ${{ inputs.output-path }}
+            --app $APP_ID
+            --release-notes "${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }} - Branch: ${{ github.ref_name }}" \
+            --groups "flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers"
+    
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.aws-account-id }}:role/prod-github-actions-react-native-builds
+          aws-region: eu-central-1
+
+      - name: Upload Android build to S3
+        run: |
+          aws s3 cp \
+            ${{ inputs.output-path }} \
+            s3://walletconnect.react-native-builds.prod/android/${{ inputs.release-type }}/${{ inputs.project-type }}-${{ inputs.release-type }}.apk

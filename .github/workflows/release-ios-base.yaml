@@ -25,6 +25,10 @@ on:
       release-type:
         description: 'Release type of the project (debug/internal/production)'
         type: string
+      project-type:
+        description: 'Type of project (wallet/dapp)'
+        required: true
+        type: string
       scheme-name:
         description: 'Scheme name of the project'
         required: true
@@ -66,6 +70,8 @@ on:
         required: true
       google-services-file:
         required: false
+      aws-account-id:
+        required: true
 
 jobs:
   build:
@@ -101,10 +107,12 @@ jobs:
 
       - name: Cache pods
         id: pods-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ inputs.root-path }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles(env.podfile_path) }}
+          key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(env.podfile_path) }}
+          restore-keys: |
+            ${{ runner.os }}-pods-${{ github.ref_name }}-
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
@@ -145,3 +153,18 @@ jobs:
           SCHEME: ${{ inputs.scheme-name }}
           XCODE_PROJECT_PATH: ${{ inputs.xcode-project-path }}
           XCWORKSPACE_PATH: ${{ inputs.xcode-workspace-path }}
+          PROJECT_TYPE: ${{ inputs.project-type }}
+          RELEASE_TYPE: ${{ inputs.release-type }}
+          BRANCH_NAME: ${{ github.ref_name }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.aws-account-id }}:role/prod-github-actions-react-native-builds
+          aws-region: eu-central-1
+
+      - name: Upload iOS build to S3
+        run: |
+          aws s3 cp \
+            ./build/app.ipa \
+            s3://walletconnect.react-native-builds.prod/ios/${{ inputs.release-type }}/${{ inputs.project-type }}-${{ inputs.release-type }}.ipa

@@ -23,6 +23,9 @@ platform :ios do
     # Setup the keychain and match to work with CI
     setup_ci()
 
+    project_type = ENV['PROJECT_TYPE'] || ENV['SCHEME']
+    branch_name = ENV['BRANCH_NAME'] || ''
+
     # Get Apple API Key
     api_key = app_store_connect_api_key(
       key_id: ENV["APPLE_KEY_ID"],
@@ -70,13 +73,15 @@ platform :ios do
       workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
       export_method: "app-store",
+      output_directory: "./build",
+      output_name: "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
     )
 
     # Upload to TestFlight
     upload_to_testflight(
       apple_id: ENV["APPLE_ID"],
       app_identifier: ENV["BUNDLE_ID"],
-      changelog: "#{ENV["SCHEME"]} build 🚀",
+      changelog: "#{project_type} build from branch: #{branch_name}",
       distribute_external: false,
       notify_external_testers: false,
       skip_waiting_for_build_processing: true

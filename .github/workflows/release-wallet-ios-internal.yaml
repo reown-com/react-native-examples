@@ -17,6 +17,7 @@ jobs:
       scheme-name: 'RNWallet-Internal'
       bundle-id: 'com.walletconnect.web3wallet.rnsample.internal'
       apple-id: '6499165794'
+      project-type: 'wallet'
     secrets:
       project-id: ${{ secrets.ENV_WALLET_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}
