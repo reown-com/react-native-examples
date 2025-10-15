@@ -84,6 +84,7 @@ export default function SessionSignSuiPersonalMessageModal() {
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
+          error: 'User rejected transaction request',
         });
       } catch (e) {
         setIsLoadingReject(false);
@@ -110,7 +111,7 @@ export default function SessionSignSuiPersonalMessageModal() {
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}>
       <View style={styles.container}>
-        <Chains chains={[chain]} />
+        {chain ? <Chains chains={[chain]} /> : null}
         <Methods methods={[method]} />
         <Message message={transaction} />
       </View>

@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
+    "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",

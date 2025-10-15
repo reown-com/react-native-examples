@@ -9,7 +9,8 @@ import {
   getSignTypedDataParamsData,
   getWalletAddressFromParams,
 } from '@/utils/HelperUtil';
-import {EIP155_SIGNING_METHODS, PresetsUtil} from './PresetsUtil';
+import {PresetsUtil} from './PresetsUtil';
+import { EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 type RequestEventArgs = Omit<
   SignClientTypes.EventArguments['session_request'],
   'verifyContext'
@@ -59,7 +60,7 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
     case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
       try {
         const chainData = PresetsUtil.getChainData(chainId);
-        const provider = new providers.JsonRpcProvider(chainData.rpcUrl);
+        const provider = new providers.JsonRpcProvider(chainData?.rpcUrl);
         const sendTransaction = request.params[0];
         const connectedWallet = wallet.connect(provider);
         const {hash} = await connectedWallet.sendTransaction(sendTransaction);

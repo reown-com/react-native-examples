@@ -40,7 +40,7 @@ export function RootStackNavigator() {
           options={{
             headerShown: true,
             headerTitle: 'Session Details',
-            headerBackTitleVisible: false,
+            headerBackTitle: '',
             headerTintColor: Theme['fg-100'],
           }}
         />
@@ -54,8 +54,9 @@ export function RootStackNavigator() {
           component={LogList}
           options={{
             headerShown: true,
-            headerBackTitleVisible: false,
             title: 'Logs',
+            headerBackTitle: '',
+            headerTintColor: Theme['fg-100'],
           }}
         />
       </StackNavigator.Navigator>

@@ -104,11 +104,8 @@ export type SettingsStackScreenProps<T extends keyof SettingsStackParamList> =
   >;
 
 export type Chain = {
-  id: number | string;
-  caip2: string;
-  network: string;
+  chainId: string;
   name: string;
-  nativeCurrency: {name: string; symbol: string; decimals: number};
+  namespace: string;
   rpcUrl: string;
-  blockExplorer: string;
 };

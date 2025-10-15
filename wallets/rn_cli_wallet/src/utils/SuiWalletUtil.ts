@@ -16,7 +16,6 @@ export async function createOrRestoreSuiWallet() {
     wallet1 = await SuiLib.init({});
     // Don't store private keys in local storage in a production project!
     await storage.setItem('SUI_MNEMONIC_1', wallet1.getMnemonic());
-    console.log('SUI_MNEMONIC_1', wallet1.getMnemonic());
   }
 
   suiAddresses = [wallet1.getAddress()];

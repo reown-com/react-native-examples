@@ -51,6 +51,7 @@ export default function SessionSignModal() {
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
+          error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
@@ -74,6 +75,7 @@ export default function SessionSignModal() {
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
+          error: 'User rejected signature request',
         });
       } catch (e) {
         setIsLoadingReject(false);
@@ -100,7 +102,7 @@ export default function SessionSignModal() {
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}>
       <View style={styles.container}>
-        <Chains chains={[chain]} />
+        {chain ? <Chains chains={[chain]} /> : null}
         <Methods methods={[method]} />
         <Message message={message} />
       </View>

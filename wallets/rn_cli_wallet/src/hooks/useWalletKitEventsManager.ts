@@ -2,15 +2,14 @@ import {useCallback, useEffect} from 'react';
 import {SignClientTypes} from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
-import {
-  EIP155_CHAINS,
-  EIP155_SIGNING_METHODS,
-  SUI_SIGNING_METHODS,
-} from '@/utils/PresetsUtil';
+
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import {walletKit} from '@/utils/WalletKitUtil';
 import {getSupportedChains} from '@/utils/HelperUtil';
+import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
+import { SUI_SIGNING_METHODS } from '@/constants/Sui';
+import { TON_SIGNING_METHODS } from '@/constants/Ton';
 
 export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -87,6 +86,13 @@ export default function useWalletKitEventsManager(initialized: boolean) {
             requestEvent,
             requestSession,
           });
+        case TON_SIGNING_METHODS.SIGN_DATA:
+          return ModalStore.open('SessionTonSignDataModal', {
+            requestEvent,
+            requestSession
+          })
+        case TON_SIGNING_METHODS.SEND_MESSAGE:
+          return ModalStore.open('SessionTonSendMessageModal', { requestEvent, requestSession })
         default:
           return ModalStore.open('SessionUnsuportedMethodModal', {
             requestEvent,

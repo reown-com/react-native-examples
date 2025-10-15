@@ -1,5 +1,6 @@
 import React from 'react';
-import {FlatList, SafeAreaView, StyleSheet} from 'react-native';
+import {FlatList, StyleSheet} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {Log} from './components/Log';
 import {useTheme} from '@/hooks/useTheme';

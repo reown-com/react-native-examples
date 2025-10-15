@@ -26,7 +26,9 @@ interface State {
     | 'LoadingModal'
     | 'SessionSuiSignTransactionModal'
     | 'SessionSuiSignPersonalMessageModal'
-    | 'SessionSuiSignAndExecuteTransactionModal';
+    | 'SessionSuiSignAndExecuteTransactionModal'
+    | 'SessionTonSendMessageModal'
+    | 'SessionTonSignDataModal';
   data?: ModalData;
 }
 

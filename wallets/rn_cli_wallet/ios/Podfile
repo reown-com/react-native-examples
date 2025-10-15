@@ -9,15 +9,9 @@ end
 
 # Use it to require both react-native's and this package's scripts:
 node_require('react-native/scripts/react_native_pods.rb')
-node_require('react-native-permissions/scripts/setup.rb')
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
-
-setup_permissions([
-  'Camera',
-  'Notifications'
-])
 
 
 linkage = ENV['USE_FRAMEWORKS']

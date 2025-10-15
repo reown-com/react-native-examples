@@ -14,16 +14,13 @@ import SettingsStore from '@/store/SettingsStore';
 import {handleRedirect} from '@/utils/LinkingUtils';
 import {useTheme} from '@/hooks/useTheme';
 import {Chains} from '@/components/Modal/Chains';
-import {
-  EIP155_CHAINS,
-  EIP155_SIGNING_METHODS,
-  SUI_CHAINS,
-  SUI_EVENTS,
-  SUI_SIGNING_METHODS,
-} from '@/utils/PresetsUtil';
 import {RequestModal} from './RequestModal';
 import {getSupportedChains} from '@/utils/HelperUtil';
 import {suiAddresses} from '@/utils/SuiWalletUtil';
+import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
+import { SUI_CHAINS, SUI_EVENTS, SUI_SIGNING_METHODS } from '@/constants/Sui';
+import { TON_CHAINS, TON_SIGNING_METHODS } from '@/constants/Ton';
+import { tonAddresses } from '@/utils/TonWalletUtil'
 
 export default function SessionProposalModal() {
   const Theme = useTheme();
@@ -51,6 +48,11 @@ export default function SessionProposalModal() {
     const suiMethods = Object.values(SUI_SIGNING_METHODS);
     const suiEvents = Object.values(SUI_EVENTS);
 
+    // ton
+    const tonChains = Object.keys(TON_CHAINS)
+    const tonMethods = Object.values(TON_SIGNING_METHODS)
+    const tonEvents = [] as string[]
+
     return {
       eip155: {
         chains: eip155Chains,
@@ -65,6 +67,12 @@ export default function SessionProposalModal() {
         methods: suiMethods,
         events: suiEvents,
         accounts: suiChains.map(chain => `${chain}:${suiAddresses[0]}`).flat(),
+      },
+      ton: {
+        chains: tonChains,
+        methods: tonMethods,
+        events: tonEvents,
+        accounts: tonChains.map(chain => `${chain}:${tonAddresses[0]}`).flat(),
       },
     };
   }, []);
@@ -88,7 +96,6 @@ export default function SessionProposalModal() {
         proposal: proposal.params,
         supportedNamespaces,
       });
-
       try {
         const session = await walletKit.approveSession({
           id: proposal.id,
@@ -125,6 +132,7 @@ export default function SessionProposalModal() {
         handleRedirect({
           peerRedirect: proposal.params.proposer.metadata.redirect,
           isLinkMode: false,
+          error: 'User rejected connect request',
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
