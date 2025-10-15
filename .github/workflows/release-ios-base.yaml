@@ -169,3 +169,4 @@ jobs:
           aws s3 cp \
             ./build/${{ inputs.project-type }}-${{ inputs.release-type }}.ipa \
             s3://walletconnect.react-native-builds.prod/ios/${{ inputs.release-type }}/${{ inputs.project-type }}-${{ inputs.release-type }}.ipa
+            --metadata "branch=${{ github.ref_name }},type=${{ inputs.project-type }},release_type=${{ inputs.release-type }}"
