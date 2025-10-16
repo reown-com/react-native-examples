@@ -87,7 +87,8 @@ platform :ios do
       skip_waiting_for_build_processing: true
     )
 
-    clean_build_artifacts()
+    # Only clean artifacts when running locally (not in CI)
+    clean_build_artifacts() unless ENV['CI']
   end
 
 
