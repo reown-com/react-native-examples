@@ -190,17 +190,17 @@ jobs:
                 {
                   "type": "section",
                   "fields": [
-                    { "type": "mrkdwn", "text": "*Project:*\n${{ inputs.name }} (${{ inputs.project-type }})" },
-                    { "type": "mrkdwn", "text": "*Release Type:*\n${{ inputs.release-type }}" },
-                    { "type": "mrkdwn", "text": "*Branch:*\n${{ github.ref_name }}" }
+                    { "type": "mrkdwn", "text": "*Project:*\n`${{ inputs.name }} (${{ inputs.project-type }})`" },
+                    { "type": "mrkdwn", "text": "*Release Type:*\n`${{ inputs.release-type }}`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" }
                   ]
                 },
                 {
                   "type": "section",
                   "fields": [
-                    { "type": "mrkdwn", "text": "*Build & TestFlight:*\n${{ steps.build.outcome == 'success' && '✅ Success' || '❌ Failed' }}" },
-                    { "type": "mrkdwn", "text": "*S3 Upload:*\n${{ steps.s3-upload.outcome == 'success' && '✅ Success' || steps.s3-upload.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped' }}" },
-                    { "type": "mrkdwn", "text": "*Overall Status:*\n${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}" }
+                    { "type": "mrkdwn", "text": "*Build & TestFlight:*\n`${{ steps.build.outcome == 'success' && '✅ Success' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*S3 Upload:*\n`${{ steps.s3-upload.outcome == 'success' && '✅ Success' || steps.s3-upload.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
                   ]
                 },
                 {
