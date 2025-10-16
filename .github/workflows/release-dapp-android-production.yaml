@@ -1,6 +1,7 @@
 name: release-android-appkit-production
 
 permissions:
+  id-token: write
   contents: read
 
 on: workflow_dispatch
