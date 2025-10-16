@@ -33,4 +33,6 @@ jobs:
       match-git-url: ${{ secrets.MATCH_GIT_URL }}
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      testflight-url: ${{ secrets.TESTFLIGHT_APPKIT_INTERNAL_URL }}
 

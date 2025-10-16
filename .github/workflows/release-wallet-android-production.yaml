@@ -27,3 +27,5 @@ jobs:
       keystore: ${{ secrets.WC_PROD_KEYSTORE }}
       google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      firebase-url: ${{ secrets.FIREBASE_WALLETKIT_PROD_URL }}

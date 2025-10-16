@@ -34,3 +34,5 @@ jobs:
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
       google-services-file: ${{ secrets.W3W_IOS_INTERNAL_GOOGLE_SERVICES_FILE }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      testflight-url: ${{ secrets.TESTFLIGHT_WALLETKIT_INTERNAL_URL }}

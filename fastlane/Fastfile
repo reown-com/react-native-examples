@@ -82,8 +82,8 @@ platform :ios do
       apple_id: ENV["APPLE_ID"],
       app_identifier: ENV["BUNDLE_ID"],
       changelog: "#{project_type} build from branch: #{branch_name}",
-      distribute_external: false,
-      notify_external_testers: false,
+      distribute_external: true,
+      notify_external_testers: true,
       skip_waiting_for_build_processing: true
     )
 

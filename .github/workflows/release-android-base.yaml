@@ -27,6 +27,10 @@ on:
         description: 'Path to get the APK file'
         required: true
         type: string
+      firebase-url:
+        description: 'Firebase URL of the project'
+        required: false
+        type: string
     secrets:
       project-id:
         description: 'Reown Cloud ID'
@@ -51,6 +55,8 @@ on:
       google-services-file:
         required: false
       aws-account-id:
+        required: true
+      slack-webhook-url:
         required: true
 
 jobs:
@@ -121,6 +127,8 @@ jobs:
           gcp_sa_key: ${{ secrets.gsa-key }}
       
       - name: Upload APK to Firebase
+        id: firebase-upload
+        continue-on-error: false
         env:
           APP_ID: ${{ secrets.firebase-app-id }}
         run: |
@@ -130,14 +138,85 @@ jobs:
             --groups "flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers"
     
       - name: Configure AWS credentials
+        id: aws-config
+        continue-on-error: true
         uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
         with:
           role-to-assume: arn:aws:iam::${{ secrets.aws-account-id }}:role/prod-github-actions-react-native-builds
           aws-region: eu-central-1
 
       - name: Upload Android build to S3
+        id: s3-upload
         continue-on-error: true
         run: |
           aws s3 cp \
             ${{ inputs.output-path }} \
             s3://walletconnect.react-native-builds.prod/android/${{ inputs.release-type }}/${{ inputs.project-type }}-${{ inputs.release-type }}.apk
+
+      - name: Send Slack notification
+        if: always()
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.slack-webhook-url }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "Android Build Report - ${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🤖 Android Build Report"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Project:*\n${{ inputs.name }} (${{ inputs.project-type }})"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Release Type:*\n${{ inputs.release-type }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch:*\n${{ github.ref_name }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Build:*\n${{ steps.build.outcome == 'success' && '✅ Success' || '❌ Failed' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Firebase Upload:*\n${{ steps.firebase-upload.outcome == 'success' && '✅ Success' || steps.firebase-upload.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*S3 Upload:*\n${{ steps.s3-upload.outcome == 'success' && '✅ Success' || steps.s3-upload.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped' }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Overall Status:*\n${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }${{ steps.build.outcome == 'success' && steps.firebase-upload.outcome == 'success' && inputs.firebase-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in Firebase"}},"url":"{0}"}}', inputs.firebase-url) || '' }}
+                  ]
+                }
+              ]
+            }

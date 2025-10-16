@@ -26,3 +26,5 @@ jobs:
       keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
       keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      firebase-url: ${{ secrets.FIREBASE_APPKIT_INTERNAL_URL }}
