@@ -96,13 +96,6 @@ jobs:
         with:
           root-path: ${{ inputs.root-path }}
 
-      - name: Set Xcode Version
-        run: |
-          sudo xcode-select -s /Applications/Xcode_16.2.app
-          xcodebuild -version
-          xcodebuild -showsdks
-          sudo xcodebuild -downloadPlatform iOS
-
       - name: Set podfile path
         id: podfile-hash
         run: |
