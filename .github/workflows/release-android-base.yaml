@@ -136,8 +136,8 @@ jobs:
           aws-region: eu-central-1
 
       - name: Upload Android build to S3
+        continue-on-error: true
         run: |
           aws s3 cp \
             ${{ inputs.output-path }} \
             s3://walletconnect.react-native-builds.prod/android/${{ inputs.release-type }}/${{ inputs.project-type }}-${{ inputs.release-type }}.apk
-            --metadata "branch=${{ github.ref_name }},type=${{ inputs.project-type }},release_type=${{ inputs.release-type }}"

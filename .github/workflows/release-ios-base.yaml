@@ -165,8 +165,8 @@ jobs:
           aws-region: eu-central-1
 
       - name: Upload iOS build to S3
+        continue-on-error: true
         run: |
           aws s3 cp \
             ./build/${{ inputs.project-type }}-${{ inputs.release-type }}.ipa \
             s3://walletconnect.react-native-builds.prod/ios/${{ inputs.release-type }}/${{ inputs.project-type }}-${{ inputs.release-type }}.ipa
-            --metadata "branch=${{ github.ref_name }},type=${{ inputs.project-type }},release_type=${{ inputs.release-type }}"
