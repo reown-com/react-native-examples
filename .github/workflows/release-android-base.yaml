@@ -112,6 +112,7 @@ jobs:
             ${{ runner.os }}-gradle-${{ github.ref_name }}-
 
       - name: Build APK
+        id: build
         run: |
           if [ ${{ inputs.release-type }} = 'internal' ]; then
             cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal
