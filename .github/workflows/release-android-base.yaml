@@ -214,7 +214,7 @@ jobs:
                       "type": "button",
                       "text": { "type": "plain_text", "text": "View Workflow Run" },
                       "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                    }${{ steps.build.outcome == 'success' && steps.firebase-upload.outcome == 'success' && inputs.firebase-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in Firebase"}},"url":"{0}"}}', inputs.firebase-url) || '' }}
+                    }${{ steps.build.outcome == 'success' && steps.firebase-upload.outcome == 'success' && secrets.firebase-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in Firebase"}},"url":"{0}"}}', secrets.firebase-url) || '' }}
                   ]
                 }
               ]

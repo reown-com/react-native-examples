@@ -210,7 +210,7 @@ jobs:
                       "type": "button",
                       "text": { "type": "plain_text", "text": "View Workflow Run" },
                       "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                    }${{ steps.build.outcome == 'success' && inputs.testflight-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in TestFlight"}},"url":"{0}"}}', inputs.testflight-url) || '' }}
+                    }${{ steps.build.outcome == 'success' && secrets.testflight-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in TestFlight"}},"url":"{0}"}}', secrets.testflight-url) || '' }}
                   ]
                 }
               ]
