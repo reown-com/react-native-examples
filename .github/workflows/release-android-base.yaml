@@ -161,7 +161,7 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "Android Build Report - ${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }}",
+              "text": "Android Build Report - ${{ inputs.name }} - ${{ inputs.release-type }}",
               "blocks": [
                 {
                   "type": "header",
@@ -170,7 +170,7 @@ jobs:
                 {
                   "type": "section",
                   "fields": [
-                    { "type": "mrkdwn", "text": "*Project:*\n`${{ inputs.name }} (${{ inputs.project-type }})`" },
+                    { "type": "mrkdwn", "text": "*Project:*\n`${{ inputs.name }}`" },
                     { "type": "mrkdwn", "text": "*Release Type:*\n`${{ inputs.release-type }}`" },
                     { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" }
                   ]
