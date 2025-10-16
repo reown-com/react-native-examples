@@ -27,10 +27,6 @@ on:
         description: 'Path to get the APK file'
         required: true
         type: string
-      firebase-url:
-        description: 'Firebase URL of the project'
-        required: false
-        type: string
     secrets:
       project-id:
         description: 'Reown Cloud ID'
@@ -58,6 +54,9 @@ on:
         required: true
       slack-webhook-url:
         required: true
+      firebase-url:
+        description: 'Firebase URL of the project'
+        required: false
 
 jobs:
   build:

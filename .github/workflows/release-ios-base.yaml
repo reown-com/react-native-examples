@@ -42,10 +42,6 @@ on:
         description: 'App ID of the project'
         required: true
         type: string
-      testflight-url:
-        description: 'TestFlight URL of the project'
-        required: false
-        type: string
     secrets:
       project-id:
         description: 'WalletConnect Cloud ID'
@@ -79,6 +75,9 @@ on:
         required: true
       slack-webhook-url:
         required: true
+      testflight-url:
+        description: 'TestFlight URL of the project'
+        required: false
 
 jobs:
   build:
