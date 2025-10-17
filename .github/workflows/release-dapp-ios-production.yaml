@@ -1,9 +1,17 @@
 name: release-ios-appkit-production
 
 permissions:
+  id-token: write
   contents: read
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      build-for-simulator:
+        description: "Build for simulator instead of TestFlight"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   release-production:
@@ -17,6 +25,8 @@ jobs:
       scheme-name: 'W3MWagmi'
       bundle-id: 'com.walletconnect.web3modal.rnsample'
       apple-id: '6446700301'
+      project-type: 'dapp'
+      build-for-simulator: ${{ inputs.build-for-simulator }}
     secrets:
       project-id: ${{ secrets.ENV_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}
@@ -30,4 +40,7 @@ jobs:
       match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
       match-git-url: ${{ secrets.MATCH_GIT_URL }}
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      testflight-url: ${{ secrets.TESTFLIGHT_APPKIT_PROD_URL }}
 

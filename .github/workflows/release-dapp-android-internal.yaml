@@ -1,6 +1,7 @@
 name: release-android-appkit-internal
 
 permissions:
+  id-token: write
   contents: read
 
 on: workflow_dispatch
@@ -12,6 +13,7 @@ jobs:
       name: AppKit React Native
       root-path: 'dapps/W3MWagmi'
       release-type: 'internal'
+      project-type: 'dapp'
       output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk'
     secrets:
       project-id: ${{ secrets.ENV_PROJECT_ID }}
@@ -23,3 +25,6 @@ jobs:
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
       keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
       keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      firebase-url: ${{ secrets.FIREBASE_APPKIT_INTERNAL_URL }}

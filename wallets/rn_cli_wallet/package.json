@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "android": "yarn run copy:debug && react-native run-android --mode=debug --appId com.walletconnect.web3wallet.rnsample.debug",
-    "android:build": "yarn run copy:production && cd android && ./gradlew clean && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a",
-    "android:build:internal": "yarn run copy:internal && cd android && ./gradlew clean && ./gradlew assembleInternal -PreactNativeArchitectures=arm64-v8a",
+    "android:build": "yarn run copy:production && cd android && ./gradlew clean && ./gradlew assembleRelease",
+    "android:build:internal": "yarn run copy:internal && cd android && ./gradlew clean && ./gradlew assembleInternal",
     "ios": "react-native run-ios --scheme 'RNWallet-Debug'",
     "ios:internal": "react-native run-ios --scheme 'RNWallet-Internal'",
     "bundle:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
