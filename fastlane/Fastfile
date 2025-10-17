@@ -122,19 +122,32 @@ platform :ios do
     
     if app_path     
       output_name = "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
-
-      # Ensure build directory exists
-      sh("mkdir -p ../build")
+      build_dir = File.expand_path('../build')
       
-      # Create IPA by zipping the .app
-      sh("cd '#{products_path}' && zip -r '#{File.expand_path('../build')}/#{output_name}' '#{File.basename(app_path)}'")
-      UI.success("✅ Created simulator build: ../build/#{output_name}")
+      # Ensure build directory exists
+      sh("mkdir -p #{build_dir}")
+      
+      # Create Payload directory structure
+      payload_dir = "#{build_dir}/Payload"
+      sh("rm -rf '#{payload_dir}'")  # Clean any existing Payload
+      sh("mkdir -p '#{payload_dir}'")
+      
+      # Copy .app into Payload
+      sh("cp -r '#{app_path}' '#{payload_dir}/'")
+      
+      # Create IPA by zipping Payload directory
+      sh("cd '#{build_dir}' && zip -r '#{output_name}' Payload")
+      
+      # Clean up Payload directory
+      sh("rm -rf '#{payload_dir}'")
+      
+      UI.success("✅ Created simulator build: #{build_dir}/#{output_name}")
     else
       UI.user_error!("Could not find .app bundle in #{products_path}")
     end
     
     # Only clean artifacts when running locally (not in CI)
-    # clean_build_artifacts() unless ENV['CI']
+    clean_build_artifacts() unless ENV['CI']
   end
 
 end
