@@ -43,7 +43,7 @@ on:
         required: true
         type: string
       build-for-simulator:
-        description: "Build for simulator instead of App Store"
+        description: "Build for simulator instead of TestFlight"
         required: false
         default: false
         type: boolean
@@ -139,7 +139,7 @@ jobs:
         if: ${{ env.google-services-file != '' }}
         run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/ios/GoogleService-Info.plist
 
-      - name: Build and Upload to App Store
+      - name: ${{ inputs.build-for-simulator && 'Build for simulator' || 'Build and Upload to TestFlight' }}
         id: build
         uses: maierj/fastlane-action@v3.0.0
         with:
@@ -199,7 +199,7 @@ jobs:
                   "fields": [
                     { "type": "mrkdwn", "text": "*Project:*\n`${{ inputs.name }}`" },
                     { "type": "mrkdwn", "text": "*Release Type:*\n`${{ inputs.release-type }}`" },
-                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" }
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
                     { "type": "mrkdwn", "text": "*Build for Simulator:*\n`${{ inputs.build-for-simulator }}`" }
                   ]
                 },

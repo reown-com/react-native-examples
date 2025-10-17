@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       build-for-simulator:
-        description: "Build for simulator instead of App Store"
+        description: "Build for simulator instead of TestFlight"
         required: false
         default: false
         type: boolean

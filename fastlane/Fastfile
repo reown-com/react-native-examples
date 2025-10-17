@@ -119,8 +119,20 @@ platform :ios do
     )
 
     # Find the .app in the archive
-    products_path = "#{archive_path}/Products/Applications"   
+    products_path = "#{archive_path}/Products/Applications"
+    
+    # Verify archive structure exists
+    unless Dir.exist?(products_path)
+      UI.error("Products/Applications directory doesn't exist!")
+      UI.message("Archive structure:")
+      sh("ls -la '#{archive_path}' || true")
+      sh("find '#{archive_path}' -type d -maxdepth 3 || true")
+      UI.user_error!("Archive structure is incorrect. Expected directory: #{products_path}")
+    end
+    
+    # Find the .app bundle
     app_paths = Dir.glob("#{products_path}/*.app")
+    UI.message("Found #{app_paths.count} .app bundle(s) in #{products_path}")
     
     app_path = app_paths.first
     
@@ -131,6 +143,8 @@ platform :ios do
       sh("cd '#{products_path}' && zip -r '#{File.expand_path('./build')}/#{output_name}' '#{File.basename(app_path)}'")
       UI.success("✅ Created simulator build: ./build/#{output_name}")
     else
+      UI.error("No .app bundle found in #{products_path}")
+      sh("ls -la '#{products_path}' || true")
       UI.user_error!("Could not find .app bundle in #{products_path}")
     end
     
