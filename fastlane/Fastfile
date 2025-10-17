@@ -110,47 +110,31 @@ platform :ios do
       scheme: ENV['SCHEME'],
       configuration: "Release",
       destination: "generic/platform=iOS Simulator",
-      derived_data_path: "./build/DerivedData",
-      output_directory: "./build",
-      output_name: "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}",
       archive_path: archive_path,
       skip_codesigning: true,
       skip_package_ipa: true,
     )
 
     # Find the .app in the archive
-    products_path = "#{archive_path}/Products/Applications"
-    
-    # Verify archive structure exists
-    unless Dir.exist?(products_path)
-      UI.error("Products/Applications directory doesn't exist!")
-      UI.message("Archive structure:")
-      sh("ls -la '#{archive_path}' || true")
-      sh("find '#{archive_path}' -type d -maxdepth 3 || true")
-      UI.user_error!("Archive structure is incorrect. Expected directory: #{products_path}")
-    end
-    
-    # Find the .app bundle
-    app_paths = Dir.glob("#{products_path}/*.app")
-    UI.message("Found #{app_paths.count} .app bundle(s) in #{products_path}")
-    
+    products_path = ".#{archive_path}/Products/Applications"
+    app_paths = Dir.glob("#{products_path}/*.app")  
     app_path = app_paths.first
     
     if app_path     
       output_name = "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
+
+      # Ensure build directory exists
+      sh("mkdir -p ../build")
       
       # Create IPA by zipping the .app
-      sh("cd '#{products_path}' && zip -r '#{File.expand_path('./build')}/#{output_name}' '#{File.basename(app_path)}'")
-      UI.success("✅ Created simulator build: ./build/#{output_name}")
+      sh("cd '#{products_path}' && zip -r '#{File.expand_path('../build')}/#{output_name}' '#{File.basename(app_path)}'")
+      UI.success("✅ Created simulator build: ../build/#{output_name}")
     else
-      UI.error("No .app bundle found in #{products_path}")
-      sh("ls -la '#{products_path}' || true")
       UI.user_error!("Could not find .app bundle in #{products_path}")
     end
     
     # Only clean artifacts when running locally (not in CI)
-    clean_build_artifacts() unless ENV['CI']
+    # clean_build_artifacts() unless ENV['CI']
   end
-
 
 end
