@@ -181,7 +181,7 @@ jobs:
             s3://walletconnect.react-native-builds.prod/ios/${{ inputs.release-type }}/${{ inputs.project-type }}-${{ inputs.release-type }}.ipa
 
       - name: Send Slack notification
-        if: always() && !cancelled()
+        if: always() && !cancelled() && false # Temporarily disabled
         uses: slackapi/slack-github-action@v2.1.0
         with:
           webhook: ${{ secrets.slack-webhook-url }}
