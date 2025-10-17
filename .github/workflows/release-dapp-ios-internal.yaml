@@ -4,7 +4,14 @@ permissions:
   id-token: write
   contents: read
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      build-for-simulator:
+        description: "Build for simulator instead of App Store"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   release-internal:
@@ -19,6 +26,7 @@ jobs:
       bundle-id: 'com.walletconnect.web3modal.rnsample.internal'
       apple-id: '6479817037'
       project-type: 'dapp'
+      build-for-simulator: ${{ inputs.build-for-simulator }}
     secrets:
       project-id: ${{ secrets.ENV_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}

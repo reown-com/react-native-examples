@@ -91,5 +91,35 @@ platform :ios do
     clean_build_artifacts() unless ENV['CI']
   end
 
+  lane :build_for_simulator do |options|
+    # No setup_ci or match needed for simulator builds
+    
+    project_type = ENV['PROJECT_TYPE'] || ENV['SCHEME']
+    
+    # Install pods
+    cocoapods(
+      clean_install: false,
+      repo_update: true,
+      podfile: ENV['PODFILE_PATH']
+    )
+
+    # Build for simulator
+    gym(
+      configuration: "Release",
+      workspace: ENV['XCWORKSPACE_PATH'],
+      scheme: ENV['SCHEME'],
+      destination: "generic/platform=iOS Simulator",
+      skip_package_ipa: false,
+      export_method: "development",
+      output_directory: "./build",
+      output_name: "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa",
+      codesigning_identity: "-",
+      skip_codesigning: true
+    )
+    
+    # Only clean artifacts when running locally (not in CI)
+    clean_build_artifacts() unless ENV['CI']
+  end
+
 
 end

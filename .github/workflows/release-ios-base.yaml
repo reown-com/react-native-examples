@@ -8,46 +8,51 @@ on:
   workflow_call:
     inputs:
       name:
-        description: 'Name of the project'
+        description: "Name of the project"
         required: true
         type: string
       root-path:
-        description: 'Path of the react-native project'
+        description: "Path of the react-native project"
         required: true
         type: string
       xcode-project-path:
-        description: 'Path of the Xcode project'
+        description: "Path of the Xcode project"
         required: true
         type: string
       xcode-workspace-path:
-        description: 'Path of the Xcode workspace'
+        description: "Path of the Xcode workspace"
         required: true
         type: string
       release-type:
-        description: 'Release type of the project (debug/internal/production)'
+        description: "Release type of the project (debug/internal/production)"
         type: string
       project-type:
-        description: 'Type of project (wallet/dapp)'
+        description: "Type of project (wallet/dapp)"
         required: true
         type: string
       scheme-name:
-        description: 'Scheme name of the project'
+        description: "Scheme name of the project"
         required: true
         type: string
       bundle-id:
-        description: 'Bundle ID of the project'
+        description: "Bundle ID of the project"
         required: true
         type: string
       apple-id:
-        description: 'App ID of the project'
+        description: "App ID of the project"
         required: true
         type: string
+      build-for-simulator:
+        description: "Build for simulator instead of App Store"
+        required: false
+        default: false
+        type: boolean
     secrets:
       project-id:
-        description: 'WalletConnect Cloud ID'
+        description: "WalletConnect Cloud ID"
         required: true
       relay-url:
-        description: 'WalletConnect Relay URL'
+        description: "WalletConnect Relay URL"
         required: false
       sentry-dsn:
         required: true
@@ -76,7 +81,7 @@ on:
       slack-webhook-url:
         required: true
       testflight-url:
-        description: 'TestFlight URL of the project'
+        description: "TestFlight URL of the project"
         required: false
 
 jobs:
@@ -138,7 +143,7 @@ jobs:
         id: build
         uses: maierj/fastlane-action@v3.0.0
         with:
-          lane: 'release_testflight'
+          lane: ${{ inputs.build-for-simulator && 'build_for_simulator' || 'release_testflight' }}
         env:
           APPLE_ID: ${{ inputs.apple-id }}
           APPLE_USERNAME: ${{ secrets.apple-username }}
@@ -156,6 +161,7 @@ jobs:
           PROJECT_TYPE: ${{ inputs.project-type }}
           RELEASE_TYPE: ${{ inputs.release-type }}
           BRANCH_NAME: ${{ github.ref_name }}
+          BUILD_FOR_SIMULATOR: ${{ inputs.build-for-simulator }}
 
       - name: Configure AWS credentials
         id: aws-config
@@ -166,6 +172,7 @@ jobs:
           aws-region: eu-central-1
 
       - name: Upload iOS build to S3
+        if: ${{ inputs.build-for-simulator == true }} # Upload to bucket only for simulator builds
         id: s3-upload
         continue-on-error: true
         run: |
