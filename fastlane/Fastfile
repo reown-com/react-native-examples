@@ -92,8 +92,7 @@ platform :ios do
   end
 
   lane :build_for_simulator do |options|
-    # No setup_ci or match needed for simulator builds
-    
+   
     project_type = ENV['PROJECT_TYPE'] || ENV['SCHEME']
     
     # Install pods
@@ -103,19 +102,37 @@ platform :ios do
       podfile: ENV['PODFILE_PATH']
     )
 
-    # Build for simulator
+    # Build for simulator without code signing
+    archive_path = "./build/#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.xcarchive"
+
     gym(
-      configuration: "Release",
       workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
+      configuration: "Release",
       destination: "generic/platform=iOS Simulator",
-      skip_package_ipa: false,
-      export_method: "development",
+      derived_data_path: "./build/DerivedData",
       output_directory: "./build",
-      output_name: "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa",
-      codesigning_identity: "-",
-      skip_codesigning: true
+      output_name: "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}",
+      archive_path: archive_path,
+      skip_codesigning: true,
+      skip_package_ipa: true,
     )
+
+    # Find the .app in the archive
+    products_path = "#{archive_path}/Products/Applications"   
+    app_paths = Dir.glob("#{products_path}/*.app")
+    
+    app_path = app_paths.first
+    
+    if app_path     
+      output_name = "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
+      
+      # Create IPA by zipping the .app
+      sh("cd '#{products_path}' && zip -r '#{File.expand_path('./build')}/#{output_name}' '#{File.basename(app_path)}'")
+      UI.success("✅ Created simulator build: ./build/#{output_name}")
+    else
+      UI.user_error!("Could not find .app bundle in #{products_path}")
+    end
     
     # Only clean artifacts when running locally (not in CI)
     clean_build_artifacts() unless ENV['CI']

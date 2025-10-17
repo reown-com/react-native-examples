@@ -200,6 +200,7 @@ jobs:
                     { "type": "mrkdwn", "text": "*Project:*\n`${{ inputs.name }}`" },
                     { "type": "mrkdwn", "text": "*Release Type:*\n`${{ inputs.release-type }}`" },
                     { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" }
+                    { "type": "mrkdwn", "text": "*Build for Simulator:*\n`${{ inputs.build-for-simulator }}`" }
                   ]
                 },
                 {
