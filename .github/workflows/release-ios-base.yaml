@@ -164,16 +164,23 @@ jobs:
           BUILD_FOR_SIMULATOR: ${{ inputs.build-for-simulator }}
 
       - name: Configure AWS credentials
-        id: aws-config
+        id: aws-creds
         continue-on-error: true
         uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
         with:
           role-to-assume: arn:aws:iam::${{ secrets.aws-account-id }}:role/prod-github-actions-react-native-builds
           aws-region: eu-central-1
+          output-env-credentials: false
+          output-credentials: true
 
       - name: Upload iOS build to S3
         if: ${{ inputs.build-for-simulator == true }} # Upload to bucket only for simulator builds
         id: s3-upload
+        env:
+          AWS_REGION: eu-central-1
+          AWS_ACCESS_KEY_ID: ${{ steps.aws-creds.outputs.aws-access-key-id }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.aws-creds.outputs.aws-secret-access-key }}
+          AWS_SESSION_TOKEN: ${{ steps.aws-creds.outputs.aws-session-token }}
         continue-on-error: true
         run: |
           aws s3 cp \
