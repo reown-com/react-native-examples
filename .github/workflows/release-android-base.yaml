@@ -107,9 +107,10 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ github.ref_name }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+            ${{ inputs.root-path }}/android/.gradle
+          key: ${{ runner.os }}-gradle-${{ inputs.name }}-${{ hashFiles(format('{0}/android/**/*.gradle*', inputs.root-path), format('{0}/android/**/gradle-wrapper.properties', inputs.root-path)) }}
           restore-keys: |
-            ${{ runner.os }}-gradle-${{ github.ref_name }}-
+            ${{ runner.os }}-gradle-${{ inputs.name }}-
 
       - name: Build APK
         id: build
