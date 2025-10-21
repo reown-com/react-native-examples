@@ -23,6 +23,9 @@ platform :ios do
     # Setup the keychain and match to work with CI
     setup_ci()
 
+    project_type = ENV['PROJECT_TYPE'] || ENV['SCHEME']
+    branch_name = ENV['BRANCH_NAME'] || ''
+
     # Get Apple API Key
     api_key = app_store_connect_api_key(
       key_id: ENV["APPLE_KEY_ID"],
@@ -70,20 +73,81 @@ platform :ios do
       workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
       export_method: "app-store",
+      output_directory: "./build",
+      output_name: "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
     )
 
     # Upload to TestFlight
     upload_to_testflight(
       apple_id: ENV["APPLE_ID"],
       app_identifier: ENV["BUNDLE_ID"],
-      changelog: "#{ENV["SCHEME"]} build 🚀",
-      distribute_external: false,
-      notify_external_testers: false,
+      changelog: "#{project_type} build from branch: #{branch_name}",
+      distribute_external: true,
+      notify_external_testers: true,
       skip_waiting_for_build_processing: true
     )
 
-    clean_build_artifacts()
+    # Only clean artifacts when running locally (not in CI)
+    clean_build_artifacts() unless ENV['CI']
   end
 
+  lane :build_for_simulator do |options|
+   
+    project_type = ENV['PROJECT_TYPE'] || ENV['SCHEME']
+    
+    # Install pods
+    cocoapods(
+      clean_install: false,
+      repo_update: true,
+      podfile: ENV['PODFILE_PATH']
+    )
+
+    # Build for simulator without code signing
+    archive_path = "./build/#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.xcarchive"
+
+    gym(
+      workspace: ENV['XCWORKSPACE_PATH'],
+      scheme: ENV['SCHEME'],
+      configuration: "Release",
+      destination: "generic/platform=iOS Simulator",
+      archive_path: archive_path,
+      skip_codesigning: true,
+      skip_package_ipa: true,
+    )
+
+    # Find the .app in the archive
+    products_path = ".#{archive_path}/Products/Applications"
+    app_paths = Dir.glob("#{products_path}/*.app")  
+    app_path = app_paths.first
+    
+    if app_path     
+      output_name = "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
+      build_dir = File.expand_path('../build')
+      
+      # Ensure build directory exists
+      sh("mkdir -p #{build_dir}")
+      
+      # Create Payload directory structure
+      payload_dir = "#{build_dir}/Payload"
+      sh("rm -rf '#{payload_dir}'")  # Clean any existing Payload
+      sh("mkdir -p '#{payload_dir}'")
+      
+      # Copy .app into Payload
+      sh("cp -r '#{app_path}' '#{payload_dir}/'")
+      
+      # Create IPA by zipping Payload directory
+      sh("cd '#{build_dir}' && zip -r '#{output_name}' Payload")
+      
+      # Clean up Payload directory
+      sh("rm -rf '#{payload_dir}'")
+      
+      UI.success("✅ Created simulator build: #{build_dir}/#{output_name}")
+    else
+      UI.user_error!("Could not find .app bundle in #{products_path}")
+    end
+    
+    # Only clean artifacts when running locally (not in CI)
+    clean_build_artifacts() unless ENV['CI']
+  end
 
 end

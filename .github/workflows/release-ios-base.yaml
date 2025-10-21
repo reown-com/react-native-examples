@@ -1,48 +1,58 @@
 name: release-ios-base
 
 permissions:
+  id-token: write
   contents: read
 
 on:
   workflow_call:
     inputs:
       name:
-        description: 'Name of the project'
+        description: "Name of the project"
         required: true
         type: string
       root-path:
-        description: 'Path of the react-native project'
+        description: "Path of the react-native project"
         required: true
         type: string
       xcode-project-path:
-        description: 'Path of the Xcode project'
+        description: "Path of the Xcode project"
         required: true
         type: string
       xcode-workspace-path:
-        description: 'Path of the Xcode workspace'
+        description: "Path of the Xcode workspace"
         required: true
         type: string
       release-type:
-        description: 'Release type of the project (debug/internal/production)'
+        description: "Release type of the project (debug/internal/production)"
+        type: string
+      project-type:
+        description: "Type of project (wallet/dapp)"
+        required: true
         type: string
       scheme-name:
-        description: 'Scheme name of the project'
+        description: "Scheme name of the project"
         required: true
         type: string
       bundle-id:
-        description: 'Bundle ID of the project'
+        description: "Bundle ID of the project"
         required: true
         type: string
       apple-id:
-        description: 'App ID of the project'
+        description: "App ID of the project"
         required: true
         type: string
+      build-for-simulator:
+        description: "Build for simulator instead of TestFlight"
+        required: false
+        default: false
+        type: boolean
     secrets:
       project-id:
-        description: 'WalletConnect Cloud ID'
+        description: "WalletConnect Cloud ID"
         required: true
       relay-url:
-        description: 'WalletConnect Relay URL'
+        description: "WalletConnect Relay URL"
         required: false
       sentry-dsn:
         required: true
@@ -66,6 +76,13 @@ on:
         required: true
       google-services-file:
         required: false
+      aws-account-id:
+        required: true
+      slack-webhook-url:
+        required: true
+      testflight-url:
+        description: "TestFlight URL of the project"
+        required: false
 
 jobs:
   build:
@@ -84,13 +101,6 @@ jobs:
         with:
           root-path: ${{ inputs.root-path }}
 
-      - name: Set Xcode Version
-        run: |
-          sudo xcode-select -s /Applications/Xcode_16.2.app
-          xcodebuild -version
-          xcodebuild -showsdks
-          sudo xcodebuild -downloadPlatform iOS
-
       - name: Set podfile path
         id: podfile-hash
         run: |
@@ -101,10 +111,12 @@ jobs:
 
       - name: Cache pods
         id: pods-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ inputs.root-path }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles(env.podfile_path) }}
+          key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(env.podfile_path) }}
+          restore-keys: |
+            ${{ runner.os }}-pods-${{ github.ref_name }}-
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
@@ -127,10 +139,11 @@ jobs:
         if: ${{ env.google-services-file != '' }}
         run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/ios/GoogleService-Info.plist
 
-      - name: Build and Upload to App Store
+      - name: ${{ inputs.build-for-simulator && 'Build for simulator' || 'Build and Upload to TestFlight' }}
+        id: build
         uses: maierj/fastlane-action@v3.0.0
         with:
-          lane: 'release_testflight'
+          lane: ${{ inputs.build-for-simulator && 'build_for_simulator' || 'release_testflight' }}
         env:
           APPLE_ID: ${{ inputs.apple-id }}
           APPLE_USERNAME: ${{ secrets.apple-username }}
@@ -145,3 +158,75 @@ jobs:
           SCHEME: ${{ inputs.scheme-name }}
           XCODE_PROJECT_PATH: ${{ inputs.xcode-project-path }}
           XCWORKSPACE_PATH: ${{ inputs.xcode-workspace-path }}
+          PROJECT_TYPE: ${{ inputs.project-type }}
+          RELEASE_TYPE: ${{ inputs.release-type }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          BUILD_FOR_SIMULATOR: ${{ inputs.build-for-simulator }}
+
+      - name: Configure AWS credentials
+        id: aws-creds
+        continue-on-error: true
+        uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.aws-account-id }}:role/prod-github-actions-react-native-builds
+          aws-region: eu-central-1
+          output-env-credentials: false
+          output-credentials: true
+
+      - name: Upload iOS build to S3
+        if: ${{ inputs.build-for-simulator == true }} # Upload to bucket only for simulator builds
+        id: s3-upload
+        env:
+          AWS_REGION: eu-central-1
+          AWS_ACCESS_KEY_ID: ${{ steps.aws-creds.outputs.aws-access-key-id }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.aws-creds.outputs.aws-secret-access-key }}
+          AWS_SESSION_TOKEN: ${{ steps.aws-creds.outputs.aws-session-token }}
+        continue-on-error: true
+        run: |
+          aws s3 cp \
+            ./build/${{ inputs.project-type }}-${{ inputs.release-type }}.ipa \
+            s3://walletconnect.react-native-builds.prod/ios/${{ inputs.release-type }}/${{ inputs.project-type }}-${{ inputs.release-type }}.ipa
+
+      - name: Send Slack notification
+        if: always() && !cancelled()
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.slack-webhook-url }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "iOS Build Report - ${{ inputs.name }} - ${{ inputs.release-type }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🍎 iOS Build Report" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`${{ inputs.name }}`" },
+                    { "type": "mrkdwn", "text": "*Release Type:*\n`${{ inputs.release-type }}`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Build for Simulator:*\n`${{ inputs.build-for-simulator }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Build & TestFlight:*\n`${{ steps.build.outcome == 'success' && '✅ Success' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*S3 Upload:*\n`${{ steps.s3-upload.outcome == 'success' && '✅ Success' || steps.s3-upload.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }${{ steps.build.outcome == 'success' && secrets.testflight-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in TestFlight"}},"url":"{0}"}}', secrets.testflight-url) || '' }}
+                  ]
+                }
+              ]
+            }

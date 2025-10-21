@@ -1,9 +1,17 @@
 name: release-ios-walletkit-production
 
 permissions:
+  id-token: write
   contents: read
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      build-for-simulator:
+        description: "Build for simulator instead of TestFlight"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   release-production:
@@ -17,6 +25,8 @@ jobs:
       scheme-name: 'RNWallet'
       bundle-id: 'com.walletconnect.web3wallet.rnsample'
       apple-id: '6449264964'
+      project-type: 'wallet'
+      build-for-simulator: ${{ inputs.build-for-simulator }}
     secrets:
       project-id: ${{ secrets.ENV_WALLET_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}
@@ -31,3 +41,6 @@ jobs:
       match-git-url: ${{ secrets.MATCH_GIT_URL }}
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
       google-services-file: ${{ secrets.W3W_IOS_PROD_GOOGLE_SERVICES_FILE }}
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      testflight-url: ${{ secrets.TESTFLIGHT_WALLETKIT_PROD_URL }}
