@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Text, FlexView } from '@reown/appkit-ui-react-native';
 import { useAccount, useProvider } from '@reown/appkit-react-native';
-import base58 from 'bs58';
+import bs58 from 'bs58';
 import {
   Connection,
   SystemProgram,
@@ -17,7 +17,7 @@ import { ToastUtils } from '@/utils/ToastUtils';
 
 export function SolanaActionsView() {
   const isConnected = true;
-  const { address, chainId } = useAccount();
+  const { address } = useAccount();
   const { provider } = useProvider();
 
   const onSignSuccess = (data: any, title = 'Sign successful') => {
@@ -40,17 +40,14 @@ export function SolanaActionsView() {
 
         return;
       }
-      const encodedMessage = new TextEncoder().encode('Hello from AppKit Solana');
-      const params = {
-        message: base58.encode(encodedMessage),
-        pubkey: address,
-      };
-      const { signature } = (await provider.request(
-        {
-          method: 'solana_signMessage',
-          params,
-        }, `solana:${chainId}`
-      )) as { signature: string };
+
+      const { signature } = (await provider.request({
+        method: 'solana_signMessage',
+        params: {
+          message: bs58.encode(new TextEncoder().encode('Hello from AppKit Solana')),
+          pubkey: address,
+        },
+      })) as { signature: string };
       onSignSuccess(signature, 'Sign Message successful');
     } catch (error) {
       onSignError(error as Error, 'Sign Message failed');
@@ -82,17 +79,14 @@ export function SolanaActionsView() {
       transaction.feePayer = senderPubKey;
       const { blockhash } = await connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
-      const serializedTransaction = transaction.serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-      });
-      const base58EncodedTransaction = base58.encode(serializedTransaction);
-      const params = { transaction: base58EncodedTransaction };
       const result = (await provider.request(
         {
           method: 'solana_signTransaction',
-          params,
-        }, `solana:${chainId}`
+          params: {
+            transaction: transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64'),
+            pubkey: address,
+          },
+        }
       )) as { signature?: string; transaction?: string };
       if (result.signature) {
         onSignSuccess(`Signature: ${result.signature}`, 'Sign Transaction successful');
@@ -131,26 +125,21 @@ export function SolanaActionsView() {
         SystemProgram.transfer({
           fromPubkey: senderPubKey,
           toPubkey: recipientPubKey,
-          lamports: 0.00002 * LAMPORTS_PER_SOL, // Slightly different amount for distinction
+          lamports: 0.00002 * LAMPORTS_PER_SOL,
         })
       );
       transaction.feePayer = senderPubKey;
       const { blockhash } = await connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
-      const serializedTransaction = transaction.serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-      });
-      const base58EncodedTransaction = base58.encode(serializedTransaction);
-      const params = { transaction: base58EncodedTransaction };
-      // The result for signAndSendTransaction is typically the transaction signature
-      const { signature } = (await provider.request(
-        { method: 'solana_signAndSendTransaction', params }, `solana:${chainId}`
+      const { signature } = (await provider.request({
+        method: 'solana_signAndSendTransaction',
+        params: {
+          transaction: transaction.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64'),
+          pubkey: address,
+        },
+      }
       )) as { signature: string };
       onSignSuccess(`Tx Signature: ${signature}`, 'Sign & Send Tx successful');
-      // Optionally, you can confirm the transaction here using the signature and connection
-      // await connection.confirmTransaction(signature, 'confirmed');
-      // ToastUtils.showInfoToast('Transaction confirmation pending...');
     } catch (error) {
       onSignError(error as Error, 'Sign & Send Tx failed');
     }
@@ -195,29 +184,20 @@ export function SolanaActionsView() {
       tx2.feePayer = senderPubKey;
       tx2.recentBlockhash = blockhash;
 
-      const serializedTx1 = base58.encode(
-        tx1.serialize({ requireAllSignatures: false, verifySignatures: false })
-      );
-      const serializedTx2 = base58.encode(
-        tx2.serialize({ requireAllSignatures: false, verifySignatures: false })
-      );
+      const serializedTx1 = tx1.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
+      const serializedTx2 = tx2.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
 
-      const params = { transactions: [serializedTx1, serializedTx2] };
-
-      // The result for signAllTransactions is typically an array of signed transactions or signatures
-      const result = (await provider.request(
-        {
-          method: 'solana_signAllTransactions',
-          params,
-        }, `solana:${chainId}`
-      )) as { transactions?: string[]; signatures?: string[] }; // Adjust based on provider's typical response
+      const result = (await provider.request({
+        method: 'solana_signAllTransactions',
+        params: {
+          transactions: [serializedTx1, serializedTx2],
+          pubkey: address,
+        },
+      })) as { transactions?: string[]; signatures?: string[] };
 
       if (result.transactions) {
         onSignSuccess(
-          `Signed ${result.transactions.length} Txs (bs58): Tx1: ${result.transactions[0].substring(
-            0,
-            30
-          )}...`,
+          `Signed ${result.transactions.length} Txs (bs58): Tx1: ${result.transactions[0].substring(0,30)}...`,
           'Sign All Txs successful'
         );
       } else if (result.signatures) {
@@ -228,10 +208,7 @@ export function SolanaActionsView() {
           'Sign All Txs successful'
         );
       } else {
-        onSignSuccess(
-          'All transactions signed (response format varies)',
-          'Sign All Txs successful'
-        );
+        onSignSuccess('All transactions signed (response format varies)','Sign All Txs successful');
       }
     } catch (error) {
       onSignError(error as Error, 'Sign All Txs failed');
