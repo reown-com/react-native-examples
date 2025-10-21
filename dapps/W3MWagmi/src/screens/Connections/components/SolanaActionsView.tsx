@@ -83,8 +83,8 @@ export function SolanaActionsView() {
         {
           method: 'solana_signTransaction',
           params: {
-            feePayer: transaction.feePayer!.toBase58(),
-            recentBlockhash: transaction.recentBlockhash!,
+            feePayer: transaction.feePayer.toBase58(),
+            recentBlockhash: transaction.recentBlockhash,
             instructions: transaction.instructions.map((instruction) => ({
               programId: instruction.programId.toBase58(),
               keys: instruction.keys.map((key) => ({
@@ -93,7 +93,9 @@ export function SolanaActionsView() {
               })),
               data: bs58.encode(new Uint8Array(instruction.data)),
             })),
-            partialSignatures: transaction.signatures.map((sign) => ({
+            partialSignatures: transaction.signatures
+            .filter((sign) => sign.signature)
+            .map((sign) => ({
               pubkey: sign.publicKey.toBase58(),
               signature: bs58.encode(new Uint8Array(sign.signature!)),
             })),
@@ -148,8 +150,8 @@ export function SolanaActionsView() {
       const { signature } = (await provider.request({
         method: 'solana_signAndSendTransaction',
         params: {
-          feePayer: transaction.feePayer!.toBase58(),
-          recentBlockhash: transaction.recentBlockhash!,
+          feePayer: transaction.feePayer.toBase58(),
+          recentBlockhash: transaction.recentBlockhash,
           instructions: transaction.instructions.map((instruction) => ({
             programId: instruction.programId.toBase58(),
             keys: instruction.keys.map((key) => ({
@@ -158,7 +160,9 @@ export function SolanaActionsView() {
             })),
             data: bs58.encode(new Uint8Array(instruction.data)),
           })),
-          partialSignatures: transaction.signatures.map((sign) => ({
+          partialSignatures: transaction.signatures
+          .filter((sign) => sign.signature)
+          .map((sign) => ({
             pubkey: sign.publicKey.toBase58(),
             signature: bs58.encode(new Uint8Array(sign.signature!)),
           })),

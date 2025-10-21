@@ -94,8 +94,8 @@ export function SolanaActionsView() {
       const result = (await provider.request({
         method: 'solana_signTransaction',
         params: {
-          feePayer: transaction.feePayer!.toBase58(),
-          recentBlockhash: transaction.recentBlockhash!,
+          feePayer: transaction.feePayer.toBase58(),
+          recentBlockhash: transaction.recentBlockhash,
           instructions: transaction.instructions.map(instruction => ({
             programId: instruction.programId.toBase58(),
             keys: instruction.keys.map(key => ({
@@ -168,8 +168,8 @@ export function SolanaActionsView() {
       const {signature} = (await provider.request({
         method: 'solana_signAndSendTransaction',
         params: {
-          feePayer: transaction.feePayer!.toBase58(),
-          recentBlockhash: transaction.recentBlockhash!,
+          feePayer: transaction.feePayer.toBase58(),
+          recentBlockhash: transaction.recentBlockhash,
           instructions: transaction.instructions.map(instruction => ({
             programId: instruction.programId.toBase58(),
             keys: instruction.keys.map(key => ({
