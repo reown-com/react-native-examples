@@ -4,12 +4,16 @@ import { ThemedView } from '@/components/themed-view';
 import { NetworkKey, NETWORKS } from '@/constants/networks';
 import { usePOS } from '@/context/POSContext';
 import { usePOSListener } from '@/hooks/use-pos-listener';
-import { UnknownOutputParams, useLocalSearchParams } from 'expo-router';
+import { useTheme } from '@/hooks/use-theme-color';
+import { showErrorToast } from '@/utils/toast';
+import * as Haptics from 'expo-haptics';
+import { router, UnknownOutputParams, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
-  StyleSheet
+  StyleSheet,
+  TouchableOpacity
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
@@ -28,14 +32,17 @@ export default function QRModalScreen() {
   const [isPaymentFailed, setIsPaymentFailed] = useState(false);
   const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
   const [isPaymentRejected, setIsPaymentRejected] = useState(false);
+  const [isConnectionFailed, setIsConnectionFailed] = useState(false);
 
   const [qrUri, setQrUri] = useState('');
   const {posClient} = usePOS();
+  const Theme = useTheme();
 
   // Extract data from URL parameters
   const { amount, token, network, recipientAddress } = params;
 
   usePOSListener('connected', () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     console.log('Connected to wallet');
     setIsWalletConnected(true);
   });
@@ -45,11 +52,15 @@ export default function QRModalScreen() {
   });
 
   usePOSListener('connection_failed', () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    setIsConnectionFailed(true);
     console.log('Connection failed');
   });
 
   usePOSListener('connection_rejected', () => {
-    console.log('Connection rejected');
+    setIsConnectionFailed(true);
+    showErrorToast({title: 'Connection rejected', message: 'Scan to try again'});
+    posClient?.restart()
   });
 
   usePOSListener('qr_ready', ({uri}) => {
@@ -59,28 +70,66 @@ export default function QRModalScreen() {
 
   usePOSListener('payment_requested', () => {
     console.log('Payment requested');
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setIsPaymentRequested(true);
   });
 
   usePOSListener('payment_rejected', () => {
     console.log('Payment rejected');
+    showErrorToast({title: 'Payment rejected'});
     setIsPaymentRejected(true);
   });
 
   usePOSListener('payment_broadcasted', () => {
     console.log('Payment broadcasted');
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setIsPaymentBroadcasted(true);
   });
 
   usePOSListener('payment_failed', () => {
     console.log('Payment failed');
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     setIsPaymentFailed(true);
   });
 
-  usePOSListener('payment_successful', () => {
+  usePOSListener('payment_successful', ({transaction, result}) => {
     console.log('Payment successful');
     setIsPaymentSuccessful(true);
+    
+    const chainId = transaction.chainId; // e.g., "eip155:8453"
+    
+    // Find the network data to get explorer URL
+    const networkData = Object.values(NETWORKS).find(network => 
+      network.id === chainId
+    );
+    
+    const explorerUrl = networkData?.network.blockExplorers?.default?.url;
+    const explorerLink = explorerUrl ? `${explorerUrl}/tx/${result}` : undefined;
+    
+    router.dismiss();
+    router.replace({
+      pathname: '/payment-success',
+      params: {
+        transactionHash: result,
+        explorerLink: explorerLink,
+        network: networkData?.name || 'Unknown',
+        amount: amount,
+        token: token,
+        recipientAddress: recipientAddress
+      }
+    });
   });
+
+  const requestPayment = async () => {
+    setIsConnectionFailed(false);
+    setIsPaymentRequested(false);
+    setIsPaymentBroadcasted(false);
+    setIsPaymentFailed(false);
+    setIsPaymentSuccessful(false);
+    setIsPaymentRejected(false);
+    setIsWalletConnected(false);
+    posClient?.restart();
+  };
 
   useEffect(() => {
     const networkData = NETWORKS[network];
@@ -95,80 +144,58 @@ export default function QRModalScreen() {
       recipient: `${networkData.id}:${recipientAddress}`,
     };
 
-    console.log('requesting payment', paymentIntent);
     posClient?.createPaymentIntent({paymentIntents: [paymentIntent]});
-    //set loader
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <ThemedView style={styles.container}>
       {qrUri ? (
-        <ThemedView style={styles.content}>
-          <ThemedText type="subtitle" style={styles.qrTitle}>
-            Scan to Pay
-          </ThemedText>
-          
-          <ThemedView style={styles.qrContainer}>
+        <ThemedView style={styles.content}>         
+          <ThemedView style={[
+            styles.qrContainer,
+            { 
+              backgroundColor: Theme.white,
+              shadowColor: Theme.cardShadow 
+            }
+          ]}>
             <QRCode
               value={qrUri}
-              size={Math.min(Dimensions.get('window').width * 0.6, 350)}
+              size={Math.min(Dimensions.get('window').width * 0.65, 350)}
               color="#000000"
               backgroundColor="#FFFFFF"
             />
           </ThemedView>
-          
-          <ThemedText style={styles.amountText}>
-            {amount} {token} on {network}
-          </ThemedText>
+          <ThemedView style={[styles.amountContainer, { backgroundColor: Theme.cardBackground }]}>
+            <ThemedText style={[
+              styles.amountText,
+              { color: Theme.text }
+            ]}>
+              ${amount} {token}
+            </ThemedText>
+            <ThemedText style={[
+              styles.amountTextSecondary,
+              { color: Theme.text }
+            ]}>
+              on {network}
+            </ThemedText>
+          </ThemedView>
           <ThemedView style={styles.statusContainer}>
-            <PaymentStep isCompleted={isWalletConnected} isError={false} text="Scan QR - Waiting for wallet connection" />
+            <PaymentStep isCompleted={isWalletConnected} isError={isConnectionFailed} text="Scan QR - Waiting for wallet connection" />
             <PaymentStep isCompleted={isPaymentRequested} isError={isPaymentFailed} text="Sending transaction" />
             <PaymentStep isCompleted={isPaymentBroadcasted} isError={isPaymentFailed || isPaymentRejected} text="Confirming transaction" />
             <PaymentStep isCompleted={isPaymentSuccessful} isError={isPaymentFailed || isPaymentRejected} text="Payment successful" />
           </ThemedView>
+          {isConnectionFailed || isPaymentFailed || isPaymentRejected ? <TouchableOpacity activeOpacity={0.8} style={[styles.actionButton, { backgroundColor: Theme.cardBackground }]} onPress={requestPayment}>
+            <ThemedText style={styles.actionButtonText}>Retry</ThemedText>
+          </TouchableOpacity> : null}
         </ThemedView>
       ) : (<>
         <ThemedView style={[styles.content, { justifyContent: 'center' }]}>
-          <ActivityIndicator size="large" color="#FAFAFA" />
+          <ActivityIndicator size="large" color={Theme.text} />
           <ThemedText>Generating QR Code...</ThemedText>
         </ThemedView>
       </>)}
-
-      {/* {paymentStatus === 'confirmed' && (
-        <ThemedView style={styles.content}>
-          <IconSymbol name="checkmark.circle.fill" size={60} color="#28A745" />
-          <ThemedText style={styles.successText}>Payment Confirmed!</ThemedText>
-          
-          <ThemedView style={styles.detailsContainer}>
-            <ThemedText style={styles.detailsText}>
-              Amount: {amount} {token}
-            </ThemedText>
-            <ThemedText style={styles.detailsText}>
-              Network: {network}
-            </ThemedText>
-          </ThemedView>
-
-          <TouchableOpacity style={styles.actionButton} onPress={handleNewPayment}>
-            <ThemedText style={styles.actionButtonText}>New Payment</ThemedText>
-          </TouchableOpacity>
-        </ThemedView>
-      )}
-
-      {paymentStatus === 'failed' && (
-        <ThemedView style={styles.content}>
-          <IconSymbol name="xmark.circle.fill" size={60} color="#DC3545" />
-          <ThemedText style={styles.errorText}>Payment Failed</ThemedText>
-          
-          <TouchableOpacity style={styles.actionButton} onPress={handleRetry}>
-            <ThemedText style={styles.actionButtonText}>Retry</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]} onPress={handleNewPayment}>
-            <ThemedText style={styles.actionButtonText}>New Payment</ThemedText>
-          </TouchableOpacity>
-        </ThemedView>
-      )} */}
     </ThemedView>
   );
 }
@@ -176,112 +203,54 @@ export default function QRModalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  closeButton: {
-    padding: 8,
-  },
-  title: {
-    flex: 1,
-    textAlign: 'center',
-  },
-  placeholder: {
-    width: 40,
+    paddingHorizontal: 20,
   },
   content: {
     flex: 1,
     alignItems: 'center',
     padding: 20,
   },
-  qrTitle: {
-    marginBottom: 30,
-    textAlign: 'center',
-  },
   qrContainer: {
-    padding: 30,
-    backgroundColor: 'white',
+    padding: 20,
     borderRadius: 20,
     marginBottom: 30,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 8,
   },
+  amountContainer:{
+    borderRadius: 18,
+    padding: 12,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
   amountText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 15,
+    fontWeight: '600',
     textAlign: 'center',
-    color: '#007BFF',
   },
-  instructionText: {
-    textAlign: 'center',
-    color: '#666',
+  amountTextSecondary: {
     fontSize: 16,
-    marginBottom: 30,
-    paddingHorizontal: 20,
+    fontWeight: '400',
+    textAlign: 'center',
   },
   statusContainer: {
-    width: '100%',
     gap: 8,
   },
-  statusStep: {
+  actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#e3f2fd',
-    width: '100%',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 25,
-  },
-  waitingText: {
-    fontSize: 16,
-    color: '#007BFF',
-    marginLeft: 8,
-    fontWeight: '500',
-  },
-  successText: {
-    fontSize: 24,
-    color: '#28A745',
-    marginBottom: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  errorText: {
-    fontSize: 24,
-    color: '#DC3545',
-    marginBottom: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  detailsContainer: {
-    backgroundColor: '#3a3a3a',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 30,
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  detailsText: {
-    fontSize: 16,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  actionButton: {
-    backgroundColor: '#28A745',
+    justifyContent: 'center',
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
     marginBottom: 10,
+    marginTop: 10,
     minWidth: 150,
-  },
-  secondaryButton: {
-    backgroundColor: '#6c757d',
+    gap: 4,
   },
   actionButtonText: {
     color: 'white',

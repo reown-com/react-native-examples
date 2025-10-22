@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { NETWORKS } from '@/constants/networks';
+import { useTheme } from '@/hooks/use-theme-color';
 import { getItem, STORAGE_KEYS } from '@/utils/storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -51,6 +52,7 @@ const useAmountFormatter = () => {
 export default function PaymentScreen() {
   const [recipientAddress, setRecipientAddress] = useState('');
   const { formatAmount } = useAmountFormatter();
+  const Theme = useTheme();
 
   const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
     defaultValues: {
@@ -83,7 +85,7 @@ export default function PaymentScreen() {
 
   const onSubmit = (data: FormData) => {   
     router.push({
-      pathname: '/qr-modal',
+      pathname: '/scan',
       params: {
         amount: data.amount.replace(',', '.'),
         token: data.token,
@@ -112,14 +114,21 @@ export default function PaymentScreen() {
                 }}
                 render={({ field: { onChange, value } }) => (
                   <TextInput
-                    style={[styles.input, errors.amount && styles.inputError]}
+                    style={[
+                      styles.input, 
+                      { 
+                        color: Theme.text,
+                        borderColor: errors.amount ? Theme.error : Theme.border,
+                        backgroundColor: Theme.background 
+                      }
+                    ]}
                     value={value}
                     onChangeText={(text) => {
                       const formattedText = formatAmount(text);
                       onChange(formattedText);
                     }}
                     placeholder="Enter amount"
-                    placeholderTextColor="#808080"
+                    placeholderTextColor={Theme.placeholder}
                     keyboardType="numeric"
                     returnKeyType="done"
                     autoFocus
@@ -127,7 +136,7 @@ export default function PaymentScreen() {
                 )}
               />
               {errors.amount && (
-                <ThemedText style={styles.errorText}>{errors.amount.message}</ThemedText>
+                <ThemedText style={[styles.errorText, { color: Theme.error }]}>{errors.amount.message}</ThemedText>
               )}
             </ThemedView>
 
@@ -144,13 +153,17 @@ export default function PaymentScreen() {
                     key={token}
                     style={[
                       styles.optionButton,
-                      watchedToken === token && styles.optionButtonSelected
+                      { 
+                        borderColor: Theme.border,
+                        backgroundColor: watchedToken === token ? Theme.primary : Theme.background 
+                      }
                     ]}
                     onPress={() => setValue('token', token)}
                   >
                     <ThemedText style={[
                       styles.optionButtonText,
-                      watchedToken === token && styles.optionButtonTextSelected
+                      watchedToken === token && styles.optionButtonTextSelected,
+                      { color: watchedToken === token ? 'white' : Theme.text }
                     ]}>
                       {token}
                     </ThemedText>
@@ -172,13 +185,17 @@ export default function PaymentScreen() {
                     key={network}
                     style={[
                       styles.optionButton,
-                      watchedNetwork === network && styles.optionButtonSelected
+                      { 
+                        borderColor: Theme.border,
+                        backgroundColor: watchedNetwork === network ? Theme.primary : Theme.background 
+                      }
                     ]}
                     onPress={() => setValue('network', network)}
                   >
                     <ThemedText style={[
                       styles.optionButtonText,
-                      watchedNetwork === network && styles.optionButtonTextSelected
+                      watchedNetwork === network && styles.optionButtonTextSelected,
+                      { color: watchedNetwork === network ? 'white' : Theme.text }
                     ]}>
                       {network}
                     </ThemedText>
@@ -188,7 +205,13 @@ export default function PaymentScreen() {
             </ThemedView>
 
             <TouchableOpacity 
-              style={styles.generateButton}
+              style={[
+                styles.generateButton,
+                { 
+                  backgroundColor: Theme.primary,
+                  shadowColor: Theme.primary 
+                }
+              ]}
               onPress={handleSubmit(onSubmit)}
             >
               <IconSymbol name="qrcode" size={20} color="white" />
@@ -207,39 +230,17 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 20,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 30,
-  },
-  backButton: {
-    padding: 8,
-  },
-  title: {
-    flex: 1,
-    textAlign: 'center',
-  },
-  placeholder: {
-    width: 40,
-  },
   section: {
     marginBottom: 25,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
     borderRadius: 12,
     padding: 15,
     fontSize: 16,
     marginTop: 8,
-    backgroundColor: '#f8f9fa',
-  },
-  inputError: {
-    borderColor: '#DC3545',
   },
   errorText: {
-    color: '#DC3545',
     fontSize: 14,
     marginTop: 5,
   },
@@ -252,30 +253,21 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 25,
     borderWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#f8f9fa',
-  },
-  optionButtonSelected: {
-    backgroundColor: '#007BFF',
-    borderColor: '#007BFF',
   },
   optionButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#333',
   },
   optionButtonTextSelected: {
     color: 'white',
   },
   generateButton: {
-    backgroundColor: '#007BFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 18,
     borderRadius: 12,
     marginTop: 20,
-    shadowColor: '#007BFF',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,

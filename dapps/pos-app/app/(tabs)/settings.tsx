@@ -6,12 +6,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme-color';
 import { getItem, setItem, STORAGE_KEYS } from '@/utils/storage';
 import { showErrorToast, showSuccessToast } from '@/utils/toast';
 
 export default function TabTwoScreen() {
   const [recipientAddress, setRecipientAddress] = useState('');
   const [originalAddress, setOriginalAddress] = useState('');
+  const Theme = useTheme();
 
   const isSaveDisabled = !recipientAddress || recipientAddress === originalAddress;
 
@@ -36,10 +38,10 @@ export default function TabTwoScreen() {
     try {
       await setItem(STORAGE_KEYS.RECIPIENT_ADDRESS, recipientAddress);
       setOriginalAddress(recipientAddress);
-      showSuccessToast('Recipient address saved');
+      showSuccessToast({title: 'Recipient address saved'});
     } catch (error) {
       console.error('Error saving recipient address:', error);
-      showErrorToast('Failed to save recipient address');
+      showErrorToast({title: 'Failed to save recipient address'});
     }
   };
 
@@ -69,17 +71,29 @@ export default function TabTwoScreen() {
           Recipient Address
         </ThemedText>
         <TextInput
-          style={styles.textInput}
+          style={[
+            styles.textInput,
+            { 
+              borderColor: Theme.border,
+              backgroundColor: Theme.background,
+              color: Theme.text 
+            }
+          ]}
           value={recipientAddress}
           onChangeText={setRecipientAddress}
           placeholder="Enter recipient address"
-          placeholderTextColor="#666"
+          placeholderTextColor={Theme.placeholder}
           multiline
           numberOfLines={3}
         />
         <TouchableOpacity
           activeOpacity={0.8}
-          style={[styles.saveButton, isSaveDisabled && styles.saveButtonDisabled]}
+          style={[
+            styles.saveButton, 
+            { 
+              backgroundColor: isSaveDisabled ? Theme.buttonDisabled : Theme.primary 
+            }
+          ]}
           onPress={handleSaveAddress}
           disabled={isSaveDisabled}
         >
@@ -112,24 +126,18 @@ const styles = StyleSheet.create({
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    backgroundColor: '#f9f9f9',
     textAlignVertical: 'top',
     marginBottom: 12,
   },
   saveButton: {
-    backgroundColor: '#007AFF',
     padding: 12,
     borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  saveButtonDisabled: {
-    backgroundColor: '#8a8a8a',
   },
   saveButtonText: {
     color: 'white',

@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/use-theme-color";
 import { StyleSheet } from "react-native";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
@@ -12,10 +13,11 @@ interface Props {
 
 
 export default function PaymentStep({ isCompleted, isError, text }: Props) {
+  const Theme = useTheme();
   return (
-    <ThemedView style={styles.statusStep}>
-      <IconSymbol name={isCompleted ? 'checkmark.circle.fill' : isError ? 'xmark.circle.fill' : 'clock'} size={20} color={isCompleted ? "#28A745" : isError ? "#DC3545" : "#007BFF"} />
-      <ThemedText style={[styles.text, { color: isCompleted ? "#28A745" : isError ? "#DC3545" : "#007BFF" }]}>{text}</ThemedText>
+    <ThemedView style={[styles.statusStep, { backgroundColor: Theme.cardBackground }]}>
+      <IconSymbol name={isCompleted ? 'checkmark.circle.fill' : isError ? 'xmark.circle.fill' : 'clock'} size={20} color={isCompleted ? Theme.success : isError ? Theme.error : Theme.primary} />
+      <ThemedText style={[styles.text, { color: isCompleted ? Theme.success : isError ? Theme.error : Theme.text }]}>{text}</ThemedText>
     </ThemedView>
   );
 }
@@ -24,10 +26,8 @@ const styles = StyleSheet.create({
   statusStep: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#e3f2fd',
-    width: '100%',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
     borderRadius: 25,
   },
   text: {

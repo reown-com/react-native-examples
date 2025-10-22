@@ -37,7 +37,8 @@ export default function RootLayout() {
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="payment" options={{ presentation: 'card', title: 'Create Payment', headerBackButtonDisplayMode: 'minimal' }} />
-            <Stack.Screen name="qr-modal" options={{ presentation: 'modal', title: 'Payment Request' }} />
+            <Stack.Screen name="scan" options={{ presentation: 'card', title: 'Payment Request', headerBackButtonDisplayMode: 'minimal' }} />
+            <Stack.Screen name="payment-success" options={{ presentation: 'card', title: 'Payment Success', headerBackButtonDisplayMode: 'minimal' }} />
           </Stack>
           <StatusBar style="auto" />
         </POSProvider>

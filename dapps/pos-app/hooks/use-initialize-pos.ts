@@ -19,11 +19,11 @@ export const useInitializePOS = ({deviceId, projectId, metadata, loggerOptions}:
       .then(() => {
         setIsInitialized(true);
         setPosClient(posService.getClient());
-        showSuccessToast('POS terminal initialized');
+        showSuccessToast({title: 'POS terminal initialized'});
       })
       .catch((error) => {
         console.error("Error initializing POS client:", error);
-        showErrorToast('Failed to initialize POS terminal');
+        showErrorToast({title: 'Failed to initialize POS terminal'});
       });
   }, [deviceId, projectId, metadata, posService, loggerOptions]);
 

@@ -16,6 +16,52 @@ export const Colors = {
     icon: '#687076',
     tabIconDefault: '#687076',
     tabIconSelected: tintColorLight,
+    
+    // Primary colors
+    primary: '#007BFF',
+    primaryDark: '#0056b3',
+    
+    // Success colors
+    success: '#28A745',
+    successLight: '#10B981',
+    successBackground: '#ECFDF5',
+    
+    // Error colors
+    error: '#DC3545',
+    errorLight: '#f8d7da',
+    
+    // Warning colors
+    warning: '#FFC107',
+    warningLight: '#fff3cd',
+    
+    // Neutral colors
+    gray50: '#f8f9fa',
+    gray100: '#f9f9f9',
+    gray200: '#e3f2fd',
+    gray300: '#ddd',
+    gray400: '#ccc',
+    gray500: '#808080',
+    gray600: '#666',
+    gray700: '#333',
+    gray800: '#374151',
+    gray900: '#1F2937',
+    
+    // Border colors
+    border: '#ddd',
+    borderLight: '#F3F4F6',
+    
+    // Card colors
+    cardBackground: '#FFFFFF',
+    cardShadow: '#000',
+    
+    // Button states
+    buttonDisabled: '#8a8a8a',
+    
+    // Placeholder colors
+    placeholder: '#808080',
+
+    white: '#FFFFFF',
+    black: '#1a1a1a',
   },
   dark: {
     text: '#ECEDEE',
@@ -24,6 +70,52 @@ export const Colors = {
     icon: '#9BA1A6',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
+    
+    // Primary colors
+    primary: '#007BFF',
+    primaryDark: '#0056b3',
+    
+    // Success colors
+    success: '#28A745',
+    successLight: '#10B981',
+    successBackground: '#1a3d2e',
+    
+    // Error colors
+    error: '#DC3545',
+    errorLight: '#3d1a1a',
+    
+    // Warning colors
+    warning: '#FFC107',
+    warningLight: '#3d3a1a',
+    
+    // Neutral colors
+    gray50: '#2a2a2a',
+    gray100: '#1f1f1f',
+    gray200: '#3a3a3a',
+    gray300: '#555',
+    gray400: '#666',
+    gray500: '#808080',
+    gray600: '#999',
+    gray700: '#ccc',
+    gray800: '#d1d5db',
+    gray900: '#f9fafb',
+    
+    // Border colors
+    border: '#555',
+    borderLight: '#3a3a3a',
+    
+    // Card colors
+    cardBackground: '#2a2a2a',
+    cardShadow: '#000',
+    
+    // Button states
+    buttonDisabled: '#555',
+    
+    // Placeholder colors
+    placeholder: '#999',
+
+    white: '#FFFFFF',
+    black: '#1a1a1a',
   },
 };
 

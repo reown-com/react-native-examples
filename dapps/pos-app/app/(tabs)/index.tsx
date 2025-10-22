@@ -8,12 +8,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { usePOS } from '@/context/POSContext';
+import { useTheme } from '@/hooks/use-theme-color';
 import { getItem, STORAGE_KEYS } from '@/utils/storage';
 import { router } from 'expo-router';
 
 export default function HomeScreen() {
   const {isInitialized} = usePOS();
   const [recipientAddress, setRecipientAddress] = useState('');
+  const Theme = useTheme();
 
   const loadRecipientAddress = async () => {
     const address = await getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
@@ -63,7 +65,13 @@ export default function HomeScreen() {
         : 
           <TouchableOpacity
             activeOpacity={0.8}
-            style={styles.primaryButton}
+            style={[
+              styles.primaryButton,
+              { 
+                backgroundColor: Theme.primary,
+                shadowColor: Theme.primary 
+              }
+            ]}
             onPress={() => {
               router.push('/settings');
             }}
@@ -76,7 +84,10 @@ export default function HomeScreen() {
           activeOpacity={0.8}
           style={[
             styles.primaryButton,
-            (!recipientAddress || !isInitialized) && styles.buttonDisabled
+            { 
+              backgroundColor: (!recipientAddress || !isInitialized) ? Theme.buttonDisabled : Theme.primary,
+              shadowColor: Theme.primary 
+            }
           ]}
           onPress={handleStartPayment}
           disabled={!recipientAddress || !isInitialized}
@@ -110,20 +121,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   primaryButton: {
-    backgroundColor: '#007BFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 18,
     borderRadius: 12,
-    shadowColor: '#007BFF',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-  },
-  buttonDisabled: {
-    backgroundColor: '#8a8a8a',
   },
   primaryButtonText: {
     color: 'white',
