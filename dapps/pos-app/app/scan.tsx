@@ -1,3 +1,4 @@
+import WCLogo from '@/assets/images/wc-logo.png';
 import PaymentStep from '@/components/payment-step';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -164,6 +165,8 @@ export default function QRModalScreen() {
               size={Math.min(Dimensions.get('window').width * 0.65, 350)}
               color="#000000"
               backgroundColor="#FFFFFF"
+              logo={WCLogo}
+              logoSize={60}
             />
           </ThemedView>
           <ThemedView style={[styles.amountContainer, { backgroundColor: Theme.cardBackground }]}>
