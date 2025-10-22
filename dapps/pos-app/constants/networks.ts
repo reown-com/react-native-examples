@@ -16,7 +16,6 @@ const mainnet = {
       apiUrl: 'https://api.etherscan.io/api',
     },
   },
-  usdcAddress: "0xA0b86a33E6441A8469A53D2b5eE5a6B7bc2c9Beb", // USDC on Ethereum
 }
 
 const optimism = {
@@ -35,7 +34,6 @@ const optimism = {
       apiUrl: 'https://api-optimistic.etherscan.io/api',
     },
   },
-  usdcAddress: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", // USDC on Optimism
 }
 
 const base = {
@@ -54,17 +52,9 @@ const base = {
       apiUrl: 'https://api.basescan.org/api',
     },
   },
-  usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // USDC on Base
 }
 
 export const NETWORKS = {
-  ethereum: {
-    id: "eip155:1",
-    name: "Ethereum",
-    displayName: "Ethereum",
-    network: mainnet,
-    usdcAddress: "0xA0b86a33E6441A8469A53D2b5eE5a6B7bc2c9Beb", // USDC on Ethereum
-  },
   base: {
     id: "eip155:8453",
     name: "Base",
@@ -77,7 +67,14 @@ export const NETWORKS = {
     name: "Optimism",
     displayName: "Optimism",
     network: optimism,
-    usdcAddress: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", // USDC on Optimism
+    usdcAddress: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", // USDC on Optimism
+  },
+  ethereum: {
+    id: "eip155:1",
+    name: "Ethereum",
+    displayName: "Ethereum",
+    network: mainnet,
+    usdcAddress: "0xA0b86a33E6441A8469A53D2b5eE5a6B7bc2c9Beb", // USDC on Ethereum
   },
 } as const;
 

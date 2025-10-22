@@ -2,7 +2,9 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import '@walletconnect/react-native-compat';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
 
 import { POSProvider } from '@/context/POSContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -29,15 +31,18 @@ export default function RootLayout() {
   });
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <POSProvider posClient={posClient} isInitialized={isInitialized}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="payment" options={{ presentation: 'card', title: 'Create Payment', headerBackButtonDisplayMode: 'minimal' }} />
-          <Stack.Screen name="qr-modal" options={{ presentation: 'modal', title: 'Payment Request' }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </POSProvider>
-    </ThemeProvider>
+    <KeyboardProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <POSProvider posClient={posClient} isInitialized={isInitialized}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="payment" options={{ presentation: 'card', title: 'Create Payment', headerBackButtonDisplayMode: 'minimal' }} />
+            <Stack.Screen name="qr-modal" options={{ presentation: 'modal', title: 'Payment Request' }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </POSProvider>
+        <Toast />
+      </ThemeProvider>
+    </KeyboardProvider>
   );
 }

@@ -18,6 +18,10 @@ const MAPPING = {
   'chevron.right': 'chevron-right',
   'qrcode': 'qr-code',
   'gearshape.fill': 'settings',
+  'checkmark.circle.fill': 'check-circle',
+  'xmark.circle.fill': 'cancel',
+  'clock': 'schedule',
+  'creditcard.fill': 'credit-card',
 } as IconMapping;
 
 /**

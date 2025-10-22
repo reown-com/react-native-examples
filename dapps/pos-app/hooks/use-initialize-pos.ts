@@ -1,15 +1,7 @@
 import POSClientService, { POSClientConfig } from "@/services/POSClientService";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { IPOSClient } from "@walletconnect/pos-client";
 import { useEffect, useState } from "react";
-import { Alert } from "react-native";
-
-export type PaymentState =
-  | "idle"
-  | "connecting"
-  | "payment_requesting"
-  | "payment_processing"
-  | "payment_completed"
-  | "payment_failed";
 
 export const useInitializePOS = ({deviceId, projectId, metadata, loggerOptions}: POSClientConfig) => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -27,10 +19,11 @@ export const useInitializePOS = ({deviceId, projectId, metadata, loggerOptions}:
       .then(() => {
         setIsInitialized(true);
         setPosClient(posService.getClient());
+        showSuccessToast('POS terminal initialized');
       })
       .catch((error) => {
         console.error("Error initializing POS client:", error);
-        Alert.alert("Failed to initialize POS terminal", "🔴");
+        showErrorToast('Failed to initialize POS terminal');
       });
   }, [deviceId, projectId, metadata, posService, loggerOptions]);
 

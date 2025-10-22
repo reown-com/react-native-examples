@@ -13,6 +13,7 @@ import {
   TextInput,
   TouchableOpacity
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 const TOKENS = ['USDC'];
 const AVAILABLE_NETWORKS = Object.keys(NETWORKS);
@@ -94,7 +95,7 @@ export default function PaymentScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <KeyboardAwareScrollView contentContainerStyle={styles.scrollContent}>
           <>
             {/* Amount Input */}
             <ThemedView style={styles.section}>
@@ -117,9 +118,11 @@ export default function PaymentScreen() {
                       const formattedText = formatAmount(text);
                       onChange(formattedText);
                     }}
-                    placeholder="Enter amount (e.g., 50.00)"
+                    placeholder="Enter amount"
+                    placeholderTextColor="#808080"
                     keyboardType="numeric"
                     returnKeyType="done"
+                    autoFocus
                   />
                 )}
               />
@@ -192,7 +195,7 @@ export default function PaymentScreen() {
               <ThemedText style={styles.generateButtonText}>Generate QR Code</ThemedText>
             </TouchableOpacity>
           </>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </ThemedView>
   );
 }

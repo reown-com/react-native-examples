@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
@@ -7,9 +7,13 @@ import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { getItem, setItem, STORAGE_KEYS } from '@/utils/storage';
+import { showErrorToast, showSuccessToast } from '@/utils/toast';
 
 export default function TabTwoScreen() {
   const [recipientAddress, setRecipientAddress] = useState('');
+  const [originalAddress, setOriginalAddress] = useState('');
+
+  const isSaveDisabled = !recipientAddress || recipientAddress === originalAddress;
 
   useEffect(() => {
     // Load existing recipient address on component mount
@@ -18,6 +22,7 @@ export default function TabTwoScreen() {
         const address = await getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
         if (address) {
           setRecipientAddress(address);
+          setOriginalAddress(address);
         }
       } catch (error) {
         console.error('Error loading recipient address:', error);
@@ -30,10 +35,11 @@ export default function TabTwoScreen() {
   const handleSaveAddress = async () => {
     try {
       await setItem(STORAGE_KEYS.RECIPIENT_ADDRESS, recipientAddress);
-      Alert.alert('Success', 'Recipient address saved successfully!');
+      setOriginalAddress(recipientAddress);
+      showSuccessToast('Recipient address saved');
     } catch (error) {
       console.error('Error saving recipient address:', error);
-      Alert.alert('Error', 'Failed to save recipient address');
+      showErrorToast('Failed to save recipient address');
     }
   };
 
@@ -71,13 +77,14 @@ export default function TabTwoScreen() {
           multiline
           numberOfLines={3}
         />
-        <ThemedText 
-          type="default" 
-          style={styles.saveButton}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={[styles.saveButton, isSaveDisabled && styles.saveButtonDisabled]}
           onPress={handleSaveAddress}
+          disabled={isSaveDisabled}
         >
-          Save Address
-        </ThemedText>
+          <ThemedText style={styles.saveButtonText}>Save Address</ThemedText>
+        </TouchableOpacity>
       </ThemedView>
       
     </ParallaxScrollView>
@@ -115,10 +122,18 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: '#007AFF',
-    color: 'white',
     padding: 12,
     borderRadius: 8,
-    textAlign: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveButtonDisabled: {
+    backgroundColor: '#8a8a8a',
+  },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 16,
     fontWeight: '600',
   },
 });

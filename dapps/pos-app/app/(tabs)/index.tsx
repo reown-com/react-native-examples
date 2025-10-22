@@ -61,7 +61,6 @@ export default function HomeScreen() {
           Recipient Address: {recipientAddress?.slice(0, 6)}...{recipientAddress?.slice(-4)}
         </ThemedText>
         : 
-        <ThemedView style={styles.buttonContainer}>
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.primaryButton}
@@ -72,9 +71,7 @@ export default function HomeScreen() {
             <IconSymbol name="gearshape.fill" size={20} color="white" />
             <ThemedText style={styles.primaryButtonText}>Set Terminal Address</ThemedText>
           </TouchableOpacity>
-        </ThemedView>
       }
-      <ThemedView style={styles.buttonContainer}>
         <TouchableOpacity
           activeOpacity={0.8}
           style={[
@@ -89,7 +86,6 @@ export default function HomeScreen() {
             Start New Payment
           </ThemedText>
         </TouchableOpacity>
-      </ThemedView>
     </ParallaxScrollView>
   );
 }
@@ -113,10 +109,6 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
   },
-  buttonContainer: {
-    marginBottom: 20,
-    justifyContent: 'flex-end',
-  },
   primaryButton: {
     backgroundColor: '#007BFF',
     flexDirection: 'row',
@@ -124,7 +116,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 18,
     borderRadius: 12,
-    marginBottom: 12,
     shadowColor: '#007BFF',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
