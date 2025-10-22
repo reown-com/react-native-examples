@@ -1,11 +1,12 @@
 import POSClientService from "@/services/POSClientService";
-import { useEffect } from "react";
+import { POSClientTypes } from "@walletconnect/pos-client";
+import { useEffect, useRef } from "react";
 
 /**
  * Custom hook for managing POS client event listeners
  * 
  * @param event - The event name to listen for
- * @param callback - The callback function to execute when the event is triggered
+ * @param listener - The callback function to execute when the event is triggered
  * @param deps - Dependency array for the callback (similar to useEffect)
  * 
  * @example
@@ -21,14 +22,28 @@ import { useEffect } from "react";
  * };
  * ```
  */
-export const usePOSListener = (event: string, callback: (args: any) => void, deps: any[] = []) => {
+export const usePOSListener = <E extends POSClientTypes.Event>(
+  event: E, 
+  listener: (args: POSClientTypes.EventArguments[E]) => void
+) => {
+  const listenerRef = useRef(listener);
+  
+  // Update the ref whenever the listener changes
+  useEffect(() => {
+    listenerRef.current = listener;
+  }, [listener]);
+  
   useEffect(() => {
     const posService = POSClientService.getInstance();
-    posService.addListener(event, callback);
+    
+    const stableListener = (args: POSClientTypes.EventArguments[E]) => {
+      listenerRef.current(args);
+    };
+    
+    posService.addListener(event, stableListener);
     
     return () => {
-      posService.removeListener(event, callback);
+      posService.removeListener(event, stableListener);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [event, callback, ...deps]);
+  }, [event]);
 };

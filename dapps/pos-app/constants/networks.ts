@@ -15,7 +15,8 @@ const mainnet = {
       url: 'https://etherscan.io',
       apiUrl: 'https://api.etherscan.io/api',
     },
-  }
+  },
+  usdcAddress: "0xA0b86a33E6441A8469A53D2b5eE5a6B7bc2c9Beb", // USDC on Ethereum
 }
 
 const optimism = {
@@ -34,6 +35,7 @@ const optimism = {
       apiUrl: 'https://api-optimistic.etherscan.io/api',
     },
   },
+  usdcAddress: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", // USDC on Optimism
 }
 
 const base = {
@@ -51,7 +53,8 @@ const base = {
       url: 'https://basescan.org',
       apiUrl: 'https://api.basescan.org/api',
     },
-  }
+  },
+  usdcAddress: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // USDC on Base
 }
 
 export const NETWORKS = {

@@ -33,7 +33,8 @@ export default function RootLayout() {
       <POSProvider posClient={posClient} isInitialized={isInitialized}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+          <Stack.Screen name="payment" options={{ presentation: 'card', title: 'Create Payment', headerBackButtonDisplayMode: 'minimal' }} />
+          <Stack.Screen name="qr-modal" options={{ presentation: 'modal', title: 'Payment Request' }} />
         </Stack>
         <StatusBar style="auto" />
       </POSProvider>

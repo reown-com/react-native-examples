@@ -1,4 +1,5 @@
 import POSClientService, { POSClientConfig } from "@/services/POSClientService";
+import { IPOSClient } from "@walletconnect/pos-client";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
@@ -12,6 +13,7 @@ export type PaymentState =
 
 export const useInitializePOS = ({deviceId, projectId, metadata, loggerOptions}: POSClientConfig) => {
   const [isInitialized, setIsInitialized] = useState(false);
+  const [posClient, setPosClient] = useState<IPOSClient | null>(null);
   
   const posService = POSClientService.getInstance();
   
@@ -24,7 +26,7 @@ export const useInitializePOS = ({deviceId, projectId, metadata, loggerOptions}:
     })
       .then(() => {
         setIsInitialized(true);
-        Alert.alert("POS Terminal Ready", "🟢");
+        setPosClient(posService.getClient());
       })
       .catch((error) => {
         console.error("Error initializing POS client:", error);
@@ -34,6 +36,6 @@ export const useInitializePOS = ({deviceId, projectId, metadata, loggerOptions}:
 
   return {
     isInitialized,
-    posClient: posService.getClient(),
+    posClient,
   }
 };
