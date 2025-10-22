@@ -1,7 +1,7 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { NETWORKS } from '@/constants/networks';
+import { NetworkKey, NETWORKS, TokenKey } from '@/constants/networks';
 import { useTheme } from '@/hooks/use-theme-color';
 import { getItem, STORAGE_KEYS } from '@/utils/storage';
 import { router } from 'expo-router';
@@ -16,13 +16,12 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-const TOKENS = ['USDC'];
 const AVAILABLE_NETWORKS = Object.keys(NETWORKS);
 
 interface FormData {
   amount: string;
-  token: string;
-  network: string;
+  token: TokenKey;
+  network: NetworkKey;
 }
 
 const useAmountFormatter = () => {
@@ -57,13 +56,15 @@ export default function PaymentScreen() {
   const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
     defaultValues: {
       amount: '',
-      token: TOKENS[0],
-      network: AVAILABLE_NETWORKS[0]
+      token: 'usdc',
+      network: 'base'
     }
   });
 
   const watchedToken = watch('token');
   const watchedNetwork = watch('network');
+  const selectedNetwork = NETWORKS[watchedNetwork as NetworkKey];
+  const availableTokens = Object.keys(selectedNetwork.tokens) as TokenKey[];
 
   useEffect(() => {
     loadRecipientAddress();
@@ -84,6 +85,8 @@ export default function PaymentScreen() {
   };
 
   const onSubmit = (data: FormData) => {   
+
+
     router.push({
       pathname: '/scan',
       params: {
@@ -140,38 +143,6 @@ export default function PaymentScreen() {
               )}
             </ThemedView>
 
-            {/* Token Selector */}
-            <ThemedView style={styles.section}>
-              <ThemedText type="subtitle">Select Token</ThemedText>
-              <ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-                style={styles.buttonContainer}
-              >
-                {TOKENS.map(token => (
-                  <TouchableOpacity
-                    key={token}
-                    style={[
-                      styles.optionButton,
-                      { 
-                        borderColor: Theme.border,
-                        backgroundColor: watchedToken === token ? Theme.primary : Theme.background 
-                      }
-                    ]}
-                    onPress={() => setValue('token', token)}
-                  >
-                    <ThemedText style={[
-                      styles.optionButtonText,
-                      watchedToken === token && styles.optionButtonTextSelected,
-                      { color: watchedToken === token ? 'white' : Theme.text }
-                    ]}>
-                      {token}
-                    </ThemedText>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </ThemedView>
-
             {/* Network Selector */}
             <ThemedView style={styles.section}>
               <ThemedText type="subtitle">Select Network</ThemedText>
@@ -190,7 +161,7 @@ export default function PaymentScreen() {
                         backgroundColor: watchedNetwork === network ? Theme.primary : Theme.background 
                       }
                     ]}
-                    onPress={() => setValue('network', network)}
+                    onPress={() => setValue('network', network as NetworkKey)}
                   >
                     <ThemedText style={[
                       styles.optionButtonText,
@@ -203,6 +174,40 @@ export default function PaymentScreen() {
                 ))}
               </ScrollView>
             </ThemedView>
+
+            {/* Token Selector */}
+            <ThemedView style={styles.section}>
+              <ThemedText type="subtitle">Select Token</ThemedText>
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                style={styles.buttonContainer}
+              >
+                {availableTokens.map(token => (
+                  <TouchableOpacity
+                    key={token}
+                    style={[
+                      styles.optionButton,
+                      { 
+                        borderColor: Theme.border,
+                        backgroundColor: watchedToken === token ? Theme.primary : Theme.background 
+                      }
+                    ]}
+                    onPress={() => setValue('token', token as TokenKey)}
+                  >
+                    <ThemedText style={[
+                      styles.optionButtonText,
+                      watchedToken === token && styles.optionButtonTextSelected,
+                      { color: watchedToken === token ? 'white' : Theme.text }
+                    ]}>
+                      {token}
+                    </ThemedText>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </ThemedView>
+
+            
 
             <TouchableOpacity 
               style={[

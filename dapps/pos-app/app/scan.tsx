@@ -2,7 +2,7 @@ import WCLogo from '@/assets/images/wc-logo.png';
 import PaymentStep from '@/components/payment-step';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { NetworkKey, NETWORKS } from '@/constants/networks';
+import { NetworkKey, NETWORKS, TokenKey } from '@/constants/networks';
 import { usePOS } from '@/context/POSContext';
 import { usePOSListener } from '@/hooks/use-pos-listener';
 import { useTheme } from '@/hooks/use-theme-color';
@@ -20,7 +20,7 @@ import QRCode from 'react-native-qrcode-svg';
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
-  token: string;
+  token: TokenKey;
   network: NetworkKey;
   recipientAddress: string;
 }
@@ -52,15 +52,17 @@ export default function QRModalScreen() {
     console.log('Disconnected from wallet');
   });
 
-  usePOSListener('connection_failed', () => {
+  usePOSListener('connection_failed', ({error}) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     setIsConnectionFailed(true);
-    console.log('Connection failed');
+    console.log('Connection failed', error);
+    showErrorToast({title: 'Connection failed', message: error?.message});
   });
 
-  usePOSListener('connection_rejected', () => {
+  usePOSListener('connection_rejected', ({error}) => {
     setIsConnectionFailed(true);
-    showErrorToast({title: 'Connection rejected', message: 'Scan to try again'});
+    console.log('Connection rejected', error);
+    showErrorToast({title: 'Connection rejected', message: error?.message});
     posClient?.restart()
   });
 
@@ -75,9 +77,9 @@ export default function QRModalScreen() {
     setIsPaymentRequested(true);
   });
 
-  usePOSListener('payment_rejected', () => {
-    console.log('Payment rejected');
-    showErrorToast({title: 'Payment rejected'});
+  usePOSListener('payment_rejected', ({error}) => {
+    console.log('Payment rejected', error);
+    showErrorToast({title: 'Payment rejected', message: error?.message});
     setIsPaymentRejected(true);
   });
 
@@ -87,9 +89,10 @@ export default function QRModalScreen() {
     setIsPaymentBroadcasted(true);
   });
 
-  usePOSListener('payment_failed', () => {
-    console.log('Payment failed');
+  usePOSListener('payment_failed', ({error}) => {
+    console.log('Payment failed', error);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    showErrorToast({title: 'Payment failed', message: error?.message});
     setIsPaymentFailed(true);
   });
 
@@ -101,10 +104,10 @@ export default function QRModalScreen() {
     
     // Find the network data to get explorer URL
     const networkData = Object.values(NETWORKS).find(network => 
-      network.id === chainId
+      network.caipId === chainId
     );
     
-    const explorerUrl = networkData?.network.blockExplorers?.default?.url;
+    const explorerUrl = networkData?.blockExplorers?.default?.url;
     const explorerLink = explorerUrl ? `${explorerUrl}/tx/${result}` : undefined;
     
     router.dismiss();
@@ -134,15 +137,16 @@ export default function QRModalScreen() {
 
   useEffect(() => {
     const networkData = NETWORKS[network];
+    const tokenData = networkData.tokens[token];
     const paymentIntent = {
       token: {
-        network: { name: networkData.name, chainId: networkData.id },
-        symbol: token, // TODO: improve data sent from params
-        standard: "ERC20", // TODO: improve data sent from params
-        address: networkData.usdcAddress, // TODO: improve data sent from params
+        network: { name: networkData.name, chainId: networkData.caipId },
+        symbol: tokenData.symbol,
+        standard: tokenData.standard,
+        address: tokenData.address,
       },
       amount,
-      recipient: `${networkData.id}:${recipientAddress}`,
+      recipient: `${networkData.caipId}:${recipientAddress}`,
     };
 
     posClient?.createPaymentIntent({paymentIntents: [paymentIntent]});
