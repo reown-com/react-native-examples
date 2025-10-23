@@ -1,28 +1,28 @@
-import { useFocusEffect } from '@react-navigation/native';
-import { Image } from 'expo-image';
-import { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from "@react-navigation/native";
+import { Image } from "expo-image";
+import { useCallback, useEffect, useState } from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { usePOS } from '@/context/POSContext';
-import { useTheme } from '@/hooks/use-theme-color';
-import { storage, STORAGE_KEYS } from '@/utils/storage';
-import { useAppKit, useAppKitState } from '@reown/appkit-react-native';
-import { router } from 'expo-router';
+import ParallaxScrollView from "@/components/parallax-scroll-view";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { usePOS } from "@/context/POSContext";
+import { useTheme } from "@/hooks/use-theme-color";
+import { storage, STORAGE_KEYS } from "@/utils/storage";
+import { useAppKit, useAppKitState } from "@reown/appkit-react-native";
+import { router } from "expo-router";
 
 export default function HomeScreen() {
-  const {isInitialized} = usePOS();
+  const { isInitialized } = usePOS();
   const { isConnected } = useAppKitState();
   const { open } = useAppKit();
-  const [recipientAddress, setRecipientAddress] = useState('');
+  const [recipientAddress, setRecipientAddress] = useState("");
   const Theme = useTheme();
 
   const loadRecipientAddress = async () => {
     const address = await storage.getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
-    setRecipientAddress(address || '');
+    setRecipientAddress(address || "");
   };
 
   useEffect(() => {
@@ -34,25 +34,26 @@ export default function HomeScreen() {
     useCallback(() => {
       const loadRecipientAddress = async () => {
         const address = await storage.getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
-        setRecipientAddress(address || '');
+        setRecipientAddress(address || "");
       };
       loadRecipientAddress();
-    }, [])
+    }, []),
   );
 
   const handleStartPayment = () => {
-    router.push('/payment');
+    router.push("/payment");
   };
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
       headerImage={
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
+          source={require("@/assets/images/partial-react-logo.png")}
           style={styles.logo}
         />
-      }>
+      }
+    >
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="title" style={styles.title}>
           POS Terminal
@@ -88,10 +89,13 @@ export default function HomeScreen() {
           activeOpacity={0.8}
           style={[
             styles.primaryButton,
-            { 
-              backgroundColor: (!recipientAddress || !isInitialized) ? Theme.buttonDisabled : Theme.primary,
-              shadowColor: Theme.primary 
-            }
+            {
+              backgroundColor:
+                !recipientAddress || !isInitialized
+                  ? Theme.buttonDisabled
+                  : Theme.primary,
+              shadowColor: Theme.primary,
+            },
           ]}
           onPress={handleStartPayment}
           disabled={!recipientAddress || !isInitialized}
@@ -107,11 +111,16 @@ export default function HomeScreen() {
           onPress={() => open()}
           style={[
             styles.primaryButton,
-            { backgroundColor: Theme.buttonDisabled, shadowColor: Theme.buttonDisabled }
+            {
+              backgroundColor: Theme.buttonDisabled,
+              shadowColor: Theme.buttonDisabled,
+            },
           ]}
         >
           <IconSymbol name="creditcard.fill" size={20} color="white" />
-          <ThemedText style={styles.primaryButtonText}>Connect Wallet</ThemedText>
+          <ThemedText style={styles.primaryButtonText}>
+            Connect Wallet
+          </ThemedText>
         </TouchableOpacity>
       )}
     </ParallaxScrollView>
@@ -120,10 +129,10 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   title: {
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 14,
   },
   stepContainer: {
@@ -135,12 +144,12 @@ const styles = StyleSheet.create({
     width: 290,
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
   },
   primaryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     padding: 18,
     borderRadius: 12,
     shadowOffset: { width: 0, height: 2 },
@@ -149,9 +158,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   primaryButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 8,
   },
 });

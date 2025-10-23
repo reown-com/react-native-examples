@@ -1,22 +1,22 @@
-import WCLogo from '@/assets/images/wc-logo.png';
-import PaymentStep from '@/components/payment-step';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { NetworkKey, NETWORKS, TokenKey } from '@/constants/networks';
-import { usePOS } from '@/context/POSContext';
-import { usePOSListener } from '@/hooks/use-pos-listener';
-import { useTheme } from '@/hooks/use-theme-color';
-import { showErrorToast } from '@/utils/toast';
-import * as Haptics from 'expo-haptics';
-import { router, UnknownOutputParams, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import WCLogo from "@/assets/images/wc-logo.png";
+import PaymentStep from "@/components/payment-step";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { NetworkKey, NETWORKS, TokenKey } from "@/constants/networks";
+import { usePOS } from "@/context/POSContext";
+import { usePOSListener } from "@/hooks/use-pos-listener";
+import { useTheme } from "@/hooks/use-theme-color";
+import { showErrorToast } from "@/utils/toast";
+import * as Haptics from "expo-haptics";
+import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
   StyleSheet,
-  TouchableOpacity
-} from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
+  TouchableOpacity,
+} from "react-native";
+import QRCode from "react-native-qrcode-svg";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
@@ -35,92 +35,94 @@ export default function QRModalScreen() {
   const [isPaymentRejected, setIsPaymentRejected] = useState(false);
   const [isConnectionFailed, setIsConnectionFailed] = useState(false);
 
-  const [qrUri, setQrUri] = useState('');
-  const {posClient} = usePOS();
+  const [qrUri, setQrUri] = useState("");
+  const { posClient } = usePOS();
   const Theme = useTheme();
 
   // Extract data from URL parameters
   const { amount, token, network, recipientAddress } = params;
 
-  usePOSListener('connected', () => {
+  usePOSListener("connected", () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    console.log('Connected to wallet');
+    console.log("Connected to wallet");
     setIsWalletConnected(true);
   });
 
-  usePOSListener('disconnected', () => {
-    console.log('Disconnected from wallet');
+  usePOSListener("disconnected", () => {
+    console.log("Disconnected from wallet");
   });
 
-  usePOSListener('connection_failed', ({error}) => {
+  usePOSListener("connection_failed", ({ error }) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     setIsConnectionFailed(true);
-    console.log('Connection failed', error);
-    showErrorToast({title: 'Connection failed', message: error?.message});
+    console.log("Connection failed", error);
+    showErrorToast({ title: "Connection failed", message: error?.message });
   });
 
-  usePOSListener('connection_rejected', ({error}) => {
+  usePOSListener("connection_rejected", ({ error }) => {
     setIsConnectionFailed(true);
-    console.log('Connection rejected', error);
-    showErrorToast({title: 'Connection rejected', message: error?.message});
-    posClient?.restart()
+    console.log("Connection rejected", error);
+    showErrorToast({ title: "Connection rejected", message: error?.message });
+    posClient?.restart();
   });
 
-  usePOSListener('qr_ready', ({uri}) => {
-    console.log('QR ready');
+  usePOSListener("qr_ready", ({ uri }) => {
+    console.log("QR ready");
     setQrUri(uri);
   });
 
-  usePOSListener('payment_requested', () => {
-    console.log('Payment requested');
+  usePOSListener("payment_requested", () => {
+    console.log("Payment requested");
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setIsPaymentRequested(true);
   });
 
-  usePOSListener('payment_rejected', ({error}) => {
-    console.log('Payment rejected', error);
-    showErrorToast({title: 'Payment rejected', message: error?.message});
+  usePOSListener("payment_rejected", ({ error }) => {
+    console.log("Payment rejected", error);
+    showErrorToast({ title: "Payment rejected", message: error?.message });
     setIsPaymentRejected(true);
   });
 
-  usePOSListener('payment_broadcasted', () => {
-    console.log('Payment broadcasted');
+  usePOSListener("payment_broadcasted", () => {
+    console.log("Payment broadcasted");
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setIsPaymentBroadcasted(true);
   });
 
-  usePOSListener('payment_failed', ({error}) => {
-    console.log('Payment failed', error);
+  usePOSListener("payment_failed", ({ error }) => {
+    console.log("Payment failed", error);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    showErrorToast({title: 'Payment failed', message: error?.message});
+    showErrorToast({ title: "Payment failed", message: error?.message });
     setIsPaymentFailed(true);
   });
 
-  usePOSListener('payment_successful', ({transaction, result}) => {
-    console.log('Payment successful');
+  usePOSListener("payment_successful", ({ transaction, result }) => {
+    console.log("Payment successful");
     setIsPaymentSuccessful(true);
-    
+
     const chainId = transaction.chainId; // e.g., "eip155:8453"
-    
+
     // Find the network data to get explorer URL
-    const networkData = Object.values(NETWORKS).find(network => 
-      network.caipId === chainId
+    const networkData = Object.values(NETWORKS).find(
+      (network) => network.caipId === chainId,
     );
-    
+
     const explorerUrl = networkData?.blockExplorers?.default?.url;
-    const explorerLink = explorerUrl ? `${explorerUrl}/tx/${result}` : undefined;
-    
+    const explorerLink = explorerUrl
+      ? `${explorerUrl}/tx/${result}`
+      : undefined;
+
     router.dismiss();
     router.replace({
-      pathname: '/payment-success',
+      pathname: "/payment-success",
       params: {
         transactionHash: result,
         explorerLink: explorerLink,
-        network: networkData?.name || 'Unknown',
+        network: networkData?.name || "Unknown",
         amount: amount,
         token: token,
-        recipientAddress: recipientAddress
-      }
+        recipientAddress: recipientAddress,
+      },
     });
   });
 
@@ -149,60 +151,90 @@ export default function QRModalScreen() {
       recipient: `${networkData.caipId}:${recipientAddress}`,
     };
 
-    posClient?.createPaymentIntent({paymentIntents: [paymentIntent]});
+    posClient?.createPaymentIntent({ paymentIntents: [paymentIntent] });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <ThemedView style={styles.container}>
       {qrUri ? (
-        <ThemedView style={styles.content}>         
-          <ThemedView style={[
-            styles.qrContainer,
-            { 
-              backgroundColor: Theme.white,
-              shadowColor: Theme.cardShadow 
-            }
-          ]}>
+        <ThemedView style={styles.content}>
+          <ThemedView
+            style={[
+              styles.qrContainer,
+              {
+                backgroundColor: Theme.white,
+                shadowColor: Theme.cardShadow,
+              },
+            ]}
+          >
             <QRCode
               value={qrUri}
-              size={Math.min(Dimensions.get('window').width * 0.65, 350)}
+              size={Math.min(Dimensions.get("window").width * 0.65, 350)}
               color="#000000"
               backgroundColor="#FFFFFF"
               logo={WCLogo}
               logoSize={60}
             />
           </ThemedView>
-          <ThemedView style={[styles.amountContainer, { backgroundColor: Theme.cardBackground }]}>
-            <ThemedText style={[
-              styles.amountText,
-              { color: Theme.text }
-            ]}>
+          <ThemedView
+            style={[
+              styles.amountContainer,
+              { backgroundColor: Theme.cardBackground },
+            ]}
+          >
+            <ThemedText style={[styles.amountText, { color: Theme.text }]}>
               ${amount} {token}
             </ThemedText>
-            <ThemedText style={[
-              styles.amountTextSecondary,
-              { color: Theme.text }
-            ]}>
+            <ThemedText
+              style={[styles.amountTextSecondary, { color: Theme.text }]}
+            >
               on {network}
             </ThemedText>
           </ThemedView>
           <ThemedView style={styles.statusContainer}>
-            <PaymentStep isCompleted={isWalletConnected} isError={isConnectionFailed} text="Scan QR - Waiting for wallet connection" />
-            <PaymentStep isCompleted={isPaymentRequested} isError={isPaymentFailed} text="Sending transaction" />
-            <PaymentStep isCompleted={isPaymentBroadcasted} isError={isPaymentFailed || isPaymentRejected} text="Confirming transaction" />
-            <PaymentStep isCompleted={isPaymentSuccessful} isError={isPaymentFailed || isPaymentRejected} text="Payment successful" />
+            <PaymentStep
+              isCompleted={isWalletConnected}
+              isError={isConnectionFailed}
+              text="Scan QR - Waiting for wallet connection"
+            />
+            <PaymentStep
+              isCompleted={isPaymentRequested}
+              isError={isPaymentFailed}
+              text="Sending transaction"
+            />
+            <PaymentStep
+              isCompleted={isPaymentBroadcasted}
+              isError={isPaymentFailed || isPaymentRejected}
+              text="Confirming transaction"
+            />
+            <PaymentStep
+              isCompleted={isPaymentSuccessful}
+              isError={isPaymentFailed || isPaymentRejected}
+              text="Payment successful"
+            />
           </ThemedView>
-          {isConnectionFailed || isPaymentFailed || isPaymentRejected ? <TouchableOpacity activeOpacity={0.8} style={[styles.actionButton, { backgroundColor: Theme.cardBackground }]} onPress={requestPayment}>
-            <ThemedText style={styles.actionButtonText}>Retry</ThemedText>
-          </TouchableOpacity> : null}
+          {isConnectionFailed || isPaymentFailed || isPaymentRejected ? (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[
+                styles.actionButton,
+                { backgroundColor: Theme.cardBackground },
+              ]}
+              onPress={requestPayment}
+            >
+              <ThemedText style={styles.actionButtonText}>Retry</ThemedText>
+            </TouchableOpacity>
+          ) : null}
         </ThemedView>
-      ) : (<>
-        <ThemedView style={[styles.content, { justifyContent: 'center' }]}>
-          <ActivityIndicator size="large" color={Theme.text} />
-          <ThemedText>Generating QR Code...</ThemedText>
-        </ThemedView>
-      </>)}
+      ) : (
+        <>
+          <ThemedView style={[styles.content, { justifyContent: "center" }]}>
+            <ActivityIndicator size="large" color={Theme.text} />
+            <ThemedText>Generating QR Code...</ThemedText>
+          </ThemedView>
+        </>
+      )}
     </ThemedView>
   );
 }
@@ -214,7 +246,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     padding: 20,
   },
   qrContainer: {
@@ -226,31 +258,31 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
-  amountContainer:{
+  amountContainer: {
     borderRadius: 18,
     padding: 12,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 20,
   },
   amountText: {
     fontSize: 24,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: "600",
+    textAlign: "center",
   },
   amountTextSecondary: {
     fontSize: 16,
-    fontWeight: '400',
-    textAlign: 'center',
+    fontWeight: "400",
+    textAlign: "center",
   },
   statusContainer: {
     gap: 8,
   },
   actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 25,
@@ -260,9 +292,9 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   actionButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

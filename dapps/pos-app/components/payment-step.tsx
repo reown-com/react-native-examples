@@ -10,22 +10,47 @@ interface Props {
   text: string;
 }
 
-
-
 export default function PaymentStep({ isCompleted, isError, text }: Props) {
   const Theme = useTheme();
   return (
-    <ThemedView style={[styles.statusStep, { backgroundColor: Theme.cardBackground }]}>
-      <IconSymbol name={isCompleted ? 'checkmark.circle.fill' : isError ? 'xmark.circle.fill' : 'clock'} size={20} color={isCompleted ? Theme.success : isError ? Theme.error : Theme.primary} />
-      <ThemedText style={[styles.text, { color: isCompleted ? Theme.success : isError ? Theme.error : Theme.text }]}>{text}</ThemedText>
+    <ThemedView
+      style={[styles.statusStep, { backgroundColor: Theme.cardBackground }]}
+    >
+      <IconSymbol
+        name={
+          isCompleted
+            ? "checkmark.circle.fill"
+            : isError
+              ? "xmark.circle.fill"
+              : "clock"
+        }
+        size={20}
+        color={
+          isCompleted ? Theme.success : isError ? Theme.error : Theme.primary
+        }
+      />
+      <ThemedText
+        style={[
+          styles.text,
+          {
+            color: isCompleted
+              ? Theme.success
+              : isError
+                ? Theme.error
+                : Theme.text,
+          },
+        ]}
+      >
+        {text}
+      </ThemedText>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   statusStep: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 4,
     paddingHorizontal: 12,
     borderRadius: 25,
@@ -33,6 +58,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     marginLeft: 8,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });

@@ -1,20 +1,19 @@
-
 const mainnet = {
   id: 1,
   caipId: "eip155:1",
-  name: 'Ethereum',
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  name: "Ethereum",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   blockTime: 12000,
   rpcUrls: {
     default: {
-      http: ['https://eth.merkle.io'],
+      http: ["https://eth.merkle.io"],
     },
   },
   blockExplorers: {
     default: {
-      name: 'Etherscan',
-      url: 'https://etherscan.io',
-      apiUrl: 'https://api.etherscan.io/api',
+      name: "Etherscan",
+      url: "https://etherscan.io",
+      apiUrl: "https://api.etherscan.io/api",
     },
   },
   tokens: {
@@ -29,25 +28,25 @@ const mainnet = {
       decimals: 6,
       standard: "ERC20",
       symbol: "USDT",
-    }
+    },
   },
-}
+};
 
 const optimism = {
   id: 10,
   caipId: "eip155:10",
-  name: 'OP Mainnet',
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  name: "OP Mainnet",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://mainnet.optimism.io'],
+      http: ["https://mainnet.optimism.io"],
     },
   },
   blockExplorers: {
     default: {
-      name: 'Optimism Explorer',
-      url: 'https://optimistic.etherscan.io',
-      apiUrl: 'https://api-optimistic.etherscan.io/api',
+      name: "Optimism Explorer",
+      url: "https://optimistic.etherscan.io",
+      apiUrl: "https://api-optimistic.etherscan.io/api",
     },
   },
   tokens: {
@@ -57,30 +56,30 @@ const optimism = {
       standard: "ERC20",
       symbol: "USDC",
     },
-    usdt:{
+    usdt: {
       address: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
       decimals: 6,
       standard: "ERC20",
       symbol: "USDT",
-    }
+    },
   },
-}
+};
 
 const base = {
   id: 8453,
   caipId: "eip155:8453",
-  name: 'Base',
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  name: "Base",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://mainnet.base.org'],
+      http: ["https://mainnet.base.org"],
     },
   },
   blockExplorers: {
     default: {
-      name: 'Basescan',
-      url: 'https://basescan.org',
-      apiUrl: 'https://api.basescan.org/api',
+      name: "Basescan",
+      url: "https://basescan.org",
+      apiUrl: "https://api.basescan.org/api",
     },
   },
   tokens: {
@@ -90,24 +89,24 @@ const base = {
       standard: "ERC20",
       symbol: "USDC",
     },
-  }
-}
+  },
+};
 
 const arbitrum = {
   id: 42161,
   caipId: "eip155:42161",
-  name: 'Arbitrum',
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  name: "Arbitrum",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://arb1.arbitrum.io/rpc'],
+      http: ["https://arb1.arbitrum.io/rpc"],
     },
   },
   blockExplorers: {
     default: {
-      name: 'Arbiscan',
-      url: 'https://arbiscan.io',
-      apiUrl: 'https://api.arbiscan.io/api',
+      name: "Arbiscan",
+      url: "https://arbiscan.io",
+      apiUrl: "https://api.arbiscan.io/api",
     },
   },
   tokens: {
@@ -117,30 +116,30 @@ const arbitrum = {
       standard: "ERC20",
       symbol: "USDC",
     },
-    usdt:{
+    usdt: {
       address: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
       decimals: 6,
       standard: "ERC20",
       symbol: "USDT",
-    }
-  }
-}
+    },
+  },
+};
 
 const sepolia = {
   id: 11155111,
   caipId: "eip155:11155111",
-  name: 'Sepolia',
-  nativeCurrency: { name: 'Sepolia Ether', symbol: 'ETH', decimals: 18 },
+  name: "Sepolia",
+  nativeCurrency: { name: "Sepolia Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://sepolia.drpc.org'],
+      http: ["https://sepolia.drpc.org"],
     },
   },
   blockExplorers: {
     default: {
-      name: 'Etherscan',
-      url: 'https://sepolia.etherscan.io',
-      apiUrl: 'https://api-sepolia.etherscan.io/api',
+      name: "Etherscan",
+      url: "https://sepolia.etherscan.io",
+      apiUrl: "https://api-sepolia.etherscan.io/api",
     },
   },
   tokens: {
@@ -150,8 +149,8 @@ const sepolia = {
       standard: "ERC20",
       symbol: "USDC",
     },
-  }
-}
+  },
+};
 
 // const solana = {
 //   id: '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
@@ -204,4 +203,4 @@ export const NETWORKS = {
 } as const;
 
 export type NetworkKey = keyof typeof NETWORKS;
-export type TokenKey = keyof (typeof NETWORKS)[NetworkKey]['tokens'];
+export type TokenKey = keyof (typeof NETWORKS)[NetworkKey]["tokens"];

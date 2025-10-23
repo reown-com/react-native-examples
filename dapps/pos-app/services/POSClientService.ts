@@ -1,4 +1,4 @@
-import '@walletconnect/react-native-compat';
+import "@walletconnect/react-native-compat";
 
 import { IPOSClient, POSClient } from "@walletconnect/pos-client";
 
@@ -31,7 +31,7 @@ class POSClientService {
     }
 
     this.config = config;
-    
+
     try {
       this.posClient = await POSClient.init({
         projectId: config.projectId,
@@ -86,7 +86,7 @@ class POSClientService {
 
     // Re-attach all stored listeners
     this.listeners.forEach((callbacks, event) => {
-      callbacks.forEach(callback => {
+      callbacks.forEach((callback) => {
         this.posClient!.on(event as any, callback);
       });
     });
