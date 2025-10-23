@@ -7,7 +7,11 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme-color";
 import { networks } from "@/utils/appkit";
-import { useAccount, useAppKit } from "@reown/appkit-react-native";
+import {
+  useAccount,
+  useAppKit,
+  useAppKitState,
+} from "@reown/appkit-react-native";
 
 // Network mapping for display names
 const getNetworkName = (chainId: string) => {
@@ -29,9 +33,18 @@ const formatAccounts = (accounts: any[]) => {
 export default function Settings() {
   const Theme = useTheme();
   const { allAccounts } = useAccount();
-  const { open } = useAppKit();
+  const { disconnect, open } = useAppKit();
+  const { isConnected } = useAppKitState();
 
   const groupedAccounts = allAccounts ? formatAccounts(allAccounts) : [];
+
+  const onAppKitPress = () => {
+    if (isConnected) {
+      disconnect();
+    } else {
+      open();
+    }
+  };
 
   return (
     <ParallaxScrollView
@@ -57,9 +70,11 @@ export default function Settings() {
       </ThemedView>
 
       <ThemedView style={styles.accountsContainer}>
-        <ThemedText type="subtitle" style={styles.label}>
-          Select Recipient Address
-        </ThemedText>
+        {isConnected && (
+          <ThemedText type="subtitle" style={styles.label}>
+            Recipient Addresses
+          </ThemedText>
+        )}
 
         {groupedAccounts.map((account) => (
           <ThemedView key={account.chainId} style={styles.networkGroup}>
@@ -86,13 +101,36 @@ export default function Settings() {
             </ThemedView>
           </ThemedView>
         ))}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={[styles.openButton, { backgroundColor: Theme.primary }]}
-          onPress={() => open()}
-        >
-          <ThemedText style={styles.openButtonText}>Open AppKit</ThemedText>
-        </TouchableOpacity>
+        {isConnected ? (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[
+              styles.appkitButton,
+              {
+                backgroundColor: Theme.buttonDisabled,
+                shadowColor: Theme.buttonDisabled,
+              },
+            ]}
+            onPress={() => onAppKitPress()}
+          >
+            <IconSymbol
+              name={
+                isConnected
+                  ? "rectangle.portrait.and.arrow.right"
+                  : "creditcard.fill"
+              }
+              size={20}
+              color="white"
+            />
+            <ThemedText style={styles.appkitButtonText}>
+              {isConnected ? "Disconnect Wallet" : "Connect Wallet"}
+            </ThemedText>
+          </TouchableOpacity>
+        ) : (
+          <ThemedText type="subtitle" style={styles.label}>
+            No recipient wallet connected
+          </ThemedText>
+        )}
       </ThemedView>
     </ParallaxScrollView>
   );
@@ -140,16 +178,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "monospace",
   },
-  openButton: {
-    padding: 12,
-    borderRadius: 8,
+  appkitButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    padding: 18,
+    borderRadius: 12,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  openButtonText: {
+  appkitButtonText: {
     color: "white",
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "bold",
+    marginLeft: 8,
   },
 });

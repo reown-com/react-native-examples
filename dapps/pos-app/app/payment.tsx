@@ -3,12 +3,12 @@ import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { NetworkKey, NETWORKS, TokenKey } from "@/constants/networks";
 import { useTheme } from "@/hooks/use-theme-color";
-import { storage, STORAGE_KEYS } from "@/utils/storage";
+import { showErrorToast } from "@/utils/toast";
+import { useAccount } from "@reown/appkit-react-native";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Alert,
   ScrollView,
   StyleSheet,
   TextInput,
@@ -49,7 +49,7 @@ const useAmountFormatter = () => {
 };
 
 export default function PaymentScreen() {
-  const [recipientAddress, setRecipientAddress] = useState("");
+  const { allAccounts } = useAccount();
   const { formatAmount } = useAmountFormatter();
   const Theme = useTheme();
 
@@ -72,25 +72,20 @@ export default function PaymentScreen() {
   const selectedNetwork = NETWORKS[watchedNetwork as NetworkKey];
   const availableTokens = Object.keys(selectedNetwork.tokens) as TokenKey[];
 
-  useEffect(() => {
-    loadRecipientAddress();
-  }, []);
-
-  const loadRecipientAddress = async () => {
-    try {
-      const address = await storage.getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
-      if (address) {
-        setRecipientAddress(address);
-      } else {
-        Alert.alert("No Recipient", "Please set recipient address in Settings");
-        router.back();
-      }
-    } catch (error) {
-      console.error("Error loading recipient address:", error);
-    }
-  };
-
   const onSubmit = (data: FormData) => {
+    const networkData = NETWORKS[data.network];
+    const recipientAddress = allAccounts?.find(
+      (account) => account.chainId === String(networkData.id),
+    )?.address;
+
+    if (!recipientAddress) {
+      showErrorToast({
+        title: "No valid recipient address found",
+        message: "Please select another chain",
+      });
+      return;
+    }
+
     router.push({
       pathname: "/scan",
       params: {

@@ -152,45 +152,45 @@ const sepolia = {
   },
 };
 
-// const solana = {
-//   id: '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
-//   caipId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
-//   name: 'Solana',
-//   nativeCurrency: { name: 'Solana', symbol: 'SOL', decimals: 9 },
-//   rpcUrls: {
-//     default: {
-//       http: ['https://rpc.walletconnect.org/v1']
-//     }
-//   },
-//   blockExplorers: { default: { name: 'Solscan', url: 'https://solscan.io' } },
-//   tokens: {
-//     usdc: {
-//       address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-//       decimals: 6,
-//       standard: "token",
-//       symbol: "USDC",
-//     },
-//   }
-// }
+const solana = {
+  id: "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+  caipId: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+  name: "Solana",
+  nativeCurrency: { name: "Solana", symbol: "SOL", decimals: 9 },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.walletconnect.org/v1"],
+    },
+  },
+  blockExplorers: { default: { name: "Solscan", url: "https://solscan.io" } },
+  tokens: {
+    usdc: {
+      address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      decimals: 6,
+      standard: "token",
+      symbol: "USDC",
+    },
+  },
+};
 
-// const solanaDevnet = {
-//   id: 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
-//   caipId: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
-//   name: 'Solana Devnet',
-//   nativeCurrency: { name: 'Solana', symbol: 'SOL', decimals: 9 },
-//   rpcUrls: {
-//     default: { http: ['https://rpc.walletconnect.org/v1'] }
-//   },
-//   blockExplorers: { default: { name: 'Solscan', url: 'https://solscan.io' } },
-//   tokens: {
-//     usdc: {
-//       address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-//       decimals: 6,
-//       standard: "token",
-//       symbol: "USDC",
-//     },
-//   }
-// }
+const solanaDevnet = {
+  id: "EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+  caipId: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+  name: "Solana Devnet",
+  nativeCurrency: { name: "Solana", symbol: "SOL", decimals: 9 },
+  rpcUrls: {
+    default: { http: ["https://rpc.walletconnect.org/v1"] },
+  },
+  blockExplorers: { default: { name: "Solscan", url: "https://solscan.io" } },
+  tokens: {
+    usdc: {
+      address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      decimals: 6,
+      standard: "token",
+      symbol: "USDC",
+    },
+  },
+};
 
 export const NETWORKS = {
   base,
@@ -198,8 +198,8 @@ export const NETWORKS = {
   arbitrum,
   mainnet,
   sepolia,
-  // solana,
-  // solanaDevnet,
+  solana,
+  solanaDevnet,
 } as const;
 
 export type NetworkKey = keyof typeof NETWORKS;

@@ -25,6 +25,7 @@ const MAPPING = {
   "xmark.circle.fill": "cancel",
   clock: "schedule",
   "creditcard.fill": "credit-card",
+  "rectangle.portrait.and.arrow.right": "logout",
 } as IconMapping;
 
 /**

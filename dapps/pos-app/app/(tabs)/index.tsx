@@ -1,6 +1,4 @@
-import { useFocusEffect } from "@react-navigation/native";
 import { Image } from "expo-image";
-import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
@@ -9,7 +7,6 @@ import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { usePOS } from "@/context/POSContext";
 import { useTheme } from "@/hooks/use-theme-color";
-import { storage, STORAGE_KEYS } from "@/utils/storage";
 import { useAppKit, useAppKitState } from "@reown/appkit-react-native";
 import { router } from "expo-router";
 
@@ -17,28 +14,7 @@ export default function HomeScreen() {
   const { isInitialized } = usePOS();
   const { isConnected } = useAppKitState();
   const { open } = useAppKit();
-  const [recipientAddress, setRecipientAddress] = useState("");
   const Theme = useTheme();
-
-  const loadRecipientAddress = async () => {
-    const address = await storage.getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
-    setRecipientAddress(address || "");
-  };
-
-  useEffect(() => {
-    loadRecipientAddress();
-  }, []);
-
-  // Reload recipient address when screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      const loadRecipientAddress = async () => {
-        const address = await storage.getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
-        setRecipientAddress(address || "");
-      };
-      loadRecipientAddress();
-    }, []),
-  );
 
   const handleStartPayment = () => {
     router.push("/payment");
@@ -56,49 +32,26 @@ export default function HomeScreen() {
     >
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="title" style={styles.title}>
-          POS Terminal
+          Mobile POS Terminal
         </ThemedText>
         <ThemedText type="defaultSemiBold" style={styles.subtitle}>
-          Crypto payment system powered by WalletConnect
+          by WalletConnect
         </ThemedText>
       </ThemedView>
-      {/* {recipientAddress ? 
-        <ThemedText type="defaultSemiBold" style={styles.subtitle}>
-          Recipient Address: {recipientAddress?.slice(0, 6)}...{recipientAddress?.slice(-4)}
-        </ThemedText>
-        : 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[
-              styles.primaryButton,
-              { 
-                backgroundColor: Theme.primary,
-                shadowColor: Theme.primary 
-              }
-            ]}
-            onPress={() => {
-              router.push('/settings');
-            }}
-          >
-            <IconSymbol name="gearshape.fill" size={20} color="white" />
-            <ThemedText style={styles.primaryButtonText}>Set Terminal Address</ThemedText>
-          </TouchableOpacity>
-      } */}
       {isConnected ? (
         <TouchableOpacity
           activeOpacity={0.8}
           style={[
             styles.primaryButton,
             {
-              backgroundColor:
-                !recipientAddress || !isInitialized
-                  ? Theme.buttonDisabled
-                  : Theme.primary,
+              backgroundColor: !isInitialized
+                ? Theme.buttonDisabled
+                : Theme.primary,
               shadowColor: Theme.primary,
             },
           ]}
           onPress={handleStartPayment}
-          disabled={!recipientAddress || !isInitialized}
+          disabled={!isInitialized}
         >
           <IconSymbol name="creditcard.fill" size={20} color="white" />
           <ThemedText style={styles.primaryButtonText}>
@@ -119,7 +72,7 @@ export default function HomeScreen() {
         >
           <IconSymbol name="creditcard.fill" size={20} color="white" />
           <ThemedText style={styles.primaryButtonText}>
-            Connect Wallet
+            Connect Recipient Wallet
           </ThemedText>
         </TouchableOpacity>
       )}

@@ -140,6 +140,7 @@ export default function QRModalScreen() {
   useEffect(() => {
     const networkData = NETWORKS[network];
     const tokenData = networkData.tokens[token];
+
     const paymentIntent = {
       token: {
         network: { name: networkData.name, chainId: networkData.caipId },
@@ -179,17 +180,36 @@ export default function QRModalScreen() {
           </ThemedView>
           <ThemedView
             style={[
+              styles.recipientContainer,
+              { backgroundColor: Theme.cardBackground },
+            ]}
+          >
+            <ThemedText style={[{ color: Theme.text }]}>
+              Recipient: {recipientAddress.slice(0, 6)}...
+              {recipientAddress.slice(-4)}
+            </ThemedText>
+          </ThemedView>
+          <ThemedView
+            style={[
               styles.amountContainer,
               { backgroundColor: Theme.cardBackground },
             ]}
           >
-            <ThemedText style={[styles.amountText, { color: Theme.text }]}>
+            <ThemedText
+              style={[
+                styles.amountText,
+                { color: Theme.text, textTransform: "uppercase" },
+              ]}
+            >
               ${amount} {token}
             </ThemedText>
             <ThemedText
-              style={[styles.amountTextSecondary, { color: Theme.text }]}
+              style={[
+                styles.amountTextSecondary,
+                { color: Theme.text, textTransform: "capitalize" },
+              ]}
             >
-              on {network}
+              {network}
             </ThemedText>
           </ThemedView>
           <ThemedView style={styles.statusContainer}>
@@ -252,19 +272,26 @@ const styles = StyleSheet.create({
   qrContainer: {
     padding: 20,
     borderRadius: 20,
-    marginBottom: 30,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 8,
+    marginBottom: 16,
+  },
+  recipientContainer: {
+    marginVertical: 8,
+    borderRadius: 14,
+    paddingVertical: 12,
+    width: "100%",
+    alignItems: "center",
   },
   amountContainer: {
     borderRadius: 18,
-    padding: 12,
+    paddingVertical: 12,
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: 8,
   },
   amountText: {
     fontSize: 24,
