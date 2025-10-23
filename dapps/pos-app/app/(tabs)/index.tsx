@@ -9,16 +9,19 @@ import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { usePOS } from '@/context/POSContext';
 import { useTheme } from '@/hooks/use-theme-color';
-import { getItem, STORAGE_KEYS } from '@/utils/storage';
+import { storage, STORAGE_KEYS } from '@/utils/storage';
+import { useAppKit, useAppKitState } from '@reown/appkit-react-native';
 import { router } from 'expo-router';
 
 export default function HomeScreen() {
   const {isInitialized} = usePOS();
+  const { isConnected } = useAppKitState();
+  const { open } = useAppKit();
   const [recipientAddress, setRecipientAddress] = useState('');
   const Theme = useTheme();
 
   const loadRecipientAddress = async () => {
-    const address = await getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
+    const address = await storage.getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
     setRecipientAddress(address || '');
   };
 
@@ -30,7 +33,7 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       const loadRecipientAddress = async () => {
-        const address = await getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
+        const address = await storage.getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
         setRecipientAddress(address || '');
       };
       loadRecipientAddress();
@@ -58,7 +61,7 @@ export default function HomeScreen() {
           Crypto payment system powered by WalletConnect
         </ThemedText>
       </ThemedView>
-      {recipientAddress ? 
+      {/* {recipientAddress ? 
         <ThemedText type="defaultSemiBold" style={styles.subtitle}>
           Recipient Address: {recipientAddress?.slice(0, 6)}...{recipientAddress?.slice(-4)}
         </ThemedText>
@@ -79,7 +82,8 @@ export default function HomeScreen() {
             <IconSymbol name="gearshape.fill" size={20} color="white" />
             <ThemedText style={styles.primaryButtonText}>Set Terminal Address</ThemedText>
           </TouchableOpacity>
-      }
+      } */}
+      {isConnected ? (
         <TouchableOpacity
           activeOpacity={0.8}
           style={[
@@ -97,6 +101,19 @@ export default function HomeScreen() {
             Start New Payment
           </ThemedText>
         </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => open()}
+          style={[
+            styles.primaryButton,
+            { backgroundColor: Theme.buttonDisabled, shadowColor: Theme.buttonDisabled }
+          ]}
+        >
+          <IconSymbol name="creditcard.fill" size={20} color="white" />
+          <ThemedText style={styles.primaryButtonText}>Connect Wallet</ThemedText>
+        </TouchableOpacity>
+      )}
     </ParallaxScrollView>
   );
 }

@@ -3,7 +3,7 @@ import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { NetworkKey, NETWORKS, TokenKey } from '@/constants/networks';
 import { useTheme } from '@/hooks/use-theme-color';
-import { getItem, STORAGE_KEYS } from '@/utils/storage';
+import { storage, STORAGE_KEYS } from '@/utils/storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -72,7 +72,7 @@ export default function PaymentScreen() {
 
   const loadRecipientAddress = async () => {
     try {
-      const address = await getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
+      const address = await storage.getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
       if (address) {
         setRecipientAddress(address);
       } else {

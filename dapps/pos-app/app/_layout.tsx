@@ -5,10 +5,18 @@ import { StatusBar } from 'expo-status-bar';
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
+import { WagmiProvider } from 'wagmi';
 
 import { POSProvider } from '@/context/POSContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useInitializePOS } from '@/hooks/use-initialize-pos';
+import { appKit, wagmiAdapter } from '@/utils/appkit';
+import { AppKit, AppKitProvider } from '@reown/appkit-react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
+
+const queryClient = new QueryClient();
+
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -20,10 +28,10 @@ export default function RootLayout() {
     projectId: process.env.EXPO_PUBLIC_PROJECT_ID!,
     deviceId: '1234567890',
     metadata: {
-      merchantName: "Crypto POS Terminal",
-      logoIcon: "https://appkit.reown.com/metadata-icon.svg",
-      description: "Professional Point of Sale Terminal",
-      url: "https://appkit.reown.com",
+      merchantName: "Mobile POS Terminal",
+      description: "Mobile Point of Sale Terminal",
+      logoIcon: "https://avatars.githubusercontent.com/u/179229932",
+      url: "https://reown.com/appkit",
     },
     loggerOptions: {
       posLevel: "debug",
@@ -32,18 +40,25 @@ export default function RootLayout() {
 
   return (
     <KeyboardProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <POSProvider posClient={posClient} isInitialized={isInitialized}>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="payment" options={{ presentation: 'card', title: 'Create Payment', headerBackButtonDisplayMode: 'minimal' }} />
-            <Stack.Screen name="scan" options={{ presentation: 'card', title: 'Payment Request', headerBackButtonDisplayMode: 'minimal' }} />
-            <Stack.Screen name="payment-success" options={{ presentation: 'card', title: 'Payment Success', headerBackButtonDisplayMode: 'minimal' }} />
-          </Stack>
-          <StatusBar style="auto" />
-        </POSProvider>
-        <Toast />
-      </ThemeProvider>
+      <AppKitProvider instance={appKit}>
+        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <POSProvider posClient={posClient} isInitialized={isInitialized}>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="payment" options={{ presentation: 'card', title: 'Create Payment', headerBackButtonDisplayMode: 'minimal' }} />
+                <Stack.Screen name="scan" options={{ presentation: 'card', title: 'Payment Request', headerBackButtonDisplayMode: 'minimal' }} />
+                <Stack.Screen name="payment-success" options={{ presentation: 'card', title: 'Payment Success', headerBackButtonDisplayMode: 'minimal' }} />
+              </Stack>
+              <StatusBar style="auto" />
+              <AppKit />
+            </POSProvider>
+            <Toast />
+          </ThemeProvider>
+        </QueryClientProvider>
+        </WagmiProvider>
+      </AppKitProvider>
     </KeyboardProvider>
   );
 }

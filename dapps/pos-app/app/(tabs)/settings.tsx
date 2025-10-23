@@ -7,7 +7,7 @@ import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme-color';
-import { getItem, setItem, STORAGE_KEYS } from '@/utils/storage';
+import { storage, STORAGE_KEYS } from '@/utils/storage';
 import { showErrorToast, showSuccessToast } from '@/utils/toast';
 
 export default function TabTwoScreen() {
@@ -21,7 +21,7 @@ export default function TabTwoScreen() {
     // Load existing recipient address on component mount
     const loadRecipientAddress = async () => {
       try {
-        const address = await getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
+        const address = await storage.getItem(STORAGE_KEYS.RECIPIENT_ADDRESS);
         if (address) {
           setRecipientAddress(address);
           setOriginalAddress(address);
@@ -36,7 +36,7 @@ export default function TabTwoScreen() {
 
   const handleSaveAddress = async () => {
     try {
-      await setItem(STORAGE_KEYS.RECIPIENT_ADDRESS, recipientAddress);
+      await storage.setItem(STORAGE_KEYS.RECIPIENT_ADDRESS, recipientAddress);
       setOriginalAddress(recipientAddress);
       showSuccessToast({title: 'Recipient address saved'});
     } catch (error) {
