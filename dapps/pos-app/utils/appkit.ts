@@ -17,9 +17,11 @@ export const wagmiAdapter = new WagmiAdapter({
 
 const solanaAdapter = new SolanaAdapter();
 
+export const networks = [mainnet, polygon, arbitrum, optimism, base, sepolia, solana];
+
 export const appKit = createAppKit({
   projectId,
-  networks: [mainnet, polygon, arbitrum, optimism, base, sepolia, solana],
+  networks,
   defaultNetwork: mainnet,
   adapters: [wagmiAdapter, solanaAdapter],
   storage,
