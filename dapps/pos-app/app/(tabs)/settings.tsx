@@ -6,16 +6,15 @@ import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme-color";
-import { networks } from "@/utils/appkit";
+import { getNetworkById } from "@/utils/networks";
 import {
   useAccount,
   useAppKit,
   useAppKitState,
 } from "@reown/appkit-react-native";
 
-// Network mapping for display names
 const getNetworkName = (chainId: string) => {
-  const network = networks.find((n) => String(n.id) === String(chainId));
+  const network = getNetworkById(chainId);
   return network?.name;
 };
 

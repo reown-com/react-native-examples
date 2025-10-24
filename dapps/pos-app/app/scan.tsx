@@ -2,10 +2,14 @@ import WCLogo from "@/assets/images/wc-logo.png";
 import PaymentStep from "@/components/payment-step";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { NetworkKey, NETWORKS, TokenKey } from "@/constants/networks";
 import { usePOS } from "@/context/POSContext";
 import { usePOSListener } from "@/hooks/use-pos-listener";
 import { useTheme } from "@/hooks/use-theme-color";
+import {
+  getNetworkByCaipId,
+  getNetworkByName,
+  TokenKey,
+} from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
 import * as Haptics from "expo-haptics";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
@@ -21,7 +25,7 @@ import QRCode from "react-native-qrcode-svg";
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
   token: TokenKey;
-  network: NetworkKey;
+  networkName: string;
   recipientAddress: string;
 }
 
@@ -40,7 +44,7 @@ export default function QRModalScreen() {
   const Theme = useTheme();
 
   // Extract data from URL parameters
-  const { amount, token, network, recipientAddress } = params;
+  const { amount, token, networkName, recipientAddress } = params;
 
   usePOSListener("connected", () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -100,12 +104,7 @@ export default function QRModalScreen() {
     console.log("Payment successful");
     setIsPaymentSuccessful(true);
 
-    const chainId = transaction.chainId; // e.g., "eip155:8453"
-
-    // Find the network data to get explorer URL
-    const networkData = Object.values(NETWORKS).find(
-      (network) => network.caipId === chainId,
-    );
+    const networkData = getNetworkByCaipId(transaction.chainId);
 
     const explorerUrl = networkData?.blockExplorers?.default?.url;
     const explorerLink = explorerUrl
@@ -138,18 +137,27 @@ export default function QRModalScreen() {
   };
 
   useEffect(() => {
-    const networkData = NETWORKS[network];
+    const networkData = getNetworkByName(networkName);
+
+    if (!networkData) {
+      showErrorToast({
+        title: "Network not found",
+        message: "Please select another network",
+      });
+      return;
+    }
+
     const tokenData = networkData.tokens[token];
 
     const paymentIntent = {
       token: {
-        network: { name: networkData.name, chainId: networkData.caipId },
+        network: { name: networkData.name, chainId: networkData.caipNetworkId },
         symbol: tokenData.symbol,
         standard: tokenData.standard,
         address: tokenData.address,
       },
       amount,
-      recipient: `${networkData.caipId}:${recipientAddress}`,
+      recipient: `${networkData.caipNetworkId}:${recipientAddress}`,
     };
 
     posClient?.createPaymentIntent({ paymentIntents: [paymentIntent] });
@@ -209,7 +217,7 @@ export default function QRModalScreen() {
                 { color: Theme.text, textTransform: "capitalize" },
               ]}
             >
-              {network}
+              {networkName}
             </ThemedText>
           </ThemedView>
           <ThemedView style={styles.statusContainer}>

@@ -1,81 +1,75 @@
+import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { NetworkKey, NETWORKS, TokenKey } from "@/constants/networks";
 import { useTheme } from "@/hooks/use-theme-color";
+import { getAvailableNetworks, Network, TokenKey } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
 import { useAccount } from "@reown/appkit-react-native";
 import { router } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import {
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-
-const AVAILABLE_NETWORKS = Object.keys(NETWORKS);
 
 interface FormData {
   amount: string;
   token: TokenKey;
-  network: NetworkKey;
+  networkName: string;
 }
-
-const useAmountFormatter = () => {
-  const formatAmount = (text: string) => {
-    // Allow only digits, one comma or dot, and up to 2 decimal places
-    const cleanedText = text
-      .replace(/[^0-9,.]/g, "") // Remove any non-numeric characters except comma and dot
-      .replace(/(,.*),/g, "$1") // Remove multiple commas, keep only the first one
-      .replace(/(\..*)\./g, "$1") // Remove multiple dots, keep only the first one
-      .replace(/(,.*)\./g, "$1") // If there's already a comma, don't allow dots
-      .replace(/(\..*),/g, "$1"); // If there's already a dot, don't allow commas
-
-    // Transform dot to comma for display
-    const displayValue = cleanedText.replace(".", ",");
-
-    return displayValue;
-  };
-
-  const getFormValue = (displayValue: string) => {
-    // Convert comma back to dot for form validation
-    return displayValue.replace(",", ".");
-  };
-
-  return { formatAmount, getFormValue };
-};
 
 export default function PaymentScreen() {
   const { allAccounts } = useAccount();
-  const { formatAmount } = useAmountFormatter();
   const Theme = useTheme();
+  const availabeNetworks = getAvailableNetworks(
+    allAccounts?.map((account) => account.chainId) || [],
+  );
 
   const {
     control,
     handleSubmit,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      amount: "",
-      token: "usdc",
-      network: "base",
+      amount: "0",
+      token: Object.keys(availabeNetworks[0]?.tokens || {})[0] as TokenKey,
+      networkName: availabeNetworks[0]?.name || "",
     },
   });
 
+  const watchAmount = watch("amount");
   const watchedToken = watch("token");
-  const watchedNetwork = watch("network");
-  const selectedNetwork = NETWORKS[watchedNetwork as NetworkKey];
-  const availableTokens = Object.keys(selectedNetwork.tokens) as TokenKey[];
+  const watchedNetwork = watch("networkName");
+  const selectedNetwork = availabeNetworks.find(
+    (network) => network.name === watchedNetwork,
+  );
+
+  const availableTokens = Object.keys(
+    selectedNetwork?.tokens || {},
+  ) as TokenKey[];
+
+  const onNetworkChange = (network: Network) => {
+    setValue("networkName", network.name);
+    const networkData = availabeNetworks.find(
+      (n) => String(n.id) === String(network.id),
+    );
+
+    if (Object.keys(networkData?.tokens || {}).includes(getValues("token"))) {
+      return;
+    }
+
+    setValue("token", Object.keys(networkData?.tokens || {})[0] as TokenKey);
+  };
 
   const onSubmit = (data: FormData) => {
-    const networkData = NETWORKS[data.network];
+    const networkData = availabeNetworks.find(
+      (network) => network.name === data.networkName,
+    );
     const recipientAddress = allAccounts?.find(
-      (account) => account.chainId === String(networkData.id),
+      (account) => account.chainId === String(networkData?.id),
     )?.address;
 
     if (!recipientAddress) {
@@ -86,16 +80,23 @@ export default function PaymentScreen() {
       return;
     }
 
+    let amount = data.amount.replace(",", ".");
+    if (amount.endsWith(".")) {
+      amount = amount.slice(0, -1);
+    }
+
     router.push({
       pathname: "/scan",
       params: {
-        amount: data.amount.replace(",", "."),
+        amount,
         token: data.token,
-        network: data.network,
+        networkName: data.networkName,
         recipientAddress,
       },
     });
   };
+
+  console.log("errors", errors);
 
   return (
     <ThemedView style={styles.container}>
@@ -104,39 +105,9 @@ export default function PaymentScreen() {
           {/* Amount Input */}
           <ThemedView style={styles.section}>
             <ThemedText type="subtitle">Amount to Pay</ThemedText>
-            <Controller
-              control={control}
-              name="amount"
-              rules={{
-                required: "Amount is required",
-                pattern: {
-                  value: /^\d+([,.]\d{1,10})?$/,
-                  message: "Invalid amount format",
-                },
-              }}
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      color: Theme.text,
-                      borderColor: errors.amount ? Theme.error : Theme.border,
-                      backgroundColor: Theme.background,
-                    },
-                  ]}
-                  value={value}
-                  onChangeText={(text) => {
-                    const formattedText = formatAmount(text);
-                    onChange(formattedText);
-                  }}
-                  placeholder="Enter amount"
-                  placeholderTextColor={Theme.placeholder}
-                  keyboardType="numeric"
-                  returnKeyType="done"
-                  autoFocus
-                />
-              )}
-            />
+            <ThemedText style={[styles.input, { color: Theme.text }]}>
+              ${watchAmount}
+            </ThemedText>
             {errors.amount && (
               <ThemedText style={[styles.errorText, { color: Theme.error }]}>
                 {errors.amount.message}
@@ -152,33 +123,37 @@ export default function PaymentScreen() {
               showsHorizontalScrollIndicator={false}
               style={styles.buttonContainer}
             >
-              {AVAILABLE_NETWORKS.map((network) => (
+              {availabeNetworks.map((network) => (
                 <TouchableOpacity
-                  key={network}
+                  key={network.id}
                   style={[
                     styles.optionButton,
                     {
                       borderColor: Theme.border,
                       backgroundColor:
-                        watchedNetwork === network
+                        watchedNetwork === network.name
                           ? Theme.primary
                           : Theme.background,
                     },
                   ]}
-                  onPress={() => setValue("network", network as NetworkKey)}
+                  onPress={() => {
+                    onNetworkChange(network);
+                  }}
                 >
                   <ThemedText
                     style={[
                       styles.optionButtonText,
-                      watchedNetwork === network &&
+                      watchedNetwork === network.name &&
                         styles.optionButtonTextSelected,
                       {
                         color:
-                          watchedNetwork === network ? "white" : Theme.text,
+                          watchedNetwork === network.name
+                            ? "white"
+                            : Theme.text,
                       },
                     ]}
                   >
-                    {network}
+                    {network.name}
                   </ThemedText>
                 </TouchableOpacity>
               ))}
@@ -222,6 +197,43 @@ export default function PaymentScreen() {
             </ScrollView>
           </ThemedView>
 
+          {/* Amount Keyboard */}
+          <ThemedView style={styles.section}>
+            <ThemedView
+              style={[styles.dividerLine, { backgroundColor: Theme.gray500 }]}
+            />
+            <Controller
+              control={control}
+              name="amount"
+              rules={{
+                validate: (value) => {
+                  console.log("validate function called with:", value);
+                  if (!value || value === "0") {
+                    return "Amount is required";
+                  }
+                  return true;
+                },
+              }}
+              render={({ field: { onChange, value: prev } }) => (
+                <NumericKeyboard
+                  onKeyPress={(key) => {
+                    if (key === "erase") {
+                      const newDisplay = prev?.slice(0, -1) || "";
+                      onChange?.(newDisplay.replace(",", "."));
+                    } else if (key === ",") {
+                      if (prev.includes(",") || prev.includes(".")) return; // Don't add multiple commas
+                      const newDisplay = prev + ",";
+                      onChange?.(newDisplay.replace(",", "."));
+                    } else {
+                      const newDisplay = prev === "0" ? key : prev + key;
+                      onChange?.(newDisplay.replace(",", "."));
+                    }
+                  }}
+                />
+              )}
+            />
+          </ThemedView>
+
           <TouchableOpacity
             style={[
               styles.generateButton,
@@ -257,8 +269,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     padding: 15,
-    fontSize: 16,
+    fontSize: 32,
+    fontWeight: "bold",
     marginTop: 8,
+    textAlign: "center",
   },
   errorText: {
     fontSize: 14,
@@ -298,5 +312,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 8,
+  },
+  dividerLine: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: "#ddd",
+    marginBottom: 12,
   },
 });

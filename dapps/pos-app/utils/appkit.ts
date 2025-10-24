@@ -1,43 +1,24 @@
 import "@walletconnect/react-native-compat";
 
-import { createAppKit, solana } from "@reown/appkit-react-native";
+import { createAppKit } from "@reown/appkit-react-native";
 import { SolanaAdapter } from "@reown/appkit-solana-react-native";
 import { WagmiAdapter } from "@reown/appkit-wagmi-react-native";
-
-// You can use 'viem/chains' or define your own chains using `AppKitNetwork` type. Check Options/networks for more detailed info
-import {
-  arbitrum,
-  base,
-  mainnet,
-  optimism,
-  polygon,
-  sepolia,
-} from "viem/chains";
+import { NETWORKS_LIST, WAGMI_NETWORKS_LIST } from "./networks";
 import { storage } from "./storage";
 
 const projectId = process.env.EXPO_PUBLIC_PROJECT_ID!;
 
 export const wagmiAdapter = new WagmiAdapter({
   projectId,
-  networks: [mainnet, polygon, arbitrum, optimism, base, sepolia],
+  networks: WAGMI_NETWORKS_LIST,
 });
 
 const solanaAdapter = new SolanaAdapter();
 
-export const networks = [
-  mainnet,
-  polygon,
-  arbitrum,
-  optimism,
-  base,
-  sepolia,
-  solana,
-];
-
 export const appKit = createAppKit({
   projectId,
-  networks,
-  defaultNetwork: mainnet,
+  networks: NETWORKS_LIST,
+  defaultNetwork: NETWORKS_LIST[0],
   adapters: [wagmiAdapter, solanaAdapter],
   storage,
   metadata: {

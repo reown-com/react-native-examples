@@ -1,9 +1,35 @@
-const mainnet = {
+import {
+  arbitrum as arbitrumViem,
+  base as baseViem,
+  mainnet as mainnetViem,
+  optimism as optimismViem,
+  polygon as polygonViem,
+  sepolia as sepoliaViem,
+} from "viem/chains";
+
+import type { AppKitNetwork } from "@reown/appkit-react-native";
+
+// ******************** Types ********************
+export type NetworkKey = (typeof NETWORKS_LIST)[number]["name"];
+export type TokenKey = "usdc" | "usdt";
+export interface Token {
+  address: string;
+  decimals: number;
+  standard: string;
+  symbol: string;
+}
+
+export type Network = AppKitNetwork & {
+  tokens: Record<string, Token>;
+};
+
+// ******************** Networks ********************
+const mainnet: Network = {
   id: 1,
-  caipId: "eip155:1",
+  caipNetworkId: "eip155:1",
+  chainNamespace: "eip155",
   name: "Ethereum",
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-  blockTime: 12000,
   rpcUrls: {
     default: {
       http: ["https://eth.merkle.io"],
@@ -13,7 +39,6 @@ const mainnet = {
     default: {
       name: "Etherscan",
       url: "https://etherscan.io",
-      apiUrl: "https://api.etherscan.io/api",
     },
   },
   tokens: {
@@ -32,9 +57,10 @@ const mainnet = {
   },
 };
 
-const optimism = {
+const optimism: Network = {
   id: 10,
-  caipId: "eip155:10",
+  caipNetworkId: "eip155:10",
+  chainNamespace: "eip155",
   name: "OP Mainnet",
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
@@ -46,7 +72,6 @@ const optimism = {
     default: {
       name: "Optimism Explorer",
       url: "https://optimistic.etherscan.io",
-      apiUrl: "https://api-optimistic.etherscan.io/api",
     },
   },
   tokens: {
@@ -65,9 +90,10 @@ const optimism = {
   },
 };
 
-const base = {
+const base: Network = {
   id: 8453,
-  caipId: "eip155:8453",
+  caipNetworkId: "eip155:8453",
+  chainNamespace: "eip155",
   name: "Base",
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
@@ -79,7 +105,6 @@ const base = {
     default: {
       name: "Basescan",
       url: "https://basescan.org",
-      apiUrl: "https://api.basescan.org/api",
     },
   },
   tokens: {
@@ -92,9 +117,10 @@ const base = {
   },
 };
 
-const arbitrum = {
+const arbitrum: Network = {
   id: 42161,
-  caipId: "eip155:42161",
+  caipNetworkId: "eip155:42161",
+  chainNamespace: "eip155",
   name: "Arbitrum",
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
@@ -106,7 +132,6 @@ const arbitrum = {
     default: {
       name: "Arbiscan",
       url: "https://arbiscan.io",
-      apiUrl: "https://api.arbiscan.io/api",
     },
   },
   tokens: {
@@ -125,9 +150,10 @@ const arbitrum = {
   },
 };
 
-const sepolia = {
+const sepolia: Network = {
   id: 11155111,
-  caipId: "eip155:11155111",
+  caipNetworkId: "eip155:11155111",
+  chainNamespace: "eip155",
   name: "Sepolia",
   nativeCurrency: { name: "Sepolia Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
@@ -139,7 +165,6 @@ const sepolia = {
     default: {
       name: "Etherscan",
       url: "https://sepolia.etherscan.io",
-      apiUrl: "https://api-sepolia.etherscan.io/api",
     },
   },
   tokens: {
@@ -152,9 +177,10 @@ const sepolia = {
   },
 };
 
-const solana = {
+const solana: Network = {
   id: "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
-  caipId: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+  caipNetworkId: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+  chainNamespace: "solana",
   name: "Solana",
   nativeCurrency: { name: "Solana", symbol: "SOL", decimals: 9 },
   rpcUrls: {
@@ -173,9 +199,10 @@ const solana = {
   },
 };
 
-const solanaDevnet = {
+const solanaDevnet: Network = {
   id: "EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
-  caipId: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+  caipNetworkId: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+  chainNamespace: "solana",
   name: "Solana Devnet",
   nativeCurrency: { name: "Solana", symbol: "SOL", decimals: 9 },
   rpcUrls: {
@@ -192,15 +219,43 @@ const solanaDevnet = {
   },
 };
 
-export const NETWORKS = {
-  base,
+// The same chains must be included in NETWORKS_LIST with the token information
+export const WAGMI_NETWORKS_LIST = [
+  mainnetViem,
+  optimismViem,
+  polygonViem,
+  arbitrumViem,
+  baseViem,
+  sepoliaViem,
+] as const;
+
+export const NETWORKS_LIST: Network[] = [
+  mainnet,
   optimism,
   arbitrum,
-  mainnet,
+  base,
   sepolia,
   solana,
   solanaDevnet,
-} as const;
+];
 
-export type NetworkKey = keyof typeof NETWORKS;
-export type TokenKey = keyof (typeof NETWORKS)[NetworkKey]["tokens"];
+// ******************** Helpers ********************
+export const getNetworkByName = (name: string): Network | undefined =>
+  NETWORKS_LIST.find((network) => network.name === name);
+
+export const getNetworkById = (id: string | number): Network | undefined =>
+  NETWORKS_LIST.find((network) => String(network.id) === String(id));
+
+export const getNetworkByCaipId = (caipId: string): Network | undefined =>
+  NETWORKS_LIST.find((network) => network.caipNetworkId === caipId);
+
+export const getAvailableNetworks = (userChainIds: string[]): Network[] =>
+  NETWORKS_LIST.filter((network) => userChainIds.includes(String(network.id)));
+
+export const getAvailableTokens = (network: Network): string[] =>
+  Object.keys(network.tokens);
+
+export const getTokenData = (
+  network: Network,
+  tokenKey: string,
+): Token | undefined => network.tokens[tokenKey];
