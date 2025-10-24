@@ -1,18 +1,21 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { useSuccessAnimations } from "@/hooks/use-success-animations";
 import { useTheme } from "@/hooks/use-theme-color";
 import { showErrorToast } from "@/utils/toast";
 import * as Haptics from "expo-haptics";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
 import {
+  Animated,
   Linking,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface SuccessParams extends UnknownOutputParams {
   transactionHash: string;
@@ -26,6 +29,7 @@ interface SuccessParams extends UnknownOutputParams {
 export default function PaymentSuccessScreen() {
   const Theme = useTheme();
   const params = useLocalSearchParams<SuccessParams>();
+  const insets = useSafeAreaInsets();
   const {
     transactionHash,
     explorerLink,
@@ -34,6 +38,18 @@ export default function PaymentSuccessScreen() {
     token,
     recipientAddress,
   } = params;
+
+  // Get animation values from custom hook
+  const {
+    iconScale,
+    iconOpacity,
+    iconTranslateY,
+    pulseScale,
+    cardTranslateY,
+    cardOpacity,
+    buttonsTranslateY,
+    buttonsOpacity,
+  } = useSuccessAnimations();
 
   const handleViewOnExplorer = async () => {
     try {
@@ -45,6 +61,10 @@ export default function PaymentSuccessScreen() {
 
   const handleNewPayment = () => {
     router.replace("/payment");
+  };
+
+  const handleGoToMainScreen = () => {
+    router.replace("/");
   };
 
   const formatAddress = (address: string) => {
@@ -67,18 +87,26 @@ export default function PaymentSuccessScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[
+        styles.container,
+        { paddingTop: insets.top, backgroundColor: Theme.background },
+      ]}
       contentContainerStyle={styles.scrollContent}
       bounces={false}
     >
       <ThemedView style={styles.content}>
         {/* Success Icon with Background Circle */}
-        <View
+        <Animated.View
           style={[
             styles.iconContainer,
             {
               backgroundColor: Theme.successBackground,
               shadowColor: Theme.success,
+              transform: [
+                { scale: Animated.multiply(iconScale, pulseScale) },
+                { translateY: iconTranslateY },
+              ],
+              opacity: iconOpacity,
             },
           ]}
         >
@@ -87,15 +115,18 @@ export default function PaymentSuccessScreen() {
             size={100}
             color={Theme.success}
           />
-        </View>
-        {/* Transaction Details Card */}
-        <ThemedView
+        </Animated.View>
+
+        {/* Transaction Details Card - WRAP WITH Animated.View */}
+        <Animated.View
           style={[
             styles.detailsContainer,
             {
               backgroundColor: Theme.cardBackground,
               borderColor: Theme.borderLight,
               shadowColor: Theme.cardShadow,
+              transform: [{ translateY: cardTranslateY }],
+              opacity: cardOpacity,
             },
           ]}
         >
@@ -156,24 +187,50 @@ export default function PaymentSuccessScreen() {
               {formatHash(transactionHash)}
             </ThemedText>
           </View>
-        </ThemedView>
+        </Animated.View>
 
-        {/* Action Buttons */}
-        <View style={styles.buttonContainer}>
+        {/* Action Buttons - WRAP WITH Animated.View */}
+        <Animated.View
+          style={[
+            styles.buttonContainer,
+            {
+              transform: [{ translateY: buttonsTranslateY }],
+              opacity: buttonsOpacity,
+            },
+          ]}
+        >
           <TouchableOpacity
             activeOpacity={0.8}
             style={[
               styles.explorerButton,
               {
-                backgroundColor: Theme.primary,
-                shadowColor: Theme.primary,
+                backgroundColor: Theme.cardBackground,
               },
             ]}
             onPress={handleViewOnExplorer}
           >
-            <IconSymbol name="safari" size={20} color="white" />
-            <ThemedText style={styles.explorerButtonText}>
+            <IconSymbol name="safari" size={20} color={Theme.text} />
+            <ThemedText
+              style={[styles.explorerButtonText, { color: Theme.text }]}
+            >
               View on Explorer
+            </ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[
+              styles.explorerButton,
+              {
+                backgroundColor: Theme.cardBackground,
+              },
+            ]}
+            onPress={handleGoToMainScreen}
+          >
+            <IconSymbol name="house.fill" size={20} color={Theme.text} />
+            <ThemedText
+              style={[styles.explorerButtonText, { color: Theme.text }]}
+            >
+              Go to main screen
             </ThemedText>
           </TouchableOpacity>
 
@@ -183,17 +240,16 @@ export default function PaymentSuccessScreen() {
               styles.newPaymentButton,
               {
                 backgroundColor: Theme.success,
-                shadowColor: Theme.success,
               },
             ]}
             onPress={handleNewPayment}
           >
-            <IconSymbol name="plus.circle" size={20} color="white" />
+            <IconSymbol name="plus.circle" size={20} color={Theme.white} />
             <ThemedText style={styles.newPaymentButtonText}>
               New Payment
             </ThemedText>
           </TouchableOpacity>
-        </View>
+        </Animated.View>
       </ThemedView>
     </ScrollView>
   );
@@ -210,7 +266,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingHorizontal: 24,
-    paddingTop: 40,
+    paddingTop: 20,
     paddingBottom: 32,
   },
   iconContainer: {
@@ -265,7 +321,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    gap: 12,
+    gap: 6,
   },
   explorerButton: {
     flexDirection: "row",

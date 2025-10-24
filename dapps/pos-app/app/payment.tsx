@@ -6,10 +6,11 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { getAvailableNetworks, Network, TokenKey } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
 import { useAccount } from "@reown/appkit-react-native";
+import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 interface FormData {
   amount: string;
@@ -51,6 +52,7 @@ export default function PaymentScreen() {
   ) as TokenKey[];
 
   const onNetworkChange = (network: Network) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setValue("networkName", network.name);
     const networkData = availabeNetworks.find(
       (n) => String(n.id) === String(network.id),
@@ -61,6 +63,11 @@ export default function PaymentScreen() {
     }
 
     setValue("token", Object.keys(networkData?.tokens || {})[0] as TokenKey);
+  };
+
+  const onTokenChange = (token: TokenKey) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setValue("token", token);
   };
 
   const onSubmit = (data: FormData) => {
@@ -99,24 +106,23 @@ export default function PaymentScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} bounces={false}>
         <>
-          {/* Amount Input */}
+          {/* Amount Container */}
           <ThemedView style={styles.section}>
             <ThemedText type="subtitle">Amount to Pay</ThemedText>
-            <ThemedText
-              style={[
-                styles.input,
-                { color: Theme.text, borderColor: Theme.border },
-              ]}
+            <ThemedView
+              style={[styles.amountContainer, { borderColor: Theme.gray500 }]}
             >
-              ${watchAmount}
-            </ThemedText>
-            {errors.amount && (
-              <ThemedText style={[styles.errorText, { color: Theme.error }]}>
-                {errors.amount.message}
-              </ThemedText>
-            )}
+              <Text style={[styles.amountText, { color: Theme.text }]}>
+                ${watchAmount}
+              </Text>
+              {errors.amount && (
+                <Text style={[styles.errorText, { color: Theme.error }]}>
+                  {errors.amount.message}
+                </Text>
+              )}
+            </ThemedView>
           </ThemedView>
 
           {/* Network Selector */}
@@ -126,6 +132,7 @@ export default function PaymentScreen() {
               horizontal
               showsHorizontalScrollIndicator={false}
               style={styles.buttonContainer}
+              bounces={false}
             >
               {availabeNetworks.map((network) => (
                 <TouchableOpacity
@@ -169,6 +176,7 @@ export default function PaymentScreen() {
             <ThemedText type="subtitle">Select Token</ThemedText>
             <ScrollView
               horizontal
+              bounces={false}
               showsHorizontalScrollIndicator={false}
               style={styles.buttonContainer}
             >
@@ -185,7 +193,7 @@ export default function PaymentScreen() {
                           : Theme.background,
                     },
                   ]}
-                  onPress={() => setValue("token", token as TokenKey)}
+                  onPress={() => onTokenChange(token as TokenKey)}
                 >
                   <ThemedText
                     style={[
@@ -269,17 +277,19 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 25,
   },
-  input: {
-    borderWidth: 1,
+  amountContainer: {
+    marginTop: 4,
     borderRadius: 12,
-    padding: 15,
+    paddingVertical: 12,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  amountText: {
     fontSize: 32,
     fontWeight: "bold",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 8,
-    paddingTop: 20,
-    margin: 0,
     textAlign: "center",
   },
   errorText: {

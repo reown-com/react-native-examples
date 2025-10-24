@@ -71,6 +71,7 @@ export default function RootLayout() {
                   options={{
                     presentation: "card",
                     title: "Payment Success",
+                    headerShown: false,
                     headerBackButtonDisplayMode: "minimal",
                   }}
                 />

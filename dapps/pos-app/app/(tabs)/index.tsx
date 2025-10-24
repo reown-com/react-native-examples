@@ -65,8 +65,8 @@ export default function HomeScreen() {
           style={[
             styles.primaryButton,
             {
-              backgroundColor: Theme.buttonDisabled,
-              shadowColor: Theme.buttonDisabled,
+              backgroundColor: Theme.primary,
+              shadowColor: Theme.primary,
             },
           ]}
         >
@@ -76,6 +76,23 @@ export default function HomeScreen() {
           </ThemedText>
         </TouchableOpacity>
       )}
+      {/* <TouchableOpacity
+        onPress={() => {
+          router.push({
+            pathname: "/payment-success",
+            params: {
+              transactionHash: "0x1234567890",
+              explorerLink: "https://etherscan.io/tx/0x1234567890",
+              network: "Ethereum",
+              amount: "100",
+              token: "ETH",
+              recipientAddress: "0x1234567890",
+            },
+          });
+        }}
+      >
+        <ThemedText>Go to mocked payment success</ThemedText>
+      </TouchableOpacity> */}
     </ParallaxScrollView>
   );
 }
