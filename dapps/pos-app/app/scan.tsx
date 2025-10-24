@@ -46,9 +46,19 @@ export default function QRModalScreen() {
   // Extract data from URL parameters
   const { amount, token, networkName, recipientAddress } = params;
 
-  usePOSListener("connected", () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    console.log("Connected to wallet");
+  usePOSListener("connected", ({ session }) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    console.log("Connected to wallet", session);
+
+    // Disable deep link redirections
+    const updatedSession = {
+      ...session,
+      sessionConfig: {
+        disableDeepLink: true,
+      },
+    };
+
+    posClient?.engine.signClient.session.set(session.topic, updatedSession);
     setIsWalletConnected(true);
   });
 
@@ -70,14 +80,14 @@ export default function QRModalScreen() {
     posClient?.restart();
   });
 
-  usePOSListener("qr_ready", ({ uri }) => {
+  usePOSListener("qr_ready", async ({ uri }) => {
     console.log("QR ready");
     setQrUri(uri);
   });
 
   usePOSListener("payment_requested", () => {
     console.log("Payment requested");
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setIsPaymentRequested(true);
   });
 
@@ -89,7 +99,7 @@ export default function QRModalScreen() {
 
   usePOSListener("payment_broadcasted", () => {
     console.log("Payment broadcasted");
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setIsPaymentBroadcasted(true);
   });
 

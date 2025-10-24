@@ -62,7 +62,7 @@ export default function PaymentSuccessScreen() {
   };
 
   useEffect(() => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   }, []);
 
   return (

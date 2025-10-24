@@ -10,7 +10,6 @@ import { router } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 interface FormData {
   amount: string;
@@ -100,12 +99,17 @@ export default function PaymentScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <KeyboardAwareScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <>
           {/* Amount Input */}
           <ThemedView style={styles.section}>
             <ThemedText type="subtitle">Amount to Pay</ThemedText>
-            <ThemedText style={[styles.input, { color: Theme.text }]}>
+            <ThemedText
+              style={[
+                styles.input,
+                { color: Theme.text, borderColor: Theme.border },
+              ]}
+            >
               ${watchAmount}
             </ThemedText>
             {errors.amount && (
@@ -250,7 +254,7 @@ export default function PaymentScreen() {
             </ThemedText>
           </TouchableOpacity>
         </>
-      </KeyboardAwareScrollView>
+      </ScrollView>
     </ThemedView>
   );
 }
@@ -271,7 +275,11 @@ const styles = StyleSheet.create({
     padding: 15,
     fontSize: 32,
     fontWeight: "bold",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 8,
+    paddingTop: 20,
+    margin: 0,
     textAlign: "center",
   },
   errorText: {

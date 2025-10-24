@@ -1,4 +1,5 @@
 import { useTheme } from "@/hooks/use-theme-color";
+import * as Haptics from "expo-haptics";
 import { memo } from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { ThemedText } from "./themed-text";
@@ -18,6 +19,7 @@ function NumericKeyboardBase({ onKeyPress }: NumericKeyboardProps) {
   ];
 
   const handlePress = (key: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     onKeyPress(key);
   };
 

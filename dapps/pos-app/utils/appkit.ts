@@ -3,6 +3,8 @@ import "@walletconnect/react-native-compat";
 import { createAppKit } from "@reown/appkit-react-native";
 import { SolanaAdapter } from "@reown/appkit-solana-react-native";
 import { WagmiAdapter } from "@reown/appkit-wagmi-react-native";
+import * as Clipboard from "expo-clipboard";
+import * as Haptics from "expo-haptics";
 import { NETWORKS_LIST, WAGMI_NETWORKS_LIST } from "./networks";
 import { storage } from "./storage";
 
@@ -21,6 +23,12 @@ export const appKit = createAppKit({
   defaultNetwork: NETWORKS_LIST[0],
   adapters: [wagmiAdapter, solanaAdapter],
   storage,
+  clipboardClient: {
+    setString: async (value: string) => {
+      await Clipboard.setStringAsync(value);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    },
+  },
   metadata: {
     name: "Mobile POS Terminal",
     description: "Mobile POS terminal for crypto payments",
