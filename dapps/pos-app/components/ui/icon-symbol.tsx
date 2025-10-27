@@ -27,6 +27,8 @@ const MAPPING = {
   clock: "schedule",
   "creditcard.fill": "credit-card",
   "rectangle.portrait.and.arrow.right": "logout",
+  safari: "link",
+  "plus.circle": "add-circle-outline",
 } as IconMapping;
 
 /**

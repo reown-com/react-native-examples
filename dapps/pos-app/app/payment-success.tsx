@@ -3,7 +3,8 @@ import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useSuccessAnimations } from "@/hooks/use-success-animations";
 import { useTheme } from "@/hooks/use-theme-color";
-import { showErrorToast } from "@/utils/toast";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
+import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
@@ -57,6 +58,11 @@ export default function PaymentSuccessScreen() {
     } catch {
       showErrorToast({ title: "Could not open explorer link" });
     }
+  };
+
+  const handleOnHashPress = () => {
+    Clipboard.setStringAsync(transactionHash);
+    showSuccessToast({ title: "Copied to clipboard" });
   };
 
   const handleNewPayment = () => {
@@ -183,6 +189,7 @@ export default function PaymentSuccessScreen() {
             <ThemedText
               style={[styles.detailValue, { color: Theme.text }]}
               numberOfLines={1}
+              onPress={handleOnHashPress}
             >
               {formatHash(transactionHash)}
             </ThemedText>
