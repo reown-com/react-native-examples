@@ -17,7 +17,7 @@ runs:
       with:
         node-version: 22
         cache: ${{ inputs.package-manager }}
-        cache-dependency-path: ${{ inputs.root-path }}/${{ inputs.package-manager }}.lock
+        cache-dependency-path: ${{ inputs.root-path }}/${{ inputs.package-manager == 'npm' && 'package-lock.json' || 'yarn.lock' }}
 
     - name: Install dependencies
       shell: bash
