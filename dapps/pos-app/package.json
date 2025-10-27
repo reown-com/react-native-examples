@@ -6,6 +6,7 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
+    "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
