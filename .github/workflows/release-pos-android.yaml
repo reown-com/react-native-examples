@@ -22,6 +22,7 @@ jobs:
       relay-url: ${{ secrets.ENV_RELAY_URL }}
       sentry-dsn: ${{ secrets.POS_SENTRY_DSN }}
       sentry-file: ${{ secrets.POS_SENTRY_FILE }}
+      env-file: ${{ vars.POS_ENV_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
       firebase-app-id: ${{ secrets.POS_ANDROID_FIREBASE_APP_ID }}
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
