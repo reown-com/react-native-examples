@@ -15,6 +15,7 @@ jobs:
       release-type: 'internal'
       project-type: 'wallet'
       output-path: 'wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk'
+      upload-to-bucket: true
     secrets:
       project-id: ${{ vars.WALLETKIT_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}

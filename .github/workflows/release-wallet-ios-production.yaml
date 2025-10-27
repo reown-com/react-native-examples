@@ -26,7 +26,6 @@ jobs:
       bundle-id: 'com.walletconnect.web3wallet.rnsample'
       apple-id: '6449264964'
       project-type: 'wallet'
-      build-for-simulator: ${{ inputs.build-for-simulator }}
     secrets:
       project-id: ${{ vars.WALLETKIT_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}

@@ -51,6 +51,11 @@ on:
         description: "Path + name of the env file"
         required: false
         type: string
+      upload-to-bucket:
+        description: "Upload to S3"
+        required: false
+        default: false
+        type: boolean
     secrets:
       project-id:
         description: "WalletConnect Cloud ID"
@@ -179,7 +184,7 @@ jobs:
 
       - name: Configure AWS credentials
         id: aws-creds
-        if: ${{ secrets.aws-account-id != '' }}
+        if: ${{ inputs.upload-to-bucket == true }}
         continue-on-error: true
         uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
         with:
@@ -189,7 +194,7 @@ jobs:
           output-credentials: true
 
       - name: Upload iOS build to S3
-        if: ${{ inputs.build-for-simulator == true && secrets.aws-account-id != '' }} # Upload to bucket only for simulator builds
+        if: ${{ inputs.upload-to-bucket == true }}
         id: s3-upload
         env:
           AWS_REGION: eu-central-1
@@ -240,7 +245,7 @@ jobs:
                       "type": "button",
                       "text": { "type": "plain_text", "text": "View Workflow Run" },
                       "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                    }${{ steps.build.outcome == 'success' && secrets.testflight-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in TestFlight"}},"url":"{0}"}}', secrets.testflight-url) || '' }}
+                    }${{ steps.build.outcome == 'success' && inputs.upload-to-bucket == false && secrets.testflight-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in TestFlight"}},"url":"{0}"}}', secrets.testflight-url) || '' }}
                   ]
                 }
               ]

@@ -27,6 +27,7 @@ jobs:
       apple-id: '6479817037'
       project-type: 'dapp'
       build-for-simulator: ${{ inputs.build-for-simulator }}
+      upload-to-bucket: ${{ inputs.build-for-simulator }}
     secrets:
       project-id: ${{ vars.APPKIT_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}

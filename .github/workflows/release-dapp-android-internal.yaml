@@ -15,6 +15,7 @@ jobs:
       release-type: 'internal'
       project-type: 'dapp'
       output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk'
+      upload-to-bucket: true
     secrets:
       project-id: ${{ vars.APPKIT_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}

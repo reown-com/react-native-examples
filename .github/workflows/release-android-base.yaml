@@ -31,6 +31,11 @@ on:
         description: "Path + name of the env file"
         required: false
         type: string
+      upload-to-bucket:
+        description: "Upload to S3"
+        required: false
+        default: false
+        type: boolean
     secrets:
       project-id:
         description: 'Reown Cloud ID'
@@ -154,6 +159,7 @@ jobs:
     
       - name: Configure AWS credentials
         id: aws-creds
+        if: ${{ inputs.upload-to-bucket == true }}
         continue-on-error: true
         uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
         with:
@@ -164,6 +170,7 @@ jobs:
 
       - name: Upload Android build to S3
         id: s3-upload
+        if: ${{ inputs.upload-to-bucket == true }}
         env:
           AWS_REGION: eu-central-1
           AWS_ACCESS_KEY_ID: ${{ steps.aws-creds.outputs.aws-access-key-id }}
