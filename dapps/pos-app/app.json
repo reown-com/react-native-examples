@@ -48,7 +48,8 @@
           "project": "mobile-pos-react-native",
           "organization": "walletconnect"
         }
-      ]
+      ],
+      "./scripts/withAndroidReleaseSigningConfig.js"
     ],
     "experiments": {
       "typedRoutes": true,

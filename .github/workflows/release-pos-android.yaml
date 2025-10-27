@@ -1,0 +1,32 @@
+name: release-android-mobilepos
+
+permissions:
+  id-token: write
+  contents: read
+
+on: workflow_dispatch
+
+jobs:
+  release-internal:
+    uses: ./.github/workflows/release-android-base.yaml
+    with:
+      name: Mobile POS React Native
+      root-path: 'dapps/pos-app'
+      release-type: 'production'
+      project-type: 'dapp'
+      output-path: 'dapps/pos-app/android/app/build/outputs/apk/release/app-release.apk'
+      env-file-path: 'dapps/pos-app/.env'
+      package-manager: 'npm'
+    secrets:
+      project-id: ${{ vars.POS_APP_PROJECT_ID }}
+      relay-url: ${{ secrets.ENV_RELAY_URL }}
+      sentry-dsn: ${{ secrets.POS_SENTRY_DSN }}
+      sentry-file: ${{ secrets.POS_SENTRY_FILE }}
+      secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+      firebase-app-id: ${{ secrets.POS_ANDROID_FIREBASE_APP_ID }}
+      gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+      keystore-name: ${{ secrets.WC_PROD_KEYSTORE_NAME }}
+      keystore: ${{ secrets.WC_PROD_KEYSTORE }}
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      # firebase-url: ${{ vars.FIREBASE_APPKIT_INTERNAL_URL }}

@@ -386,7 +386,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.reown.mobilepos;
-				PRODUCT_NAME = mobilepos;
+				PRODUCT_NAME = "mobilepos";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.reown.mobilepos";
 				SWIFT_OBJC_BRIDGING_HEADER = "mobilepos/mobilepos-Bridging-Header.h";
@@ -423,7 +423,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.reown.mobilepos;
-				PRODUCT_NAME = mobilepos;
+				PRODUCT_NAME = "mobilepos";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.reown.mobilepos";
 				SWIFT_OBJC_BRIDGING_HEADER = "mobilepos/mobilepos-Bridging-Header.h";
