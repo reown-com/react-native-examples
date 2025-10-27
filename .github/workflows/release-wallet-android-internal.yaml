@@ -16,7 +16,7 @@ jobs:
       project-type: 'wallet'
       output-path: 'wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk'
     secrets:
-      project-id: ${{ secrets.ENV_WALLET_PROJECT_ID }}
+      project-id: ${{ vars.WALLETKIT_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}
       sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
@@ -28,4 +28,4 @@ jobs:
       google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      firebase-url: ${{ secrets.FIREBASE_WALLETKIT_INTERNAL_URL }}
+      firebase-url: ${{ vars.FIREBASE_WALLETKIT_INTERNAL_URL }}

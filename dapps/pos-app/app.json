@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "pos-app",
-    "slug": "pos-app",
+    "name": "mobile-pos",
+    "slug": "mobile-pos",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "posapp",
+    "scheme": "mobilepos",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.reownmobile.posapp"
+      "bundleIdentifier": "com.reown.mobilepos"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.reownmobile.posapp"
+      "package": "com.reown.mobilepos"
     },
     "web": {
       "output": "static",
@@ -39,6 +39,14 @@
           "dark": {
             "backgroundColor": "#000000"
           }
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "mobile-pos-react-native",
+          "organization": "walletconnect"
         }
       ]
     ],

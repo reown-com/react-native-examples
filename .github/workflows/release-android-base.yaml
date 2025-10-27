@@ -27,6 +27,10 @@ on:
         description: 'Path to get the APK file'
         required: true
         type: string
+      env-file-path:
+        description: "Path + name of the env file"
+        required: false
+        type: string
     secrets:
       project-id:
         description: 'Reown Cloud ID'
@@ -39,7 +43,7 @@ on:
         description: 'Relay URL'
         required: false
       sentry-dsn:
-        required: true
+        required: false
       sentry-file:
         required: true
       secrets-file:
@@ -51,11 +55,13 @@ on:
       google-services-file:
         required: false
       aws-account-id:
-        required: true
+        required: false
       slack-webhook-url:
         required: true
       firebase-url:
         description: 'Firebase URL of the project'
+        required: false
+      env-file:
         required: false
 
 jobs:
@@ -77,8 +83,15 @@ jobs:
           java-version: '17'
           architecture: x86_64
 
+      # Create env file
       - name: Create env file
-        run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+        run: |
+          if [ -n "${{ secrets.env-file }}" ] && [ -n "${{ inputs.env-file-path }}" ]; then
+            echo "${{ secrets.env-file }}" > ${{ inputs.env-file-path }}
+          else
+            touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+            echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+          fi
       
       - name: Add Sentry file
         run: touch ${{ inputs.root-path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/android/sentry.properties
@@ -89,6 +102,7 @@ jobs:
       - name: Add Keystore file
         run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
 
+      # Add Google Services file -> to create it run: base64 -i path/to/GoogleService-Info.plist
       - name: Add Google Services file
         env:
           google-services-file: ${{ secrets.google-services-file }}

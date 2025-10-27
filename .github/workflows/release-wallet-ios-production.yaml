@@ -28,7 +28,7 @@ jobs:
       project-type: 'wallet'
       build-for-simulator: ${{ inputs.build-for-simulator }}
     secrets:
-      project-id: ${{ secrets.ENV_WALLET_PROJECT_ID }}
+      project-id: ${{ vars.WALLETKIT_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}
       sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
@@ -43,4 +43,4 @@ jobs:
       google-services-file: ${{ secrets.W3W_IOS_PROD_GOOGLE_SERVICES_FILE }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      testflight-url: ${{ secrets.TESTFLIGHT_WALLETKIT_PROD_URL }}
+      testflight-url: ${{ vars.TESTFLIGHT_WALLETKIT_PROD_URL }}
