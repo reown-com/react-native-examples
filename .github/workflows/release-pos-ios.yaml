@@ -1,0 +1,13 @@
+name: release-ios-mobilepos
+
+permissions:
+  contents: read
+
+on: workflow_dispatch
+
+jobs:
+  echo-example:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo a simple message
+        run: echo "Hello, World!"
