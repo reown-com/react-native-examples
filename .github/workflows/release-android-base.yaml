@@ -36,6 +36,11 @@ on:
         required: false
         default: false
         type: boolean
+      package-manager:
+        description: "Package manager of the project"
+        required: false
+        default: 'yarn'
+        type: string
     secrets:
       project-id:
         description: 'Reown Cloud ID'
@@ -80,6 +85,7 @@ jobs:
         uses: ./.github/actions/ci-setup
         with:
           root-path: ${{ inputs.root-path }}
+          package-manager: ${{ inputs.package-manager }}
 
       - name: Install Java 17
         uses: actions/setup-java@v3
@@ -135,9 +141,9 @@ jobs:
         id: build
         run: |
           if [ ${{ inputs.release-type }} = 'internal' ]; then
-            cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal
+            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} install && ${{ inputs.package-manager }} run android:build:internal
           else
-            cd ${{ inputs.root-path }} && yarn install && yarn run android:build
+            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} install && ${{ inputs.package-manager }} run android:build
           fi
   
       - name: Setup Firebase

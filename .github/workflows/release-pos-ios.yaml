@@ -20,6 +20,7 @@ jobs:
       apple-id: '6754570257'
       project-type: 'dapp'
       env-file-path: 'dapps/pos-app/.env'
+      package-manager: 'npm'
     secrets:
       project-id: ${{ vars.POS_APP_PROJECT_ID }}
       sentry-file: ${{ secrets.POS_SENTRY_FILE }}

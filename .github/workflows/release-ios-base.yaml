@@ -56,6 +56,11 @@ on:
         required: false
         default: false
         type: boolean
+      package-manager:
+        description: "Package manager of the project"
+        required: false
+        default: 'yarn'
+        type: string
     secrets:
       project-id:
         description: "WalletConnect Cloud ID"
@@ -111,6 +116,7 @@ jobs:
         uses: ./.github/actions/ci-setup
         with:
           root-path: ${{ inputs.root-path }}
+          package-manager: ${{ inputs.package-manager }}
 
       - name: Set podfile path
         id: podfile-hash

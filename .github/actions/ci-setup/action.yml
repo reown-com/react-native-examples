@@ -4,6 +4,10 @@ inputs:
   root-path:
     description: 'Path of the project'
     required: true
+  package-manager:
+    description: 'Package manager of the project'
+    required: false
+    default: 'yarn'
 
 runs:
   using: composite
@@ -12,11 +16,15 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
-        cache: 'yarn'
-        cache-dependency-path: ${{ inputs.root-path }}/yarn.lock
+        cache: ${{ inputs.package-manager }}
+        cache-dependency-path: ${{ inputs.root-path }}/${{ inputs.package-manager }}.lock
 
     - name: Install dependencies
       shell: bash
       run: |
         cd ${{ inputs.root-path }}
-        yarn install --immutable
+        if [ "${{ inputs.package-manager }}" = "npm" ]; then
+          npm ci
+        else
+          yarn install --immutable
+        fi
