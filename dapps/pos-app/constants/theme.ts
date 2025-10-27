@@ -51,7 +51,7 @@ export const Colors = {
     borderLight: "#F3F4F6",
 
     // Card colors
-    cardBackground: "#FFFFFF",
+    cardBackground: "#EAEAEA",
     cardShadow: "#000",
 
     // Button states

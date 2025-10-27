@@ -337,7 +337,6 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   actionButtonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
