@@ -11,7 +11,7 @@ import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 
 interface FormData {
   amount: string;
@@ -107,8 +107,8 @@ export default function PaymentScreen() {
     <ThemedView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} bounces={false}>
         <>
-          {/* Amount Container */}
-          <ThemedView style={styles.section}>
+          Amount Container
+          {/* <ThemedView style={styles.section}>
             <ThemedText type="subtitle">Amount to Pay</ThemedText>
             <ThemedView
               style={[
@@ -129,8 +129,7 @@ export default function PaymentScreen() {
                 </Text>
               )}
             </ThemedView>
-          </ThemedView>
-
+          </ThemedView> */}
           {/* Network Selector */}
           <ThemedView style={styles.section}>
             <ThemedText type="subtitle">Select Network</ThemedText>
@@ -176,7 +175,6 @@ export default function PaymentScreen() {
               ))}
             </ScrollView>
           </ThemedView>
-
           {/* Token Selector */}
           <ThemedView style={styles.section}>
             <ThemedText type="subtitle">Select Token</ThemedText>
@@ -219,7 +217,6 @@ export default function PaymentScreen() {
               ))}
             </ScrollView>
           </ThemedView>
-
           {/* Amount Keyboard */}
           <ThemedView style={styles.section}>
             <ThemedView
@@ -258,7 +255,6 @@ export default function PaymentScreen() {
               )}
             />
           </ThemedView>
-
           <TouchableOpacity
             style={[
               styles.generateButton,

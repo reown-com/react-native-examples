@@ -10,14 +10,16 @@ import "react-native-reanimated";
 import Toast from "react-native-toast-message";
 import { WagmiProvider } from "wagmi";
 
+import HeaderImage from "@/components/header-image";
 import { POSProvider } from "@/context/POSContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useInitializePOS } from "@/hooks/use-initialize-pos";
+import { useTheme } from "@/hooks/use-theme-color";
 import { appKit, wagmiAdapter } from "@/utils/appkit";
 import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
+import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
-import * as Sentry from "@sentry/react-native";
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -40,12 +42,9 @@ Sentry.init({
 
 const queryClient = new QueryClient();
 
-export const unstable_settings = {
-  anchor: "(tabs)",
-};
-
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
+  const Theme = useTheme();
   const { posClient, isInitialized } = useInitializePOS({
     projectId: process.env.EXPO_PUBLIC_PROJECT_ID!,
     deviceId: "1234567890",
@@ -68,31 +67,34 @@ export default Sentry.wrap(function RootLayout() {
             value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
           >
             <POSProvider posClient={posClient} isInitialized={isInitialized}>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack
+                initialRouteName="index"
+                screenOptions={{
+                  headerTitle: HeaderImage,
+                  headerShadowVisible: false,
+                  headerTintColor: Theme["text-primary"],
+                  headerBackButtonDisplayMode: "minimal",
+                  headerTitleAlign: "center",
+                  headerStyle: {
+                    backgroundColor: Theme["bg-primary"],
+                  },
+                }}
+              >
+                <Stack.Screen name="home" />
                 <Stack.Screen
-                  name="payment"
+                  name="settings"
                   options={{
-                    presentation: "card",
-                    title: "Create Payment",
-                    headerBackButtonDisplayMode: "minimal",
+                    title: "",
                   }}
                 />
-                <Stack.Screen
-                  name="scan"
-                  options={{
-                    presentation: "card",
-                    title: "Payment Request",
-                    headerBackButtonDisplayMode: "minimal",
-                  }}
-                />
+                <Stack.Screen name="amount" />
+                <Stack.Screen name="payment" />
+                <Stack.Screen name="scan" />
                 <Stack.Screen
                   name="payment-success"
                   options={{
-                    presentation: "card",
-                    title: "Payment Success",
                     headerShown: false,
-                    headerBackButtonDisplayMode: "minimal",
+                    headerBackVisible: false,
                   }}
                 />
               </Stack>

@@ -1,10 +1,8 @@
-import { Image } from "expo-image";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Image, StyleSheet } from "react-native";
 
-import ParallaxScrollView from "@/components/parallax-scroll-view";
+import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { IconSymbol } from "@/components/ui/icon-symbol";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -18,20 +16,42 @@ export default function HomeScreen() {
   const Theme = useTheme();
 
   const handleStartPayment = () => {
-    router.push("/payment");
+    router.push("/amount");
+  };
+
+  const handleSettingsPress = () => {
+    router.push("/settings");
   };
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
+    <ThemedView style={styles.container}>
+      <Button
+        onPress={handleStartPayment}
+        style={[
+          styles.actionButton,
+          { backgroundColor: Theme["foreground-primary"] },
+        ]}
+      >
         <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.logo}
+          source={require("@/assets/images/plus.png")}
+          style={styles.actionButtonImage}
         />
-      }
-    >
-      <ThemedView style={styles.stepContainer}>
+        <ThemedText fontSize={18}>New sale</ThemedText>
+      </Button>
+      <Button
+        onPress={handleSettingsPress}
+        style={[
+          styles.actionButton,
+          { backgroundColor: Theme["foreground-primary"] },
+        ]}
+      >
+        <Image
+          source={require("@/assets/images/gear.png")}
+          style={styles.actionButtonImage}
+        />
+        <ThemedText fontSize={18}>Settings</ThemedText>
+      </Button>
+      {/* <ThemedView style={styles.stepContainer}>
         <ThemedText type="title" style={styles.title}>
           Mobile POS Terminal
         </ThemedText>
@@ -88,7 +108,7 @@ export default function HomeScreen() {
             Connect Recipient Wallet
           </ThemedText>
         </TouchableOpacity>
-      )}
+      )} */}
       {/* <TouchableOpacity
         onPress={() => {
           router.push({
@@ -106,11 +126,33 @@ export default function HomeScreen() {
       >
         <ThemedText>Go to mocked payment success</ThemedText>
       </TouchableOpacity> */}
-    </ParallaxScrollView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: Spacing["spacing-5"],
+    paddingTop: Spacing["spacing-2"],
+    paddingBottom: Spacing["spacing-7"],
+    justifyContent: "center",
+    alignItems: "center",
+    gap: Spacing["spacing-3"],
+  },
+  actionButton: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    borderRadius: BorderRadius["5"],
+    gap: Spacing["spacing-4"],
+  },
+  actionButtonImage: {
+    width: 32,
+    height: 32,
+  },
+
   title: {
     textAlign: "center",
   },

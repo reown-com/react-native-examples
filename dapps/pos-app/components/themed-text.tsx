@@ -6,6 +6,7 @@ export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   type?: "default" | "title" | "defaultSemiBold" | "subtitle" | "link";
+  fontSize?: number;
 };
 
 export function ThemedText({
@@ -13,6 +14,7 @@ export function ThemedText({
   lightColor,
   darkColor,
   type = "default",
+  fontSize,
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor(
@@ -30,6 +32,7 @@ export function ThemedText({
         type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
         type === "subtitle" ? styles.subtitle : undefined,
         type === "link" ? [styles.link, { color: linkColor }] : undefined,
+        fontSize ? { fontSize } : undefined,
         style,
       ]}
       {...rest}
