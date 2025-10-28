@@ -6,7 +6,7 @@ export const getMetadata = () => {
     icons: ['https://avatars.githubusercontent.com/u/179229932'],
     redirect: {
       native: 'rn-web3wallet://',
-      universal: 'https://appkit-lab.reown.com/rn_walletkit',
+      universal: 'https://lab.reown.com/rn_walletkit',
       linkMode: true,
     },
   };

@@ -6,7 +6,7 @@ export const getMetadata = () => {
     icons: ['https://avatars.githubusercontent.com/u/179229932'],
     redirect: {
       native: 'w3mwagmisample-internal://',
-      universal: 'https://appkit-lab.reown.com/rn_appkit_internal',
+      universal: 'https://lab.reown.com/rn_appkit_internal',
       linkMode: true,
     },
   };

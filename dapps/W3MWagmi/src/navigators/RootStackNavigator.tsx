@@ -40,8 +40,9 @@ export function RootStackNavigator() {
         component={LogList}
         options={{
           headerShown: true,
-          headerBackTitleVisible: false,
+          headerBackButtonDisplayMode: 'minimal',
           title: 'Logs',
+          headerTintColor: Theme['fg-100'],
         }}
       />
       <StackNavigator.Screen
@@ -49,7 +50,7 @@ export function RootStackNavigator() {
         component={AppKitLogList}
         options={{
           headerShown: true,
-          headerBackTitleVisible: false,
+          headerBackButtonDisplayMode: 'minimal',
           title: 'AppKit Logs',
         }}
       />
