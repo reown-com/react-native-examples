@@ -30,4 +30,4 @@ jobs:
       keystore: ${{ secrets.WC_PROD_KEYSTORE }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      # firebase-url: ${{ vars.FIREBASE_APPKIT_INTERNAL_URL }}
+      firebase-url: ${{ vars.FIREBASE_POS_URL }}

@@ -35,4 +35,4 @@ jobs:
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
       google-services-file: ${{ secrets.POS_IOS_GOOGLE_SERVICES_FILE_BASE64 }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      # testflight-url: ${{ secrets.TESTFLIGHT_WALLETKIT_INTERNAL_URL }}
+      # testflight-url: ${{ vars.TESTFLIGHT_POS_URL }}
