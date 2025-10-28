@@ -23,7 +23,7 @@
     "@reown/appkit-solana-react-native": "2.0.1",
     "@reown/appkit-wagmi-react-native": "2.0.1",
     "@tanstack/react-query": "^5.81.5",
-    "@walletconnect/react-native-compat": "2.22.2",
+    "@walletconnect/react-native-compat": "2.22.4",
     "expo": "54.0.12",
     "expo-application": "~7.0.7",
     "expo-blur": "~15.0.7",
@@ -51,8 +51,8 @@
     "react-native-web": "^0.21.0",
     "react-native-worklets": "0.5.1",
     "text-encoding": "0.7.0",
-    "viem": "2.38.0",
-    "wagmi": "2.17.5"
+    "viem": "2.38.5",
+    "wagmi": "2.19.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -62,11 +62,12 @@
     "typescript": "~5.9.2"
   },
   "overrides": {
-    "@walletconnect/ethereum-provider": "2.21.8",
-    "@walletconnect/universal-provider": "2.21.8",
+    "@walletconnect/ethereum-provider": "2.22.4",
+    "@walletconnect/universal-provider": "2.22.4",
     "valtio": "2.1.8",
-    "viem": "2.38.0",
-    "fast-redact": "3.5.0"
+    "viem": "2.38.5",
+    "fast-redact": "3.5.0",
+    "hono": "4.10.2"
   },
   "private": true
 }

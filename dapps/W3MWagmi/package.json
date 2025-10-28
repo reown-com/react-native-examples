@@ -50,8 +50,8 @@
     "react-native-toast-message": "2.2.1",
     "text-encoding": "^0.7.0",
     "tweetnacl": "1.0.3",
-    "viem": "2.37.9",
-    "wagmi": "2.17.5"
+    "viem": "2.38.5",
+    "wagmi": "2.19.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -95,12 +95,13 @@
     "form-data": "3.0.4",
     "sha.js": "2.4.12",
     "brace-expansion": "1.1.12",
-    "@walletconnect/ethereum-provider": "2.22.2",
-    "@walletconnect/universal-provider": "2.22.2",
-    "viem": "2.37.9",
+    "@walletconnect/ethereum-provider": "2.22.4",
+    "@walletconnect/universal-provider": "2.22.4",
+    "viem": "2.38.5",
     "valtio": "2.1.8",
     "tmp": "0.2.4",
     "on-headers": "1.1.0",
-    "fast-redact": "3.5.0"
+    "fast-redact": "3.5.0",
+    "hono": "4.10.2"
   }
 }

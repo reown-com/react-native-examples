@@ -25,7 +25,7 @@
     "@sentry/react-native": "^7.4.0",
     "@tanstack/react-query": "^5.90.5",
     "@walletconnect/pos-client": "0.0.0-canary.3",
-    "@walletconnect/react-native-compat": "^2.22.4",
+    "@walletconnect/react-native-compat": "2.22.4",
     "expo": "~54.0.17",
     "expo-application": "~7.0.7",
     "expo-clipboard": "~8.0.7",
@@ -55,8 +55,8 @@
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.5.1",
     "text-encoding": "^0.7.0",
-    "viem": "2.38.3",
-    "wagmi": "^2.18.2"
+    "viem": "2.38.5",
+    "wagmi": "2.19.0"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
@@ -68,13 +68,14 @@
     "typescript": "~5.9.2"
   },
   "overrides": {
-    "viem": "2.38.3",
+    "viem": "2.38.5",
     "@walletconnect/universal-provider": "2.22.4",
     "@walletconnect/core": "2.22.4",
     "@walletconnect/logger": "2.1.2",
     "@walletconnect/sign-client": "2.22.4",
     "@walletconnect/types": "2.22.4",
-    "@walletconnect/utils": "2.22.4"
+    "@walletconnect/utils": "2.22.4",
+    "hono": "4.10.2"
   },
   "private": true
 }
