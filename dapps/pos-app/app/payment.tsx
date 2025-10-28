@@ -218,7 +218,6 @@ export default function PaymentScreen() {
               name="amount"
               rules={{
                 validate: (value) => {
-                  console.log("validate function called with:", value);
                   if (!value || value === "0") {
                     return "Amount is required";
                   }

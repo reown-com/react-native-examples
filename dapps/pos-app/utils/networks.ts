@@ -3,7 +3,6 @@ import {
   base as baseViem,
   mainnet as mainnetViem,
   optimism as optimismViem,
-  polygon as polygonViem,
   sepolia as sepoliaViem,
 } from "viem/chains";
 
@@ -223,7 +222,6 @@ const solanaDevnet: Network = {
 export const WAGMI_NETWORKS_LIST = [
   mainnetViem,
   optimismViem,
-  polygonViem,
   arbitrumViem,
   baseViem,
   sepoliaViem,

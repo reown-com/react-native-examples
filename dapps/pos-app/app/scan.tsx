@@ -219,7 +219,7 @@ export default function QRModalScreen() {
                 { color: Theme.text, textTransform: "uppercase" },
               ]}
             >
-              ${amount} {token}
+              ${amount} {token?.toUpperCase()}
             </ThemedText>
             <ThemedText
               style={[

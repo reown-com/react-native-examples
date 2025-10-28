@@ -31,7 +31,8 @@ export const useInitializePOS = ({
         console.error("Error initializing POS client:", error);
         showErrorToast({ title: "Failed to initialize POS terminal" });
       });
-  }, [deviceId, projectId, metadata, posService, loggerOptions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     isInitialized,
