@@ -1,3 +1,4 @@
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { StyleSheet } from "react-native";
 import { ThemedText } from "./themed-text";
@@ -14,7 +15,10 @@ export default function PaymentStep({ isCompleted, isError, text }: Props) {
   const Theme = useTheme();
   return (
     <ThemedView
-      style={[styles.statusStep, { backgroundColor: Theme.cardBackground }]}
+      style={[
+        styles.statusStep,
+        { backgroundColor: Theme["foreground-primary"] },
+      ]}
     >
       <IconSymbol
         name={
@@ -26,7 +30,11 @@ export default function PaymentStep({ isCompleted, isError, text }: Props) {
         }
         size={20}
         color={
-          isCompleted ? Theme.success : isError ? Theme.error : Theme.primary
+          isCompleted
+            ? Theme["icon-success"]
+            : isError
+              ? Theme["icon-error"]
+              : Theme["icon-accent-primary"]
         }
       />
       <ThemedText
@@ -34,10 +42,10 @@ export default function PaymentStep({ isCompleted, isError, text }: Props) {
           styles.text,
           {
             color: isCompleted
-              ? Theme.success
+              ? Theme["text-success"]
               : isError
-                ? Theme.error
-                : Theme.text,
+                ? Theme["text-error"]
+                : Theme["text-primary"],
           },
         ]}
       >
@@ -51,13 +59,13 @@ const styles = StyleSheet.create({
   statusStep: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    paddingVertical: Spacing["spacing-1"],
+    paddingHorizontal: Spacing["spacing-3"],
+    borderRadius: BorderRadius["3"],
   },
   text: {
     fontSize: 14,
-    marginLeft: 8,
+    marginLeft: Spacing["spacing-2"],
     fontWeight: "500",
   },
 });

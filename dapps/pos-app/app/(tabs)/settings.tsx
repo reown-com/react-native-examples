@@ -4,6 +4,7 @@ import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { Fonts } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme-color";
 import { getNetworkById } from "@/utils/networks";
@@ -77,7 +78,12 @@ export default function Settings() {
 
         {groupedAccounts.map((account) => (
           <ThemedView key={account.chainId} style={styles.networkGroup}>
-            <ThemedText style={[styles.networkName, { color: Theme.primary }]}>
+            <ThemedText
+              style={[
+                styles.networkName,
+                { color: Theme["text-accent-primary"] },
+              ]}
+            >
               {account.networkName}
             </ThemedText>
             <ThemedView
@@ -85,13 +91,16 @@ export default function Settings() {
               style={[
                 styles.accountItem,
                 {
-                  backgroundColor: Theme.background,
-                  borderColor: Theme.border,
+                  backgroundColor: Theme["foreground-primary"],
+                  borderColor: Theme["border-primary"],
                 },
               ]}
             >
               <ThemedText
-                style={[styles.accountAddress, { color: Theme.text }]}
+                style={[
+                  styles.accountAddress,
+                  { color: Theme["text-primary"] },
+                ]}
                 numberOfLines={1}
                 ellipsizeMode="middle"
               >
@@ -106,8 +115,8 @@ export default function Settings() {
             style={[
               styles.appkitButton,
               {
-                backgroundColor: Theme.buttonDisabled,
-                shadowColor: Theme.buttonDisabled,
+                backgroundColor: Theme["icon-error"],
+                shadowColor: Theme["icon-error"],
               },
             ]}
             onPress={() => onAppKitPress()}
@@ -119,9 +128,11 @@ export default function Settings() {
                   : "creditcard.fill"
               }
               size={20}
-              color="white"
+              color={Theme["text-invert"]}
             />
-            <ThemedText style={styles.appkitButtonText}>
+            <ThemedText
+              style={[styles.appkitButtonText, { color: Theme["text-invert"] }]}
+            >
               {isConnected ? "Disconnect Wallet" : "Connect Wallet"}
             </ThemedText>
           </TouchableOpacity>
@@ -144,34 +155,34 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flexDirection: "row",
-    gap: 8,
+    gap: Spacing["spacing-2"],
   },
   accountsContainer: {
-    marginTop: 20,
-    padding: 16,
+    marginTop: Spacing["spacing-5"],
+    padding: Spacing["spacing-4"],
     flex: 1,
   },
   label: {
-    marginBottom: 16,
+    marginBottom: Spacing["spacing-4"],
     fontWeight: "600",
   },
   scrollView: {
     maxHeight: 400,
-    marginBottom: 16,
+    marginBottom: Spacing["spacing-4"],
   },
   networkGroup: {
-    marginBottom: 20,
+    marginBottom: Spacing["spacing-5"],
   },
   networkName: {
     fontSize: 18,
     fontWeight: "700",
-    marginBottom: 8,
+    marginBottom: Spacing["spacing-2"],
   },
   accountItem: {
     borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 8,
+    borderRadius: BorderRadius["2"],
+    padding: Spacing["spacing-3"],
+    marginBottom: Spacing["spacing-2"],
   },
   accountAddress: {
     fontSize: 14,
@@ -181,17 +192,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    padding: 18,
-    borderRadius: 12,
+    padding: Spacing["spacing-4"],
+    borderRadius: BorderRadius["3"],
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
   },
   appkitButtonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "bold",
-    marginLeft: 8,
+    marginLeft: Spacing["spacing-2"],
   },
 });

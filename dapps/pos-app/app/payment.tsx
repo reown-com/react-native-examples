@@ -2,6 +2,7 @@ import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { getAvailableNetworks, Network, TokenKey } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
@@ -102,7 +103,6 @@ export default function PaymentScreen() {
     });
   };
 
-
   return (
     <ThemedView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} bounces={false}>
@@ -111,13 +111,20 @@ export default function PaymentScreen() {
           <ThemedView style={styles.section}>
             <ThemedText type="subtitle">Amount to Pay</ThemedText>
             <ThemedView
-              style={[styles.amountContainer, { borderColor: Theme.gray500 }]}
+              style={[
+                styles.amountContainer,
+                { borderColor: Theme["border-primary"] },
+              ]}
             >
-              <Text style={[styles.amountText, { color: Theme.text }]}>
+              <Text
+                style={[styles.amountText, { color: Theme["text-primary"] }]}
+              >
                 ${watchAmount}
               </Text>
               {errors.amount && (
-                <Text style={[styles.errorText, { color: Theme.error }]}>
+                <Text
+                  style={[styles.errorText, { color: Theme["text-error"] }]}
+                >
                   {errors.amount.message}
                 </Text>
               )}
@@ -139,11 +146,11 @@ export default function PaymentScreen() {
                   style={[
                     styles.optionButton,
                     {
-                      borderColor: Theme.border,
+                      borderColor: Theme["border-primary"],
                       backgroundColor:
                         watchedNetwork === network.name
-                          ? Theme.primary
-                          : Theme.background,
+                          ? Theme["bg-accent-primary"]
+                          : Theme["foreground-primary"],
                     },
                   ]}
                   onPress={() => {
@@ -158,8 +165,8 @@ export default function PaymentScreen() {
                       {
                         color:
                           watchedNetwork === network.name
-                            ? "white"
-                            : Theme.text,
+                            ? Theme["text-invert"]
+                            : Theme["text-primary"],
                       },
                     ]}
                   >
@@ -185,11 +192,11 @@ export default function PaymentScreen() {
                   style={[
                     styles.optionButton,
                     {
-                      borderColor: Theme.border,
+                      borderColor: Theme["border-primary"],
                       backgroundColor:
                         watchedToken === token
-                          ? Theme.primary
-                          : Theme.background,
+                          ? Theme["bg-accent-primary"]
+                          : Theme["foreground-primary"],
                     },
                   ]}
                   onPress={() => onTokenChange(token as TokenKey)}
@@ -198,7 +205,12 @@ export default function PaymentScreen() {
                     style={[
                       styles.optionButtonText,
                       watchedToken === token && styles.optionButtonTextSelected,
-                      { color: watchedToken === token ? "white" : Theme.text },
+                      {
+                        color:
+                          watchedToken === token
+                            ? Theme["text-invert"]
+                            : Theme["text-primary"],
+                      },
                     ]}
                   >
                     {token}
@@ -211,7 +223,10 @@ export default function PaymentScreen() {
           {/* Amount Keyboard */}
           <ThemedView style={styles.section}>
             <ThemedView
-              style={[styles.dividerLine, { backgroundColor: Theme.gray500 }]}
+              style={[
+                styles.dividerLine,
+                { backgroundColor: Theme["border-secondary"] },
+              ]}
             />
             <Controller
               control={control}
@@ -248,14 +263,19 @@ export default function PaymentScreen() {
             style={[
               styles.generateButton,
               {
-                backgroundColor: Theme.primary,
-                shadowColor: Theme.primary,
+                backgroundColor: Theme["bg-accent-primary"],
+                shadowColor: Theme["bg-accent-primary"],
               },
             ]}
             onPress={handleSubmit(onSubmit)}
           >
-            <IconSymbol name="qrcode" size={20} color="white" />
-            <ThemedText style={styles.generateButtonText}>
+            <IconSymbol name="qrcode" size={20} color={Theme["text-invert"]} />
+            <ThemedText
+              style={[
+                styles.generateButtonText,
+                { color: Theme["text-invert"] },
+              ]}
+            >
               Generate QR Code
             </ThemedText>
           </TouchableOpacity>
@@ -270,19 +290,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 20,
+    padding: Spacing["spacing-5"],
   },
   section: {
-    marginBottom: 25,
+    marginBottom: Spacing["spacing-6"],
   },
   amountContainer: {
-    marginTop: 4,
-    borderRadius: 12,
-    paddingVertical: 12,
+    marginTop: Spacing["spacing-1"],
+    borderRadius: BorderRadius["3"],
+    paddingVertical: Spacing["spacing-3"],
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 8,
+    marginBottom: Spacing["spacing-2"],
     borderWidth: StyleSheet.hairlineWidth,
   },
   amountText: {
@@ -292,46 +312,42 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    marginTop: 5,
+    marginTop: Spacing["spacing-1"],
   },
   buttonContainer: {
-    marginTop: 10,
+    marginTop: Spacing["spacing-2"],
   },
   optionButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    marginRight: 10,
-    borderRadius: 25,
+    paddingHorizontal: Spacing["spacing-5"],
+    paddingVertical: Spacing["spacing-3"],
+    marginRight: Spacing["spacing-2"],
+    borderRadius: BorderRadius["full"],
     borderWidth: 1,
   },
   optionButtonText: {
     fontSize: 14,
     fontWeight: "500",
   },
-  optionButtonTextSelected: {
-    color: "white",
-  },
+  optionButtonTextSelected: {},
   generateButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    padding: 18,
-    borderRadius: 12,
-    marginTop: 20,
+    padding: Spacing["spacing-4"],
+    borderRadius: BorderRadius["3"],
+    marginTop: Spacing["spacing-5"],
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
   },
   generateButtonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "bold",
-    marginLeft: 8,
+    marginLeft: Spacing["spacing-2"],
   },
   dividerLine: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: "#ddd",
-    marginBottom: 12,
+    marginBottom: Spacing["spacing-3"],
   },
 });

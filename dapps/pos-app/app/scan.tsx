@@ -2,6 +2,7 @@ import WCLogo from "@/assets/images/wc-logo.png";
 import PaymentStep from "@/components/payment-step";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { usePOSListener } from "@/hooks/use-pos-listener";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -182,8 +183,8 @@ export default function QRModalScreen() {
             style={[
               styles.qrContainer,
               {
-                backgroundColor: Theme.white,
-                shadowColor: Theme.cardShadow,
+                backgroundColor: Theme["bg-primary"],
+                shadowColor: Theme["border-secondary"],
               },
             ]}
           >
@@ -199,10 +200,10 @@ export default function QRModalScreen() {
           <ThemedView
             style={[
               styles.recipientContainer,
-              { backgroundColor: Theme.cardBackground },
+              { backgroundColor: Theme["foreground-primary"] },
             ]}
           >
-            <ThemedText style={[{ color: Theme.text }]}>
+            <ThemedText style={[{ color: Theme["text-primary"] }]}>
               Recipient: {recipientAddress.slice(0, 6)}...
               {recipientAddress.slice(-4)}
             </ThemedText>
@@ -210,13 +211,13 @@ export default function QRModalScreen() {
           <ThemedView
             style={[
               styles.amountContainer,
-              { backgroundColor: Theme.cardBackground },
+              { backgroundColor: Theme["foreground-primary"] },
             ]}
           >
             <ThemedText
               style={[
                 styles.amountText,
-                { color: Theme.text, textTransform: "uppercase" },
+                { color: Theme["text-primary"], textTransform: "uppercase" },
               ]}
             >
               ${amount} {token?.toUpperCase()}
@@ -224,7 +225,7 @@ export default function QRModalScreen() {
             <ThemedText
               style={[
                 styles.amountTextSecondary,
-                { color: Theme.text, textTransform: "capitalize" },
+                { color: Theme["text-secondary"], textTransform: "capitalize" },
               ]}
             >
               {networkName}
@@ -257,18 +258,28 @@ export default function QRModalScreen() {
               activeOpacity={0.8}
               style={[
                 styles.actionButton,
-                { backgroundColor: Theme.cardBackground },
+                { backgroundColor: Theme["bg-accent-primary"] },
               ]}
               onPress={requestPayment}
             >
-              <ThemedText style={styles.actionButtonText}>Retry</ThemedText>
+              <ThemedText
+                style={[
+                  styles.actionButtonText,
+                  { color: Theme["text-invert"] },
+                ]}
+              >
+                Retry
+              </ThemedText>
             </TouchableOpacity>
           ) : null}
         </ThemedView>
       ) : (
         <>
           <ThemedView style={[styles.content, { justifyContent: "center" }]}>
-            <ActivityIndicator size="large" color={Theme.text} />
+            <ActivityIndicator
+              size="large"
+              color={Theme["icon-accent-primary"]}
+            />
             <ThemedText>Generating QR Code...</ThemedText>
           </ThemedView>
         </>
@@ -280,36 +291,36 @@ export default function QRModalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing["spacing-5"],
   },
   content: {
     flex: 1,
     alignItems: "center",
-    padding: 20,
+    padding: Spacing["spacing-5"],
   },
   qrContainer: {
-    padding: 20,
-    borderRadius: 20,
+    padding: Spacing["spacing-5"],
+    borderRadius: BorderRadius["5"],
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 8,
-    marginBottom: 16,
+    marginBottom: Spacing["spacing-4"],
   },
   recipientContainer: {
-    marginVertical: 8,
-    borderRadius: 14,
-    paddingVertical: 12,
+    marginVertical: Spacing["spacing-2"],
+    borderRadius: BorderRadius["4"],
+    paddingVertical: Spacing["spacing-3"],
     width: "100%",
     alignItems: "center",
   },
   amountContainer: {
-    borderRadius: 18,
-    paddingVertical: 12,
+    borderRadius: BorderRadius["4"],
+    paddingVertical: Spacing["spacing-3"],
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 8,
+    marginBottom: Spacing["spacing-2"],
   },
   amountText: {
     fontSize: 24,
@@ -322,19 +333,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   statusContainer: {
-    gap: 8,
+    gap: Spacing["spacing-2"],
   },
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 25,
-    marginBottom: 10,
-    marginTop: 10,
+    paddingHorizontal: Spacing["spacing-7"],
+    paddingVertical: Spacing["spacing-4"],
+    borderRadius: BorderRadius["full"],
+    marginBottom: Spacing["spacing-2"],
+    marginTop: Spacing["spacing-2"],
     minWidth: 150,
-    gap: 4,
+    gap: Spacing["spacing-1"],
   },
   actionButtonText: {
     fontSize: 16,

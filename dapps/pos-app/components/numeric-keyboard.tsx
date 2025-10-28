@@ -1,3 +1,4 @@
+import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import * as Haptics from "expo-haptics";
 import { memo } from "react";
@@ -36,14 +37,14 @@ function NumericKeyboardBase({ onKeyPress }: NumericKeyboardProps) {
               {key === "erase" ? (
                 <ThemedText
                   testID="key-erase"
-                  style={[styles.keyText, { color: Theme.text }]}
+                  style={[styles.keyText, { color: Theme["text-primary"] }]}
                 >
                   ←
                 </ThemedText>
               ) : (
                 <ThemedText
                   testID={`key-${key}`}
-                  style={[styles.keyText, { color: Theme.text }]}
+                  style={[styles.keyText, { color: Theme["text-primary"] }]}
                 >
                   {key}
                 </ThemedText>
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 10,
+    marginBottom: Spacing["spacing-2"],
   },
   key: {
     width: 70,

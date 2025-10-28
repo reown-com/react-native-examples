@@ -1,6 +1,7 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useSuccessAnimations } from "@/hooks/use-success-animations";
 import { useTheme } from "@/hooks/use-theme-color";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
@@ -95,7 +96,7 @@ export default function PaymentSuccessScreen() {
     <ScrollView
       style={[
         styles.container,
-        { paddingTop: insets.top, backgroundColor: Theme.background },
+        { paddingTop: insets.top, backgroundColor: Theme["bg-primary"] },
       ]}
       contentContainerStyle={styles.scrollContent}
       bounces={false}
@@ -106,8 +107,8 @@ export default function PaymentSuccessScreen() {
           style={[
             styles.iconContainer,
             {
-              backgroundColor: Theme.successBackground,
-              shadowColor: Theme.success,
+              backgroundColor: Theme["bg-success"],
+              shadowColor: Theme["icon-success"],
               transform: [
                 { scale: Animated.multiply(iconScale, pulseScale) },
                 { translateY: iconTranslateY },
@@ -119,7 +120,7 @@ export default function PaymentSuccessScreen() {
           <IconSymbol
             name="checkmark.circle.fill"
             size={100}
-            color={Theme.success}
+            color={Theme["icon-success"]}
           />
         </Animated.View>
 
@@ -128,50 +129,68 @@ export default function PaymentSuccessScreen() {
           style={[
             styles.detailsContainer,
             {
-              backgroundColor: Theme.cardBackground,
-              borderColor: Theme.borderLight,
-              shadowColor: Theme.cardShadow,
+              backgroundColor: Theme["foreground-primary"],
+              borderColor: Theme["border-primary"],
+              shadowColor: Theme["border-secondary"],
               transform: [{ translateY: cardTranslateY }],
               opacity: cardOpacity,
             },
           ]}
         >
-          <ThemedText style={[styles.detailsTitle, { color: Theme.text }]}>
+          <ThemedText
+            style={[styles.detailsTitle, { color: Theme["text-primary"] }]}
+          >
             Transaction Details
           </ThemedText>
 
           <View style={styles.detailRow}>
-            <ThemedText style={[styles.detailLabel, { color: Theme.text }]}>
+            <ThemedText
+              style={[styles.detailLabel, { color: Theme["text-primary"] }]}
+            >
               Amount
             </ThemedText>
-            <ThemedText style={[styles.detailValue, { color: Theme.text }]}>
+            <ThemedText
+              style={[styles.detailValue, { color: Theme["text-primary"] }]}
+            >
               {amount} {token}
             </ThemedText>
           </View>
 
           <View
-            style={[styles.separator, { backgroundColor: Theme.borderLight }]}
+            style={[
+              styles.separator,
+              { backgroundColor: Theme["border-primary"] },
+            ]}
           />
 
           <View style={styles.detailRow}>
-            <ThemedText style={[styles.detailLabel, { color: Theme.text }]}>
+            <ThemedText
+              style={[styles.detailLabel, { color: Theme["text-primary"] }]}
+            >
               Network
             </ThemedText>
-            <ThemedText style={[styles.detailValue, { color: Theme.text }]}>
+            <ThemedText
+              style={[styles.detailValue, { color: Theme["text-primary"] }]}
+            >
               {network}
             </ThemedText>
           </View>
 
           <View
-            style={[styles.separator, { backgroundColor: Theme.borderLight }]}
+            style={[
+              styles.separator,
+              { backgroundColor: Theme["border-primary"] },
+            ]}
           />
 
           <View style={styles.detailRow}>
-            <ThemedText style={[styles.detailLabel, { color: Theme.text }]}>
+            <ThemedText
+              style={[styles.detailLabel, { color: Theme["text-primary"] }]}
+            >
               Recipient
             </ThemedText>
             <ThemedText
-              style={[styles.detailValue, { color: Theme.text }]}
+              style={[styles.detailValue, { color: Theme["text-primary"] }]}
               numberOfLines={1}
             >
               {formatAddress(recipientAddress)}
@@ -179,15 +198,23 @@ export default function PaymentSuccessScreen() {
           </View>
 
           <View
-            style={[styles.separator, { backgroundColor: Theme.borderLight }]}
+            style={[
+              styles.separator,
+              { backgroundColor: Theme["border-primary"] },
+            ]}
           />
 
           <View style={styles.detailRow}>
-            <ThemedText style={[styles.detailLabel, { color: Theme.text }]}>
+            <ThemedText
+              style={[styles.detailLabel, { color: Theme["text-primary"] }]}
+            >
               Transaction Hash
             </ThemedText>
             <ThemedText
-              style={[styles.detailValue, { color: Theme.text }]}
+              style={[
+                styles.detailValue,
+                { color: Theme["text-accent-primary"] },
+              ]}
               numberOfLines={1}
               onPress={handleOnHashPress}
             >
@@ -211,14 +238,22 @@ export default function PaymentSuccessScreen() {
             style={[
               styles.explorerButton,
               {
-                backgroundColor: Theme.cardBackground,
+                backgroundColor: Theme["foreground-primary"],
+                borderColor: Theme["border-primary"],
               },
             ]}
             onPress={handleViewOnExplorer}
           >
-            <IconSymbol name="safari" size={20} color={Theme.text} />
+            <IconSymbol
+              name="safari"
+              size={20}
+              color={Theme["text-accent-primary"]}
+            />
             <ThemedText
-              style={[styles.explorerButtonText, { color: Theme.text }]}
+              style={[
+                styles.explorerButtonText,
+                { color: Theme["text-primary"] },
+              ]}
             >
               View on Explorer
             </ThemedText>
@@ -228,14 +263,22 @@ export default function PaymentSuccessScreen() {
             style={[
               styles.explorerButton,
               {
-                backgroundColor: Theme.cardBackground,
+                backgroundColor: Theme["foreground-primary"],
+                borderColor: Theme["border-primary"],
               },
             ]}
             onPress={handleGoToMainScreen}
           >
-            <IconSymbol name="house.fill" size={20} color={Theme.text} />
+            <IconSymbol
+              name="house.fill"
+              size={20}
+              color={Theme["text-accent-primary"]}
+            />
             <ThemedText
-              style={[styles.explorerButtonText, { color: Theme.text }]}
+              style={[
+                styles.explorerButtonText,
+                { color: Theme["text-primary"] },
+              ]}
             >
               Go to main screen
             </ThemedText>
@@ -246,13 +289,22 @@ export default function PaymentSuccessScreen() {
             style={[
               styles.newPaymentButton,
               {
-                backgroundColor: Theme.success,
+                backgroundColor: Theme["bg-accent-primary"],
               },
             ]}
             onPress={handleNewPayment}
           >
-            <IconSymbol name="plus.circle" size={20} color={Theme.white} />
-            <ThemedText style={styles.newPaymentButtonText}>
+            <IconSymbol
+              name="plus.circle"
+              size={20}
+              color={Theme["text-invert"]}
+            />
+            <ThemedText
+              style={[
+                styles.newPaymentButtonText,
+                { color: Theme["text-invert"] },
+              ]}
+            >
               New Payment
             </ThemedText>
           </TouchableOpacity>
@@ -272,26 +324,26 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     alignItems: "center",
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 32,
+    paddingHorizontal: Spacing["spacing-6"],
+    paddingTop: Spacing["spacing-5"],
+    paddingBottom: Spacing["spacing-8"],
   },
   iconContainer: {
     width: 120,
     height: 120,
-    borderRadius: 60,
+    borderRadius: BorderRadius["full"],
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 24,
+    marginBottom: Spacing["spacing-6"],
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 4,
   },
   detailsContainer: {
-    borderRadius: 16,
-    padding: 24,
-    marginBottom: 32,
+    borderRadius: BorderRadius["4"],
+    padding: Spacing["spacing-6"],
+    marginBottom: Spacing["spacing-8"],
     width: "100%",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
@@ -302,14 +354,14 @@ const styles = StyleSheet.create({
   detailsTitle: {
     fontSize: 20,
     fontWeight: "700",
-    marginBottom: 20,
+    marginBottom: Spacing["spacing-5"],
     textAlign: "center",
   },
   detailRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: Spacing["spacing-3"],
   },
   detailLabel: {
     fontSize: 15,
@@ -324,46 +376,45 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    marginVertical: 4,
+    marginVertical: Spacing["spacing-1"],
   },
   buttonContainer: {
     width: "100%",
-    gap: 6,
+    gap: Spacing["spacing-2"],
   },
   explorerButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    paddingHorizontal: Spacing["spacing-6"],
+    paddingVertical: Spacing["spacing-4"],
+    borderRadius: BorderRadius["3"],
+    borderWidth: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   explorerButtonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "600",
-    marginLeft: 8,
+    marginLeft: Spacing["spacing-2"],
   },
   newPaymentButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 12,
+    paddingHorizontal: Spacing["spacing-6"],
+    paddingVertical: Spacing["spacing-4"],
+    borderRadius: BorderRadius["3"],
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
   },
   newPaymentButtonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "600",
-    marginLeft: 8,
+    marginLeft: Spacing["spacing-2"],
   },
 });

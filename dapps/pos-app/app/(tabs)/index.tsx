@@ -5,6 +5,7 @@ import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAppKit, useAppKitState } from "@reown/appkit-react-native";
@@ -45,16 +46,22 @@ export default function HomeScreen() {
             styles.primaryButton,
             {
               backgroundColor: !isInitialized
-                ? Theme.buttonDisabled
-                : Theme.primary,
-              shadowColor: Theme.primary,
+                ? Theme["icon-default"]
+                : Theme["bg-accent-primary"],
+              shadowColor: Theme["bg-accent-primary"],
             },
           ]}
           onPress={handleStartPayment}
           disabled={!isInitialized}
         >
-          <IconSymbol name="creditcard.fill" size={20} color="white" />
-          <ThemedText style={styles.primaryButtonText}>
+          <IconSymbol
+            name="creditcard.fill"
+            size={20}
+            color={Theme["text-invert"]}
+          />
+          <ThemedText
+            style={[styles.primaryButtonText, { color: Theme["text-invert"] }]}
+          >
             Start New Payment
           </ThemedText>
         </TouchableOpacity>
@@ -65,13 +72,19 @@ export default function HomeScreen() {
           style={[
             styles.primaryButton,
             {
-              backgroundColor: Theme.primary,
-              shadowColor: Theme.primary,
+              backgroundColor: Theme["bg-accent-primary"],
+              shadowColor: Theme["bg-accent-primary"],
             },
           ]}
         >
-          <IconSymbol name="creditcard.fill" size={20} color="white" />
-          <ThemedText style={styles.primaryButtonText}>
+          <IconSymbol
+            name="creditcard.fill"
+            size={20}
+            color={Theme["text-invert"]}
+          />
+          <ThemedText
+            style={[styles.primaryButtonText, { color: Theme["text-invert"] }]}
+          >
             Connect Recipient Wallet
           </ThemedText>
         </TouchableOpacity>
@@ -106,8 +119,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   stepContainer: {
-    gap: 2,
-    marginBottom: 8,
+    gap: Spacing["spacing-05"],
+    marginBottom: Spacing["spacing-2"],
   },
   logo: {
     height: 178,
@@ -120,17 +133,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    padding: 18,
-    borderRadius: 12,
+    padding: Spacing["spacing-4"],
+    borderRadius: BorderRadius["3"],
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
   },
   primaryButtonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "bold",
-    marginLeft: 8,
+    marginLeft: Spacing["spacing-2"],
   },
 });
