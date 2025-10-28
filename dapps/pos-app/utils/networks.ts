@@ -20,6 +20,7 @@ export interface Token {
 
 export type Network = AppKitNetwork & {
   tokens: Record<string, Token>;
+  icon?: string;
 };
 
 // ******************** Networks ********************
@@ -27,6 +28,7 @@ const mainnet: Network = {
   id: 1,
   caipNetworkId: "eip155:1",
   chainNamespace: "eip155",
+  icon: require("@/assets/images/chains/eip155-1.png"),
   name: "Ethereum",
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
@@ -60,6 +62,7 @@ const optimism: Network = {
   id: 10,
   caipNetworkId: "eip155:10",
   chainNamespace: "eip155",
+  icon: require("@/assets/images/chains/eip155-10.png"),
   name: "OP Mainnet",
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
@@ -94,6 +97,7 @@ const base: Network = {
   caipNetworkId: "eip155:8453",
   chainNamespace: "eip155",
   name: "Base",
+  icon: require("@/assets/images/chains/base.webp"),
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
     default: {
@@ -121,6 +125,7 @@ const arbitrum: Network = {
   caipNetworkId: "eip155:42161",
   chainNamespace: "eip155",
   name: "Arbitrum",
+  icon: require("@/assets/images/chains/arbitrum.webp"),
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
     default: {
@@ -154,6 +159,7 @@ const sepolia: Network = {
   caipNetworkId: "eip155:11155111",
   chainNamespace: "eip155",
   name: "Sepolia",
+  icon: require("@/assets/images/chains/eip155-1.png"),
   nativeCurrency: { name: "Sepolia Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
     default: {
@@ -181,6 +187,7 @@ const solana: Network = {
   caipNetworkId: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
   chainNamespace: "solana",
   name: "Solana",
+  icon: require("@/assets/images/chains/solana.png"),
   nativeCurrency: { name: "Solana", symbol: "SOL", decimals: 9 },
   rpcUrls: {
     default: {
@@ -203,6 +210,7 @@ const solanaDevnet: Network = {
   caipNetworkId: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
   chainNamespace: "solana",
   name: "Solana Devnet",
+  icon: require("@/assets/images/chains/solana.png"),
   nativeCurrency: { name: "Solana", symbol: "SOL", decimals: 9 },
   rpcUrls: {
     default: { http: ["https://rpc.walletconnect.org/v1"] },
