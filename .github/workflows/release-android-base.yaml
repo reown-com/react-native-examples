@@ -97,8 +97,10 @@ jobs:
       # Create env file
       - name: Create env file
         run: |
-          if [ -n "${{ secrets.env-file }}" ] && [ -n "${{ inputs.env-file-path }}" ]; then
-            echo "${{ secrets.env-file }}" > ${{ inputs.env-file-path }}
+          ENV_FILE_CONTENT="${{ secrets.env-file }}"
+          ENV_FILE_PATH="${{ inputs.env-file-path }}"
+          if [ -n "$ENV_FILE_CONTENT" ] && [ -n "$ENV_FILE_PATH" ]; then
+            echo "$ENV_FILE_CONTENT" > "$ENV_FILE_PATH"
           else
             touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
             echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
