@@ -47,6 +47,20 @@ on:
         required: false
         default: false
         type: boolean
+      env-file-path:
+        description: "Path + name of the env file"
+        required: false
+        type: string
+      upload-to-bucket:
+        description: "Upload to S3"
+        required: false
+        default: false
+        type: boolean
+      package-manager:
+        description: "Package manager of the project"
+        required: false
+        default: 'yarn'
+        type: string
     secrets:
       project-id:
         description: "WalletConnect Cloud ID"
@@ -55,7 +69,7 @@ on:
         description: "WalletConnect Relay URL"
         required: false
       sentry-dsn:
-        required: true
+        required: false
       sentry-file:
         required: true
       apple-username:
@@ -77,11 +91,13 @@ on:
       google-services-file:
         required: false
       aws-account-id:
-        required: true
+        required: false
       slack-webhook-url:
         required: true
       testflight-url:
         description: "TestFlight URL of the project"
+        required: false
+      env-file:
         required: false
 
 jobs:
@@ -100,6 +116,7 @@ jobs:
         uses: ./.github/actions/ci-setup
         with:
           root-path: ${{ inputs.root-path }}
+          package-manager: ${{ inputs.package-manager }}
 
       - name: Set podfile path
         id: podfile-hash
@@ -128,11 +145,19 @@ jobs:
         run: bundle install
 
       # Create env file
-      - run: touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }} && echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+      - name: Create env file
+        run: |
+          if [ -n "${{ secrets.env-file }}" ] && [ -n "${{ inputs.env-file-path }}" ]; then
+            echo "${{ secrets.env-file }}" > ${{ inputs.env-file-path }}
+          else
+            touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+            echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+          fi
 
       # Create sentry file
       - run: touch ${{ inputs.root-path }}/ios/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/ios/sentry.properties
 
+      # Add Google Services file -> to create it run: base64 -i path/to/GoogleService-Info.plist
       - name: Create Google Services file
         env:
           google-services-file: ${{ secrets.google-services-file }}
@@ -165,6 +190,7 @@ jobs:
 
       - name: Configure AWS credentials
         id: aws-creds
+        if: ${{ inputs.upload-to-bucket == true }}
         continue-on-error: true
         uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
         with:
@@ -174,7 +200,7 @@ jobs:
           output-credentials: true
 
       - name: Upload iOS build to S3
-        if: ${{ inputs.build-for-simulator == true }} # Upload to bucket only for simulator builds
+        if: ${{ inputs.upload-to-bucket == true }}
         id: s3-upload
         env:
           AWS_REGION: eu-central-1
@@ -225,7 +251,7 @@ jobs:
                       "type": "button",
                       "text": { "type": "plain_text", "text": "View Workflow Run" },
                       "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                    }${{ steps.build.outcome == 'success' && secrets.testflight-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in TestFlight"}},"url":"{0}"}}', secrets.testflight-url) || '' }}
+                    }${{ steps.build.outcome == 'success' && inputs.upload-to-bucket == false && secrets.testflight-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in TestFlight"}},"url":"{0}"}}', secrets.testflight-url) || '' }}
                   ]
                 }
               ]

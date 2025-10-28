@@ -15,8 +15,9 @@ jobs:
       release-type: 'internal'
       project-type: 'dapp'
       output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk'
+      upload-to-bucket: true
     secrets:
-      project-id: ${{ secrets.ENV_PROJECT_ID }}
+      project-id: ${{ vars.APPKIT_PROJECT_ID }}
       relay-url: ${{ secrets.ENV_RELAY_URL }}
       sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
       sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
@@ -27,4 +28,4 @@ jobs:
       keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      firebase-url: ${{ secrets.FIREBASE_APPKIT_INTERNAL_URL }}
+      firebase-url: ${{ vars.FIREBASE_APPKIT_INTERNAL_URL }}
