@@ -1,5 +1,5 @@
 import React from 'react';
-import {Alert, FlatList, Pressable, SafeAreaView, StyleSheet, Text} from 'react-native';
+import {Alert, FlatList, Pressable, StyleSheet, Text, SafeAreaView} from 'react-native';
 import { useAppKitLogs } from '@reown/appkit-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
@@ -21,7 +21,7 @@ export function AppKitLogList() {
         data={logs}
         keyExtractor={(_, index) => index.toString()}
         contentContainerStyle={styles.contentContainer}
-        renderItem={({item}) => <Pressable onPress={() => copyToClipboard(JSON.stringify(item))}><Text style={[styles.text, styles[item.level]]}>{`[${item.level}] ${item.fileName}:${item.functionName} ${item.message}`}</Text></Pressable>}
+        renderItem={({item}) => <Pressable onPress={() => copyToClipboard(JSON.stringify(item))}><Text style={[styles.text, {color: Theme['fg-100']}]}>{`[${item.level}] ${item.fileName}:${item.functionName} ${item.message}`}</Text></Pressable>}
       />
     </SafeAreaView>
   );
@@ -36,17 +36,5 @@ const styles = StyleSheet.create({
   },
   text: {
     marginVertical: 4,
-  },
-  error: {
-    color: 'red',
-  },
-  warn: {
-    color: 'yellow',
-  },
-  info: {
-    color: 'blue',
-  },
-  debug: {
-    color: 'green',
-  },
+  }
 });

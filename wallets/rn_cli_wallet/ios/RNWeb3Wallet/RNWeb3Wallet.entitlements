@@ -6,8 +6,7 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:appkit-lab.reown.com</string>
-		<string>applinks:dev.appkit-lab.reown.com</string>
+		<string>applinks:lab.reown.com</string>
 	</array>
 </dict>
 </plist>
