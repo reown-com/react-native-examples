@@ -102,7 +102,6 @@ export default function PaymentScreen() {
     });
   };
 
-  console.log("errors", errors);
 
   return (
     <ThemedView style={styles.container}>
