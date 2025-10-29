@@ -2,7 +2,7 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import * as Haptics from "expo-haptics";
 import { memo } from "react";
-import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { Platform, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { Button } from "./button";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
@@ -43,9 +43,15 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
               {key === "erase" ? (
                 <ThemedText
                   testID="key-erase"
-                  style={[styles.keyText, { color: Theme["text-primary"] }]}
+                  style={[
+                    styles.keyText,
+                    {
+                      color: Theme["text-primary"],
+                      fontSize: Platform.OS === "ios" ? 22 : 16,
+                    },
+                  ]}
                 >
-                  ←
+                  ⌫
                 </ThemedText>
               ) : (
                 <ThemedText
@@ -83,6 +89,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius["4"],
   },
   keyText: {
-    fontSize: 26,
+    fontSize: 22,
+    lineHeight: 26,
   },
 });
