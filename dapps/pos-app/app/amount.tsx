@@ -17,7 +17,6 @@ export default function AmountScreen() {
   const {
     control,
     handleSubmit,
-    setValue,
     watch,
     formState: { isValid },
   } = useForm<FormData>({
@@ -25,20 +24,25 @@ export default function AmountScreen() {
       amount: "0",
     },
   });
+  const watchAmount = watch("amount");
 
   const onSubmit = ({ amount }: FormData) => {
+    let formattedAmount = amount;
     if (amount.endsWith(".")) {
-      setValue("amount", `${amount}00`);
+      formattedAmount = `${amount}00`;
     }
+
+    if (!formattedAmount.includes(".")) {
+      formattedAmount = `${formattedAmount}.00`;
+    }
+
     router.push({
       pathname: "/payment-method",
       params: {
-        amount,
+        amount: formattedAmount,
       },
     });
   };
-
-  const watchAmount = watch("amount");
 
   return (
     <ThemedView style={styles.container}>

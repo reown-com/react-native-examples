@@ -29,6 +29,10 @@ export const appKit = createAppKit({
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     },
   },
+  features: {
+    onramp: false,
+    swaps: false,
+  },
   metadata: {
     name: "Mobile POS Terminal",
     description: "Mobile POS terminal for crypto payments",

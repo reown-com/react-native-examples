@@ -6,6 +6,7 @@ import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { useTheme } from "@/hooks/use-theme-color";
+import { showInfoToast } from "@/utils/toast";
 import { useAppKitState } from "@reown/appkit-react-native";
 import { router } from "expo-router";
 
@@ -16,6 +17,18 @@ export default function HomeScreen() {
   const Theme = useTheme();
 
   const handleStartPayment = () => {
+    if (!isInitialized) {
+      return showInfoToast({
+        title: "Please wait for the POS to initialize",
+      });
+    }
+
+    if (!isConnected) {
+      return showInfoToast({
+        title: "Please connect your wallet",
+        message: "Please connect your wallet to start a payment",
+      });
+    }
     router.push("/amount");
   };
 

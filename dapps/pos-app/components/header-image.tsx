@@ -1,9 +1,12 @@
 import { Spacing } from "@/constants/spacing";
-import { useTheme } from "@/hooks/use-theme-color";
 import { Image } from "react-native";
 
-export default function HeaderImage() {
-  const Theme = useTheme();
+interface HeaderImageProps {
+  tintColor?: string;
+}
+
+export default function HeaderImage({ tintColor }: HeaderImageProps) {
+  console.log("tintColor", tintColor);
   return (
     <Image
       source={require("@/assets/images/brand.png")}
@@ -12,7 +15,7 @@ export default function HeaderImage() {
         height: 18,
         width: 165,
         marginTop: Spacing["spacing-1"],
-        tintColor: Theme["text"],
+        tintColor: tintColor,
       }}
     />
   );

@@ -37,7 +37,7 @@ Sentry.init({
   integrations: [Sentry.mobileReplayIntegration()],
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  // spotlight: __DEV__,
+  spotlight: __DEV__,
 });
 
 const queryClient = new QueryClient();
@@ -68,15 +68,28 @@ export default Sentry.wrap(function RootLayout() {
           >
             <POSProvider posClient={posClient} isInitialized={isInitialized}>
               <Stack
-                screenOptions={{
-                  headerTitle: HeaderImage,
-                  headerShadowVisible: false,
-                  headerTintColor: Theme["text-primary"],
-                  headerBackButtonDisplayMode: "minimal",
-                  headerTitleAlign: "center",
-                  headerStyle: {
-                    backgroundColor: Theme["bg-primary"],
-                  },
+                screenOptions={({ route }) => {
+                  const isPaymentSuccess = route.name === "payment-success";
+                  const headerBackgroundColor = isPaymentSuccess
+                    ? Theme["text-success"]
+                    : Theme["bg-primary"];
+
+                  const headerTintColor = isPaymentSuccess
+                    ? Theme["text-invert"]
+                    : Theme["text-primary"];
+                  return {
+                    headerTitle: HeaderImage,
+                    headerShadowVisible: false,
+                    headerTintColor,
+                    headerBackButtonDisplayMode: "minimal",
+                    headerTitleAlign: "center",
+                    headerStyle: {
+                      backgroundColor: headerBackgroundColor,
+                    },
+                    contentStyle: {
+                      backgroundColor: Theme["bg-primary"],
+                    },
+                  };
                 }}
               >
                 <Stack.Screen name="index" />
@@ -89,12 +102,11 @@ export default Sentry.wrap(function RootLayout() {
                 <Stack.Screen name="amount" />
                 <Stack.Screen name="payment-method" />
                 <Stack.Screen name="payment-token" />
-                <Stack.Screen name="payment" />
+                <Stack.Screen name="payment-network" />
                 <Stack.Screen name="scan" />
                 <Stack.Screen
                   name="payment-success"
                   options={{
-                    headerShown: false,
                     headerBackVisible: false,
                   }}
                 />

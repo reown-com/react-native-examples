@@ -5,6 +5,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { getAccounts } from "@/utils/accounts";
 import { getNetworkById } from "@/utils/networks";
 import {
   useAccount,
@@ -12,29 +13,13 @@ import {
   useAppKitState,
 } from "@reown/appkit-react-native";
 
-const getNetworkName = (chainId: string) => {
-  const network = getNetworkById(chainId);
-  return network?.name;
-};
-
-const formatAccounts = (accounts: any[]) => {
-  return accounts
-    .map((account) => ({
-      address: account.address,
-      namespace: account.namespace,
-      chainId: account.chainId,
-      networkName: getNetworkName(account.chainId),
-    }))
-    .filter((account) => account.networkName);
-};
-
 export default function Settings() {
   const Theme = useTheme();
   const { allAccounts } = useAccount();
   const { disconnect, open } = useAppKit();
   const { isConnected } = useAppKitState();
 
-  const groupedAccounts = allAccounts ? formatAccounts(allAccounts) : [];
+  const groupedAccounts = allAccounts ? getAccounts(allAccounts) : [];
 
   const onAppKitPress = () => {
     if (isConnected) {
@@ -43,8 +28,6 @@ export default function Settings() {
       open();
     }
   };
-
-  //TODO: Cover case where there are multiple accounts with the same chainId
 
   return (
     <ThemedView style={styles.container}>
@@ -63,13 +46,10 @@ export default function Settings() {
                   <ThemedText
                     style={[styles.network, { color: Theme["text-tertiary"] }]}
                   >
-                    {item.networkName}
+                    {item.network?.name}
                   </ThemedText>
                   <ThemedText
-                    style={[
-                      styles.accountAddress,
-                      { color: Theme["text-primary"] },
-                    ]}
+                    style={[styles.address, { color: Theme["text-primary"] }]}
                     numberOfLines={1}
                     ellipsizeMode="middle"
                   >
@@ -94,14 +74,20 @@ export default function Settings() {
           styles.appkitButton,
           {
             backgroundColor: Theme["bg-accent-primary"],
+            position: isConnected ? "absolute" : "relative",
           },
         ]}
-        onPress={() => onAppKitPress()}
+        onPress={onAppKitPress}
       >
         <ThemedText
-          style={[styles.appkitButtonText, { color: Theme["text-invert"] }]}
+          style={[
+            styles.appkitButtonText,
+            {
+              color: Theme["text-invert"],
+            },
+          ]}
         >
-          {isConnected ? "Disconnect Wallet" : "Connect Recipient Wallet"}
+          {isConnected ? "Disconnect Wallet" : "Connect Wallet"}
         </ThemedText>
       </Button>
     </ThemedView>
@@ -117,12 +103,13 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingHorizontal: Spacing["spacing-5"],
+    paddingBottom: Spacing["extra-spacing-1"],
+    gap: Spacing["spacing-3"],
   },
   item: {
     flexDirection: "row",
     borderWidth: 1,
     borderRadius: BorderRadius["5"],
-    marginBottom: Spacing["spacing-5"],
     padding: Spacing["spacing-6"],
   },
   network: {
@@ -135,19 +122,14 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: BorderRadius["5"],
   },
-  label: {
-    marginBottom: Spacing["spacing-4"],
-    fontWeight: "600",
-  },
-  scrollView: {
-    maxHeight: 400,
-    marginBottom: Spacing["spacing-4"],
-  },
-  accountAddress: {
+  address: {
     fontSize: 16,
-    lineHeight: 18,
   },
   appkitButton: {
+    position: "absolute",
+    bottom: Spacing["spacing-5"],
+    left: 0,
+    right: 0,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: Spacing["spacing-4"],

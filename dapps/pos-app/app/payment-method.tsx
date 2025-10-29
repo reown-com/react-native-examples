@@ -49,7 +49,7 @@ export default function PaymentMethodScreen() {
           source={require("@/assets/images/payment-methods/crypto.png")}
           style={styles.cryptoImage}
         />
-        <ThemedText fontSize={16}>Pay with WalletConnect</ThemedText>
+        <ThemedText fontSize={16}>Pay with Crypto</ThemedText>
       </Button>
     </ThemedView>
   );
