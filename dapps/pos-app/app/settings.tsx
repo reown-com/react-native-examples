@@ -29,64 +29,85 @@ export default function Settings() {
     }
   };
 
-  return (
+  return isConnected ? (
     <ThemedView style={styles.container}>
-      {isConnected && (
-        <FlatList
-          data={groupedAccounts}
-          contentContainerStyle={styles.list}
-          renderItem={({ item }) => {
-            const network = getNetworkById(item.chainId);
-            return (
-              <View
-                style={[styles.item, { borderColor: Theme["border-primary"] }]}
-              >
-                <View style={{ flex: 1 }}>
-                  <ThemedText
-                    style={[styles.network, { color: Theme["text-tertiary"] }]}
-                  >
-                    {item.network?.name}
-                  </ThemedText>
-                  <ThemedText
-                    style={[styles.address, { color: Theme["text-primary"] }]}
-                    numberOfLines={1}
-                    ellipsizeMode="middle"
-                  >
-                    {item.address}
-                  </ThemedText>
-                </View>
-                <Image
-                  source={
-                    network?.icon ??
-                    require("@/assets/images/chains/chain-placeholder.png")
-                  }
-                  style={styles.networkLogo}
-                />
+      <FlatList
+        data={groupedAccounts}
+        contentContainerStyle={styles.list}
+        renderItem={({ item }) => {
+          const network = getNetworkById(item.chainId);
+          return (
+            <View
+              style={[styles.item, { borderColor: Theme["border-primary"] }]}
+            >
+              <View style={styles.networkContainer}>
+                <ThemedText
+                  style={[styles.network, { color: Theme["text-tertiary"] }]}
+                >
+                  {item.network?.name}
+                </ThemedText>
+                <ThemedText
+                  style={[styles.address, { color: Theme["text-primary"] }]}
+                  numberOfLines={1}
+                  ellipsizeMode="middle"
+                >
+                  {item.address}
+                </ThemedText>
               </View>
-            );
-          }}
-          keyExtractor={(item) => `${item.chainId}-${item.address}`}
-        />
-      )}
+              <Image
+                source={
+                  network?.icon ??
+                  require("@/assets/images/chains/chain-placeholder.png")
+                }
+                style={styles.networkLogo}
+              />
+            </View>
+          );
+        }}
+        keyExtractor={(item) => `${item.chainId}-${item.address}`}
+      />
       <Button
         style={[
-          styles.appkitButton,
-          {
-            backgroundColor: Theme["bg-accent-primary"],
-            position: isConnected ? "absolute" : "relative",
-          },
+          styles.disconnectButton,
+          { backgroundColor: Theme["bg-accent-primary"] },
         ]}
         onPress={onAppKitPress}
       >
         <ThemedText
+          style={[styles.disconnectText, { color: Theme["text-invert"] }]}
+        >
+          Disconnect Wallet
+        </ThemedText>
+      </Button>
+    </ThemedView>
+  ) : (
+    <ThemedView style={styles.disconnectedContainer}>
+      <Button
+        style={[
+          styles.connectButton,
+          {
+            backgroundColor: Theme["foreground-primary"],
+          },
+        ]}
+        onPress={onAppKitPress}
+      >
+        <Image
+          source={require("@/assets/images/wallet.png")}
           style={[
-            styles.appkitButtonText,
+            styles.connectButtonImage,
+            { tintColor: Theme["icon-default"] },
+          ]}
+        />
+        <ThemedText
+          fontSize={18}
+          style={[
+            styles.connectText,
             {
-              color: Theme["text-invert"],
+              color: Theme["text-primary"],
             },
           ]}
         >
-          {isConnected ? "Disconnect Wallet" : "Connect Wallet"}
+          Connect Wallet
         </ThemedText>
       </Button>
     </ThemedView>
@@ -112,6 +133,9 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius["5"],
     padding: Spacing["spacing-6"],
   },
+  networkContainer: {
+    flex: 1,
+  },
   network: {
     fontSize: 14,
     lineHeight: 16,
@@ -125,7 +149,7 @@ const styles = StyleSheet.create({
   address: {
     fontSize: 16,
   },
-  appkitButton: {
+  disconnectButton: {
     position: "absolute",
     bottom: Spacing["spacing-2"],
     left: 0,
@@ -137,7 +161,29 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius["5"],
     marginHorizontal: Spacing["spacing-5"],
   },
-  appkitButtonText: {
+  disconnectText: {
+    fontSize: 18,
+    lineHeight: 20,
+  },
+  disconnectedContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: Spacing["spacing-5"],
+  },
+  connectButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: 300,
+    borderRadius: BorderRadius["5"],
+    gap: Spacing["spacing-4"],
+  },
+  connectButtonImage: {
+    width: 32,
+    height: 32,
+  },
+  connectText: {
     fontSize: 18,
     lineHeight: 20,
   },

@@ -24,6 +24,7 @@ export default function HomeScreen() {
     }
 
     if (!isConnected) {
+      router.navigate("/settings");
       return showInfoToast({
         title: "Please connect your wallet",
         message: "Please connect your wallet to start a payment",

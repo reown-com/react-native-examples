@@ -118,7 +118,8 @@ export default function QRModalScreen() {
   });
 
   const handleOnClosePress = () => {
-    router.dismissTo("/amount");
+    router.dismissAll();
+    router.navigate("/amount");
   };
 
   useEffect(() => {

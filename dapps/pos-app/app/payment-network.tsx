@@ -42,7 +42,8 @@ export default function PaymentNetworkScreen() {
   );
 
   const handleOnClosePress = () => {
-    router.dismissTo("/amount");
+    router.dismissAll();
+    router.navigate("/amount");
   };
 
   const handleNetworkPress = (networkCaipId: string) => {

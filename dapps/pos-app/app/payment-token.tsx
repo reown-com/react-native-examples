@@ -33,7 +33,8 @@ export default function PaymentTokenScreen() {
   };
 
   const handleOnClosePress = () => {
-    router.dismissTo("/amount");
+    router.dismissAll();
+    router.navigate("/amount");
   };
 
   return (
