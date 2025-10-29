@@ -2,7 +2,7 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import * as Haptics from "expo-haptics";
 import { memo } from "react";
-import { Platform, StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { Image, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { Button } from "./button";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
@@ -41,18 +41,16 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
               zoomScale={0.95}
             >
               {key === "erase" ? (
-                <ThemedText
+                <Image
                   testID="key-erase"
+                  source={require("@/assets/images/backspace.png")}
                   style={[
-                    styles.keyText,
+                    styles.backspace,
                     {
-                      color: Theme["text-primary"],
-                      fontSize: Platform.OS === "ios" ? 22 : 16,
+                      tintColor: Theme["text-primary"],
                     },
                   ]}
-                >
-                  ⌫
-                </ThemedText>
+                />
               ) : (
                 <ThemedText
                   testID={`key-${key}`}
@@ -91,5 +89,9 @@ const styles = StyleSheet.create({
   keyText: {
     fontSize: 22,
     lineHeight: 26,
+  },
+  backspace: {
+    width: 22,
+    height: 22,
   },
 });
