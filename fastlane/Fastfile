@@ -77,16 +77,21 @@ platform :ios do
       output_name: "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
     )
 
-    # Upload to TestFlight
-    upload_to_testflight(
+    testflight_params = {
       apple_id: ENV["APPLE_ID"],
       app_identifier: ENV["BUNDLE_ID"],
       changelog: "#{project_type} build from branch: #{branch_name}",
-      distribute_external: ENV['TESTFLIGHT_GROUPS'] && !ENV['TESTFLIGHT_GROUPS'].empty?,
-      notify_external_testers: true,
       skip_waiting_for_build_processing: true
-      groups: ENV['TESTFLIGHT_GROUPS']&.split(',')&.map(&:strip),
-    )
+    }
+    
+    if ENV['TESTFLIGHT_GROUPS'] && !ENV['TESTFLIGHT_GROUPS'].empty?
+      testflight_params[:distribute_external] = true
+      testflight_params[:notify_external_testers] = true
+      testflight_params[:groups] = ENV['TESTFLIGHT_GROUPS'].split(',').map(&:strip)
+    end
+
+    # Upload to TestFlight
+    upload_to_testflight(testflight_params)
 
     # Only clean artifacts when running locally (not in CI)
     clean_build_artifacts() unless ENV['CI']
