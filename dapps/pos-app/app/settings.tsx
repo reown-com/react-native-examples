@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   appkitButton: {
     position: "absolute",
-    bottom: Spacing["spacing-5"],
+    bottom: Spacing["spacing-2"],
     left: 0,
     right: 0,
     alignItems: "center",

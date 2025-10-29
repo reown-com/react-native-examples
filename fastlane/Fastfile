@@ -82,9 +82,10 @@ platform :ios do
       apple_id: ENV["APPLE_ID"],
       app_identifier: ENV["BUNDLE_ID"],
       changelog: "#{project_type} build from branch: #{branch_name}",
-      distribute_external: true,
+      distribute_external: ENV['TESTFLIGHT_GROUPS'] && !ENV['TESTFLIGHT_GROUPS'].empty?,
       notify_external_testers: true,
       skip_waiting_for_build_processing: true
+      groups: ENV['TESTFLIGHT_GROUPS']&.split(',')&.map(&:strip),
     )
 
     # Only clean artifacts when running locally (not in CI)

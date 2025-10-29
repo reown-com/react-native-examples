@@ -59,8 +59,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
-    paddingTop: Spacing["spacing-2"],
-    paddingBottom: Spacing["spacing-7"],
+    paddingVertical: Spacing["spacing-2"],
     justifyContent: "center",
     alignItems: "center",
     gap: Spacing["spacing-3"],

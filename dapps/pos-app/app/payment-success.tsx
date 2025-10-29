@@ -22,7 +22,7 @@ interface SuccessParams extends UnknownOutputParams {
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const diagonalLength = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
 const initialCircleSize = 20;
-const finalScale = diagonalLength / initialCircleSize;
+const finalScale = Math.round(diagonalLength / initialCircleSize) + 1;
 
 export default function PaymentSuccessScreen() {
   const Theme = useTheme();
@@ -34,7 +34,8 @@ export default function PaymentSuccessScreen() {
   const contentOpacity = useRef(new Animated.Value(0)).current;
 
   const handleNewPayment = () => {
-    router.replace("/amount");
+    router.dismissAll();
+    router.navigate("/amount");
   };
 
   useEffect(() => {

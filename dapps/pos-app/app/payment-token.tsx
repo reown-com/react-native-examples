@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
-    bottom: Spacing["spacing-5"],
+    bottom: Spacing["spacing-2"],
   },
   image: {
     width: 40,

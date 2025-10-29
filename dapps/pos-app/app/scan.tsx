@@ -247,6 +247,6 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    bottom: Spacing["spacing-5"],
+    bottom: Spacing["spacing-2"],
   },
 });

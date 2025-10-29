@@ -20,6 +20,7 @@ import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
 import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -43,6 +44,7 @@ Sentry.init({
 const queryClient = new QueryClient();
 
 export default Sentry.wrap(function RootLayout() {
+  const { bottom } = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const Theme = useTheme();
   const { posClient, isInitialized } = useInitializePOS({
@@ -96,6 +98,7 @@ export default Sentry.wrap(function RootLayout() {
                     },
                     contentStyle: {
                       backgroundColor: Theme["bg-primary"],
+                      paddingBottom: bottom,
                     },
                   };
                 }}
