@@ -46,10 +46,10 @@ export default function PaymentMethodScreen() {
         ]}
       >
         <Image
-          source={require("@/assets/images/payment-methods/crypto.png")}
+          source={require("@/assets/images/payment-methods/wpay.png")}
           style={styles.cryptoImage}
         />
-        <ThemedText fontSize={16}>Pay with Crypto</ThemedText>
+        <ThemedText fontSize={16}>Pay with crypto</ThemedText>
       </Button>
     </ThemedView>
   );
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     width: 140,
   },
   cryptoImage: {
-    height: 40,
-    width: 140,
+    height: 24,
+    width: 80,
   },
 });

@@ -23,7 +23,7 @@ export function CloseButton({ style, onPress }: CloseButtonProps) {
       ]}
     >
       <Image
-        style={styles.image}
+        style={[styles.image, { tintColor: Theme["text-primary"] }]}
         source={require("@/assets/images/close.png")}
       />
     </Button>

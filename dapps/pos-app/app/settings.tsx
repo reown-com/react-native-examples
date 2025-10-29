@@ -34,7 +34,6 @@ export default function Settings() {
       {isConnected && (
         <FlatList
           data={groupedAccounts}
-          fadingEdgeLength={20}
           contentContainerStyle={styles.list}
           renderItem={({ item }) => {
             const network = getNetworkById(item.chainId);
@@ -102,6 +101,7 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing["spacing-7"],
   },
   list: {
+    paddingTop: Spacing["spacing-2"],
     paddingHorizontal: Spacing["spacing-5"],
     paddingBottom: Spacing["extra-spacing-1"],
     gap: Spacing["spacing-3"],

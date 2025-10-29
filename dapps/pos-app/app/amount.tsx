@@ -109,7 +109,10 @@ export default function AmountScreen() {
         ]}
       >
         <ThemedText
-          style={[styles.buttonText, { color: Theme["text-invert"] }]}
+          style={[
+            styles.buttonText,
+            { color: isValid ? Theme["text-invert"] : Theme["text-secondary"] },
+          ]}
         >
           {isValid ? `Charge $${watchAmount}` : "Enter Amount"}
         </ThemedText>
