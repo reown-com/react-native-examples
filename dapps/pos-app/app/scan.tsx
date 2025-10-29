@@ -12,7 +12,6 @@ import * as Haptics from "expo-haptics";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Image,
   ImageBackground,
   ImageSourcePropType,
@@ -162,7 +161,7 @@ export default function QRModalScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return qrUri ? (
+  return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.amountContainer}>
         <ThemedText
@@ -194,15 +193,6 @@ export default function QRModalScreen() {
       </QRCode>
       <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
     </ThemedView>
-  ) : (
-    <>
-      <ThemedView
-        style={[{ flex: 1, alignItems: "center", justifyContent: "center" }]}
-      >
-        <ActivityIndicator size="large" color={Theme["icon-accent-primary"]} />
-        <ThemedText>Please wait while we prepare the payment...</ThemedText>
-      </ThemedView>
-    </>
   );
 }
 
@@ -219,7 +209,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: Spacing["spacing-2"],
-    marginBottom: Spacing["spacing-5"],
+    marginBottom: Spacing["spacing-8"],
   },
   amountText: {
     fontSize: 16,
