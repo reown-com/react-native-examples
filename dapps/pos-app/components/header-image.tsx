@@ -3,10 +3,10 @@ import { Image } from "react-native";
 
 interface HeaderImageProps {
   tintColor?: string;
+  padding?: boolean;
 }
 
-export default function HeaderImage({ tintColor }: HeaderImageProps) {
-  console.log("tintColor", tintColor);
+export default function HeaderImage({ tintColor, padding }: HeaderImageProps) {
   return (
     <Image
       source={require("@/assets/images/brand.png")}
@@ -16,6 +16,7 @@ export default function HeaderImage({ tintColor }: HeaderImageProps) {
         width: 165,
         marginTop: Spacing["spacing-1"],
         tintColor: tintColor,
+        paddingRight: padding ? Spacing["spacing-2"] : 0,
       }}
     />
   );

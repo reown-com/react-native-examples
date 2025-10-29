@@ -68,7 +68,7 @@ export default Sentry.wrap(function RootLayout() {
           >
             <POSProvider posClient={posClient} isInitialized={isInitialized}>
               <Stack
-                screenOptions={({ route }) => {
+                screenOptions={({ route, navigation }) => {
                   const isPaymentSuccess = route.name === "payment-success";
                   const headerBackgroundColor = isPaymentSuccess
                     ? Theme["text-success"]
@@ -77,8 +77,16 @@ export default Sentry.wrap(function RootLayout() {
                   const headerTintColor = isPaymentSuccess
                     ? Theme["text-invert"]
                     : Theme["text-primary"];
+
+                  const canGoBack = navigation.canGoBack();
+
                   return {
-                    headerTitle: HeaderImage,
+                    headerTitle: canGoBack ? "" : HeaderImage,
+                    headerRight: canGoBack
+                      ? () => (
+                          <HeaderImage padding tintColor={headerTintColor} />
+                        )
+                      : undefined,
                     headerShadowVisible: false,
                     headerTintColor,
                     headerBackButtonDisplayMode: "minimal",
