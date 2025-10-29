@@ -68,7 +68,6 @@ export default Sentry.wrap(function RootLayout() {
           >
             <POSProvider posClient={posClient} isInitialized={isInitialized}>
               <Stack
-                initialRouteName="index"
                 screenOptions={{
                   headerTitle: HeaderImage,
                   headerShadowVisible: false,
@@ -80,7 +79,7 @@ export default Sentry.wrap(function RootLayout() {
                   },
                 }}
               >
-                <Stack.Screen name="home" />
+                <Stack.Screen name="index" />
                 <Stack.Screen
                   name="settings"
                   options={{
@@ -88,6 +87,8 @@ export default Sentry.wrap(function RootLayout() {
                   }}
                 />
                 <Stack.Screen name="amount" />
+                <Stack.Screen name="payment-method" />
+                <Stack.Screen name="payment-token" />
                 <Stack.Screen name="payment" />
                 <Stack.Screen name="scan" />
                 <Stack.Screen

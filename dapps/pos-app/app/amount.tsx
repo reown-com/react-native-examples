@@ -4,6 +4,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet } from "react-native";
 
@@ -16,16 +17,25 @@ export default function AmountScreen() {
   const {
     control,
     handleSubmit,
+    setValue,
     watch,
-    formState: { errors },
+    formState: { isValid },
   } = useForm<FormData>({
     defaultValues: {
       amount: "0",
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
+  const onSubmit = ({ amount }: FormData) => {
+    if (amount.endsWith(".")) {
+      setValue("amount", `${amount}00`);
+    }
+    router.push({
+      pathname: "/payment-method",
+      params: {
+        amount,
+      },
+    });
   };
 
   const watchAmount = watch("amount");
@@ -52,20 +62,13 @@ export default function AmountScreen() {
         >
           ${watchAmount}
         </ThemedText>
-        {errors.amount && (
-          <ThemedText
-            style={[styles.errorText, { color: Theme["text-error"] }]}
-          >
-            {errors.amount.message}
-          </ThemedText>
-        )}
       </ThemedView>
       <Controller
         control={control}
         name="amount"
         rules={{
           validate: (value) => {
-            if (!value || value === "0") {
+            if (!value || value === "0" || Number(value) === 0) {
               return "Amount is required";
             }
             return true;
@@ -91,12 +94,20 @@ export default function AmountScreen() {
       />
       <Button
         onPress={handleSubmit(onSubmit)}
-        style={[styles.button, { backgroundColor: Theme["bg-accent-primary"] }]}
+        disabled={!isValid}
+        style={[
+          styles.button,
+          {
+            backgroundColor: isValid
+              ? Theme["bg-accent-primary"]
+              : Theme["foreground-tertiary"], //TODO: Add a disabled color for buttons
+          },
+        ]}
       >
         <ThemedText
           style={[styles.buttonText, { color: Theme["text-invert"] }]}
         >
-          Charge ${watchAmount}
+          {isValid ? `Charge $${watchAmount}` : "Enter Amount"}
         </ThemedText>
       </Button>
     </ThemedView>
@@ -123,10 +134,6 @@ const styles = StyleSheet.create({
     fontSize: 50,
     textAlign: "center",
     lineHeight: 50,
-  },
-  errorText: {
-    fontSize: 14,
-    marginTop: Spacing["spacing-1"],
   },
   button: {
     width: "100%",
