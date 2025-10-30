@@ -8,34 +8,34 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		144C98A7BBB5414F98C6A185 /* KHTeka-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 16CB0849012C4C499C4859C4 /* KHTeka-Light.otf */; };
 		3A3F8486D042A5317ECD78BF /* libPods-mobilepos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 64F9C26B8EF3B56879C1087E /* libPods-mobilepos.a */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		751A2E60847A43B6DA842DCD /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 922FF57656C74C7EF846D99F /* ExpoModulesProvider.swift */; };
+		953CEADADE6F4E799B0F871D /* KHTeka-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = CE6DFD3E88E042D6A187A462 /* KHTeka-Medium.otf */; };
+		9A9EA94CE856487491D0050E /* KHTeka-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 96800C0DD5F242B2A8FD6BAD /* KHTeka-Regular.otf */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		C7DCDA39216BB26DEC9530E4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E8B1347B2DAD18500EC8D4CE /* PrivacyInfo.xcprivacy */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		144C98A7BBB5414F98C6A185 /* KHTeka-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 16CB0849012C4C499C4859C4 /* KHTeka-Light.otf */; };
-		9A9EA94CE856487491D0050E /* KHTeka-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 96800C0DD5F242B2A8FD6BAD /* KHTeka-Regular.otf */; };
-		953CEADADE6F4E799B0F871D /* KHTeka-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = CE6DFD3E88E042D6A187A462 /* KHTeka-Medium.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		13B07F961A680F5B00A75B9A /* mobilepos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobilepos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = mobilepos/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = mobilepos/Info.plist; sourceTree = "<group>"; };
+		16CB0849012C4C499C4859C4 /* KHTeka-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "KHTeka-Light.otf"; path = "../assets/fonts/KHTeka-Light.otf"; sourceTree = "<group>"; };
 		24CBE55C0F94CBE555C73920 /* Pods-mobilepos.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobilepos.debug.xcconfig"; path = "Target Support Files/Pods-mobilepos/Pods-mobilepos.debug.xcconfig"; sourceTree = "<group>"; };
 		64F9C26B8EF3B56879C1087E /* libPods-mobilepos.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mobilepos.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		922FF57656C74C7EF846D99F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-mobilepos/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		96800C0DD5F242B2A8FD6BAD /* KHTeka-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "KHTeka-Regular.otf"; path = "../assets/fonts/KHTeka-Regular.otf"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = mobilepos/SplashScreen.storyboard; sourceTree = "<group>"; };
 		B72486B4B4F086BB6495C5F4 /* Pods-mobilepos.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobilepos.release.xcconfig"; path = "Target Support Files/Pods-mobilepos/Pods-mobilepos.release.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		CE6DFD3E88E042D6A187A462 /* KHTeka-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "KHTeka-Medium.otf"; path = "../assets/fonts/KHTeka-Medium.otf"; sourceTree = "<group>"; };
 		E8B1347B2DAD18500EC8D4CE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = mobilepos/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = mobilepos/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* mobilepos-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "mobilepos-Bridging-Header.h"; path = "mobilepos/mobilepos-Bridging-Header.h"; sourceTree = "<group>"; };
-		16CB0849012C4C499C4859C4 /* KHTeka-Light.otf */ = {isa = PBXFileReference; name = "KHTeka-Light.otf"; path = "../assets/fonts/KHTeka-Light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		96800C0DD5F242B2A8FD6BAD /* KHTeka-Regular.otf */ = {isa = PBXFileReference; name = "KHTeka-Regular.otf"; path = "../assets/fonts/KHTeka-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		CE6DFD3E88E042D6A187A462 /* KHTeka-Medium.otf */ = {isa = PBXFileReference; name = "KHTeka-Medium.otf"; path = "../assets/fonts/KHTeka-Medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,15 +139,15 @@
 			sourceTree = "<group>";
 		};
 		CEC0D1A03F8A4221B100BB39 /* Resources */ = {
-			isa = "PBXGroup";
+			isa = PBXGroup;
 			children = (
 				16CB0849012C4C499C4859C4 /* KHTeka-Light.otf */,
 				96800C0DD5F242B2A8FD6BAD /* KHTeka-Regular.otf */,
 				CE6DFD3E88E042D6A187A462 /* KHTeka-Medium.otf */,
 			);
 			name = Resources;
-			sourceTree = "<group>";
 			path = "";
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -407,7 +407,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.reown.mobilepos;
-				PRODUCT_NAME = "mobilepos";
+				PRODUCT_NAME = mobilepos;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.reown.mobilepos";
 				SWIFT_OBJC_BRIDGING_HEADER = "mobilepos/mobilepos-Bridging-Header.h";
@@ -444,7 +444,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.reown.mobilepos;
-				PRODUCT_NAME = "mobilepos";
+				PRODUCT_NAME = mobilepos;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.reown.mobilepos";
 				SWIFT_OBJC_BRIDGING_HEADER = "mobilepos/mobilepos-Bridging-Header.h";
