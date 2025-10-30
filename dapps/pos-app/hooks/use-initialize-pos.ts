@@ -1,5 +1,5 @@
 import POSClientService, { POSClientConfig } from "@/services/POSClientService";
-import { showErrorToast, showSuccessToast } from "@/utils/toast";
+import { showErrorToast } from "@/utils/toast";
 import { IPOSClient } from "@walletconnect/pos-client";
 import { useEffect, useState } from "react";
 
@@ -25,7 +25,6 @@ export const useInitializePOS = ({
       .then(() => {
         setIsInitialized(true);
         setPosClient(posService.getClient());
-        showSuccessToast({ title: "POS terminal initialized" });
       })
       .catch((error) => {
         console.error("Error initializing POS client:", error);

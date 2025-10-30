@@ -6,18 +6,22 @@ import {
 import "@walletconnect/react-native-compat";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import Toast from "react-native-toast-message";
 import { WagmiProvider } from "wagmi";
 
+import HeaderImage from "@/components/header-image";
 import { POSProvider } from "@/context/POSContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useInitializePOS } from "@/hooks/use-initialize-pos";
+import { useTheme } from "@/hooks/use-theme-color";
 import { appKit, wagmiAdapter } from "@/utils/appkit";
 import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
+import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
-import * as Sentry from "@sentry/react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -35,17 +39,15 @@ Sentry.init({
   integrations: [Sentry.mobileReplayIntegration()],
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  // spotlight: __DEV__,
+  spotlight: __DEV__,
 });
 
 const queryClient = new QueryClient();
 
-export const unstable_settings = {
-  anchor: "(tabs)",
-};
-
 export default Sentry.wrap(function RootLayout() {
+  const { bottom } = useSafeAreaInsets();
   const colorScheme = useColorScheme();
+  const Theme = useTheme();
   const { posClient, isInitialized } = useInitializePOS({
     projectId: process.env.EXPO_PUBLIC_PROJECT_ID!,
     deviceId: "1234567890",
@@ -61,48 +63,76 @@ export default Sentry.wrap(function RootLayout() {
   });
 
   return (
-    <AppKitProvider instance={appKit}>
-      <WagmiProvider config={wagmiAdapter.wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
-            <POSProvider posClient={posClient} isInitialized={isInitialized}>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="payment"
-                  options={{
-                    presentation: "card",
-                    title: "Create Payment",
-                    headerBackButtonDisplayMode: "minimal",
+    <GestureHandlerRootView>
+      <AppKitProvider instance={appKit}>
+        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <POSProvider posClient={posClient} isInitialized={isInitialized}>
+                <Stack
+                  screenOptions={({ route }) => {
+                    const centerTitle =
+                      route.name === "index" ||
+                      route.name === "payment-success";
+                    const isPaymentSuccess = route.name === "payment-success";
+                    const headerBackgroundColor = isPaymentSuccess
+                      ? Theme["text-success"]
+                      : Theme["bg-primary"];
+
+                    const headerTintColor = isPaymentSuccess
+                      ? Theme["text-invert"]
+                      : Theme["text-primary"];
+
+                    return {
+                      headerTitle: centerTitle ? HeaderImage : "",
+                      headerRight: !centerTitle
+                        ? () => (
+                            <HeaderImage padding tintColor={headerTintColor} />
+                          )
+                        : undefined,
+                      headerShadowVisible: false,
+                      headerTintColor,
+                      headerBackButtonDisplayMode: "minimal",
+                      headerTitleAlign: "center",
+                      headerStyle: {
+                        backgroundColor: headerBackgroundColor,
+                      },
+                      contentStyle: {
+                        backgroundColor: Theme["bg-primary"],
+                        paddingBottom: bottom,
+                      },
+                    };
                   }}
-                />
-                <Stack.Screen
-                  name="scan"
-                  options={{
-                    presentation: "card",
-                    title: "Payment Request",
-                    headerBackButtonDisplayMode: "minimal",
-                  }}
-                />
-                <Stack.Screen
-                  name="payment-success"
-                  options={{
-                    presentation: "card",
-                    title: "Payment Success",
-                    headerShown: false,
-                    headerBackButtonDisplayMode: "minimal",
-                  }}
-                />
-              </Stack>
-              <StatusBar style="auto" />
-              <AppKit />
-            </POSProvider>
-            <Toast />
-          </ThemeProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
-    </AppKitProvider>
+                >
+                  <Stack.Screen name="index" />
+                  <Stack.Screen
+                    name="settings"
+                    options={{
+                      title: "",
+                    }}
+                  />
+                  <Stack.Screen name="amount" />
+                  <Stack.Screen name="payment-method" />
+                  <Stack.Screen name="payment-token" />
+                  <Stack.Screen name="payment-network" />
+                  <Stack.Screen name="scan" />
+                  <Stack.Screen
+                    name="payment-success"
+                    options={{
+                      headerBackVisible: false,
+                    }}
+                  />
+                </Stack>
+                <StatusBar style="auto" />
+                <AppKit />
+              </POSProvider>
+              <Toast />
+            </ThemeProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </AppKitProvider>
+    </GestureHandlerRootView>
   );
 });

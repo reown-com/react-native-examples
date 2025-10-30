@@ -21,6 +21,7 @@ jobs:
       project-type: 'dapp'
       env-file-path: 'dapps/pos-app/.env'
       package-manager: 'npm'
+      testflight-groups: 'External'
     secrets:
       project-id: ${{ vars.POS_APP_PROJECT_ID }}
       sentry-file: ${{ secrets.POS_SENTRY_FILE }}
@@ -35,4 +36,4 @@ jobs:
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
       google-services-file: ${{ secrets.POS_IOS_GOOGLE_SERVICES_FILE_BASE64 }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      # testflight-url: ${{ vars.TESTFLIGHT_POS_URL }}
+      testflight-url: ${{ vars.TESTFLIGHT_POS_URL }}

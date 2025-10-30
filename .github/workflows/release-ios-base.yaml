@@ -61,6 +61,10 @@ on:
         required: false
         default: 'yarn'
         type: string
+      testflight-groups:
+        description: "TestFlight groups"
+        required: false
+        type: string
     secrets:
       project-id:
         description: "WalletConnect Cloud ID"
@@ -189,6 +193,7 @@ jobs:
           RELEASE_TYPE: ${{ inputs.release-type }}
           BRANCH_NAME: ${{ github.ref_name }}
           BUILD_FOR_SIMULATOR: ${{ inputs.build-for-simulator }}
+          TESTFLIGHT_GROUPS: ${{ inputs.testflight-groups }}
 
       - name: Configure AWS credentials
         id: aws-creds
