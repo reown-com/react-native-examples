@@ -37,18 +37,7 @@ export default function QRModalScreen() {
   const tokenData = getTokenById(token);
 
   usePOSListener("connected", ({ session }) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     console.log("Connected to wallet", session);
-
-    // Disable deep link redirections
-    const updatedSession = {
-      ...session,
-      sessionConfig: {
-        disableDeepLink: true,
-      },
-    };
-
-    posClient?.engine.signClient.session.set(session.topic, updatedSession);
   });
 
   usePOSListener("disconnected", () => {
@@ -69,6 +58,7 @@ export default function QRModalScreen() {
 
   usePOSListener("qr_ready", async ({ uri }) => {
     console.log("QR ready");
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setQrUri(uri);
   });
 
@@ -84,7 +74,6 @@ export default function QRModalScreen() {
 
   usePOSListener("payment_broadcasted", () => {
     console.log("Payment broadcasted");
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   });
 
   usePOSListener("payment_failed", ({ error }) => {
