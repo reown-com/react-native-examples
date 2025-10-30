@@ -20,7 +20,8 @@ export function useThemeColor(
   }
 }
 
-export function useTheme() {
-  const theme = useColorScheme() ?? "light";
+export function useTheme(scheme?: "light" | "dark") {
+  const systemScheme = useColorScheme();
+  const theme = scheme || systemScheme || "light";
   return Colors[theme];
 }

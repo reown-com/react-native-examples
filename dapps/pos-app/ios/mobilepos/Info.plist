@@ -53,6 +53,12 @@
     </array>
     <key>RCTNewArchEnabled</key>
     <true/>
+    <key>UIAppFonts</key>
+    <array>
+      <string>KHTeka-Light.otf</string>
+      <string>KHTeka-Regular.otf</string>
+      <string>KHTeka-Medium.otf</string>
+    </array>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>

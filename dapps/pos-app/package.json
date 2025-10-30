@@ -13,7 +13,6 @@
     "prettier": "prettier"
   },
   "dependencies": {
-    "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/netinfo": "11.4.1",
     "@react-navigation/bottom-tabs": "^7.4.0",
@@ -24,7 +23,7 @@
     "@reown/appkit-wagmi-react-native": "0.0.0-accounts-canary.1-20251023174733",
     "@sentry/react-native": "^7.4.0",
     "@tanstack/react-query": "^5.90.5",
-    "@walletconnect/pos-client": "0.0.0-canary.3",
+    "@walletconnect/pos-client": "0.0.0-canary.4",
     "@walletconnect/react-native-compat": "2.22.4",
     "expo": "~54.0.17",
     "expo-application": "~7.0.7",
@@ -40,13 +39,14 @@
     "expo-symbols": "~1.0.7",
     "expo-system-ui": "~6.0.7",
     "expo-web-browser": "~15.0.8",
+    "pressto": "^0.6.0",
+    "qrcode": "^1.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.65.0",
     "react-native": "0.81.4",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-get-random-values": "~1.11.0",
-    "react-native-qrcode-svg": "^6.3.15",
     "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",
@@ -59,6 +59,7 @@
     "wagmi": "2.19.0"
   },
   "devDependencies": {
+    "@types/qrcode": "^1.5.6",
     "@types/react": "~19.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
@@ -70,6 +71,7 @@
   "overrides": {
     "viem": "2.38.5",
     "@walletconnect/universal-provider": "2.22.4",
+    "@walletconnect/ethereum-provider": "2.22.4",
     "@walletconnect/core": "2.22.4",
     "@walletconnect/logger": "2.1.2",
     "@walletconnect/sign-client": "2.22.4",
