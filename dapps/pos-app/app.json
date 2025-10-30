@@ -25,7 +25,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.reown.mobilepos"
+      "package": "com.reown.mobilepos",
+      "versionCode": 2
     },
     "web": {
       "output": "static",
