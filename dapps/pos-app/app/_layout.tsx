@@ -6,6 +6,7 @@ import {
 import "@walletconnect/react-native-compat";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import Toast from "react-native-toast-message";
 import { WagmiProvider } from "wagmi";
@@ -62,73 +63,76 @@ export default Sentry.wrap(function RootLayout() {
   });
 
   return (
-    <AppKitProvider instance={appKit}>
-      <WagmiProvider config={wagmiAdapter.wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
-            <POSProvider posClient={posClient} isInitialized={isInitialized}>
-              <Stack
-                screenOptions={({ route }) => {
-                  const centerTitle =
-                    route.name === "index" || route.name === "payment-success";
-                  const isPaymentSuccess = route.name === "payment-success";
-                  const headerBackgroundColor = isPaymentSuccess
-                    ? Theme["text-success"]
-                    : Theme["bg-primary"];
+    <GestureHandlerRootView>
+      <AppKitProvider instance={appKit}>
+        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <POSProvider posClient={posClient} isInitialized={isInitialized}>
+                <Stack
+                  screenOptions={({ route }) => {
+                    const centerTitle =
+                      route.name === "index" ||
+                      route.name === "payment-success";
+                    const isPaymentSuccess = route.name === "payment-success";
+                    const headerBackgroundColor = isPaymentSuccess
+                      ? Theme["text-success"]
+                      : Theme["bg-primary"];
 
-                  const headerTintColor = isPaymentSuccess
-                    ? Theme["text-invert"]
-                    : Theme["text-primary"];
+                    const headerTintColor = isPaymentSuccess
+                      ? Theme["text-invert"]
+                      : Theme["text-primary"];
 
-                  return {
-                    headerTitle: centerTitle ? HeaderImage : "",
-                    headerRight: !centerTitle
-                      ? () => (
-                          <HeaderImage padding tintColor={headerTintColor} />
-                        )
-                      : undefined,
-                    headerShadowVisible: false,
-                    headerTintColor,
-                    headerBackButtonDisplayMode: "minimal",
-                    headerTitleAlign: "center",
-                    headerStyle: {
-                      backgroundColor: headerBackgroundColor,
-                    },
-                    contentStyle: {
-                      backgroundColor: Theme["bg-primary"],
-                      paddingBottom: bottom,
-                    },
-                  };
-                }}
-              >
-                <Stack.Screen name="index" />
-                <Stack.Screen
-                  name="settings"
-                  options={{
-                    title: "",
+                    return {
+                      headerTitle: centerTitle ? HeaderImage : "",
+                      headerRight: !centerTitle
+                        ? () => (
+                            <HeaderImage padding tintColor={headerTintColor} />
+                          )
+                        : undefined,
+                      headerShadowVisible: false,
+                      headerTintColor,
+                      headerBackButtonDisplayMode: "minimal",
+                      headerTitleAlign: "center",
+                      headerStyle: {
+                        backgroundColor: headerBackgroundColor,
+                      },
+                      contentStyle: {
+                        backgroundColor: Theme["bg-primary"],
+                        paddingBottom: bottom,
+                      },
+                    };
                   }}
-                />
-                <Stack.Screen name="amount" />
-                <Stack.Screen name="payment-method" />
-                <Stack.Screen name="payment-token" />
-                <Stack.Screen name="payment-network" />
-                <Stack.Screen name="scan" />
-                <Stack.Screen
-                  name="payment-success"
-                  options={{
-                    headerBackVisible: false,
-                  }}
-                />
-              </Stack>
-              <StatusBar style="auto" />
-              <AppKit />
-            </POSProvider>
-            <Toast />
-          </ThemeProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
-    </AppKitProvider>
+                >
+                  <Stack.Screen name="index" />
+                  <Stack.Screen
+                    name="settings"
+                    options={{
+                      title: "",
+                    }}
+                  />
+                  <Stack.Screen name="amount" />
+                  <Stack.Screen name="payment-method" />
+                  <Stack.Screen name="payment-token" />
+                  <Stack.Screen name="payment-network" />
+                  <Stack.Screen name="scan" />
+                  <Stack.Screen
+                    name="payment-success"
+                    options={{
+                      headerBackVisible: false,
+                    }}
+                  />
+                </Stack>
+                <StatusBar style="auto" />
+                <AppKit />
+              </POSProvider>
+              <Toast />
+            </ThemeProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </AppKitProvider>
+    </GestureHandlerRootView>
   );
 });

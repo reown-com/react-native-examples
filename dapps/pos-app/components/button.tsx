@@ -1,55 +1,17 @@
+import { PressableScale } from "pressto";
 import React from "react";
-import { Pressable, PressableProps, StyleProp, ViewStyle } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
+import { StyleProp, ViewStyle } from "react-native";
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-interface ButtonProps extends Omit<PressableProps, "style"> {
+interface Props {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  zoomScale?: number;
+  onPress: () => void;
 }
 
-export const Button: React.FC<ButtonProps> = ({
-  children,
-  style,
-  zoomScale = 0.99,
-  ...props
-}) => {
-  const scale = useSharedValue(1);
-
-  const handlePressIn = () => {
-    scale.value = withSpring(zoomScale, {
-      damping: 20,
-      stiffness: 400,
-    });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withTiming(1, {
-      duration: 150,
-    });
-  };
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  });
-
+export const Button: React.FC<Props> = ({ children, style, onPress }) => {
   return (
-    <AnimatedPressable
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={[style, animatedStyle]}
-      {...props}
-    >
+    <PressableScale style={style} onPress={onPress}>
       {children}
-    </AnimatedPressable>
+    </PressableScale>
   );
 };
