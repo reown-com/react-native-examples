@@ -9,7 +9,7 @@ const CONNECTING_ERROR_MARGIN = 0.1;
 const CIRCLE_SIZE_MODIFIER = 2.5;
 const QRCODE_MATRIX_MARGIN = 7;
 
-function isAdjecentDots(cy: number, otherCy: number, cellSize: number) {
+function isAdjacentDots(cy: number, otherCy: number, cellSize: number) {
   if (cy === otherCy) {
     return false;
   }
@@ -123,7 +123,7 @@ export const QRCodeUtil = {
       // Only get dots that have neighbors
       .map(([cx, cys]) => {
         const newCys = cys.filter((cy) =>
-          cys.every((otherCy) => !isAdjecentDots(cy, otherCy, cellSize)),
+          cys.every((otherCy) => !isAdjacentDots(cy, otherCy, cellSize)),
         );
 
         return [Number(cx), newCys] as CoordinateMapping;
@@ -149,7 +149,7 @@ export const QRCodeUtil = {
       // Removing dots with no neighbors
       .map(([cx, cys]) => {
         const newCys = cys.filter((cy) =>
-          cys.some((otherCy) => isAdjecentDots(cy, otherCy, cellSize)),
+          cys.some((otherCy) => isAdjacentDots(cy, otherCy, cellSize)),
         );
 
         return [Number(cx), newCys] as CoordinateMapping;
@@ -161,7 +161,7 @@ export const QRCodeUtil = {
 
         for (const cy of cys) {
           const group = groups.find((item) =>
-            item.some((otherCy) => isAdjecentDots(cy, otherCy, cellSize)),
+            item.some((otherCy) => isAdjacentDots(cy, otherCy, cellSize)),
           );
           if (group) {
             group.push(cy);

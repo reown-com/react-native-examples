@@ -38,7 +38,6 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                 styles.key,
                 { backgroundColor: Theme["foreground-primary"] },
               ]}
-              zoomScale={0.95}
             >
               {key === "erase" ? (
                 <Image
