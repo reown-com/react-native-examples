@@ -1,3 +1,5 @@
+import { ScannerFrame } from '@/components/scanner-frame';
+import { Spacing } from '@/constants/spacing';
 import { useIsFocused } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
@@ -13,9 +15,11 @@ import {
 } from 'react-native-vision-camera';
 
 const { width, height } = Dimensions.get('window');
-const SCAN_AREA_SIZE = 250; // Size of the transparent square
+const SCAN_AREA_SIZE = 280; // Size of the transparent square
+const FRAME_OVERLAP = 6; // How much the frame overlaps the blur edges
 const scanAreaLeft = (width - SCAN_AREA_SIZE) / 2;
-const scanAreaTop = (height - SCAN_AREA_SIZE) / 2;
+const scanAreaTop = (height - SCAN_AREA_SIZE) / 3;
+const scanAreaBottom = ((height - SCAN_AREA_SIZE) * 2) / 3;
 
 export default function Scanner() {
   const device = useCameraDevice('back', {
@@ -52,15 +56,6 @@ export default function Scanner() {
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
-      {/* <TouchableOpacity onPress={goBack} style={styles.backButton} hitSlop={40}>
-        <SvgChevronRight
-          fill="white"
-          height={24}
-          width={24}
-          style={styles.backIcon}
-        />
-      </TouchableOpacity> */}
-
       {hasPermission && device ? (
         <>
           <Camera
@@ -69,11 +64,13 @@ export default function Scanner() {
             isActive={isActive}
             codeScanner={codeScanner}
           />
+          {/* Top blur overlay */}
           <BlurView
             intensity={80}
             style={[styles.blurOverlay, { top: 0, height: scanAreaTop }]}
             tint="dark"
           />
+          {/* Left blur overlay */}
           <BlurView
             intensity={80}
             style={[
@@ -87,6 +84,53 @@ export default function Scanner() {
             ]}
             tint="dark"
           />
+          {/* Bottom blur overlay */}
+          <BlurView
+            intensity={80}
+            style={[styles.blurOverlay, { bottom: 0, height: scanAreaBottom }]}
+            tint="dark"
+          />
+          {/* Right blur overlay */}
+          <BlurView
+            intensity={80}
+            style={[
+              styles.blurOverlay,
+              {
+                top: scanAreaTop,
+                right: 0,
+                width: scanAreaLeft,
+                height: SCAN_AREA_SIZE,
+              },
+            ]}
+            tint="dark"
+          />
+
+          <View
+            style={[
+              styles.scanAreaContainer,
+              {
+                top: scanAreaTop - FRAME_OVERLAP,
+                left: scanAreaLeft - FRAME_OVERLAP,
+                width: SCAN_AREA_SIZE + FRAME_OVERLAP * 2,
+                height: SCAN_AREA_SIZE + FRAME_OVERLAP * 2,
+              },
+            ]}
+          >
+            <ScannerFrame size={SCAN_AREA_SIZE + FRAME_OVERLAP * 2} />
+          </View>
+
+          <View
+            style={[
+              styles.instructionContainer,
+              {
+                bottom: scanAreaBottom - Spacing['spacing-12'],
+              },
+            ]}
+          >
+            <Text style={styles.instructionText}>
+              Find a WalletConnect QR Code to scan
+            </Text>
+          </View>
         </>
       ) : (
         <View style={styles.errorContainer}>
@@ -98,21 +142,6 @@ export default function Scanner() {
 }
 
 const styles = StyleSheet.create({
-  backButton: {
-    zIndex: 1,
-    backgroundColor: 'black',
-    opacity: 0.7,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 24,
-    height: 36,
-    width: 36,
-    marginTop: 16,
-    marginLeft: 16,
-  },
-  backIcon: {
-    transform: [{ rotate: '180deg' }],
-  },
   errorContainer: {
     flex: 1,
     alignItems: 'center',
@@ -121,5 +150,20 @@ const styles = StyleSheet.create({
   blurOverlay: {
     position: 'absolute',
     width: '100%',
+  },
+  scanAreaContainer: {
+    position: 'absolute',
+  },
+  instructionContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  instructionText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
 });
