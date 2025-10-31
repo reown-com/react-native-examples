@@ -1,11 +1,17 @@
+import { Button } from '@/components/primitives/button';
 import { ScannerFrame } from '@/components/scanner-frame';
-import { Spacing } from '@/constants/spacing';
+import { BorderRadius, Spacing } from '@/constants/spacing';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useIsFocused } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import {
   Camera,
   Code,
@@ -22,21 +28,18 @@ const scanAreaTop = (height - SCAN_AREA_SIZE) / 3;
 const scanAreaBottom = ((height - SCAN_AREA_SIZE) * 2) / 3;
 
 export default function Scanner() {
+  const closeBorderColor = useThemeColor('border-secondary');
+  const { top } = useSafeAreaInsets();
   const device = useCameraDevice('back', {
     physicalDevices: ['wide-angle-camera'],
   });
-  const { hasPermission, requestPermission } = useCameraPermission(); // Add this
+  const { hasPermission, requestPermission } = useCameraPermission();
 
-  // 2. Only activate Camera when the app is focused and this screen is currently opened
   const isActive = useIsFocused();
 
   const onCodeScanned = (codes: Code[]) => {
     const uri = codes[0].value;
     console.log(uri);
-    // navigation.navigate('Home', {
-    //   screen: 'ConnectionsStack',
-    //   params: {screen: 'Connections', params: {uri: uri!}},
-    // });
   };
 
   const codeScanner = useCodeScanner({
@@ -119,6 +122,23 @@ export default function Scanner() {
             <ScannerFrame size={SCAN_AREA_SIZE + FRAME_OVERLAP * 2} />
           </View>
 
+          <Button
+            onPress={goBack}
+            hitSlop={10}
+            style={[
+              styles.closeButton,
+              {
+                borderColor: closeBorderColor,
+                top: top + Spacing['spacing-8'],
+              },
+            ]}
+          >
+            <Image
+              source={require('@/assets/icons/close.png')}
+              style={styles.closeIcon}
+            />
+          </Button>
+
           <View
             style={[
               styles.instructionContainer,
@@ -153,6 +173,17 @@ const styles = StyleSheet.create({
   },
   scanAreaContainer: {
     position: 'absolute',
+  },
+  closeButton: {
+    position: 'absolute',
+    right: 20,
+    borderWidth: 1,
+    borderRadius: BorderRadius['3'],
+    padding: Spacing['spacing-3'],
+  },
+  closeIcon: {
+    width: 16,
+    height: 16,
   },
   instructionContainer: {
     position: 'absolute',
