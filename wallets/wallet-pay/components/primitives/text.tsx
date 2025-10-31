@@ -15,7 +15,10 @@ export function Text({
   type = 'default',
   ...rest
 }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text-primary');
+  const color = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    'text-primary',
+  );
 
   return (
     <RNText
