@@ -1,5 +1,5 @@
 import { Text } from '@/components/primitives/text';
-import { View } from '@/components/primitives/view';
+import { View } from 'react-native';
 
 export default function SettingsScreen() {
   return (

@@ -21,8 +21,7 @@ export default function TabLayout() {
         tabBarIconStyle: {
           marginBottom: Spacing['spacing-1'],
         },
-      }}
-    >
+      }}>
       <Tabs.Screen
         name="index"
         options={{

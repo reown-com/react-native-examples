@@ -12,3 +12,8 @@ export function useThemeColor(
   const theme = useColorScheme() ?? 'light';
   return Colors[theme][colorName];
 }
+
+export function useTheme() {
+  const theme = useColorScheme() ?? 'light';
+  return Colors[theme];
+}
