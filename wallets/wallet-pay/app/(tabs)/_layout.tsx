@@ -1,8 +1,9 @@
+import { Image } from 'expo-image';
 import { Tabs } from 'expo-router';
 import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Spacing } from '@/constants/spacing';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -12,22 +13,34 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors[colorScheme ?? 'light']["icon-inverse"],
+        tabBarInactiveTintColor: Colors[colorScheme ?? 'light']["icon-default"],
         headerShown: false,
         tabBarButton: HapticTab,
+        
+        tabBarIconStyle: {
+          marginBottom: Spacing["spacing-1"],
+        }
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'Wallets',
+          tabBarIcon: ({ color }) => <Image source={require('@/assets/tabs/wallet.png')} style={{ width: 28, height: 28, tintColor: color }} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="connected-apps"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Connected Apps',
+          tabBarIcon: ({ color }) => <Image source={require('@/assets/tabs/stack.png')} style={{ width: 28, height: 28, tintColor: color }} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <Image source={require('@/assets/tabs/gear.png')} style={{ width: 28, height: 28, tintColor: color }} />,
         }}
       />
     </Tabs>
