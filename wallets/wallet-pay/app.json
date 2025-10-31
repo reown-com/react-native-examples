@@ -33,9 +33,15 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 240,
+          "imageWidth": 180,
           "resizeMode": "contain",
           "backgroundColor": "#202020"
+        }
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera."
         }
       ]
     ],
