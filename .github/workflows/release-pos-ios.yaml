@@ -13,7 +13,7 @@ jobs:
       name: Mobile POS React Native
       root-path: 'dapps/pos-app'
       release-type: 'production'
-      scheme-name: 'mobilepos'
+      scheme-name: 'WPay'
       bundle-id: 'com.reown.mobilepos'
       apple-id: '6754570257'
       project-type: 'dapp'
