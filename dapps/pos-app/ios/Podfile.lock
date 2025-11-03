@@ -1383,7 +1383,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-  - react-native-compat (2.22.4):
+  - react-native-compat (2.23.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2505,7 +2505,7 @@ SPEC CHECKSUMS:
   React-logger: 7b234de35acb469ce76d6bbb0457f664d6f32f62
   React-Mapbuffer: fbe1da882a187e5898bdf125e1cc6e603d27ecae
   React-microtasksnativemodule: 76905804171d8ccbe69329fc84c57eb7934add7f
-  react-native-compat: ffd8fe04207a111865db4118342087a21acecb6c
+  react-native-compat: 9d75cf826b8e4962155c99375cf047cd075cf041
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-safe-area-context: 42a1b4f8774b577d03b53de7326e3d5757fe9513
