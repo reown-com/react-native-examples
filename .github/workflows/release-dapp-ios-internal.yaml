@@ -19,8 +19,6 @@ jobs:
     with:
       name: AppKit React Native
       root-path: 'dapps/W3MWagmi'
-      xcode-project-path: 'dapps/W3MWagmi/ios/W3MWagmi.xcodeproj'
-      xcode-workspace-path: 'dapps/W3MWagmi/ios/W3MWagmi.xcworkspace'
       release-type: 'internal'
       scheme-name: 'W3MWagmi Internal'
       bundle-id: 'com.walletconnect.web3modal.rnsample.internal'
