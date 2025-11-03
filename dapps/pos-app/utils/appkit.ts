@@ -34,9 +34,11 @@ export const appKit = createAppKit({
     swaps: false,
   },
   metadata: {
-    name: "Mobile POS Terminal",
-    description: "Mobile POS terminal for crypto payments",
+    name: "WPay",
+    description: "WalletConnect Point of Sale",
     url: "https://reown.com/appkit",
-    icons: ["https://avatars.githubusercontent.com/u/179229932"],
+    icons: [
+      "https://raw.githubusercontent.com/reown-com/react-native-examples/refs/heads/main/dapps/pos-app/assets/images/icon.png",
+    ],
   },
 });

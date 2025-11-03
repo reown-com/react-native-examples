@@ -52,9 +52,10 @@ export default Sentry.wrap(function RootLayout() {
     projectId: process.env.EXPO_PUBLIC_PROJECT_ID!,
     deviceId: "1234567890",
     metadata: {
-      merchantName: "Mobile POS Terminal",
-      description: "Mobile Point of Sale Terminal",
-      logoIcon: "https://avatars.githubusercontent.com/u/179229932",
+      merchantName: "WPay",
+      description: "WalletConnect Point of Sale",
+      logoIcon:
+        "https://raw.githubusercontent.com/reown-com/react-native-examples/refs/heads/main/dapps/pos-app/assets/images/icon.png",
       url: "https://reown.com/appkit",
     },
     loggerOptions: {
