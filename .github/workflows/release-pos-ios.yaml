@@ -12,16 +12,15 @@ jobs:
     with:
       name: Mobile POS React Native
       root-path: 'dapps/pos-app'
-      xcode-project-path: 'dapps/pos-app/ios/mobilepos.xcodeproj'
-      xcode-workspace-path: 'dapps/pos-app/ios/mobilepos.xcworkspace'
       release-type: 'production'
-      scheme-name: 'mobilepos'
+      scheme-name: 'WPay'
       bundle-id: 'com.reown.mobilepos'
       apple-id: '6754570257'
       project-type: 'dapp'
       env-file-path: 'dapps/pos-app/.env'
       package-manager: 'npm'
       testflight-groups: 'External'
+      is-expo-project: true
     secrets:
       project-id: ${{ vars.POS_APP_PROJECT_ID }}
       sentry-file: ${{ secrets.POS_SENTRY_FILE }}
