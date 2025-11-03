@@ -10,13 +10,15 @@ import { getNetworkByCaipId, getTokenById, TokenKey } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
 import * as Haptics from "expo-haptics";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Image,
   ImageBackground,
   ImageSourcePropType,
   StyleSheet,
+  View,
 } from "react-native";
+
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
   token: TokenKey;
@@ -36,6 +38,19 @@ export default function QRModalScreen() {
   const networkData = getNetworkByCaipId(networkCaipId);
   const tokenData = getTokenById(token);
 
+  const onFailure = useCallback(() => {
+    router.dismiss();
+    router.replace({
+      pathname: "/payment-failure",
+      params: {
+        amount,
+        token,
+        networkCaipId,
+        recipientAddress,
+      },
+    });
+  }, [amount, token, networkCaipId, recipientAddress]);
+
   usePOSListener("connected", ({ session }) => {
     console.log("Connected to wallet", session);
   });
@@ -47,13 +62,12 @@ export default function QRModalScreen() {
   usePOSListener("connection_failed", ({ error }) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     console.log("Connection failed", error);
-    showErrorToast({ title: "Connection failed", message: error?.message });
+    onFailure();
   });
 
   usePOSListener("connection_rejected", ({ error }) => {
     console.log("Connection rejected", error);
-    showErrorToast({ title: "Connection rejected", message: error?.message });
-    posClient?.restart();
+    onFailure();
   });
 
   usePOSListener("qr_ready", async ({ uri }) => {
@@ -69,7 +83,7 @@ export default function QRModalScreen() {
 
   usePOSListener("payment_rejected", ({ error }) => {
     console.log("Payment rejected", error);
-    showErrorToast({ title: "Payment rejected", message: error?.message });
+    onFailure();
   });
 
   usePOSListener("payment_broadcasted", () => {
@@ -79,7 +93,7 @@ export default function QRModalScreen() {
   usePOSListener("payment_failed", ({ error }) => {
     console.log("Payment failed", error);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    showErrorToast({ title: "Payment failed", message: error?.message });
+    onFailure();
   });
 
   usePOSListener("payment_successful", ({ transaction, result }) => {
@@ -168,7 +182,7 @@ export default function QRModalScreen() {
           ${amount}
         </ThemedText>
       </ThemedView>
-      <QRCode size={300} uri={qrUri}>
+      <QRCode size={300} uri={qrUri} style={{ flex: 2 }}>
         <ImageBackground
           source={tokenData?.icon as ImageSourcePropType}
           style={styles.tokenIcon}
@@ -181,6 +195,7 @@ export default function QRModalScreen() {
           />
         </ImageBackground>
       </QRCode>
+      <View style={{ flex: 1 }} />
       <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
     </ThemedView>
   );
@@ -190,16 +205,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
-    paddingBottom: Spacing["spacing-5"],
+    paddingVertical: Spacing["spacing-5"],
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
   },
   amountContainer: {
     width: "100%",
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
     gap: Spacing["spacing-2"],
-    marginBottom: Spacing["spacing-8"],
+    // marginBottom: Spacing["spacing-8"],
   },
   amountText: {
     fontSize: 16,

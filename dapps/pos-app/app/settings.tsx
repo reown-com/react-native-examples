@@ -12,6 +12,8 @@ import {
   useAppKit,
   useAppKitState,
 } from "@reown/appkit-react-native";
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 
 export default function Settings() {
   const Theme = useTheme();
@@ -28,6 +30,14 @@ export default function Settings() {
       open();
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!isConnected) {
+        open();
+      }
+    }, [isConnected, open]),
+  );
 
   return isConnected ? (
     <ThemedView style={styles.container}>
@@ -107,7 +117,7 @@ export default function Settings() {
             },
           ]}
         >
-          Connect Wallet
+          Connect Recipient Wallet
         </ThemedText>
       </Button>
     </ThemedView>

@@ -96,6 +96,7 @@ export default Sentry.wrap(function RootLayout() {
                       headerTintColor,
                       headerBackButtonDisplayMode: "minimal",
                       headerTitleAlign: "center",
+                      headerBackImageSource: require("@/assets/images/arrow-left.png"),
                       headerStyle: {
                         backgroundColor: headerBackgroundColor,
                       },
@@ -118,6 +119,7 @@ export default Sentry.wrap(function RootLayout() {
                   <Stack.Screen name="payment-token" />
                   <Stack.Screen name="payment-network" />
                   <Stack.Screen name="scan" />
+                  <Stack.Screen name="payment-failure" />
                   <Stack.Screen
                     name="payment-success"
                     options={{

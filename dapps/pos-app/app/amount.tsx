@@ -21,7 +21,7 @@ export default function AmountScreen() {
     formState: { isValid },
   } = useForm<FormData>({
     defaultValues: {
-      amount: "0",
+      amount: "",
     },
   });
   const watchAmount = watch("amount");
@@ -58,13 +58,13 @@ export default function AmountScreen() {
             styles.amountText,
             {
               color:
-                watchAmount === "0"
+                watchAmount === ""
                   ? Theme["text-secondary"]
                   : Theme["text-primary"],
             },
           ]}
         >
-          ${watchAmount}
+          ${watchAmount || "0.00"}
         </ThemedText>
       </ThemedView>
       <Controller
@@ -72,7 +72,12 @@ export default function AmountScreen() {
         name="amount"
         rules={{
           validate: (value) => {
-            if (!value || value === "0" || Number(value) === 0) {
+            if (
+              !value ||
+              value === "0" ||
+              value === "" ||
+              Number(value) === 0
+            ) {
               return "Amount is required";
             }
             return true;
@@ -82,7 +87,7 @@ export default function AmountScreen() {
           <NumericKeyboard
             onKeyPress={(key) => {
               if (key === "erase") {
-                const newDisplay = prev?.slice(0, -1) || "0";
+                const newDisplay = prev?.slice(0, -1) || "";
                 onChange?.(newDisplay);
               } else if (key === ".") {
                 if (prev.includes(".")) return; // Don't add multiple commas
@@ -102,19 +107,15 @@ export default function AmountScreen() {
         style={[
           styles.button,
           {
-            backgroundColor: isValid
-              ? Theme["bg-accent-primary"]
-              : Theme["foreground-tertiary"], //TODO: Add a disabled color for buttons
+            backgroundColor: Theme["bg-accent-primary"],
+            opacity: isValid ? 1 : 0.6,
           },
         ]}
       >
         <ThemedText
-          style={[
-            styles.buttonText,
-            { color: isValid ? Theme["text-invert"] : Theme["text-secondary"] },
-          ]}
+          style={[styles.buttonText, { color: Theme["text-invert"] }]}
         >
-          {isValid ? `Charge $${watchAmount}` : "Enter Amount"}
+          {isValid ? `Charge $${watchAmount}` : "Enter amount"}
         </ThemedText>
       </Button>
     </ThemedView>
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-10"],
+    paddingVertical: Spacing["spacing-5"],
   },
   amountContainer: {
     flex: 1,

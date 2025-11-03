@@ -3,34 +3,46 @@ import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import { Animated, Dimensions, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Image } from "expo-image";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { Button } from "@/components/button";
-
-interface SuccessParams extends UnknownOutputParams {
-  amount: string;
-}
+import { TokenKey } from "@/utils/networks";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const diagonalLength = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
 const initialCircleSize = 20;
 const finalScale = Math.round(diagonalLength / initialCircleSize) + 1;
 
+interface ScreenParams extends UnknownOutputParams {
+  amount: string;
+  token: TokenKey;
+  networkCaipId: string;
+  recipientAddress: string;
+}
+
 export default function PaymentSuccessScreen() {
   const Theme = useTheme();
-  const params = useLocalSearchParams<SuccessParams>();
   const insets = useSafeAreaInsets();
-  const { amount } = params;
+  const params = useLocalSearchParams<ScreenParams>();
 
   const circleScale = useRef(new Animated.Value(1)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
 
-  const handleNewPayment = () => {
-    router.dismissAll();
-    router.navigate("/amount");
+  const handleRetry = () => {
+    const { amount, token, networkCaipId, recipientAddress } = params;
+    router.dismissTo({
+      pathname: "/scan",
+      params: {
+        amount,
+        token,
+        networkCaipId,
+        recipientAddress,
+      },
+    });
   };
 
   useEffect(() => {
@@ -62,7 +74,7 @@ export default function PaymentSuccessScreen() {
         style={[
           styles.circle,
           {
-            backgroundColor: Theme["text-success"],
+            backgroundColor: Theme["bg-primary"],
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
@@ -83,49 +95,39 @@ export default function PaymentSuccessScreen() {
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
+          <Image
+            source={require("@/assets/images/warning-circle.png")}
+            style={styles.warningCircle}
+          />
           <ThemedText
-            style={[styles.amountDescription, { color: Theme["text-invert"] }]}
+            style={[styles.failedText, { color: Theme["text-primary"] }]}
           >
-            Payment Successful
+            Payment failed
           </ThemedText>
           <ThemedText
-            style={[styles.amountValue, { color: Theme["text-invert"] }]}
+            style={[
+              styles.failedDescription,
+              { color: Theme["text-secondary"] },
+            ]}
           >
-            ${amount}
+            The payment couldn’t be completed due to an error. Please try again
+            or use a different payment method.
           </ThemedText>
         </View>
         <View style={styles.buttonContainer}>
           <Button
-            onPress={() => {}}
+            onPress={handleRetry}
             style={[
               styles.button,
               {
-                backgroundColor: Theme["text-success"],
-                borderColor: Theme["border-primary"],
+                backgroundColor: Theme["bg-accent-primary"],
               },
             ]}
           >
             <ThemedText
               style={[styles.buttonText, { color: Theme["text-invert"] }]}
             >
-              Send email receipt
-            </ThemedText>
-          </Button>
-
-          <Button
-            style={[
-              styles.button,
-              {
-                backgroundColor: Theme["bg-primary"],
-                borderColor: Theme["bg-primary"],
-              },
-            ]}
-            onPress={handleNewPayment}
-          >
-            <ThemedText
-              style={[styles.buttonText, { color: Theme["text-primary"] }]}
-            >
-              New Sale
+              Try again
             </ThemedText>
           </Button>
         </View>
@@ -151,16 +153,22 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
-  amountDescription: {
-    fontSize: 18,
-    lineHeight: 20,
+  failedText: {
+    fontSize: 26,
+    lineHeight: 28,
     textAlign: "center",
     marginBottom: Spacing["spacing-3"],
   },
-  amountValue: {
-    fontSize: 38,
-    lineHeight: 38,
+  failedDescription: {
+    fontSize: 16,
+    lineHeight: 18,
     textAlign: "center",
+    marginBottom: Spacing["spacing-3"],
+  },
+  warningCircle: {
+    width: 48,
+    height: 48,
+    marginBottom: Spacing["spacing-3"],
   },
   buttonContainer: {
     width: "100%",
@@ -173,7 +181,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
     borderRadius: BorderRadius["5"],
-    borderWidth: 1,
   },
   buttonText: {
     fontSize: 18,
