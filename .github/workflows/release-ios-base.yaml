@@ -15,14 +15,6 @@ on:
         description: "Path of the react-native project"
         required: true
         type: string
-      xcode-project-path:
-        description: "Path of the Xcode project"
-        required: true
-        type: string
-      xcode-workspace-path:
-        description: "Path of the Xcode workspace"
-        required: true
-        type: string
       release-type:
         description: "Release type of the project (debug/internal/production)"
         type: string
@@ -133,6 +125,18 @@ jobs:
           cd ${{ inputs.root-path }}
           npx expo prebuild --platform ios
 
+      - name: Set Xcode paths
+        run: |
+          # Find the .xcodeproj and .xcworkspace (works for both Expo and non-Expo)
+          XCODEPROJ=$(find "${{ inputs.root-path }}/ios" -maxdepth 1 -name "*.xcodeproj" -print -quit)
+          XCWORKSPACE=$(find "${{ inputs.root-path }}/ios" -maxdepth 1 -name "*.xcworkspace" -print -quit)
+          
+          echo "Found Xcode project: $XCODEPROJ"
+          echo "Found Xcode workspace: $XCWORKSPACE"
+          
+          echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
+          echo "XCWORKSPACE_PATH=$XCWORKSPACE" >> "$GITHUB_ENV"
+
       - name: Set podfile path
         if: ${{ inputs.is-expo-project == false }}
         id: podfile-hash
@@ -200,8 +204,8 @@ jobs:
           MATCH_GIT_URL: ${{ secrets.match-git-url }}
           PODFILE_PATH: ${{ inputs.root-path }}/ios/Podfile
           SCHEME: ${{ inputs.scheme-name }}
-          XCODE_PROJECT_PATH: ${{ inputs.xcode-project-path }}
-          XCWORKSPACE_PATH: ${{ inputs.xcode-workspace-path }}
+          XCODE_PROJECT_PATH: ${{ env.XCODE_PROJECT_PATH }}
+          XCWORKSPACE_PATH: ${{ env.XCWORKSPACE_PATH }}
           PROJECT_TYPE: ${{ inputs.project-type }}
           RELEASE_TYPE: ${{ inputs.release-type }}
           BRANCH_NAME: ${{ github.ref_name }}
