@@ -72,8 +72,8 @@ export const QRCodeUtil = {
     });
 
     const clearArenaSize = Math.floor((logoSize + 25) / cellSize);
-    const matrixMiddleStart = matrix.length / 2 - clearArenaSize / 2;
-    const matrixMiddleEnd = matrix.length / 2 + clearArenaSize / 2 - 1;
+    const centerPoint = matrix.length / 2;
+    const radius = clearArenaSize / 2;
     const circles: [number, number][] = [];
 
     // Getting coordinates for each of the QR code dots
@@ -89,14 +89,13 @@ export const QRCodeUtil = {
                 j > matrix.length - (QRCODE_MATRIX_MARGIN + 1))
             )
           ) {
-            if (
-              !(
-                i > matrixMiddleStart &&
-                i < matrixMiddleEnd &&
-                j > matrixMiddleStart &&
-                j < matrixMiddleEnd
-              )
-            ) {
+            // Calculate distance from center point
+            const distanceFromCenter = Math.sqrt(
+              Math.pow(i - centerPoint, 2) + Math.pow(j - centerPoint, 2),
+            );
+
+            // Only add the dot if it's outside the circular radius
+            if (distanceFromCenter >= radius) {
               const cx = i * cellSize + cellSize / 2;
               const cy = j * cellSize + cellSize / 2;
               circles.push([cx, cy]);
