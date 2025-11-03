@@ -27,6 +27,7 @@ export default function PaymentMethodScreen() {
   return (
     <ThemedView style={styles.container}>
       <Button
+        onPress={() => {}}
         style={[
           styles.actionButton,
           { backgroundColor: Theme["foreground-primary"] },

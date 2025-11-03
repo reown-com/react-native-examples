@@ -37,7 +37,7 @@ export default function AmountScreen() {
     }
 
     router.push({
-      pathname: "/payment-method",
+      pathname: "/payment-token",
       params: {
         amount: formattedAmount,
       },
