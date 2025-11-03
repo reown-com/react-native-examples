@@ -19,8 +19,6 @@ jobs:
     with:
       name: WalletKit React Native
       root-path: 'wallets/rn_cli_wallet'
-      xcode-project-path: 'wallets/rn_cli_wallet/ios/RNWeb3Wallet.xcodeproj'
-      xcode-workspace-path: 'wallets/rn_cli_wallet/ios/RNWeb3Wallet.xcworkspace'
       release-type: 'production'
       scheme-name: 'RNWallet'
       bundle-id: 'com.walletconnect.web3wallet.rnsample'
