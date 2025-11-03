@@ -54,7 +54,6 @@ platform :ios do
       path: ENV['XCODE_PROJECT_PATH'],
       bundle_identifier: ENV['BUNDLE_ID'],
       code_sign_identity: "Apple Distribution",
-      profile_name: "match AppStore #{ENV['BUNDLE_ID']}"
     )
 
     # Install pods
