@@ -65,6 +65,11 @@ on:
         description: "TestFlight groups"
         required: false
         type: string
+      is-expo-project:
+        description: "Is Expo project"
+        required: false
+        default: false
+        type: boolean
     secrets:
       project-id:
         description: "WalletConnect Cloud ID"
@@ -122,7 +127,14 @@ jobs:
           root-path: ${{ inputs.root-path }}
           package-manager: ${{ inputs.package-manager }}
 
+      - name: Expo Prebuild
+        if: ${{ inputs.is-expo-project == true }}
+        run: |
+          cd ${{ inputs.root-path }}
+          npx expo prebuild --platform ios
+
       - name: Set podfile path
+        if: ${{ inputs.is-expo-project == false }}
         id: podfile-hash
         run: |
           echo "Root path: ${{ inputs.root-path }}"
@@ -132,6 +144,7 @@ jobs:
 
       - name: Cache pods
         id: pods-cache
+        if: ${{ inputs.is-expo-project == false }}
         uses: actions/cache@v4
         with:
           path: ${{ inputs.root-path }}/ios/Pods

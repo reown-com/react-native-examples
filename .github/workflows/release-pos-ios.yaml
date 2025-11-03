@@ -22,6 +22,7 @@ jobs:
       env-file-path: 'dapps/pos-app/.env'
       package-manager: 'npm'
       testflight-groups: 'External'
+      is-expo-project: true
     secrets:
       project-id: ${{ vars.POS_APP_PROJECT_ID }}
       sentry-file: ${{ secrets.POS_SENTRY_FILE }}
