@@ -167,7 +167,7 @@ export default function QRModalScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={styles.amountContainer}>
+      <View style={styles.amountContainer}>
         <ThemedText
           style={[styles.amountText, { color: Theme["text-tertiary"] }]}
         >
@@ -181,8 +181,8 @@ export default function QRModalScreen() {
         >
           ${amount}
         </ThemedText>
-      </ThemedView>
-      <QRCode size={300} uri={qrUri} style={{ flex: 2 }}>
+      </View>
+      <QRCode size={300} uri={qrUri}>
         <ImageBackground
           source={tokenData?.icon as ImageSourcePropType}
           style={styles.tokenIcon}
@@ -215,7 +215,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: Spacing["spacing-2"],
-    // marginBottom: Spacing["spacing-8"],
   },
   amountText: {
     fontSize: 16,

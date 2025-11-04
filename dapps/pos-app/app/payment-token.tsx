@@ -5,15 +5,9 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { TOKEN_LIST, TokenKey } from "@/utils/networks";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import {
-  FlatList,
-  Image,
-  ImageSourcePropType,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Image } from "expo-image";
+import { FlatList, ImageSourcePropType, StyleSheet, View } from "react-native";
 
-//TODO: Get token list from settings
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
 }
@@ -54,7 +48,8 @@ export default function PaymentTokenScreen() {
             <Image
               source={item.icon as ImageSourcePropType}
               style={styles.image}
-              resizeMode="contain"
+              cachePolicy="memory-disk"
+              priority="high"
             />
           </Button>
         )}

@@ -1,5 +1,5 @@
-import { FlatList, Image, StyleSheet, View } from "react-native";
-
+import { FlatList, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -69,6 +69,8 @@ export default function Settings() {
                   network?.icon ??
                   require("@/assets/images/chains/chain-placeholder.png")
                 }
+                cachePolicy="memory-disk"
+                priority="high"
                 style={styles.networkLogo}
               />
             </View>
@@ -107,6 +109,8 @@ export default function Settings() {
             styles.connectButtonImage,
             { tintColor: Theme["icon-default"] },
           ]}
+          cachePolicy="memory-disk"
+          priority="high"
         />
         <ThemedText
           fontSize={18}

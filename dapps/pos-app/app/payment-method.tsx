@@ -1,5 +1,5 @@
-import { Image, StyleSheet } from "react-native";
-
+import { StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -36,6 +36,8 @@ export default function PaymentMethodScreen() {
         <Image
           source={require("@/assets/images/payment-methods/card.png")}
           style={styles.cardsImage}
+          cachePolicy="memory-disk"
+          priority="high"
         />
         <ThemedText fontSize={16}>Pay with credit/debit card</ThemedText>
       </Button>
@@ -49,6 +51,8 @@ export default function PaymentMethodScreen() {
         <Image
           source={require("@/assets/images/payment-methods/wpay.png")}
           style={styles.cryptoImage}
+          cachePolicy="memory-disk"
+          priority="high"
         />
         <ThemedText fontSize={16}>Pay with crypto</ThemedText>
       </Button>

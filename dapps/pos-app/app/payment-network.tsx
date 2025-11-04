@@ -12,9 +12,9 @@ import {
 import { showErrorToast } from "@/utils/toast";
 import { useAccount } from "@reown/appkit-react-native";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
+import { Image } from "expo-image";
 import {
   FlatList,
-  Image,
   ImageBackground,
   ImageSourcePropType,
   StyleSheet,

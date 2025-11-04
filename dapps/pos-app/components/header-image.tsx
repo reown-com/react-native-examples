@@ -1,5 +1,5 @@
 import { Spacing } from "@/constants/spacing";
-import { Image } from "react-native";
+import { Image } from "expo-image";
 
 interface HeaderImageProps {
   tintColor?: string;
@@ -10,7 +10,8 @@ export default function HeaderImage({ tintColor, padding }: HeaderImageProps) {
   return (
     <Image
       source={require("@/assets/images/brand.png")}
-      resizeMode="contain"
+      cachePolicy="memory-disk"
+      priority="high"
       style={{
         height: 18,
         width: 165,

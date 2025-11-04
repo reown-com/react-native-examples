@@ -1,4 +1,4 @@
-import { BorderRadius } from "@/constants/spacing";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { QRCodeUtil } from "@/utils/qr-code";
 import { memo, useMemo } from "react";
@@ -38,6 +38,7 @@ export function QrCode_({
 }: QrCodeProps) {
   const Theme = useTheme("light");
   const logoSize = arenaClear ? 0 : size / 4;
+  const padding = Spacing["spacing-3"];
 
   const dots = useMemo(
     () => (uri ? QRCodeUtil.generate(uri, size, logoSize) : []),
@@ -49,7 +50,6 @@ export function QrCode_({
       style={[
         styles.container,
         {
-          width: size,
           backgroundColor: Theme["bg-primary"],
         },
         style,
@@ -62,7 +62,11 @@ export function QrCode_({
       {!arenaClear && <View style={styles.icon}>{children}</View>}
     </View>
   ) : (
-    <Shimmer width={size} height={size} borderRadius={BorderRadius["5"]} />
+    <Shimmer
+      width={size + padding * 2}
+      height={size + padding * 2}
+      borderRadius={BorderRadius["5"]}
+    />
   );
 }
 
@@ -80,6 +84,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: BorderRadius["5"],
     alignSelf: "center",
+    padding: Spacing["spacing-3"],
   },
   icon: {
     position: "absolute",

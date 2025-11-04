@@ -1,6 +1,7 @@
 import { BorderRadius } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { Image, StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { Image } from "expo-image";
 import { Button } from "./button";
 
 interface CloseButtonProps {
@@ -25,6 +26,8 @@ export function CloseButton({ style, onPress }: CloseButtonProps) {
       <Image
         style={[styles.image, { tintColor: Theme["text-primary"] }]}
         source={require("@/assets/images/close.png")}
+        cachePolicy="memory-disk"
+        priority="high"
       />
     </Button>
   );

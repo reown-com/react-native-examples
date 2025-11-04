@@ -2,7 +2,8 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import * as Haptics from "expo-haptics";
 import { memo } from "react";
-import { Image, StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { Image } from "expo-image";
 import { Button } from "./button";
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
@@ -49,6 +50,8 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                       tintColor: Theme["text-primary"],
                     },
                   ]}
+                  cachePolicy="memory-disk"
+                  priority="high"
                 />
               ) : (
                 <ThemedText

@@ -28,10 +28,10 @@ Sentry.init({
 
   // Adds more context data to events (IP address, cookies, user, etc.)
   // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
-  sendDefaultPii: true,
+  sendDefaultPii: false,
 
   // Enable Logs
-  enableLogs: true,
+  enableLogs: __DEV__ ? true : false,
 
   // Configure Session Replay
   replaysSessionSampleRate: 0.1,
@@ -59,7 +59,7 @@ export default Sentry.wrap(function RootLayout() {
       url: "https://reown.com/appkit",
     },
     loggerOptions: {
-      posLevel: "debug",
+      posLevel: __DEV__ ? "debug" : "silent",
     },
   });
 
@@ -97,7 +97,6 @@ export default Sentry.wrap(function RootLayout() {
                       headerTintColor,
                       headerBackButtonDisplayMode: "minimal",
                       headerTitleAlign: "center",
-                      headerBackImageSource: require("@/assets/images/arrow-left.png"),
                       headerStyle: {
                         backgroundColor: headerBackgroundColor,
                       },

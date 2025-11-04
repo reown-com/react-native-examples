@@ -14,10 +14,10 @@ interface SuccessParams extends UnknownOutputParams {
   amount: string;
 }
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
 const diagonalLength = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
 const initialCircleSize = 20;
-const finalScale = Math.round(diagonalLength / initialCircleSize) + 1;
+const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 
 export default function PaymentSuccessScreen() {
   const Theme = useTheme();

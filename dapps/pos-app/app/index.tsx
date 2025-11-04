@@ -1,5 +1,5 @@
-import { Image, StyleSheet } from "react-native";
-
+import { StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -30,7 +30,13 @@ export default function HomeScreen() {
   };
 
   const handleSettingsPress = () => {
-    router.push("/settings");
+    // router.push("/settings");
+    router.navigate({
+      pathname: "/payment-success",
+      params: {
+        amount: "100",
+      },
+    });
   };
 
   return (
@@ -45,6 +51,8 @@ export default function HomeScreen() {
         <Image
           source={require("@/assets/images/plus.png")}
           style={styles.actionButtonImage}
+          cachePolicy="memory-disk"
+          priority="high"
         />
         <ThemedText fontSize={18}>New sale</ThemedText>
       </Button>
@@ -58,6 +66,8 @@ export default function HomeScreen() {
         <Image
           source={require("@/assets/images/gear.png")}
           style={styles.actionButtonImage}
+          cachePolicy="memory-disk"
+          priority="high"
         />
         <ThemedText fontSize={18}>Settings</ThemedText>
       </Button>

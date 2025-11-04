@@ -98,6 +98,8 @@ export default function PaymentSuccessScreen() {
           <Image
             source={require("@/assets/images/warning-circle.png")}
             style={styles.warningCircle}
+            cachePolicy="memory-disk"
+            priority="high"
           />
           <ThemedText
             style={[styles.failedText, { color: Theme["text-primary"] }]}
