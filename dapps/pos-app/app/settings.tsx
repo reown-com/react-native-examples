@@ -27,14 +27,14 @@ export default function Settings() {
     if (isConnected) {
       disconnect();
     } else {
-      open();
+      open({ view: "WalletConnect" });
     }
   };
 
   useFocusEffect(
     useCallback(() => {
       if (!isConnected) {
-        open();
+        open({ view: "WalletConnect" });
       }
     }, [isConnected, open]),
   );

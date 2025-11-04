@@ -30,13 +30,7 @@ export default function HomeScreen() {
   };
 
   const handleSettingsPress = () => {
-    // router.push("/settings");
-    router.navigate({
-      pathname: "/payment-success",
-      params: {
-        amount: "100",
-      },
-    });
+    router.push("/settings");
   };
 
   return (
