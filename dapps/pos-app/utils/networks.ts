@@ -9,12 +9,13 @@ import {
 } from "viem/chains";
 
 import type { AppKitNetwork } from "@reown/appkit-react-native";
+import { ImageSourcePropType } from "react-native";
 
 // ******************** Types ********************
 export type TokenKey = "usdc" | "usdt";
 export interface Token {
   id: TokenKey;
-  icon: string;
+  icon: IconKey;
   symbol: string;
   decimals: number;
   addresses: Record<string, string>;
@@ -22,7 +23,7 @@ export interface Token {
 }
 
 export type Network = AppKitNetwork & {
-  icon?: string;
+  icon?: IconKey;
 };
 
 // ******************** Networks ********************
@@ -30,42 +31,42 @@ const mainnet: Network = {
   ...mainnetViem,
   caipNetworkId: "eip155:1",
   chainNamespace: "eip155",
-  icon: require("@/assets/images/chains/eip155-1.png"),
+  icon: "eip155:1",
 };
 
 const polygon: Network = {
   ...polygonViem,
   caipNetworkId: "eip155:137",
   chainNamespace: "eip155",
-  icon: require("@/assets/images/chains/eip155-137.png"),
+  icon: "eip155:137",
 };
 
 const optimism: Network = {
   ...optimismViem,
   caipNetworkId: "eip155:10",
   chainNamespace: "eip155",
-  icon: require("@/assets/images/chains/eip155-10.png"),
+  icon: "eip155:10",
 };
 
 const base: Network = {
   ...baseViem,
   caipNetworkId: "eip155:8453",
   chainNamespace: "eip155",
-  icon: require("@/assets/images/chains/base.webp"),
+  icon: "eip155:8453",
 };
 
 const arbitrum: Network = {
   ...arbitrumViem,
   caipNetworkId: "eip155:42161",
   chainNamespace: "eip155",
-  icon: require("@/assets/images/chains/arbitrum.webp"),
+  icon: "eip155:42161",
 };
 
 const sepolia: Network = {
   ...sepoliaViem,
   caipNetworkId: "eip155:11155111",
   chainNamespace: "eip155",
-  icon: require("@/assets/images/chains/eip155-1.png"),
+  icon: "eip155:1",
 };
 
 const solana: Network = {
@@ -73,7 +74,7 @@ const solana: Network = {
   caipNetworkId: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
   chainNamespace: "solana",
   name: "Solana",
-  icon: require("@/assets/images/chains/solana.png"),
+  icon: "solana",
   nativeCurrency: { name: "Solana", symbol: "SOL", decimals: 9 },
   rpcUrls: {
     default: {
@@ -88,7 +89,7 @@ const solanaDevnet: Network = {
   caipNetworkId: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
   chainNamespace: "solana",
   name: "Solana Devnet",
-  icon: require("@/assets/images/chains/solana.png"),
+  icon: "solana",
   nativeCurrency: { name: "Solana", symbol: "SOL", decimals: 9 },
   rpcUrls: {
     default: { http: ["https://rpc.walletconnect.org/v1"] },
@@ -116,7 +117,7 @@ export const TOKEN_LIST: Token[] = [
     id: "usdc",
     symbol: "USDC",
     decimals: 6,
-    icon: require("@/assets/images/tokens/usdc.png"),
+    icon: "usdc",
     addresses: {
       "eip155:1": "0xA0b86a33E6441A8469A53D2b5eE5a6B7bc2c9Beb",
       "eip155:10": "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
@@ -141,7 +142,7 @@ export const TOKEN_LIST: Token[] = [
   {
     id: "usdt",
     symbol: "USDT",
-    icon: require("@/assets/images/tokens/usdt.png"),
+    icon: "usdt",
     decimals: 6,
     addresses: {
       "eip155:1": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
@@ -155,6 +156,27 @@ export const TOKEN_LIST: Token[] = [
     },
   },
 ];
+
+export const IconMap: Record<IconKey, ImageSourcePropType> = {
+  "eip155:1": require("@/assets/images/chains/eip155-1.png"),
+  "eip155:10": require("@/assets/images/chains/eip155-10.png"),
+  "eip155:137": require("@/assets/images/chains/eip155-137.png"),
+  "eip155:42161": require("@/assets/images/chains/arbitrum.webp"),
+  "eip155:8453": require("@/assets/images/chains/base.webp"),
+  solana: require("@/assets/images/chains/solana.png"),
+  usdc: require("@/assets/images/tokens/usdc.png"),
+  usdt: require("@/assets/images/tokens/usdt.png"),
+};
+
+export type IconKey =
+  | "eip155:1"
+  | "eip155:10"
+  | "eip155:137"
+  | "eip155:42161"
+  | "eip155:8453"
+  | "solana"
+  | "usdc"
+  | "usdt";
 
 // ******************** Helpers ********************
 export const getNetworkByName = (name: string): Network | undefined =>
@@ -178,3 +200,8 @@ export const getTokenAvailableNetworks = (tokenId: string): Network[] => {
 
 export const getTokenById = (id: string): Token | undefined =>
   TOKEN_LIST.find((token) => token.id === id);
+
+export const getIcon = (key?: IconKey): ImageSourcePropType | undefined => {
+  if (!key) return undefined;
+  return IconMap[key];
+};

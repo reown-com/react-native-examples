@@ -5,6 +5,7 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { getAccounts } from "@/utils/accounts";
 import {
+  getIcon,
   getTokenAvailableNetworks,
   getTokenById,
   TokenKey,
@@ -13,13 +14,7 @@ import { showErrorToast } from "@/utils/toast";
 import { useAccount } from "@reown/appkit-react-native";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
-import {
-  FlatList,
-  ImageBackground,
-  ImageSourcePropType,
-  StyleSheet,
-  View,
-} from "react-native";
+import { FlatList, ImageBackground, StyleSheet, View } from "react-native";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
@@ -99,12 +94,12 @@ export default function PaymentNetworkScreen() {
               {tokenData?.symbol} on {item.name}
             </ThemedText>
             <ImageBackground
-              source={tokenData?.icon as ImageSourcePropType}
+              source={getIcon(tokenData?.icon)}
               style={styles.tokenIcon}
               resizeMode="contain"
             >
               <Image
-                source={item.icon as ImageSourcePropType}
+                source={getIcon(item.icon)}
                 style={[
                   styles.chainIcon,
                   { borderColor: Theme["border-primary"] },

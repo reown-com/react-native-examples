@@ -34,9 +34,9 @@ Sentry.init({
   enableLogs: __DEV__ ? true : false,
 
   // Configure Session Replay
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1,
-  integrations: [Sentry.mobileReplayIntegration()],
+  replaysSessionSampleRate: 0,
+  replaysOnErrorSampleRate: 0,
+  integrations: [],
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   spotlight: __DEV__,

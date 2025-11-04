@@ -6,18 +6,17 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { usePOSListener } from "@/hooks/use-pos-listener";
 import { useTheme } from "@/hooks/use-theme-color";
-import { getNetworkByCaipId, getTokenById, TokenKey } from "@/utils/networks";
+import {
+  getIcon,
+  getNetworkByCaipId,
+  getTokenById,
+  TokenKey,
+} from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
 import * as Haptics from "expo-haptics";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Image,
-  ImageBackground,
-  ImageSourcePropType,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Image, ImageBackground, StyleSheet, View } from "react-native";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
@@ -164,12 +163,12 @@ export default function QRModalScreen() {
       </View>
       <QRCode size={300} uri={qrUri}>
         <ImageBackground
-          source={tokenData?.icon as ImageSourcePropType}
+          source={getIcon(tokenData?.icon)}
           style={styles.tokenIcon}
           resizeMode="contain"
         >
           <Image
-            source={networkData?.icon as ImageSourcePropType}
+            source={getIcon(networkData?.icon)}
             style={[styles.chainIcon, { borderColor: Theme["bg-primary"] }]}
             resizeMode="contain"
           />

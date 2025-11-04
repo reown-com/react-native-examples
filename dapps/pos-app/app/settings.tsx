@@ -6,7 +6,7 @@ import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { getAccounts } from "@/utils/accounts";
-import { getNetworkById } from "@/utils/networks";
+import { getIcon, getNetworkById } from "@/utils/networks";
 import {
   useAccount,
   useAppKit,
@@ -66,7 +66,7 @@ export default function Settings() {
               </View>
               <Image
                 source={
-                  network?.icon ??
+                  getIcon(network?.icon) ??
                   require("@/assets/images/chains/chain-placeholder.png")
                 }
                 cachePolicy="memory-disk"

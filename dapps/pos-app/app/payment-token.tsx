@@ -3,10 +3,10 @@ import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { TOKEN_LIST, TokenKey } from "@/utils/networks";
+import { getIcon, TOKEN_LIST, TokenKey } from "@/utils/networks";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
-import { FlatList, ImageSourcePropType, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
@@ -46,7 +46,7 @@ export default function PaymentTokenScreen() {
           >
             <ThemedText fontSize={16}>{item.symbol}</ThemedText>
             <Image
-              source={item.icon as ImageSourcePropType}
+              source={getIcon(item.icon)}
               style={styles.image}
               cachePolicy="memory-disk"
               priority="high"
