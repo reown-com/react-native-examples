@@ -51,54 +51,34 @@ export default function QRModalScreen() {
     });
   }, [amount, token, networkCaipId, recipientAddress]);
 
-  usePOSListener("connected", ({ session }) => {
-    console.log("Connected to wallet", session);
-  });
-
-  usePOSListener("disconnected", () => {
-    console.log("Disconnected from wallet");
-  });
-
   usePOSListener("connection_failed", ({ error }) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    console.log("Connection failed", error);
     onFailure();
   });
 
   usePOSListener("connection_rejected", ({ error }) => {
-    console.log("Connection rejected", error);
     onFailure();
   });
 
   usePOSListener("qr_ready", async ({ uri }) => {
-    console.log("QR ready");
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setQrUri(uri);
   });
 
   usePOSListener("payment_requested", () => {
-    console.log("Payment requested");
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   });
 
   usePOSListener("payment_rejected", ({ error }) => {
-    console.log("Payment rejected", error);
     onFailure();
   });
 
-  usePOSListener("payment_broadcasted", () => {
-    console.log("Payment broadcasted");
-  });
-
   usePOSListener("payment_failed", ({ error }) => {
-    console.log("Payment failed", error);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     onFailure();
   });
 
   usePOSListener("payment_successful", ({ transaction, result }) => {
-    console.log("Payment successful");
-
     const _networkData = getNetworkByCaipId(transaction.chainId);
 
     const explorerUrl = _networkData?.blockExplorers?.default?.url;

@@ -1,7 +1,7 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { QRCodeUtil } from "@/utils/qr-code";
-import { memo, useMemo } from "react";
+import { generateQRDataAsync, type QRData } from "@/utils/qr-code-generator";
+import { memo, useEffect, useState } from "react";
 import {
   ImageSourcePropType,
   StyleSheet,
@@ -9,14 +9,8 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import Svg from "react-native-svg";
+import Svg, { Circle, Line, Rect } from "react-native-svg";
 import { Shimmer } from "./shimmer";
-// import { Icon } from "../../components/wui-icon";
-// import { Image } from "../../components/wui-image";
-// import { Shimmer } from "../../components/wui-shimmer";
-// import { QRCodeUtil } from "../../utils/QRCodeUtil";
-// import { BorderRadius, LightTheme, Spacing } from "../../utils/ThemeUtil";
-// import type { IconType } from "../../utils/TypesUtil";
 
 export interface QrCodeProps {
   size: number;
@@ -28,7 +22,7 @@ export interface QrCodeProps {
   children?: React.ReactNode;
 }
 
-export function QrCode_({
+function QrCode_({
   size,
   uri,
   testID,
@@ -40,12 +34,49 @@ export function QrCode_({
   const logoSize = arenaClear ? 0 : size / 4;
   const padding = Spacing["spacing-3"];
 
-  const dots = useMemo(
-    () => (uri ? QRCodeUtil.generate(uri, size, logoSize) : []),
-    [uri, size, logoSize],
-  );
+  const [qrData, setQrData] = useState<QRData | null>(null);
 
-  return uri ? (
+  const dotColor = Theme["bg-invert"];
+  const edgeColor = Theme["bg-primary"];
+
+  useEffect(() => {
+    if (!uri) {
+      setQrData(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    // Run QR generation asynchronously
+    generateQRDataAsync(uri, size, logoSize)
+      .then((data) => {
+        if (!cancelled) {
+          setQrData(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to generate QR code:", error);
+        if (!cancelled) {
+          setQrData(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [uri, size, logoSize]);
+
+  if (!uri || !qrData) {
+    return (
+      <Shimmer
+        width={size + padding * 2}
+        height={size + padding * 2}
+        borderRadius={BorderRadius["5"]}
+      />
+    );
+  }
+
+  return (
     <View
       style={[
         styles.container,
@@ -57,16 +88,47 @@ export function QrCode_({
       testID={testID}
     >
       <Svg height={size} width={size}>
-        {dots}
+        {/* Render rectangles */}
+        {qrData.rects.map((rect, idx) => (
+          <Rect
+            key={`rect_${idx}`}
+            fill={rect.fillType === "dot" ? dotColor : edgeColor}
+            height={rect.size}
+            rx={rect.size * 0.32}
+            ry={rect.size * 0.32}
+            width={rect.size}
+            x={rect.x}
+            y={rect.y}
+          />
+        ))}
+
+        {/* Render circles */}
+        {qrData.circles.map((circle, idx) => (
+          <Circle
+            key={`circle_${idx}`}
+            cx={circle.cx}
+            cy={circle.cy}
+            fill={dotColor}
+            r={circle.r}
+          />
+        ))}
+
+        {/* Render lines */}
+        {qrData.lines.map((line, idx) => (
+          <Line
+            key={`line_${idx}`}
+            x1={line.x1}
+            x2={line.x2}
+            y1={line.y1}
+            y2={line.y2}
+            stroke={dotColor}
+            strokeWidth={line.strokeWidth}
+            strokeLinecap="round"
+          />
+        ))}
       </Svg>
       {!arenaClear && <View style={styles.icon}>{children}</View>}
     </View>
-  ) : (
-    <Shimmer
-      width={size + padding * 2}
-      height={size + padding * 2}
-      borderRadius={BorderRadius["5"]}
-    />
   );
 }
 
