@@ -1,7 +1,7 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { generateQRDataAsync, type QRData } from "@/utils/qr-code-generator";
-import { memo, useEffect, useState } from "react";
+import { QRCodeUtil } from "@/utils/qr-code-generator";
+import { memo, useMemo } from "react";
 import {
   ImageSourcePropType,
   StyleSheet,
@@ -20,6 +20,8 @@ export interface QrCodeProps {
   arenaClear?: boolean;
   style?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
+  logoSize?: number;
+  logoBorderRadius?: number;
 }
 
 function QrCode_({
@@ -29,50 +31,28 @@ function QrCode_({
   arenaClear,
   style,
   children,
+  logoSize,
+  logoBorderRadius,
 }: QrCodeProps) {
   const Theme = useTheme("light");
-  const logoSize = arenaClear ? 0 : size / 4;
-  const padding = Spacing["spacing-3"];
-
-  const [qrData, setQrData] = useState<QRData | null>(null);
+  const containerPadding = Spacing["spacing-3"];
+  const qrSize = size - containerPadding * 2;
+  const _logoSize = arenaClear ? 0 : (logoSize ?? qrSize / 4);
 
   const dotColor = Theme["bg-invert"];
   const edgeColor = Theme["bg-primary"];
 
-  useEffect(() => {
-    if (!uri) {
-      setQrData(null);
-      return;
-    }
-
-    let cancelled = false;
-
-    // Run QR generation asynchronously
-    generateQRDataAsync(uri, size, logoSize)
-      .then((data) => {
-        if (!cancelled) {
-          setQrData(data);
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to generate QR code:", error);
-        if (!cancelled) {
-          setQrData(null);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [uri, size, logoSize]);
+  const qrData = useMemo(
+    () =>
+      uri
+        ? QRCodeUtil.generate(uri, qrSize, _logoSize, logoBorderRadius)
+        : null,
+    [uri, qrSize, _logoSize, logoBorderRadius],
+  );
 
   if (!uri || !qrData) {
     return (
-      <Shimmer
-        width={size + padding * 2}
-        height={size + padding * 2}
-        borderRadius={BorderRadius["5"]}
-      />
+      <Shimmer width={size} height={size} borderRadius={BorderRadius["5"]} />
     );
   }
 
@@ -81,17 +61,19 @@ function QrCode_({
       style={[
         styles.container,
         {
+          width: size,
           backgroundColor: Theme["bg-primary"],
+          padding: containerPadding,
         },
         style,
       ]}
       testID={testID}
     >
-      <Svg height={size} width={size}>
+      <Svg height={qrSize} width={qrSize}>
         {/* Render rectangles */}
-        {qrData.rects.map((rect, idx) => (
+        {qrData.rects.map((rect) => (
           <Rect
-            key={`rect_${idx}`}
+            key={`rect_${rect.x}_${rect.y}`}
             fill={rect.fillType === "dot" ? dotColor : edgeColor}
             height={rect.size}
             rx={rect.size * 0.32}
@@ -103,9 +85,9 @@ function QrCode_({
         ))}
 
         {/* Render circles */}
-        {qrData.circles.map((circle, idx) => (
+        {qrData.circles.map((circle) => (
           <Circle
-            key={`circle_${idx}`}
+            key={`circle_${circle.cx}_${circle.cy}`}
             cx={circle.cx}
             cy={circle.cy}
             fill={dotColor}
@@ -114,9 +96,9 @@ function QrCode_({
         ))}
 
         {/* Render lines */}
-        {qrData.lines.map((line, idx) => (
+        {qrData.lines.map((line) => (
           <Line
-            key={`line_${idx}`}
+            key={`line_${line.x1}_${line.y1}_${line.y2}`}
             x1={line.x1}
             x2={line.x2}
             y1={line.y1}
@@ -136,7 +118,8 @@ export const QRCode = memo(QrCode_, (prevProps, nextProps) => {
   return (
     prevProps.size === nextProps.size &&
     prevProps.uri === nextProps.uri &&
-    prevProps.style === nextProps.style
+    prevProps.style === nextProps.style &&
+    prevProps.logoBorderRadius === nextProps.logoBorderRadius
   );
 });
 
@@ -146,7 +129,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: BorderRadius["5"],
     alignSelf: "center",
-    padding: Spacing["spacing-3"],
   },
   icon: {
     position: "absolute",

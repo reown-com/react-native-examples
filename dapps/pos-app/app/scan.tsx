@@ -161,7 +161,7 @@ export default function QRModalScreen() {
           ${amount}
         </ThemedText>
       </View>
-      <QRCode size={300} uri={qrUri}>
+      <QRCode size={300} uri={qrUri} logoBorderRadius={55}>
         <ImageBackground
           source={getIcon(tokenData?.icon)}
           style={styles.tokenIcon}

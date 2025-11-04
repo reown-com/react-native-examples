@@ -31,6 +31,7 @@ function isAdjacentDots(cy: number, otherCy: number, cellSize: number) {
     return false;
   }
   const diff = cy - otherCy < 0 ? otherCy - cy : cy - otherCy;
+
   return diff <= cellSize + CONNECTING_ERROR_MARGIN;
 }
 
@@ -57,6 +58,7 @@ function processQRMatrix(
   matrix: boolean[][],
   size: number,
   logoSize: number,
+  logoBorderRadius?: number,
 ): QRData {
   const matrixLength = matrix.length;
   const cellSize = size / matrixLength;
@@ -64,20 +66,9 @@ function processQRMatrix(
   const strokeWidth = cellSize / (CIRCLE_SIZE_MODIFIER / 2);
   const circleRadius = cellSize / CIRCLE_SIZE_MODIFIER;
 
-  // Pre-allocate arrays with estimated capacity
   const rects: QRData["rects"] = [];
-  rects.length = 27; // 3 corners × 3 layers × 3 = 27 rects max
-  let rectIndex = 0;
-
-  // Estimate circle capacity (roughly half the matrix minus corners and logo area)
-  const estimatedCircles = Math.floor((matrixLength * matrixLength) / 2);
   const circles: QRData["circles"] = [];
-  circles.length = estimatedCircles;
-  let circleIndex = 0;
-
   const lines: QRData["lines"] = [];
-  lines.length = Math.floor(estimatedCircles / 4);
-  let lineIndex = 0;
 
   // Generate corner rectangles - optimized with direct indexing
   const qrList = [
@@ -88,29 +79,31 @@ function processQRMatrix(
   const baseOffset = (matrixLength - QRCODE_MATRIX_MARGIN) * cellSize;
 
   for (let qrIdx = 0; qrIdx < 3; qrIdx++) {
-    const qr = qrList[qrIdx];
+    const qr = qrList[qrIdx]!;
     const x1 = baseOffset * qr.x;
     const y1 = baseOffset * qr.y;
 
     for (let i = 0; i < 3; i++) {
       const dotSize = cellSize * (QRCODE_MATRIX_MARGIN - i * 2);
-      rects[rectIndex++] = {
+      rects.push({
         x: x1 + cellSize * i,
         y: y1 + cellSize * i,
         size: dotSize,
         fillType: i % 2 === 0 ? "dot" : "edge",
-      };
+      });
     }
   }
 
-  const clearArenaSize = Math.floor((logoSize + LOGO_PADDING) / cellSize);
-  const centerPoint = matrixLength / 2;
-  const radius = clearArenaSize / 2;
   const circleCoords: [number, number][] = [];
 
-  // Calculate circle coordinates - optimized with direct indexing and Math.pow avoidance
+  // Determine if using circular or rounded rectangle hole
+  const isCircular = logoBorderRadius === undefined;
+  const effectiveBorderRadius =
+    logoBorderRadius ?? (logoSize + LOGO_PADDING) / 2;
+
+  // Calculate circle coordinates - optimized with configurable hole shape
   for (let i = 0; i < matrixLength; i++) {
-    const row = matrix[i];
+    const row = matrix[i]!;
     const rowLength = row.length;
 
     for (let j = 0; j < rowLength; j++) {
@@ -127,13 +120,55 @@ function processQRMatrix(
         continue;
       }
 
-      const dx = i - centerPoint;
-      const dy = j - centerPoint;
-      const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
+      // Calculate pixel coordinates first
+      const cx = i * cellSize + halfCellSize;
+      const cy = j * cellSize + halfCellSize;
 
-      if (distanceFromCenter >= radius) {
-        const cx = i * cellSize + halfCellSize;
-        const cy = j * cellSize + halfCellSize;
+      // Skip hole calculation if logoSize is 0 (arenaClear)
+      if (logoSize === 0) {
+        circleCoords.push([cx, cy]);
+        continue;
+      }
+
+      // Calculate distance from center in pixel space
+      const centerX = size / 2;
+      const centerY = size / 2;
+
+      let isOutsideLogoArea = false;
+
+      if (isCircular) {
+        // Circular hole
+        const dx = cx - centerX;
+        const dy = cy - centerY;
+        const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
+        const pixelRadius = (logoSize + LOGO_PADDING) / 2;
+        isOutsideLogoArea = distanceFromCenter >= pixelRadius;
+      } else {
+        // Rounded rectangle hole
+        const halfLogoArea = (logoSize + LOGO_PADDING) / 2;
+        const dx = Math.abs(cx - centerX);
+        const dy = Math.abs(cy - centerY);
+
+        // Check if point is outside the rounded rectangle
+        if (dx > halfLogoArea || dy > halfLogoArea) {
+          isOutsideLogoArea = true;
+        } else if (
+          dx > halfLogoArea - effectiveBorderRadius &&
+          dy > halfLogoArea - effectiveBorderRadius
+        ) {
+          // Check corner radius
+          const cornerDx = dx - (halfLogoArea - effectiveBorderRadius);
+          const cornerDy = dy - (halfLogoArea - effectiveBorderRadius);
+          const cornerDistance = Math.sqrt(
+            cornerDx * cornerDx + cornerDy * cornerDy,
+          );
+          isOutsideLogoArea = cornerDistance >= effectiveBorderRadius;
+        } else {
+          isOutsideLogoArea = false;
+        }
+      }
+
+      if (isOutsideLogoArea) {
         circleCoords.push([cx, cy]);
       }
     }
@@ -142,9 +177,10 @@ function processQRMatrix(
   // Build circlesToConnect - optimized loop
   const circlesToConnect: Record<number, number[]> = {};
   for (let k = 0; k < circleCoords.length; k++) {
-    const [cx, cy] = circleCoords[k];
-    if (circlesToConnect[cx]) {
-      circlesToConnect[cx].push(cy);
+    const [cx, cy] = circleCoords[k]!;
+    const existing = circlesToConnect[cx];
+    if (existing) {
+      existing.push(cy);
     } else {
       circlesToConnect[cx] = [cy];
     }
@@ -153,15 +189,18 @@ function processQRMatrix(
   // Process circles and lines - optimized to avoid Object.entries
   for (const cxKey in circlesToConnect) {
     const cx = Number(cxKey);
-    const cys = circlesToConnect[cxKey];
+    const cys = circlesToConnect[cxKey]!;
 
     if (cys.length === 1) {
+      const firstCy = cys[0];
+      if (firstCy === undefined) continue;
+
       // Single dot, add as circle
-      circles[circleIndex++] = {
+      circles.push({
         cx,
-        cy: cys[0],
+        cy: firstCy,
         r: circleRadius,
-      };
+      });
       continue;
     }
 
@@ -173,7 +212,13 @@ function processQRMatrix(
 
     // Find all adjacent pairs
     for (let i = 0; i < cys.length - 1; i++) {
-      if (isAdjacentDots(cys[i], cys[i + 1], cellSize)) {
+      const currentCy = cys[i];
+      const nextCy = cys[i + 1];
+      if (
+        currentCy !== undefined &&
+        nextCy !== undefined &&
+        isAdjacentDots(currentCy, nextCy, cellSize)
+      ) {
         isConnected[i] = true;
         isConnected[i + 1] = true;
       }
@@ -185,24 +230,25 @@ function processQRMatrix(
 
     for (let i = 0; i < cys.length; i++) {
       const cy = cys[i];
+      if (cy === undefined) continue;
 
       if (!isConnected[i]) {
         // Lonely dot - add as circle
-        circles[circleIndex++] = {
+        circles.push({
           cx,
           cy,
           r: circleRadius,
-        };
+        });
 
         // Finish any ongoing line group
         if (groupStart !== -1 && groupEnd !== -1 && groupStart !== groupEnd) {
-          lines[lineIndex++] = {
+          lines.push({
             x1: cx,
             x2: cx,
             y1: groupStart,
             y2: groupEnd,
             strokeWidth,
-          };
+          });
         }
         groupStart = -1;
         groupEnd = -1;
@@ -213,18 +259,23 @@ function processQRMatrix(
           groupEnd = cy;
         } else {
           // Check if adjacent to previous
-          if (i > 0 && isAdjacentDots(cy, cys[i - 1], cellSize)) {
+          const prevCy = cys[i - 1];
+          if (
+            i > 0 &&
+            prevCy !== undefined &&
+            isAdjacentDots(cy, prevCy, cellSize)
+          ) {
             groupEnd = cy;
           } else {
             // Gap in the group, finish previous line
             if (groupStart !== groupEnd) {
-              lines[lineIndex++] = {
+              lines.push({
                 x1: cx,
                 x2: cx,
                 y1: groupStart,
                 y2: groupEnd,
                 strokeWidth,
-              };
+              });
             }
             groupStart = cy;
             groupEnd = cy;
@@ -235,44 +286,34 @@ function processQRMatrix(
 
     // Don't forget the last group
     if (groupStart !== -1 && groupEnd !== -1 && groupStart !== groupEnd) {
-      lines[lineIndex++] = {
+      lines.push({
         x1: cx,
         x2: cx,
         y1: groupStart,
         y2: groupEnd,
         strokeWidth,
-      };
+      });
     }
   }
-
-  // Trim arrays to actual size
-  rects.length = rectIndex;
-  circles.length = circleIndex;
-  lines.length = lineIndex;
 
   return { rects, circles, lines };
 }
 
-// Run asynchronously without blocking the UI
-export async function generateQRDataAsync(
+export function generateQRData(
   uri: string,
   size: number,
   logoSize: number,
-): Promise<QRData> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      try {
-        if (!uri || size <= 0) {
-          throw new Error("Invalid QR code parameters");
-        }
+  logoBorderRadius?: number,
+): QRData {
+  if (!uri || size <= 0) {
+    throw new Error("Invalid QR code parameters");
+  }
 
-        const matrix = getMatrix(uri, "Q");
-        const data = processQRMatrix(matrix, size, logoSize);
-        resolve(data);
-      } catch (error) {
-        console.error("QR generation failed:", error);
-        reject(error);
-      }
-    }, 0);
-  });
+  const matrix = getMatrix(uri, "Q");
+
+  return processQRMatrix(matrix, size, logoSize, logoBorderRadius);
 }
+
+export const QRCodeUtil = {
+  generate: generateQRData,
+};
