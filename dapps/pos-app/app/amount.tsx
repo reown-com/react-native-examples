@@ -1,12 +1,11 @@
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 interface FormData {
   amount: string;
@@ -45,8 +44,8 @@ export default function AmountScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView
+    <View style={styles.container}>
+      <View
         style={[
           styles.amountContainer,
           { borderColor: Theme["border-primary"] },
@@ -66,7 +65,7 @@ export default function AmountScreen() {
         >
           ${watchAmount || "0.00"}
         </ThemedText>
-      </ThemedView>
+      </View>
       <Controller
         control={control}
         name="amount"
@@ -118,7 +117,7 @@ export default function AmountScreen() {
           {isValid ? `Charge $${watchAmount}` : "Enter amount"}
         </ThemedText>
       </Button>
-    </ThemedView>
+    </View>
   );
 }
 

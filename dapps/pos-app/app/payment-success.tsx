@@ -4,11 +4,10 @@ import React, { useEffect, useRef } from "react";
 import { Animated, Dimensions, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { Button } from "@/components/button";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
@@ -56,7 +55,7 @@ export default function PaymentSuccessScreen() {
   }, []);
 
   return (
-    <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Expanding circle background */}
       <Animated.View
         style={[
@@ -130,7 +129,7 @@ export default function PaymentSuccessScreen() {
           </Button>
         </View>
       </Animated.View>
-    </ThemedView>
+    </View>
   );
 }
 

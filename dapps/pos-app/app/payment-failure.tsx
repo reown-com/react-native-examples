@@ -1,15 +1,14 @@
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import { Animated, Dimensions, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Image } from "expo-image";
 
+import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { Button } from "@/components/button";
 import { TokenKey } from "@/utils/networks";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -68,7 +67,7 @@ export default function PaymentSuccessScreen() {
   }, []);
 
   return (
-    <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Expanding circle background */}
       <Animated.View
         style={[
@@ -134,7 +133,7 @@ export default function PaymentSuccessScreen() {
           </Button>
         </View>
       </Animated.View>
-    </ThemedView>
+    </View>
   );
 }
 

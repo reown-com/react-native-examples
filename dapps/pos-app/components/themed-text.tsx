@@ -6,6 +6,7 @@ export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   fontSize?: number;
+  lineHeight?: number;
 };
 
 export function ThemedText({
@@ -13,6 +14,7 @@ export function ThemedText({
   lightColor,
   darkColor,
   fontSize,
+  lineHeight,
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor(
@@ -26,6 +28,7 @@ export function ThemedText({
         { color },
         styles.default,
         fontSize ? { fontSize } : undefined,
+        lineHeight ? { lineHeight } : undefined,
         style,
       ]}
       {...rest}

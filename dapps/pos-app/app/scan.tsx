@@ -1,7 +1,6 @@
 import { CloseButton } from "@/components/close-button";
 import { QRCode } from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { usePOSListener } from "@/hooks/use-pos-listener";
@@ -145,7 +144,7 @@ export default function QRModalScreen() {
   }, []);
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.amountContainer}>
         <ThemedText
           style={[styles.amountText, { color: Theme["text-tertiary"] }]}
@@ -176,7 +175,7 @@ export default function QRModalScreen() {
       </QRCode>
       <View style={{ flex: 1 }} />
       <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
-    </ThemedView>
+    </View>
   );
 }
 

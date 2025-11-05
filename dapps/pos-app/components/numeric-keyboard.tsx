@@ -1,12 +1,11 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import * as Haptics from "expo-haptics";
-import { memo } from "react";
-import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { Image } from "expo-image";
+import { memo } from "react";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Button } from "./button";
 import { ThemedText } from "./themed-text";
-import { ThemedView } from "./themed-view";
 
 export interface NumericKeyboardProps {
   onKeyPress: (value: string) => void;
@@ -28,9 +27,9 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
   };
 
   return (
-    <ThemedView style={[styles.container, style]}>
+    <View style={[styles.container, style]}>
       {keys.map((row, rowIndex) => (
-        <ThemedView key={`row-${rowIndex}`} style={styles.row}>
+        <View key={`row-${rowIndex}`} style={styles.row}>
           {row.map((key) => (
             <Button
               key={key}
@@ -63,9 +62,9 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
               )}
             </Button>
           ))}
-        </ThemedView>
+        </View>
       ))}
-    </ThemedView>
+    </View>
   );
 }
 
