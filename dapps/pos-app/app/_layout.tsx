@@ -119,6 +119,7 @@ export default Sentry.wrap(function RootLayout() {
                       headerBackVisible: false,
                     }}
                   />
+                  <Stack.Screen name="address-not-set" />
                   <Stack.Screen name="settings" />
                   <Stack.Screen name="settings-address-list" />
                   <Stack.Screen name="settings-update-address" />

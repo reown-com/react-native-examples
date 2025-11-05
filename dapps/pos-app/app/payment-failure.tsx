@@ -96,7 +96,7 @@ export default function PaymentSuccessScreen() {
         >
           <Image
             source={require("@/assets/images/warning-circle.png")}
-            style={styles.warningCircle}
+            style={[styles.warningCircle, { tintColor: Theme["icon-error"] }]}
             cachePolicy="memory-disk"
             priority="high"
           />
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   warningCircle: {
     width: 48,
     height: 48,
-    marginBottom: Spacing["spacing-3"],
+    marginBottom: Spacing["spacing-6"],
   },
   buttonContainer: {
     width: "100%",

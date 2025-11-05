@@ -55,11 +55,7 @@ export default function PaymentNetworkScreen() {
     }
 
     if (!recipientAddress) {
-      // TODO: Redirect to missing address screen
-      showErrorToast({
-        title: "No valid recipient address found",
-        message: "Please select another chain",
-      });
+      router.push("/address-not-set");
       return;
     }
 

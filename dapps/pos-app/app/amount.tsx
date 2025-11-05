@@ -27,6 +27,7 @@ export default function AmountScreen() {
 
   const onSubmit = ({ amount }: FormData) => {
     let formattedAmount = amount;
+
     if (amount.endsWith(".")) {
       formattedAmount = `${amount}00`;
     }
@@ -85,12 +86,17 @@ export default function AmountScreen() {
         render={({ field: { onChange, value: prev } }) => (
           <NumericKeyboard
             onKeyPress={(key) => {
+              let newDisplay;
               if (key === "erase") {
-                const newDisplay = prev?.slice(0, -1) || "";
+                newDisplay = prev?.slice(0, -1) || "";
                 onChange?.(newDisplay);
               } else if (key === ".") {
                 if (prev.includes(".")) return; // Don't add multiple commas
-                const newDisplay = prev + ".";
+                if (prev === "") {
+                  newDisplay = "0.";
+                } else {
+                  newDisplay = prev + ".";
+                }
                 onChange?.(newDisplay);
               } else {
                 const newDisplay = prev === "0" ? key : prev + key;
