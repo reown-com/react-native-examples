@@ -108,12 +108,9 @@ export default Sentry.wrap(function RootLayout() {
                   }}
                 >
                   <Stack.Screen name="index" />
-                  <Stack.Screen
-                    name="settings"
-                    options={{
-                      title: "",
-                    }}
-                  />
+                  <Stack.Screen name="settings" />
+                  <Stack.Screen name="settings-recipient" />
+                  <Stack.Screen name="settings-address" />
                   <Stack.Screen name="amount" />
                   <Stack.Screen name="payment-method" />
                   <Stack.Screen name="payment-token" />

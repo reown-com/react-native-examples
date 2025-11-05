@@ -1,3 +1,4 @@
+import { Namespace } from "@/utils/types";
 import { Appearance } from "react-native";
 import { createMMKV } from "react-native-mmkv";
 import { create } from "zustand";
@@ -21,15 +22,29 @@ const mmkvStorage = {
 interface SettingsStore {
   themeMode: "light" | "dark";
 
-  //actions
+  networkAddresses: Record<Namespace, string>;
+
+  // Actions
   setThemeMode: (themeMode: "light" | "dark") => void;
+  setNetworkAddress: (network: Namespace, address: string) => void;
 }
 
 export const useSettingsStore = create<SettingsStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       themeMode: Appearance.getColorScheme() || "light",
+      networkAddresses: {
+        eip155: "",
+        solana: "",
+      },
       setThemeMode: (themeMode: "light" | "dark") => set({ themeMode }),
+      setNetworkAddress: (network: Namespace, address: string) =>
+        set({
+          networkAddresses: {
+            ...get().networkAddresses,
+            [network]: address,
+          },
+        }),
     }),
     {
       name: "settings",

@@ -12,8 +12,8 @@ import {
 } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
 import { useAccount } from "@reown/appkit-react-native";
-import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
+import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { FlatList, ImageBackground, StyleSheet, View } from "react-native";
 
 interface ScreenParams extends UnknownOutputParams {
@@ -104,7 +104,8 @@ export default function PaymentNetworkScreen() {
                   styles.chainIcon,
                   { borderColor: Theme["border-primary"] },
                 ]}
-                resizeMode="contain"
+                cachePolicy="memory-disk"
+                priority="high"
               />
             </ImageBackground>
           </Button>

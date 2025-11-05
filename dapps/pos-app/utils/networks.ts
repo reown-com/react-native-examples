@@ -27,49 +27,49 @@ export type Network = AppKitNetwork & {
 };
 
 // ******************** Networks ********************
-const mainnet: Network = {
+export const mainnet: Network = {
   ...mainnetViem,
   caipNetworkId: "eip155:1",
   chainNamespace: "eip155",
   icon: "eip155:1",
 };
 
-const polygon: Network = {
+export const polygon: Network = {
   ...polygonViem,
   caipNetworkId: "eip155:137",
   chainNamespace: "eip155",
   icon: "eip155:137",
 };
 
-const optimism: Network = {
+export const optimism: Network = {
   ...optimismViem,
   caipNetworkId: "eip155:10",
   chainNamespace: "eip155",
   icon: "eip155:10",
 };
 
-const base: Network = {
+export const base: Network = {
   ...baseViem,
   caipNetworkId: "eip155:8453",
   chainNamespace: "eip155",
   icon: "eip155:8453",
 };
 
-const arbitrum: Network = {
+export const arbitrum: Network = {
   ...arbitrumViem,
   caipNetworkId: "eip155:42161",
   chainNamespace: "eip155",
   icon: "eip155:42161",
 };
 
-const sepolia: Network = {
+export const sepolia: Network = {
   ...sepoliaViem,
   caipNetworkId: "eip155:11155111",
   chainNamespace: "eip155",
   icon: "eip155:1",
 };
 
-const solana: Network = {
+export const solana: Network = {
   id: "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
   caipNetworkId: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
   chainNamespace: "solana",
@@ -84,7 +84,7 @@ const solana: Network = {
   blockExplorers: { default: { name: "Solscan", url: "https://solscan.io" } },
 };
 
-const solanaDevnet: Network = {
+export const solanaDevnet: Network = {
   id: "EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
   caipNetworkId: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
   chainNamespace: "solana",
@@ -97,19 +97,14 @@ const solanaDevnet: Network = {
   blockExplorers: { default: { name: "Solscan", url: "https://solscan.io" } },
 };
 
-export const WAGMI_NETWORKS_LIST = [
-  mainnet as Chain,
-  polygon as Chain,
-  optimism as Chain,
-  arbitrum as Chain,
-  base as Chain,
-  sepolia as Chain,
-] as readonly [Chain, ...Chain[]];
+export const WAGMI_NETWORKS_LIST = [mainnet as Chain] as readonly [
+  Chain,
+  ...Chain[],
+];
 
 export const NETWORKS_LIST: Network[] = [
   ...(WAGMI_NETWORKS_LIST as unknown as Network[]),
   solana,
-  solanaDevnet,
 ];
 
 export const TOKEN_LIST: Token[] = [

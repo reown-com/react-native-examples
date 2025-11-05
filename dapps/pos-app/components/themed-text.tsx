@@ -1,31 +1,27 @@
 import { StyleSheet, Text, type TextProps } from "react-native";
 
+import { Colors } from "@/constants/theme";
 import { useThemeColor } from "@/hooks/use-theme-color";
 
 export type ThemedTextProps = TextProps & {
-  lightColor?: string;
-  darkColor?: string;
   fontSize?: number;
   lineHeight?: number;
+  color?: keyof typeof Colors.light;
 };
 
 export function ThemedText({
   style,
-  lightColor,
-  darkColor,
   fontSize,
   lineHeight,
+  color,
   ...rest
 }: ThemedTextProps) {
-  const color = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    "text-primary",
-  );
+  const _color = useThemeColor(color ?? "text-primary");
 
   return (
     <Text
       style={[
-        { color },
+        { color: _color },
         styles.default,
         fontSize ? { fontSize } : undefined,
         lineHeight ? { lineHeight } : undefined,
@@ -39,7 +35,7 @@ export function ThemedText({
 const styles = StyleSheet.create({
   default: {
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 18,
     fontFamily: "KH Teka",
   },
 });

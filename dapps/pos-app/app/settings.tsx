@@ -1,14 +1,13 @@
-import { Button } from "@/components/button";
+import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
+import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
-import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { router } from "expo-router";
-import { StyleSheet, Switch, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 export default function Settings() {
-  const Theme = useTheme();
   // const { allAccounts } = useAccount();
   const { themeMode, setThemeMode } = useSettingsStore((state) => state);
   // const { disconnect, open } = useAppKit();
@@ -32,45 +31,32 @@ export default function Settings() {
   //   }, [isConnected, open]),
   // );
 
+  const handleRecipientPress = () => {
+    router.push("/settings-recipient");
+  };
+
   return (
     <View style={styles.container}>
-      <View
-        style={[styles.card, { backgroundColor: Theme["foreground-primary"] }]}
-      >
+      <Card style={styles.card}>
         <ThemedText fontSize={16} lineHeight={18}>
           Dark Mode
         </ThemedText>
         <Switch
           style={styles.switch}
-          thumbColor={
-            themeMode === "dark"
-              ? Theme["icon-accent-primary"]
-              : Theme["icon-default"]
-          }
-          trackColor={{
-            true: Theme["foreground-tertiary"],
-            false: Theme["foreground-tertiary"],
-          }}
           value={themeMode === "dark"}
           onValueChange={(value) => setThemeMode(value ? "dark" : "light")}
         />
-      </View>
-      <Button
-        onPress={() => {}}
-        style={[styles.card, { backgroundColor: Theme["foreground-primary"] }]}
-      >
+      </Card>
+      <Card onPress={handleRecipientPress} style={styles.card}>
         <ThemedText fontSize={16} lineHeight={18}>
           Recipient addresses
         </ThemedText>
-      </Button>
-      <Button
-        onPress={() => {}}
-        style={[styles.card, { backgroundColor: Theme["foreground-primary"] }]}
-      >
+      </Card>
+      <Card onPress={() => {}} style={styles.card}>
         <ThemedText fontSize={16} lineHeight={18}>
           Networks
         </ThemedText>
-      </Button>
+      </Card>
       <CloseButton style={styles.closeButton} onPress={router.dismissAll} />
     </View>
   );
@@ -176,8 +162,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: Spacing["spacing-7"],
-    borderRadius: BorderRadius["5"],
     height: 100,
   },
   switch: {

@@ -13,9 +13,10 @@ import {
 } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { Image, ImageBackground, StyleSheet, View } from "react-native";
+import { ImageBackground, StyleSheet, View } from "react-native";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
@@ -169,7 +170,8 @@ export default function QRModalScreen() {
           <Image
             source={getIcon(networkData?.icon)}
             style={[styles.chainIcon, { borderColor: Theme["bg-primary"] }]}
-            resizeMode="contain"
+            cachePolicy="memory-disk"
+            priority="high"
           />
         </ImageBackground>
       </QRCode>
