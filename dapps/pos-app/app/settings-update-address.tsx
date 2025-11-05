@@ -114,6 +114,5 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
-    bottom: Spacing["spacing-2"],
   },
 });

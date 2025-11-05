@@ -4,8 +4,8 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { getIcon, TOKEN_LIST, TokenKey } from "@/utils/networks";
-import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { Image } from "expo-image";
+import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { FlatList, StyleSheet, View } from "react-native";
 
 interface ScreenParams extends UnknownOutputParams {
@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
-    bottom: Spacing["spacing-2"],
   },
   image: {
     width: 40,

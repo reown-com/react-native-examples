@@ -13,6 +13,7 @@ import {
 } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Camera,
   Code,
@@ -26,6 +27,7 @@ interface ScreenParams extends UnknownOutputParams {
 }
 
 export default function SettingsScanAddress() {
+  const { bottom } = useSafeAreaInsets();
   const device = useCameraDevice("back", {
     physicalDevices: ["wide-angle-camera"],
   });
@@ -47,7 +49,6 @@ export default function SettingsScanAddress() {
 
   const onCodeScanned = (codes: Code[]) => {
     const address = codes[0].value;
-    console.log("address", address);
     if (address && isValidAddress(namespace, address)) {
       setNetworkAddress(namespace, address);
     } else {
@@ -81,10 +82,20 @@ export default function SettingsScanAddress() {
             isActive={isActive}
             codeScanner={codeScanner}
           />
-          <CloseButton onPress={router.back} style={styles.closeButton} />
+          <CloseButton
+            onPress={router.back}
+            themeMode="dark"
+            style={[
+              styles.closeButton,
+              {
+                borderWidth: 0,
+                bottom: bottom + Spacing["spacing-6"],
+              },
+            ]}
+          />
         </>
       ) : (
-        <View>
+        <View style={styles.container}>
           <ThemedText>Camera not available</ThemedText>
         </View>
       )}
@@ -101,6 +112,5 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
-    bottom: Spacing["spacing-8"],
   },
 });

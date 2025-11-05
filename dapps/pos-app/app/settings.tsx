@@ -157,7 +157,6 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
-    bottom: Spacing["spacing-2"],
   },
   list: {
     paddingTop: Spacing["spacing-2"],
