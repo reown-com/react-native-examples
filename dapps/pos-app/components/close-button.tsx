@@ -2,7 +2,6 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { Image } from "expo-image";
 import { Platform, StyleProp, StyleSheet, ViewStyle } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "./button";
 
 interface CloseButtonProps {
@@ -12,7 +11,6 @@ interface CloseButtonProps {
 }
 
 export function CloseButton({ style, onPress, themeMode }: CloseButtonProps) {
-  const { bottom } = useSafeAreaInsets();
   const Theme = useTheme(themeMode);
   return (
     <Button
@@ -38,10 +36,9 @@ export function CloseButton({ style, onPress, themeMode }: CloseButtonProps) {
 
 const styles = StyleSheet.create({
   button: {
-    borderWidth: 4,
     borderRadius: BorderRadius["full"],
-    height: 68,
-    width: 68,
+    height: 64,
+    width: 64,
     alignItems: "center",
     justifyContent: "center",
     bottom: Platform.OS === "ios" ? Spacing["spacing-2"] : Spacing["spacing-6"],

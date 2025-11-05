@@ -107,10 +107,6 @@ export default Sentry.wrap(function RootLayout() {
                   }}
                 >
                   <Stack.Screen name="index" />
-                  <Stack.Screen name="settings" />
-                  <Stack.Screen name="settings-address-list" />
-                  <Stack.Screen name="settings-update-address" />
-                  <Stack.Screen name="settings-scan-address" />
                   <Stack.Screen name="amount" />
                   <Stack.Screen name="payment-method" />
                   <Stack.Screen name="payment-token" />
@@ -123,6 +119,11 @@ export default Sentry.wrap(function RootLayout() {
                       headerBackVisible: false,
                     }}
                   />
+                  <Stack.Screen name="settings" />
+                  <Stack.Screen name="settings-address-list" />
+                  <Stack.Screen name="settings-update-address" />
+                  <Stack.Screen name="settings-scan-address" />
+                  <Stack.Screen name="settings-networks" />
                 </Stack>
                 <StatusBar style="auto" />
                 <AppKit />

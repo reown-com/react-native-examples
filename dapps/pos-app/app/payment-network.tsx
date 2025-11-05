@@ -3,7 +3,7 @@ import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { getAccounts } from "@/utils/accounts";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   getIcon,
   getTokenAvailableNetworks,
@@ -11,7 +11,7 @@ import {
   TokenKey,
 } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
-import { useAccount } from "@reown/appkit-react-native";
+import { Namespace } from "@/utils/types";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { FlatList, ImageBackground, StyleSheet, View } from "react-native";
@@ -23,17 +23,17 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function PaymentNetworkScreen() {
   const Theme = useTheme();
-  const { allAccounts } = useAccount();
   const { amount, token } = useLocalSearchParams<ScreenParams>();
+  const { networkAddresses, getEnabledNetworks } = useSettingsStore(
+    (state) => state,
+  );
 
   const tokenData = getTokenById(token);
   const tokenNetworks = getTokenAvailableNetworks(token);
-  const recipientAccounts = getAccounts(allAccounts);
+  const enabledNetworks = getEnabledNetworks();
 
   const availableNetworks = tokenNetworks.filter((network) =>
-    recipientAccounts.some(
-      (account) => account.network?.caipNetworkId === network.caipNetworkId,
-    ),
+    enabledNetworks.some((n) => n.id === network.id),
   );
 
   const handleOnClosePress = () => {
@@ -42,10 +42,8 @@ export default function PaymentNetworkScreen() {
   };
 
   const handleNetworkPress = (networkCaipId: string) => {
-    const recipientAddress = recipientAccounts.find(
-      (account) => account.network?.caipNetworkId === networkCaipId,
-    )?.address;
-
+    const namespace = networkCaipId.split(":")[0];
+    const recipientAddress = networkAddresses[namespace as Namespace];
     const tokenAddress = tokenData?.addresses[networkCaipId];
 
     if (!tokenAddress) {
@@ -57,7 +55,7 @@ export default function PaymentNetworkScreen() {
     }
 
     if (!recipientAddress) {
-      //This case should never happen
+      // TODO: Redirect to missing address screen
       showErrorToast({
         title: "No valid recipient address found",
         message: "Please select another chain",

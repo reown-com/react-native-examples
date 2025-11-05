@@ -17,11 +17,13 @@ const withAndroidReleaseSigningConfig = (config) => {
 };
 
 function addReleaseSigningConfig(buildGradle) {
-  // Check if already modified
-  if (
-    buildGradle.includes("secretsProperties") &&
-    buildGradle.includes("signingConfigs.release")
-  ) {
+  // Check if already modified - be more explicit
+  if (buildGradle.includes("def secretsProperties = new Properties()")) {
+    console.log("secretsProperties already exists, skipping...");
+    return buildGradle;
+  }
+
+  if (buildGradle.includes("signingConfigs.release")) {
     console.log("Release signing config already exists, skipping...");
     return buildGradle;
   }
