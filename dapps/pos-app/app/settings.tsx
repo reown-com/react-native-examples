@@ -42,6 +42,15 @@ export default function Settings() {
         </ThemedText>
         <Switch
           style={styles.switch}
+          thumbColor={
+            themeMode === "dark"
+              ? Theme["icon-accent-primary"]
+              : Theme["icon-default"]
+          }
+          trackColor={{
+            true: Theme["foreground-tertiary"],
+            false: Theme["foreground-tertiary"],
+          }}
           value={themeMode === "dark"}
           onValueChange={(value) => setThemeMode(value ? "dark" : "light")}
         />
