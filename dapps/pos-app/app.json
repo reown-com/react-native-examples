@@ -19,7 +19,9 @@
         "NFCReaderUsageDescription": "This app requires NFC to send messages"
       },
       "entitlements": {
-        "com.apple.developer.nfc.readersession.formats": ["TAG"]
+        "com.apple.developer.nfc.readersession.formats": [
+          "TAG"
+        ]
       }
     },
     "android": {
@@ -32,7 +34,9 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.reown.mobilepos",
-      "permissions": ["android.permission.NFC"],
+      "permissions": [
+        "android.permission.NFC"
+      ],
       "versionCode": 2
     },
     "web": {
@@ -63,7 +67,11 @@
       [
         "expo-font",
         {
-          "fonts": ["./assets/fonts/KHTeka-Light.otf", "./assets/fonts/KHTeka-Regular.otf", "./assets/fonts/KHTeka-Medium.otf"],
+          "fonts": [
+            "./assets/fonts/KHTeka-Light.otf",
+            "./assets/fonts/KHTeka-Regular.otf",
+            "./assets/fonts/KHTeka-Medium.otf"
+          ],
           "android": {
             "fonts": [
               {
@@ -86,8 +94,18 @@
             ]
           },
           "ios": {
-            "fonts": ["./assets/fonts/KHTeka-Light.otf", "./assets/fonts/KHTeka-Regular.otf", "./assets/fonts/KHTeka-Medium.otf"]
+            "fonts": [
+              "./assets/fonts/KHTeka-Light.otf",
+              "./assets/fonts/KHTeka-Regular.otf",
+              "./assets/fonts/KHTeka-Medium.otf"
+            ]
           }
+        }
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera."
         }
       ]
     ],

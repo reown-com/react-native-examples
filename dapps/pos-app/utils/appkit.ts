@@ -1,5 +1,6 @@
 import "@walletconnect/react-native-compat";
 
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { createAppKit } from "@reown/appkit-react-native";
 import { SolanaAdapter } from "@reown/appkit-solana-react-native";
 import { WagmiAdapter } from "@reown/appkit-wagmi-react-native";
@@ -17,12 +18,15 @@ export const wagmiAdapter = new WagmiAdapter({
 
 const solanaAdapter = new SolanaAdapter();
 
+const { themeMode } = useSettingsStore.getState();
+
 export const appKit = createAppKit({
   projectId,
   networks: NETWORKS_LIST,
   defaultNetwork: NETWORKS_LIST[0],
   adapters: [wagmiAdapter, solanaAdapter],
   storage,
+  themeMode,
   clipboardClient: {
     setString: async (value: string) => {
       await Clipboard.setStringAsync(value);

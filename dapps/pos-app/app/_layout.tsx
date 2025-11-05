@@ -17,6 +17,11 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useInitializePOS } from "@/hooks/use-initialize-pos";
 import { useTheme } from "@/hooks/use-theme-color";
 import { appKit, wagmiAdapter } from "@/utils/appkit";
+import {
+  getHeaderBackgroundColor,
+  getHeaderTintColor,
+  shouldCenterHeaderTitle,
+} from "@/utils/navigation";
 import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
 import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -74,17 +79,11 @@ export default Sentry.wrap(function RootLayout() {
               <POSProvider posClient={posClient} isInitialized={isInitialized}>
                 <Stack
                   screenOptions={({ route }) => {
-                    const centerTitle =
-                      route.name === "index" ||
-                      route.name === "payment-success";
-                    const isPaymentSuccess = route.name === "payment-success";
-                    const headerBackgroundColor = isPaymentSuccess
-                      ? Theme["text-success"]
-                      : Theme["bg-primary"];
-
-                    const headerTintColor = isPaymentSuccess
-                      ? Theme["text-invert"]
-                      : Theme["text-primary"];
+                    const centerTitle = shouldCenterHeaderTitle(route.name);
+                    const headerTintColor = getHeaderTintColor(route.name);
+                    const headerBackgroundColor = getHeaderBackgroundColor(
+                      route.name,
+                    );
 
                     return {
                       headerTitle: centerTitle ? HeaderImage : "",
@@ -94,11 +93,11 @@ export default Sentry.wrap(function RootLayout() {
                           )
                         : undefined,
                       headerShadowVisible: false,
-                      headerTintColor,
+                      headerTintColor: Theme[headerTintColor],
                       headerBackButtonDisplayMode: "minimal",
                       headerTitleAlign: "center",
                       headerStyle: {
-                        backgroundColor: headerBackgroundColor,
+                        backgroundColor: Theme[headerBackgroundColor],
                       },
                       contentStyle: {
                         backgroundColor: Theme["bg-primary"],
@@ -109,8 +108,9 @@ export default Sentry.wrap(function RootLayout() {
                 >
                   <Stack.Screen name="index" />
                   <Stack.Screen name="settings" />
-                  <Stack.Screen name="settings-recipient" />
-                  <Stack.Screen name="settings-address" />
+                  <Stack.Screen name="settings-address-list" />
+                  <Stack.Screen name="settings-update-address" />
+                  <Stack.Screen name="settings-scan-address" />
                   <Stack.Screen name="amount" />
                   <Stack.Screen name="payment-method" />
                   <Stack.Screen name="payment-token" />

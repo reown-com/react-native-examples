@@ -4,35 +4,22 @@ import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useAppKitTheme } from "@reown/appkit-react-native";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
 export default function Settings() {
-  // const { allAccounts } = useAccount();
   const { themeMode, setThemeMode } = useSettingsStore((state) => state);
-  // const { disconnect, open } = useAppKit();
-  // const { isConnected } = useAppKitState();
+  const { setThemeMode: setAppKitThemeMode } = useAppKitTheme();
 
-  // const groupedAccounts = allAccounts ? getAccounts(allAccounts) : [];
-
-  // const onAppKitPress = () => {
-  //   if (isConnected) {
-  //     disconnect();
-  //   } else {
-  //     open({ view: "WalletConnect" });
-  //   }
-  // };
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (!isConnected) {
-  //       open({ view: "WalletConnect" });
-  //     }
-  //   }, [isConnected, open]),
-  // );
+  const handleThemeModeChange = (value: boolean) => {
+    const newThemeMode = value ? "dark" : "light";
+    setThemeMode(newThemeMode);
+    setAppKitThemeMode(newThemeMode);
+  };
 
   const handleRecipientPress = () => {
-    router.push("/settings-recipient");
+    router.push("/settings-address-list");
   };
 
   return (
@@ -44,7 +31,7 @@ export default function Settings() {
         <Switch
           style={styles.switch}
           value={themeMode === "dark"}
-          onValueChange={(value) => setThemeMode(value ? "dark" : "light")}
+          onValueChange={handleThemeModeChange}
         />
       </Card>
       <Card onPress={handleRecipientPress} style={styles.card}>

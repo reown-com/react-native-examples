@@ -2,6 +2,7 @@ import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
+import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { Namespace } from "@/utils/types";
 import {
@@ -18,7 +19,8 @@ interface ScreenParams extends UnknownOutputParams {
   namespace: Namespace;
 }
 
-export default function SettingsAddress() {
+export default function SettingsUpdateAddress() {
+  const Theme = useTheme();
   const { namespace } = useLocalSearchParams<ScreenParams>();
   const { setNetworkAddress, networkAddresses } = useSettingsStore(
     (state) => state,
@@ -29,6 +31,15 @@ export default function SettingsAddress() {
 
   const handleOpenAppKit = () => {
     open({ view: "WalletConnect" });
+  };
+
+  const handleScanAddress = () => {
+    router.push({
+      pathname: "/settings-scan-address",
+      params: {
+        namespace,
+      },
+    });
   };
 
   useEffect(() => {
@@ -46,21 +57,21 @@ export default function SettingsAddress() {
         }
       });
       disconnect();
-      router.back();
+      router.dismissTo("/settings-address-list");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, allAccounts, disconnect, namespace, setNetworkAddress]);
 
   return (
     <View style={styles.container}>
-      <Card style={styles.card} onPress={() => {}}>
+      <Card style={styles.card} onPress={handleScanAddress}>
         <ThemedText>Set or update address via QR code</ThemedText>
         <Image
           cachePolicy="memory-disk"
           priority="high"
           contentFit="contain"
           source={require("@/assets/images/scan.png")}
-          style={styles.scanIcon}
+          style={[styles.scanIcon, { tintColor: Theme["text-primary"] }]}
         />
       </Card>
       <Card style={styles.card} onPress={handleOpenAppKit}>

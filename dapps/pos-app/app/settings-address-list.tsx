@@ -8,7 +8,7 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
-export default function SettingsRecipient() {
+export default function SettingsAddressList() {
   const { networkAddresses } = useSettingsStore((state) => state);
 
   const solanaAddress = networkAddresses.solana;
@@ -16,7 +16,7 @@ export default function SettingsRecipient() {
 
   const handleAddressPress = (namespace: Namespace) => {
     router.push({
-      pathname: "/settings-address",
+      pathname: "/settings-update-address",
       params: { namespace },
     });
   };
