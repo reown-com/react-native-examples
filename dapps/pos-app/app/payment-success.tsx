@@ -94,7 +94,7 @@ export default function PaymentSuccessScreen() {
           </ThemedText>
         </View>
         <View style={styles.buttonContainer}>
-          <Button
+          {/* <Button
             onPress={() => {}}
             style={[
               styles.button,
@@ -109,7 +109,7 @@ export default function PaymentSuccessScreen() {
             >
               Send email receipt
             </ThemedText>
-          </Button>
+          </Button> */}
 
           <Button
             style={[
