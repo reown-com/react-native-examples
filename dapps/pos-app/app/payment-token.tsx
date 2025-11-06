@@ -3,7 +3,7 @@ import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { getIcon, TOKEN_LIST, TokenKey } from "@/utils/networks";
+import { TOKEN_LIST, TokenKey } from "@/utils/networks";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { FlatList, StyleSheet, View } from "react-native";
@@ -46,7 +46,7 @@ export default function PaymentTokenScreen() {
           >
             <ThemedText fontSize={16}>{item.symbol}</ThemedText>
             <Image
-              source={getIcon(item.icon)}
+              source={{ uri: item.icon }}
               style={styles.image}
               cachePolicy="memory-disk"
               priority="high"

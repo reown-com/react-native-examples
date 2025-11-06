@@ -42,7 +42,7 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
               {key === "erase" ? (
                 <Image
                   testID="key-erase"
-                  source={require("@/assets/images/backspace.png")}
+                  source={{ uri: "backspace" }}
                   style={[
                     styles.backspace,
                     {

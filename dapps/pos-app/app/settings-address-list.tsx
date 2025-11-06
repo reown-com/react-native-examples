@@ -26,7 +26,7 @@ export default function SettingsAddressList() {
       <Card style={styles.card} onPress={() => handleAddressPress("solana")}>
         <Image
           style={styles.logo}
-          source={require("@/assets/images/chains/solana.png")}
+          source={{ uri: "solana" }}
           cachePolicy="memory-disk"
           priority="high"
         />
@@ -42,7 +42,7 @@ export default function SettingsAddressList() {
       <Card style={styles.card} onPress={() => handleAddressPress("eip155")}>
         <Image
           style={styles.logo}
-          source={require("@/assets/images/chains/eip155-1.png")}
+          source={{ uri: "eip155_1" }}
           cachePolicy="memory-disk"
           priority="high"
         />

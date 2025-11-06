@@ -5,7 +5,7 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { CaipNetworkId, getIcon, getNetworkByCaipId } from "@/utils/networks";
+import { CaipNetworkId, getNetworkByCaipId } from "@/utils/networks";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -36,10 +36,7 @@ export default function SettingsNetworks() {
             >
               <View style={styles.leftContainer}>
                 <Image
-                  source={
-                    getIcon(network?.icon) ??
-                    require("@/assets/images/chains/chain-placeholder.png")
-                  }
+                  source={{ uri: network?.icon ?? "chain_placeholder" }}
                   style={styles.networkLogo}
                 />
                 <ThemedText color="text-tertiary">{network?.name}</ThemedText>

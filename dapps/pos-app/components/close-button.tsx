@@ -26,7 +26,7 @@ export function CloseButton({ style, onPress, themeMode }: CloseButtonProps) {
     >
       <Image
         style={[styles.image, { tintColor: Theme["text-primary"] }]}
-        source={require("@/assets/images/close.png")}
+        source={{ uri: "close" }}
         cachePolicy="memory-disk"
         priority="high"
       />

@@ -36,7 +36,7 @@ export default function HomeScreen() {
         ]}
       >
         <Image
-          source={require("@/assets/images/plus.png")}
+          source={{ uri: "plus" }}
           style={styles.actionButtonImage}
           cachePolicy="memory-disk"
           priority="high"
@@ -51,7 +51,7 @@ export default function HomeScreen() {
         ]}
       >
         <Image
-          source={require("@/assets/images/gear.png")}
+          source={{ uri: "gear" }}
           style={styles.actionButtonImage}
           cachePolicy="memory-disk"
           priority="high"

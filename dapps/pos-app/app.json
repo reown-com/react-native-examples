@@ -4,7 +4,7 @@
     "slug": "mobile-pos",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/app_icons/icon.png",
     "scheme": "WPay",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -28,9 +28,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/app_icons/android_icon_foreground.png",
+        "backgroundImage": "./assets/app_icons/android_icon_background.png",
+        "monochromeImage": "./assets/app_icons/android_icon_monochrome.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -38,18 +38,17 @@
       "permissions": [
         "android.permission.NFC"
       ],
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "output": "static"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/app_icons/splash_icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#000000"
@@ -68,11 +67,6 @@
       [
         "expo-font",
         {
-          "fonts": [
-            "./assets/fonts/KHTeka-Light.otf",
-            "./assets/fonts/KHTeka-Regular.otf",
-            "./assets/fonts/KHTeka-Medium.otf"
-          ],
           "android": {
             "fonts": [
               {
@@ -111,13 +105,9 @@
         }
       ],
       [
-        "expo-build-properties",
+        "expo-asset",
         {
-          "android": {
-            "enableMinifyInReleaseBuilds": true,
-            "enableShrinkResourcesInReleaseBuilds": true
-
-          }
+          "assets": ["./assets/images","./assets/images/tokens","./assets/images/chains","./assets/images/payment_methods","./assets/app_icons"]
         }
       ]
     ],

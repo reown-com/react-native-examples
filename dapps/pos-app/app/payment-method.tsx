@@ -33,7 +33,7 @@ export default function PaymentMethodScreen() {
         ]}
       >
         <Image
-          source={require("@/assets/images/payment-methods/card.png")}
+          source={{ uri: "card" }}
           style={styles.cardsImage}
           cachePolicy="memory-disk"
           priority="high"
@@ -48,7 +48,7 @@ export default function PaymentMethodScreen() {
         ]}
       >
         <Image
-          source={require("@/assets/images/payment-methods/wpay.png")}
+          source={{ uri: "wpay" }}
           style={styles.cryptoImage}
           cachePolicy="memory-disk"
           priority="high"

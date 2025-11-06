@@ -70,7 +70,7 @@ export default function SettingsUpdateAddress() {
           cachePolicy="memory-disk"
           priority="high"
           contentFit="contain"
-          source={require("@/assets/images/scan.png")}
+          source={{ uri: "scan" }}
           style={[styles.scanIcon, { tintColor: Theme["text-primary"] }]}
         />
       </Card>
@@ -82,8 +82,8 @@ export default function SettingsUpdateAddress() {
           contentFit="contain"
           source={
             themeMode === "dark"
-              ? require("@/assets/images/reown-logo-white.png")
-              : require("@/assets/images/reown-logo.png")
+              ? { uri: "reown_logo_white" }
+              : { uri: "reown_logo" }
           }
           style={styles.reownLogo}
         />
