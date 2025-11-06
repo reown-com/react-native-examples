@@ -1,7 +1,13 @@
 import * as Haptics from "expo-haptics";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef } from "react";
-import { Animated, Dimensions, StyleSheet, View } from "react-native";
+import React, { useEffect } from "react";
+import { Dimensions, StyleSheet, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
@@ -24,8 +30,8 @@ export default function PaymentSuccessScreen() {
   const insets = useSafeAreaInsets();
   const { amount } = params;
 
-  const circleScale = useRef(new Animated.Value(1)).current;
-  const contentOpacity = useRef(new Animated.Value(0)).current;
+  const circleScale = useSharedValue(1);
+  const contentOpacity = useSharedValue(0);
 
   const handleNewPayment = () => {
     router.dismissAll();
@@ -35,24 +41,20 @@ export default function PaymentSuccessScreen() {
   useEffect(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
-    Animated.parallel([
-      Animated.spring(circleScale, {
-        toValue: finalScale,
-        tension: 15,
-        friction: 12,
-        useNativeDriver: true,
-      }),
-      Animated.sequence([
-        Animated.delay(300),
-        Animated.timing(contentOpacity, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-      ]),
-    ]).start();
+    circleScale.value = withTiming(finalScale, {
+      duration: 400,
+    });
+    contentOpacity.value = withDelay(150, withTiming(1, { duration: 200 }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const circleAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: circleScale.value }],
+  }));
+
+  const contentAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
+  }));
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -65,20 +67,13 @@ export default function PaymentSuccessScreen() {
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
-            transform: [{ scale: circleScale }],
           },
+          circleAnimatedStyle,
         ]}
       />
 
       {/* Content that fades in after circle expands */}
-      <Animated.View
-        style={[
-          styles.contentContainer,
-          {
-            opacity: contentOpacity,
-          },
-        ]}
-      >
+      <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >

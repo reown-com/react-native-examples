@@ -109,6 +109,16 @@
           "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
           "enableLocation": false
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
+
+          }
+        }
       ]
     ],
     "experiments": {
