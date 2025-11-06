@@ -1,28 +1,32 @@
 import "@walletconnect/react-native-compat";
 
-import { createAppKit } from "@reown/appkit-react-native";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { createAppKit, solana } from "@reown/appkit-react-native";
 import { SolanaAdapter } from "@reown/appkit-solana-react-native";
 import { WagmiAdapter } from "@reown/appkit-wagmi-react-native";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
-import { NETWORKS_LIST, WAGMI_NETWORKS_LIST } from "./networks";
+import { mainnet } from "viem/chains";
 import { storage } from "./storage";
 
 const projectId = process.env.EXPO_PUBLIC_PROJECT_ID!;
 
 export const wagmiAdapter = new WagmiAdapter({
   projectId,
-  networks: WAGMI_NETWORKS_LIST,
+  networks: [mainnet],
 });
 
 const solanaAdapter = new SolanaAdapter();
 
+const { themeMode } = useSettingsStore.getState();
+
 export const appKit = createAppKit({
   projectId,
-  networks: NETWORKS_LIST,
-  defaultNetwork: NETWORKS_LIST[0],
+  networks: [mainnet, solana],
+  defaultNetwork: mainnet,
   adapters: [wagmiAdapter, solanaAdapter],
   storage,
+  themeMode,
   clipboardClient: {
     setString: async (value: string) => {
       await Clipboard.setStringAsync(value);

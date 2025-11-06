@@ -1,18 +1,15 @@
-import { Image, StyleSheet } from "react-native";
-
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { useTheme } from "@/hooks/use-theme-color";
 import { showInfoToast } from "@/utils/toast";
-import { useAppKitState } from "@reown/appkit-react-native";
+import { Image } from "expo-image";
 import { router } from "expo-router";
+import { StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   const { isInitialized } = usePOS();
-  const { isConnected } = useAppKitState();
 
   const Theme = useTheme();
 
@@ -22,10 +19,6 @@ export default function HomeScreen() {
         title: "Please wait for the POS to initialize",
       });
     }
-
-    if (!isConnected) {
-      return router.navigate("/settings");
-    }
     router.push("/amount");
   };
 
@@ -34,7 +27,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <Button
         onPress={handleStartPayment}
         style={[
@@ -45,6 +38,8 @@ export default function HomeScreen() {
         <Image
           source={require("@/assets/images/plus.png")}
           style={styles.actionButtonImage}
+          cachePolicy="memory-disk"
+          priority="high"
         />
         <ThemedText fontSize={18}>New sale</ThemedText>
       </Button>
@@ -58,10 +53,12 @@ export default function HomeScreen() {
         <Image
           source={require("@/assets/images/gear.png")}
           style={styles.actionButtonImage}
+          cachePolicy="memory-disk"
+          priority="high"
         />
         <ThemedText fontSize={18}>Settings</ThemedText>
       </Button>
-    </ThemedView>
+    </View>
   );
 }
 

@@ -1,11 +1,10 @@
-import { Image, StyleSheet } from "react-native";
-
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
+import { StyleSheet, View } from "react-native";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
@@ -25,7 +24,7 @@ export default function PaymentMethodScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <Button
         onPress={() => {}}
         style={[
@@ -36,6 +35,8 @@ export default function PaymentMethodScreen() {
         <Image
           source={require("@/assets/images/payment-methods/card.png")}
           style={styles.cardsImage}
+          cachePolicy="memory-disk"
+          priority="high"
         />
         <ThemedText fontSize={16}>Pay with credit/debit card</ThemedText>
       </Button>
@@ -49,10 +50,12 @@ export default function PaymentMethodScreen() {
         <Image
           source={require("@/assets/images/payment-methods/wpay.png")}
           style={styles.cryptoImage}
+          cachePolicy="memory-disk"
+          priority="high"
         />
         <ThemedText fontSize={16}>Pay with crypto</ThemedText>
       </Button>
-    </ThemedView>
+    </View>
   );
 }
 

@@ -16,10 +16,13 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NFCReaderUsageDescription": "This app requires NFC to send messages"
+        "NFCReaderUsageDescription": "This app requires NFC to send messages",
+        "NSLocationWhenInUseUsageDescription": "This app requires location when using the camera"
       },
       "entitlements": {
-        "com.apple.developer.nfc.readersession.formats": ["TAG"]
+        "com.apple.developer.nfc.readersession.formats": [
+          "TAG"
+        ]
       }
     },
     "android": {
@@ -32,8 +35,10 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.reown.mobilepos",
-      "permissions": ["android.permission.NFC"],
-      "versionCode": 2
+      "permissions": [
+        "android.permission.NFC"
+      ],
+      "versionCode": 3
     },
     "web": {
       "output": "static",
@@ -54,6 +59,7 @@
         "@sentry/react-native/expo",
         {
           "url": "https://sentry.io/",
+          "note": "Use SENTRY_AUTH_TOKEN env to authenticate with Sentry.",
           "project": "mobile-pos-react-native",
           "organization": "walletconnect"
         }
@@ -62,7 +68,11 @@
       [
         "expo-font",
         {
-          "fonts": ["./assets/fonts/KHTeka-Light.otf", "./assets/fonts/KHTeka-Regular.otf", "./assets/fonts/KHTeka-Medium.otf"],
+          "fonts": [
+            "./assets/fonts/KHTeka-Light.otf",
+            "./assets/fonts/KHTeka-Regular.otf",
+            "./assets/fonts/KHTeka-Medium.otf"
+          ],
           "android": {
             "fonts": [
               {
@@ -85,8 +95,19 @@
             ]
           },
           "ios": {
-            "fonts": ["./assets/fonts/KHTeka-Light.otf", "./assets/fonts/KHTeka-Regular.otf", "./assets/fonts/KHTeka-Medium.otf"]
+            "fonts": [
+              "./assets/fonts/KHTeka-Light.otf",
+              "./assets/fonts/KHTeka-Regular.otf",
+              "./assets/fonts/KHTeka-Medium.otf"
+            ]
           }
+        }
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
+          "enableLocation": false
         }
       ]
     ],

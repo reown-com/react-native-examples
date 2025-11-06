@@ -17,6 +17,11 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useInitializePOS } from "@/hooks/use-initialize-pos";
 import { useTheme } from "@/hooks/use-theme-color";
 import { appKit, wagmiAdapter } from "@/utils/appkit";
+import {
+  getHeaderBackgroundColor,
+  getHeaderTintColor,
+  shouldCenterHeaderTitle,
+} from "@/utils/navigation";
 import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
 import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -28,15 +33,15 @@ Sentry.init({
 
   // Adds more context data to events (IP address, cookies, user, etc.)
   // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
-  sendDefaultPii: true,
+  sendDefaultPii: false,
 
   // Enable Logs
-  enableLogs: true,
+  enableLogs: __DEV__ ? true : false,
 
   // Configure Session Replay
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1,
-  integrations: [Sentry.mobileReplayIntegration()],
+  replaysSessionSampleRate: 0,
+  replaysOnErrorSampleRate: 0,
+  integrations: [],
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   spotlight: __DEV__,
@@ -59,7 +64,7 @@ export default Sentry.wrap(function RootLayout() {
       url: "https://reown.com/appkit",
     },
     loggerOptions: {
-      posLevel: "debug",
+      posLevel: __DEV__ ? "debug" : "silent",
     },
   });
 
@@ -74,17 +79,11 @@ export default Sentry.wrap(function RootLayout() {
               <POSProvider posClient={posClient} isInitialized={isInitialized}>
                 <Stack
                   screenOptions={({ route }) => {
-                    const centerTitle =
-                      route.name === "index" ||
-                      route.name === "payment-success";
-                    const isPaymentSuccess = route.name === "payment-success";
-                    const headerBackgroundColor = isPaymentSuccess
-                      ? Theme["text-success"]
-                      : Theme["bg-primary"];
-
-                    const headerTintColor = isPaymentSuccess
-                      ? Theme["text-invert"]
-                      : Theme["text-primary"];
+                    const centerTitle = shouldCenterHeaderTitle(route.name);
+                    const headerTintColor = getHeaderTintColor(route.name);
+                    const headerBackgroundColor = getHeaderBackgroundColor(
+                      route.name,
+                    );
 
                     return {
                       headerTitle: centerTitle ? HeaderImage : "",
@@ -94,12 +93,11 @@ export default Sentry.wrap(function RootLayout() {
                           )
                         : undefined,
                       headerShadowVisible: false,
-                      headerTintColor,
+                      headerTintColor: Theme[headerTintColor],
                       headerBackButtonDisplayMode: "minimal",
                       headerTitleAlign: "center",
-                      headerBackImageSource: require("@/assets/images/arrow-left.png"),
                       headerStyle: {
-                        backgroundColor: headerBackgroundColor,
+                        backgroundColor: Theme[headerBackgroundColor],
                       },
                       contentStyle: {
                         backgroundColor: Theme["bg-primary"],
@@ -109,12 +107,6 @@ export default Sentry.wrap(function RootLayout() {
                   }}
                 >
                   <Stack.Screen name="index" />
-                  <Stack.Screen
-                    name="settings"
-                    options={{
-                      title: "",
-                    }}
-                  />
                   <Stack.Screen name="amount" />
                   <Stack.Screen name="payment-method" />
                   <Stack.Screen name="payment-token" />
@@ -127,6 +119,12 @@ export default Sentry.wrap(function RootLayout() {
                       headerBackVisible: false,
                     }}
                   />
+                  <Stack.Screen name="address-not-set" />
+                  <Stack.Screen name="settings" />
+                  <Stack.Screen name="settings-address-list" />
+                  <Stack.Screen name="settings-update-address" />
+                  <Stack.Screen name="settings-scan-address" />
+                  <Stack.Screen name="settings-networks" />
                 </Stack>
                 <StatusBar style="auto" />
                 <AppKit />

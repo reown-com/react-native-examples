@@ -1,12 +1,11 @@
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 interface FormData {
   amount: string;
@@ -28,6 +27,7 @@ export default function AmountScreen() {
 
   const onSubmit = ({ amount }: FormData) => {
     let formattedAmount = amount;
+
     if (amount.endsWith(".")) {
       formattedAmount = `${amount}00`;
     }
@@ -45,8 +45,8 @@ export default function AmountScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView
+    <View style={styles.container}>
+      <View
         style={[
           styles.amountContainer,
           { borderColor: Theme["border-primary"] },
@@ -66,7 +66,7 @@ export default function AmountScreen() {
         >
           ${watchAmount || "0.00"}
         </ThemedText>
-      </ThemedView>
+      </View>
       <Controller
         control={control}
         name="amount"
@@ -86,12 +86,17 @@ export default function AmountScreen() {
         render={({ field: { onChange, value: prev } }) => (
           <NumericKeyboard
             onKeyPress={(key) => {
+              let newDisplay;
               if (key === "erase") {
-                const newDisplay = prev?.slice(0, -1) || "";
+                newDisplay = prev?.slice(0, -1) || "";
                 onChange?.(newDisplay);
               } else if (key === ".") {
                 if (prev.includes(".")) return; // Don't add multiple commas
-                const newDisplay = prev + ".";
+                if (prev === "") {
+                  newDisplay = "0.";
+                } else {
+                  newDisplay = prev + ".";
+                }
                 onChange?.(newDisplay);
               } else {
                 const newDisplay = prev === "0" ? key : prev + key;
@@ -118,7 +123,7 @@ export default function AmountScreen() {
           {isValid ? `Charge $${watchAmount}` : "Enter amount"}
         </ThemedText>
       </Button>
-    </ThemedView>
+    </View>
   );
 }
 

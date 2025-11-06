@@ -4,20 +4,19 @@ import React, { useEffect, useRef } from "react";
 import { Animated, Dimensions, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { Button } from "@/components/button";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
 }
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
 const diagonalLength = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
 const initialCircleSize = 20;
-const finalScale = Math.round(diagonalLength / initialCircleSize) + 1;
+const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 
 export default function PaymentSuccessScreen() {
   const Theme = useTheme();
@@ -56,7 +55,7 @@ export default function PaymentSuccessScreen() {
   }, []);
 
   return (
-    <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Expanding circle background */}
       <Animated.View
         style={[
@@ -95,7 +94,7 @@ export default function PaymentSuccessScreen() {
           </ThemedText>
         </View>
         <View style={styles.buttonContainer}>
-          <Button
+          {/* <Button
             onPress={() => {}}
             style={[
               styles.button,
@@ -110,7 +109,7 @@ export default function PaymentSuccessScreen() {
             >
               Send email receipt
             </ThemedText>
-          </Button>
+          </Button> */}
 
           <Button
             style={[
@@ -130,7 +129,7 @@ export default function PaymentSuccessScreen() {
           </Button>
         </View>
       </Animated.View>
-    </ThemedView>
+    </View>
   );
 }
 
