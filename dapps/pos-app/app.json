@@ -16,7 +16,8 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NFCReaderUsageDescription": "This app requires NFC to send messages"
+        "NFCReaderUsageDescription": "This app requires NFC to send messages",
+        "NSLocationWhenInUseUsageDescription": "This app requires location when using the camera"
       },
       "entitlements": {
         "com.apple.developer.nfc.readersession.formats": [
@@ -105,7 +106,8 @@
       [
         "react-native-vision-camera",
         {
-          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera."
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
+          "enableLocation": false
         }
       ]
     ],
