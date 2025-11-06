@@ -12,7 +12,6 @@ import Animated, {
 export function WalletConnectLoading({ size = 120 }: { size?: number }) {
   const gap = 2; // 2px gap between squares
   const squareSize = (size - gap) / 2; // Each square takes half minus gap
-  const duration = 4000; // 4 seconds per cycle
 
   // Corner radius for each square
   const cornerTL = useSharedValue(squareSize * 0.12);
@@ -143,18 +142,8 @@ export function WalletConnectLoading({ size = 120 }: { size?: number }) {
       -1,
       false,
     );
-  }, [
-    squareSize,
-    duration,
-    cornerTL,
-    cornerTR,
-    cornerBL,
-    cornerBR,
-    opacityTL,
-    opacityTR,
-    opacityBL,
-    opacityBR,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [squareSize]);
 
   // Animated styles for each square
   const animatedStyleTL = useAnimatedStyle(() => ({
