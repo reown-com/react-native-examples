@@ -6,6 +6,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "android:build": "cd android && ./gradlew assembleRelease",
+    "prebuild": "expo prebuild",
+    "postprebuild": "node scripts/setup-secrets.js",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
@@ -81,7 +83,8 @@
     "@walletconnect/sign-client": "2.23.0",
     "@walletconnect/types": "2.23.0",
     "@walletconnect/utils": "2.23.0",
-    "hono": "4.10.2"
+    "hono": "4.10.2",
+    "tar": "7.5.2"
   },
   "private": true
 }
