@@ -22,7 +22,7 @@ interface ScreenParams extends UnknownOutputParams {
 export default function SettingsUpdateAddress() {
   const Theme = useTheme();
   const { namespace } = useLocalSearchParams<ScreenParams>();
-  const { setNetworkAddress, networkAddresses } = useSettingsStore(
+  const { setNetworkAddress, networkAddresses, themeMode } = useSettingsStore(
     (state) => state,
   );
   const { open, disconnect } = useAppKit();
@@ -80,7 +80,11 @@ export default function SettingsUpdateAddress() {
           cachePolicy="memory-disk"
           priority="high"
           contentFit="contain"
-          source={require("@/assets/images/reown-logo.png")}
+          source={
+            themeMode === "dark"
+              ? require("@/assets/images/reown-logo-white.png")
+              : require("@/assets/images/reown-logo.png")
+          }
           style={styles.reownLogo}
         />
       </Card>

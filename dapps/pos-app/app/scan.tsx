@@ -1,6 +1,7 @@
 import { CloseButton } from "@/components/close-button";
 import { QRCode } from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
+import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { usePOSListener } from "@/hooks/use-pos-listener";
@@ -29,6 +30,7 @@ export default function QRModalScreen() {
   const params = useLocalSearchParams<ScreenParams>();
 
   const [qrUri, setQrUri] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { posClient } = usePOS();
   const Theme = useTheme();
 
@@ -48,6 +50,7 @@ export default function QRModalScreen() {
         recipientAddress,
       },
     });
+    setIsLoading(false);
   }, [amount, token, networkCaipId, recipientAddress]);
 
   usePOSListener("connection_failed", ({ error }) => {
@@ -64,8 +67,9 @@ export default function QRModalScreen() {
     setQrUri(uri);
   });
 
-  usePOSListener("payment_requested", () => {
+  usePOSListener("connected", () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    setIsLoading(true);
   });
 
   usePOSListener("payment_rejected", ({ error }) => {
@@ -97,6 +101,7 @@ export default function QRModalScreen() {
         recipientAddress: recipientAddress,
       },
     });
+    setIsLoading(false);
   });
 
   const handleOnClosePress = () => {
@@ -146,36 +151,51 @@ export default function QRModalScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.amountContainer}>
-        <ThemedText
-          style={[styles.amountText, { color: Theme["text-tertiary"] }]}
-        >
-          Scan to pay
-        </ThemedText>
-        <ThemedText
-          style={[
-            styles.amountValue,
-            { color: Theme["text-primary"], textTransform: "uppercase" },
-          ]}
-        >
-          ${amount}
-        </ThemedText>
-      </View>
-      <QRCode size={300} uri={qrUri} logoBorderRadius={55}>
-        <ImageBackground
-          source={getIcon(tokenData?.icon)}
-          style={styles.tokenIcon}
-          resizeMode="contain"
-        >
-          <Image
-            source={getIcon(networkData?.icon)}
-            style={[styles.chainIcon, { borderColor: Theme["bg-primary"] }]}
-            cachePolicy="memory-disk"
-            priority="high"
-          />
-        </ImageBackground>
-      </QRCode>
-      <View style={{ flex: 1 }} />
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <WalletConnectLoading size={180} />
+          <ThemedText
+            style={[styles.amountText, { color: Theme["text-primary"] }]}
+            fontSize={16}
+            lineHeight={18}
+          >
+            Waiting for payment confirmation…
+          </ThemedText>
+        </View>
+      ) : (
+        <View style={styles.scanContainer}>
+          <View style={styles.amountContainer}>
+            <ThemedText
+              style={[styles.amountText, { color: Theme["text-tertiary"] }]}
+            >
+              Scan to pay
+            </ThemedText>
+            <ThemedText
+              style={[
+                styles.amountValue,
+                { color: Theme["text-primary"], textTransform: "uppercase" },
+              ]}
+            >
+              ${amount}
+            </ThemedText>
+          </View>
+          <QRCode size={300} uri={qrUri} logoBorderRadius={55}>
+            <ImageBackground
+              source={getIcon(tokenData?.icon)}
+              style={styles.tokenIcon}
+              resizeMode="contain"
+            >
+              <Image
+                source={getIcon(networkData?.icon)}
+                style={[styles.chainIcon, { borderColor: Theme["bg-primary"] }]}
+                cachePolicy="memory-disk"
+                priority="high"
+              />
+            </ImageBackground>
+          </QRCode>
+          <View style={{ flex: 1 }} />
+        </View>
+      )}
       <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
     </View>
   );
@@ -183,6 +203,16 @@ export default function QRModalScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Spacing["spacing-6"],
+    paddingHorizontal: Spacing["spacing-5"],
+  },
+  scanContainer: {
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
@@ -222,5 +252,6 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
+    alignSelf: "center",
   },
 });

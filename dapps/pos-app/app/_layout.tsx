@@ -89,7 +89,10 @@ export default Sentry.wrap(function RootLayout() {
                       headerTitle: centerTitle ? HeaderImage : "",
                       headerRight: !centerTitle
                         ? () => (
-                            <HeaderImage padding tintColor={headerTintColor} />
+                            <HeaderImage
+                              padding
+                              tintColor={Theme[headerTintColor]}
+                            />
                           )
                         : undefined,
                       headerShadowVisible: false,
