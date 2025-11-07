@@ -16,7 +16,7 @@ import { POSProvider } from "@/context/POSContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useInitializePOS } from "@/hooks/use-initialize-pos";
 import { useTheme } from "@/hooks/use-theme-color";
-import { appKit, wagmiAdapter } from "@/utils/appkit";
+import { appKit, posClientMetadata, wagmiAdapter } from "@/utils/appkit";
 import {
   getHeaderBackgroundColor,
   getHeaderTintColor,
@@ -56,13 +56,7 @@ export default Sentry.wrap(function RootLayout() {
   const { posClient, isInitialized } = useInitializePOS({
     projectId: process.env.EXPO_PUBLIC_PROJECT_ID!,
     deviceId: "1234567890",
-    metadata: {
-      merchantName: "WPay",
-      description: "WalletConnect Point of Sale",
-      logoIcon:
-        "https://raw.githubusercontent.com/reown-com/react-native-examples/refs/heads/main/dapps/pos-app/assets/images/icon.png",
-      url: "https://reown.com/appkit",
-    },
+    metadata: posClientMetadata,
     loggerOptions: {
       posLevel: __DEV__ ? "debug" : "silent",
     },

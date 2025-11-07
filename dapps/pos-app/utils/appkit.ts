@@ -11,6 +11,14 @@ import { storage } from "./storage";
 
 const projectId = process.env.EXPO_PUBLIC_PROJECT_ID!;
 
+export const posClientMetadata = {
+  merchantName: "WPay",
+  description: "WalletConnect Point of Sale",
+  logoIcon:
+    "https://raw.githubusercontent.com/reown-com/react-native-examples/refs/heads/main/dapps/pos-app/assets/images/icon.png",
+  url: "https://walletconnect.com",
+};
+
 export const wagmiAdapter = new WagmiAdapter({
   projectId,
   networks: [mainnet],
@@ -38,11 +46,9 @@ export const appKit = createAppKit({
     swaps: false,
   },
   metadata: {
-    name: "WPay",
-    description: "WalletConnect Point of Sale",
-    url: "https://reown.com/appkit",
-    icons: [
-      "https://raw.githubusercontent.com/reown-com/react-native-examples/refs/heads/main/dapps/pos-app/assets/images/icon.png",
-    ],
+    name: posClientMetadata.merchantName,
+    description: posClientMetadata.description,
+    url: posClientMetadata.url,
+    icons: [posClientMetadata.logoIcon],
   },
 });
