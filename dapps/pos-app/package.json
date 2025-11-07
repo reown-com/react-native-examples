@@ -5,6 +5,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
+    "android:pos": "expo run:android --port 8082",
     "android:build": "cd android && ./gradlew assembleRelease",
     "prebuild": "expo prebuild",
     "postprebuild": "node scripts/setup-secrets.js",
