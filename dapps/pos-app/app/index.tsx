@@ -3,23 +3,91 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { useTheme } from "@/hooks/use-theme-color";
+import { createNDEFType4TagHandler } from "@/utils/ndef-type4";
 import { showErrorToast, showInfoToast, showSuccessToast } from "@/utils/toast";
+import NativeHCEModule, {
+  type HCEModuleEvent,
+} from "@icedevml/react-native-host-card-emulation/js/NativeHCEModule";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import {
-  HCESession,
-  NFCTagType4,
-  NFCTagType4NDEFContentType,
-} from "react-native-hce";
 
 export default function HomeScreen() {
   const { isInitialized } = usePOS();
   const [isHCEEnabled, setIsHCEEnabled] = useState(false);
-  const [hceSession, setHceSession] = useState<HCESession | null>(null);
 
   const Theme = useTheme();
+
+  // Create NDEF Type 4 tag handler with "HELLO WORLD" text content
+  // Change to false and use WalletConnect URI if needed
+  const handleCAPDU = useMemo(
+    () => createNDEFType4TagHandler("HELLO WORLD", true),
+    [],
+  );
+
+  // Set up HCE event listener
+  useEffect(() => {
+    const subscription = NativeHCEModule.onEvent(
+      async (event: HCEModuleEvent) => {
+        try {
+          switch (event.type) {
+            case "sessionStarted":
+              // Session started, can now start HCE
+              try {
+                await NativeHCEModule.startHCE();
+              } catch (error) {
+                console.error("Error starting HCE:", error);
+                showErrorToast({
+                  title: "HCE Error",
+                  message: "Failed to start HCE emulation",
+                });
+                setIsHCEEnabled(false);
+              }
+              break;
+
+            case "readerDetected":
+              console.log("Reader detected");
+              break;
+
+            case "readerDeselected":
+              console.log("Reader deselected");
+              break;
+
+            case "received":
+              // Handle incoming APDU using NDEF Type 4 tag handler
+              if (!event.arg) {
+                console.error("Received APDU event without data");
+                break;
+              }
+              const capdu = event.arg; // APDU in hex string format
+              console.log("Received APDU:", capdu);
+
+              try {
+                // Process APDU and get response
+                const response = handleCAPDU(capdu);
+                await NativeHCEModule.respondAPDU(null, response);
+                console.log("Responded with:", response);
+              } catch (error) {
+                console.error("Error processing APDU:", error);
+                // Respond with error on failure
+                await NativeHCEModule.respondAPDU(null, "6F00");
+              }
+              break;
+
+            default:
+              break;
+          }
+        } catch (error) {
+          console.error("Error in HCE event handler:", error);
+        }
+      },
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, [handleCAPDU]);
 
   const handleStartPayment = () => {
     if (!isInitialized) {
@@ -36,41 +104,22 @@ export default function HomeScreen() {
 
   const handleToggleHCE = async () => {
     try {
-      if (isHCEEnabled && hceSession) {
-        // Disable HCE
-        await hceSession.setEnabled(false);
+      if (isHCEEnabled) {
+        // Stop HCE session
+        // Note: The library doesn't have a direct stop method in the README
+        // We may need to end the session differently
         setIsHCEEnabled(false);
-        setHceSession(null);
         showSuccessToast({
           title: "HCE Disabled",
           message: "NFC tag emulation stopped",
         });
       } else {
-        // Enable HCE
-        // Testing with simple text content to verify NDEF formatting
-        const testContent = "HELLO WORLD";
-
-        // Create NFC Type 4 tag with text content
-        const tag = new NFCTagType4({
-          type: NFCTagType4NDEFContentType.Text,
-          content: testContent,
-          writable: false,
-        });
-
-        // Get the session instance
-        const session = await HCESession.getInstance();
-
-        // Set the application for the session (must be awaited)
-        await session.setApplication(tag);
-
-        // Enable the HCE session
-        await session.setEnabled(true);
-
+        // Start HCE session
+        await NativeHCEModule.beginSession();
         setIsHCEEnabled(true);
-        setHceSession(session);
         showSuccessToast({
           title: "HCE Enabled",
-          message: "NFC tag is now emulating the WalletConnect URI",
+          message: "NFC tag is now emulating. Tap to scan.",
         });
       }
     } catch (error) {
@@ -83,7 +132,6 @@ export default function HomeScreen() {
             : "Failed to toggle HCE. Make sure NFC is enabled on your device.",
       });
       setIsHCEEnabled(false);
-      setHceSession(null);
     }
   };
 

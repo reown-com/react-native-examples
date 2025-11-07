@@ -8,7 +8,7 @@ const path = require("path");
 
 /**
  * Adds NFC HCE (Host Card Emulation) configuration to AndroidManifest.xml
- * and creates the aid_list.xml resource file required by react-native-hce
+ * and creates the aid_list.xml resource file required by @icedevml/react-native-host-card-emulation
  */
 const withAndroidHCE = (config) => {
   // Modify AndroidManifest.xml to add uses-feature and service
@@ -41,19 +41,19 @@ const withAndroidHCE = (config) => {
         mainApplication.service = [];
       }
 
-      // Check if CardService already exists
-      const hasCardService = mainApplication.service.some(
+      // Check if HCEService already exists
+      const hasHCEService = mainApplication.service.some(
         (service) =>
           service.$?.["android:name"] ===
-          "com.reactnativehce.services.CardService",
+          "com.itsecrnd.rtnhceandroid.HCEService",
       );
 
-      if (!hasCardService) {
+      if (!hasHCEService) {
         mainApplication.service.push({
           $: {
-            "android:name": "com.reactnativehce.services.CardService",
+            "android:name": "com.itsecrnd.rtnhceandroid.HCEService",
             "android:exported": "true",
-            "android:enabled": "false",
+            "android:enabled": "true",
             "android:permission": "android.permission.BIND_NFC_SERVICE",
           },
           "intent-filter": [
@@ -130,7 +130,7 @@ const withAndroidHCE = (config) => {
 </host-apdu-service>`;
 
       fs.writeFileSync(aidFilePath, aidFileContent, "utf8");
-      console.log("Created aid_list.xml for react-native-hce");
+      console.log("Created aid_list.xml for @icedevml/react-native-host-card-emulation");
 
       return config;
     },

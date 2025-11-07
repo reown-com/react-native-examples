@@ -15,6 +15,7 @@
     "prettier": "prettier"
   },
   "dependencies": {
+    "@icedevml/react-native-host-card-emulation": "^0.7.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/netinfo": "11.4.1",
     "@react-navigation/bottom-tabs": "^7.4.0",
@@ -51,7 +52,6 @@
     "react-native": "0.81.4",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-get-random-values": "~1.11.0",
-    "react-native-hce": "^0.3.0",
     "react-native-mmkv": "^4.0.0",
     "react-native-nitro-modules": "^0.31.4",
     "react-native-reanimated": "~4.1.1",
