@@ -57,7 +57,7 @@ export default function PaymentSuccessScreen() {
         <ThemedText
           style={[styles.failedDescription, { color: Theme["text-secondary"] }]}
         >
-          The payment couldn’t be completed due to an error. Please try again or
+          The payment couldn't be completed due to an error. Please try again or
           use a different payment method.
         </ThemedText>
       </View>
