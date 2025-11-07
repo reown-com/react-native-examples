@@ -124,13 +124,15 @@ const withAndroidHCE = (config) => {
   <aid-group android:category="other"
              android:description="@string/app_name">
     <!-- NFC Type 4 tag emulation AIDs -->
-    <aid-filter android:name="D2760000850100" />
+    <!-- According to Stack Overflow, use D2760000850101 for NDEF tag emulation -->
     <aid-filter android:name="D2760000850101" />
   </aid-group>
 </host-apdu-service>`;
 
       fs.writeFileSync(aidFilePath, aidFileContent, "utf8");
-      console.log("Created aid_list.xml for @icedevml/react-native-host-card-emulation");
+      console.log(
+        "Created aid_list.xml for @icedevml/react-native-host-card-emulation",
+      );
 
       return config;
     },

@@ -19,10 +19,11 @@ export default function HomeScreen() {
 
   const Theme = useTheme();
 
-  // Create NDEF Type 4 tag handler with "HELLO WORLD" text content
-  // Change to false and use WalletConnect URI if needed
+  // Create NDEF Type 4 tag handler with a URI (iOS doesn't support plaintext NDEF records)
+  // According to https://gist.github.com/equipter/de2d9e421be9af1615e9b9cad4834ddc
+  // iOS only supports URL/URI records, not plaintext
   const handleCAPDU = useMemo(
-    () => createNDEFType4TagHandler("HELLO WORLD", true),
+    () => createNDEFType4TagHandler("https://example.com", false),
     [],
   );
 
