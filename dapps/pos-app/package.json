@@ -5,6 +5,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
+    "android:pos": "expo run:android --port 8082",
     "android:build": "cd android && ./gradlew assembleRelease",
     "prebuild": "expo prebuild",
     "postprebuild": "node scripts/setup-secrets.js",
@@ -28,6 +29,7 @@
     "@walletconnect/react-native-compat": "2.23.0",
     "expo": "~54.0.17",
     "expo-application": "~7.0.7",
+    "expo-asset": "~12.0.9",
     "expo-clipboard": "~8.0.7",
     "expo-constants": "~18.0.9",
     "expo-font": "~14.0.9",

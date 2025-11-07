@@ -5,7 +5,6 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
-  getIcon,
   getTokenAvailableNetworks,
   getTokenById,
   TokenKey,
@@ -88,12 +87,12 @@ export default function PaymentNetworkScreen() {
               {tokenData?.symbol} on {item.name}
             </ThemedText>
             <ImageBackground
-              source={getIcon(tokenData?.icon)}
+              source={{ uri: tokenData?.icon }}
               style={styles.tokenIcon}
               resizeMode="contain"
             >
               <Image
-                source={getIcon(item.icon)}
+                source={{ uri: item.icon }}
                 style={[
                   styles.chainIcon,
                   { borderColor: Theme["border-primary"] },

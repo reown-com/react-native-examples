@@ -9,7 +9,7 @@ interface HeaderImageProps {
 export default function HeaderImage({ tintColor, padding }: HeaderImageProps) {
   return (
     <Image
-      source={require("@/assets/images/brand.png")}
+      source={{ uri: "brand" }}
       cachePolicy="memory-disk"
       priority="high"
       style={{

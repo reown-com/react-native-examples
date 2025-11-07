@@ -23,7 +23,7 @@ export default function PaymentSuccessScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Image
-          source={require("@/assets/images/warning-circle.png")}
+          source={{ uri: "warning_circle" }}
           style={[styles.warningCircle, { tintColor: Theme["icon-warning"] }]}
           cachePolicy="memory-disk"
           priority="high"
