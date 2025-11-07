@@ -15,7 +15,7 @@ export const posClientMetadata = {
   merchantName: "WPay",
   description: "WalletConnect Point of Sale",
   logoIcon:
-    "https://raw.githubusercontent.com/reown-com/react-native-examples/refs/heads/main/dapps/pos-app/assets/images/icon.png",
+    "https://raw.githubusercontent.com/reown-com/react-native-examples/refs/heads/main/dapps/pos-app/icon.png",
   url: "https://walletconnect.com",
 };
 
