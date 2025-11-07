@@ -64,6 +64,7 @@
         }
       ],
       "./scripts/withAndroidReleaseSigningConfig.js",
+      "./scripts/withAndroidHCE.js",
       [
         "expo-font",
         {
