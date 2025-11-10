@@ -81,6 +81,12 @@ export default function SettingsScanAddress() {
             device={device}
             isActive={isActive}
             codeScanner={codeScanner}
+            photo={false}
+            video={false}
+            frameProcessor={undefined}
+            videoHdr={false}
+            fps={30}
+            enableBufferCompression
           />
           <CloseButton
             onPress={router.back}
