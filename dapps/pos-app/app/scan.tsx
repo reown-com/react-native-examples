@@ -6,6 +6,7 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { usePOSListener } from "@/hooks/use-pos-listener";
 import { useTheme } from "@/hooks/use-theme-color";
+import { resetNavigation } from "@/utils/navigation";
 import { getNetworkByCaipId, getTokenById, TokenKey } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
 import * as Haptics from "expo-haptics";
@@ -100,8 +101,7 @@ export default function QRModalScreen() {
   });
 
   const handleOnClosePress = () => {
-    router.dismissAll();
-    router.navigate("/amount");
+    resetNavigation("/amount");
   };
 
   useEffect(() => {
@@ -176,12 +176,12 @@ export default function QRModalScreen() {
           </View>
           <QRCode size={300} uri={qrUri} logoBorderRadius={55}>
             <ImageBackground
-              source={{ uri: tokenData?.icon }}
+              source={tokenData?.icon}
               style={styles.tokenIcon}
               resizeMode="contain"
             >
               <Image
-                source={{ uri: networkData?.icon }}
+                source={networkData?.icon}
                 style={[styles.chainIcon, { borderColor: Theme["bg-primary"] }]}
                 cachePolicy="memory-disk"
                 priority="high"

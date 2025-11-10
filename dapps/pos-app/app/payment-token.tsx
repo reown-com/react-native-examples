@@ -1,8 +1,8 @@
-import { Button } from "@/components/button";
+import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
-import { useTheme } from "@/hooks/use-theme-color";
+import { resetNavigation } from "@/utils/navigation";
 import { TOKEN_LIST, TokenKey } from "@/utils/networks";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
@@ -13,7 +13,6 @@ interface ScreenParams extends UnknownOutputParams {
 }
 
 export default function PaymentTokenScreen() {
-  const Theme = useTheme();
   const { amount } = useLocalSearchParams<ScreenParams>();
 
   const handleTokenPress = (token: TokenKey) => {
@@ -27,8 +26,7 @@ export default function PaymentTokenScreen() {
   };
 
   const handleOnClosePress = () => {
-    router.dismissAll();
-    router.navigate("/amount");
+    resetNavigation("/amount");
   };
 
   return (
@@ -37,21 +35,15 @@ export default function PaymentTokenScreen() {
         data={TOKEN_LIST}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
-          <Button
-            style={[
-              styles.item,
-              { backgroundColor: Theme["foreground-primary"] },
-            ]}
-            onPress={() => handleTokenPress(item.id)}
-          >
+          <Card style={styles.item} onPress={() => handleTokenPress(item.id)}>
             <ThemedText fontSize={16}>{item.symbol}</ThemedText>
             <Image
-              source={{ uri: item.icon }}
+              source={item.icon}
               style={styles.image}
               cachePolicy="memory-disk"
               priority="high"
             />
-          </Button>
+          </Card>
         )}
       />
       <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
@@ -62,7 +54,6 @@ export default function PaymentTokenScreen() {
 const styles = StyleSheet.create({
   container: {
     paddingVertical: Spacing["spacing-5"],
-    alignItems: "center",
     justifyContent: "space-between",
     flex: 1,
   },

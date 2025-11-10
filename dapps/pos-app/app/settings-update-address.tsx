@@ -10,6 +10,7 @@ import {
   useAppKit,
   useAppKitState,
 } from "@reown/appkit-react-native";
+import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { useEffect } from "react";
@@ -28,6 +29,11 @@ export default function SettingsUpdateAddress() {
   const { open, disconnect } = useAppKit();
   const { allAccounts } = useAccount();
   const { isConnected } = useAppKitState();
+  const [assets] = useAssets([
+    require("@/assets/images/scan.png"),
+    require("@/assets/images/reown_logo.png"),
+    require("@/assets/images/reown_logo_white.png"),
+  ]);
 
   const handleOpenAppKit = () => {
     open({ view: "WalletConnect" });
@@ -70,7 +76,7 @@ export default function SettingsUpdateAddress() {
           cachePolicy="memory-disk"
           priority="high"
           contentFit="contain"
-          source={{ uri: "scan" }}
+          source={assets?.[0]}
           style={[styles.scanIcon, { tintColor: Theme["text-primary"] }]}
         />
       </Card>
@@ -80,11 +86,7 @@ export default function SettingsUpdateAddress() {
           cachePolicy="memory-disk"
           priority="high"
           contentFit="contain"
-          source={
-            themeMode === "dark"
-              ? { uri: "reown_logo_white" }
-              : { uri: "reown_logo" }
-          }
+          source={themeMode === "dark" ? assets?.[2] : assets?.[1]}
           style={styles.reownLogo}
         />
       </Card>

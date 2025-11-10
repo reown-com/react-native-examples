@@ -4,6 +4,7 @@ import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { resetNavigation } from "@/utils/navigation";
 import { useAppKitTheme } from "@reown/appkit-react-native";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
@@ -48,7 +49,7 @@ export default function Settings() {
           Networks
         </ThemedText>
       </Card>
-      <CloseButton style={styles.closeButton} onPress={router.dismissAll} />
+      <CloseButton style={styles.closeButton} onPress={resetNavigation} />
     </View>
   );
 }

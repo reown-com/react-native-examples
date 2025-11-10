@@ -11,11 +11,12 @@
     "postprebuild": "node scripts/setup-secrets.js",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "web:serve": "expo serve",
+    "web:build": "expo export -p web",
     "lint": "expo lint",
     "prettier": "prettier"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/netinfo": "11.4.1",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",

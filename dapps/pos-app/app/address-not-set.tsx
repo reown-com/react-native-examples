@@ -8,14 +8,16 @@ import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { resetNavigation } from "@/utils/navigation";
+import { useAssets } from "expo-asset";
 
 export default function PaymentSuccessScreen() {
   const Theme = useTheme();
   const insets = useSafeAreaInsets();
+  const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
 
   const handleGoToSettings = () => {
-    router.dismissAll();
-    router.push("/settings");
+    resetNavigation("/settings");
     router.push("/settings-address-list");
   };
 
@@ -23,7 +25,7 @@ export default function PaymentSuccessScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Image
-          source={{ uri: "warning_circle" }}
+          source={assets?.[0]}
           style={[styles.warningCircle, { tintColor: Theme["icon-warning"] }]}
           cachePolicy="memory-disk"
           priority="high"

@@ -1,5 +1,5 @@
 import * as Haptics from "expo-haptics";
-import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
+import { UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, {
@@ -14,6 +14,7 @@ import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { resetNavigation } from "@/utils/navigation";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
@@ -34,8 +35,7 @@ export default function PaymentSuccessScreen() {
   const contentOpacity = useSharedValue(0);
 
   const handleNewPayment = () => {
-    router.dismissAll();
-    router.navigate("/amount");
+    resetNavigation("/amount");
   };
 
   useEffect(() => {
