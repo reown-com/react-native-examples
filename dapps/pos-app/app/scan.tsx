@@ -9,7 +9,6 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { resetNavigation } from "@/utils/navigation";
 import { getNetworkByCaipId, getTokenById, TokenKey } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
-import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -50,7 +49,6 @@ export default function QRModalScreen() {
   }, [amount, token, networkCaipId, recipientAddress]);
 
   usePOSListener("connection_failed", ({ error }) => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     onFailure();
   });
 
@@ -59,12 +57,10 @@ export default function QRModalScreen() {
   });
 
   usePOSListener("qr_ready", async ({ uri }) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setQrUri(uri);
   });
 
   usePOSListener("connected", () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setIsLoading(true);
   });
 
@@ -73,7 +69,6 @@ export default function QRModalScreen() {
   });
 
   usePOSListener("payment_failed", ({ error }) => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     onFailure();
   });
 

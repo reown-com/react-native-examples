@@ -1,7 +1,6 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAssets } from "expo-asset";
-import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { memo } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
@@ -24,7 +23,6 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
   ];
 
   const handlePress = (key: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     onKeyPress(key);
   };
 

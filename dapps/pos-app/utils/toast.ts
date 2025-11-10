@@ -1,4 +1,3 @@
-import * as Haptics from "expo-haptics";
 import Toast from "react-native-toast-message";
 
 interface ToastProps {
@@ -29,9 +28,6 @@ export const showErrorToast = ({
   haptics = true,
 }: ToastPropsWithHaptics) => {
   showToast({ title, message, type: "error" });
-  if (haptics) {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-  }
 };
 
 export const showSuccessToast = ({
@@ -40,9 +36,6 @@ export const showSuccessToast = ({
   haptics = true,
 }: ToastPropsWithHaptics) => {
   showToast({ title, message, type: "success" });
-  if (haptics) {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  }
 };
 
 export const showInfoToast = ({
@@ -51,9 +44,6 @@ export const showInfoToast = ({
   haptics = true,
 }: ToastPropsWithHaptics) => {
   showToast({ title, message, type: "info" });
-  if (haptics) {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-  }
 };
 
 export const showWarningToast = ({
@@ -62,7 +52,4 @@ export const showWarningToast = ({
   haptics = true,
 }: ToastPropsWithHaptics) => {
   showToast({ title, message, type: "warning" });
-  if (haptics) {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-  }
 };

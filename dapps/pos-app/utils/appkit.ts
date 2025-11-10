@@ -5,7 +5,6 @@ import { createAppKit, solana } from "@reown/appkit-react-native";
 import { SolanaAdapter } from "@reown/appkit-solana-react-native";
 import { WagmiAdapter } from "@reown/appkit-wagmi-react-native";
 import * as Clipboard from "expo-clipboard";
-import * as Haptics from "expo-haptics";
 import { mainnet } from "viem/chains";
 import { storage } from "./storage";
 
@@ -38,7 +37,6 @@ export const appKit = createAppKit({
   clipboardClient: {
     setString: async (value: string) => {
       await Clipboard.setStringAsync(value);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     },
   },
   features: {

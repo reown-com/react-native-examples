@@ -1,4 +1,3 @@
-import * as Haptics from "expo-haptics";
 import { UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
@@ -39,8 +38,6 @@ export default function PaymentSuccessScreen() {
   };
 
   useEffect(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-
     circleScale.value = withTiming(finalScale, {
       duration: 400,
     });

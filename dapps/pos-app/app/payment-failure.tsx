@@ -1,7 +1,6 @@
-import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -37,10 +36,6 @@ export default function PaymentSuccessScreen() {
       },
     });
   };
-
-  useEffect(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-  }, []);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
