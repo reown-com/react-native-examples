@@ -1,26 +1,27 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-// import { type Storage } from "@reown/appkit-react-native";
+import { Storage } from "@reown/appkit-react-native";
 import { safeJsonParse, safeJsonStringify } from "@walletconnect/safe-json";
+import { createMMKV } from "react-native-mmkv";
 
-export const storage: any = {
+const mmkv = createMMKV();
+
+export const storage: Storage = {
   getKeys: async () => {
-    return (await AsyncStorage.getAllKeys()) as string[];
+    return mmkv.getAllKeys();
   },
   getEntries: async <T = any>(): Promise<[string, T][]> => {
-    const keys = await AsyncStorage.getAllKeys();
-    return await Promise.all(
-      keys.map(async (key) => [
-        key,
-        safeJsonParse((await AsyncStorage.getItem(key)) ?? "") as T,
-      ]),
-    );
+    function parseEntry(key: string): [string, any] {
+      const value = mmkv.getString(key);
+      return [key, safeJsonParse(value ?? "")];
+    }
+
+    const keys = mmkv.getAllKeys();
+    return keys.map(parseEntry);
   },
   setItem: async <T = any>(key: string, value: T) => {
-    await AsyncStorage.setItem(key, safeJsonStringify(value));
+    return mmkv.set(key, safeJsonStringify(value));
   },
   getItem: async <T = any>(key: string): Promise<T | undefined> => {
-    const item = await AsyncStorage.getItem(key);
+    const item = mmkv.getString(key);
     if (typeof item === "undefined" || item === null) {
       return undefined;
     }
@@ -28,6 +29,7 @@ export const storage: any = {
     return safeJsonParse(item) as T;
   },
   removeItem: async (key: string) => {
-    await AsyncStorage.removeItem(key);
+    mmkv.remove(key);
+    return;
   },
 };

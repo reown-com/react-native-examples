@@ -1,3 +1,5 @@
+import type { AppKitNetwork } from "@reown/appkit-react-native";
+import { ImageSourcePropType } from "react-native";
 import {
   arbitrum as arbitrumViem,
   base as baseViem,
@@ -6,10 +8,7 @@ import {
   polygon as polygonViem,
   sepolia as sepoliaViem,
 } from "viem/chains";
-
-// import type { AppKitNetwork } from "@reown/appkit-react-native";
-import { ImageSourcePropType } from "react-native";
-// export type { CaipNetworkId } from "@reown/appkit-common-react-native";
+export type { CaipNetworkId } from "@reown/appkit-common-react-native";
 
 // ******************** Types ********************
 export type TokenKey = "usdc" | "usdt";
@@ -22,7 +21,7 @@ export interface Token {
   standard: Record<string, string>;
 }
 
-export type Network = any & {
+export type Network = AppKitNetwork & {
   icon?: string;
 };
 
