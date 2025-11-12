@@ -1,7 +1,6 @@
-import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -10,6 +9,7 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { TokenKey } from "@/utils/networks";
+import { useAssets } from "expo-asset";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
@@ -22,6 +22,7 @@ export default function PaymentSuccessScreen() {
   const Theme = useTheme();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<ScreenParams>();
+  const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
 
   const handleRetry = () => {
     const { amount, token, networkCaipId, recipientAddress } = params;
@@ -36,15 +37,11 @@ export default function PaymentSuccessScreen() {
     });
   };
 
-  useEffect(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-  }, []);
-
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Image
-          source={{ uri: "warning_circle" }}
+          source={assets?.[0]}
           style={[styles.warningCircle, { tintColor: Theme["icon-error"] }]}
           cachePolicy="memory-disk"
           priority="high"
@@ -57,8 +54,8 @@ export default function PaymentSuccessScreen() {
         <ThemedText
           style={[styles.failedDescription, { color: Theme["text-secondary"] }]}
         >
-          The payment couldn't be completed due to an error. Please try again or
-          use a different payment method.
+          The payment couldn&apos;t be completed due to an error. Please try
+          again or use a different payment method.
         </ThemedText>
       </View>
       <View style={styles.buttonContainer}>

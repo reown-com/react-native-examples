@@ -3,13 +3,19 @@ import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { resetNavigation } from "@/utils/navigation";
 import { Namespace } from "@/utils/types";
+import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
 export default function SettingsAddressList() {
   const { networkAddresses } = useSettingsStore((state) => state);
+  const [assets] = useAssets([
+    require("@/assets/images/chains/solana.png"),
+    require("@/assets/images/chains/eip155_1.png"),
+  ]);
 
   const solanaAddress = networkAddresses.solana;
   const eip155Address = networkAddresses.eip155;
@@ -26,7 +32,7 @@ export default function SettingsAddressList() {
       <Card style={styles.card} onPress={() => handleAddressPress("solana")}>
         <Image
           style={styles.logo}
-          source={{ uri: "solana" }}
+          source={assets?.[0]}
           cachePolicy="memory-disk"
           priority="high"
         />
@@ -42,7 +48,7 @@ export default function SettingsAddressList() {
       <Card style={styles.card} onPress={() => handleAddressPress("eip155")}>
         <Image
           style={styles.logo}
-          source={{ uri: "eip155_1" }}
+          source={assets?.[1]}
           cachePolicy="memory-disk"
           priority="high"
         />
@@ -55,7 +61,7 @@ export default function SettingsAddressList() {
           </ThemedText>
         </View>
       </Card>
-      <CloseButton style={styles.closeButton} onPress={router.dismissAll} />
+      <CloseButton style={styles.closeButton} onPress={resetNavigation} />
     </View>
   );
 }

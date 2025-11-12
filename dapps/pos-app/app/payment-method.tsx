@@ -2,6 +2,7 @@ import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { StyleSheet, View } from "react-native";
@@ -13,6 +14,10 @@ interface ScreenParams extends UnknownOutputParams {
 export default function PaymentMethodScreen() {
   const Theme = useTheme();
   const { amount } = useLocalSearchParams<ScreenParams>();
+  const [assets] = useAssets([
+    require("@/assets/images/payment_methods/card.png"),
+    require("@/assets/images/payment_methods/wpay.png"),
+  ]);
 
   const handleWalletConnectPayPress = () => {
     router.push({
@@ -33,7 +38,7 @@ export default function PaymentMethodScreen() {
         ]}
       >
         <Image
-          source={{ uri: "card" }}
+          source={assets?.[0]}
           style={styles.cardsImage}
           cachePolicy="memory-disk"
           priority="high"
@@ -48,7 +53,7 @@ export default function PaymentMethodScreen() {
         ]}
       >
         <Image
-          source={{ uri: "wpay" }}
+          source={assets?.[1]}
           style={styles.cryptoImage}
           cachePolicy="memory-disk"
           priority="high"

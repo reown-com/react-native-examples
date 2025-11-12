@@ -38,7 +38,7 @@
       "permissions": [
         "android.permission.NFC"
       ],
-      "versionCode": 5
+      "versionCode": 6
     },
     "web": {
       "output": "static"
@@ -98,10 +98,11 @@
         }
       ],
       [
-        "react-native-vision-camera",
+        "expo-camera",
         {
-          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
-          "enableLocation": false
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": false
         }
       ],
       [

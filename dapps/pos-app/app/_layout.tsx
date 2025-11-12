@@ -1,38 +1,39 @@
+import "@/config/polyfills";
+
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import "@walletconnect/react-native-compat";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import Toast from "react-native-toast-message";
-import { WagmiProvider } from "wagmi";
 
 import HeaderImage from "@/components/header-image";
-import { POSProvider } from "@/context/POSContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useInitializePOS } from "@/hooks/use-initialize-pos";
+
 import { useTheme } from "@/hooks/use-theme-color";
-import { appKit, posClientMetadata, wagmiAdapter } from "@/utils/appkit";
 import {
   getHeaderBackgroundColor,
   getHeaderTintColor,
   shouldCenterHeaderTitle,
 } from "@/utils/navigation";
-import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
 import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
+
+import { POSProvider } from "@/context/POSContext";
+import { appKit, wagmiAdapter } from "@/utils/appkit";
+import { showErrorToast } from "@/utils/toast";
+import { toastConfig } from "@/utils/toasts";
+import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
+import React, { useEffect, useRef, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { WagmiProvider } from "wagmi";
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
-
-  // Adds more context data to events (IP address, cookies, user, etc.)
-  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
   sendDefaultPii: false,
 
   // Enable Logs
@@ -43,7 +44,6 @@ Sentry.init({
   replaysOnErrorSampleRate: 0,
   integrations: [],
 
-  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   spotlight: __DEV__,
 });
 
@@ -53,14 +53,37 @@ export default Sentry.wrap(function RootLayout() {
   const { bottom } = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const Theme = useTheme();
-  const { posClient, isInitialized } = useInitializePOS({
-    projectId: process.env.EXPO_PUBLIC_PROJECT_ID!,
-    deviceId: "1234567890",
-    metadata: posClientMetadata,
-    loggerOptions: {
-      posLevel: __DEV__ ? "debug" : "silent",
-    },
-  });
+
+  const posClientRef = useRef<any | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    async function initializePOSClient() {
+      try {
+        const { POSClient } = await import("@walletconnect/pos-client");
+        const client = await POSClient.init({
+          projectId: process.env.EXPO_PUBLIC_PROJECT_ID!,
+          deviceId: "1234567890",
+          metadata: {
+            merchantName: "WPay",
+            description: "WalletConnect Point of Sale",
+            logoIcon:
+              "https://raw.githubusercontent.com/reown-com/react-native-examples/refs/heads/main/dapps/pos-app/icon.png",
+            url: "https://walletconnect.com",
+          },
+          loggerOptions: {
+            posLevel: __DEV__ ? "debug" : "silent",
+          },
+        });
+        posClientRef.current = client;
+        setIsInitialized(true);
+      } catch {
+        showErrorToast("Failed to initialize POS");
+      }
+    }
+
+    initializePOSClient();
+  }, []);
 
   return (
     <GestureHandlerRootView>
@@ -70,7 +93,10 @@ export default Sentry.wrap(function RootLayout() {
             <ThemeProvider
               value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
             >
-              <POSProvider posClient={posClient} isInitialized={isInitialized}>
+              <POSProvider
+                posClient={posClientRef.current}
+                isInitialized={isInitialized}
+              >
                 <Stack
                   screenOptions={({ route }) => {
                     const centerTitle = shouldCenterHeaderTitle(route.name);
@@ -126,7 +152,7 @@ export default Sentry.wrap(function RootLayout() {
                 <StatusBar style="auto" />
                 <AppKit />
               </POSProvider>
-              <Toast />
+              <Toast config={toastConfig} position="bottom" />
             </ThemeProvider>
           </QueryClientProvider>
         </WagmiProvider>

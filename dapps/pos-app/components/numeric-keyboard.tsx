@@ -1,6 +1,6 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import * as Haptics from "expo-haptics";
+import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { memo } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
@@ -14,6 +14,7 @@ export interface NumericKeyboardProps {
 
 function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
   const Theme = useTheme();
+  const [assets] = useAssets([require("@/assets/images/backspace.png")]);
   const keys = [
     ["1", "2", "3"],
     ["4", "5", "6"],
@@ -22,7 +23,6 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
   ];
 
   const handlePress = (key: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     onKeyPress(key);
   };
 
@@ -42,7 +42,7 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
               {key === "erase" ? (
                 <Image
                   testID="key-erase"
-                  source={{ uri: "backspace" }}
+                  source={assets?.[0]}
                   style={[
                     styles.backspace,
                     {

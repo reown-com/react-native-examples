@@ -6,21 +6,14 @@ import { isValidAddress } from "@/utils/accounts";
 import { showErrorToast } from "@/utils/toast";
 import { Namespace } from "@/utils/types";
 import {
-  router,
-  UnknownOutputParams,
-  useFocusEffect,
-  useLocalSearchParams,
-} from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+  BarcodeScanningResult,
+  CameraView,
+  useCameraPermissions,
+} from "expo-camera";
+import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
+import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-  Camera,
-  Code,
-  useCameraDevice,
-  useCameraPermission,
-  useCodeScanner,
-} from "react-native-vision-camera";
 
 interface ScreenParams extends UnknownOutputParams {
   namespace: Namespace;
@@ -28,59 +21,39 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function SettingsScanAddress() {
   const { bottom } = useSafeAreaInsets();
-  const device = useCameraDevice("back", {
-    physicalDevices: ["wide-angle-camera"],
-  });
-  const { hasPermission, requestPermission } = useCameraPermission();
+
+  const [permission, requestPermission] = useCameraPermissions();
+
   const { setNetworkAddress } = useSettingsStore((state) => state);
   const { namespace } = useLocalSearchParams<ScreenParams>();
-  const [isActive, setIsActive] = useState(false);
 
-  // Only activate Camera when the app is focused and this screen is currently opened
-  useFocusEffect(
-    useCallback(() => {
-      setIsActive(true);
-      return () => {
-        // Clean up the camera
-        setIsActive(false);
-      };
-    }, []),
-  );
-
-  const onCodeScanned = (codes: Code[]) => {
-    const address = codes[0].value;
+  const onCodeScanned = (result: BarcodeScanningResult) => {
+    console.log(result);
+    const address = result.data;
     if (address && isValidAddress(namespace, address)) {
       setNetworkAddress(namespace, address);
     } else {
-      //TODO: Check this
-      showErrorToast({
-        title: "Invalid address",
-        message: "Please scan a valid address",
-      });
+      showErrorToast("Invalid address");
     }
     router.dismissTo("/settings-address-list");
   };
 
-  const codeScanner = useCodeScanner({
-    codeTypes: ["qr", "ean-13"],
-    onCodeScanned,
-  });
-
   useEffect(() => {
-    if (!hasPermission) {
+    if (!permission?.granted) {
       requestPermission();
     }
-  }, [hasPermission, requestPermission]);
+  }, [permission, requestPermission]);
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      {hasPermission && device ? (
+      {permission?.granted ? (
         <>
-          <Camera
+          <CameraView
             style={StyleSheet.absoluteFill}
-            device={device}
-            isActive={isActive}
-            codeScanner={codeScanner}
+            barcodeScannerSettings={{
+              barcodeTypes: ["qr", "ean13"],
+            }}
+            onBarcodeScanned={onCodeScanned}
           />
           <CloseButton
             onPress={router.back}

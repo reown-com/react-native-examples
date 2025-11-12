@@ -5,10 +5,10 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { resetNavigation } from "@/utils/navigation";
 import { CaipNetworkId, getNetworkByCaipId } from "@/utils/networks";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
 import { FlatList, StyleSheet, View } from "react-native";
 
 export default function SettingsNetworks() {
@@ -22,7 +22,7 @@ export default function SettingsNetworks() {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList
         data={Array.from(supportedNetworks.entries())}
         contentContainerStyle={styles.list}
@@ -36,7 +36,10 @@ export default function SettingsNetworks() {
             >
               <View style={styles.leftContainer}>
                 <Image
-                  source={{ uri: network?.icon ?? "chain_placeholder" }}
+                  source={
+                    network?.icon ??
+                    require("@/assets/images/chains/chain_placeholder.png")
+                  }
                   style={styles.networkLogo}
                 />
                 <ThemedText color="text-tertiary">{network?.name}</ThemedText>
@@ -63,12 +66,15 @@ export default function SettingsNetworks() {
         style={styles.gradient}
         pointerEvents="none"
       />
-      <CloseButton style={styles.closeButton} onPress={router.dismissAll} />
+      <CloseButton style={styles.closeButton} onPress={resetNavigation} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   list: {
     paddingHorizontal: Spacing["spacing-5"],
     paddingTop: Spacing["spacing-5"],

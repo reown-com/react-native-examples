@@ -16,6 +16,8 @@ export function Switch({ style, value, onValueChange }: Props) {
       value={value}
       onValueChange={onValueChange}
       thumbColor="white"
+      // @ts-ignore - activeThumbColor is a valid prop for Web Switch
+      activeThumbColor="white"
       trackColor={{
         true: Theme["icon-accent-primary"],
         false: Theme["foreground-tertiary"],

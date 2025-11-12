@@ -1,24 +1,9 @@
 import { ALLOWED_CHAINS, CaipNetworkId, Network } from "@/utils/networks";
+import { storage } from "@/utils/storage";
 import { Namespace } from "@/utils/types";
 import { Appearance } from "react-native";
-import { createMMKV } from "react-native-mmkv";
 import { create } from "zustand";
 import { persist, StorageValue } from "zustand/middleware";
-
-const storage = createMMKV();
-
-const mmkvStorage = {
-  getItem: (name: string) => {
-    const value = storage.getString(name);
-    return value ? JSON.parse(value) : null;
-  },
-  setItem: (name: string, value: any) => {
-    storage.set(name, JSON.stringify(value));
-  },
-  removeItem: (name: string) => {
-    storage.remove(name);
-  },
-};
 
 interface SettingsStore {
   themeMode: "light" | "dark";
@@ -69,10 +54,8 @@ export const useSettingsStore = create<SettingsStore>()(
       name: "settings",
       version: 2,
       storage: {
-        getItem: (name) => {
-          const str = mmkvStorage.getItem(name);
-          if (!str) return null;
-          const existingValue = JSON.parse(str);
+        getItem: async (name) => {
+          const existingValue = await storage.getItem(name);
 
           // Create a Set of valid network IDs from ALLOWED_NETWORKS
           const validNetworkIds = new Set(
@@ -114,10 +97,10 @@ export const useSettingsStore = create<SettingsStore>()(
               ),
             },
           });
-          mmkvStorage.setItem(name, str);
+          storage.setItem(name, str);
         },
         removeItem: (name) => {
-          mmkvStorage.removeItem(name);
+          storage.removeItem(name);
         },
       },
     },

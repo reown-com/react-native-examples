@@ -1,5 +1,6 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { Platform, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { Button } from "./button";
@@ -12,6 +13,8 @@ interface CloseButtonProps {
 
 export function CloseButton({ style, onPress, themeMode }: CloseButtonProps) {
   const Theme = useTheme(themeMode);
+  const [assets] = useAssets([require("@/assets/images/close.png")]);
+
   return (
     <Button
       onPress={onPress}
@@ -26,7 +29,7 @@ export function CloseButton({ style, onPress, themeMode }: CloseButtonProps) {
     >
       <Image
         style={[styles.image, { tintColor: Theme["text-primary"] }]}
-        source={{ uri: "close" }}
+        source={assets?.[0]}
         cachePolicy="memory-disk"
         priority="high"
       />

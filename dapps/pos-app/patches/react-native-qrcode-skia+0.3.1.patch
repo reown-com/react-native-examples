@@ -1,0 +1,148 @@
+diff --git a/node_modules/react-native-qrcode-skia/lib/typescript/src/qrcode/transform-matrix-into-path.d.ts b/node_modules/react-native-qrcode-skia/lib/typescript/src/qrcode/transform-matrix-into-path.d.ts
+index 0c62fc7..391e163 100644
+--- a/node_modules/react-native-qrcode-skia/lib/typescript/src/qrcode/transform-matrix-into-path.d.ts
++++ b/node_modules/react-native-qrcode-skia/lib/typescript/src/qrcode/transform-matrix-into-path.d.ts
+@@ -4,6 +4,7 @@ export type ShapeOptions = {
+     eyePatternShape?: BaseShapeOptions;
+     gap?: number;
+     eyePatternGap?: number;
++    logoAreaBorderRadius?: number;
+ };
+ declare const transformMatrixIntoPath: (matrix: (1 | 0)[][], size: number, options?: ShapeOptions, logoSize?: number) => {
+     cellSize: number;
+diff --git a/node_modules/react-native-qrcode-skia/src/index.tsx b/node_modules/react-native-qrcode-skia/src/index.tsx
+index 7e8ab68..d72ff2d 100644
+--- a/node_modules/react-native-qrcode-skia/src/index.tsx
++++ b/node_modules/react-native-qrcode-skia/src/index.tsx
+@@ -1,16 +1,16 @@
+ import React, { useMemo } from 'react';
+ 
+ import {
+-  Skia,
+   Canvas,
+-  Path as SkiaPath,
+   Group,
++  Skia,
++  Path as SkiaPath,
+ } from '@shopify/react-native-skia';
+ 
++import { StyleSheet, View } from 'react-native';
+ import { generateMatrix } from './qrcode/generate-matrix';
+ import { transformMatrixIntoPath } from './qrcode/transform-matrix-into-path';
+ import type { QRCodeProps } from './types';
+-import { StyleSheet, View } from 'react-native';
+ 
+ const QRCode: React.FC<QRCodeProps> = React.memo(
+   ({
+diff --git a/node_modules/react-native-qrcode-skia/src/qrcode/transform-matrix-into-path.ts b/node_modules/react-native-qrcode-skia/src/qrcode/transform-matrix-into-path.ts
+index bdf8df0..01429e6 100644
+--- a/node_modules/react-native-qrcode-skia/src/qrcode/transform-matrix-into-path.ts
++++ b/node_modules/react-native-qrcode-skia/src/qrcode/transform-matrix-into-path.ts
+@@ -11,6 +11,7 @@ export type ShapeOptions = {
+   eyePatternShape?: BaseShapeOptions;
+   gap?: number;
+   eyePatternGap?: number;
++  logoAreaBorderRadius?: number;
+ };
+ 
+ const defaultShapeOptions: ShapeOptions = {
+@@ -55,6 +56,7 @@ const transformMatrixIntoPath = (
+     eyePatternShape = 'rounded',
+     gap = 0,
+     eyePatternGap = 0,
++    logoAreaBorderRadius = 0,
+   } = options;
+   const cellSize = size / matrix.length;
+   let path = '';
+@@ -95,12 +97,67 @@ const transformMatrixIntoPath = (
+     if (logoSize === 0) return false;
+     const center = Math.floor(matrix.length / 2);
+     const logoRadius = Math.floor(logoSize / cellSize / 2);
+-    return (
+-      i >= center - logoRadius &&
+-      i <= center + logoRadius &&
+-      j >= center - logoRadius &&
+-      j <= center + logoRadius
+-    );
++    
++    // Calculate the logo area bounds
++    const logoAreaX = (center - logoRadius) * cellSize;
++    const logoAreaY = (center - logoRadius) * cellSize;
++    const logoAreaWidth = (logoRadius * 2 + 1) * cellSize;
++    const logoAreaHeight = logoAreaWidth;
++    const borderRadius = logoAreaBorderRadius ?? logoAreaWidth / 4;
++    
++    // Get the cell's center point
++    const cellX = j * cellSize + cellSize / 2;
++    const cellY = i * cellSize + cellSize / 2;
++    
++    // Check if cell center is within the rounded rectangle
++    const r = Math.min(borderRadius, logoAreaWidth / 2, logoAreaHeight / 2);
++    
++    // Check if point is within the rounded rectangle
++    // First check if it's in the center rectangle (excluding corners)
++    if (
++      cellX >= logoAreaX + r &&
++      cellX <= logoAreaX + logoAreaWidth - r &&
++      cellY >= logoAreaY &&
++      cellY <= logoAreaY + logoAreaHeight
++    ) {
++      return true;
++    }
++    if (
++      cellY >= logoAreaY + r &&
++      cellY <= logoAreaY + logoAreaHeight - r &&
++      cellX >= logoAreaX &&
++      cellX <= logoAreaX + logoAreaWidth
++    ) {
++      return true;
++    }
++    
++    // Check if point is in one of the four rounded corners
++    // Top-left corner
++    if (cellX < logoAreaX + r && cellY < logoAreaY + r) {
++      const dx = cellX - (logoAreaX + r);
++      const dy = cellY - (logoAreaY + r);
++      return dx * dx + dy * dy <= r * r;
++    }
++    // Top-right corner
++    if (cellX > logoAreaX + logoAreaWidth - r && cellY < logoAreaY + r) {
++      const dx = cellX - (logoAreaX + logoAreaWidth - r);
++      const dy = cellY - (logoAreaY + r);
++      return dx * dx + dy * dy <= r * r;
++    }
++    // Bottom-right corner
++    if (cellX > logoAreaX + logoAreaWidth - r && cellY > logoAreaY + logoAreaHeight - r) {
++      const dx = cellX - (logoAreaX + logoAreaWidth - r);
++      const dy = cellY - (logoAreaY + logoAreaHeight - r);
++      return dx * dx + dy * dy <= r * r;
++    }
++    // Bottom-left corner
++    if (cellX < logoAreaX + r && cellY > logoAreaY + logoAreaHeight - r) {
++      const dx = cellX - (logoAreaX + r);
++      const dy = cellY - (logoAreaY + logoAreaHeight - r);
++      return dx * dx + dy * dy <= r * r;
++    }
++    
++    return false;
+   };
+ 
+   const renderElement = (
+diff --git a/node_modules/react-native-qrcode-skia/src/types.ts b/node_modules/react-native-qrcode-skia/src/types.ts
+index 116ff71..b47a289 100644
+--- a/node_modules/react-native-qrcode-skia/src/types.ts
++++ b/node_modules/react-native-qrcode-skia/src/types.ts
+@@ -1,11 +1,11 @@
+ import type { StyleProp, ViewStyle } from 'react-native';
+ import type { ErrorCorrectionLevelType } from './qrcode/generate-matrix';
+ import type {
+-  ShapeOptions,
+   BaseShapeOptions,
++  ShapeOptions,
+ } from './qrcode/transform-matrix-into-path';
+ 
+-export type { ShapeOptions, BaseShapeOptions };
++export type { BaseShapeOptions, ShapeOptions };
+ 
+ /**
+  * Represents a base shared value.

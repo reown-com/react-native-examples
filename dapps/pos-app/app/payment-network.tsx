@@ -1,15 +1,17 @@
-import { Button } from "@/components/button";
+import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { usePOS } from "@/context/POSContext";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { resetNavigation } from "@/utils/navigation";
 import {
   getTokenAvailableNetworks,
   getTokenById,
   TokenKey,
 } from "@/utils/networks";
-import { showErrorToast } from "@/utils/toast";
+import { showErrorToast, showInfoToast } from "@/utils/toast";
 import { Namespace } from "@/utils/types";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
@@ -22,12 +24,13 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function PaymentNetworkScreen() {
   const Theme = useTheme();
+  const { isInitialized } = usePOS();
   const { amount, token } = useLocalSearchParams<ScreenParams>();
   const { networkAddresses, getEnabledNetworks } = useSettingsStore(
     (state) => state,
   );
-
   const tokenData = getTokenById(token);
+
   const tokenNetworks = getTokenAvailableNetworks(token);
   const enabledNetworks = getEnabledNetworks();
 
@@ -36,8 +39,7 @@ export default function PaymentNetworkScreen() {
   );
 
   const handleOnClosePress = () => {
-    router.dismissAll();
-    router.navigate("/amount");
+    resetNavigation("/amount");
   };
 
   const handleNetworkPress = (networkCaipId: string) => {
@@ -46,16 +48,18 @@ export default function PaymentNetworkScreen() {
     const tokenAddress = tokenData?.addresses[networkCaipId];
 
     if (!tokenAddress) {
-      showErrorToast({
-        title: "Token address not found",
-        message: "Please select another network",
-      });
+      // Shouldn't happen
+      showErrorToast("Token address not found");
       return;
     }
 
     if (!recipientAddress) {
       router.push("/address-not-set");
       return;
+    }
+
+    if (!isInitialized) {
+      return showInfoToast("Please wait for the POS to initialize");
     }
 
     router.push({
@@ -76,23 +80,20 @@ export default function PaymentNetworkScreen() {
         data={availableNetworks}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
-          <Button
-            style={[
-              styles.item,
-              { backgroundColor: Theme["foreground-primary"] },
-            ]}
+          <Card
+            style={styles.item}
             onPress={() => handleNetworkPress(item.caipNetworkId)}
           >
             <ThemedText fontSize={16}>
               {tokenData?.symbol} on {item.name}
             </ThemedText>
             <ImageBackground
-              source={{ uri: tokenData?.icon }}
+              source={tokenData?.icon}
               style={styles.tokenIcon}
               resizeMode="contain"
             >
               <Image
-                source={{ uri: item.icon }}
+                source={item.icon}
                 style={[
                   styles.chainIcon,
                   { borderColor: Theme["border-primary"] },
@@ -101,7 +102,7 @@ export default function PaymentNetworkScreen() {
                 priority="high"
               />
             </ImageBackground>
-          </Button>
+          </Card>
         )}
       />
       <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
@@ -122,10 +123,8 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
     justifyContent: "space-between",
     padding: Spacing["spacing-6"],
-    borderRadius: BorderRadius["5"],
   },
   tokenIcon: {
     width: 40,

@@ -6,9 +6,9 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { usePOS } from "@/context/POSContext";
 import { usePOSListener } from "@/hooks/use-pos-listener";
 import { useTheme } from "@/hooks/use-theme-color";
+import { resetNavigation } from "@/utils/navigation";
 import { getNetworkByCaipId, getTokenById, TokenKey } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
-import * as Haptics from "expo-haptics";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -49,7 +49,6 @@ export default function QRModalScreen() {
   }, [amount, token, networkCaipId, recipientAddress]);
 
   usePOSListener("connection_failed", ({ error }) => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     onFailure();
   });
 
@@ -58,12 +57,10 @@ export default function QRModalScreen() {
   });
 
   usePOSListener("qr_ready", async ({ uri }) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setQrUri(uri);
   });
 
   usePOSListener("connected", () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setIsLoading(true);
   });
 
@@ -72,7 +69,6 @@ export default function QRModalScreen() {
   });
 
   usePOSListener("payment_failed", ({ error }) => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     onFailure();
   });
 
@@ -84,7 +80,6 @@ export default function QRModalScreen() {
       ? `${explorerUrl}/tx/${result}`
       : undefined;
 
-    router.dismiss();
     router.replace({
       pathname: "/payment-success",
       params: {
@@ -100,18 +95,14 @@ export default function QRModalScreen() {
   });
 
   const handleOnClosePress = () => {
-    router.dismissAll();
-    router.navigate("/amount");
+    resetNavigation("/amount");
   };
 
   useEffect(() => {
     const _networkData = getNetworkByCaipId(networkCaipId);
 
     if (!_networkData) {
-      showErrorToast({
-        title: "Network not found",
-        message: "Please select another network",
-      });
+      showErrorToast("Network not found");
       return;
     }
 
@@ -119,10 +110,7 @@ export default function QRModalScreen() {
     const tokenAddress = tokenData?.addresses[networkCaipId];
 
     if (!tokenData || !tokenStandard || !tokenAddress) {
-      showErrorToast({
-        title: "Token not found",
-        message: "Please select another token",
-      });
+      showErrorToast("Token not found");
       return;
     }
 
@@ -176,12 +164,12 @@ export default function QRModalScreen() {
           </View>
           <QRCode size={300} uri={qrUri} logoBorderRadius={55}>
             <ImageBackground
-              source={{ uri: tokenData?.icon }}
+              source={tokenData?.icon}
               style={styles.tokenIcon}
               resizeMode="contain"
             >
               <Image
-                source={{ uri: networkData?.icon }}
+                source={networkData?.icon}
                 style={[styles.chainIcon, { borderColor: Theme["bg-primary"] }]}
                 cachePolicy="memory-disk"
                 priority="high"

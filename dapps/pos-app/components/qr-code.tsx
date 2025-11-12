@@ -1,7 +1,6 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { QRCodeUtil } from "@/utils/qr-code-generator";
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import {
   ImageSourcePropType,
   StyleSheet,
@@ -9,7 +8,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import Svg, { Circle, Line, Rect } from "react-native-svg";
+import QRCodeSkia from "react-native-qrcode-skia";
 import { Shimmer } from "./shimmer";
 
 export interface QrCodeProps {
@@ -38,19 +37,12 @@ function QrCode_({
   const containerPadding = Spacing["spacing-3"];
   const qrSize = size - containerPadding * 2;
   const _logoSize = arenaClear ? 0 : (logoSize ?? qrSize / 4);
+  const logoAreaSize = _logoSize > 0 ? _logoSize + Spacing["spacing-4"] : 0;
 
   const dotColor = Theme["bg-invert"];
   const edgeColor = Theme["bg-primary"];
 
-  const qrData = useMemo(
-    () =>
-      uri
-        ? QRCodeUtil.generate(uri, qrSize, _logoSize, logoBorderRadius)
-        : null,
-    [uri, qrSize, _logoSize, logoBorderRadius],
-  );
-
-  if (!uri || !qrData) {
+  if (!uri) {
     return (
       <Shimmer width={size} height={size} borderRadius={BorderRadius["5"]} />
     );
@@ -69,46 +61,23 @@ function QrCode_({
       ]}
       testID={testID}
     >
-      <Svg height={qrSize} width={qrSize}>
-        {/* Render rectangles */}
-        {qrData.rects.map((rect) => (
-          <Rect
-            key={`rect_${rect.x}_${rect.y}`}
-            fill={rect.fillType === "dot" ? dotColor : edgeColor}
-            height={rect.size}
-            rx={rect.size * 0.32}
-            ry={rect.size * 0.32}
-            width={rect.size}
-            x={rect.x}
-            y={rect.y}
-          />
-        ))}
-
-        {/* Render circles */}
-        {qrData.circles.map((circle) => (
-          <Circle
-            key={`circle_${circle.cx}_${circle.cy}`}
-            cx={circle.cx}
-            cy={circle.cy}
-            fill={dotColor}
-            r={circle.r}
-          />
-        ))}
-
-        {/* Render lines */}
-        {qrData.lines.map((line) => (
-          <Line
-            key={`line_${line.x1}_${line.y1}_${line.y2}`}
-            x1={line.x1}
-            x2={line.x2}
-            y1={line.y1}
-            y2={line.y2}
-            stroke={dotColor}
-            strokeWidth={line.strokeWidth}
-            strokeLinecap="round"
-          />
-        ))}
-      </Svg>
+      <QRCodeSkia
+        value={uri}
+        size={qrSize}
+        color={dotColor}
+        style={{ backgroundColor: edgeColor }}
+        errorCorrectionLevel="Q"
+        pathStyle="fill"
+        shapeOptions={{
+          shape: "rounded",
+          eyePatternShape: "rounded",
+          gap: 0,
+          eyePatternGap: 0,
+          logoAreaBorderRadius: 100,
+        }}
+        logoAreaSize={logoAreaSize > 0 ? logoAreaSize : undefined}
+        logo={!arenaClear && children ? children : undefined}
+      />
       {!arenaClear && <View style={styles.icon}>{children}</View>}
     </View>
   );
