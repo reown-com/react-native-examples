@@ -7,6 +7,7 @@ import {
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { getUniqueId } from "react-native-device-info";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import Toast from "react-native-toast-message";
@@ -24,6 +25,7 @@ import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { POSProvider } from "@/context/POSContext";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { appKit, wagmiAdapter } from "@/utils/appkit";
 import { showErrorToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
@@ -52,18 +54,29 @@ const queryClient = new QueryClient();
 export default Sentry.wrap(function RootLayout() {
   const { bottom } = useSafeAreaInsets();
   const colorScheme = useColorScheme();
+  const { setDeviceId, deviceId } = useSettingsStore((state) => state);
   const Theme = useTheme();
 
   const posClientRef = useRef<any | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    async function initializePOSClient() {
+    async function getDeviceId() {
+      const deviceId = await getUniqueId();
+      setDeviceId(deviceId.toString());
+    }
+    if (!deviceId) {
+      getDeviceId();
+    }
+  }, [deviceId, setDeviceId]);
+
+  useEffect(() => {
+    async function initializePOSClient(deviceId: string) {
       try {
         const { POSClient } = await import("@walletconnect/pos-client");
         const client = await POSClient.init({
           projectId: process.env.EXPO_PUBLIC_PROJECT_ID!,
-          deviceId: "1234567890",
+          deviceId,
           metadata: {
             merchantName: "WPay",
             description: "WalletConnect Point of Sale",
@@ -81,9 +94,10 @@ export default Sentry.wrap(function RootLayout() {
         showErrorToast("Failed to initialize POS");
       }
     }
-
-    initializePOSClient();
-  }, []);
+    if (!isInitialized && deviceId) {
+      initializePOSClient(deviceId);
+    }
+  }, [deviceId, isInitialized]);
 
   return (
     <GestureHandlerRootView>

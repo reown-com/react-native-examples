@@ -10,18 +10,21 @@ interface SettingsStore {
 
   networkAddresses: Record<Namespace, string>;
   supportedNetworks: Map<CaipNetworkId, boolean>;
+  deviceId: string;
 
   // Actions
   setThemeMode: (themeMode: "light" | "dark") => void;
   setNetworkAddress: (network: Namespace, address: string) => void;
   toggleSupportedNetwork: (networkId: CaipNetworkId) => void;
   getEnabledNetworks: () => Network[];
+  setDeviceId: (deviceId: string) => void;
 }
 
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set, get) => ({
       themeMode: Appearance.getColorScheme() || "light",
+      deviceId: "",
       networkAddresses: {
         eip155: "",
         solana: "",
@@ -49,6 +52,7 @@ export const useSettingsStore = create<SettingsStore>()(
           supportedNetworks.get(network.caipNetworkId),
         );
       },
+      setDeviceId: (deviceId: string) => set({ deviceId }),
     }),
     {
       name: "settings",
