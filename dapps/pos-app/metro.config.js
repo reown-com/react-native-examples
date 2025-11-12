@@ -7,7 +7,7 @@ config.transformer = {
   getTransformOptions: async () => ({
     transform: {
       experimentalImportSupport: false,
-      inlineRequires: true, // THIS IS THE KEY
+      inlineRequires: true,
     },
   }),
 };

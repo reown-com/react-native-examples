@@ -24,8 +24,11 @@ import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { POSProvider } from "@/context/POSContext";
+import { appKit, wagmiAdapter } from "@/utils/appkit";
+import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { WagmiProvider } from "wagmi";
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -84,76 +87,76 @@ export default Sentry.wrap(function RootLayout() {
 
   return (
     <GestureHandlerRootView>
-      {/* <AppKitProvider instance={appKit}> */}
-      {/* <WagmiProvider config={wagmiAdapter.wagmiConfig}> */}
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <POSProvider
-            posClient={posClientRef.current}
-            isInitialized={isInitialized}
-          >
-            <Stack
-              screenOptions={({ route }) => {
-                const centerTitle = shouldCenterHeaderTitle(route.name);
-                const headerTintColor = getHeaderTintColor(route.name);
-                const headerBackgroundColor = getHeaderBackgroundColor(
-                  route.name,
-                );
-
-                return {
-                  headerTitle: centerTitle ? HeaderImage : "",
-                  headerRight: !centerTitle
-                    ? () => (
-                        <HeaderImage
-                          padding
-                          tintColor={Theme[headerTintColor]}
-                        />
-                      )
-                    : undefined,
-                  headerShadowVisible: false,
-                  headerTintColor: Theme[headerTintColor],
-                  headerBackButtonDisplayMode: "minimal",
-                  headerTitleAlign: "center",
-                  headerStyle: {
-                    backgroundColor: Theme[headerBackgroundColor],
-                  },
-                  contentStyle: {
-                    backgroundColor: Theme["bg-primary"],
-                    paddingBottom: bottom,
-                  },
-                };
-              }}
+      <AppKitProvider instance={appKit}>
+        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
             >
-              <Stack.Screen name="index" />
-              <Stack.Screen name="amount" />
-              <Stack.Screen name="payment-method" />
-              <Stack.Screen name="payment-token" />
-              <Stack.Screen name="payment-network" />
-              <Stack.Screen name="scan" />
-              <Stack.Screen name="payment-failure" />
-              <Stack.Screen
-                name="payment-success"
-                options={{
-                  headerBackVisible: false,
-                }}
-              />
-              <Stack.Screen name="address-not-set" />
-              <Stack.Screen name="settings" />
-              <Stack.Screen name="settings-address-list" />
-              <Stack.Screen name="settings-update-address" />
-              <Stack.Screen name="settings-scan-address" />
-              <Stack.Screen name="settings-networks" />
-            </Stack>
-            <StatusBar style="auto" />
-            {/* <AppKit /> */}
-          </POSProvider>
-          <Toast />
-        </ThemeProvider>
-      </QueryClientProvider>
-      {/* </WagmiProvider> */}
-      {/* </AppKitProvider> */}
+              <POSProvider
+                posClient={posClientRef.current}
+                isInitialized={isInitialized}
+              >
+                <Stack
+                  screenOptions={({ route }) => {
+                    const centerTitle = shouldCenterHeaderTitle(route.name);
+                    const headerTintColor = getHeaderTintColor(route.name);
+                    const headerBackgroundColor = getHeaderBackgroundColor(
+                      route.name,
+                    );
+
+                    return {
+                      headerTitle: centerTitle ? HeaderImage : "",
+                      headerRight: !centerTitle
+                        ? () => (
+                            <HeaderImage
+                              padding
+                              tintColor={Theme[headerTintColor]}
+                            />
+                          )
+                        : undefined,
+                      headerShadowVisible: false,
+                      headerTintColor: Theme[headerTintColor],
+                      headerBackButtonDisplayMode: "minimal",
+                      headerTitleAlign: "center",
+                      headerStyle: {
+                        backgroundColor: Theme[headerBackgroundColor],
+                      },
+                      contentStyle: {
+                        backgroundColor: Theme["bg-primary"],
+                        paddingBottom: bottom,
+                      },
+                    };
+                  }}
+                >
+                  <Stack.Screen name="index" />
+                  <Stack.Screen name="amount" />
+                  <Stack.Screen name="payment-method" />
+                  <Stack.Screen name="payment-token" />
+                  <Stack.Screen name="payment-network" />
+                  <Stack.Screen name="scan" />
+                  <Stack.Screen name="payment-failure" />
+                  <Stack.Screen
+                    name="payment-success"
+                    options={{
+                      headerBackVisible: false,
+                    }}
+                  />
+                  <Stack.Screen name="address-not-set" />
+                  <Stack.Screen name="settings" />
+                  <Stack.Screen name="settings-address-list" />
+                  <Stack.Screen name="settings-update-address" />
+                  <Stack.Screen name="settings-scan-address" />
+                  <Stack.Screen name="settings-networks" />
+                </Stack>
+                <StatusBar style="auto" />
+                <AppKit />
+              </POSProvider>
+              <Toast />
+            </ThemeProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </AppKitProvider>
     </GestureHandlerRootView>
   );
 });
