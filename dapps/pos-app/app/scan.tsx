@@ -102,10 +102,7 @@ export default function QRModalScreen() {
     const _networkData = getNetworkByCaipId(networkCaipId);
 
     if (!_networkData) {
-      showErrorToast({
-        title: "Network not found",
-        message: "Please select another network",
-      });
+      showErrorToast("Network not found");
       return;
     }
 
@@ -113,10 +110,7 @@ export default function QRModalScreen() {
     const tokenAddress = tokenData?.addresses[networkCaipId];
 
     if (!tokenData || !tokenStandard || !tokenAddress) {
-      showErrorToast({
-        title: "Token not found",
-        message: "Please select another token",
-      });
+      showErrorToast("Token not found");
       return;
     }
 

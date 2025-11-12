@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 18,
     textAlign: "center",
+    marginBottom: Spacing["spacing-2"],
   },
   warningCircle: {
     width: 48,

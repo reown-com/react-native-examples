@@ -33,11 +33,7 @@ export default function SettingsScanAddress() {
     if (address && isValidAddress(namespace, address)) {
       setNetworkAddress(namespace, address);
     } else {
-      //TODO: Check this
-      showErrorToast({
-        title: "Invalid address",
-        message: "Please scan a valid address",
-      });
+      showErrorToast("Invalid address");
     }
     router.dismissTo("/settings-address-list");
   };

@@ -49,10 +49,7 @@ export default function PaymentNetworkScreen() {
 
     if (!tokenAddress) {
       // Shouldn't happen
-      showErrorToast({
-        title: "Token address not found",
-        message: "Please select another network",
-      });
+      showErrorToast("Token address not found");
       return;
     }
 
@@ -62,9 +59,7 @@ export default function PaymentNetworkScreen() {
     }
 
     if (!isInitialized) {
-      return showInfoToast({
-        title: "Please wait for the POS to initialize",
-      });
+      return showInfoToast("Please wait for the POS to initialize");
     }
 
     router.push({

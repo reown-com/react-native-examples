@@ -25,6 +25,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { POSProvider } from "@/context/POSContext";
 import { appKit, wagmiAdapter } from "@/utils/appkit";
+import { showErrorToast } from "@/utils/toast";
+import { toastConfig } from "@/utils/toasts";
 import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -73,12 +75,10 @@ export default Sentry.wrap(function RootLayout() {
             posLevel: __DEV__ ? "debug" : "silent",
           },
         });
-
-        console.log("POS Client initialized successfully");
         posClientRef.current = client;
         setIsInitialized(true);
-      } catch (error) {
-        console.error("Failed to initialize POSClient:", error);
+      } catch {
+        showErrorToast("Failed to initialize POS");
       }
     }
 
@@ -152,7 +152,7 @@ export default Sentry.wrap(function RootLayout() {
                 <StatusBar style="auto" />
                 <AppKit />
               </POSProvider>
-              <Toast />
+              <Toast config={toastConfig} position="bottom" />
             </ThemeProvider>
           </QueryClientProvider>
         </WagmiProvider>
