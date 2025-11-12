@@ -3,12 +3,13 @@ import {
   base as baseViem,
   mainnet as mainnetViem,
   optimism as optimismViem,
+  polygon as polygonViem,
   sepolia as sepoliaViem,
 } from "viem/chains";
 
-import type { AppKitNetwork } from "@reown/appkit-react-native";
+// import type { AppKitNetwork } from "@reown/appkit-react-native";
 import { ImageSourcePropType } from "react-native";
-export type { CaipNetworkId } from "@reown/appkit-common-react-native";
+// export type { CaipNetworkId } from "@reown/appkit-common-react-native";
 
 // ******************** Types ********************
 export type TokenKey = "usdc" | "usdt";
@@ -21,7 +22,7 @@ export interface Token {
   standard: Record<string, string>;
 }
 
-export type Network = AppKitNetwork & {
+export type Network = any & {
   icon?: string;
 };
 
@@ -33,12 +34,12 @@ export const mainnet: Network = {
   icon: require("@/assets/images/chains/eip155_1.png"),
 };
 
-// export const polygon: Network = {
-//   ...polygonViem,
-//   caipNetworkId: "eip155:137",
-//   chainNamespace: "eip155",
-//   icon: "eip155:137",
-// };
+export const polygon: Network = {
+  ...polygonViem,
+  caipNetworkId: "eip155:137",
+  chainNamespace: "eip155",
+  icon: require("@/assets/images/chains/eip155_137.png"),
+};
 
 export const optimism: Network = {
   ...optimismViem,
@@ -98,7 +99,7 @@ export const solanaDevnet: Network = {
 
 export const ALLOWED_CHAINS: Network[] = [
   mainnet,
-  // polygon,
+  polygon,
   optimism,
   base,
   arbitrum,
@@ -114,7 +115,7 @@ export const TOKEN_LIST: Token[] = [
     decimals: 6,
     icon: require("@/assets/images/tokens/usdc.png"),
     addresses: {
-      "eip155:1": "0xA0b86a33E6441A8469A53D2b5eE5a6B7bc2c9Beb",
+      "eip155:1": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       "eip155:10": "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
       "eip155:137": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
       "eip155:42161": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
@@ -123,7 +124,7 @@ export const TOKEN_LIST: Token[] = [
       "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp":
         "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
       "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1":
-        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
     },
     standard: {
       "eip155:1": "ERC20",
@@ -142,16 +143,13 @@ export const TOKEN_LIST: Token[] = [
     icon: require("@/assets/images/tokens/usdt.png"),
     decimals: 6,
     addresses: {
-      "eip155:1": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-      "eip155:10": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
-      "eip155:137": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-      "eip155:42161": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+      "eip155:1": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp":
+        "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
     },
     standard: {
       "eip155:1": "ERC20",
-      "eip155:10": "ERC20",
-      "eip155:137": "ERC20",
-      "eip155:42161": "ERC20",
+      "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": "token",
     },
   },
 ];

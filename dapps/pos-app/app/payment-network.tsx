@@ -2,6 +2,7 @@ import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { usePOS } from "@/context/POSContext";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
@@ -10,7 +11,7 @@ import {
   getTokenById,
   TokenKey,
 } from "@/utils/networks";
-import { showErrorToast } from "@/utils/toast";
+import { showErrorToast, showInfoToast } from "@/utils/toast";
 import { Namespace } from "@/utils/types";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
@@ -23,6 +24,7 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function PaymentNetworkScreen() {
   const Theme = useTheme();
+  const { isInitialized } = usePOS();
   const { amount, token } = useLocalSearchParams<ScreenParams>();
   const { networkAddresses, getEnabledNetworks } = useSettingsStore(
     (state) => state,
@@ -46,6 +48,7 @@ export default function PaymentNetworkScreen() {
     const tokenAddress = tokenData?.addresses[networkCaipId];
 
     if (!tokenAddress) {
+      // Shouldn't happen
       showErrorToast({
         title: "Token address not found",
         message: "Please select another network",
@@ -56,6 +59,12 @@ export default function PaymentNetworkScreen() {
     if (!recipientAddress) {
       router.push("/address-not-set");
       return;
+    }
+
+    if (!isInitialized) {
+      return showInfoToast({
+        title: "Please wait for the POS to initialize",
+      });
     }
 
     router.push({

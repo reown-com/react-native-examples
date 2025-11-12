@@ -16,7 +16,7 @@ export default function HeaderImage({ tintColor, padding }: HeaderImageProps) {
       priority="high"
       style={{
         height: 18,
-        width: 165,
+        width: 185,
         marginTop: Spacing["spacing-1"],
         tintColor: tintColor,
         paddingRight: padding ? Spacing["spacing-2"] : 0,

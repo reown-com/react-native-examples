@@ -1,5 +1,5 @@
-import POSClientService from "@/services/POSClientService";
-import { POSClientTypes } from "@walletconnect/pos-client";
+import { usePOS } from "@/context/POSContext";
+import type { POSClientTypes } from "@walletconnect/pos-client";
 import { useEffect, useRef } from "react";
 
 /**
@@ -26,6 +26,7 @@ export const usePOSListener = <E extends POSClientTypes.Event>(
   event: E,
   listener: (args: POSClientTypes.EventArguments[E]) => void,
 ) => {
+  const { posClient } = usePOS();
   const listenerRef = useRef(listener);
 
   // Update the ref whenever the listener changes
@@ -34,16 +35,16 @@ export const usePOSListener = <E extends POSClientTypes.Event>(
   }, [listener]);
 
   useEffect(() => {
-    const posService = POSClientService.getInstance();
+    if (!posClient) return;
 
     const stableListener = (args: POSClientTypes.EventArguments[E]) => {
       listenerRef.current(args);
     };
 
-    posService.addListener(event, stableListener);
+    posClient.on(event, stableListener);
 
     return () => {
-      posService.removeListener(event, stableListener);
+      posClient.off(event, stableListener);
     };
-  }, [event]);
+  }, [event, posClient]);
 };

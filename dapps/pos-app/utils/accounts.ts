@@ -1,9 +1,9 @@
-import { Account } from "@reown/appkit-react-native/lib/typescript/hooks/useAccount";
+// import { Account } from "@reown/appkit-react-native";
 import { isAddress } from "viem";
 import { getNetworkById } from "./networks";
 import { Namespace } from "./types";
 
-export const getAccounts = (accounts: Account[]) => {
+export const getAccounts = (accounts: any[]) => {
   const seenChainIds = new Set<string>();
 
   return accounts

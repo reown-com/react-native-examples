@@ -80,7 +80,6 @@ export default function QRModalScreen() {
       ? `${explorerUrl}/tx/${result}`
       : undefined;
 
-    router.dismiss();
     router.replace({
       pathname: "/payment-success",
       params: {

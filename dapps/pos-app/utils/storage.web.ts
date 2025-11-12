@@ -1,4 +1,4 @@
-import { Storage } from "@reown/appkit-react-native";
+// import { Storage } from "@reown/appkit-react-native";
 import { safeJsonParse, safeJsonStringify } from "@walletconnect/safe-json";
 
 // Check if we're in a browser environment
@@ -15,7 +15,7 @@ const getStorage = () => {
   return null;
 };
 
-export const storage: Storage = {
+export const storage: any = {
   getKeys: async () => {
     const storage = getStorage();
     if (storage) {

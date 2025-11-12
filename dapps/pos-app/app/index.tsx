@@ -1,16 +1,13 @@
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
-import { usePOS } from "@/context/POSContext";
 import { useTheme } from "@/hooks/use-theme-color";
-import { showInfoToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
-  const { isInitialized } = usePOS();
   const [assets] = useAssets([
     require("@/assets/images/plus.png"),
     require("@/assets/images/gear.png"),
@@ -19,11 +16,6 @@ export default function HomeScreen() {
   const Theme = useTheme();
 
   const handleStartPayment = () => {
-    if (!isInitialized) {
-      return showInfoToast({
-        title: "Please wait for the POS to initialize",
-      });
-    }
     router.push("/amount");
   };
 

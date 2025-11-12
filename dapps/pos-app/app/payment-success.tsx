@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { resetNavigation } from "@/utils/navigation";
 
@@ -25,6 +26,7 @@ const initialCircleSize = 20;
 const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 
 export default function PaymentSuccessScreen() {
+  useDisableBackButton();
   const Theme = useTheme();
   const params = useLocalSearchParams<SuccessParams>();
   const insets = useSafeAreaInsets();
