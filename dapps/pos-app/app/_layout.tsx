@@ -7,7 +7,6 @@ import {
 } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { getUniqueId } from "react-native-device-info";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import Toast from "react-native-toast-message";
@@ -27,6 +26,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { POSProvider } from "@/context/POSContext";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { appKit, wagmiAdapter } from "@/utils/appkit";
+import { getDeviceIdentifier } from "@/utils/misc";
 import { showErrorToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
@@ -62,13 +62,14 @@ export default Sentry.wrap(function RootLayout() {
 
   useEffect(() => {
     async function getDeviceId() {
-      const deviceId = await getUniqueId();
-      setDeviceId(deviceId.toString());
+      const deviceId = await getDeviceIdentifier();
+      setDeviceId(deviceId);
     }
     if (!deviceId) {
       getDeviceId();
     }
-  }, [deviceId, setDeviceId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deviceId]);
 
   useEffect(() => {
     async function initializePOSClient(deviceId: string) {
