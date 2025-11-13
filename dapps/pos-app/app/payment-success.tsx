@@ -127,7 +127,10 @@ export default function PaymentSuccessScreen() {
             </ThemedText>
           </Button>
         </View>
-        <SecondaryLogo style={styles.secondaryLogo} tintColor="white" />
+        <SecondaryLogo
+          style={styles.secondaryLogo}
+          tintColor={Theme["text-invert"]}
+        />
       </Animated.View>
     </View>
   );
