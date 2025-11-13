@@ -28,14 +28,14 @@ const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
-  const Theme = useTheme();
+  const isVariant = process.env.EXPO_PUBLIC_VARIANT === "polygon";
+  const Theme = useTheme(isVariant ? "light" : undefined);
   const params = useLocalSearchParams<SuccessParams>();
   const insets = useSafeAreaInsets();
   const { amount } = params;
-  const backgroundColor =
-    process.env.EXPO_PUBLIC_VARIANT === "polygon"
-      ? Theme["polygon-accent"]
-      : Theme["text-success"];
+  const backgroundColor = isVariant
+    ? Theme["polygon-payment-success"]
+    : Theme["bg-payment-success"];
 
   const circleScale = useSharedValue(1);
   const contentOpacity = useSharedValue(0);

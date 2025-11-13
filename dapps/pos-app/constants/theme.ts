@@ -32,6 +32,7 @@ export const Colors = {
     "bg-success": "rgba(48, 164, 107, 0.2)",
     "bg-error": "rgba(223, 74, 52, 0.2)",
     "bg-warning": "rgba(243, 161, 63, 0.2)",
+    "bg-payment-success": "#30A46B",
 
     // Text colors
     "text-primary": "#202020",
@@ -54,7 +55,8 @@ export const Colors = {
     "border-warning": "#F3A13F",
 
     // Custom colors
-    "polygon-accent": "#6C00F6",
+    "polygon-payment-success": "#6C00F6",
+    "polygon-payment-success-header": "#FFFFFF",
   },
   dark: {
     // Foreground colors
@@ -87,6 +89,7 @@ export const Colors = {
     "bg-success": "rgba(48, 164, 107, 0.2)",
     "bg-error": "rgba(223, 74, 52, 0.2)",
     "bg-warning": "rgba(243, 161, 63, 0.2)",
+    "bg-payment-success": "#30A46B",
 
     // Text colors
     "text-primary": "#FFFFFF",
@@ -109,7 +112,8 @@ export const Colors = {
     "border-warning": "#F3A13F",
 
     // Custom colors
-    "polygon-accent": "#6C00F6",
+    "polygon-payment-success": "#6C00F6",
+    "polygon-payment-success-header": "#FFFFFF",
   },
 };
 

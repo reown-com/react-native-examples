@@ -10,7 +10,7 @@ export const getHeaderBackgroundColor = (
 ): keyof typeof Colors.light | keyof typeof Colors.dark => {
   if (routeName === "payment-success") {
     return process.env.EXPO_PUBLIC_VARIANT === "polygon"
-      ? "polygon-accent"
+      ? "polygon-payment-success"
       : "text-success";
   }
   return "bg-primary";
@@ -19,7 +19,13 @@ export const getHeaderBackgroundColor = (
 export const getHeaderTintColor = (
   routeName: string,
 ): keyof typeof Colors.light | keyof typeof Colors.dark => {
-  return routeName === "payment-success" ? "text-invert" : "text-primary";
+  if (routeName === "payment-success") {
+    return process.env.EXPO_PUBLIC_VARIANT === "polygon"
+      ? "polygon-payment-success-header"
+      : "text-invert";
+  }
+
+  return "text-primary";
 };
 
 export const resetNavigation = (href?: Href) => {
