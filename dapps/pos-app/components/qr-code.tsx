@@ -37,7 +37,7 @@ function QrCode_({
   const containerPadding = Spacing["spacing-3"];
   const qrSize = size - containerPadding * 2;
   const _logoSize = arenaClear ? 0 : (logoSize ?? qrSize / 4);
-  const logoAreaSize = _logoSize > 0 ? _logoSize + Spacing["spacing-4"] : 0;
+  const logoAreaSize = _logoSize > 0 ? _logoSize + Spacing["spacing-6"] : 0;
 
   const dotColor = Theme["bg-invert"];
   const edgeColor = Theme["bg-primary"];
