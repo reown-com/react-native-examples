@@ -4330,42 +4330,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-renew-uri-20251113203108":
-  version: 0.0.0-fix-renew-uri-20251113203108
-  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-renew-uri-20251113203108"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-renew-uri-20251113231957":
+  version: 0.0.0-fix-renew-uri-20251113231957
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-renew-uri-20251113231957"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113203108
+    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113231957
   peerDependencies:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: a6a8b5e297eeb71bc16c415b4454b511160ea59887d4dea11c7ce1fd7ecc1f92f013b31038140e459842db1049e60e75e1b606947954a5c8fd96f7ed7e1ab4dc
+  checksum: 829369f59d92cf0805bafaa0810b852906004b2e72e542e998f32e7d8f3bf97e837d10985444e5007c3b5c7d579078127c1cdec4067f6f167d740a86d21efefd
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-react-native@npm:0.0.0-fix-renew-uri-20251113203108":
-  version: 0.0.0-fix-renew-uri-20251113203108
-  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-fix-renew-uri-20251113203108"
+"@reown/appkit-coinbase-react-native@npm:0.0.0-fix-renew-uri-20251113231957":
+  version: 0.0.0-fix-renew-uri-20251113231957
+  resolution: "@reown/appkit-coinbase-react-native@npm:0.0.0-fix-renew-uri-20251113231957"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113203108
+    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113231957
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.1.2"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 4f296535f1f3600e2744a66b0ae047b7c0b270526704d19bf0c0c174403fe50a5f20168c06549612f722a517495aafd3e7e9977e5cfd7e0b1922c8fc79d8a336
+  checksum: 22dae311b7795dff2682628dd04816bb16869f4dc369ac073b3e4a202a6ae98110fe069d59b62aa85337ac9c2ed395c08e4b590ac2d047a84e1a634a917d9034
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-fix-renew-uri-20251113203108":
-  version: 0.0.0-fix-renew-uri-20251113203108
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-fix-renew-uri-20251113203108"
+"@reown/appkit-common-react-native@npm:0.0.0-fix-renew-uri-20251113231957":
+  version: 0.0.0-fix-renew-uri-20251113231957
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-fix-renew-uri-20251113231957"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 0c0efaa9be9352f04aa23a73796baf1f31ea47678c8299e351fed3db3645fd4c8f72b8e208d3177fb527be8bb5ae51c27b0dc72803f44ff67c02b8a582cdf230
+  checksum: 3a2bd7d2b1b16a652a194ca22fcfae390fe0d0cf17a02b3721369d998691051951fee48457abf3d825ceb60e88f1642af5c3a16f4f654ddc0bc3ed82d6480ac8
   languageName: node
   linkType: hard
 
@@ -4393,11 +4393,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-fix-renew-uri-20251113203108":
-  version: 0.0.0-fix-renew-uri-20251113203108
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-fix-renew-uri-20251113203108"
+"@reown/appkit-core-react-native@npm:0.0.0-fix-renew-uri-20251113231957":
+  version: 0.0.0-fix-renew-uri-20251113231957
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-fix-renew-uri-20251113231957"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113203108
+    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113231957
     countries-and-timezones: 3.7.2
     derive-valtio: 0.2.0
     valtio: 2.1.8
@@ -4405,7 +4405,7 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 513b1757e07273650e8bfc68c848bc660241c331b6af8b84913a0076a6aa6bd134c8c4b8f194fa50534e76972baf0a53f43051f79adf628224f5d9b785c509eb
+  checksum: f55cd70a5a5042d8e55436099644e8767d34470d564cbe55ab9cdd4c36eed6591226582dbe8febd8f60f384d21bd865a28ae06d46dedc457609b30f45ba9f5b6
   languageName: node
   linkType: hard
 
@@ -4432,13 +4432,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:0.0.0-fix-renew-uri-20251113203108":
-  version: 0.0.0-fix-renew-uri-20251113203108
-  resolution: "@reown/appkit-react-native@npm:0.0.0-fix-renew-uri-20251113203108"
+"@reown/appkit-react-native@npm:0.0.0-fix-renew-uri-20251113231957":
+  version: 0.0.0-fix-renew-uri-20251113231957
+  resolution: "@reown/appkit-react-native@npm:0.0.0-fix-renew-uri-20251113231957"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113203108
-    "@reown/appkit-core-react-native": 0.0.0-fix-renew-uri-20251113203108
-    "@reown/appkit-ui-react-native": 0.0.0-fix-renew-uri-20251113203108
+    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113231957
+    "@reown/appkit-core-react-native": 0.0.0-fix-renew-uri-20251113231957
+    "@reown/appkit-ui-react-native": 0.0.0-fix-renew-uri-20251113231957
     "@walletconnect/universal-provider": 2.21.10
     valtio: 2.1.8
   peerDependencies:
@@ -4448,7 +4448,7 @@ __metadata:
     react-native: ">=0.72"
     react-native-safe-area-context: ">=4.4.0"
     react-native-svg: ">=13.10"
-  checksum: e6013c8de37b1ca2b1486a0c4b73ab5c30205efbdd9ab48b4d2bf1f17ca3a0702ff8916464ee99a1afc774a22a5b29f0f6fa017c5a3711aab6def15776645b4b
+  checksum: 7c2eaa7ed4437471970c2a1d408cb164df36a52db67f5d5ddc7789c1d8416e236a45828c7d983722a775f74452a609e77403dde50f85c77f13d7a6b84c35cc6f
   languageName: node
   linkType: hard
 
@@ -4466,11 +4466,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:0.0.0-fix-renew-uri-20251113203108":
-  version: 0.0.0-fix-renew-uri-20251113203108
-  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-fix-renew-uri-20251113203108"
+"@reown/appkit-solana-react-native@npm:0.0.0-fix-renew-uri-20251113231957":
+  version: 0.0.0-fix-renew-uri-20251113231957
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-fix-renew-uri-20251113231957"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113203108
+    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113231957
     "@solana/spl-token": 0.4.13
     "@solana/web3.js": 1.98.2
     bs58: 6.0.0
@@ -4479,22 +4479,22 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: bce527d60c2dbf2bd0cc6a76ee25cf97d17b95e201eee22e0b19330fef6f1912b302a969d9c0d95364956670e3586183ecdda62f5944b8d0ef6b25eb040866b5
+  checksum: c560b9237d9591071852e7236d030329be9dcccf70dc69742437723425e95e576aef57259f1505f92c79ea9c84309b770a2fe77aaf733c4f5b3757734f101bba
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-fix-renew-uri-20251113203108":
-  version: 0.0.0-fix-renew-uri-20251113203108
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-fix-renew-uri-20251113203108"
+"@reown/appkit-ui-react-native@npm:0.0.0-fix-renew-uri-20251113231957":
+  version: 0.0.0-fix-renew-uri-20251113231957
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-fix-renew-uri-20251113231957"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113203108
+    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113231957
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: cf2fcf98ccf9833054d0ecc65d77449d0d7bef9a99d3d467bf71295a795d73b1d1b097a6c386766f54b4c57b7c0de2fbd9eca851d530c009b5f77f93050acf05
+  checksum: e11b20d0f83130ef844b39aab6de8405c94acb71ef28262acfe01d1c9b3d968c7a4d178545a8585f5b3fb1874dea4ecf8bc645b477149a7d23f34687f571b0b4
   languageName: node
   linkType: hard
 
@@ -4531,12 +4531,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-fix-renew-uri-20251113203108":
-  version: 0.0.0-fix-renew-uri-20251113203108
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-fix-renew-uri-20251113203108"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-fix-renew-uri-20251113231957":
+  version: 0.0.0-fix-renew-uri-20251113231957
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-fix-renew-uri-20251113231957"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113203108
-    "@reown/appkit-react-native": 0.0.0-fix-renew-uri-20251113203108
+    "@reown/appkit-common-react-native": 0.0.0-fix-renew-uri-20251113231957
+    "@reown/appkit-react-native": 0.0.0-fix-renew-uri-20251113231957
   peerDependencies:
     "@react-native-community/netinfo": "*"
     "@walletconnect/react-native-compat": ">=2.16.1"
@@ -4545,7 +4545,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2 <3.0.0"
     wagmi: ">=2 <3.0.0"
-  checksum: 4101b47822f87e46016bf879aa80494fe96b1389b39761fcffa7d88cee5d98c41a2d5fc9b66cecea4d9311b0082b6d10796dae245430c042e10dcf5bb16d319e
+  checksum: 922f1e2e9f9a8fc546528f905da42862b1064084704ee93b570cf9010df1fecf9a904e3d09b270da320244551f3dd83f1ff2b0efe568fd268ed743c0d0eff161
   languageName: node
   linkType: hard
 
@@ -14385,11 +14385,11 @@ __metadata:
     "@react-navigation/bottom-tabs": 7.7.0
     "@react-navigation/native": 7.1.19
     "@react-navigation/native-stack": 7.6.1
-    "@reown/appkit-bitcoin-react-native": 0.0.0-fix-renew-uri-20251113203108
-    "@reown/appkit-coinbase-react-native": 0.0.0-fix-renew-uri-20251113203108
-    "@reown/appkit-react-native": 0.0.0-fix-renew-uri-20251113203108
-    "@reown/appkit-solana-react-native": 0.0.0-fix-renew-uri-20251113203108
-    "@reown/appkit-wagmi-react-native": 0.0.0-fix-renew-uri-20251113203108
+    "@reown/appkit-bitcoin-react-native": 0.0.0-fix-renew-uri-20251113231957
+    "@reown/appkit-coinbase-react-native": 0.0.0-fix-renew-uri-20251113231957
+    "@reown/appkit-react-native": 0.0.0-fix-renew-uri-20251113231957
+    "@reown/appkit-solana-react-native": 0.0.0-fix-renew-uri-20251113231957
+    "@reown/appkit-wagmi-react-native": 0.0.0-fix-renew-uri-20251113231957
     "@sentry/react-native": 7.3.0
     "@solana/web3.js": ^1.98.2
     "@tanstack/react-query": 5.62.2
