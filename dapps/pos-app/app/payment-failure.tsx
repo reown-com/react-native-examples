@@ -20,7 +20,7 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function PaymentSuccessScreen() {
   const Theme = useTheme();
-  const insets = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
   const params = useLocalSearchParams<ScreenParams>();
   const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
 
@@ -38,7 +38,7 @@ export default function PaymentSuccessScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: top }]}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Image
           source={assets?.[0]}

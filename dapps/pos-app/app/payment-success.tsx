@@ -15,6 +15,8 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { resetNavigation } from "@/utils/navigation";
+import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
@@ -29,7 +31,8 @@ export default function PaymentSuccessScreen() {
   useDisableBackButton();
   const Theme = useTheme();
   const params = useLocalSearchParams<SuccessParams>();
-  const insets = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
+  const colorScheme = useColorScheme();
   const { amount } = params;
 
   const circleScale = useSharedValue(1);
@@ -56,7 +59,7 @@ export default function PaymentSuccessScreen() {
   }));
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: top }]}>
       {/* Expanding circle background */}
       <Animated.View
         style={[
@@ -123,6 +126,7 @@ export default function PaymentSuccessScreen() {
           </Button>
         </View>
       </Animated.View>
+      <StatusBar style={colorScheme} />
     </View>
   );
 }

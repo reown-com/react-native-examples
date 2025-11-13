@@ -12,6 +12,18 @@ interface FormData {
   amount: string;
 }
 
+const formatAmount = (amount: string) => {
+  let formattedAmount = amount;
+  if (amount.endsWith(".")) {
+    formattedAmount = `${amount}00`;
+  } else if (!formattedAmount.includes(".")) {
+    formattedAmount = `${formattedAmount}.00`;
+  } else if (formattedAmount.split(".")[1].length < 2) {
+    formattedAmount = `${formattedAmount}0`;
+  }
+  return formattedAmount;
+};
+
 export default function AmountScreen() {
   const Theme = useTheme();
   const {
@@ -33,15 +45,7 @@ export default function AmountScreen() {
       return;
     }
 
-    let formattedAmount = amount;
-
-    if (amount.endsWith(".")) {
-      formattedAmount = `${amount}00`;
-    }
-
-    if (!formattedAmount.includes(".")) {
-      formattedAmount = `${formattedAmount}.00`;
-    }
+    const formattedAmount = formatAmount(amount);
 
     router.push({
       pathname: "/payment-token",
@@ -125,9 +129,11 @@ export default function AmountScreen() {
         ]}
       >
         <ThemedText
-          style={[styles.buttonText, { color: Theme["text-invert"] }]}
+          fontSize={18}
+          lineHeight={20}
+          style={{ color: Theme["text-invert"] }}
         >
-          {isValid ? `Charge $${watchAmount}` : "Enter amount"}
+          {isValid ? `Charge $${formatAmount(watchAmount)}` : "Enter amount"}
         </ThemedText>
       </Button>
     </View>
@@ -162,8 +168,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     alignItems: "center",
     borderRadius: BorderRadius["5"],
-  },
-  buttonText: {
-    fontSize: 18,
   },
 });
