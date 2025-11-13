@@ -13,6 +13,23 @@ interface FormData {
   amount: string;
 }
 
+const formatAmount = (amount: string) => {
+  if (!amount.includes(".")) {
+    return `${amount}.00`;
+  }
+  const [whole, decimal] = amount.split(".");
+  if (decimal.length === 0) {
+    return `${whole}.00`;
+  } else if (decimal.length === 1) {
+    return `${whole}.${decimal}0`;
+  }
+
+  const trimmedDecimal = decimal.replace(/0+$/, "");
+  const paddedDecimal =
+    trimmedDecimal.length >= 2 ? trimmedDecimal : trimmedDecimal.padEnd(2, "0");
+  return `${whole}.${paddedDecimal}`;
+};
+
 export default function AmountScreen() {
   const Theme = useTheme();
   const {
@@ -34,15 +51,7 @@ export default function AmountScreen() {
       return;
     }
 
-    let formattedAmount = amount;
-
-    if (amount.endsWith(".")) {
-      formattedAmount = `${amount}00`;
-    }
-
-    if (!formattedAmount.includes(".")) {
-      formattedAmount = `${formattedAmount}.00`;
-    }
+    const formattedAmount = formatAmount(amount);
 
     router.push({
       pathname: "/payment-token",
@@ -130,7 +139,7 @@ export default function AmountScreen() {
           lineHeight={20}
           style={{ color: Theme["text-invert"] }}
         >
-          {isValid ? `Charge $${watchAmount}` : "Enter amount"}
+          {isValid ? `Charge $${formatAmount(watchAmount)}` : "Enter amount"}
         </ThemedText>
       </Button>
       <SecondaryLogo style={styles.secondaryLogo} />

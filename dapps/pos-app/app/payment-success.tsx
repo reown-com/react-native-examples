@@ -17,6 +17,8 @@ import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { isVariant } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
+import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
@@ -31,7 +33,8 @@ export default function PaymentSuccessScreen() {
   useDisableBackButton();
   const Theme = useTheme(isVariant() ? "light" : undefined);
   const params = useLocalSearchParams<SuccessParams>();
-  const insets = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
+  const colorScheme = useColorScheme();
   const { amount } = params;
   const backgroundColor = isVariant()
     ? Theme["polygon-payment-success"]
@@ -61,7 +64,7 @@ export default function PaymentSuccessScreen() {
   }));
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: top }]}>
       {/* Expanding circle background */}
       <Animated.View
         style={[
@@ -132,6 +135,7 @@ export default function PaymentSuccessScreen() {
           tintColor={Theme["text-invert"]}
         />
       </Animated.View>
+      <StatusBar style={colorScheme} />
     </View>
   );
 }

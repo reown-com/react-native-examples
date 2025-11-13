@@ -108,10 +108,10 @@ export default function PaymentNetworkScreen() {
       />
       <LinearGradient
         colors={[
-          Theme["bg-primary"] + "00", // Transparent at top
-          Theme["bg-primary"] + "40", // More transparent earlier
-          Theme["bg-primary"] + "CC", // Strong fade
-          Theme["bg-primary"], // Solid at bottom
+          Theme["bg-primary"] + "00",
+          Theme["bg-primary"] + "40",
+          Theme["bg-primary"] + "CC",
+          Theme["bg-primary"],
         ]}
         locations={[0, 0.3, 0.5, 1]}
         style={styles.gradient}
@@ -151,6 +151,13 @@ const styles = StyleSheet.create({
     bottom: -2,
     right: -2,
     position: "absolute",
+  },
+  gradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 200,
   },
   closeButton: {
     position: "absolute",
