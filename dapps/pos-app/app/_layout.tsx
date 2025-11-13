@@ -23,6 +23,7 @@ import {
 import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { Spacing } from "@/constants/spacing";
 import { POSProvider } from "@/context/POSContext";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { appKit, wagmiAdapter } from "@/utils/appkit";
@@ -31,7 +32,11 @@ import { showErrorToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Platform } from "react-native";
+import {
+  initialWindowMetrics,
+  SafeAreaProvider,
+} from "react-native-safe-area-context";
 import { WagmiProvider } from "wagmi";
 
 Sentry.init({
@@ -39,12 +44,14 @@ Sentry.init({
   sendDefaultPii: false,
 
   // Enable Logs
-  enableLogs: __DEV__ ? true : false,
+  enableLogs: false,
 
   // Configure Session Replay
   replaysSessionSampleRate: 0,
   replaysOnErrorSampleRate: 0,
   integrations: [],
+
+  environment: "default",
 
   spotlight: __DEV__,
 });
@@ -52,7 +59,6 @@ Sentry.init({
 const queryClient = new QueryClient();
 
 export default Sentry.wrap(function RootLayout() {
-  const { bottom } = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const { setDeviceId, deviceId } = useSettingsStore((state) => state);
   const Theme = useTheme();
@@ -102,76 +108,83 @@ export default Sentry.wrap(function RootLayout() {
 
   return (
     <GestureHandlerRootView>
-      <AppKitProvider instance={appKit}>
-        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
-          <QueryClientProvider client={queryClient}>
-            <ThemeProvider
-              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-            >
-              <POSProvider
-                posClient={posClientRef.current}
-                isInitialized={isInitialized}
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <AppKitProvider instance={appKit}>
+          <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+            <QueryClientProvider client={queryClient}>
+              <ThemeProvider
+                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
               >
-                <Stack
-                  screenOptions={({ route }) => {
-                    const centerTitle = shouldCenterHeaderTitle(route.name);
-                    const headerTintColor = getHeaderTintColor(route.name);
-                    const headerBackgroundColor = getHeaderBackgroundColor(
-                      route.name,
-                    );
-
-                    return {
-                      headerTitle: centerTitle ? HeaderImage : "",
-                      headerRight: !centerTitle
-                        ? () => (
-                            <HeaderImage
-                              padding
-                              tintColor={Theme[headerTintColor]}
-                            />
-                          )
-                        : undefined,
-                      headerShadowVisible: false,
-                      headerTintColor: Theme[headerTintColor],
-                      headerBackButtonDisplayMode: "minimal",
-                      headerTitleAlign: "center",
-                      headerStyle: {
-                        backgroundColor: Theme[headerBackgroundColor],
-                      },
-                      contentStyle: {
-                        backgroundColor: Theme["bg-primary"],
-                        paddingBottom: bottom,
-                      },
-                    };
-                  }}
+                <POSProvider
+                  posClient={posClientRef.current}
+                  isInitialized={isInitialized}
                 >
-                  <Stack.Screen name="index" />
-                  <Stack.Screen name="amount" />
-                  <Stack.Screen name="payment-method" />
-                  <Stack.Screen name="payment-token" />
-                  <Stack.Screen name="payment-network" />
-                  <Stack.Screen name="scan" />
-                  <Stack.Screen name="payment-failure" />
-                  <Stack.Screen
-                    name="payment-success"
-                    options={{
-                      headerBackVisible: false,
+                  <Stack
+                    screenOptions={({ route }) => {
+                      const centerTitle = shouldCenterHeaderTitle(route.name);
+                      const headerTintColor = getHeaderTintColor(route.name);
+                      const headerBackgroundColor = getHeaderBackgroundColor(
+                        route.name,
+                      );
+
+                      return {
+                        headerTitle: centerTitle ? HeaderImage : "",
+                        headerRight: !centerTitle
+                          ? () => (
+                              <HeaderImage
+                                padding
+                                tintColor={Theme[headerTintColor]}
+                              />
+                            )
+                          : undefined,
+                        headerShadowVisible: false,
+                        headerTintColor: Theme[headerTintColor],
+                        headerBackButtonDisplayMode: "minimal",
+                        headerTitleAlign: "center",
+                        headerStyle: {
+                          backgroundColor: Theme[headerBackgroundColor],
+                        },
+                        contentStyle: {
+                          backgroundColor: Theme["bg-primary"],
+                          paddingBottom:
+                            Platform.OS === "ios"
+                              ? Spacing["spacing-6"]
+                              : Spacing["spacing-12"],
+                        },
+                      };
                     }}
+                  >
+                    <Stack.Screen name="index" />
+                    <Stack.Screen name="amount" />
+                    <Stack.Screen name="payment-method" />
+                    <Stack.Screen name="payment-token" />
+                    <Stack.Screen name="payment-network" />
+                    <Stack.Screen name="scan" />
+                    <Stack.Screen name="payment-failure" />
+                    <Stack.Screen
+                      name="payment-success"
+                      options={{
+                        headerBackVisible: false,
+                      }}
+                    />
+                    <Stack.Screen name="address-not-set" />
+                    <Stack.Screen name="settings" />
+                    <Stack.Screen name="settings-address-list" />
+                    <Stack.Screen name="settings-update-address" />
+                    <Stack.Screen name="settings-scan-address" />
+                    <Stack.Screen name="settings-networks" />
+                  </Stack>
+                  <StatusBar
+                    style={colorScheme === "dark" ? "light" : "dark"}
                   />
-                  <Stack.Screen name="address-not-set" />
-                  <Stack.Screen name="settings" />
-                  <Stack.Screen name="settings-address-list" />
-                  <Stack.Screen name="settings-update-address" />
-                  <Stack.Screen name="settings-scan-address" />
-                  <Stack.Screen name="settings-networks" />
-                </Stack>
-                <StatusBar style="auto" />
-                <AppKit />
-              </POSProvider>
-              <Toast config={toastConfig} position="bottom" />
-            </ThemeProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
-      </AppKitProvider>
+                  <AppKit />
+                </POSProvider>
+                <Toast config={toastConfig} position="bottom" />
+              </ThemeProvider>
+            </QueryClientProvider>
+          </WagmiProvider>
+        </AppKitProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 });
