@@ -163,11 +163,4 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignSelf: "center",
   },
-  gradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 200,
-  },
 });
