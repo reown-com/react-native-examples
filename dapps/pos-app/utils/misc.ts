@@ -8,3 +8,7 @@ export const getDeviceIdentifier = async () => {
     return "unknown";
   }
 };
+
+export const isVariant = () => {
+  return process.env.EXPO_PUBLIC_VARIANT === "polygon" || false;
+};

@@ -15,6 +15,7 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
+import { isVariant } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
 
 interface SuccessParams extends UnknownOutputParams {
@@ -28,12 +29,11 @@ const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
-  const isVariant = process.env.EXPO_PUBLIC_VARIANT === "polygon";
-  const Theme = useTheme(isVariant ? "light" : undefined);
+  const Theme = useTheme(isVariant() ? "light" : undefined);
   const params = useLocalSearchParams<SuccessParams>();
   const insets = useSafeAreaInsets();
   const { amount } = params;
-  const backgroundColor = isVariant
+  const backgroundColor = isVariant()
     ? Theme["polygon-payment-success"]
     : Theme["bg-payment-success"];
 

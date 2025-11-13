@@ -1,5 +1,6 @@
 import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { isVariant } from "@/utils/misc";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { ImageStyle, StyleProp, StyleSheet } from "react-native";
@@ -12,7 +13,7 @@ interface SecondaryLogoProps {
 export function SecondaryLogo({ tintColor, style }: SecondaryLogoProps) {
   const Theme = useTheme();
   const [assets] = useAssets([require("@/assets/images/polygon_logo.png")]);
-  const showLogo = process.env.EXPO_PUBLIC_VARIANT === "polygon";
+  const showLogo = isVariant();
   const _tintColor = tintColor ?? Theme["text-secondary"];
 
   return showLogo ? (
