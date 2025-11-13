@@ -23,6 +23,7 @@ import {
 import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { Spacing } from "@/constants/spacing";
 import { POSProvider } from "@/context/POSContext";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { appKit, wagmiAdapter } from "@/utils/appkit";
@@ -31,12 +32,12 @@ import { showErrorToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
 import React, { useEffect, useRef, useState } from "react";
+import { Platform } from "react-native";
 import {
   initialWindowMetrics,
   SafeAreaProvider,
 } from "react-native-safe-area-context";
 import { WagmiProvider } from "wagmi";
-import { Spacing } from "@/constants/spacing";
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -145,7 +146,10 @@ export default Sentry.wrap(function RootLayout() {
                         },
                         contentStyle: {
                           backgroundColor: Theme["bg-primary"],
-                          paddingBottom: Spacing["spacing-12"],
+                          paddingBottom:
+                            Platform.OS === "ios"
+                              ? Spacing["spacing-6"]
+                              : Spacing["spacing-12"],
                         },
                       };
                     }}
