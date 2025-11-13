@@ -1,5 +1,6 @@
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
+import { SecondaryLogo } from "@/components/secondary-logo";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -125,11 +126,14 @@ export default function AmountScreen() {
         ]}
       >
         <ThemedText
-          style={[styles.buttonText, { color: Theme["text-invert"] }]}
+          fontSize={18}
+          lineHeight={20}
+          style={{ color: Theme["text-invert"] }}
         >
           {isValid ? `Charge $${watchAmount}` : "Enter amount"}
         </ThemedText>
       </Button>
+      <SecondaryLogo style={styles.secondaryLogo} />
     </View>
   );
 }
@@ -163,7 +167,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: BorderRadius["5"],
   },
-  buttonText: {
-    fontSize: 18,
+  secondaryLogo: {
+    marginTop: Spacing["spacing-5"],
   },
 });

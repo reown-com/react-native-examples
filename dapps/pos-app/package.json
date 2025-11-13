@@ -7,6 +7,8 @@
     "android": "expo run:android",
     "android:pos": "expo run:android --port 8082",
     "android:build": "cd android && ./gradlew assembleRelease",
+    "android:build:default": "cp .env.default .env && npm run android:build",
+    "android:build:polygon": "cp .env.polygon .env && npm run android:build",
     "prebuild": "expo prebuild",
     "postprebuild": "node scripts/setup-secrets.js",
     "postinstall": "patch-package",

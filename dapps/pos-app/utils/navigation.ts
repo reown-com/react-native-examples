@@ -8,7 +8,12 @@ export const shouldCenterHeaderTitle = (routeName: string) => {
 export const getHeaderBackgroundColor = (
   routeName: string,
 ): keyof typeof Colors.light | keyof typeof Colors.dark => {
-  return routeName === "payment-success" ? "text-success" : "bg-primary";
+  if (routeName === "payment-success") {
+    return process.env.EXPO_PUBLIC_VARIANT === "polygon"
+      ? "polygon-accent"
+      : "text-success";
+  }
+  return "bg-primary";
 };
 
 export const getHeaderTintColor = (

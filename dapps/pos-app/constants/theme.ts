@@ -52,6 +52,9 @@ export const Colors = {
     "border-success": "#30A46B",
     "border-error": "#DF4A34",
     "border-warning": "#F3A13F",
+
+    // Custom colors
+    "polygon-accent": "#6C00F6",
   },
   dark: {
     // Foreground colors
@@ -104,6 +107,9 @@ export const Colors = {
     "border-success": "#30A46B",
     "border-error": "#DF4A34",
     "border-warning": "#F3A13F",
+
+    // Custom colors
+    "polygon-accent": "#6C00F6",
   },
 };
 

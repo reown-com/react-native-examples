@@ -10,6 +10,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
+import { SecondaryLogo } from "@/components/secondary-logo";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
@@ -31,6 +32,10 @@ export default function PaymentSuccessScreen() {
   const params = useLocalSearchParams<SuccessParams>();
   const insets = useSafeAreaInsets();
   const { amount } = params;
+  const backgroundColor =
+    process.env.EXPO_PUBLIC_VARIANT === "polygon"
+      ? Theme["polygon-accent"]
+      : Theme["text-success"];
 
   const circleScale = useSharedValue(1);
   const contentOpacity = useSharedValue(0);
@@ -62,7 +67,7 @@ export default function PaymentSuccessScreen() {
         style={[
           styles.circle,
           {
-            backgroundColor: Theme["text-success"],
+            backgroundColor,
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
@@ -122,6 +127,7 @@ export default function PaymentSuccessScreen() {
             </ThemedText>
           </Button>
         </View>
+        <SecondaryLogo style={styles.secondaryLogo} tintColor="white" />
       </Animated.View>
     </View>
   );
@@ -171,5 +177,9 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     lineHeight: 20,
+  },
+  secondaryLogo: {
+    marginTop: Spacing["spacing-5"],
+    alignSelf: "center",
   },
 });

@@ -37,6 +37,7 @@ import { WagmiProvider } from "wagmi";
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   sendDefaultPii: false,
+  environment: process.env.EXPO_PUBLIC_VARIANT ?? "default",
 
   // Enable Logs
   enableLogs: __DEV__ ? true : false,
