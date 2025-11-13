@@ -13,15 +13,20 @@ interface FormData {
 }
 
 const formatAmount = (amount: string) => {
-  let formattedAmount = amount;
-  if (amount.endsWith(".")) {
-    formattedAmount = `${amount}00`;
-  } else if (!formattedAmount.includes(".")) {
-    formattedAmount = `${formattedAmount}.00`;
-  } else if (formattedAmount.split(".")[1].length < 2) {
-    formattedAmount = `${formattedAmount}0`;
+  if (!amount.includes(".")) {
+    return `${amount}.00`;
   }
-  return formattedAmount;
+  const [whole, decimal] = amount.split(".");
+  if (decimal.length === 0) {
+    return `${whole}.00`;
+  } else if (decimal.length === 1) {
+    return `${whole}.${decimal}0`;
+  }
+
+  const trimmedDecimal = decimal.replace(/0+$/, "");
+  const paddedDecimal =
+    trimmedDecimal.length >= 2 ? trimmedDecimal : trimmedDecimal.padEnd(2, "0");
+  return `${whole}.${paddedDecimal}`;
 };
 
 export default function AmountScreen() {
