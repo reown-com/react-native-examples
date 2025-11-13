@@ -14,6 +14,7 @@ import {
 import { showErrorToast, showInfoToast } from "@/utils/toast";
 import { Namespace } from "@/utils/types";
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { FlatList, ImageBackground, StyleSheet, View } from "react-native";
 
@@ -105,6 +106,17 @@ export default function PaymentNetworkScreen() {
           </Card>
         )}
       />
+      <LinearGradient
+        colors={[
+          Theme["bg-primary"] + "00", // Transparent at top
+          Theme["bg-primary"] + "40", // More transparent earlier
+          Theme["bg-primary"] + "CC", // Strong fade
+          Theme["bg-primary"], // Solid at bottom
+        ]}
+        locations={[0, 0.3, 0.5, 1]}
+        style={styles.gradient}
+        pointerEvents="none"
+      />
       <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
     </View>
   );
@@ -118,7 +130,7 @@ const styles = StyleSheet.create({
   listContainer: {
     gap: Spacing["spacing-3"],
     paddingHorizontal: Spacing["spacing-5"],
-    paddingBottom: Spacing["extra-spacing-1"],
+    paddingBottom: Spacing["extra-spacing-2"],
   },
   item: {
     flexDirection: "row",
@@ -143,5 +155,12 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
+  },
+  gradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 200,
   },
 });

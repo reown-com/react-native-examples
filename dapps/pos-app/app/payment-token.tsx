@@ -2,9 +2,11 @@ import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { useTheme } from "@/hooks/use-theme-color";
 import { resetNavigation } from "@/utils/navigation";
 import { TOKEN_LIST, TokenKey } from "@/utils/networks";
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import { FlatList, StyleSheet, View } from "react-native";
 
@@ -13,6 +15,7 @@ interface ScreenParams extends UnknownOutputParams {
 }
 
 export default function PaymentTokenScreen() {
+  const Theme = useTheme();
   const { amount } = useLocalSearchParams<ScreenParams>();
 
   const handleTokenPress = (token: TokenKey) => {
@@ -45,6 +48,17 @@ export default function PaymentTokenScreen() {
             />
           </Card>
         )}
+      />
+      <LinearGradient
+        colors={[
+          Theme["bg-primary"] + "00", // Transparent at top
+          Theme["bg-primary"] + "40", // More transparent earlier
+          Theme["bg-primary"] + "CC", // Strong fade
+          Theme["bg-primary"], // Solid at bottom
+        ]}
+        locations={[0, 0.3, 0.5, 1]}
+        style={styles.gradient}
+        pointerEvents="none"
       />
       <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
     </View>
@@ -79,5 +93,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: BorderRadius["5"],
+  },
+  gradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 200,
   },
 });

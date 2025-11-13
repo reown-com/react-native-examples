@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 200, // Adjust height as needed
+    height: 200,
   },
   closeButton: {
     position: "absolute",
