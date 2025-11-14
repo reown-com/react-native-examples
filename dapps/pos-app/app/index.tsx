@@ -1,4 +1,5 @@
 import { Button } from "@/components/button";
+import { SecondaryLogo } from "@/components/secondary-logo";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -55,6 +56,7 @@ export default function HomeScreen() {
         />
         <ThemedText fontSize={18}>Settings</ThemedText>
       </Button>
+      <SecondaryLogo />
     </View>
   );
 }
