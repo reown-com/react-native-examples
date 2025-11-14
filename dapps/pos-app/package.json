@@ -27,10 +27,10 @@
     "@sentry/react-native": "~7.2.0",
     "@shopify/react-native-skia": "2.2.12",
     "@tanstack/react-query": "5.90.5",
-    "@walletconnect/core": "2.23.1-canary-init.7",
-    "@walletconnect/pos-client": "2.23.1-canary-init.7",
-    "@walletconnect/react-native-compat": "2.23.1-canary-init.7",
-    "@walletconnect/sign-client": "2.23.1-canary-init.7",
+    "@walletconnect/core": "2.23.1-canary-init.8",
+    "@walletconnect/pos-client": "2.23.1-canary-init.8",
+    "@walletconnect/react-native-compat": "2.23.1-canary-init.8",
+    "@walletconnect/sign-client": "2.23.1-canary-init.8",
     "expo": "^54.0.23",
     "expo-application": "~7.0.7",
     "expo-asset": "~12.0.9",
@@ -83,12 +83,12 @@
     "hono": "4.10.2",
     "tar": "7.5.2",
     "valtio": "2.1.8",
-    "@walletconnect/core": "2.23.1-canary-init.7",
-    "@walletconnect/sign-client": "2.23.1-canary-init.7",
-    "@walletconnect/universal-provider": "2.23.1-canary-init.7",
-    "@walletconnect/ethereum-provider": "2.23.1-canary-init.7",
-    "@walletconnect/react-native-compat": "2.23.1-canary-init.7",
-    "@walletconnect/utils": "2.23.1-canary-init.7"
+    "@walletconnect/core": "2.23.1-canary-init.8",
+    "@walletconnect/sign-client": "2.23.1-canary-init.8",
+    "@walletconnect/universal-provider": "2.23.1-canary-init.8",
+    "@walletconnect/ethereum-provider": "2.23.1-canary-init.8",
+    "@walletconnect/react-native-compat": "2.23.1-canary-init.8",
+    "@walletconnect/utils": "2.23.1-canary-init.8"
   },
   "private": true
 }
