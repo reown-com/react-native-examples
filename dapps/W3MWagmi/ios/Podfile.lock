@@ -1824,7 +1824,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-compat (2.22.4):
+  - react-native-compat (2.23.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3273,7 +3273,7 @@ SPEC CHECKSUMS:
   React-logger: a3cb5b29c32b8e447b5a96919340e89334062b48
   React-Mapbuffer: 9d2434a42701d6144ca18f0ca1c4507808ca7696
   React-microtasksnativemodule: 75b6604b667d297292345302cc5bfb6b6aeccc1b
-  react-native-compat: 67bb1df21b252406f83fe8c0302c8479b53c03b0
+  react-native-compat: baac2e018250ad367b9461e90362c3dcaec14eac
   react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-mmkv: ac7507625cd74bac0eb5333604a7cd7b08fe9e3e
