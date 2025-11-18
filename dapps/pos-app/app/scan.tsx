@@ -49,10 +49,14 @@ export default function QRModalScreen() {
   }, [amount, token, networkCaipId, recipientAddress]);
 
   usePOSListener("connection_failed", ({ error }) => {
+    showErrorToast(error?.message || "Payment failed");
+    posClient?.disconnect();
     onFailure();
   });
 
   usePOSListener("connection_rejected", ({ error }) => {
+    showErrorToast(error?.message || "Payment failed");
+    posClient?.disconnect();
     onFailure();
   });
 
@@ -65,10 +69,14 @@ export default function QRModalScreen() {
   });
 
   usePOSListener("payment_rejected", ({ error }) => {
+    showErrorToast(error?.message || "Payment failed");
+    posClient?.disconnect();
     onFailure();
   });
 
   usePOSListener("payment_failed", ({ error }) => {
+    showErrorToast(error?.message || "Payment failed");
+    posClient?.disconnect();
     onFailure();
   });
 

@@ -38,7 +38,7 @@
       "permissions": [
         "android.permission.NFC"
       ],
-      "versionCode": 10
+      "versionCode": 11
     },
     "web": {
       "output": "static"

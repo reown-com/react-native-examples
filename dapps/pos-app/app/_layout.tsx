@@ -179,7 +179,11 @@ export default Sentry.wrap(function RootLayout() {
                   />
                   <AppKit />
                 </POSProvider>
-                <Toast config={toastConfig} position="bottom" />
+                <Toast
+                  config={toastConfig}
+                  position="bottom"
+                  visibilityTime={6000}
+                />
               </ThemeProvider>
             </QueryClientProvider>
           </WagmiProvider>
