@@ -14,6 +14,7 @@ import {
   useInitializeWalletKit,
   useWalletKitListener,
 } from '@/hooks/use-walletkit';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -21,6 +22,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
   useInitializeWalletKit();
 
   useWalletKitListener('session_proposal', (args) => {
@@ -33,29 +35,30 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <GestureHandlerRootView>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="scanner"
-            options={{ headerShown: false, presentation: 'card' }}
-          />
-          <Stack.Screen
-            name="modal"
-            options={{
-              presentation: 'formSheet',
-              title: 'Modal',
-            }}
-          />
-          <Stack.Screen
-            name="session-proposal"
-            options={{
-              presentation: 'formSheet',
-              headerShown: false,
-            }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <BottomSheetModalProvider>
+          <Stack
+            screenOptions={{
+              contentStyle: {
+                // backgroundColor: Theme['bg-primary'],
+              },
+            }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="scanner"
+              options={{ headerShown: false, presentation: 'card' }}
+            />
+            <Stack.Screen
+              name="session-proposal"
+              options={{
+                presentation: 'transparentModal',
+                animation: 'none',
+                headerShown: false,
+              }}
+            />
+          </Stack>
+          <StatusBar style="auto" />
+        </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </ThemeProvider>
   );

@@ -63,6 +63,10 @@ export const Colors = {
     'border-success': '#30A46B',
     'border-error': '#DF4A34',
     'border-warning': '#F3A13F',
+
+    // Others
+    white: '#FFFFFF',
+    black: '#202020',
   },
   dark: {
     // Foreground colors
@@ -121,6 +125,10 @@ export const Colors = {
     'border-success': '#30A46B',
     'border-error': '#DF4A34',
     'border-warning': '#F3A13F',
+
+    // Others
+    white: '#FFFFFF',
+    black: '#202020',
   },
 };
 

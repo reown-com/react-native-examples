@@ -11,7 +11,7 @@ interface Props {
 
 export function CloseModalButton({ onPress, style }: Props) {
   const borderColor = useThemeColor('border-secondary');
-  const tintColor = useThemeColor('icon-default');
+  const tintColor = useThemeColor('icon-inverse');
 
   return (
     <Button
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     width: 38,
   },
   closeIcon: {
-    width: 16,
-    height: 16,
+    width: 13,
+    height: 13,
   },
 });

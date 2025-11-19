@@ -9,7 +9,7 @@ export const mockedProposal = {
     requiredNamespaces: {},
     optionalNamespaces: {
       eip155: {
-        chains: ['eip155:1'],
+        chains: ['eip155:1', 'eip155:42161', 'eip155:43114'],
         methods: ['eth_sendTransaction', 'personal_sign'],
         events: ['chainChanged', 'accountsChanged'],
       },
@@ -32,7 +32,7 @@ export const mockedProposal = {
       authentication: [
         {
           domain: 'react-app.walletconnect.com',
-          chains: ['eip155:1'],
+          chains: ['eip155:1', 'eip155:42161', 'eip155:43114'],
           nonce: '1',
           type: 'caip122',
           aud: 'https://react-app.walletconnect.com',

@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "wallet-pay",
-    "slug": "wallet-pay",
+    "name": "beta-wallet",
+    "slug": "beta-wallet",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "walletpay",
+    "scheme": "betawallet",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.walletconnect.walletpay"
+      "bundleIdentifier": "com.reown.betawallet"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.walletconnect.walletpay"
+      "package": "com.reown.betawallet"
     },
     "web": {
       "output": "static",
@@ -39,9 +39,11 @@
         }
       ],
       [
-        "react-native-vision-camera",
+        "expo-camera",
         {
-          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera."
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": false
         }
       ]
     ],

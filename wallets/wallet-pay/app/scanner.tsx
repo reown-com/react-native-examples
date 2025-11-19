@@ -1,8 +1,6 @@
 import { CloseModalButton } from '@/components/close-modal-button';
 import { ScannerFrame } from '@/components/scanner-frame';
 import { Spacing } from '@/constants/spacing';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import { useIsFocused } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
@@ -12,12 +10,10 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import {
-  Camera,
-  Code,
-  useCameraDevice,
-  useCameraPermission,
-  useCodeScanner,
-} from 'react-native-vision-camera';
+  BarcodeScanningResult,
+  CameraView,
+  useCameraPermissions,
+} from 'expo-camera';
 
 const { width, height } = Dimensions.get('window');
 const SCAN_AREA_SIZE = 280; // Size of the transparent square
@@ -27,44 +23,34 @@ const scanAreaTop = (height - SCAN_AREA_SIZE) / 3;
 const scanAreaBottom = ((height - SCAN_AREA_SIZE) * 2) / 3;
 
 export default function Scanner() {
-  const closeBorderColor = useThemeColor('border-secondary');
   const { top } = useSafeAreaInsets();
-  const device = useCameraDevice('back', {
-    physicalDevices: ['wide-angle-camera'],
-  });
-  const { hasPermission, requestPermission } = useCameraPermission();
 
-  const isActive = useIsFocused();
-  const isReady = hasPermission && device;
+  const [permission, requestPermission] = useCameraPermissions();
 
-  const onCodeScanned = (codes: Code[]) => {
-    const uri = codes[0].value;
+  const onCodeScanned = (result: BarcodeScanningResult) => {
+    const uri = result.data;
     console.log(uri);
   };
-
-  const codeScanner = useCodeScanner({
-    codeTypes: ['qr', 'ean-13'],
-    onCodeScanned,
-  });
 
   const goBack = () => {
     router.back();
   };
 
   useEffect(() => {
-    if (!hasPermission) {
+    if (!permission?.granted) {
       requestPermission();
     }
-  }, [hasPermission, requestPermission]);
+  }, [permission, requestPermission]);
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFill}>
-      {isReady && (
-        <Camera
+      {permission?.granted && (
+        <CameraView
           style={StyleSheet.absoluteFill}
-          device={device}
-          isActive={isActive}
-          codeScanner={codeScanner}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr', 'ean13'],
+          }}
+          onBarcodeScanned={onCodeScanned}
         />
       )}
       {/* Top blur overlay */}
@@ -132,7 +118,7 @@ export default function Scanner() {
           },
         ]}>
         <Text style={styles.instructionText}>
-          {isReady
+          {permission?.granted
             ? 'Find a WalletConnect QR Code to scan'
             : 'Camera not available'}
         </Text>
