@@ -2,7 +2,9 @@ import type { AppKitNetwork } from "@reown/appkit-react-native";
 import { ImageSourcePropType } from "react-native";
 import {
   arbitrum as arbitrumViem,
+  avalanche as avalancheViem,
   base as baseViem,
+  linea as lineaViem,
   mainnet as mainnetViem,
   optimism as optimismViem,
   polygon as polygonViem,
@@ -61,6 +63,20 @@ export const arbitrum: Network = {
   icon: require("@/assets/images/chains/eip155_42161.png"),
 };
 
+export const linea: Network = {
+  ...lineaViem,
+  caipNetworkId: "eip155:59144",
+  chainNamespace: "eip155",
+  icon: require("@/assets/images/chains/eip155_59144.png"),
+};
+
+export const avalanche: Network = {
+  ...avalancheViem,
+  caipNetworkId: "eip155:43114",
+  chainNamespace: "eip155",
+  icon: require("@/assets/images/chains/eip155_43114.png"),
+};
+
 export const sepolia: Network = {
   ...sepoliaViem,
   caipNetworkId: "eip155:11155111",
@@ -102,6 +118,8 @@ export const ALLOWED_CHAINS: Network[] = [
   optimism,
   base,
   arbitrum,
+  linea,
+  avalanche,
   sepolia,
   solana,
   solanaDevnet,
@@ -118,6 +136,8 @@ export const TOKEN_LIST: Token[] = [
       "eip155:10": "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
       "eip155:137": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
       "eip155:42161": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+      "eip155:43114": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+      "eip155:59144": "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
       "eip155:8453": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       "eip155:11155111": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp":
@@ -130,6 +150,8 @@ export const TOKEN_LIST: Token[] = [
       "eip155:10": "ERC20",
       "eip155:137": "ERC20",
       "eip155:42161": "ERC20",
+      "eip155:43114": "ERC20",
+      "eip155:59144": "ERC20",
       "eip155:8453": "ERC20",
       "eip155:11155111": "ERC20",
       "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": "token",
@@ -143,11 +165,23 @@ export const TOKEN_LIST: Token[] = [
     decimals: 6,
     addresses: {
       "eip155:1": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "eip155:10": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+      "eip155:137": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
+      "eip155:8453": "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",
+      "eip155:42161": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+      "eip155:43114": "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
+      "eip155:59144": "0xA219439258ca9da29E9Cc4cE5596924745e12B93",
       "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp":
         "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
     },
     standard: {
       "eip155:1": "ERC20",
+      "eip155:10": "ERC20",
+      "eip155:137": "ERC20",
+      "eip155:8453": "ERC20",
+      "eip155:42161": "ERC20",
+      "eip155:43114": "ERC20",
+      "eip155:59144": "ERC20",
       "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp": "token",
     },
   },

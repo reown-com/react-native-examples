@@ -5,18 +5,15 @@ import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
-import { useAppKitTheme } from "@reown/appkit-react-native";
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
 export default function Settings() {
   const { themeMode, setThemeMode } = useSettingsStore((state) => state);
-  const { setThemeMode: setAppKitThemeMode } = useAppKitTheme();
 
   const handleThemeModeChange = (value: boolean) => {
     const newThemeMode = value ? "dark" : "light";
     setThemeMode(newThemeMode);
-    setAppKitThemeMode(newThemeMode);
   };
 
   const handleRecipientPress = () => {
