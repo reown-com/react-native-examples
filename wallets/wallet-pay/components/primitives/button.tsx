@@ -6,20 +6,21 @@ import { StyleSheet } from 'react-native';
 
 import { Text } from '@/components/primitives/text';
 export type ButtonProps = CustomPressableProps & {
-  type?: 'primary' | 'secondary';
+  type?: 'primary' | 'secondary' | 'none';
   text?: string;
 };
 
 export const Button: React.FC<ButtonProps> = ({
   children,
   style,
-  type = 'secondary',
+  type = 'none',
   text,
   onPress,
   ...props
 }) => {
   const Theme = useTheme();
   const isPrimary = type === 'primary';
+  const isSecondary = type === 'secondary';
   const backgroundColor = Theme[isPrimary ? 'bg-accent-primary' : 'bg-primary'];
   const borderColor = isPrimary ? 'transparent' : Theme['border-secondary'];
   const textColor = isPrimary ? 'white' : 'text-primary';
@@ -30,7 +31,7 @@ export const Button: React.FC<ButtonProps> = ({
       style={[
         styles.button,
         { backgroundColor, borderColor },
-        !isPrimary && styles.buttonSecondary,
+        isSecondary && styles.buttonSecondary,
         text && styles.textContainer,
         style,
       ]}

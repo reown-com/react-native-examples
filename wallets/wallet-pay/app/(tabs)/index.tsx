@@ -1,4 +1,5 @@
 import { Button } from '@/components/primitives/button';
+import { mockedProposal } from '@/constants/mocks';
 import { BorderRadius, Spacing } from '@/constants/spacing';
 import { useWalletKit } from '@/hooks/use-walletkit';
 import { router } from 'expo-router';
@@ -9,12 +10,15 @@ export default function HomeScreen() {
   const [proposalUri, setProposalUri] = useState('');
   const { walletKit } = useWalletKit();
 
+  const onMockedProposal = async () => {
+    router.push({
+      pathname: '/session-proposal',
+      params: { proposal: JSON.stringify(mockedProposal) },
+    });
+  };
+
   const onSessionProposal = async () => {
     await walletKit?.pair({ uri: proposalUri });
-    // router.push({
-    //   pathname: '/session-proposal',
-    //   params: { proposal: JSON.stringify(mockedProposal) },
-    // });
   };
 
   return (
@@ -22,13 +26,7 @@ export default function HomeScreen() {
       <Button
         style={styles.button}
         type="primary"
-        onPress={() => router.navigate('/scanner')}
-        text="Go to Camera"
-      />
-      <Button
-        style={styles.button}
-        type="primary"
-        onPress={() => onSessionProposal()}
+        onPress={onMockedProposal}
         text="Proposal modal"
       />
       <TextInput

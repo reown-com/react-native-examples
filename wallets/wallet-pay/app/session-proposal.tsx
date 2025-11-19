@@ -133,7 +133,12 @@ export default function ModalScreen() {
           </View>
         </View>
         <View style={styles.buttonsContainer}>
-          <Button onPress={onReject} style={styles.button} text="Cancel" />
+          <Button
+            onPress={onReject}
+            style={styles.button}
+            type="secondary"
+            text="Cancel"
+          />
           <Button
             onPress={onConnect}
             type="primary"

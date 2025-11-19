@@ -6,18 +6,24 @@ import { HapticTab } from '@/components/haptic-tab';
 import { Spacing } from '@/constants/spacing';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Header } from '@/components/header';
+import { useTheme } from '@/hooks/use-theme-color';
+import { StyleSheet } from 'react-native';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const Theme = useTheme();
 
   return (
     <Tabs
       screenOptions={{
+        sceneStyle: {
+          backgroundColor: Theme['bg-primary'],
+        },
         tabBarActiveTintColor: Colors[colorScheme ?? 'light']['icon-inverse'],
         tabBarInactiveTintColor: Colors[colorScheme ?? 'light']['icon-default'],
-        headerShown: false,
+        header: () => <Header />,
         tabBarButton: HapticTab,
-
         tabBarIconStyle: {
           marginBottom: Spacing['spacing-1'],
         },
@@ -29,7 +35,9 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Image
               source={require('@/assets/tabs/wallet.png')}
-              style={{ width: 28, height: 28, tintColor: color }}
+              style={[styles.tabBarIcon, { tintColor: color }]}
+              cachePolicy="memory-disk"
+              priority="high"
             />
           ),
         }}
@@ -41,7 +49,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Image
               source={require('@/assets/tabs/stack.png')}
-              style={{ width: 28, height: 28, tintColor: color }}
+              style={[styles.tabBarIcon, { tintColor: color }]}
             />
           ),
         }}
@@ -53,7 +61,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Image
               source={require('@/assets/tabs/gear.png')}
-              style={{ width: 28, height: 28, tintColor: color }}
+              style={[styles.tabBarIcon, { tintColor: color }]}
             />
           ),
         }}
@@ -61,3 +69,10 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBarIcon: {
+    width: 28,
+    height: 28,
+  },
+});
