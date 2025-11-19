@@ -45,6 +45,39 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": false
         }
+      ],
+      [
+        "expo-font",
+        {
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "KH Teka",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/KHTeka-Light.otf",
+                    "weight": 300
+                  },
+                  {
+                    "path": "./assets/fonts/KHTeka-Regular.otf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/KHTeka-Medium.otf",
+                    "weight": 500
+                  }
+                ]
+              }
+            ]
+          },
+          "ios": {
+            "fonts": [
+              "./assets/fonts/KHTeka-Light.otf",
+              "./assets/fonts/KHTeka-Regular.otf",
+              "./assets/fonts/KHTeka-Medium.otf"
+            ]
+          }
+        }
       ]
     ],
     "experiments": {

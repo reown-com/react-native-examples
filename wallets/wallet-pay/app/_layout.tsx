@@ -15,6 +15,7 @@ import {
   useWalletKitListener,
 } from '@/hooks/use-walletkit';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { Header } from '@/components/header';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -35,15 +36,10 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView>
         <BottomSheetModalProvider>
-          <Stack
-            screenOptions={{
-              contentStyle: {
-                // backgroundColor: Theme['bg-primary'],
-              },
-            }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ header: Header }} />
             <Stack.Screen
               name="scanner"
               options={{ headerShown: false, presentation: 'card' }}

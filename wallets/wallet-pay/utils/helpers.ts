@@ -1,4 +1,10 @@
-import { EIP155_CHAINS } from '@/constants/eip155';
+import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/eip155';
+import { WalletKitTypes } from '@reown/walletkit';
+import {
+  buildApprovedNamespaces,
+  getSdkError,
+  SdkErrorKey,
+} from '@walletconnect/utils';
 import { ProposalTypes } from '@walletconnect/types';
 
 export function getChainData(chainId?: string) {
@@ -38,4 +44,38 @@ export function getChains(
   return chains
     .map((chain) => getChainData(chain))
     .filter((chain) => chain !== undefined);
+}
+
+export function getApprovedNamespaces(
+  proposal: WalletKitTypes.SessionProposal,
+) {
+  const eip155Chains = Object.keys(EIP155_CHAINS);
+  const eip155Methods = Object.values(EIP155_SIGNING_METHODS);
+
+  // add solana
+  // add sui
+  // add ton
+
+  //TODO get addresses from wallet
+  const eip155Addresses = ['0x0000000000000000000000000000000000000000'];
+
+  const supportedNamespaces = {
+    eip155: {
+      chains: eip155Chains,
+      methods: eip155Methods,
+      events: ['accountsChanged', 'chainChanged'],
+      accounts: eip155Chains
+        .map((chain) => `${chain}:${eip155Addresses[0]}`)
+        .flat(),
+    },
+  };
+
+  return buildApprovedNamespaces({
+    proposal: proposal.params,
+    supportedNamespaces,
+  });
+}
+
+export function getRejectError(error: SdkErrorKey) {
+  return getSdkError(error);
 }

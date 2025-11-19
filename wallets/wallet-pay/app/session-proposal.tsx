@@ -7,10 +7,15 @@ import { Button } from '@/components/primitives/button';
 import { Text } from '@/components/primitives/text';
 import { BorderRadius, Spacing } from '@/constants/spacing';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { getChains } from '@/utils/helpers';
+import {
+  getApprovedNamespaces,
+  getChains,
+  getRejectError,
+} from '@/utils/helpers';
 import { WalletKitTypes } from '@reown/walletkit';
 import { Image } from 'expo-image';
 import { useRef } from 'react';
+import { useWalletKit } from '@/hooks/use-walletkit';
 
 interface ScreenParams extends UnknownOutputParams {
   proposal: string;
@@ -18,18 +23,44 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function ModalScreen() {
   const { proposal } = useLocalSearchParams<ScreenParams>();
+  const { walletKit } = useWalletKit();
   const cardBackgroundColor = useThemeColor('foreground-primary');
   const borderColor = useThemeColor('foreground-primary'); // Use same color for border
 
   const modalRef = useRef<ModalRef>(null);
 
   const parsedProposal = JSON.parse(proposal) as WalletKitTypes.SessionProposal;
-  console.log('parsedProposal', parsedProposal);
+
   const chains = getChains(
     parsedProposal.params.requiredNamespaces,
     parsedProposal.params.optionalNamespaces,
   );
-  console.log('chains', chains);
+
+  const onConnect = async () => {
+    const namespaces = getApprovedNamespaces(parsedProposal);
+    const session = await walletKit?.approveSession({
+      id: parsedProposal.id,
+      namespaces,
+    });
+    // TODO save session if needed
+    console.log('session', session);
+    // walletKit.getActiveSessions();
+
+    //TODO: redirect back to the app if possible
+
+    handleDismiss();
+  };
+
+  const onReject = async () => {
+    await walletKit?.rejectSession({
+      id: parsedProposal.id,
+      reason: getRejectError('USER_REJECTED_METHODS'),
+    });
+
+    //TODO: redirect back to the app if possible
+
+    handleDismiss();
+  };
 
   const handleDismiss = () => {
     modalRef.current?.close();
@@ -102,9 +133,9 @@ export default function ModalScreen() {
           </View>
         </View>
         <View style={styles.buttonsContainer}>
-          <Button onPress={handleDismiss} style={styles.button} text="Cancel" />
+          <Button onPress={onReject} style={styles.button} text="Cancel" />
           <Button
-            onPress={() => {}}
+            onPress={onConnect}
             type="primary"
             style={styles.button}
             text="Connect"
