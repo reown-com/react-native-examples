@@ -1,11 +1,11 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import * as Haptics from "expo-haptics";
+import { useAssets } from "expo-asset";
+import { Image } from "expo-image";
 import { memo } from "react";
-import { Image, StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Button } from "./button";
 import { ThemedText } from "./themed-text";
-import { ThemedView } from "./themed-view";
 
 export interface NumericKeyboardProps {
   onKeyPress: (value: string) => void;
@@ -14,6 +14,7 @@ export interface NumericKeyboardProps {
 
 function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
   const Theme = useTheme();
+  const [assets] = useAssets([require("@/assets/images/backspace.png")]);
   const keys = [
     ["1", "2", "3"],
     ["4", "5", "6"],
@@ -22,14 +23,13 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
   ];
 
   const handlePress = (key: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
     onKeyPress(key);
   };
 
   return (
-    <ThemedView style={[styles.container, style]}>
+    <View style={[styles.container, style]}>
       {keys.map((row, rowIndex) => (
-        <ThemedView key={`row-${rowIndex}`} style={styles.row}>
+        <View key={`row-${rowIndex}`} style={styles.row}>
           {row.map((key) => (
             <Button
               key={key}
@@ -42,13 +42,15 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
               {key === "erase" ? (
                 <Image
                   testID="key-erase"
-                  source={require("@/assets/images/backspace.png")}
+                  source={assets?.[0]}
                   style={[
                     styles.backspace,
                     {
                       tintColor: Theme["text-primary"],
                     },
                   ]}
+                  cachePolicy="memory-disk"
+                  priority="high"
                 />
               ) : (
                 <ThemedText
@@ -60,9 +62,9 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
               )}
             </Button>
           ))}
-        </ThemedView>
+        </View>
       ))}
-    </ThemedView>
+    </View>
   );
 }
 

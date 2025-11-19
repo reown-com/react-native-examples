@@ -1,5 +1,4 @@
-import POSClientService from "@/services/POSClientService";
-import { IPOSClient } from "@walletconnect/pos-client";
+import type { IPOSClient } from "@walletconnect/pos-client";
 import { createContext, useContext } from "react";
 
 export const POSContext = createContext<{
@@ -32,8 +31,4 @@ export const usePOS = () => {
     throw new Error("usePOS must be used within a POSProvider");
   }
   return context;
-};
-
-export const usePOSService = () => {
-  return POSClientService.getInstance();
 };

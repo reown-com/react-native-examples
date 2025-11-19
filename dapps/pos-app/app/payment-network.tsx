@@ -1,25 +1,22 @@
-import { Button } from "@/components/button";
+import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { usePOS } from "@/context/POSContext";
 import { useTheme } from "@/hooks/use-theme-color";
-import { getAccounts } from "@/utils/accounts";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { resetNavigation } from "@/utils/navigation";
 import {
   getTokenAvailableNetworks,
   getTokenById,
   TokenKey,
 } from "@/utils/networks";
-import { showErrorToast } from "@/utils/toast";
-import { useAccount } from "@reown/appkit-react-native";
+import { showErrorToast, showInfoToast } from "@/utils/toast";
+import { Namespace } from "@/utils/types";
+import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import {
-  FlatList,
-  Image,
-  ImageBackground,
-  ImageSourcePropType,
-  StyleSheet,
-  View,
-} from "react-native";
+import { FlatList, ImageBackground, StyleSheet, View } from "react-native";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
@@ -28,46 +25,42 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function PaymentNetworkScreen() {
   const Theme = useTheme();
-  const { allAccounts } = useAccount();
+  const { isInitialized } = usePOS();
   const { amount, token } = useLocalSearchParams<ScreenParams>();
-
+  const { networkAddresses, getEnabledNetworks } = useSettingsStore(
+    (state) => state,
+  );
   const tokenData = getTokenById(token);
+
   const tokenNetworks = getTokenAvailableNetworks(token);
-  const recipientAccounts = getAccounts(allAccounts);
+  const enabledNetworks = getEnabledNetworks();
 
   const availableNetworks = tokenNetworks.filter((network) =>
-    recipientAccounts.some(
-      (account) => account.network?.caipNetworkId === network.caipNetworkId,
-    ),
+    enabledNetworks.some((n) => n.id === network.id),
   );
 
   const handleOnClosePress = () => {
-    router.dismissAll();
-    router.navigate("/amount");
+    resetNavigation("/amount");
   };
 
   const handleNetworkPress = (networkCaipId: string) => {
-    const recipientAddress = recipientAccounts.find(
-      (account) => account.network?.caipNetworkId === networkCaipId,
-    )?.address;
-
+    const namespace = networkCaipId.split(":")[0];
+    const recipientAddress = networkAddresses[namespace as Namespace];
     const tokenAddress = tokenData?.addresses[networkCaipId];
 
     if (!tokenAddress) {
-      showErrorToast({
-        title: "Token address not found",
-        message: "Please select another network",
-      });
+      // Shouldn't happen
+      showErrorToast("Token address not found");
       return;
     }
 
     if (!recipientAddress) {
-      //This case should never happen
-      showErrorToast({
-        title: "No valid recipient address found",
-        message: "Please select another chain",
-      });
+      router.push("/address-not-set");
       return;
+    }
+
+    if (!isInitialized) {
+      return showInfoToast("Please wait for the POS to initialize");
     }
 
     router.push({
@@ -88,32 +81,41 @@ export default function PaymentNetworkScreen() {
         data={availableNetworks}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
-          <Button
-            style={[
-              styles.item,
-              { backgroundColor: Theme["foreground-primary"] },
-            ]}
+          <Card
+            style={styles.item}
             onPress={() => handleNetworkPress(item.caipNetworkId)}
           >
             <ThemedText fontSize={16}>
               {tokenData?.symbol} on {item.name}
             </ThemedText>
             <ImageBackground
-              source={tokenData?.icon as ImageSourcePropType}
+              source={tokenData?.icon}
               style={styles.tokenIcon}
               resizeMode="contain"
             >
               <Image
-                source={item.icon as ImageSourcePropType}
+                source={item.icon}
                 style={[
                   styles.chainIcon,
                   { borderColor: Theme["border-primary"] },
                 ]}
-                resizeMode="contain"
+                cachePolicy="memory-disk"
+                priority="high"
               />
             </ImageBackground>
-          </Button>
+          </Card>
         )}
+      />
+      <LinearGradient
+        colors={[
+          Theme["bg-primary"] + "00",
+          Theme["bg-primary"] + "40",
+          Theme["bg-primary"] + "CC",
+          Theme["bg-primary"],
+        ]}
+        locations={[0, 0.3, 0.5, 1]}
+        style={styles.gradient}
+        pointerEvents="none"
       />
       <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
     </View>
@@ -128,15 +130,13 @@ const styles = StyleSheet.create({
   listContainer: {
     gap: Spacing["spacing-3"],
     paddingHorizontal: Spacing["spacing-5"],
-    paddingBottom: Spacing["extra-spacing-1"],
+    paddingBottom: Spacing["extra-spacing-2"],
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
     justifyContent: "space-between",
     padding: Spacing["spacing-6"],
-    borderRadius: BorderRadius["5"],
   },
   tokenIcon: {
     width: 40,
@@ -152,9 +152,15 @@ const styles = StyleSheet.create({
     right: -2,
     position: "absolute",
   },
+  gradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 200,
+  },
   closeButton: {
     position: "absolute",
     alignSelf: "center",
-    bottom: Spacing["spacing-2"],
   },
 });

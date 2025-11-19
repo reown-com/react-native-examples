@@ -1,6 +1,4 @@
-# Welcome to your Expo app 👋
-
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+# Welcome to POS Sample app
 
 ## Get started
 
@@ -10,41 +8,36 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Set up environment variables
+
+   Create a `.env` file using the example template:
 
    ```bash
-   npx expo start
+   cp .env.example .env
    ```
 
-In the output, you'll find options to open the app in a
+   Update the `.env` file with your configuration values.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+3. Create native folders
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+   ```bash
+   npm run prebuild
+   ```
 
-## Get a fresh project
+   This will automatically set up the required files for development.
 
-When you're ready, run:
+4. Start the app
 
-```bash
-npm run reset-project
-```
+   ```bash
+   npm run android
+   ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+   ```bash
+   npm run ios
+   ```
 
-## Learn more
+## Production Releases
 
-To learn more about developing your project with Expo, look at the following resources:
+For production Android releases, you'll need the actual `secrets.properties` file and keystore. Get these from the mobile team or 1Password.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+> **⚠️ Security Note**: Never commit `secrets.properties` or keystore files to version control.

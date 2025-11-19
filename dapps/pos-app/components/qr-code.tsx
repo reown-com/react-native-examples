@@ -1,7 +1,6 @@
-import { BorderRadius } from "@/constants/spacing";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { QRCodeUtil } from "@/utils/qr-code";
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import {
   ImageSourcePropType,
   StyleSheet,
@@ -9,14 +8,8 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import Svg from "react-native-svg";
+import QRCodeSkia from "react-native-qrcode-skia";
 import { Shimmer } from "./shimmer";
-// import { Icon } from "../../components/wui-icon";
-// import { Image } from "../../components/wui-image";
-// import { Shimmer } from "../../components/wui-shimmer";
-// import { QRCodeUtil } from "../../utils/QRCodeUtil";
-// import { BorderRadius, LightTheme, Spacing } from "../../utils/ThemeUtil";
-// import type { IconType } from "../../utils/TypesUtil";
 
 export interface QrCodeProps {
   size: number;
@@ -26,43 +19,67 @@ export interface QrCodeProps {
   arenaClear?: boolean;
   style?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
+  logoSize?: number;
+  logoBorderRadius?: number;
 }
 
-export function QrCode_({
+function QrCode_({
   size,
   uri,
   testID,
   arenaClear,
   style,
   children,
+  logoSize,
+  logoBorderRadius,
 }: QrCodeProps) {
   const Theme = useTheme("light");
-  const logoSize = arenaClear ? 0 : size / 4;
+  const containerPadding = Spacing["spacing-3"];
+  const qrSize = size - containerPadding * 2;
+  const _logoSize = arenaClear ? 0 : (logoSize ?? qrSize / 4);
+  const logoAreaSize = _logoSize > 0 ? _logoSize + Spacing["spacing-6"] : 0;
 
-  const dots = useMemo(
-    () => (uri ? QRCodeUtil.generate(uri, size, logoSize) : []),
-    [uri, size, logoSize],
-  );
+  const dotColor = Theme["bg-invert"];
+  const edgeColor = Theme["bg-primary"];
 
-  return uri ? (
+  if (!uri) {
+    return (
+      <Shimmer width={size} height={size} borderRadius={BorderRadius["5"]} />
+    );
+  }
+
+  return (
     <View
       style={[
         styles.container,
         {
           width: size,
           backgroundColor: Theme["bg-primary"],
+          padding: containerPadding,
         },
         style,
       ]}
       testID={testID}
     >
-      <Svg height={size} width={size}>
-        {dots}
-      </Svg>
+      <QRCodeSkia
+        value={uri}
+        size={qrSize}
+        color={dotColor}
+        style={{ backgroundColor: edgeColor }}
+        errorCorrectionLevel="Q"
+        pathStyle="fill"
+        shapeOptions={{
+          shape: "rounded",
+          eyePatternShape: "rounded",
+          gap: 0,
+          eyePatternGap: 0,
+          logoAreaBorderRadius: 100,
+        }}
+        logoAreaSize={logoAreaSize > 0 ? logoAreaSize : undefined}
+        logo={!arenaClear && children ? children : undefined}
+      />
       {!arenaClear && <View style={styles.icon}>{children}</View>}
     </View>
-  ) : (
-    <Shimmer width={size} height={size} borderRadius={BorderRadius["5"]} />
   );
 }
 
@@ -70,7 +87,8 @@ export const QRCode = memo(QrCode_, (prevProps, nextProps) => {
   return (
     prevProps.size === nextProps.size &&
     prevProps.uri === nextProps.uri &&
-    prevProps.style === nextProps.style
+    prevProps.style === nextProps.style &&
+    prevProps.logoBorderRadius === nextProps.logoBorderRadius
   );
 });
 

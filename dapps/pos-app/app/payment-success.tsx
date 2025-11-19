@@ -1,67 +1,65 @@
-import * as Haptics from "expo-haptics";
-import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef } from "react";
-import {
-  Animated,
-  Dimensions,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { UnknownOutputParams, useLocalSearchParams } from "expo-router";
+import React, { useEffect } from "react";
+import { Dimensions, StyleSheet, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
+import { resetNavigation } from "@/utils/navigation";
+import { StatusBar } from "expo-status-bar";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
 }
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
 const diagonalLength = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
 const initialCircleSize = 20;
-const finalScale = Math.round(diagonalLength / initialCircleSize) + 1;
+const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 
 export default function PaymentSuccessScreen() {
+  useDisableBackButton();
   const Theme = useTheme();
   const params = useLocalSearchParams<SuccessParams>();
-  const insets = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
+  const colorScheme = useColorScheme();
   const { amount } = params;
 
-  const circleScale = useRef(new Animated.Value(1)).current;
-  const contentOpacity = useRef(new Animated.Value(0)).current;
+  const circleScale = useSharedValue(1);
+  const contentOpacity = useSharedValue(0);
 
   const handleNewPayment = () => {
-    router.dismissAll();
-    router.navigate("/amount");
+    resetNavigation("/amount");
   };
 
   useEffect(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-
-    Animated.parallel([
-      Animated.spring(circleScale, {
-        toValue: finalScale,
-        tension: 15,
-        friction: 12,
-        useNativeDriver: true,
-      }),
-      Animated.sequence([
-        Animated.delay(300),
-        Animated.timing(contentOpacity, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-      ]),
-    ]).start();
+    circleScale.value = withTiming(finalScale, {
+      duration: 400,
+    });
+    contentOpacity.value = withDelay(150, withTiming(1, { duration: 200 }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const circleAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: circleScale.value }],
+  }));
+
+  const contentAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
+  }));
+
   return (
-    <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: top }]}>
       {/* Expanding circle background */}
       <Animated.View
         style={[
@@ -71,20 +69,13 @@ export default function PaymentSuccessScreen() {
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
-            transform: [{ scale: circleScale }],
           },
+          circleAnimatedStyle,
         ]}
       />
 
       {/* Content that fades in after circle expands */}
-      <Animated.View
-        style={[
-          styles.contentContainer,
-          {
-            opacity: contentOpacity,
-          },
-        ]}
-      >
+      <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
@@ -100,8 +91,8 @@ export default function PaymentSuccessScreen() {
           </ThemedText>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            activeOpacity={0.8}
+          {/* <Button
+            onPress={() => {}}
             style={[
               styles.button,
               {
@@ -115,10 +106,9 @@ export default function PaymentSuccessScreen() {
             >
               Send email receipt
             </ThemedText>
-          </TouchableOpacity>
+          </Button> */}
 
-          <TouchableOpacity
-            activeOpacity={0.8}
+          <Button
             style={[
               styles.button,
               {
@@ -133,10 +123,11 @@ export default function PaymentSuccessScreen() {
             >
               New Sale
             </ThemedText>
-          </TouchableOpacity>
+          </Button>
         </View>
       </Animated.View>
-    </ThemedView>
+      <StatusBar style={colorScheme} />
+    </View>
   );
 }
 

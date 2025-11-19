@@ -48,6 +48,15 @@ platform :ios do
       force_for_new_certificates: true
     )
 
+    # Update Xcode project code signing settings to use Match profiles
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: ENV['XCODE_PROJECT_PATH'],
+      bundle_identifier: ENV['BUNDLE_ID'],
+      code_sign_identity: "Apple Distribution",
+      profile_name: "match AppStore #{ENV['BUNDLE_ID']}"
+    )
+
     # Install pods
     cocoapods(
       clean_install: false,
@@ -154,6 +163,22 @@ platform :ios do
     
     # Only clean artifacts when running locally (not in CI)
     clean_build_artifacts() unless ENV['CI']
+  end
+
+  lane :test_code_signing do
+    ENV['XCODE_PROJECT_PATH'] = 'dapps/pos-app/ios/WPay.xcodeproj'
+    ENV['BUNDLE_ID'] = 'com.reown.mobilepos'
+    
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: ENV['XCODE_PROJECT_PATH'],
+      bundle_identifier: ENV['BUNDLE_ID'],
+      code_sign_identity: "Apple Distribution",
+      profile_name: "match AppStore #{ENV['BUNDLE_ID']}"
+    )
+    
+    puts "✅ Code signing settings updated successfully!"
+    puts "Profile name used: match AppStore #{ENV['BUNDLE_ID']}"
   end
 
 end

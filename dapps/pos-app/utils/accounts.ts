@@ -1,7 +1,9 @@
-import { Account } from "@reown/appkit-react-native/lib/typescript/hooks/useAccount";
+// import { Account } from "@reown/appkit-react-native";
+import { isAddress } from "viem";
 import { getNetworkById } from "./networks";
+import { Namespace } from "./types";
 
-export const getAccounts = (accounts: Account[]) => {
+export const getAccounts = (accounts: any[]) => {
   const seenChainIds = new Set<string>();
 
   return accounts
@@ -21,4 +23,22 @@ export const getAccounts = (accounts: Account[]) => {
       seenChainIds.add(account.chainId);
       return true;
     });
+};
+
+export const isValidAddress = (namespace: Namespace, address: string) => {
+  if (!address || typeof address !== "string") {
+    return false;
+  }
+
+  switch (namespace) {
+    case "eip155": {
+      return isAddress(address);
+    }
+    case "solana": {
+      const base58Regex = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+      return base58Regex.test(address);
+    }
+    default:
+      return false;
+  }
 };

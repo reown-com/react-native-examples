@@ -1,12 +1,13 @@
 import { useTheme } from "@/hooks/use-theme-color";
-import { memo, useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  StyleSheet,
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from "react-native";
+import { memo, useEffect, useState } from "react";
+import { StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 
 type PercentString = `${number}%`;
 type ShimmerDimension = number | PercentString;
@@ -41,35 +42,15 @@ function Shimmer_({
   const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
   const [measuredHeight, setMeasuredHeight] = useState<number | null>(null);
 
-  const translateRef = useRef(new Animated.Value(0));
-  const loopRef = useRef<Animated.CompositeAnimation | null>(null);
+  const translateX = useSharedValue(0);
 
   useEffect(() => {
     if (!measuredWidth) {
       return undefined;
     }
-    const translateX = translateRef.current;
-    translateX.setValue(0);
-    const timing = Animated.timing(translateX, {
-      toValue: 1,
-      duration,
-      useNativeDriver: true,
-    });
-    const loop = Animated.loop(timing);
-    loopRef.current = loop;
-
-    loop.start();
-
-    return () => {
-      loop.stop();
-      if (loopRef.current === loop) {
-        loopRef.current = null;
-      }
-      translateX.stopAnimation(() => {
-        translateX.setValue(0);
-      });
-    };
-  }, [duration, measuredWidth]);
+    translateX.value = 0;
+    translateX.value = withRepeat(withTiming(1, { duration }), -1, false);
+  }, [duration, measuredWidth, translateX]);
 
   const baseColor = backgroundColor ?? Theme["foreground-secondary"];
   const highlightColor = foregroundColor ?? Theme["foreground-tertiary"];
@@ -86,16 +67,24 @@ function Shimmer_({
   };
 
   // Compute animated translateX only if we have width
-  let animatedTranslateX: any = 0;
-  let bandWidth = 0;
-  if (measuredWidth) {
-    bandWidth = Math.max(8, measuredWidth * highlightWidthRatio);
-    const travel = measuredWidth + bandWidth * 2;
-    animatedTranslateX = translateRef.current.interpolate({
-      inputRange: [0, 1],
-      outputRange: [-bandWidth, travel - bandWidth],
-    });
-  }
+  const bandWidth = measuredWidth
+    ? Math.max(8, measuredWidth * highlightWidthRatio)
+    : 0;
+  const travel = measuredWidth ? measuredWidth + bandWidth * 2 : 0;
+
+  const animatedStyle = useAnimatedStyle(() => {
+    if (!measuredWidth) {
+      return {};
+    }
+    const translateXValue = interpolate(
+      translateX.value,
+      [0, 1],
+      [-bandWidth, travel - bandWidth],
+    );
+    return {
+      transform: [{ translateX: translateXValue }, { rotate: `${angle}deg` }],
+    };
+  });
 
   const containerStyle: ViewStyle = {
     width,
@@ -121,15 +110,7 @@ function Shimmer_({
       {measuredWidth && measuredHeight ? (
         <Animated.View
           pointerEvents="none"
-          style={[
-            bandStyle,
-            {
-              transform: [
-                { translateX: animatedTranslateX },
-                { rotate: `${angle}deg` },
-              ],
-            },
-          ]}
+          style={[bandStyle, animatedStyle]}
         />
       ) : null}
     </View>

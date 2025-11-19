@@ -1,16 +1,33 @@
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 interface FormData {
   amount: string;
 }
+
+const formatAmount = (amount: string) => {
+  if (!amount.includes(".")) {
+    return `${amount}.00`;
+  }
+  const [whole, decimal] = amount.split(".");
+  if (decimal.length === 0) {
+    return `${whole}.00`;
+  } else if (decimal.length === 1) {
+    return `${whole}.${decimal}0`;
+  }
+
+  const trimmedDecimal = decimal.replace(/0+$/, "");
+  const paddedDecimal =
+    trimmedDecimal.length >= 2 ? trimmedDecimal : trimmedDecimal.padEnd(2, "0");
+  return `${whole}.${paddedDecimal}`;
+};
 
 export default function AmountScreen() {
   const Theme = useTheme();
@@ -21,23 +38,22 @@ export default function AmountScreen() {
     formState: { isValid },
   } = useForm<FormData>({
     defaultValues: {
-      amount: "0",
+      amount: "",
     },
   });
   const watchAmount = watch("amount");
+  const { networkAddresses } = useSettingsStore((state) => state);
 
   const onSubmit = ({ amount }: FormData) => {
-    let formattedAmount = amount;
-    if (amount.endsWith(".")) {
-      formattedAmount = `${amount}00`;
+    if (Object.values(networkAddresses).every((address) => address === "")) {
+      router.push("/address-not-set");
+      return;
     }
 
-    if (!formattedAmount.includes(".")) {
-      formattedAmount = `${formattedAmount}.00`;
-    }
+    const formattedAmount = formatAmount(amount);
 
     router.push({
-      pathname: "/payment-method",
+      pathname: "/payment-token",
       params: {
         amount: formattedAmount,
       },
@@ -45,8 +61,8 @@ export default function AmountScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedView
+    <View style={styles.container}>
+      <View
         style={[
           styles.amountContainer,
           { borderColor: Theme["border-primary"] },
@@ -58,21 +74,26 @@ export default function AmountScreen() {
             styles.amountText,
             {
               color:
-                watchAmount === "0"
+                watchAmount === ""
                   ? Theme["text-secondary"]
                   : Theme["text-primary"],
             },
           ]}
         >
-          ${watchAmount}
+          ${watchAmount || "0.00"}
         </ThemedText>
-      </ThemedView>
+      </View>
       <Controller
         control={control}
         name="amount"
         rules={{
           validate: (value) => {
-            if (!value || value === "0" || Number(value) === 0) {
+            if (
+              !value ||
+              value === "0" ||
+              value === "" ||
+              Number(value) === 0
+            ) {
               return "Amount is required";
             }
             return true;
@@ -81,12 +102,17 @@ export default function AmountScreen() {
         render={({ field: { onChange, value: prev } }) => (
           <NumericKeyboard
             onKeyPress={(key) => {
+              let newDisplay;
               if (key === "erase") {
-                const newDisplay = prev?.slice(0, -1) || "0";
+                newDisplay = prev?.slice(0, -1) || "";
                 onChange?.(newDisplay);
               } else if (key === ".") {
                 if (prev.includes(".")) return; // Don't add multiple commas
-                const newDisplay = prev + ".";
+                if (prev === "") {
+                  newDisplay = "0.";
+                } else {
+                  newDisplay = prev + ".";
+                }
                 onChange?.(newDisplay);
               } else {
                 const newDisplay = prev === "0" ? key : prev + key;
@@ -102,22 +128,20 @@ export default function AmountScreen() {
         style={[
           styles.button,
           {
-            backgroundColor: isValid
-              ? Theme["bg-accent-primary"]
-              : Theme["foreground-tertiary"], //TODO: Add a disabled color for buttons
+            backgroundColor: Theme["bg-accent-primary"],
+            opacity: isValid ? 1 : 0.6,
           },
         ]}
       >
         <ThemedText
-          style={[
-            styles.buttonText,
-            { color: isValid ? Theme["text-invert"] : Theme["text-secondary"] },
-          ]}
+          fontSize={18}
+          lineHeight={20}
+          style={{ color: Theme["text-invert"] }}
         >
-          {isValid ? `Charge $${watchAmount}` : "Enter Amount"}
+          {isValid ? `Charge $${formatAmount(watchAmount)}` : "Enter amount"}
         </ThemedText>
       </Button>
-    </ThemedView>
+    </View>
   );
 }
 
@@ -127,7 +151,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-10"],
+    paddingVertical: Spacing["spacing-5"],
   },
   amountContainer: {
     flex: 1,
@@ -149,8 +173,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     alignItems: "center",
     borderRadius: BorderRadius["5"],
-  },
-  buttonText: {
-    fontSize: 18,
   },
 });
