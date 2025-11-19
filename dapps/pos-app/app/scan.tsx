@@ -9,6 +9,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { resetNavigation } from "@/utils/navigation";
 import { getNetworkByCaipId, getTokenById, TokenKey } from "@/utils/networks";
 import { showErrorToast } from "@/utils/toast";
+import * as Sentry from "@sentry/react-native";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -50,12 +51,14 @@ export default function QRModalScreen() {
 
   usePOSListener("connection_failed", ({ error }) => {
     showErrorToast(error?.message || "Payment failed");
+    Sentry.logger.error(error?.message || "Payment failed", { error });
     posClient?.disconnect();
     onFailure();
   });
 
   usePOSListener("connection_rejected", ({ error }) => {
     showErrorToast(error?.message || "Payment failed");
+    Sentry.logger.error(error?.message || "Payment failed", { error });
     posClient?.disconnect();
     onFailure();
   });
@@ -70,6 +73,7 @@ export default function QRModalScreen() {
 
   usePOSListener("payment_rejected", ({ error }) => {
     showErrorToast(error?.message || "Payment failed");
+    Sentry.logger.error(error?.message || "Payment failed", { error });
     posClient?.disconnect();
     onFailure();
   });
