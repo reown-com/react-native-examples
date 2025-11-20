@@ -1,5 +1,6 @@
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
+import { SecondaryLogo } from "@/components/secondary-logo";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -141,6 +142,7 @@ export default function AmountScreen() {
           {isValid ? `Charge $${formatAmount(watchAmount)}` : "Enter amount"}
         </ThemedText>
       </Button>
+      <SecondaryLogo style={styles.secondaryLogo} />
     </View>
   );
 }
@@ -173,5 +175,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     alignItems: "center",
     borderRadius: BorderRadius["5"],
+  },
+  secondaryLogo: {
+    marginTop: Spacing["spacing-5"],
   },
 });
