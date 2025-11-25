@@ -1,3 +1,5 @@
+import { usePaymentStatus } from "@/api/hooks";
+import { startPayment } from "@/api/payment";
 import { CloseButton } from "@/components/close-button";
 import { QRCode } from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
@@ -22,88 +24,87 @@ export default function QRModalScreen() {
   const [assets] = useAssets([require("@/assets/images/wc_logo_blue.png")]);
 
   const [qrUri, setQrUri] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { deviceId } = useSettingsStore((state) => state);
   const Theme = useTheme();
 
   const { amount } = params;
 
-  const onFailure = useCallback(() => {
+  const onSuccess = useCallback(() => {
     router.dismiss();
     router.replace({
-      pathname: "/payment-failure",
+      pathname: "/payment-success",
       params: {
         amount,
       },
     });
-    setIsLoading(false);
   }, [amount]);
+
+  const onFailure = useCallback(
+    (errorCode?: string) => {
+      router.dismiss();
+      router.replace({
+        pathname: "/payment-failure",
+        params: {
+          amount,
+          ...(errorCode && { errorCode }),
+        },
+      });
+    },
+    [amount],
+  );
 
   const handleOnClosePress = () => {
     resetNavigation("/amount");
   };
 
   useEffect(() => {
-    async function startPayment() {
-      const paymentIntent = {
-        merchantId: deviceId,
-        refId: uuidv4(),
-        amount: Number(amount) * 100, // amount in cents i.e. $1 = 100
-        currency: "USD",
-      };
+    if (!deviceId || !amount) return;
 
-      console.log(JSON.stringify(paymentIntent));
-      //TODO: create types + move api calls to a separate file
-      const response = await fetch(
-        "https://pay-mvp-core-worker.walletconnect-v1-bridge.workers.dev/start",
-        {
-          method: "POST",
-          body: JSON.stringify(paymentIntent),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
+    async function initiatePayment() {
+      setIsLoading(true);
+      try {
+        const paymentRequest = {
+          merchantId: deviceId,
+          refId: uuidv4(),
+          amount: Number(amount) * 100, // amount in cents i.e. $1 = 100
+          currency: "USD",
+        };
 
-      console.log(response);
-
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      // const response = {
-      //   ok: true,
-      //   data: {
-      //     paymentId: "1234567890",
-      //   },
-      // };
-
-      if (!response.ok) {
-        throw new Error("Failed to start payment");
+        const data = await startPayment(paymentRequest);
+        const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/${data.paymentId}`;
+        setQrUri(url);
+        setPaymentId(data.paymentId);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Failed to start payment:", error);
+        setIsLoading(false);
+        onFailure();
       }
-
-      const data = await response.json();
-
-      // const data = await response.json();
-      // console.log(data);
-      const url = `https://gateway-wc.vercel.app/v1/${data.paymentId}`;
-      setQrUri(url);
     }
 
-    startPayment();
-
+    initiatePayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [deviceId, amount]);
+
+  // Poll payment status once paymentId is available
+  usePaymentStatus(paymentId, {
+    enabled: !!paymentId && !isLoading,
+    onTerminalState: (data) => {
+      if (data.status === "ok") {
+        onSuccess();
+      } else if (data.status === "error") {
+        onFailure(data.error);
+      }
+    },
+  });
 
   return (
     <View style={styles.container}>
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <WalletConnectLoading size={180} />
-          <ThemedText
-            style={[styles.amountText, { color: Theme["text-primary"] }]}
-            fontSize={16}
-            lineHeight={18}
-          >
-            Waiting for payment confirmation…
-          </ThemedText>
         </View>
       ) : (
         <View style={styles.scanContainer}>
