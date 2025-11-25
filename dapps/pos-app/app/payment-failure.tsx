@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -9,14 +9,16 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { getPaymentErrorMessage } from "@/utils/payment-errors";
+import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
   errorCode: string; // Error code from API (e.g., "INSUFFICIENT_BALANCE")
+  errorMessage: string;
 }
 
-export default function PaymentSuccessScreen() {
+export default function PaymentFailureScreen() {
   const Theme = useTheme();
   const { top } = useSafeAreaInsets();
   const params = useLocalSearchParams<ScreenParams>();
@@ -25,6 +27,10 @@ export default function PaymentSuccessScreen() {
   const handleRetry = () => {
     router.dismissTo("/amount");
   };
+
+  useEffect(() => {
+    showErrorToast(`${params.errorCode}: ${params.errorMessage}`);
+  }, [params]);
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>

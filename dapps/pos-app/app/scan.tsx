@@ -42,13 +42,14 @@ export default function QRModalScreen() {
   }, [amount]);
 
   const onFailure = useCallback(
-    (errorCode?: string) => {
+    (errorCode?: string, errorMessage?: string) => {
       router.dismiss();
       router.replace({
         pathname: "/payment-failure",
         params: {
           amount,
           ...(errorCode && { errorCode }),
+          ...(errorMessage && { errorMessage }),
         },
       });
     },
@@ -80,7 +81,7 @@ export default function QRModalScreen() {
       } catch (error) {
         console.error("Failed to start payment:", error);
         setIsLoading(false);
-        onFailure();
+        onFailure(undefined, (error as Error)?.message ?? "Unknown error");
       }
     }
 

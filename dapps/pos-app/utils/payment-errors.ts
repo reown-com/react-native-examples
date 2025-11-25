@@ -19,4 +19,3 @@ export function getPaymentErrorMessage(errorCode?: string): string {
     "The payment couldn't be completed due to an error. Please try again or use a different payment method."
   );
 }
-
