@@ -3,7 +3,6 @@ import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { useSettingsStore } from "@/store/useSettingsStore";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, View } from "react-native";
@@ -42,18 +41,12 @@ export default function AmountScreen() {
     },
   });
   const watchAmount = watch("amount");
-  const { networkAddresses } = useSettingsStore((state) => state);
 
   const onSubmit = ({ amount }: FormData) => {
-    if (Object.values(networkAddresses).every((address) => address === "")) {
-      router.push("/address-not-set");
-      return;
-    }
-
     const formattedAmount = formatAmount(amount);
 
     router.push({
-      pathname: "/payment-token",
+      pathname: "/scan",
       params: {
         amount: formattedAmount,
       },

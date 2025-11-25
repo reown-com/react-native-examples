@@ -25,10 +25,12 @@ export const useSettingsStore = create<SettingsStore>()(
     (set, get) => ({
       themeMode: Appearance.getColorScheme() || "light",
       deviceId: "",
+      //TODO: remove this addresses
       networkAddresses: {
         eip155: "",
         solana: "",
       },
+      //TODO: remove this networks
       supportedNetworks: new Map(
         ALLOWED_CHAINS.map((network) => [network.caipNetworkId, true]),
       ),

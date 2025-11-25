@@ -2,38 +2,31 @@ import { CloseButton } from "@/components/close-button";
 import { QRCode } from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
-import { BorderRadius, Spacing } from "@/constants/spacing";
-import { usePOS } from "@/context/POSContext";
-import { usePOSListener } from "@/hooks/use-pos-listener";
+import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
-import { getNetworkByCaipId, getTokenById, TokenKey } from "@/utils/networks";
-import { showErrorToast } from "@/utils/toast";
-import * as Sentry from "@sentry/react-native";
+import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { ImageBackground, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { v4 as uuidv4 } from "uuid";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
-  token: TokenKey;
-  networkCaipId: string;
-  recipientAddress: string;
 }
 
 export default function QRModalScreen() {
   const params = useLocalSearchParams<ScreenParams>();
+  const [assets] = useAssets([require("@/assets/images/wc_logo_blue.png")]);
 
   const [qrUri, setQrUri] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { posClient } = usePOS();
+  const { deviceId } = useSettingsStore((state) => state);
   const Theme = useTheme();
 
-  const { amount, token, networkCaipId, recipientAddress } = params;
-
-  const networkData = getNetworkByCaipId(networkCaipId);
-  const tokenData = getTokenById(token);
+  const { amount } = params;
 
   const onFailure = useCallback(() => {
     router.dismiss();
@@ -41,106 +34,61 @@ export default function QRModalScreen() {
       pathname: "/payment-failure",
       params: {
         amount,
-        token,
-        networkCaipId,
-        recipientAddress,
       },
     });
     setIsLoading(false);
-  }, [amount, token, networkCaipId, recipientAddress]);
-
-  usePOSListener("connection_failed", ({ error }) => {
-    showErrorToast(error?.message || "Payment failed");
-    Sentry.logger.error(error?.message || "Payment failed", { error });
-    posClient?.disconnect();
-    onFailure();
-  });
-
-  usePOSListener("connection_rejected", ({ error }) => {
-    showErrorToast(error?.message || "Payment failed");
-    Sentry.logger.error(error?.message || "Payment failed", { error });
-    posClient?.disconnect();
-    onFailure();
-  });
-
-  usePOSListener("qr_ready", async ({ uri }) => {
-    setQrUri(uri);
-  });
-
-  usePOSListener("connected", () => {
-    setIsLoading(true);
-  });
-
-  usePOSListener("payment_rejected", ({ error }) => {
-    showErrorToast(error?.message || "Payment failed");
-    Sentry.logger.error(error?.message || "Payment failed", { error });
-    posClient?.disconnect();
-    onFailure();
-  });
-
-  usePOSListener("payment_failed", ({ error }) => {
-    showErrorToast(error?.message || "Payment failed");
-    posClient?.disconnect();
-    onFailure();
-  });
-
-  usePOSListener("payment_successful", ({ transaction, result }) => {
-    const _networkData = getNetworkByCaipId(transaction.chainId);
-
-    const explorerUrl = _networkData?.blockExplorers?.default?.url;
-    const explorerLink = explorerUrl
-      ? `${explorerUrl}/tx/${result}`
-      : undefined;
-
-    router.replace({
-      pathname: "/payment-success",
-      params: {
-        transactionHash: result,
-        explorerLink: explorerLink,
-        network: networkData?.name || "Unknown",
-        amount: amount,
-        token: token,
-        recipientAddress: recipientAddress,
-      },
-    });
-    setIsLoading(false);
-  });
+  }, [amount]);
 
   const handleOnClosePress = () => {
     resetNavigation("/amount");
   };
 
   useEffect(() => {
-    const _networkData = getNetworkByCaipId(networkCaipId);
+    async function startPayment() {
+      const paymentIntent = {
+        merchantId: deviceId,
+        refId: uuidv4(),
+        amount: Number(amount) * 100, // amount in cents i.e. $1 = 100
+        currency: "USD",
+      };
 
-    if (!_networkData) {
-      showErrorToast("Network not found");
-      return;
-    }
-
-    const tokenStandard = tokenData?.standard[networkCaipId];
-    const tokenAddress = tokenData?.addresses[networkCaipId];
-
-    if (!tokenData || !tokenStandard || !tokenAddress) {
-      showErrorToast("Token not found");
-      return;
-    }
-
-    const paymentIntent = {
-      token: {
-        network: {
-          name: _networkData.name,
-          chainId: _networkData.caipNetworkId,
+      console.log(JSON.stringify(paymentIntent));
+      //TODO: create types + move api calls to a separate file
+      const response = await fetch(
+        "https://pay-mvp-core-worker.walletconnect-v1-bridge.workers.dev/start",
+        {
+          method: "POST",
+          body: JSON.stringify(paymentIntent),
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-        symbol: tokenData.symbol,
-        standard: tokenStandard,
-        address: tokenAddress,
-      },
-      amount,
-      recipient: `${_networkData.caipNetworkId}:${recipientAddress}`,
-    };
+      );
 
-    posClient?.createPaymentIntent({ paymentIntents: [paymentIntent] });
+      console.log(response);
+
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      // const response = {
+      //   ok: true,
+      //   data: {
+      //     paymentId: "1234567890",
+      //   },
+      // };
+
+      if (!response.ok) {
+        throw new Error("Failed to start payment");
+      }
+
+      const data = await response.json();
+
+      // const data = await response.json();
+      // console.log(data);
+      const url = `https://gateway-wc.vercel.app/v1/${data.paymentId}`;
+      setQrUri(url);
+    }
+
+    startPayment();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -174,19 +122,8 @@ export default function QRModalScreen() {
               ${amount}
             </ThemedText>
           </View>
-          <QRCode size={300} uri={qrUri} logoBorderRadius={55}>
-            <ImageBackground
-              source={tokenData?.icon}
-              style={styles.tokenIcon}
-              resizeMode="contain"
-            >
-              <Image
-                source={networkData?.icon}
-                style={[styles.chainIcon, { borderColor: Theme["bg-primary"] }]}
-                cachePolicy="memory-disk"
-                priority="high"
-              />
-            </ImageBackground>
+          <QRCode size={300} uri={qrUri} logoBorderRadius={100}>
+            <Image source={assets?.[0]} style={styles.logo} />
           </QRCode>
           <View style={{ flex: 1 }} />
         </View>
@@ -231,19 +168,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 36,
   },
-  tokenIcon: {
+  logo: {
     width: 80,
     height: 80,
-    borderRadius: BorderRadius["5"],
-  },
-  chainIcon: {
-    width: 40,
-    height: 40,
-    borderWidth: 4,
-    borderRadius: BorderRadius["5"],
-    bottom: -2,
-    right: -2,
-    position: "absolute",
   },
   closeButton: {
     position: "absolute",

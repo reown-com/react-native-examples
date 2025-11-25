@@ -76,7 +76,7 @@ function QrCode_({
           logoAreaBorderRadius: 100,
         }}
         logoAreaSize={logoAreaSize > 0 ? logoAreaSize : undefined}
-        logo={!arenaClear && children ? children : undefined}
+        logo={children}
       />
       {!arenaClear && <View style={styles.icon}>{children}</View>}
     </View>

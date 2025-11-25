@@ -5,7 +5,6 @@ import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
-import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
 export default function Settings() {
@@ -16,13 +15,13 @@ export default function Settings() {
     setThemeMode(newThemeMode);
   };
 
-  const handleRecipientPress = () => {
-    router.push("/settings-address-list");
-  };
+  // const handleRecipientPress = () => {
+  //   router.push("/settings-address-list");
+  // };
 
-  const handleNetworksPress = () => {
-    router.push("/settings-networks");
-  };
+  // const handleNetworksPress = () => {
+  //   router.push("/settings-networks");
+  // };
 
   return (
     <View style={styles.container}>
@@ -36,7 +35,7 @@ export default function Settings() {
           onValueChange={handleThemeModeChange}
         />
       </Card>
-      <Card onPress={handleRecipientPress} style={styles.card}>
+      {/* <Card onPress={handleRecipientPress} style={styles.card}>
         <ThemedText fontSize={16} lineHeight={18}>
           Recipient addresses
         </ThemedText>
@@ -45,7 +44,7 @@ export default function Settings() {
         <ThemedText fontSize={16} lineHeight={18}>
           Networks
         </ThemedText>
-      </Card>
+      </Card> */}
       <CloseButton style={styles.closeButton} onPress={resetNavigation} />
     </View>
   );
