@@ -1,8 +1,6 @@
 import { ApiError } from "@/utils/types";
 
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  "https://pay-mvp-core-worker.walletconnect-v1-bridge.workers.dev";
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "";
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;

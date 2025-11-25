@@ -5,6 +5,7 @@ import {
   StartPaymentResponse,
 } from "@/utils/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { getPaymentStatus, startPayment } from "./payment";
 
 /**
@@ -57,21 +58,59 @@ export function usePaymentStatus(
     ...queryOptions
   } = options;
 
-  return useQuery<PaymentStatusResponse, Error>({
+  const hasCalledCallback = useRef(false);
+  const callbackRef = useRef(onTerminalState);
+  const previousPaymentIdRef = useRef(paymentId);
+
+  // Keep callback ref up to date
+  useEffect(() => {
+    callbackRef.current = onTerminalState;
+  }, [onTerminalState]);
+
+  // Reset callback flag when paymentId changes
+  useEffect(() => {
+    if (previousPaymentIdRef.current !== paymentId) {
+      hasCalledCallback.current = false;
+      previousPaymentIdRef.current = paymentId;
+    }
+  }, [paymentId]);
+
+  const query = useQuery<PaymentStatusResponse, Error>({
     queryKey: ["paymentStatus", paymentId],
-    queryFn: () => getPaymentStatus(paymentId!),
+    queryFn: () => {
+      return getPaymentStatus(paymentId!);
+    },
     enabled: enabled && !!paymentId,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
     refetchInterval: (query) => {
       const data = query.state.data;
       // Stop polling if payment has reached a terminal state
       if (data && TERMINAL_STATUSES.includes(data.status)) {
-        if (onTerminalState) {
-          onTerminalState(data);
-        }
         return false;
       }
       return pollingInterval;
     },
+
+    // Let failed requests retry naturally
+    retry: 3,
     ...queryOptions,
   });
+
+  // Handle terminal state callback
+  useEffect(() => {
+    const data = query.data;
+    if (
+      data &&
+      TERMINAL_STATUSES.includes(data.status) &&
+      !hasCalledCallback.current &&
+      callbackRef.current
+    ) {
+      hasCalledCallback.current = true;
+      callbackRef.current(data);
+    }
+  }, [query.data]);
+
+  return query;
 }

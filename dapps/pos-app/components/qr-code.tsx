@@ -73,7 +73,7 @@ function QrCode_({
           eyePatternShape: "rounded",
           gap: 0,
           eyePatternGap: 0,
-          logoAreaBorderRadius: 100,
+          logoAreaBorderRadius: logoBorderRadius,
         }}
         logoAreaSize={logoAreaSize > 0 ? logoAreaSize : undefined}
         logo={children}

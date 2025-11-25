@@ -23,17 +23,7 @@ export default function PaymentSuccessScreen() {
   const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
 
   const handleRetry = () => {
-    const { amount } = params;
-    if (amount) {
-      router.dismissTo({
-        pathname: "/scan",
-        params: {
-          amount,
-        },
-      });
-    } else {
-      router.dismissTo("/amount");
-    }
+    router.dismissTo("/amount");
   };
 
   return (

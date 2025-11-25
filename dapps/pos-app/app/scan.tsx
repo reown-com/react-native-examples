@@ -88,7 +88,6 @@ export default function QRModalScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceId, amount]);
 
-  // Poll payment status once paymentId is available
   usePaymentStatus(paymentId, {
     enabled: !!paymentId && !isLoading,
     onTerminalState: (data) => {
