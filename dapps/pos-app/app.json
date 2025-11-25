@@ -36,7 +36,13 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.reown.mobilepos",
       "permissions": [
-        "android.permission.NFC"
+        "android.permission.NFC",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_ADVERTISE",
+        "android.permission.USB_PERMISSION"
       ],
       "versionCode": 11
     },

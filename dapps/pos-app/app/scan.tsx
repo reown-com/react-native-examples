@@ -37,9 +37,13 @@ export default function QRModalScreen() {
       pathname: "/payment-success",
       params: {
         amount,
+        paymentId,
+        network: "Base",
+        token: "USDC",
+        timestamp: new Date().toISOString(),
       },
     });
-  }, [amount]);
+  }, [amount, paymentId]);
 
   const onFailure = useCallback(
     (errorCode?: string, errorMessage?: string) => {
@@ -67,7 +71,7 @@ export default function QRModalScreen() {
       setIsLoading(true);
       try {
         const paymentRequest = {
-          merchantId: deviceId,
+          merchantId: "test_merchant_111",
           refId: uuidv4(),
           amount: Number(amount) * 100, // amount in cents i.e. $1 = 100
           currency: "USD",

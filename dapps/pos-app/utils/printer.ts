@@ -1,0 +1,85 @@
+import { WALLET_CONNECT_LOGO_BASE64 } from "@/constants/wc-logo";
+import {
+  ReactNativePosPrinter,
+  TextOptions,
+} from "react-native-thermal-pos-printer";
+
+export const connectPrinter = async () => {
+  try {
+    // Scan for devices
+    const devices = await ReactNativePosPrinter.getDeviceList();
+    if (devices.length === 0) throw new Error("No printers found");
+
+    // Connect to first device (filter for your iMin, e.g., by name/vendor)
+    const printer = devices[0].getDevice(); // { name, address, vendorId, productId, ... }
+    await ReactNativePosPrinter.connectPrinter(printer.address); // e.g., 'USB' or mac address
+    console.log("Connected to:", printer);
+    return true;
+  } catch (error) {
+    console.error("Connection failed:", error);
+    return false;
+  }
+};
+
+export const printWalletConnectReceipt = async (
+  txnId: string,
+  amountUsd: number,
+  tokenSymbol: string,
+  networkName: string,
+  date = new Date().toLocaleDateString("en-GB"),
+) => {
+  try {
+    // Logo
+    await ReactNativePosPrinter.printImage(WALLET_CONNECT_LOGO_BASE64, {
+      width: 340,
+      align: "CENTER",
+    });
+
+    await ReactNativePosPrinter.newLine(1);
+    await ReactNativePosPrinter.printText("--------------------------------\n");
+
+    await ReactNativePosPrinter.newLine(1);
+
+    const normal = { size: 10 } as TextOptions;
+    const normalCenter = { size: 10, align: "CENTER" } as TextOptions;
+    const bold = { size: 10, bold: true } as TextOptions;
+
+    await ReactNativePosPrinter.printText("ID        ", normal);
+    await ReactNativePosPrinter.printText(`${txnId}\n`, bold);
+
+    await ReactNativePosPrinter.printText("DATE      ", normal);
+    await ReactNativePosPrinter.printText(`${date}\n`, bold);
+
+    await ReactNativePosPrinter.printText("METHOD    ", normal);
+    await ReactNativePosPrinter.printText("WalletConnect Pay\n", bold);
+
+    await ReactNativePosPrinter.printText("AMOUNT    ", normal);
+    await ReactNativePosPrinter.printText(`$${amountUsd.toFixed(2)}\n`, bold);
+
+    await ReactNativePosPrinter.printText("PAID WITH ", normal);
+    await ReactNativePosPrinter.printText(
+      `${tokenSymbol} ${amountUsd.toFixed(2)}\n`,
+      bold,
+    );
+
+    await ReactNativePosPrinter.printText("NETWORK   ", normal);
+    await ReactNativePosPrinter.printText(`${networkName}\n`, bold);
+
+    await ReactNativePosPrinter.newLine(1);
+    await ReactNativePosPrinter.printText("--------------------------------\n");
+
+    await ReactNativePosPrinter.newLine(2);
+
+    await ReactNativePosPrinter.printText(
+      "Thank you for your purchase!\n",
+      normalCenter,
+    );
+
+    await ReactNativePosPrinter.newLine(2);
+    await ReactNativePosPrinter.cutPaper();
+
+    console.log("Receipt printed perfectly!");
+  } catch (error) {
+    console.error("Print failed:", error);
+  }
+};

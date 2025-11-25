@@ -5,6 +5,8 @@ import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
+import { connectPrinter, printWalletConnectReceipt } from "@/utils/printer";
+import { showErrorToast } from "@/utils/toast";
 import { StyleSheet, View } from "react-native";
 
 export default function Settings() {
@@ -13,6 +15,19 @@ export default function Settings() {
   const handleThemeModeChange = (value: boolean) => {
     const newThemeMode = value ? "dark" : "light";
     setThemeMode(newThemeMode);
+  };
+
+  const handleTestPrinterPress = async () => {
+    try {
+      const isConnected = await connectPrinter();
+      if (!isConnected) {
+        showErrorToast("Failed to connect to printer");
+        return;
+      }
+      await printWalletConnectReceipt("1234567890", 15, "USDC", "Base");
+    } catch (error) {
+      console.error("Failed to test printer:", error);
+    }
   };
 
   // const handleRecipientPress = () => {
@@ -45,6 +60,11 @@ export default function Settings() {
           Networks
         </ThemedText>
       </Card> */}
+      <Card onPress={handleTestPrinterPress} style={styles.card}>
+        <ThemedText fontSize={16} lineHeight={18}>
+          Test printer
+        </ThemedText>
+      </Card>
       <CloseButton style={styles.closeButton} onPress={resetNavigation} />
     </View>
   );
