@@ -91,9 +91,9 @@ export default function QRModalScreen() {
   usePaymentStatus(paymentId, {
     enabled: !!paymentId && !isLoading,
     onTerminalState: (data) => {
-      if (data.status === "ok") {
+      if (data.status === "completed") {
         onSuccess();
-      } else if (data.status === "error") {
+      } else if (data.status === "failed") {
         onFailure(data.error);
       }
     },

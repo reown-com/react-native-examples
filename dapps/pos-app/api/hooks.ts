@@ -11,7 +11,7 @@ import { getPaymentStatus, startPayment } from "./payment";
 /**
  * Terminal payment statuses that indicate polling should stop
  */
-const TERMINAL_STATUSES: PaymentStatus[] = ["ok", "error"];
+const TERMINAL_STATUSES: PaymentStatus[] = ["completed", "failed"];
 
 /**
  * Hook to start a payment

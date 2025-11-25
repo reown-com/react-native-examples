@@ -1,7 +1,7 @@
 export type Namespace = "eip155" | "solana";
 
 // Payment API Types
-export type PaymentStatus = "pending" | "ok" | "error";
+export type PaymentStatus = "pending" | "completed" | "failed";
 
 export interface StartPaymentRequest {
   merchantId: string;
@@ -15,11 +15,18 @@ export interface StartPaymentResponse {
 }
 
 export interface PaymentStatusSuccessResponse {
-  status: "ok";
+  status: "completed";
+  paymentId: string;
+  chainName: string;
+  chainId: number;
+  token: string;
+  amount: number;
+  referenceId: string;
+  createdAt: number;
 }
 
 export interface PaymentStatusErrorResponse {
-  status: "error";
+  status: "failed";
   error: string; // Error code (e.g., "INSUFFICIENT_BALANCE")
 }
 
