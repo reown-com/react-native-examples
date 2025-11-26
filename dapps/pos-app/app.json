@@ -114,7 +114,21 @@
       [
         "expo-asset",
         {
-          "assets": ["./assets/images","./assets/images/tokens","./assets/images/chains","./assets/images/payment_methods","./assets/app_icons"]
+          "assets": [
+            "./assets/images",
+            "./assets/images/tokens",
+            "./assets/images/chains",
+            "./assets/images/payment_methods",
+            "./assets/app_icons"
+          ]
+        }
+      ],
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": [
+            "Bluetooth"
+          ]
         }
       ]
     ],

@@ -1,8 +1,14 @@
 import { WALLET_CONNECT_LOGO_BASE64 } from "@/constants/wc-logo";
+import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import {
   ReactNativePosPrinter,
   TextOptions,
 } from "react-native-thermal-pos-printer";
+
+export const requestBluetoothPermission = async () => {
+  const result = await request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
+  return result === RESULTS.GRANTED || result === RESULTS.LIMITED;
+};
 
 export const connectPrinter = async () => {
   try {
@@ -29,6 +35,8 @@ export const printWalletConnectReceipt = async (
   date = new Date().toLocaleDateString("en-GB"),
 ) => {
   try {
+    await ReactNativePosPrinter.initializePrinter(); // resets + UTF-8
+
     // Logo
     await ReactNativePosPrinter.printImage(WALLET_CONNECT_LOGO_BASE64, {
       width: 340,

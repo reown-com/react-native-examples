@@ -5,7 +5,11 @@ import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
-import { connectPrinter, printWalletConnectReceipt } from "@/utils/printer";
+import {
+  connectPrinter,
+  printWalletConnectReceipt,
+  requestBluetoothPermission,
+} from "@/utils/printer";
 import { showErrorToast } from "@/utils/toast";
 import { StyleSheet, View } from "react-native";
 
@@ -19,6 +23,11 @@ export default function Settings() {
 
   const handleTestPrinterPress = async () => {
     try {
+      const isBluetoothPermissionGranted = await requestBluetoothPermission();
+      if (!isBluetoothPermissionGranted) {
+        showErrorToast("Failed to request Bluetooth permission");
+        return;
+      }
       const isConnected = await connectPrinter();
       if (!isConnected) {
         showErrorToast("Failed to connect to printer");

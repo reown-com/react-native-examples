@@ -75,6 +75,7 @@ export default function QRModalScreen() {
           refId: uuidv4(),
           amount: Number(amount) * 100, // amount in cents i.e. $1 = 100
           currency: "USD",
+          chainId: 8453,
         };
 
         const data = await startPayment(paymentRequest);
