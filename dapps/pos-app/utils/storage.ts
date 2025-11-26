@@ -1,10 +1,9 @@
-import { Storage } from "@reown/appkit-react-native";
 import { safeJsonParse, safeJsonStringify } from "@walletconnect/safe-json";
 import { createMMKV } from "react-native-mmkv";
 
 const mmkv = createMMKV();
 
-export const storage: Storage = {
+export const storage = {
   getKeys: async () => {
     return mmkv.getAllKeys();
   },
