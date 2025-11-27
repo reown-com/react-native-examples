@@ -10,7 +10,10 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast } from "@/utils/toast";
-import { PaymentStatusSuccessResponse } from "@/utils/types";
+import {
+  PaymentStatusErrorResponse,
+  PaymentStatusResponse,
+} from "@/utils/types";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
@@ -29,14 +32,13 @@ export default function QRModalScreen() {
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
-  const [isConfirming, setIsConfirming] = useState(false);
   const { deviceId } = useSettingsStore((state) => state);
   const Theme = useTheme();
 
   const { amount } = params;
 
   const onSuccess = useCallback(
-    (data: PaymentStatusSuccessResponse) => {
+    (data: PaymentStatusResponse) => {
       const { paymentId, chainName, token, createdAt } = data;
 
       router.dismiss();
@@ -105,22 +107,23 @@ export default function QRModalScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceId, amount]);
 
-  usePaymentStatus(paymentId, {
-    enabled: !!paymentId && !isConfirming && !!qrUri,
+  const { data: paymentStatusData } = usePaymentStatus(paymentId, {
+    enabled: !!paymentId && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "completed") {
         onSuccess(data);
       } else if (data.status === "failed") {
-        onFailure(data.error);
-      } else if (data.status === "confirming") {
-        setIsConfirming(true);
+        const error = data as PaymentStatusErrorResponse;
+        onFailure(error.error);
       }
     },
   });
 
+  const isProcessing = paymentStatusData?.status === "processing";
+
   return (
     <View style={styles.container}>
-      {isConfirming ? (
+      {isProcessing ? (
         <View style={styles.loadingContainer}>
           <WalletConnectLoading size={180} />
           <ThemedText

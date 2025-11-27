@@ -1,5 +1,6 @@
 import {
   PaymentStatus,
+  PaymentStatusErrorResponse,
   PaymentStatusResponse,
   StartPaymentRequest,
   StartPaymentResponse,
@@ -37,7 +38,9 @@ interface UsePaymentStatusOptions {
   /**
    * Callback when payment reaches a terminal state
    */
-  onTerminalState?: (data: PaymentStatusResponse) => void;
+  onTerminalState?: (
+    data: PaymentStatusResponse | PaymentStatusErrorResponse,
+  ) => void;
 }
 
 /**
