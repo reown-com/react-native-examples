@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
+import { VariantLogo } from "@/components/variant-logo";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
@@ -34,7 +35,7 @@ const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
-  const Theme = useTheme();
+  const Theme = useTheme("light");
   const params = useLocalSearchParams<SuccessParams>();
   const { top } = useSafeAreaInsets();
   const colorScheme = useColorScheme();
@@ -98,7 +99,7 @@ export default function PaymentSuccessScreen() {
         style={[
           styles.circle,
           {
-            backgroundColor: Theme["text-success"],
+            backgroundColor: Theme["bg-payment-success"],
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
@@ -138,7 +139,7 @@ export default function PaymentSuccessScreen() {
               style={[
                 styles.button,
                 {
-                  backgroundColor: Theme["text-success"],
+                  backgroundColor: Theme["bg-payment-success"],
                   borderColor: Theme["border-primary"],
                 },
               ]}
@@ -167,6 +168,10 @@ export default function PaymentSuccessScreen() {
               New Sale
             </ThemedText>
           </Button>
+          <VariantLogo
+            style={styles.variantLogo}
+            tintColor={Theme["text-invert"]}
+          />
         </View>
       </Animated.View>
       <StatusBar style={colorScheme} />
@@ -218,5 +223,9 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     lineHeight: 20,
+  },
+  variantLogo: {
+    marginTop: Spacing["spacing-2"],
+    alignSelf: "center",
   },
 });

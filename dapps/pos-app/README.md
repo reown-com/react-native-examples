@@ -95,3 +95,48 @@ The release APK will be generated at `android/app/build/outputs/apk/release/app-
    ```
 
 > **⚠️ Security Note**: Never commit `secrets.properties` or keystore files to version control.
+
+## Creating Custom Variants
+
+To create a branded variant for a specific client:
+
+1. **Create a new branch**
+   ```bash
+   git checkout -b variant/<client-name>
+   ```
+
+2. **Replace the variant logo**
+   - Replace `assets/images/variant_logo.png` with the client's logo
+   - **Requirements**: PNG format, single color (the app applies tint colors from the theme)
+   - If needed, adjust the logo dimensions in `components/variant-logo.tsx` (default: 150x18)
+
+3. **Enable the variant logo by default**
+   - In `store/useSettingsStore.ts`, change `showVariantLogo` default to `true`:
+     ```typescript
+     showVariantLogo: true,
+     ```
+
+4. **Customize theme colors** in `constants/theme.ts`
+   - Update accent colors in both `light` and `dark` themes:
+     - `bg-accent-primary` - Main accent color (buttons, highlights)
+     - `icon-accent-primary` - Icon accent color
+   - Update payment success background (light theme only):
+     - `bg-payment-success` - Background color for the payment success screen (light theme only, as the payment success screen always uses light theme regardless of system settings)
+
+5. **Update Android version code** in `app.json`
+   - Increment `expo.android.versionCode`
+
+6. **Commit, push, and create a release tag (Devin only)**
+   ```bash
+   git add .
+   git commit -m "feat: add <client-name> variant"
+   git push origin variant/<client-name>
+   git tag variant-<client-name>
+   git push origin variant-<client-name>
+   ```
+   The tag will trigger the release workflow automatically.
+
+7. **Verify the release**
+   - Check the build status and Firebase link in the `#system-releases-react-native` Slack channel
+
+**Manual release**: If you need to trigger the release manually instead of using a tag, go to GitHub Actions and run the `release-android-mobilepos` workflow.

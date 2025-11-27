@@ -1,5 +1,6 @@
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
+import { VariantLogo } from "@/components/variant-logo";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAssets } from "expo-asset";
@@ -55,6 +56,7 @@ export default function HomeScreen() {
         />
         <ThemedText fontSize={18}>Settings</ThemedText>
       </Button>
+      <VariantLogo />
     </View>
   );
 }

@@ -4,7 +4,11 @@ permissions:
   id-token: write
   contents: read
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+  push:
+    tags:
+      - 'variant-*'
 
 jobs:
   release:
