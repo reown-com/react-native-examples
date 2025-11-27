@@ -18,7 +18,7 @@ interface SettingsStore {
 
 export const useSettingsStore = create<SettingsStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       themeMode: Appearance.getColorScheme() || "light",
       deviceId: "",
       showVariantLogo: false,
@@ -31,8 +31,14 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 2,
+      version: 3,
       storage,
+      migrate: (persistedState: any, version: number) => {
+        if (version < 3) {
+          persistedState.showVariantLogo = false;
+        }
+        return persistedState;
+      },
       onRehydrateStorage: () => (state, error) => {
         if (error) {
           console.error("Hydration failed:", error);

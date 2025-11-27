@@ -16,14 +16,16 @@ export function VariantLogo({ tintColor, style }: VariantLogoProps) {
   const [assets] = useAssets([require("@/assets/images/variant_logo.png")]);
   const _tintColor = tintColor ?? Theme["text-secondary"];
 
-  return showVariantLogo ? (
+  if (!showVariantLogo || !assets?.[0]) return null;
+
+  return (
     <Image
       source={assets?.[0]}
       style={[styles.logo, { tintColor: _tintColor }, style]}
       tintColor={_tintColor}
       contentFit="contain"
     />
-  ) : null;
+  );
 }
 
 const styles = StyleSheet.create({
