@@ -14,11 +14,16 @@ import { showErrorToast } from "@/utils/toast";
 import { StyleSheet, View } from "react-native";
 
 export default function Settings() {
-  const { themeMode, setThemeMode } = useSettingsStore((state) => state);
+  const { themeMode, setThemeMode, setShowVariantLogo, showVariantLogo } =
+    useSettingsStore((state) => state);
 
   const handleThemeModeChange = (value: boolean) => {
     const newThemeMode = value ? "dark" : "light";
     setThemeMode(newThemeMode);
+  };
+
+  const handleShowVariantLogoChange = (value: boolean) => {
+    setShowVariantLogo(value);
   };
 
   const handleTestPrinterPress = async () => {
@@ -54,6 +59,16 @@ export default function Settings() {
           style={styles.switch}
           value={themeMode === "dark"}
           onValueChange={handleThemeModeChange}
+        />
+      </Card>
+      <Card style={styles.card}>
+        <ThemedText fontSize={16} lineHeight={18}>
+          Show Variant Logo
+        </ThemedText>
+        <Switch
+          style={styles.switch}
+          value={showVariantLogo}
+          onValueChange={handleShowVariantLogoChange}
         />
       </Card>
       <Card onPress={handleTestPrinterPress} style={styles.card}>
