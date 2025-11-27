@@ -151,13 +151,15 @@ export default function QRModalScreen() {
               ${amount}
             </ThemedText>
           </View>
-          {qrUri ? (
-            <QRCode size={280} uri={qrUri} logoBorderRadius={100}>
-              <Image source={assets?.[0]} style={styles.logo} />
-            </QRCode>
-          ) : (
-            <Shimmer width={280} height={280} borderRadius={6} />
-          )}
+            {qrUri ? (
+              <View style={styles.qrCodeContainer}>
+                <QRCode size={268} uri={qrUri} logoBorderRadius={100}>
+                  <Image source={assets?.[0]} style={styles.logo} />
+                </QRCode>
+              </View>
+            ) : (
+              <Shimmer width={280} height={280} borderRadius={6} />
+            )}
           <View style={{ flex: 1 }} />
         </View>
       )}
@@ -183,6 +185,14 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing["spacing-5"],
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  qrCodeContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    borderRadius: 6,
+    width: 280,
+    height: 280,
   },
   amountContainer: {
     width: "100%",
