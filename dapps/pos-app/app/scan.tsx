@@ -5,7 +5,7 @@ import QRCode from "@/components/qr-code";
 import { Shimmer } from "@/components/shimmer";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
-import { Spacing } from "@/constants/spacing";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
@@ -152,13 +152,11 @@ export default function QRModalScreen() {
             </ThemedText>
           </View>
             {qrUri ? (
-              <View style={styles.qrCodeContainer}>
-                <QRCode size={268} uri={qrUri} logoBorderRadius={100}>
-                  <Image source={assets?.[0]} style={styles.logo} />
-                </QRCode>
-              </View>
+              <QRCode size={300} uri={qrUri} logoBorderRadius={100}>
+                <Image source={assets?.[0]} style={styles.logo} />
+              </QRCode>
             ) : (
-              <Shimmer width={280} height={280} borderRadius={6} />
+              <Shimmer width={300} height={300} borderRadius={BorderRadius["5"]} />
             )}
           <View style={{ flex: 1 }} />
         </View>

@@ -34,8 +34,8 @@ function QrCode_({
   logoBorderRadius,
 }: QrCodeProps) {
   const Theme = useTheme("light");
-
-  const qrSize = size;
+  const containerPadding = Spacing["spacing-3"];
+  const qrSize = size - containerPadding * 2;
   const _logoSize = arenaClear ? 0 : (logoSize ?? qrSize / 4);
   const logoAreaSize = _logoSize > 0 ? _logoSize + Spacing["spacing-6"] : 0;
 
@@ -53,6 +53,7 @@ function QrCode_({
       style={[
         styles.container,
         {
+          height: size,
           width: size,
           backgroundColor: Theme["bg-primary"],
         },
@@ -74,8 +75,10 @@ function QrCode_({
           eyePatternGap: 0,
           logoAreaBorderRadius: logoBorderRadius,
         }}
-        logoAreaSize={logoAreaSize > 0 ? logoAreaSize : undefined}
-        logo={children}
+        logoAreaSize={
+          !arenaClear && children && logoAreaSize > 0 ? logoAreaSize : undefined
+        }
+        logo={!arenaClear && children ? children : undefined}
       />
       {!arenaClear && <View style={styles.icon}>{children}</View>}
     </View>
