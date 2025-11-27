@@ -27,7 +27,6 @@ export const connectPrinter = async (): Promise<{
     // Connect to first device
     const printer = devices[0].getDevice(); // { name, address, vendorId, productId, ... }
     await ReactNativePosPrinter.connectPrinter(printer.address); // e.g., 'USB' or mac address
-    console.log("Connected to:", printer);
     return { connected: true };
   } catch (error) {
     console.error("Connection failed:", error);
@@ -112,8 +111,6 @@ export const printWalletConnectReceipt = async (
 
     await ReactNativePosPrinter.newLine(2);
     await ReactNativePosPrinter.cutPaper();
-
-    console.log("Receipt printed perfectly!");
   } catch (error) {
     console.error("Print failed:", error);
   }

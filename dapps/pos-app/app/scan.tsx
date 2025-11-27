@@ -8,6 +8,7 @@ import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
+import { showErrorToast } from "@/utils/toast";
 import { PaymentStatusSuccessResponse } from "@/utils/types";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
@@ -32,21 +33,24 @@ export default function QRModalScreen() {
 
   const { amount } = params;
 
-  const onSuccess = useCallback((data: PaymentStatusSuccessResponse) => {
-    const { paymentId, chainName, token, amount, createdAt } = data;
+  const onSuccess = useCallback(
+    (data: PaymentStatusSuccessResponse) => {
+      const { paymentId, chainName, token, createdAt } = data;
 
-    router.dismiss();
-    router.replace({
-      pathname: "/payment-success",
-      params: {
-        amount,
-        paymentId,
-        chainName,
-        token,
-        timestamp: new Date(createdAt * 1000).toISOString(),
-      },
-    });
-  }, [amount, paymentId]);
+      router.dismiss();
+      router.replace({
+        pathname: "/payment-success",
+        params: {
+          amount,
+          paymentId,
+          chainName,
+          token,
+          timestamp: new Date(createdAt * 1000).toISOString(),
+        },
+      });
+    },
+    [amount],
+  );
 
   const onFailure = useCallback(
     (errorCode?: string, errorMessage?: string) => {
@@ -81,14 +85,19 @@ export default function QRModalScreen() {
         };
 
         const data = await startPayment(paymentRequest);
-        const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/${data.paymentId}`;
-        setQrUri(url);
-        setPaymentId(data.paymentId);
-        setIsLoading(false);
-      } catch (error) {
+
+        if (process.env.EXPO_PUBLIC_GATEWAY_URL) {
+          const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/${data.paymentId}`;
+          setQrUri(url);
+          setPaymentId(data.paymentId);
+          setIsLoading(false);
+        } else {
+          showErrorToast("Gateway URL is not configured");
+        }
+      } catch (error: any) {
         console.error("Failed to start payment:", error);
         setIsLoading(false);
-        onFailure(undefined, (error as Error)?.message ?? "Unknown error");
+        onFailure(error?.code, (error as Error)?.message ?? "Unknown error");
       }
     }
 

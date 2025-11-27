@@ -1,6 +1,9 @@
 import { ApiError } from "@/utils/types";
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "";
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+if (!API_BASE_URL) {
+  throw new Error("EXPO_PUBLIC_API_URL environment variable is not configured");
+}
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;

@@ -78,7 +78,8 @@ export function usePaymentStatus(
   const query = useQuery<PaymentStatusResponse, Error>({
     queryKey: ["paymentStatus", paymentId],
     queryFn: () => {
-      return getPaymentStatus(paymentId!);
+      if (!paymentId) throw new Error("Payment ID required");
+      return getPaymentStatus(paymentId);
     },
     enabled: enabled && !!paymentId,
     refetchOnWindowFocus: false,

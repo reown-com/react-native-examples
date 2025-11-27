@@ -48,21 +48,31 @@ export default function PaymentSuccessScreen() {
     resetNavigation("/amount");
   };
 
-  const setPrinter = async () => {
-    try {
-      const { connected, error } = await connectPrinter();
-      setIsPrinterConnected(connected);
-      if (!connected && error) {
-        console.error("Printer connection failed:", error);
-      }
-    } catch (error) {
-      console.error("Connection failed:", error);
-      setIsPrinterConnected(false);
-    }
-  };
-
   useEffect(() => {
-    setPrinter();
+    let isMounted = true;
+
+    const initPrinter = async () => {
+      try {
+        const { connected, error } = await connectPrinter();
+        if (isMounted) {
+          setIsPrinterConnected(connected);
+          if (!connected && error) {
+            console.error("Printer connection failed:", error);
+          }
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error("Connection failed:", error);
+          setIsPrinterConnected(false);
+        }
+      }
+    };
+
+    initPrinter();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {

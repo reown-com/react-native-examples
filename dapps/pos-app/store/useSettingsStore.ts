@@ -1,7 +1,7 @@
 import { storage } from "@/utils/storage";
 import { Appearance } from "react-native";
 import { create } from "zustand";
-import { persist, StorageValue } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
 interface SettingsStore {
   themeMode: "light" | "dark";
@@ -23,28 +23,7 @@ export const useSettingsStore = create<SettingsStore>()(
     {
       name: "settings",
       version: 2,
-      storage: {
-        //TODO: Review this
-        getItem: async (name) => {
-          const existingValue = await storage.getItem(name);
-
-          return {
-            ...existingValue,
-          };
-        },
-        setItem: (name, newValue: StorageValue<SettingsStore>) => {
-          const str = JSON.stringify({
-            ...newValue,
-            state: {
-              ...newValue.state,
-            },
-          });
-          storage.setItem(name, str);
-        },
-        removeItem: (name) => {
-          storage.removeItem(name);
-        },
-      },
+      storage,
     },
   ),
 );

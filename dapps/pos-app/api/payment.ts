@@ -24,5 +24,8 @@ export async function startPayment(
 export async function getPaymentStatus(
   paymentId: string,
 ): Promise<PaymentStatusResponse> {
+  if (!paymentId?.trim()) {
+    throw new Error("paymentId is required");
+  }
   return apiClient.get<PaymentStatusResponse>(`/status/${paymentId}`);
 }
