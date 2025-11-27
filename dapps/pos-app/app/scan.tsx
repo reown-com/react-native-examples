@@ -2,6 +2,7 @@ import { usePaymentStatus } from "@/api/hooks";
 import { startPayment } from "@/api/payment";
 import { CloseButton } from "@/components/close-button";
 import QRCode from "@/components/qr-code";
+import { Shimmer } from "@/components/shimmer";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
@@ -27,7 +28,9 @@ export default function QRModalScreen() {
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+
+  //TODO: Set this loader to true when payment is initiated. Pending backend changes
+  const [isLoading, setIsLoading] = useState(false);
   const { deviceId } = useSettingsStore((state) => state);
   const Theme = useTheme();
 
@@ -75,7 +78,6 @@ export default function QRModalScreen() {
     if (!deviceId || !amount) return;
 
     async function initiatePayment() {
-      setIsLoading(true);
       try {
         const paymentRequest = {
           merchantId: "test_merchant_111",
@@ -90,13 +92,11 @@ export default function QRModalScreen() {
           const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/${data.paymentId}`;
           setQrUri(url);
           setPaymentId(data.paymentId);
-          setIsLoading(false);
         } else {
           showErrorToast("Gateway URL is not configured");
         }
       } catch (error: any) {
         console.error("Failed to start payment:", error);
-        setIsLoading(false);
         onFailure(error?.code, (error as Error)?.message ?? "Unknown error");
       }
     }
@@ -106,7 +106,7 @@ export default function QRModalScreen() {
   }, [deviceId, amount]);
 
   usePaymentStatus(paymentId, {
-    enabled: !!paymentId && !isLoading,
+    enabled: !!paymentId && !isLoading && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "completed") {
         onSuccess(data);
@@ -139,9 +139,13 @@ export default function QRModalScreen() {
               ${amount}
             </ThemedText>
           </View>
-          <QRCode size={300} uri={qrUri} logoBorderRadius={100}>
-            <Image source={assets?.[0]} style={styles.logo} />
-          </QRCode>
+          {qrUri ? (
+            <QRCode size={280} uri={qrUri} logoBorderRadius={100}>
+              <Image source={assets?.[0]} style={styles.logo} />
+            </QRCode>
+          ) : (
+            <Shimmer width={280} height={280} borderRadius={6} />
+          )}
           <View style={{ flex: 1 }} />
         </View>
       )}
