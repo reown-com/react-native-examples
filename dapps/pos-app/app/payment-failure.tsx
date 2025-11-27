@@ -9,7 +9,6 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { getPaymentErrorMessage } from "@/utils/payment-errors";
-import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 
 interface ScreenParams extends UnknownOutputParams {
@@ -29,7 +28,7 @@ export default function PaymentFailureScreen() {
   };
 
   useEffect(() => {
-    showErrorToast(`${params.errorCode}: ${params.errorMessage}`);
+    console.error(`${params.errorCode}: ${params.errorMessage}`);
   }, [params]);
 
   return (
