@@ -37,8 +37,8 @@ jobs:
             This is the React Native Examples repository for Reown AppKit and WalletKit, containing reference implementations and demo applications.
 
             Repository Structure:
-            - **Dapps** (`dapps/`): Example applications demonstrating AppKit integration with various libraries (Wagmi, Viem, Ethers v5/v6, Universal Provider, Expo)
-            - **Wallets** (`wallets/`): Reference wallet implementations using WalletKit SDK
+            - **Dapps**: Example applications demonstrating AppKit integration with various libraries (Wagmi, Viem, Ethers v5/v6, Universal Provider, Expo)
+            - **Wallets**: Reference wallet implementations using WalletKit SDK
             
             Key considerations for this project:
             - **Example-Driven Development**: Each example should be self-contained, well-documented, and demonstrate best practices
