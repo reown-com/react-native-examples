@@ -1,0 +1,54 @@
+name: Claude Auto Review
+
+on:
+  pull_request:
+    types: [opened]
+    branches: [main]
+  issue_comment:
+    types: [created]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    if: |
+      github.event_name == 'pull_request'
+      || (
+        github.event_name == 'issue_comment'
+        && github.event.issue.pull_request
+        && contains(github.event.comment.body, '@claude review')
+      )
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude Review
+        uses: WalletConnect/actions/claude/auto-review@master
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          project_context: |
+            This is the React Native Examples repository for Reown AppKit and WalletKit, containing reference implementations and demo applications.
+
+            Repository Structure:
+            - **Dapps**: Example applications demonstrating AppKit integration with various libraries (Wagmi, Viem, Ethers v5/v6, Universal Provider, Expo)
+            - **Wallets**: Reference wallet implementations using WalletKit SDK
+            
+            Key considerations for this project:
+            - **Example-Driven Development**: Each example should be self-contained, well-documented, and demonstrate best practices
+            - **React Native Patterns**: Function-based components with hooks (useState, useEffect, useCallback, useMemo)
+            - **TypeScript Standards**: Strict typing throughout all examples for educational value
+            - **Multiple Integration Patterns**: Examples showcase different blockchain libraries (Wagmi, Ethers, Viem) and use cases
+            - **Platform Support**: Examples must work on both iOS and Android, with Expo and bare React Native CLI
+            - **Documentation**: Each example includes README with setup instructions, dependencies, and key concepts
+            - **Code Quality**: Clean, readable code that serves as reference for developers integrating AppKit/WalletKit
+            - **Dependency Management**: Keep dependencies up-to-date with latest AppKit/WalletKit SDK versions
+            - **Error Handling**: Demonstrate proper error handling patterns for wallet connections and blockchain interactions
+            - **Performance**: Show efficient rendering patterns, especially for wallet lists and transaction histories
+            - **Developer Experience**: Easy setup with clear instructions for running on simulators/emulators and physical devices
