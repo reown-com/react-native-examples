@@ -10,20 +10,47 @@ export const requestBluetoothPermission = async () => {
   return result === RESULTS.GRANTED || result === RESULTS.LIMITED;
 };
 
-export const connectPrinter = async () => {
+export const connectPrinter = async (): Promise<{
+  connected: boolean;
+  error?: string;
+}> => {
   try {
     // Scan for devices
     const devices = await ReactNativePosPrinter.getDeviceList();
-    if (devices.length === 0) throw new Error("No printers found");
+    if (devices.length === 0) {
+      return {
+        connected: false,
+        error: "No printer detected on this device",
+      };
+    }
 
-    // Connect to first device (filter for your iMin, e.g., by name/vendor)
+    // Connect to first device
     const printer = devices[0].getDevice(); // { name, address, vendorId, productId, ... }
     await ReactNativePosPrinter.connectPrinter(printer.address); // e.g., 'USB' or mac address
     console.log("Connected to:", printer);
-    return true;
+    return { connected: true };
   } catch (error) {
     console.error("Connection failed:", error);
-    return false;
+
+    // Check for Bluetooth permission error
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (
+      errorMessage.includes("BLUETOOTH_CONNECT") ||
+      errorMessage.includes("bluetooth") ||
+      errorMessage.includes("permission")
+    ) {
+      return {
+        connected: false,
+        error:
+          "Please enable Bluetooth on your device to connect to the printer",
+      };
+    }
+
+    // Generic error with details
+    return {
+      connected: false,
+      error: `Failed to connect: ${errorMessage}`,
+    };
   }
 };
 

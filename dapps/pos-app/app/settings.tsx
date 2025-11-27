@@ -28,9 +28,9 @@ export default function Settings() {
         showErrorToast("Failed to request Bluetooth permission");
         return;
       }
-      const isConnected = await connectPrinter();
-      if (!isConnected) {
-        showErrorToast("Failed to connect to printer");
+      const { connected, error } = await connectPrinter();
+      if (!connected) {
+        showErrorToast(error || "Failed to connect to printer");
         return;
       }
       await printWalletConnectReceipt(

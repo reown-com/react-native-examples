@@ -62,4 +62,36 @@ android/
     └── wc_rn_upload.keystore  ← Place here
 ```
 
+**Build the release APK:**
+
+```bash
+npm run android:build
+```
+
+The release APK will be generated at `android/app/build/outputs/apk/release/app-release.apk`
+
+**Install on a device via USB:**
+
+> **Note**: Make sure USB debugging is enabled on your Android device. Go to Settings → About phone → Tap "Build number" 7 times → Developer options → Enable "USB debugging".
+
+1. Connect your device via USB and get its device ID:
+
+   ```bash
+   adb devices
+   ```
+   
+   Example output: `V510BAC07114B000171`
+
+2. Build the release APK:
+
+   ```bash
+   npm run android:build
+   ```
+
+3. Install the APK on your device (replace with your device ID):
+
+   ```bash
+   adb -s V510BAC07114B000171 install android/app/build/outputs/apk/release/app-release.apk
+   ```
+
 > **⚠️ Security Note**: Never commit `secrets.properties` or keystore files to version control.

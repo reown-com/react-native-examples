@@ -50,8 +50,11 @@ export default function PaymentSuccessScreen() {
 
   const setPrinter = async () => {
     try {
-      const isConnected = await connectPrinter();
-      setIsPrinterConnected(isConnected);
+      const { connected, error } = await connectPrinter();
+      setIsPrinterConnected(connected);
+      if (!connected && error) {
+        console.error("Printer connection failed:", error);
+      }
     } catch (error) {
       console.error("Connection failed:", error);
       setIsPrinterConnected(false);
