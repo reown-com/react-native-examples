@@ -21,7 +21,7 @@ import { StatusBar } from "expo-status-bar";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
-  network: string;
+  chainName: string;
   token: string;
   timestamp: string;
   paymentId: string;
@@ -118,7 +118,7 @@ export default function PaymentSuccessScreen() {
                   params.paymentId,
                   Number(amount),
                   params.token,
-                  params.network,
+                  params.chainName,
                   params.timestamp,
                 )
               }

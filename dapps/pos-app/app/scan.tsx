@@ -8,6 +8,7 @@ import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
+import { PaymentStatusSuccessResponse } from "@/utils/types";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
@@ -31,16 +32,18 @@ export default function QRModalScreen() {
 
   const { amount } = params;
 
-  const onSuccess = useCallback(() => {
+  const onSuccess = useCallback((data: PaymentStatusSuccessResponse) => {
+    const { paymentId, chainName, token, amount, createdAt } = data;
+
     router.dismiss();
     router.replace({
       pathname: "/payment-success",
       params: {
         amount,
         paymentId,
-        network: "Base",
-        token: "USDC",
-        timestamp: new Date().toISOString(),
+        chainName,
+        token,
+        timestamp: new Date(createdAt * 1000).toISOString(),
       },
     });
   }, [amount, paymentId]);
@@ -98,7 +101,7 @@ export default function QRModalScreen() {
     enabled: !!paymentId && !isLoading,
     onTerminalState: (data) => {
       if (data.status === "completed") {
-        onSuccess();
+        onSuccess(data);
       } else if (data.status === "failed") {
         onFailure(data.error);
       }

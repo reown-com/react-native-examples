@@ -33,7 +33,12 @@ export default function Settings() {
         showErrorToast("Failed to connect to printer");
         return;
       }
-      await printWalletConnectReceipt("1234567890", 15, "USDC", "Base");
+      await printWalletConnectReceipt(
+        "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
+        15,
+        "USDC",
+        "Base",
+      );
     } catch (error) {
       console.error("Failed to test printer:", error);
     }
