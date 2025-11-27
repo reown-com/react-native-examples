@@ -117,9 +117,6 @@ To create a branded variant for a specific client:
      ```
 
 4. **Customize theme colors** in `constants/theme.ts`
-   - Update accent colors in both `light` and `dark` themes:
-     - `bg-accent-primary` - Main accent color (buttons, highlights)
-     - `icon-accent-primary` - Icon accent color
    - Update payment success background (light theme only):
      - `bg-payment-success` - Background color for the payment success screen (light theme only, as the payment success screen always uses light theme regardless of system settings)
 
