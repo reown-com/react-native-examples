@@ -30,6 +30,7 @@ export function CloseButton({ style, onPress, themeMode }: CloseButtonProps) {
       <Image
         style={[styles.image, { tintColor: Theme["text-primary"] }]}
         source={assets?.[0]}
+        tintColor={Theme["text-primary"]}
         cachePolicy="memory-disk"
         priority="high"
       />

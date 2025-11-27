@@ -39,14 +39,6 @@ export default function Settings() {
     }
   };
 
-  // const handleRecipientPress = () => {
-  //   router.push("/settings-address-list");
-  // };
-
-  // const handleNetworksPress = () => {
-  //   router.push("/settings-networks");
-  // };
-
   return (
     <View style={styles.container}>
       <Card style={styles.card}>
@@ -59,16 +51,6 @@ export default function Settings() {
           onValueChange={handleThemeModeChange}
         />
       </Card>
-      {/* <Card onPress={handleRecipientPress} style={styles.card}>
-        <ThemedText fontSize={16} lineHeight={18}>
-          Recipient addresses
-        </ThemedText>
-      </Card>
-      <Card onPress={handleNetworksPress} style={styles.card}>
-        <ThemedText fontSize={16} lineHeight={18}>
-          Networks
-        </ThemedText>
-      </Card> */}
       <Card onPress={handleTestPrinterPress} style={styles.card}>
         <ThemedText fontSize={16} lineHeight={18}>
           Test printer

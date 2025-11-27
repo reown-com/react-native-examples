@@ -39,6 +39,7 @@ export default function PaymentFailureScreen() {
           source={assets?.[0]}
           style={[styles.warningCircle, { tintColor: Theme["icon-error"] }]}
           cachePolicy="memory-disk"
+          tintColor={Theme["icon-error"]}
           priority="high"
         />
         <ThemedText

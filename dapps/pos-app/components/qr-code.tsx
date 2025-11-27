@@ -83,7 +83,7 @@ function QrCode_({
   );
 }
 
-export const QRCode = memo(QrCode_, (prevProps, nextProps) => {
+export default memo(QrCode_, (prevProps, nextProps) => {
   return (
     prevProps.size === nextProps.size &&
     prevProps.uri === nextProps.uri &&

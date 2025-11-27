@@ -1,7 +1,7 @@
 import { usePaymentStatus } from "@/api/hooks";
 import { startPayment } from "@/api/payment";
 import { CloseButton } from "@/components/close-button";
-import { QRCode } from "@/components/qr-code";
+import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";

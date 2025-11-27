@@ -14,12 +14,13 @@ export default function HeaderImage({ tintColor, padding }: HeaderImageProps) {
       source={assets?.[0]}
       cachePolicy="memory-disk"
       priority="high"
+      tintColor={tintColor}
       style={{
         height: 18,
         width: 185,
         marginTop: Spacing["spacing-1"],
         tintColor: tintColor,
-        paddingRight: padding ? Spacing["spacing-2"] : 0,
+        marginRight: padding ? Spacing["spacing-2"] : 0,
       }}
     />
   );
