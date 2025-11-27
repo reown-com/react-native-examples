@@ -21,7 +21,7 @@ export const useSettingsStore = create<SettingsStore>()(
     (set) => ({
       themeMode: Appearance.getColorScheme() || "light",
       deviceId: "",
-      showVariantLogo: false,
+      showVariantLogo: true,
       _hasHydrated: false,
       setThemeMode: (themeMode: "light" | "dark") => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
