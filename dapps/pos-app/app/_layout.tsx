@@ -21,13 +21,14 @@ import {
 } from "@/utils/navigation";
 import * as Sentry from "@sentry/react-native";
 
+import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect } from "react";
-import { Platform } from "react-native";
+import { Platform, View } from "react-native";
 import {
   initialWindowMetrics,
   SafeAreaProvider,
@@ -54,7 +55,9 @@ const queryClient = new QueryClient();
 
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
-  const { setDeviceId, deviceId } = useSettingsStore((state) => state);
+  const setDeviceId = useSettingsStore((state) => state.setDeviceId);
+  const deviceId = useSettingsStore((state) => state.deviceId);
+  const _hasHydrated = useSettingsStore((state) => state._hasHydrated);
   const Theme = useTheme();
 
   useEffect(() => {
@@ -67,6 +70,14 @@ export default Sentry.wrap(function RootLayout() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceId]);
+
+  if (!_hasHydrated) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <WalletConnectLoading size={180} />
+      </View>
+    );
+  }
 
   return (
     <GestureHandlerRootView>
