@@ -10,14 +10,14 @@ export const Colors = {
     // Icon colors
     "icon-default": "#9A9A9A",
     "icon-invert": "#202020",
-    "icon-accent-primary": "#6C00F6",
+    "icon-accent-primary": "#0988F0",
     "icon-error": "#DF4A34",
 
     // Background colors
     "bg-primary": "#FFFFFF",
     "bg-invert": "#202020",
-    "bg-accent-primary": "#6C00F6",
-    "bg-payment-success": "#30A46B",
+    "bg-accent-primary": "#0988F0",
+    "bg-payment-success": "#6C00F6",
 
     // Text colors
     "text-primary": "#202020",
@@ -37,14 +37,14 @@ export const Colors = {
     // Icon colors
     "icon-default": "#9A9A9A",
     "icon-invert": "#FFFFFF",
-    "icon-accent-primary": "#6C00F6",
+    "icon-accent-primary": "#0988F0",
     "icon-error": "#DF4A34",
 
     // Background colors
     "bg-primary": "#202020",
     "bg-invert": "#FFFFFF",
-    "bg-accent-primary": "#6C00F6",
-    "bg-payment-success": "#30A46B",
+    "bg-accent-primary": "#0988F0",
+    "bg-payment-success": "#6C00F6",
 
     // Text colors
     "text-primary": "#FFFFFF",
