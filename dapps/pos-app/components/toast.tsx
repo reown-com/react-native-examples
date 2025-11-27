@@ -31,7 +31,11 @@ export function Toast({ message = "", type }: ToastProps) {
         },
       ]}
     >
-      <Image source={image} style={styles.image} tintColor={iconColor} />
+      <Image
+        source={image}
+        style={[styles.image, { tintColor: iconColor }]}
+        tintColor={iconColor}
+      />
 
       <ThemedText fontSize={16} lineHeight={18}>
         {message}

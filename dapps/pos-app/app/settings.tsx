@@ -5,7 +5,12 @@ import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
-import { router } from "expo-router";
+import {
+  connectPrinter,
+  printWalletConnectReceipt,
+  requestBluetoothPermission,
+} from "@/utils/printer";
+import { showErrorToast } from "@/utils/toast";
 import { StyleSheet, View } from "react-native";
 
 export default function Settings() {
@@ -16,12 +21,27 @@ export default function Settings() {
     setThemeMode(newThemeMode);
   };
 
-  const handleRecipientPress = () => {
-    router.push("/settings-address-list");
-  };
-
-  const handleNetworksPress = () => {
-    router.push("/settings-networks");
+  const handleTestPrinterPress = async () => {
+    try {
+      const isBluetoothPermissionGranted = await requestBluetoothPermission();
+      if (!isBluetoothPermissionGranted) {
+        showErrorToast("Failed to request Bluetooth permission");
+        return;
+      }
+      const { connected, error } = await connectPrinter();
+      if (!connected) {
+        showErrorToast(error || "Failed to connect to printer");
+        return;
+      }
+      await printWalletConnectReceipt(
+        "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
+        15,
+        "USDC",
+        "Base",
+      );
+    } catch (error) {
+      console.error("Failed to test printer:", error);
+    }
   };
 
   return (
@@ -36,14 +56,9 @@ export default function Settings() {
           onValueChange={handleThemeModeChange}
         />
       </Card>
-      <Card onPress={handleRecipientPress} style={styles.card}>
+      <Card onPress={handleTestPrinterPress} style={styles.card}>
         <ThemedText fontSize={16} lineHeight={18}>
-          Recipient addresses
-        </ThemedText>
-      </Card>
-      <Card onPress={handleNetworksPress} style={styles.card}>
-        <ThemedText fontSize={16} lineHeight={18}>
-          Networks
+          Test printer
         </ThemedText>
       </Card>
       <CloseButton style={styles.closeButton} onPress={resetNavigation} />

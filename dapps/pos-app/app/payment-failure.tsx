@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -8,34 +8,29 @@ import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { TokenKey } from "@/utils/networks";
+import { getPaymentErrorMessage } from "@/utils/payment-errors";
+import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
-  token: TokenKey;
-  networkCaipId: string;
-  recipientAddress: string;
+  errorCode: string; // Error code from API (e.g., "INSUFFICIENT_BALANCE")
+  errorMessage: string;
 }
 
-export default function PaymentSuccessScreen() {
+export default function PaymentFailureScreen() {
   const Theme = useTheme();
   const { top } = useSafeAreaInsets();
   const params = useLocalSearchParams<ScreenParams>();
   const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
 
   const handleRetry = () => {
-    const { amount, token, networkCaipId, recipientAddress } = params;
-    router.dismissTo({
-      pathname: "/scan",
-      params: {
-        amount,
-        token,
-        networkCaipId,
-        recipientAddress,
-      },
-    });
+    router.dismissTo("/amount");
   };
+
+  useEffect(() => {
+    showErrorToast(`${params.errorCode}: ${params.errorMessage}`);
+  }, [params]);
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
@@ -44,6 +39,7 @@ export default function PaymentSuccessScreen() {
           source={assets?.[0]}
           style={[styles.warningCircle, { tintColor: Theme["icon-error"] }]}
           cachePolicy="memory-disk"
+          tintColor={Theme["icon-error"]}
           priority="high"
         />
         <ThemedText
@@ -54,8 +50,7 @@ export default function PaymentSuccessScreen() {
         <ThemedText
           style={[styles.failedDescription, { color: Theme["text-secondary"] }]}
         >
-          The payment couldn&apos;t be completed due to an error. Please try
-          again or use a different payment method.
+          {getPaymentErrorMessage(params.errorCode)}
         </ThemedText>
       </View>
       <View style={styles.buttonContainer}>

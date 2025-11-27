@@ -1,5 +1,5 @@
 import { UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -12,14 +12,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { resetNavigation } from "@/utils/navigation";
+import { connectPrinter, printWalletConnectReceipt } from "@/utils/printer";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
+  chainName: string;
+  token: string;
+  timestamp: string;
+  paymentId: string;
 }
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
@@ -34,6 +39,7 @@ export default function PaymentSuccessScreen() {
   const { top } = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const { amount } = params;
+  const [isPrinterConnected, setIsPrinterConnected] = useState(false);
 
   const circleScale = useSharedValue(1);
   const contentOpacity = useSharedValue(0);
@@ -41,6 +47,33 @@ export default function PaymentSuccessScreen() {
   const handleNewPayment = () => {
     resetNavigation("/amount");
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const initPrinter = async () => {
+      try {
+        const { connected, error } = await connectPrinter();
+        if (isMounted) {
+          setIsPrinterConnected(connected);
+          if (!connected && error) {
+            console.error("Printer connection failed:", error);
+          }
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error("Connection failed:", error);
+          setIsPrinterConnected(false);
+        }
+      }
+    };
+
+    initPrinter();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     circleScale.value = withTiming(finalScale, {
@@ -91,22 +124,32 @@ export default function PaymentSuccessScreen() {
           </ThemedText>
         </View>
         <View style={styles.buttonContainer}>
-          {/* <Button
-            onPress={() => {}}
-            style={[
-              styles.button,
-              {
-                backgroundColor: Theme["text-success"],
-                borderColor: Theme["border-primary"],
-              },
-            ]}
-          >
-            <ThemedText
-              style={[styles.buttonText, { color: Theme["text-invert"] }]}
+          {isPrinterConnected && (
+            <Button
+              onPress={() =>
+                printWalletConnectReceipt(
+                  params.paymentId,
+                  Number(amount),
+                  params.token,
+                  params.chainName,
+                  params.timestamp,
+                )
+              }
+              style={[
+                styles.button,
+                {
+                  backgroundColor: Theme["text-success"],
+                  borderColor: Theme["border-primary"],
+                },
+              ]}
             >
-              Send email receipt
-            </ThemedText>
-          </Button> */}
+              <ThemedText
+                style={[styles.buttonText, { color: Theme["text-invert"] }]}
+              >
+                Print receipt
+              </ThemedText>
+            </Button>
+          )}
 
           <Button
             style={[

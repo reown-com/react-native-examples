@@ -36,6 +36,10 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Skia Web artifacts
+public/
+web/
+
 app-example
 
 .env.local

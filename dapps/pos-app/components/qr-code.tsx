@@ -34,8 +34,8 @@ function QrCode_({
   logoBorderRadius,
 }: QrCodeProps) {
   const Theme = useTheme("light");
-  const containerPadding = Spacing["spacing-3"];
-  const qrSize = size - containerPadding * 2;
+
+  const qrSize = size;
   const _logoSize = arenaClear ? 0 : (logoSize ?? qrSize / 4);
   const logoAreaSize = _logoSize > 0 ? _logoSize + Spacing["spacing-6"] : 0;
 
@@ -55,7 +55,6 @@ function QrCode_({
         {
           width: size,
           backgroundColor: Theme["bg-primary"],
-          padding: containerPadding,
         },
         style,
       ]}
@@ -73,17 +72,17 @@ function QrCode_({
           eyePatternShape: "rounded",
           gap: 0,
           eyePatternGap: 0,
-          logoAreaBorderRadius: 100,
+          logoAreaBorderRadius: logoBorderRadius,
         }}
         logoAreaSize={logoAreaSize > 0 ? logoAreaSize : undefined}
-        logo={!arenaClear && children ? children : undefined}
+        logo={children}
       />
       {!arenaClear && <View style={styles.icon}>{children}</View>}
     </View>
   );
 }
 
-export const QRCode = memo(QrCode_, (prevProps, nextProps) => {
+export default memo(QrCode_, (prevProps, nextProps) => {
   return (
     prevProps.size === nextProps.size &&
     prevProps.uri === nextProps.uri &&

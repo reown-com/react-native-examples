@@ -36,7 +36,13 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.reown.mobilepos",
       "permissions": [
-        "android.permission.NFC"
+        "android.permission.NFC",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_ADVERTISE",
+        "android.permission.USB_PERMISSION"
       ],
       "versionCode": 11
     },
@@ -98,17 +104,23 @@
         }
       ],
       [
-        "expo-camera",
+        "expo-asset",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": false
+          "assets": [
+            "./assets/images",
+            "./assets/images/tokens",
+            "./assets/images/chains",
+            "./assets/images/payment_methods",
+            "./assets/app_icons"
+          ]
         }
       ],
       [
-        "expo-asset",
+        "react-native-permissions",
         {
-          "assets": ["./assets/images","./assets/images/tokens","./assets/images/chains","./assets/images/payment_methods","./assets/app_icons"]
+          "iosPermissions": [
+            "Bluetooth"
+          ]
         }
       ]
     ],
