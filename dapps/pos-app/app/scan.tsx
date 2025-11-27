@@ -41,7 +41,7 @@ export default function QRModalScreen() {
     (data: PaymentStatusResponse) => {
       const { paymentId, chainName, token, createdAt } = data;
 
-      router.dismissAll();
+      router.dismiss();
       router.replace({
         pathname: "/payment-success",
         params: {
