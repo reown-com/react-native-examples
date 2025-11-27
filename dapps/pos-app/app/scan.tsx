@@ -29,8 +29,7 @@ export default function QRModalScreen() {
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
-  //TODO: Set this loader to true when payment is initiated. Pending backend changes
-  const [isLoading, setIsLoading] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   const { deviceId } = useSettingsStore((state) => state);
   const Theme = useTheme();
 
@@ -84,6 +83,7 @@ export default function QRModalScreen() {
           refId: uuidv4(),
           amount: Number(amount) * 100, // amount in cents i.e. $1 = 100
           currency: "USD",
+          chainId: 8453,
         };
 
         const data = await startPayment(paymentRequest);
@@ -106,21 +106,30 @@ export default function QRModalScreen() {
   }, [deviceId, amount]);
 
   usePaymentStatus(paymentId, {
-    enabled: !!paymentId && !isLoading && !!qrUri,
+    enabled: !!paymentId && !isConfirming && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "completed") {
         onSuccess(data);
       } else if (data.status === "failed") {
         onFailure(data.error);
+      } else if (data.status === "confirming") {
+        setIsConfirming(true);
       }
     },
   });
 
   return (
     <View style={styles.container}>
-      {isLoading ? (
+      {isConfirming ? (
         <View style={styles.loadingContainer}>
           <WalletConnectLoading size={180} />
+          <ThemedText
+            style={[styles.amountText, { color: Theme["text-primary"] }]}
+            fontSize={16}
+            lineHeight={18}
+          >
+            Waiting for payment confirmation…
+          </ThemedText>
         </View>
       ) : (
         <View style={styles.scanContainer}>
