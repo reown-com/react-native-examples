@@ -21,6 +21,7 @@ import {
 } from "@/utils/navigation";
 import * as Sentry from "@sentry/react-native";
 
+import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
@@ -54,9 +55,9 @@ const queryClient = new QueryClient();
 
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
-  const { setDeviceId, deviceId, _hasHydrated } = useSettingsStore(
-    (state) => state,
-  );
+  const setDeviceId = useSettingsStore((state) => state.setDeviceId);
+  const deviceId = useSettingsStore((state) => state.deviceId);
+  const _hasHydrated = useSettingsStore((state) => state._hasHydrated);
   const Theme = useTheme();
 
   useEffect(() => {
@@ -71,7 +72,7 @@ export default Sentry.wrap(function RootLayout() {
   }, [deviceId]);
 
   if (!_hasHydrated) {
-    return null;
+    return <WalletConnectLoading size={180} />;
   }
 
   return (

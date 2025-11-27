@@ -28,7 +28,11 @@ export const useSettingsStore = create<SettingsStore>()(
       name: "settings",
       version: 2,
       storage,
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.error("Hydration failed:", error);
+        }
+
         state?.setHasHydrated(true);
       },
     },
