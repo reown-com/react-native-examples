@@ -121,7 +121,7 @@ To create a branded variant for a specific client:
      - `bg-accent-primary` - Main accent color (buttons, highlights)
      - `icon-accent-primary` - Icon accent color
    - Update payment success background (light theme only):
-     - `bg-payment-success` - Background color for the payment success screen
+     - `bg-payment-success` - Background color for the payment success screen (light theme only, as the payment success screen always uses light theme regardless of system settings)
 
 5. **Update Android version code** in `app.json`
    - Increment `expo.android.versionCode`
