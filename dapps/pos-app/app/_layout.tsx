@@ -28,7 +28,7 @@ import { getDeviceIdentifier } from "@/utils/misc";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect } from "react";
-import { Platform } from "react-native";
+import { Platform, View } from "react-native";
 import {
   initialWindowMetrics,
   SafeAreaProvider,
@@ -72,7 +72,11 @@ export default Sentry.wrap(function RootLayout() {
   }, [deviceId]);
 
   if (!_hasHydrated) {
-    return <WalletConnectLoading size={180} />;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <WalletConnectLoading size={180} />
+      </View>
+    );
   }
 
   return (
