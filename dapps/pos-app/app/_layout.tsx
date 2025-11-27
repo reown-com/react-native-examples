@@ -54,7 +54,9 @@ const queryClient = new QueryClient();
 
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
-  const { setDeviceId, deviceId } = useSettingsStore((state) => state);
+  const { setDeviceId, deviceId, _hasHydrated } = useSettingsStore(
+    (state) => state,
+  );
   const Theme = useTheme();
 
   useEffect(() => {
@@ -67,6 +69,10 @@ export default Sentry.wrap(function RootLayout() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceId]);
+
+  if (!_hasHydrated) {
+    return null;
+  }
 
   return (
     <GestureHandlerRootView>
