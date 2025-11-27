@@ -5,7 +5,7 @@ import QRCode from "@/components/qr-code";
 import { Shimmer } from "@/components/shimmer";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
-import { Spacing } from "@/constants/spacing";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
@@ -151,13 +151,13 @@ export default function QRModalScreen() {
               ${amount}
             </ThemedText>
           </View>
-          {qrUri ? (
-            <QRCode size={280} uri={qrUri} logoBorderRadius={100}>
-              <Image source={assets?.[0]} style={styles.logo} />
-            </QRCode>
-          ) : (
-            <Shimmer width={280} height={280} borderRadius={6} />
-          )}
+            {qrUri ? (
+              <QRCode size={300} uri={qrUri} logoBorderRadius={100}>
+                <Image source={assets?.[0]} style={styles.logo} />
+              </QRCode>
+            ) : (
+              <Shimmer width={300} height={300} borderRadius={BorderRadius["5"]} />
+            )}
           <View style={{ flex: 1 }} />
         </View>
       )}
@@ -183,6 +183,14 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing["spacing-5"],
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  qrCodeContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    borderRadius: 6,
+    width: 280,
+    height: 280,
   },
   amountContainer: {
     width: "100%",
