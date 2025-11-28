@@ -14,6 +14,7 @@ import {
   requestBluetoothPermission,
 } from "@/utils/printer";
 import { showErrorToast } from "@/utils/toast";
+import * as Application from "expo-application";
 import { router } from "expo-router";
 import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
@@ -75,6 +76,16 @@ export default function Settings() {
 
   return (
     <View style={styles.container}>
+      <ThemedText
+        fontSize={12}
+        lineHeight={14}
+        color="text-tertiary"
+        style={styles.versionText}
+      >
+        Version {Application.nativeApplicationVersion} (
+        {Application.nativeBuildVersion})
+      </ThemedText>
+
       {/* Variant Selector */}
       <View style={styles.dropdownSection}>
         <ThemedText
@@ -122,7 +133,6 @@ export default function Settings() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Spacing["spacing-5"],
     paddingHorizontal: Spacing["spacing-5"],
     gap: Spacing["spacing-3"],
   },
@@ -144,5 +154,9 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
+  },
+  versionText: {
+    alignSelf: "flex-end",
+    marginBottom: Spacing["spacing-2"],
   },
 });
