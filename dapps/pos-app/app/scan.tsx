@@ -2,11 +2,11 @@ import { usePaymentStatus } from "@/api/hooks";
 import { startPayment } from "@/api/payment";
 import { CloseButton } from "@/components/close-button";
 import QRCode from "@/components/qr-code";
-import { Shimmer } from "@/components/shimmer";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast } from "@/utils/toast";
@@ -33,6 +33,7 @@ export default function QRModalScreen() {
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
   const { deviceId } = useSettingsStore((state) => state);
+  const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
   const { amount } = params;
@@ -92,16 +93,31 @@ export default function QRModalScreen() {
 
         if (process.env.EXPO_PUBLIC_GATEWAY_URL) {
           const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/${data.paymentId}`;
-          console.log("payment id:", data.paymentId);
-          console.log("gateway url:", url);
+
+          addLog("info", "Payment started", "scan", "initiatePayment", {
+            paymentId: data.paymentId,
+            gatewayUrl: url,
+          });
           setQrUri(url);
           setPaymentId(data.paymentId);
         } else {
+          addLog(
+            "error",
+            "Gateway URL is not configured",
+            "scan",
+            "initiatePayment",
+          );
           showErrorToast("Gateway URL is not configured");
         }
       } catch (error: any) {
-        console.error("Failed to start payment:", error);
-        onFailure(error?.code, (error as Error)?.message ?? "Unknown error");
+        addLog(
+          "error",
+          (error as Error).message || "Unknown error",
+          "scan",
+          "initiatePayment",
+          { error },
+        );
+        onFailure(error?.code, (error as Error).message || "Unknown error");
       }
     }
 
@@ -113,9 +129,17 @@ export default function QRModalScreen() {
     enabled: !!paymentId && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "completed") {
+        addLog("info", "Payment completed", "scan", "usePaymentStatus", {
+          paymentId,
+          data,
+        });
         onSuccess(data);
       } else if (data.status === "failed") {
         const error = data as PaymentStatusErrorResponse;
+        addLog("error", error.error, "scan", "usePaymentStatus", {
+          paymentId,
+          data,
+        });
         onFailure(error.error);
       }
     },
@@ -153,17 +177,9 @@ export default function QRModalScreen() {
               ${amount}
             </ThemedText>
           </View>
-          {qrUri ? (
-            <QRCode size={300} uri={qrUri} logoBorderRadius={100}>
-              <Image source={assets?.[0]} style={styles.logo} />
-            </QRCode>
-          ) : (
-            <Shimmer
-              width={300}
-              height={300}
-              borderRadius={BorderRadius["5"]}
-            />
-          )}
+          <QRCode size={300} uri={qrUri} logoBorderRadius={100}>
+            <Image source={assets?.[0]} style={styles.logo} />
+          </QRCode>
           <View style={{ flex: 1 }} />
         </View>
       )}

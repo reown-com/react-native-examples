@@ -14,9 +14,10 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
-import { connectPrinter, printWalletConnectReceipt } from "@/utils/printer";
+import { connectPrinter, printReceipt } from "@/utils/printer";
 import { StatusBar } from "expo-status-bar";
 
 interface SuccessParams extends UnknownOutputParams {
@@ -40,6 +41,7 @@ export default function PaymentSuccessScreen() {
   const getVariantPrinterLogo = useSettingsStore(
     (state) => state.getVariantPrinterLogo,
   );
+  const addLog = useLogsStore((state) => state.addLog);
   const { top } = useSafeAreaInsets();
   const { amount } = params;
   const [isPrinterConnected, setIsPrinterConnected] = useState(false);
@@ -51,6 +53,23 @@ export default function PaymentSuccessScreen() {
     resetNavigation("/amount");
   };
 
+  const handlePrintReceipt = async () => {
+    try {
+      await printReceipt(
+        params.paymentId,
+        Number(amount),
+        params.token,
+        params.chainName,
+        params.timestamp,
+        getVariantPrinterLogo(),
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      addLog("error", errorMessage, "payment-success", "handlePrintReceipt");
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -60,12 +79,14 @@ export default function PaymentSuccessScreen() {
         if (isMounted) {
           setIsPrinterConnected(connected);
           if (!connected && error) {
-            console.error("Printer connection failed:", error);
+            addLog("error", error, "payment-success", "initPrinter");
           }
         }
       } catch (error) {
         if (isMounted) {
-          console.error("Connection failed:", error);
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          addLog("error", errorMessage, "payment-success", "initPrinter");
           setIsPrinterConnected(false);
         }
       }
@@ -76,7 +97,7 @@ export default function PaymentSuccessScreen() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [addLog]);
 
   useEffect(() => {
     circleScale.value = withTiming(finalScale, {
@@ -135,16 +156,7 @@ export default function PaymentSuccessScreen() {
         <View style={styles.buttonContainer}>
           {isPrinterConnected && (
             <Button
-              onPress={() =>
-                printWalletConnectReceipt(
-                  params.paymentId,
-                  Number(amount),
-                  params.token,
-                  params.chainName,
-                  params.timestamp,
-                  getVariantPrinterLogo(),
-                )
-              }
+              onPress={handlePrintReceipt}
               style={[
                 styles.button,
                 {

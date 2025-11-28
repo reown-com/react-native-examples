@@ -1,3 +1,4 @@
+import { useLogsStore } from "@/store/useLogsStore";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import {
   ReactNativePosPrinter,
@@ -26,12 +27,19 @@ export const connectPrinter = async (): Promise<{
     // Connect to first device
     const printer = devices[0].getDevice(); // { name, address, vendorId, productId, ... }
     await ReactNativePosPrinter.connectPrinter(printer.address); // e.g., 'USB' or mac address
+    useLogsStore
+      .getState()
+      .addLog("info", "Printer connected", "printer", "connectPrinter", {
+        printer,
+      });
     return { connected: true };
   } catch (error) {
-    console.error("Connection failed:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    useLogsStore
+      .getState()
+      .addLog("error", errorMessage, "printer", "connectPrinter", { error });
 
     // Check for Bluetooth permission error
-    const errorMessage = error instanceof Error ? error.message : String(error);
     if (
       errorMessage.includes("BLUETOOTH_CONNECT") ||
       errorMessage.includes("bluetooth") ||
@@ -52,7 +60,7 @@ export const connectPrinter = async (): Promise<{
   }
 };
 
-export const printWalletConnectReceipt = async (
+export const printReceipt = async (
   txnId: string,
   amountUsd: number,
   tokenSymbol: string,
@@ -112,6 +120,9 @@ export const printWalletConnectReceipt = async (
     await ReactNativePosPrinter.newLine(2);
     await ReactNativePosPrinter.cutPaper();
   } catch (error) {
-    console.error("Print failed:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    useLogsStore
+      .getState()
+      .addLog("error", errorMessage, "printer", "printReceipt");
   }
 };

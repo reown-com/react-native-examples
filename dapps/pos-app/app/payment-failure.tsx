@@ -1,6 +1,6 @@
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -26,10 +26,6 @@ export default function PaymentFailureScreen() {
   const handleRetry = () => {
     router.dismissTo("/amount");
   };
-
-  useEffect(() => {
-    console.error(`${params.errorCode}: ${params.errorMessage}`);
-  }, [params]);
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
