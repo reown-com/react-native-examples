@@ -10,7 +10,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
 import {
   connectPrinter,
-  printWalletConnectReceipt,
+  printReceipt,
   requestBluetoothPermission,
 } from "@/utils/printer";
 import { showErrorToast } from "@/utils/toast";
@@ -81,7 +81,7 @@ export default function Settings() {
         showErrorToast(error || "Failed to connect to printer");
         return;
       }
-      await printWalletConnectReceipt(
+      await printReceipt(
         "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
         15,
         "USDC",

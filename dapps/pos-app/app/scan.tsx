@@ -112,12 +112,12 @@ export default function QRModalScreen() {
       } catch (error: any) {
         addLog(
           "error",
-          (error as Error)?.message ?? "Unknown error",
+          (error as Error).message || "Unknown error",
           "scan",
           "initiatePayment",
           { error },
         );
-        onFailure(error?.code, (error as Error)?.message ?? "Unknown error");
+        onFailure(error?.code, (error as Error).message || "Unknown error");
       }
     }
 

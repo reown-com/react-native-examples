@@ -60,7 +60,7 @@ export const connectPrinter = async (): Promise<{
   }
 };
 
-export const printWalletConnectReceipt = async (
+export const printReceipt = async (
   txnId: string,
   amountUsd: number,
   tokenSymbol: string,
@@ -123,6 +123,6 @@ export const printWalletConnectReceipt = async (
     const errorMessage = error instanceof Error ? error.message : String(error);
     useLogsStore
       .getState()
-      .addLog("error", errorMessage, "printer", "printWalletConnectReceipt");
+      .addLog("error", errorMessage, "printer", "printReceipt");
   }
 };
