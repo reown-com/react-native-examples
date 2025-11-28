@@ -138,6 +138,7 @@ export default Sentry.wrap(function RootLayout() {
                 }}
               />
               <Stack.Screen name="settings" />
+              <Stack.Screen name="logs" />
             </Stack>
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
             <Toast

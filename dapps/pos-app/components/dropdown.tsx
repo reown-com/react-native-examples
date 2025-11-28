@@ -10,7 +10,6 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { Button } from "./button";
 import { ThemedText } from "./themed-text";
 
 export interface DropdownOption<T extends string = string> {
@@ -57,7 +56,7 @@ export function Dropdown<T extends string = string>({
   return (
     <View style={style}>
       {/* Trigger Button */}
-      <Button
+      <Pressable
         onPress={handleToggle}
         style={[
           styles.trigger,
@@ -81,7 +80,7 @@ export function Dropdown<T extends string = string>({
         >
           ▼
         </ThemedText>
-      </Button>
+      </Pressable>
 
       {/* Dropdown Modal */}
       <Modal
@@ -91,7 +90,8 @@ export function Dropdown<T extends string = string>({
         onRequestClose={handleBackdropPress}
       >
         <Pressable style={styles.backdrop} onPress={handleBackdropPress}>
-          <View
+          <Pressable
+            onPress={(e) => e.stopPropagation()}
             style={[
               styles.optionsContainer,
               {
@@ -143,7 +143,7 @@ export function Dropdown<T extends string = string>({
                 />
               )}
             />
-          </View>
+          </Pressable>
         </Pressable>
       </Modal>
     </View>

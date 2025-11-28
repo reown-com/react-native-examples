@@ -1,3 +1,4 @@
+import { useLogsStore } from "@/store/useLogsStore";
 import { ApiError } from "@/utils/types";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -58,16 +59,34 @@ class ApiClient {
       }
 
       const data = await response.json();
+      useLogsStore
+        .getState()
+        .addLog("info", "API request successful", "api", "request", {
+          endpoint,
+          data,
+        });
       return data as T;
     } catch (error) {
       if (error && typeof error === "object" && "status" in error) {
+        const apiError = error as ApiError;
+        useLogsStore
+          .getState()
+          .addLog(
+            "error",
+            apiError.message || "API request failed",
+            "api",
+            "request",
+            { status: apiError.status, code: apiError.code, endpoint },
+          );
         throw error;
       }
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      useLogsStore
+        .getState()
+        .addLog("error", errorMessage, "api", "request", { endpoint });
       const apiError: ApiError = {
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred",
+        message: errorMessage,
       };
       throw apiError;
     }

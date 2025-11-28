@@ -5,6 +5,7 @@ import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { VariantList, VariantName } from "@/constants/variants";
+import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
 import {
@@ -13,6 +14,7 @@ import {
   requestBluetoothPermission,
 } from "@/utils/printer";
 import { showErrorToast } from "@/utils/toast";
+import { router } from "expo-router";
 import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -24,6 +26,7 @@ export default function Settings() {
     setVariant,
     getVariantPrinterLogo,
   } = useSettingsStore((state) => state);
+  const addLog = useLogsStore((state) => state.addLog);
 
   const variantOptions: DropdownOption<VariantName>[] = useMemo(
     () =>
@@ -64,7 +67,9 @@ export default function Settings() {
         getVariantPrinterLogo(),
       );
     } catch (error) {
-      console.error("Failed to test printer:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      addLog("error", errorMessage, "settings", "handleTestPrinterPress");
     }
   };
 
@@ -101,6 +106,12 @@ export default function Settings() {
       <Card onPress={handleTestPrinterPress} style={styles.card}>
         <ThemedText fontSize={16} lineHeight={18}>
           Test printer
+        </ThemedText>
+      </Card>
+
+      <Card onPress={() => router.push("/logs")} style={styles.card}>
+        <ThemedText fontSize={16} lineHeight={18}>
+          View Logs
         </ThemedText>
       </Card>
       <CloseButton style={styles.closeButton} onPress={resetNavigation} />
