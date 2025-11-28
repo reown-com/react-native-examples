@@ -78,6 +78,9 @@
     "form-data": "3.0.4",
     "on-headers": "1.1.0",
     "brace-expansion": "1.1.12",
-    "fast-redact": "3.5.0"
+    "fast-redact": "3.5.0",
+    "node-forge": "1.3.2",
+    "valibot": "1.2.0",
+    "js-yaml": "4.1.1"
   }
 }
