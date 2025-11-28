@@ -56,6 +56,13 @@ export default function Settings() {
       }
       const { connected, error } = await connectPrinter();
       if (!connected) {
+        addLog(
+          "error",
+          error || "Failed to connect to printer",
+          "settings",
+          "handleTestPrinterPress",
+          { error },
+        );
         showErrorToast(error || "Failed to connect to printer");
         return;
       }
