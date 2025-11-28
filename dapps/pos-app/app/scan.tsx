@@ -101,6 +101,12 @@ export default function QRModalScreen() {
           setQrUri(url);
           setPaymentId(data.paymentId);
         } else {
+          addLog(
+            "error",
+            "Gateway URL is not configured",
+            "scan",
+            "initiatePayment",
+          );
           showErrorToast("Gateway URL is not configured");
         }
       } catch (error: any) {

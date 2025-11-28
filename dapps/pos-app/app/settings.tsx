@@ -51,6 +51,12 @@ export default function Settings() {
     try {
       const isBluetoothPermissionGranted = await requestBluetoothPermission();
       if (!isBluetoothPermissionGranted) {
+        addLog(
+          "error",
+          "Failed to request Bluetooth permission or not granted",
+          "settings",
+          "handleTestPrinterPress",
+        );
         showErrorToast("Failed to request Bluetooth permission");
         return;
       }
