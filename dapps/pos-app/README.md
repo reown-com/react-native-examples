@@ -139,7 +139,7 @@ To create a branded variant for a specific client:
      ```typescript
      <client-name>: {
        name: "<Client Name>",
-       brandLogo: require("@/assets/variants/<client-name>_brand.png"),
+       brandLogo: require("@/assets/images/variants/<client-name>_brand.png"),
        printerLogo: <CLIENT_NAME>_LOGO_BASE64,
        defaultTheme: "light", // or "dark"
        colors: {

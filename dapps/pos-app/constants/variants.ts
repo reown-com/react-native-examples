@@ -39,7 +39,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   solflare: {
     name: "Solflare",
-    brandLogo: require("@/assets/variants/solflare_brand.png"),
+    brandLogo: require("@/assets/images/variants/solflare_brand.png"),
     printerLogo: SOLFLARE_LOGO_BASE64,
     defaultTheme: "dark",
     colors: {
@@ -62,7 +62,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   binance: {
     name: "Binance",
-    brandLogo: require("@/assets/variants/binance_brand.png"),
+    brandLogo: require("@/assets/images/variants/binance_brand.png"),
     printerLogo: BINANCE_LOGO_BASE64,
     defaultTheme: "light",
     colors: {
@@ -85,7 +85,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   phantom: {
     name: "Phantom",
-    brandLogo: require("@/assets/variants/phantom_brand.png"),
+    brandLogo: require("@/assets/images/variants/phantom_brand.png"),
     printerLogo: PHANTOM_LOGO_BASE64,
     defaultTheme: "light",
     colors: {
@@ -107,7 +107,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   solana: {
     name: "Solana",
-    brandLogo: require("@/assets/variants/solana_brand.png"),
+    brandLogo: require("@/assets/images/variants/solana_brand.png"),
     printerLogo: SOLANA_LOGO_BASE64,
     defaultTheme: "dark",
     colors: {
