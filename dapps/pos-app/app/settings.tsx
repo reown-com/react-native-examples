@@ -15,9 +15,10 @@ import {
 } from "@/utils/printer";
 import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
+import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 export default function Settings() {
   const {
@@ -37,6 +38,14 @@ export default function Settings() {
       })),
     [],
   );
+
+  const appVersion =
+    Platform.OS === "web"
+      ? (Constants.expoConfig?.version ?? "Unknown")
+      : Application.nativeApplicationVersion;
+
+  const buildVersion =
+    Platform.OS === "web" ? "web" : Application.nativeBuildVersion;
 
   const handleThemeModeChange = (value: boolean) => {
     const newThemeMode = value ? "dark" : "light";
@@ -95,8 +104,7 @@ export default function Settings() {
         color="text-tertiary"
         style={styles.versionText}
       >
-        Version {Application.nativeApplicationVersion} (
-        {Application.nativeBuildVersion})
+        Version {appVersion} ({buildVersion})
       </ThemedText>
 
       {/* Variant Selector */}
