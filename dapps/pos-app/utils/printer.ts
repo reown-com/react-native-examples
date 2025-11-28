@@ -1,4 +1,3 @@
-import { WALLET_CONNECT_LOGO_BASE64 } from "@/constants/wc-logo";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import {
   ReactNativePosPrinter,
@@ -59,12 +58,13 @@ export const printWalletConnectReceipt = async (
   tokenSymbol: string,
   networkName: string,
   date = new Date().toLocaleDateString("en-GB"),
+  logoBase64: string,
 ) => {
   try {
     await ReactNativePosPrinter.initializePrinter(); // resets + UTF-8
 
     // Logo
-    await ReactNativePosPrinter.printImage(WALLET_CONNECT_LOGO_BASE64, {
+    await ReactNativePosPrinter.printImage(logoBase64, {
       width: 340,
       align: "CENTER",
     });

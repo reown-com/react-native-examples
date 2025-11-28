@@ -14,7 +14,9 @@ export const getHeaderBackgroundColor = (
 export const getHeaderTintColor = (
   routeName: string,
 ): keyof typeof Colors.light | keyof typeof Colors.dark => {
-  return routeName === "payment-success" ? "text-white" : "text-primary";
+  return routeName === "payment-success"
+    ? "text-payment-success"
+    : "text-primary";
 };
 
 export const resetNavigation = (href?: Href) => {

@@ -92,6 +92,8 @@ export default function QRModalScreen() {
 
         if (process.env.EXPO_PUBLIC_GATEWAY_URL) {
           const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/${data.paymentId}`;
+          console.log("payment id:", data.paymentId);
+          console.log("gateway url:", url);
           setQrUri(url);
           setPaymentId(data.paymentId);
         } else {

@@ -25,9 +25,11 @@ export const Colors = {
     "text-tertiary": "#6C6C6C",
     "text-invert": "#FFFFFF",
     "text-white": "#FFFFFF",
+    "text-payment-success": "#FFFFFF",
 
     // Border colors
     "border-primary": "#E9E9E9",
+    "border-payment-success": "#E9E9E9",
   },
   dark: {
     // Foreground colors
@@ -53,9 +55,11 @@ export const Colors = {
     "text-tertiary": "#BBBBBB",
     "text-invert": "#202020",
     "text-white": "#FFFFFF",
+    "text-payment-success": "#FFFFFF",
 
     // Border colors
     "border-primary": "#363636",
+    "border-payment-success": "#E9E9E9",
   },
 };
 
