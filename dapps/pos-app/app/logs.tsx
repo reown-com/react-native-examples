@@ -11,7 +11,7 @@ import { FlatList, StyleSheet, View } from "react-native";
 
 const formatTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp);
-  return date.toLocaleString("en-GB", {
+  return date.toLocaleString(undefined, {
     day: "2-digit",
     month: "2-digit",
     hour: "2-digit",

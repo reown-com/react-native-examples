@@ -1,4 +1,5 @@
 import { storage } from "@/utils/storage";
+import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -34,10 +35,6 @@ interface LogsStore {
 // -- Constants ----------------------------------------- //
 const MAX_LOGS_COUNT = 100;
 
-const generateLogId = (): string => {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-};
-
 // -- Store --------------------------------------------- //
 export const useLogsStore = create<LogsStore>()(
   persist(
@@ -56,7 +53,7 @@ export const useLogsStore = create<LogsStore>()(
           });
         }
         const entry: LogEntry = {
-          id: generateLogId(),
+          id: uuidv4(),
           timestamp: Date.now(),
           level,
           message,

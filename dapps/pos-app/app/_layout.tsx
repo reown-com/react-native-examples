@@ -130,7 +130,12 @@ export default Sentry.wrap(function RootLayout() {
               <Stack.Screen name="index" />
               <Stack.Screen name="amount" />
               <Stack.Screen name="scan" />
-              <Stack.Screen name="payment-failure" />
+              <Stack.Screen
+                name="payment-failure"
+                options={{
+                  headerBackVisible: false,
+                }}
+              />
               <Stack.Screen
                 name="payment-success"
                 options={{
