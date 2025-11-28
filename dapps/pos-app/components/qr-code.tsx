@@ -34,7 +34,7 @@ function QrCode_({
   logoBorderRadius,
 }: QrCodeProps) {
   const Theme = useTheme("light");
-  const containerPadding = Spacing["spacing-5"];
+  const containerPadding = Spacing["spacing-4"];
   const qrSize = size - containerPadding * 2;
   const _logoSize = arenaClear ? 0 : (logoSize ?? qrSize / 4);
   const logoAreaSize = _logoSize > 0 ? _logoSize + Spacing["spacing-6"] : 0;
@@ -69,9 +69,10 @@ function QrCode_({
         errorCorrectionLevel="Q"
         pathStyle="fill"
         shapeOptions={{
-          shape: "rounded",
-          eyePatternShape: "rounded",
-          gap: 0,
+          shape: "line",
+          eyeShape: "rounded",
+          pupilShape: "circle",
+          gap: 1.2,
           eyePatternGap: 0,
           logoAreaBorderRadius: logoBorderRadius,
         }}
