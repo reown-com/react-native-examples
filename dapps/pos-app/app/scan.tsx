@@ -151,13 +151,17 @@ export default function QRModalScreen() {
               ${amount}
             </ThemedText>
           </View>
-            {qrUri ? (
-              <QRCode size={300} uri={qrUri} logoBorderRadius={100}>
-                <Image source={assets?.[0]} style={styles.logo} />
-              </QRCode>
-            ) : (
-              <Shimmer width={300} height={300} borderRadius={BorderRadius["5"]} />
-            )}
+          {qrUri ? (
+            <QRCode size={300} uri={qrUri} logoBorderRadius={100}>
+              <Image source={assets?.[0]} style={styles.logo} />
+            </QRCode>
+          ) : (
+            <Shimmer
+              width={300}
+              height={300}
+              borderRadius={BorderRadius["5"]}
+            />
+          )}
           <View style={{ flex: 1 }} />
         </View>
       )}

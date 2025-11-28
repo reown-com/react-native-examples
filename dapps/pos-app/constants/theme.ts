@@ -24,6 +24,7 @@ export const Colors = {
     "text-secondary": "#9A9A9A",
     "text-tertiary": "#6C6C6C",
     "text-invert": "#FFFFFF",
+    "text-white": "#FFFFFF",
 
     // Border colors
     "border-primary": "#E9E9E9",
@@ -51,6 +52,7 @@ export const Colors = {
     "text-secondary": "#9A9A9A",
     "text-tertiary": "#BBBBBB",
     "text-invert": "#202020",
+    "text-white": "#FFFFFF",
 
     // Border colors
     "border-primary": "#363636",
