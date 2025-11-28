@@ -1,3 +1,5 @@
+import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
+import { VariantName, Variants } from "@/constants/variants";
 import { storage } from "@/utils/storage";
 import { Appearance } from "react-native";
 import { create } from "zustand";
@@ -6,36 +8,47 @@ import { persist } from "zustand/middleware";
 interface SettingsStore {
   themeMode: "light" | "dark";
   deviceId: string;
-  showVariantLogo: boolean;
+  variant: VariantName;
   _hasHydrated: boolean;
 
   // Actions
   setThemeMode: (themeMode: "light" | "dark") => void;
   setDeviceId: (deviceId: string) => void;
   setHasHydrated: (state: boolean) => void;
-  setShowVariantLogo: (showVariantLogo: boolean) => void;
+  setVariant: (variant: VariantName) => void;
+
+  getVariantPrinterLogo: () => string;
 }
 
 export const useSettingsStore = create<SettingsStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       themeMode: Appearance.getColorScheme() || "light",
       deviceId: "",
       showVariantLogo: false,
+      variant: "default",
       _hasHydrated: false,
       setThemeMode: (themeMode: "light" | "dark") => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
-      setShowVariantLogo: (showVariantLogo: boolean) =>
-        set({ showVariantLogo }),
+      setVariant: (variant: VariantName) => {
+        const variantData = Variants[variant];
+        set({ variant });
+        if (variantData.defaultTheme) {
+          set({ themeMode: variantData.defaultTheme });
+        }
+      },
+      getVariantPrinterLogo: () => {
+        return Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64;
+      },
     }),
     {
       name: "settings",
-      version: 3,
+      version: 4,
       storage,
       migrate: (persistedState: any, version: number) => {
-        if (version < 3) {
-          persistedState.showVariantLogo = false;
+        if (version < 4) {
+          persistedState.variant = "default";
         }
         return persistedState;
       },

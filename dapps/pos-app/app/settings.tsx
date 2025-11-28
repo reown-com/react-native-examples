@@ -1,8 +1,10 @@
 import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
+import { Dropdown, DropdownOption } from "@/components/dropdown";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
+import { VariantList, VariantName } from "@/constants/variants";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
 import {
@@ -11,19 +13,34 @@ import {
   requestBluetoothPermission,
 } from "@/utils/printer";
 import { showErrorToast } from "@/utils/toast";
+import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 
 export default function Settings() {
-  const { themeMode, setThemeMode, setShowVariantLogo, showVariantLogo } =
-    useSettingsStore((state) => state);
+  const {
+    themeMode,
+    setThemeMode,
+    variant,
+    setVariant,
+    getVariantPrinterLogo,
+  } = useSettingsStore((state) => state);
+
+  const variantOptions: DropdownOption<VariantName>[] = useMemo(
+    () =>
+      VariantList.map((variant) => ({
+        value: variant.id,
+        label: variant.name,
+      })),
+    [],
+  );
 
   const handleThemeModeChange = (value: boolean) => {
     const newThemeMode = value ? "dark" : "light";
     setThemeMode(newThemeMode);
   };
 
-  const handleShowVariantLogoChange = (value: boolean) => {
-    setShowVariantLogo(value);
+  const handleVariantChange = (value: VariantName) => {
+    setVariant(value);
   };
 
   const handleTestPrinterPress = async () => {
@@ -43,6 +60,8 @@ export default function Settings() {
         15,
         "USDC",
         "Base",
+        new Date().toLocaleDateString("en-GB"),
+        getVariantPrinterLogo(),
       );
     } catch (error) {
       console.error("Failed to test printer:", error);
@@ -51,6 +70,23 @@ export default function Settings() {
 
   return (
     <View style={styles.container}>
+      {/* Variant Selector */}
+      <View style={styles.dropdownSection}>
+        <ThemedText
+          fontSize={14}
+          lineHeight={16}
+          color="text-primary"
+          style={styles.sectionLabel}
+        >
+          Theme Variant
+        </ThemedText>
+        <Dropdown
+          options={variantOptions}
+          value={variant}
+          onChange={handleVariantChange}
+          placeholder="Select variant"
+        />
+      </View>
       <Card style={styles.card}>
         <ThemedText fontSize={16} lineHeight={18}>
           Dark Mode
@@ -61,16 +97,7 @@ export default function Settings() {
           onValueChange={handleThemeModeChange}
         />
       </Card>
-      <Card style={styles.card}>
-        <ThemedText fontSize={16} lineHeight={18}>
-          Show Variant Logo
-        </ThemedText>
-        <Switch
-          style={styles.switch}
-          value={showVariantLogo}
-          onValueChange={handleShowVariantLogoChange}
-        />
-      </Card>
+
       <Card onPress={handleTestPrinterPress} style={styles.card}>
         <ThemedText fontSize={16} lineHeight={18}>
           Test printer
@@ -92,10 +119,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 100,
+    height: 80,
   },
   switch: {
     alignSelf: "center",
+  },
+  dropdownSection: {
+    gap: Spacing["spacing-2"],
+  },
+  sectionLabel: {
+    marginLeft: Spacing["spacing-2"],
   },
   closeButton: {
     position: "absolute",

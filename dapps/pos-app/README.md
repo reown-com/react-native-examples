@@ -105,20 +105,58 @@ To create a branded variant for a specific client:
    git checkout -b variant/<client-name>
    ```
 
-2. **Replace the variant logo**
-   - Replace `assets/images/variant_logo.png` with the client's logo
-   - **Requirements**: PNG format, single color (the app applies tint colors from the theme)
-   - If needed, adjust the logo dimensions in `components/variant-logo.tsx` (default: 150x18)
+2. **Add the variant logo**
+   - Add the client's logo to `assets/variants/<client-name>_brand.png`
+   - **Requirements**: PNG format
 
-3. **Enable the variant logo by default**
-   - In `store/useSettingsStore.ts`, change `showVariantLogo` default to `true`:
+3. **Add the printer logo** in `constants/printer-logos.ts`
+   - Convert the client's logo to base64 using https://base64.guru/converter/encode/image/png
+   - Add the base64 string as a new constant:
      ```typescript
-     showVariantLogo: true,
+     export const <CLIENT_NAME>_LOGO_BASE64 =
+       "data:image/png;base64,<base64-string>";
      ```
 
-4. **Customize theme colors** in `constants/theme.ts`
-   - Update payment success background (light theme only):
-     - `bg-payment-success` - Background color for the payment success screen (light theme only, as the payment success screen always uses light theme regardless of system settings)
+4. **Define the variant** in `constants/variants.ts`
+   - Import the printer logo at the top of the file:
+     ```typescript
+     import {
+       // ... existing imports ...
+       <CLIENT_NAME>_LOGO_BASE64,
+     } from "./printer-logos";
+     ```
+   - Add the variant name to the `VariantName` type:
+     ```typescript
+     export type VariantName =
+       | "default"
+       | "solflare"
+       | "binance"
+       | "phantom"
+       | "solana"
+       | "<client-name>";
+     ```
+   - Add the variant configuration to the `Variants` object:
+     ```typescript
+     <client-name>: {
+       name: "<Client Name>",
+       brandLogo: require("@/assets/variants/<client-name>_brand.png"),
+       printerLogo: <CLIENT_NAME>_LOGO_BASE64,
+       defaultTheme: "light", // or "dark"
+       colors: {
+         light: {
+           "icon-accent-primary": "#HEXCOLOR",
+           "bg-accent-primary": "#HEXCOLOR",
+           "bg-payment-success": "#HEXCOLOR",
+           "text-payment-success": "#HEXCOLOR",
+           "border-payment-success": "#HEXCOLOR",
+         },
+         dark: {
+           // Same color keys as light theme
+         },
+       },
+     },
+     ```
+
 
 5. **Update Android version code** in `app.json`
    - Increment `expo.android.versionCode`

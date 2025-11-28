@@ -1,7 +1,6 @@
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
-import { VariantLogo } from "@/components/variant-logo";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { router } from "expo-router";
@@ -135,7 +134,6 @@ export default function AmountScreen() {
           {isValid ? `Charge $${formatAmount(watchAmount)}` : "Enter amount"}
         </ThemedText>
       </Button>
-      <VariantLogo style={styles.variantLogo} />
     </View>
   );
 }
@@ -168,8 +166,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     alignItems: "center",
     borderRadius: BorderRadius["5"],
-  },
-  variantLogo: {
-    marginTop: Spacing["spacing-5"],
   },
 });

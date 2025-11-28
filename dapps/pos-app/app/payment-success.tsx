@@ -11,11 +11,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { VariantLogo } from "@/components/variant-logo";
 import { BorderRadius, Spacing } from "@/constants/spacing";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printWalletConnectReceipt } from "@/utils/printer";
 import { StatusBar } from "expo-status-bar";
@@ -37,8 +36,11 @@ export default function PaymentSuccessScreen() {
   useDisableBackButton();
   const Theme = useTheme("light");
   const params = useLocalSearchParams<SuccessParams>();
+  const themeMode = useSettingsStore((state) => state.themeMode);
+  const getVariantPrinterLogo = useSettingsStore(
+    (state) => state.getVariantPrinterLogo,
+  );
   const { top } = useSafeAreaInsets();
-  const colorScheme = useColorScheme();
   const { amount } = params;
   const [isPrinterConnected, setIsPrinterConnected] = useState(false);
 
@@ -114,12 +116,18 @@ export default function PaymentSuccessScreen() {
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <ThemedText
-            style={[styles.amountDescription, { color: Theme["text-invert"] }]}
+            style={[
+              styles.amountDescription,
+              { color: Theme["text-payment-success"] },
+            ]}
           >
             Payment Successful
           </ThemedText>
           <ThemedText
-            style={[styles.amountValue, { color: Theme["text-invert"] }]}
+            style={[
+              styles.amountValue,
+              { color: Theme["text-payment-success"] },
+            ]}
           >
             ${amount}
           </ThemedText>
@@ -134,18 +142,22 @@ export default function PaymentSuccessScreen() {
                   params.token,
                   params.chainName,
                   params.timestamp,
+                  getVariantPrinterLogo(),
                 )
               }
               style={[
                 styles.button,
                 {
                   backgroundColor: Theme["bg-payment-success"],
-                  borderColor: Theme["border-primary"],
+                  borderColor: Theme["border-payment-success"],
                 },
               ]}
             >
               <ThemedText
-                style={[styles.buttonText, { color: Theme["text-invert"] }]}
+                style={[
+                  styles.buttonText,
+                  { color: Theme["text-payment-success"] },
+                ]}
               >
                 Print receipt
               </ThemedText>
@@ -168,13 +180,9 @@ export default function PaymentSuccessScreen() {
               New Sale
             </ThemedText>
           </Button>
-          <VariantLogo
-            style={styles.variantLogo}
-            tintColor={Theme["text-invert"]}
-          />
         </View>
       </Animated.View>
-      <StatusBar style={colorScheme} />
+      <StatusBar style={themeMode} />
     </View>
   );
 }
@@ -223,9 +231,5 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     lineHeight: 20,
-  },
-  variantLogo: {
-    marginTop: Spacing["spacing-2"],
-    alignSelf: "center",
   },
 });
