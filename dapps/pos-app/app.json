@@ -47,7 +47,8 @@
       "versionCode": 12
     },
     "web": {
-      "output": "static"
+      "output": "static",
+      "favicon": "./assets/app_icons/icon.png"
     },
     "plugins": [
       "expo-router",
