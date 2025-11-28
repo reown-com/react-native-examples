@@ -127,7 +127,7 @@ export function Dropdown<T extends string = string>({
                       {item.label}
                     </ThemedText>
                     {isSelected && (
-                      <ThemedText fontSize={14} color="bg-accent-primary">
+                      <ThemedText fontSize={24} color="text-primary">
                         ✓
                       </ThemedText>
                     )}

@@ -51,6 +51,7 @@ export const useSettingsStore = create<SettingsStore>()(
         }
         if (version < 4) {
           persistedState.variant = "default";
+          delete persistedState.showVariantLogo;
         }
         return persistedState;
       },
