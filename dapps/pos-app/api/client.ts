@@ -63,7 +63,8 @@ class ApiClient {
         .getState()
         .addLog("info", "API request successful", "api", "request", {
           endpoint,
-          data,
+          body,
+          response: data,
         });
       return data as T;
     } catch (error) {
@@ -76,7 +77,7 @@ class ApiClient {
             apiError.message || "API request failed",
             "api",
             "request",
-            { status: apiError.status, code: apiError.code, endpoint },
+            { endpoint, body, response: error },
           );
         throw error;
       }
