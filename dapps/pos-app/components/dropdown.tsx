@@ -102,7 +102,7 @@ export function Dropdown<T extends string = string>({
           >
             <FlatList
               data={options}
-              keyExtractor={(item) => item.value}
+              keyExtractor={(item, index) => item.value ?? `option-${index}`}
               renderItem={({ item }) => {
                 const isSelected = item.value === value;
                 return (

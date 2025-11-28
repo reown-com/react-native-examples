@@ -18,7 +18,7 @@ type VariantColorOverrides = Partial<typeof Colors.light>;
 
 interface Variant {
   name: string;
-  brandLogo: any; // require() asset
+  brandLogo: ReturnType<typeof require>; // require() asset
   printerLogo: string; // base64 string
   defaultTheme?: "light" | "dark";
   colors: {

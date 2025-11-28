@@ -25,7 +25,6 @@ export const useSettingsStore = create<SettingsStore>()(
     (set, get) => ({
       themeMode: Appearance.getColorScheme() || "light",
       deviceId: "",
-      showVariantLogo: false,
       variant: "default",
       _hasHydrated: false,
       setThemeMode: (themeMode: "light" | "dark") => set({ themeMode }),
@@ -47,6 +46,9 @@ export const useSettingsStore = create<SettingsStore>()(
       version: 4,
       storage,
       migrate: (persistedState: any, version: number) => {
+        if (!persistedState || typeof persistedState !== "object") {
+          return { variant: "default" };
+        }
         if (version < 4) {
           persistedState.variant = "default";
         }
