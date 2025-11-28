@@ -17,7 +17,8 @@
       },
       "infoPlist": {
         "NFCReaderUsageDescription": "This app requires NFC to send messages",
-        "NSLocationWhenInUseUsageDescription": "This app requires location when using the camera"
+        "NSLocationWhenInUseUsageDescription": "This app requires location when using the camera",
+        "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts"
       },
       "entitlements": {
         "com.apple.developer.nfc.readersession.formats": [
