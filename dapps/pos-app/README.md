@@ -106,7 +106,7 @@ To create a branded variant for a specific client:
    ```
 
 2. **Add the variant logo**
-   - Add the client's logo to `assets/variants/<client-name>_brand.png`
+   - Add the client's logo to `assets/images/variants/<client-name>_brand.png`
    - **Requirements**: PNG format
 
 3. **Add the printer logo** in `constants/printer-logos.ts`
