@@ -76,6 +76,5 @@ const styles = StyleSheet.create({
   },
   value: {
     flex: 1,
-    fontFamily: "KH Teka",
   },
 });
