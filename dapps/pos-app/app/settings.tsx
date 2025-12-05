@@ -156,21 +156,43 @@ export default function Settings() {
         setMerchantLookupResult(null);
       }
 
-      const data = await getMerchantAccounts(trimmedMerchantId);
+      try {
+        const data = await getMerchantAccounts(trimmedMerchantId);
 
-      if (data) {
+        if (data) {
+          if (persistMerchantId) {
+            setMerchantId(trimmedMerchantId);
+          }
+          setMerchantLookupResult(data);
+        } else {
+          throw new Error("Merchant ID was not found");
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        addLog("error", errorMessage, "settings", "fetchMerchantAccounts", {
+          merchantId: trimmedMerchantId,
+        });
+
         if (persistMerchantId) {
           setMerchantId(trimmedMerchantId);
+          setMerchantLookupError(
+            "Merchant ID saved, but we couldn't verify it with the server.",
+          );
+        } else {
+          setMerchantLookupError(
+            "We couldn't verify this merchant ID with the server.",
+          );
         }
-      } else {
-        setMerchantLookupError("Merchant ID was not found");
-        setMerchantId("");
-      }
 
-      setIsMerchantLookupLoading(false);
-      setMerchantLookupResult(data);
+        if (!preserveCurrentResult) {
+          setMerchantLookupResult(null);
+        }
+      } finally {
+        setIsMerchantLookupLoading(false);
+      }
     },
-    [setMerchantId],
+    [setMerchantId, addLog],
   );
 
   useEffect(() => {
