@@ -13,17 +13,19 @@ export type MerchantAccounts = {
 export async function getMerchantAccounts(
   merchantId: string,
 ): Promise<MerchantAccounts | null> {
-  const normalizedMerchantId = merchantId?.trim();
-  if (!normalizedMerchantId) {
-    throw new Error("merchantId is required");
-  }
   try {
+    const normalizedMerchantId = merchantId?.trim();
+    if (!normalizedMerchantId) {
+      throw new Error("merchantId is required");
+    }
+
     const data = await merchantClient.get<MerchantAccounts>(
       `/merchants/${encodeURIComponent(normalizedMerchantId)}/accounts`,
     );
 
     return data;
   } catch {
+    console.error("Failed to get merchant accounts", merchantId);
     return null;
   }
 }

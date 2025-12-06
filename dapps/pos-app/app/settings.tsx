@@ -139,60 +139,23 @@ export default function Settings() {
   };
 
   const fetchMerchantAccounts = useCallback(
-    async (
-      targetMerchantId: string,
-      {
-        persistMerchantId = false,
-        preserveCurrentResult = false,
-      }: {
-        persistMerchantId?: boolean;
-        preserveCurrentResult?: boolean;
-      } = {},
-    ) => {
+    async (targetMerchantId: string) => {
       const trimmedMerchantId = targetMerchantId.trim();
       setIsMerchantLookupLoading(true);
       setMerchantLookupError(null);
-      if (!preserveCurrentResult) {
-        setMerchantLookupResult(null);
+
+      const data = await getMerchantAccounts(trimmedMerchantId);
+      setMerchantLookupResult(data);
+
+      if (!data) {
+        setMerchantLookupError(
+          "Merchant is ID saved, but we couldn't verify it with the server.",
+        );
       }
 
-      try {
-        const data = await getMerchantAccounts(trimmedMerchantId);
-
-        if (data) {
-          if (persistMerchantId) {
-            setMerchantId(trimmedMerchantId);
-          }
-          setMerchantLookupResult(data);
-        } else {
-          throw new Error("Merchant ID was not found");
-        }
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        addLog("error", errorMessage, "settings", "fetchMerchantAccounts", {
-          merchantId: trimmedMerchantId,
-        });
-
-        if (persistMerchantId) {
-          setMerchantId(trimmedMerchantId);
-          setMerchantLookupError(
-            "Merchant ID saved, but we couldn't verify it with the server.",
-          );
-        } else {
-          setMerchantLookupError(
-            "We couldn't verify this merchant ID with the server.",
-          );
-        }
-
-        if (!preserveCurrentResult) {
-          setMerchantLookupResult(null);
-        }
-      } finally {
-        setIsMerchantLookupLoading(false);
-      }
+      setIsMerchantLookupLoading(false);
     },
-    [setMerchantId, addLog],
+    [],
   );
 
   useEffect(() => {
@@ -205,9 +168,7 @@ export default function Settings() {
     }
 
     hasRefetchedMerchant.current = true;
-    void fetchMerchantAccounts(storedMerchantId, {
-      preserveCurrentResult: true,
-    });
+    void fetchMerchantAccounts(storedMerchantId);
   }, [_hasHydrated, storedMerchantId, fetchMerchantAccounts]);
 
   const handleMerchantConfirm = () => {
@@ -216,8 +177,8 @@ export default function Settings() {
       return;
     }
 
-    setMerchantIdInput(trimmedMerchantId);
-    void fetchMerchantAccounts(trimmedMerchantId, { persistMerchantId: true });
+    void fetchMerchantAccounts(trimmedMerchantId);
+    setMerchantId(trimmedMerchantId);
   };
 
   const isMerchantConfirmDisabled =
@@ -434,6 +395,7 @@ const styles = StyleSheet.create({
   confirmButtonLabel: {
     textAlign: "center",
     width: "100%",
+    verticalAlign: "middle",
   },
   merchantResult: {
     gap: Spacing["spacing-1"],
