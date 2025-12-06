@@ -1,10 +1,14 @@
+import { getMerchantAccounts, MerchantAccounts } from "@/api/merchant";
+import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
 import { Dropdown, DropdownOption } from "@/components/dropdown";
+import { MerchantAddressRow } from "@/components/merchant-address-row";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
-import { Spacing } from "@/constants/spacing";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { VariantList, VariantName } from "@/constants/variants";
+import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
@@ -16,9 +20,16 @@ import {
 import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useMemo } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 
 export default function Settings() {
   const {
@@ -27,8 +38,22 @@ export default function Settings() {
     variant,
     setVariant,
     getVariantPrinterLogo,
+    merchantId: storedMerchantId,
+    setMerchantId,
+    _hasHydrated,
   } = useSettingsStore((state) => state);
   const addLog = useLogsStore((state) => state.addLog);
+  const theme = useTheme();
+  const [merchantIdInput, setMerchantIdInput] = useState(
+    storedMerchantId ?? "",
+  );
+  const [merchantLookupResult, setMerchantLookupResult] =
+    useState<MerchantAccounts | null>(null);
+  const [merchantLookupError, setMerchantLookupError] = useState<string | null>(
+    null,
+  );
+  const [isMerchantLookupLoading, setIsMerchantLookupLoading] = useState(false);
+  const hasRefetchedMerchant = useRef(false);
 
   const variantOptions: DropdownOption<VariantName>[] = useMemo(
     () =>
@@ -46,6 +71,23 @@ export default function Settings() {
 
   const buildVersion =
     Platform.OS === "web" ? "web" : Application.nativeBuildVersion;
+
+  useEffect(() => {
+    setMerchantIdInput(storedMerchantId ?? "");
+    if (!storedMerchantId) {
+      setMerchantLookupResult(null);
+    }
+  }, [storedMerchantId]);
+
+  const handleMerchantIdChange = (value: string) => {
+    setMerchantIdInput(value);
+    if (merchantLookupError) {
+      setMerchantLookupError(null);
+    }
+    if (merchantLookupResult) {
+      setMerchantLookupResult(null);
+    }
+  };
 
   const handleThemeModeChange = (value: boolean) => {
     const newThemeMode = value ? "dark" : "light";
@@ -96,56 +138,188 @@ export default function Settings() {
     }
   };
 
+  const fetchMerchantAccounts = useCallback(
+    async (targetMerchantId: string) => {
+      const trimmedMerchantId = targetMerchantId.trim();
+      setIsMerchantLookupLoading(true);
+      setMerchantLookupError(null);
+
+      const data = await getMerchantAccounts(trimmedMerchantId);
+      setMerchantLookupResult(data);
+
+      if (!data) {
+        setMerchantLookupError(
+          "Merchant is ID saved, but we couldn't verify it with the server.",
+        );
+      }
+
+      setIsMerchantLookupLoading(false);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (hasRefetchedMerchant.current) {
+      return;
+    }
+
+    if (!_hasHydrated || !storedMerchantId) {
+      return;
+    }
+
+    hasRefetchedMerchant.current = true;
+    void fetchMerchantAccounts(storedMerchantId);
+  }, [_hasHydrated, storedMerchantId, fetchMerchantAccounts]);
+
+  const handleMerchantConfirm = () => {
+    const trimmedMerchantId = merchantIdInput.trim();
+    if (!trimmedMerchantId || isMerchantLookupLoading) {
+      return;
+    }
+
+    void fetchMerchantAccounts(trimmedMerchantId);
+    setMerchantId(trimmedMerchantId);
+  };
+
+  const isMerchantConfirmDisabled =
+    merchantIdInput.trim().length === 0 || isMerchantLookupLoading;
+
   return (
     <View style={styles.container}>
-      <ThemedText
-        fontSize={12}
-        lineHeight={14}
-        color="text-tertiary"
-        style={styles.versionText}
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
       >
-        Version {appVersion} ({buildVersion})
-      </ThemedText>
-
-      {/* Variant Selector */}
-      <View style={styles.dropdownSection}>
         <ThemedText
-          fontSize={14}
-          lineHeight={16}
-          color="text-primary"
-          style={styles.sectionLabel}
+          fontSize={12}
+          lineHeight={14}
+          color="text-tertiary"
+          style={styles.versionText}
         >
-          Theme Variant
+          Version {appVersion} ({buildVersion})
         </ThemedText>
-        <Dropdown
-          options={variantOptions}
-          value={variant}
-          onChange={handleVariantChange}
-          placeholder="Select variant"
-        />
-      </View>
-      <Card style={styles.card}>
-        <ThemedText fontSize={16} lineHeight={18}>
-          Dark Mode
-        </ThemedText>
-        <Switch
-          style={styles.switch}
-          value={themeMode === "dark"}
-          onValueChange={handleThemeModeChange}
-        />
-      </Card>
 
-      <Card onPress={handleTestPrinterPress} style={styles.card}>
-        <ThemedText fontSize={16} lineHeight={18}>
-          Test printer
-        </ThemedText>
-      </Card>
+        {/* Variant Selector */}
+        <View style={styles.dropdownSection}>
+          <ThemedText
+            fontSize={14}
+            lineHeight={16}
+            color="text-primary"
+            style={styles.sectionLabel}
+          >
+            Theme Variant
+          </ThemedText>
+          <Dropdown
+            options={variantOptions}
+            value={variant}
+            onChange={handleVariantChange}
+            placeholder="Select variant"
+          />
+        </View>
+        <Card style={styles.card}>
+          <ThemedText fontSize={16} lineHeight={18}>
+            Dark Mode
+          </ThemedText>
+          <Switch
+            style={styles.switch}
+            value={themeMode === "dark"}
+            onValueChange={handleThemeModeChange}
+          />
+        </Card>
 
-      <Card onPress={() => router.push("/logs")} style={styles.card}>
-        <ThemedText fontSize={16} lineHeight={18}>
-          View Logs
-        </ThemedText>
-      </Card>
+        <Card style={styles.merchantCard}>
+          <ThemedText fontSize={16} lineHeight={18}>
+            Merchant ID
+          </ThemedText>
+
+          <View style={styles.merchantInputRow}>
+            <TextInput
+              value={merchantIdInput}
+              onChangeText={handleMerchantIdChange}
+              placeholder="Enter merchant ID"
+              placeholderTextColor={theme["text-tertiary"]}
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={[
+                styles.merchantInput,
+                {
+                  borderColor: theme["border-primary"],
+                  color: theme["text-primary"],
+                  backgroundColor: theme["foreground-secondary"],
+                },
+              ]}
+            />
+            <Button
+              onPress={handleMerchantConfirm}
+              disabled={isMerchantConfirmDisabled}
+              style={[
+                styles.confirmButton,
+                {
+                  backgroundColor: isMerchantConfirmDisabled
+                    ? theme["foreground-tertiary"]
+                    : theme["bg-accent-primary"],
+                },
+              ]}
+            >
+              <ThemedText
+                fontSize={14}
+                lineHeight={16}
+                color="text-white"
+                style={styles.confirmButtonLabel}
+              >
+                {isMerchantLookupLoading ? "Loading..." : "Save"}
+              </ThemedText>
+            </Button>
+          </View>
+
+          {merchantLookupError ? (
+            <ThemedText
+              fontSize={12}
+              lineHeight={14}
+              color="text-tertiary"
+              style={styles.errorText}
+            >
+              {merchantLookupError}
+            </ThemedText>
+          ) : null}
+
+          {merchantLookupResult ? (
+            <View style={styles.merchantResult}>
+              <MerchantAddressRow
+                label="EVM"
+                value={merchantLookupResult.liquidationAddress}
+              />
+              <MerchantAddressRow
+                label="Solana"
+                value={merchantLookupResult.solanaLiquidationAddress}
+              />
+            </View>
+          ) : null}
+        </Card>
+
+        <Card onPress={handleTestPrinterPress} style={styles.card}>
+          <ThemedText fontSize={16} lineHeight={18}>
+            Test printer
+          </ThemedText>
+        </Card>
+
+        <Card onPress={() => router.push("/logs")} style={styles.card}>
+          <ThemedText fontSize={16} lineHeight={18}>
+            View Logs
+          </ThemedText>
+        </Card>
+      </ScrollView>
+      <LinearGradient
+        colors={[
+          theme["bg-primary"] + "00",
+          theme["bg-primary"] + "40",
+          theme["bg-primary"] + "CC",
+          theme["bg-primary"],
+        ]}
+        locations={[0, 0.3, 0.5, 1]}
+        style={styles.gradient}
+        pointerEvents="none"
+      />
       <CloseButton style={styles.closeButton} onPress={resetNavigation} />
     </View>
   );
@@ -155,6 +329,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
+  },
+  content: {
+    paddingTop: Spacing["spacing-5"],
+    paddingBottom: Spacing["extra-spacing-2"],
     gap: Spacing["spacing-3"],
   },
   card: {
@@ -176,8 +354,53 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignSelf: "center",
   },
+  gradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 200,
+  },
   versionText: {
     alignSelf: "flex-end",
     marginBottom: Spacing["spacing-2"],
+  },
+  merchantCard: {
+    gap: Spacing["spacing-3"],
+    paddingVertical: Spacing["spacing-5"],
+  },
+  merchantInputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing["spacing-3"],
+  },
+  merchantInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: BorderRadius["3"],
+    paddingHorizontal: Spacing["spacing-3"],
+    paddingVertical: Spacing["spacing-2"],
+    fontSize: 14,
+    lineHeight: 16,
+    fontFamily: "KH Teka",
+    minHeight: 48,
+  },
+  confirmButton: {
+    borderRadius: BorderRadius["3"],
+    paddingHorizontal: Spacing["spacing-4"],
+    minHeight: 48,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  confirmButtonLabel: {
+    textAlign: "center",
+    width: "100%",
+    verticalAlign: "middle",
+  },
+  merchantResult: {
+    gap: Spacing["spacing-1"],
+  },
+  errorText: {
+    marginTop: -Spacing["spacing-1"],
   },
 });
