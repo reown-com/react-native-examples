@@ -40,7 +40,7 @@ export default function QRModalScreen() {
 
   const onSuccess = useCallback(
     (data: PaymentStatusResponse) => {
-      const { paymentId, chainName, token, createdAt } = data;
+      const { paymentId, chainName, token, createdAt, tokenAmount, tokenDecimals } = data;
 
       router.dismiss();
       router.replace({
@@ -48,8 +48,10 @@ export default function QRModalScreen() {
         params: {
           amount,
           paymentId,
-          chainName,
+          chainName: chainName || "Unknown",
           token,
+          tokenAmount: tokenAmount || "0",
+          tokenDecimals: String(tokenDecimals || 0),
           timestamp: new Date(createdAt * 1000).toISOString(),
         },
       });

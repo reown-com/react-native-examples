@@ -60,10 +60,31 @@ export const connectPrinter = async (): Promise<{
   }
 };
 
+/**
+ * Formats a raw token amount (in smallest units) to a human-readable string
+ * @param rawAmount - Token amount in smallest unit (e.g., "100000" for 0.0001 SOL)
+ * @param decimals - Token decimals (e.g., 9 for SOL, 6 for USDC)
+ * @returns Formatted amount string (e.g., "0.0001")
+ */
+const formatTokenAmount = (rawAmount: string, decimals: number): string => {
+  if (!rawAmount || decimals === 0) return rawAmount;
+
+  const padded = rawAmount.padStart(decimals + 1, "0");
+  const integerPart = padded.slice(0, -decimals) || "0";
+  const decimalPart = padded.slice(-decimals);
+
+  // Trim trailing zeros but keep at least 2 decimal places for readability
+  const trimmedDecimal = decimalPart.replace(/0+$/, "").padEnd(2, "0");
+
+  return `${integerPart}.${trimmedDecimal}`;
+};
+
 export const printReceipt = async (
   txnId: string,
   amountUsd: number,
   tokenSymbol: string,
+  tokenAmount: string,
+  tokenDecimals: number,
   networkName: string,
   date = new Date().toLocaleDateString("en-GB"),
   logoBase64: string,
@@ -100,7 +121,7 @@ export const printReceipt = async (
 
     await ReactNativePosPrinter.printText("PAID WITH ", normal);
     await ReactNativePosPrinter.printText(
-      `${tokenSymbol} ${amountUsd.toFixed(2)}\n`,
+      `${tokenSymbol} ${formatTokenAmount(tokenAmount, tokenDecimals)}\n`,
       bold,
     );
 

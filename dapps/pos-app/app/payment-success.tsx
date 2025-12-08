@@ -26,6 +26,8 @@ interface SuccessParams extends UnknownOutputParams {
   token: string;
   timestamp: string;
   paymentId: string;
+  tokenAmount: string;
+  tokenDecimals: string;
 }
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
@@ -59,6 +61,8 @@ export default function PaymentSuccessScreen() {
         params.paymentId,
         Number(amount),
         params.token,
+        params.tokenAmount,
+        Number(params.tokenDecimals),
         params.chainName,
         params.timestamp,
         getVariantPrinterLogo(),
