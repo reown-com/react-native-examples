@@ -4,6 +4,8 @@ import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
 import { Dropdown, DropdownOption } from "@/components/dropdown";
 import { MerchantAddressRow } from "@/components/merchant-address-row";
+import { MerchantConfirmModal } from "@/components/merchant-confirm-modal";
+import { PinModal } from "@/components/pin-modal";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
@@ -17,7 +19,13 @@ import {
   printReceipt,
   requestBluetoothPermission,
 } from "@/utils/printer";
-import { showErrorToast } from "@/utils/toast";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
+import {
+  authenticateWithBiometrics,
+  BiometricStatus,
+  getBiometricLabel,
+  getBiometricStatus,
+} from "@/utils/biometrics";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
 import { LinearGradient } from "expo-linear-gradient";
@@ -41,6 +49,14 @@ export default function Settings() {
     merchantId: storedMerchantId,
     setMerchantId,
     _hasHydrated,
+    isPinSet,
+    verifyPin,
+    setPin,
+    isLockedOut,
+    getLockoutRemainingSeconds,
+    pinFailedAttempts,
+    biometricEnabled,
+    setBiometricEnabled,
   } = useSettingsStore((state) => state);
   const addLog = useLogsStore((state) => state.addLog);
   const theme = useTheme();
@@ -54,6 +70,18 @@ export default function Settings() {
   );
   const [isMerchantLookupLoading, setIsMerchantLookupLoading] = useState(false);
   const hasRefetchedMerchant = useRef(false);
+
+  // Security modal states
+  const [showPinVerifyModal, setShowPinVerifyModal] = useState(false);
+  const [showPinSetupModal, setShowPinSetupModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pinError, setPinError] = useState<string | null>(null);
+  const [pendingMerchantId, setPendingMerchantId] = useState<string | null>(null);
+  const [pendingMerchantAccounts, setPendingMerchantAccounts] =
+    useState<MerchantAccounts | null>(null);
+  const [biometricStatus, setBiometricStatus] = useState<BiometricStatus | null>(
+    null,
+  );
 
   const variantOptions: DropdownOption<VariantName>[] = useMemo(
     () =>
@@ -78,6 +106,15 @@ export default function Settings() {
       setMerchantLookupResult(null);
     }
   }, [storedMerchantId]);
+
+  // Check biometric availability on mount
+  useEffect(() => {
+    const checkBiometrics = async () => {
+      const status = await getBiometricStatus();
+      setBiometricStatus(status);
+    };
+    checkBiometrics();
+  }, []);
 
   const handleMerchantIdChange = (value: string) => {
     setMerchantIdInput(value);
@@ -139,7 +176,7 @@ export default function Settings() {
   };
 
   const fetchMerchantAccounts = useCallback(
-    async (targetMerchantId: string) => {
+    async (targetMerchantId: string): Promise<MerchantAccounts | null> => {
       const trimmedMerchantId = targetMerchantId.trim();
       setIsMerchantLookupLoading(true);
       setMerchantLookupError(null);
@@ -149,11 +186,12 @@ export default function Settings() {
 
       if (!data) {
         setMerchantLookupError(
-          "Merchant is ID saved, but we couldn't verify it with the server.",
+          "Invalid merchant ID. Please verify and try again.",
         );
       }
 
       setIsMerchantLookupLoading(false);
+      return data;
     },
     [],
   );
@@ -171,18 +209,155 @@ export default function Settings() {
     void fetchMerchantAccounts(storedMerchantId);
   }, [_hasHydrated, storedMerchantId, fetchMerchantAccounts]);
 
-  const handleMerchantConfirm = () => {
+  const handleMerchantConfirm = async () => {
     const trimmedMerchantId = merchantIdInput.trim();
     if (!trimmedMerchantId || isMerchantLookupLoading) {
       return;
     }
 
-    void fetchMerchantAccounts(trimmedMerchantId);
-    setMerchantId(trimmedMerchantId);
+    // Check if locked out
+    if (isLockedOut()) {
+      const remaining = getLockoutRemainingSeconds();
+      const minutes = Math.floor(remaining / 60);
+      const seconds = remaining % 60;
+      showErrorToast(
+        `Too many failed attempts. Try again in ${minutes}:${seconds.toString().padStart(2, "0")}`,
+      );
+      return;
+    }
+
+    // First, verify the merchant ID with the API (strict validation - must succeed)
+    const accounts = await fetchMerchantAccounts(trimmedMerchantId);
+    if (!accounts) {
+      // Don't proceed if verification fails - no more fallback
+      return;
+    }
+
+    // Store pending data for confirmation flow
+    setPendingMerchantId(trimmedMerchantId);
+    setPendingMerchantAccounts(accounts);
+
+    // Check if this is a change to existing merchant (requires PIN verification)
+    const isChangingMerchant =
+      storedMerchantId && storedMerchantId !== trimmedMerchantId && isPinSet();
+
+    if (isChangingMerchant) {
+      // Require PIN verification before showing confirmation
+      setShowPinVerifyModal(true);
+    } else {
+      // First-time setup or same merchant - show confirmation directly
+      setShowConfirmModal(true);
+    }
+  };
+
+  const handlePinVerifyComplete = (pin: string) => {
+    if (verifyPin(pin)) {
+      setPinError(null);
+      setShowPinVerifyModal(false);
+      // Show confirmation modal after successful PIN verification
+      setShowConfirmModal(true);
+    } else {
+      if (isLockedOut()) {
+        setShowPinVerifyModal(false);
+        const remaining = getLockoutRemainingSeconds();
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+        showErrorToast(
+          `Too many failed attempts. Try again in ${minutes}:${seconds.toString().padStart(2, "0")}`,
+        );
+      } else {
+        const attemptsLeft = 3 - pinFailedAttempts;
+        setPinError(`Incorrect PIN. ${attemptsLeft} attempt${attemptsLeft !== 1 ? "s" : ""} remaining.`);
+      }
+    }
+  };
+
+  const handleConfirmMerchant = () => {
+    setShowConfirmModal(false);
+
+    // If PIN is not set, prompt user to create one
+    if (!isPinSet()) {
+      setShowPinSetupModal(true);
+    } else {
+      // PIN already set, just save the merchant ID
+      completeMerchantSave();
+    }
+  };
+
+  const handlePinSetupComplete = (pin: string) => {
+    setPin(pin);
+    setShowPinSetupModal(false);
+    completeMerchantSave();
+    showSuccessToast("PIN set successfully");
+  };
+
+  const completeMerchantSave = () => {
+    if (pendingMerchantId) {
+      setMerchantId(pendingMerchantId);
+      setMerchantLookupResult(pendingMerchantAccounts);
+      showSuccessToast("Merchant ID saved successfully");
+      addLog(
+        "info",
+        `Merchant ID updated to: ${pendingMerchantId}`,
+        "settings",
+        "completeMerchantSave",
+      );
+    }
+    setPendingMerchantId(null);
+    setPendingMerchantAccounts(null);
+  };
+
+  const handleCancelSecurityFlow = () => {
+    setShowPinVerifyModal(false);
+    setShowPinSetupModal(false);
+    setShowConfirmModal(false);
+    setPinError(null);
+    setPendingMerchantId(null);
+    setPendingMerchantAccounts(null);
+    // Reset input to stored value
+    setMerchantIdInput(storedMerchantId ?? "");
+  };
+
+  const handleBiometricAuth = async () => {
+    const biometricLabel = biometricStatus
+      ? getBiometricLabel(biometricStatus.biometricType)
+      : "Biometric";
+
+    const success = await authenticateWithBiometrics(
+      `Use ${biometricLabel} to change merchant ID`,
+    );
+
+    if (success) {
+      setPinError(null);
+      setShowPinVerifyModal(false);
+      setShowConfirmModal(true);
+    } else {
+      setPinError("Biometric authentication failed. Please use PIN.");
+    }
+  };
+
+  const handleBiometricToggle = async (enabled: boolean) => {
+    if (enabled) {
+      // Verify biometrics work before enabling
+      const success = await authenticateWithBiometrics(
+        "Authenticate to enable biometric unlock",
+      );
+      if (success) {
+        setBiometricEnabled(true);
+        showSuccessToast("Biometric unlock enabled");
+      } else {
+        showErrorToast("Biometric authentication failed");
+      }
+    } else {
+      setBiometricEnabled(false);
+      showSuccessToast("Biometric unlock disabled");
+    }
   };
 
   const isMerchantConfirmDisabled =
-    merchantIdInput.trim().length === 0 || isMerchantLookupLoading;
+    merchantIdInput.trim().length === 0 ||
+    isMerchantLookupLoading ||
+    merchantIdInput.trim() === storedMerchantId;
 
   return (
     <View style={styles.container}>
@@ -297,6 +472,31 @@ export default function Settings() {
           ) : null}
         </Card>
 
+        {/* Biometric toggle - only show if PIN is set and biometrics available */}
+        {isPinSet() && biometricStatus?.isAvailable && (
+          <Card style={styles.card}>
+            <View style={styles.biometricRow}>
+              <View style={styles.biometricLabel}>
+                <ThemedText fontSize={16} lineHeight={18}>
+                  {getBiometricLabel(biometricStatus.biometricType)}
+                </ThemedText>
+                <ThemedText
+                  fontSize={12}
+                  lineHeight={14}
+                  color="text-tertiary"
+                >
+                  Use instead of PIN
+                </ThemedText>
+              </View>
+              <Switch
+                style={styles.switch}
+                value={biometricEnabled}
+                onValueChange={handleBiometricToggle}
+              />
+            </View>
+          </Card>
+        )}
+
         <Card onPress={handleTestPrinterPress} style={styles.card}>
           <ThemedText fontSize={16} lineHeight={18}>
             Test printer
@@ -321,6 +521,37 @@ export default function Settings() {
         pointerEvents="none"
       />
       <CloseButton style={styles.closeButton} onPress={resetNavigation} />
+
+      {/* PIN Verification Modal - for changing existing merchant ID */}
+      <PinModal
+        visible={showPinVerifyModal}
+        title="Enter PIN"
+        subtitle="Enter your PIN to change the merchant ID"
+        onComplete={handlePinVerifyComplete}
+        onCancel={handleCancelSecurityFlow}
+        error={pinError}
+        showBiometric={biometricEnabled && biometricStatus?.isAvailable}
+        onBiometricPress={handleBiometricAuth}
+      />
+
+      {/* PIN Setup Modal - for first-time merchant setup */}
+      <PinModal
+        visible={showPinSetupModal}
+        title="Create PIN"
+        subtitle="Set a 4-digit PIN to protect merchant settings"
+        onComplete={handlePinSetupComplete}
+        onCancel={handleCancelSecurityFlow}
+      />
+
+      {/* Merchant Confirmation Modal */}
+      <MerchantConfirmModal
+        visible={showConfirmModal}
+        merchantId={pendingMerchantId ?? ""}
+        merchantAccounts={pendingMerchantAccounts}
+        onConfirm={handleConfirmMerchant}
+        onCancel={handleCancelSecurityFlow}
+        isFirstSetup={!isPinSet()}
+      />
     </View>
   );
 }
@@ -402,5 +633,14 @@ const styles = StyleSheet.create({
   },
   errorText: {
     marginTop: -Spacing["spacing-1"],
+  },
+  biometricRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  biometricLabel: {
+    gap: Spacing["spacing-1"],
   },
 });
