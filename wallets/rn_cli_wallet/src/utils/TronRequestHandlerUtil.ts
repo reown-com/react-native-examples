@@ -1,0 +1,63 @@
+import { TRON_MAINNET_CHAINS, TRON_TEST_CHAINS, TRON_SIGNING_METHODS } from '@/constants/Tron'
+import { getWalletAddressFromParams } from '@/utils/HelperUtil'
+import { tronAddresses, tronWallets } from '@/utils/TronWalletUtil'
+import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils'
+import { SignClientTypes } from '@walletconnect/types'
+import { getSdkError } from '@walletconnect/utils'
+
+export async function approveTronRequest(
+  requestEvent: SignClientTypes.EventArguments['session_request']
+) {
+  const { params, id } = requestEvent
+  const { request } = params
+
+  try {
+    const wallet = tronWallets[getWalletAddressFromParams(tronAddresses, params)]
+  
+    if (!wallet) {
+      throw new Error('Wallet not found for address')
+    }
+
+    if (TRON_MAINNET_CHAINS[params.chainId]) {
+      wallet.setFullNode(TRON_MAINNET_CHAINS[params.chainId].fullNode)
+    } else if (TRON_TEST_CHAINS[params.chainId]) {
+      wallet.setFullNode(TRON_TEST_CHAINS[params.chainId].fullNode)
+    } else {
+      throw new Error('Invalid chain id')
+    }
+  
+    switch (request.method) {
+      case TRON_SIGNING_METHODS.TRON_SIGN_MESSAGE:
+        const signedMessage = await wallet.signMessage(request.params.message)
+        const res = {
+          signature: signedMessage
+        }
+        return formatJsonRpcResult(id, res)
+  
+      case TRON_SIGNING_METHODS.TRON_SIGN_TRANSACTION:
+        // Compatible with both new and old structures
+        // New structure : request.params.transaction = transaction
+        // Old structure: request.params.transaction = { transaction: transaction }
+        const transaction = request.params.transaction?.transaction ?? request.params.transaction
+        if (!transaction) {
+          throw new Error('Missing transaction parameter')
+        }
+        const signedTransaction = await wallet.signTransaction(transaction)
+  
+        return formatJsonRpcResult(id, signedTransaction)
+  
+      default:
+        throw new Error(getSdkError('INVALID_METHOD').message)
+    }
+  } catch (error) {
+    console.error('TRON request approval failed:', error)
+    throw new Error(`Failed to approve TRON request: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+
+}
+
+export function rejectTronRequest(request: SignClientTypes.EventArguments['session_request']) {
+  const { id } = request
+
+  return formatJsonRpcError(id, getSdkError('USER_REJECTED').message)
+}

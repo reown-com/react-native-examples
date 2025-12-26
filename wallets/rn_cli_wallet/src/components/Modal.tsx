@@ -15,6 +15,7 @@ import SessionSignSuiTransactionModal from '@/modals/SessionSuiSignTransactionMo
 import SessionSignAndExecuteSuiTransactionModal from '@/modals/SessionSuiSignAndExecuteTransactionModal';
 import SessionTonSendMessageModal from '@/modals/SessionTonSendMessageModal';
 import SessionTonSignDataModal from '@/modals/SessionTonSignDataModal';
+import SessionSignTronModal from '@/modals/SessionSignTronModal';
 
 export default function Modal() {
   const {open, view} = useSnapshot(ModalStore.state);
@@ -49,6 +50,8 @@ export default function Modal() {
           return <SessionTonSendMessageModal />
       case 'SessionTonSignDataModal':
           return <SessionTonSignDataModal />
+      case 'SessionSignTronModal':
+          return <SessionSignTronModal />
       default:
         return <View />;
     }

@@ -28,6 +28,7 @@ interface State {
     | 'SessionSuiSignPersonalMessageModal'
     | 'SessionSuiSignAndExecuteTransactionModal'
     | 'SessionTonSendMessageModal'
+    | 'SessionSignTronModal'
     | 'SessionTonSignDataModal';
   data?: ModalData;
 }

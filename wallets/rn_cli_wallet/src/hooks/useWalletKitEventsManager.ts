@@ -10,6 +10,7 @@ import {getSupportedChains} from '@/utils/HelperUtil';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SUI_SIGNING_METHODS } from '@/constants/Sui';
 import { TON_SIGNING_METHODS } from '@/constants/Ton';
+import { TRON_SIGNING_METHODS } from '@/constants/Tron';
 
 export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -93,6 +94,9 @@ export default function useWalletKitEventsManager(initialized: boolean) {
           })
         case TON_SIGNING_METHODS.SEND_MESSAGE:
           return ModalStore.open('SessionTonSendMessageModal', { requestEvent, requestSession })
+        case TRON_SIGNING_METHODS.TRON_SIGN_MESSAGE:
+        case TRON_SIGNING_METHODS.TRON_SIGN_TRANSACTION:
+          return ModalStore.open('SessionSignTronModal', { requestEvent, requestSession })
         default:
           return ModalStore.open('SessionUnsuportedMethodModal', {
             requestEvent,
