@@ -20,6 +20,10 @@ export const showErrorToast = (message: string) => {
   showToast({ message, type: "error" });
 };
 
+export const showSuccessToast = (message: string) => {
+  showToast({ message, type: "success" });
+};
+
 export const showInfoToast = (message: string) => {
   showToast({ message, type: "info" });
 };
