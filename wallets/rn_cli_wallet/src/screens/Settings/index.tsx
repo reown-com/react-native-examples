@@ -61,7 +61,7 @@ export default function Settings({navigation}: Props) {
           onPress={() =>
             copyToClipboard(eip155Wallets[eip155Address].getMnemonic())
           }
-          value={eip155Wallets[eip155Address].getMnemonic()}
+          value={eip155Wallets[eip155Address]?.getMnemonic?.() ?? ''}
         />
       </View>
       <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Device</Text>
