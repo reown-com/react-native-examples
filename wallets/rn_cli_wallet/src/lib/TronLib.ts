@@ -45,6 +45,9 @@ export default class TronLib {
   }
 
   public async signMessage(message: string) {
+    if (!message || typeof message !== 'string') {
+      throw new Error('Invalid message: must be a non-empty string')
+    }
     const signedtxn = await this.tronWeb.trx.signMessageV2(message)
     return signedtxn
   }

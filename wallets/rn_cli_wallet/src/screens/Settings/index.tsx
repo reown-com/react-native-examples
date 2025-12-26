@@ -16,7 +16,7 @@ type Props = SettingsStackScreenProps<'Settings'>;
 
 export default function Settings({navigation}: Props) {
   const Theme = useTheme();
-  const {eip155Address, suiAddress, tonAddress, socketStatus} = useSnapshot(SettingsStore.state);
+  const {eip155Address, suiAddress, tonAddress, tronAddress, socketStatus} = useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
 
   useEffect(() => {
@@ -55,6 +55,11 @@ export default function Settings({navigation}: Props) {
           title="TON Address"
           value={tonAddress}
           onPress={() => copyToClipboard(tonAddress)}
+        />
+        <Card
+          title="Tron Address"
+          value={tronAddress}
+          onPress={() => copyToClipboard(tronAddress)}
         />
         <Card
           title="EVM Seed Phrase"
