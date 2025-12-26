@@ -59,5 +59,5 @@ export async function approveTronRequest(
 export function rejectTronRequest(request: SignClientTypes.EventArguments['session_request']) {
   const { id } = request
 
-  return formatJsonRpcError(id, getSdkError('USER_REJECTED_METHODS').message)
+  return formatJsonRpcError(id, getSdkError('USER_REJECTED').message)
 }
