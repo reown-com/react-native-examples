@@ -13,6 +13,12 @@ import { VariantList, VariantName } from "@/constants/variants";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  authenticateWithBiometrics,
+  BiometricStatus,
+  getBiometricLabel,
+  getBiometricStatus,
+} from "@/utils/biometrics";
 import { resetNavigation } from "@/utils/navigation";
 import {
   connectPrinter,
@@ -20,24 +26,13 @@ import {
   requestBluetoothPermission,
 } from "@/utils/printer";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
-import {
-  authenticateWithBiometrics,
-  BiometricStatus,
-  getBiometricLabel,
-  getBiometricStatus,
-} from "@/utils/biometrics";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from "react-native";
+import { Platform, StyleSheet, TextInput, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function Settings() {
   const {
@@ -76,12 +71,13 @@ export default function Settings() {
   const [showPinSetupModal, setShowPinSetupModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pinError, setPinError] = useState<string | null>(null);
-  const [pendingMerchantId, setPendingMerchantId] = useState<string | null>(null);
-  const [pendingMerchantAccounts, setPendingMerchantAccounts] =
-    useState<MerchantAccounts | null>(null);
-  const [biometricStatus, setBiometricStatus] = useState<BiometricStatus | null>(
+  const [pendingMerchantId, setPendingMerchantId] = useState<string | null>(
     null,
   );
+  const [pendingMerchantAccounts, setPendingMerchantAccounts] =
+    useState<MerchantAccounts | null>(null);
+  const [biometricStatus, setBiometricStatus] =
+    useState<BiometricStatus | null>(null);
 
   const variantOptions: DropdownOption<VariantName>[] = useMemo(
     () =>
@@ -164,6 +160,8 @@ export default function Settings() {
         "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
         15,
         "USDC",
+        "15",
+        6,
         "Base",
         new Date().toLocaleDateString("en-GB"),
         getVariantPrinterLogo(),
@@ -267,7 +265,9 @@ export default function Settings() {
         );
       } else {
         const attemptsLeft = 3 - pinFailedAttempts;
-        setPinError(`Incorrect PIN. ${attemptsLeft} attempt${attemptsLeft !== 1 ? "s" : ""} remaining.`);
+        setPinError(
+          `Incorrect PIN. ${attemptsLeft} attempt${attemptsLeft !== 1 ? "s" : ""} remaining.`,
+        );
       }
     }
   };
@@ -480,11 +480,7 @@ export default function Settings() {
                 <ThemedText fontSize={16} lineHeight={18}>
                   {getBiometricLabel(biometricStatus.biometricType)}
                 </ThemedText>
-                <ThemedText
-                  fontSize={12}
-                  lineHeight={14}
-                  color="text-tertiary"
-                >
+                <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
                   Use instead of PIN
                 </ThemedText>
               </View>

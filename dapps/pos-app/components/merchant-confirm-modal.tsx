@@ -2,7 +2,13 @@ import { MerchantAccounts } from "@/api/merchant";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { memo } from "react";
-import { Modal, Pressable, StyleSheet, View, TouchableOpacity } from "react-native";
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { MerchantAddressRow } from "./merchant-address-row";
 import { ThemedText } from "./themed-text";
 

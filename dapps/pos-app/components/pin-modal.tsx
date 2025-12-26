@@ -90,7 +90,7 @@ function PinModalBase({
         }
       }
     },
-    [pin, onComplete]
+    [pin, onComplete],
   );
 
   const keys = [
@@ -185,9 +185,7 @@ function PinModalBase({
                           { backgroundColor: theme["foreground-primary"] },
                         ]}
                       >
-                        <ThemedText style={styles.biometricIcon}>
-                          🔐
-                        </ThemedText>
+                        <ThemedText style={styles.biometricIcon}>🔐</ThemedText>
                       </TouchableOpacity>
                     );
                   }

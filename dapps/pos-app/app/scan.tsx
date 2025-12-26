@@ -40,7 +40,14 @@ export default function QRModalScreen() {
 
   const onSuccess = useCallback(
     (data: PaymentStatusResponse) => {
-      const { paymentId, chainName, token, createdAt, tokenAmount, tokenDecimals } = data;
+      const {
+        paymentId,
+        chainName,
+        token,
+        createdAt,
+        tokenAmount,
+        tokenDecimals,
+      } = data;
 
       router.dismiss();
       router.replace({
