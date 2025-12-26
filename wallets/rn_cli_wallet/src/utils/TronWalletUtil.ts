@@ -2,7 +2,6 @@ import TronLib from '../lib/TronLib'
 import { storage } from './storage'
 
 export let tronWeb1: TronLib
-export let tronWeb2: TronLib
 export let tronWallets: Record<string, TronLib>
 export let tronAddresses: string[]
 

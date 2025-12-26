@@ -38,7 +38,10 @@ export async function approveTronRequest(
         // Compatible with both new and old structures
         // New structure : request.params.transaction = transaction
         // Old structure: request.params.transaction = { transaction: transaction }
-        const transaction = request.params.transaction?.transaction || request.params.transaction
+        const transaction = request.params.transaction?.transaction ?? request.params.transaction
+        if (!transaction) {
+          throw new Error('Missing transaction parameter')
+        }
         const signedTransaction = await wallet.signTransaction(transaction)
   
         return formatJsonRpcResult(id, signedTransaction)
