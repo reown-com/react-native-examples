@@ -15,6 +15,7 @@ interface State {
   suiAddress: string;
   suiWallet: SuiLib | null;
   tonAddress: string
+  tronAddress: string
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -41,6 +42,7 @@ const state = proxy<State>({
   suiAddress: '',
   suiWallet: null,
   tonAddress: '',
+  tronAddress: '',
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
@@ -116,6 +118,10 @@ const SettingsStore = {
 
   setTonAddress(tonAddress: string) {
     state.tonAddress = tonAddress
+  },
+
+  setTronAddress(tronAddress: string) {
+    state.tronAddress = tronAddress
   },
 };
 
