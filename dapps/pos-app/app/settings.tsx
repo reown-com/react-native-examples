@@ -1,12 +1,20 @@
+import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
 import { Dropdown, DropdownOption } from "@/components/dropdown";
+import { MerchantAddressRow } from "@/components/merchant-address-row";
+import { MerchantConfirmModal } from "@/components/merchant-confirm-modal";
+import { PinModal } from "@/components/pin-modal";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
-import { Spacing } from "@/constants/spacing";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { VariantList, VariantName } from "@/constants/variants";
+import { useBiometricAuth } from "@/hooks/use-biometric-auth";
+import { useMerchantFlow } from "@/hooks/use-merchant-flow";
+import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { getBiometricLabel } from "@/utils/biometrics";
 import { resetNavigation } from "@/utils/navigation";
 import {
   connectPrinter,
@@ -16,25 +24,60 @@ import {
 import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useMemo } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, TextInput, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
-export default function Settings() {
-  const {
-    themeMode,
-    setThemeMode,
-    variant,
-    setVariant,
-    getVariantPrinterLogo,
-  } = useSettingsStore((state) => state);
+export default function SettingsScreen() {
+  const themeMode = useSettingsStore((state) => state.themeMode);
+  const setThemeMode = useSettingsStore((state) => state.setThemeMode);
+  const variant = useSettingsStore((state) => state.variant);
+  const setVariant = useSettingsStore((state) => state.setVariant);
+  const getVariantPrinterLogo = useSettingsStore(
+    (state) => state.getVariantPrinterLogo,
+  );
   const addLog = useLogsStore((state) => state.addLog);
+  const theme = useTheme();
+
+  // Custom hooks for biometrics and merchant flow
+  const {
+    biometricStatus,
+    biometricEnabled,
+    biometricLabel,
+    canUseBiometric,
+    shouldShowBiometricOption,
+    handleBiometricToggle,
+    authenticate,
+  } = useBiometricAuth();
+
+  const {
+    merchantIdInput,
+    merchantLookupResult,
+    merchantLookupError,
+    isLoading,
+    activeModal,
+    pinError,
+    pendingMerchantId,
+    pendingMerchantAccounts,
+    isConfirmDisabled,
+    isPinSet,
+    handleInputChange,
+    handleMerchantConfirm,
+    handlePinVerifyComplete,
+    handleBiometricAuthSuccess,
+    handleBiometricAuthFailure,
+    handleConfirmMerchant,
+    handlePinSetupComplete,
+    handleCancelSecurityFlow,
+  } = useMerchantFlow();
 
   const variantOptions: DropdownOption<VariantName>[] = useMemo(
     () =>
-      VariantList.map((variant) => ({
-        value: variant.id,
-        label: variant.name,
+      VariantList.map((v) => ({
+        value: v.id,
+        label: v.name,
       })),
     [],
   );
@@ -85,6 +128,8 @@ export default function Settings() {
         "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
         15,
         "USDC",
+        "15",
+        6,
         "Base",
         new Date().toLocaleDateString("en-GB"),
         getVariantPrinterLogo(),
@@ -96,57 +141,206 @@ export default function Settings() {
     }
   };
 
+  const handleBiometricAuth = async () => {
+    const success = await authenticate(
+      `Use ${biometricLabel} to change merchant ID`,
+    );
+
+    if (success) {
+      handleBiometricAuthSuccess();
+    } else {
+      handleBiometricAuthFailure();
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <ThemedText
-        fontSize={12}
-        lineHeight={14}
-        color="text-tertiary"
-        style={styles.versionText}
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
       >
-        Version {appVersion} ({buildVersion})
-      </ThemedText>
-
-      {/* Variant Selector */}
-      <View style={styles.dropdownSection}>
         <ThemedText
-          fontSize={14}
-          lineHeight={16}
-          color="text-primary"
-          style={styles.sectionLabel}
+          fontSize={12}
+          lineHeight={14}
+          color="text-tertiary"
+          style={styles.versionText}
         >
-          Theme Variant
+          Version {appVersion} ({buildVersion})
         </ThemedText>
-        <Dropdown
-          options={variantOptions}
-          value={variant}
-          onChange={handleVariantChange}
-          placeholder="Select variant"
-        />
-      </View>
-      <Card style={styles.card}>
-        <ThemedText fontSize={16} lineHeight={18}>
-          Dark Mode
-        </ThemedText>
-        <Switch
-          style={styles.switch}
-          value={themeMode === "dark"}
-          onValueChange={handleThemeModeChange}
-        />
-      </Card>
 
-      <Card onPress={handleTestPrinterPress} style={styles.card}>
-        <ThemedText fontSize={16} lineHeight={18}>
-          Test printer
-        </ThemedText>
-      </Card>
+        <View style={styles.dropdownSection}>
+          <ThemedText
+            fontSize={14}
+            lineHeight={16}
+            color="text-primary"
+            style={styles.sectionLabel}
+          >
+            Theme Variant
+          </ThemedText>
+          <Dropdown
+            options={variantOptions}
+            value={variant}
+            onChange={handleVariantChange}
+            placeholder="Select variant"
+          />
+        </View>
 
-      <Card onPress={() => router.push("/logs")} style={styles.card}>
-        <ThemedText fontSize={16} lineHeight={18}>
-          View Logs
-        </ThemedText>
-      </Card>
+        <Card style={styles.card}>
+          <ThemedText fontSize={16} lineHeight={18}>
+            Dark Mode
+          </ThemedText>
+          <Switch
+            style={styles.switch}
+            value={themeMode === "dark"}
+            onValueChange={handleThemeModeChange}
+          />
+        </Card>
+
+        <Card style={styles.merchantCard}>
+          <ThemedText fontSize={16} lineHeight={18}>
+            Merchant ID
+          </ThemedText>
+          <View style={styles.merchantInputRow}>
+            <TextInput
+              value={merchantIdInput}
+              onChangeText={handleInputChange}
+              placeholder="Enter merchant ID"
+              placeholderTextColor={theme["text-tertiary"]}
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={[
+                styles.merchantInput,
+                {
+                  borderColor: theme["border-primary"],
+                  color: theme["text-primary"],
+                  backgroundColor: theme["foreground-secondary"],
+                },
+              ]}
+            />
+            <Button
+              onPress={handleMerchantConfirm}
+              disabled={isConfirmDisabled}
+              style={[
+                styles.confirmButton,
+                {
+                  backgroundColor: isConfirmDisabled
+                    ? theme["foreground-tertiary"]
+                    : theme["bg-accent-primary"],
+                },
+              ]}
+            >
+              <ThemedText
+                fontSize={14}
+                lineHeight={16}
+                color="text-white"
+                style={styles.confirmButtonLabel}
+              >
+                {isLoading ? "Loading..." : "Save"}
+              </ThemedText>
+            </Button>
+          </View>
+
+          {merchantLookupError ? (
+            <ThemedText
+              fontSize={12}
+              lineHeight={14}
+              color="text-tertiary"
+              style={styles.errorText}
+            >
+              {merchantLookupError}
+            </ThemedText>
+          ) : null}
+
+          {merchantLookupResult ? (
+            <View style={styles.merchantResult}>
+              <MerchantAddressRow
+                label="EVM"
+                value={merchantLookupResult.liquidationAddress}
+              />
+              <MerchantAddressRow
+                label="Solana"
+                value={merchantLookupResult.solanaLiquidationAddress}
+              />
+            </View>
+          ) : null}
+        </Card>
+
+        {/* Biometric toggle - only show if PIN is set and biometrics available */}
+        {shouldShowBiometricOption && biometricStatus && (
+          <Card style={styles.card}>
+            <View style={styles.biometricRow}>
+              <View style={styles.biometricLabel}>
+                <ThemedText fontSize={16} lineHeight={18}>
+                  {getBiometricLabel(biometricStatus.biometricType)}
+                </ThemedText>
+                <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
+                  Use instead of PIN
+                </ThemedText>
+              </View>
+              <Switch
+                style={styles.switch}
+                value={biometricEnabled}
+                onValueChange={handleBiometricToggle}
+              />
+            </View>
+          </Card>
+        )}
+
+        <Card onPress={handleTestPrinterPress} style={styles.card}>
+          <ThemedText fontSize={16} lineHeight={18}>
+            Test printer
+          </ThemedText>
+        </Card>
+
+        <Card onPress={() => router.push("/logs")} style={styles.card}>
+          <ThemedText fontSize={16} lineHeight={18}>
+            View Logs
+          </ThemedText>
+        </Card>
+      </ScrollView>
+      <LinearGradient
+        colors={[
+          theme["bg-primary"] + "00",
+          theme["bg-primary"] + "40",
+          theme["bg-primary"] + "CC",
+          theme["bg-primary"],
+        ]}
+        locations={[0, 0.3, 0.5, 1]}
+        style={styles.gradient}
+        pointerEvents="none"
+      />
       <CloseButton style={styles.closeButton} onPress={resetNavigation} />
+
+      {/* PIN Verification Modal - for changing existing merchant ID */}
+      <PinModal
+        visible={activeModal === "pin-verify"}
+        title="Enter PIN"
+        subtitle="Enter your PIN to change the merchant ID"
+        onComplete={handlePinVerifyComplete}
+        onCancel={handleCancelSecurityFlow}
+        error={pinError}
+        showBiometric={canUseBiometric}
+        onBiometricPress={handleBiometricAuth}
+      />
+
+      {/* PIN Setup Modal - for first-time merchant setup */}
+      <PinModal
+        visible={activeModal === "pin-setup"}
+        title="Create PIN"
+        subtitle="Set a 4-digit PIN to protect merchant settings"
+        onComplete={handlePinSetupComplete}
+        onCancel={handleCancelSecurityFlow}
+      />
+
+      {/* Merchant Confirmation Modal */}
+      <MerchantConfirmModal
+        visible={activeModal === "confirm"}
+        merchantId={pendingMerchantId ?? ""}
+        merchantAccounts={pendingMerchantAccounts}
+        onConfirm={handleConfirmMerchant}
+        onCancel={handleCancelSecurityFlow}
+        isFirstSetup={!isPinSet()}
+      />
     </View>
   );
 }
@@ -155,6 +349,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
+  },
+  content: {
+    paddingTop: Spacing["spacing-5"],
+    paddingBottom: Spacing["extra-spacing-2"],
     gap: Spacing["spacing-3"],
   },
   card: {
@@ -176,8 +374,62 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignSelf: "center",
   },
+  gradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 200,
+  },
   versionText: {
     alignSelf: "flex-end",
     marginBottom: Spacing["spacing-2"],
+  },
+  merchantCard: {
+    gap: Spacing["spacing-3"],
+    paddingVertical: Spacing["spacing-5"],
+  },
+  merchantInputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing["spacing-3"],
+  },
+  merchantInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: BorderRadius["3"],
+    paddingHorizontal: Spacing["spacing-3"],
+    paddingVertical: Spacing["spacing-2"],
+    fontSize: 14,
+    lineHeight: 16,
+    fontFamily: "KH Teka",
+    minHeight: 48,
+  },
+  confirmButton: {
+    borderRadius: BorderRadius["3"],
+    paddingHorizontal: Spacing["spacing-4"],
+    minHeight: 48,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  confirmButtonLabel: {
+    textAlign: "center",
+    width: "100%",
+    verticalAlign: "middle",
+  },
+  merchantResult: {
+    gap: Spacing["spacing-1"],
+  },
+  errorText: {
+    marginTop: -Spacing["spacing-1"],
+  },
+  biometricRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  biometricLabel: {
+    gap: Spacing["spacing-1"],
   },
 });

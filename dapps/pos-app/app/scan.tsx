@@ -8,6 +8,7 @@ import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { dollarsToCents } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast } from "@/utils/toast";
 import {
@@ -25,14 +26,14 @@ interface ScreenParams extends UnknownOutputParams {
   amount: string;
 }
 
-export default function QRModalScreen() {
+export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
   const [assets] = useAssets([require("@/assets/images/wc_logo_blue.png")]);
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
-  const { deviceId } = useSettingsStore((state) => state);
+  const { deviceId, merchantId } = useSettingsStore((state) => state);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
@@ -40,7 +41,14 @@ export default function QRModalScreen() {
 
   const onSuccess = useCallback(
     (data: PaymentStatusResponse) => {
-      const { paymentId, chainName, token, createdAt } = data;
+      const {
+        paymentId,
+        chainName,
+        token,
+        createdAt,
+        tokenAmount,
+        tokenDecimals,
+      } = data;
 
       router.dismiss();
       router.replace({
@@ -48,8 +56,10 @@ export default function QRModalScreen() {
         params: {
           amount,
           paymentId,
-          chainName,
+          chainName: chainName || "Unknown",
           token,
+          tokenAmount: tokenAmount || "0",
+          tokenDecimals: String(tokenDecimals || 0),
           timestamp: new Date(createdAt * 1000).toISOString(),
         },
       });
@@ -80,13 +90,23 @@ export default function QRModalScreen() {
     if (!deviceId || !amount) return;
 
     async function initiatePayment() {
+      if (!merchantId) {
+        addLog(
+          "error",
+          "Merchant ID is not configured",
+          "scan",
+          "initiatePayment",
+        );
+        showErrorToast("Merchant ID is not configured");
+        return;
+      }
+
       try {
         const paymentRequest = {
-          merchantId: "test_merchant_111",
+          merchantId,
           refId: uuidv4(),
-          amount: Number(amount) * 100, // amount in cents i.e. $1 = 100
+          amount: dollarsToCents(amount),
           currency: "USD",
-          chainId: 8453,
         };
 
         const data = await startPayment(paymentRequest);
@@ -123,7 +143,7 @@ export default function QRModalScreen() {
 
     initiatePayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deviceId, amount]);
+  }, [deviceId, amount, merchantId]);
 
   const { data: paymentStatusData } = usePaymentStatus(paymentId, {
     enabled: !!paymentId && !!qrUri,

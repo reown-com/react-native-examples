@@ -2,6 +2,8 @@ import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -14,8 +16,15 @@ export default function HomeScreen() {
   ]);
 
   const Theme = useTheme();
+  const { merchantId } = useSettingsStore();
 
   const handleStartPayment = () => {
+    if (!merchantId) {
+      router.push("/settings");
+      showErrorToast("Merchant ID is not configured");
+      return;
+    }
+
     router.push("/amount");
   };
 
