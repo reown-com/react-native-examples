@@ -25,6 +25,13 @@ interface ScreenParams extends UnknownOutputParams {
   amount: string;
 }
 
+/**
+ * Convert dollars to cents. Uses Math.round() to avoid floating-point issues (9.2 * 100 = 919.999...)
+ * @see https://github.com/nijikokun/dollars-to-cents - Stripe ecosystem standard
+ */
+const dollarsToCents = (amount: string): number =>
+  Math.round(parseFloat(amount) * 100);
+
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
   const [assets] = useAssets([require("@/assets/images/wc_logo_blue.png")]);
@@ -104,7 +111,7 @@ export default function ScanScreen() {
         const paymentRequest = {
           merchantId,
           refId: uuidv4(),
-          amount: Number(amount) * 100, // amount in cents i.e. $1 = 100
+          amount: dollarsToCents(amount),
           currency: "USD",
         };
 
