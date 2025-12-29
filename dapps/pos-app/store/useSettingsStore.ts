@@ -79,7 +79,11 @@ export const useSettingsStore = create<SettingsStore>()(
 
       // PIN methods
       setPin: (pin: string) => {
-        set({ pinHash: hashPin(pin), pinFailedAttempts: 0, pinLockoutUntil: null });
+        set({
+          pinHash: hashPin(pin),
+          pinFailedAttempts: 0,
+          pinLockoutUntil: null,
+        });
       },
       verifyPin: (pin: string) => {
         const state = get();
@@ -130,8 +134,10 @@ export const useSettingsStore = create<SettingsStore>()(
         const remaining = Math.max(0, state.pinLockoutUntil - Date.now());
         return Math.ceil(remaining / 1000);
       },
-      resetPinAttempts: () => set({ pinFailedAttempts: 0, pinLockoutUntil: null }),
-      setBiometricEnabled: (enabled: boolean) => set({ biometricEnabled: enabled }),
+      resetPinAttempts: () =>
+        set({ pinFailedAttempts: 0, pinLockoutUntil: null }),
+      setBiometricEnabled: (enabled: boolean) =>
+        set({ biometricEnabled: enabled }),
 
       getVariantPrinterLogo: () => {
         return Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64;
@@ -156,9 +162,12 @@ export const useSettingsStore = create<SettingsStore>()(
         if (version < 6) {
           // Initialize PIN protection fields
           persistedState.pinHash = persistedState.pinHash ?? null;
-          persistedState.pinFailedAttempts = persistedState.pinFailedAttempts ?? 0;
-          persistedState.pinLockoutUntil = persistedState.pinLockoutUntil ?? null;
-          persistedState.biometricEnabled = persistedState.biometricEnabled ?? false;
+          persistedState.pinFailedAttempts =
+            persistedState.pinFailedAttempts ?? 0;
+          persistedState.pinLockoutUntil =
+            persistedState.pinLockoutUntil ?? null;
+          persistedState.biometricEnabled =
+            persistedState.biometricEnabled ?? false;
         }
         return persistedState;
       },

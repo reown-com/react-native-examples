@@ -6,8 +6,8 @@ import {
   Modal,
   Pressable,
   StyleSheet,
-  View,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { MerchantAddressRow } from "./merchant-address-row";
 import { ThemedText } from "./themed-text";
@@ -43,17 +43,6 @@ function MerchantConfirmModalBase({
           style={[styles.container, { backgroundColor: theme["bg-primary"] }]}
           onPress={(e) => e.stopPropagation()}
         >
-          <View
-            style={[
-              styles.warningBadge,
-              { backgroundColor: theme["bg-accent-primary"] + "20" },
-            ]}
-          >
-            <ThemedText fontSize={24} style={styles.warningIcon}>
-              ⚠️
-            </ThemedText>
-          </View>
-
           <ThemedText
             fontSize={18}
             lineHeight={22}
@@ -189,17 +178,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius["5"],
     padding: Spacing["spacing-6"],
     alignItems: "center",
-  },
-  warningBadge: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: Spacing["spacing-4"],
-  },
-  warningIcon: {
-    textAlign: "center",
   },
   title: {
     fontWeight: "600",

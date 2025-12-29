@@ -25,7 +25,7 @@ interface ScreenParams extends UnknownOutputParams {
   amount: string;
 }
 
-export default function QRModalScreen() {
+export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
   const [assets] = useAssets([require("@/assets/images/wc_logo_blue.png")]);
 

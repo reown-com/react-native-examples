@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
     paddingLeft: Spacing["spacing-7"],
     paddingRight: Spacing["spacing-9"],
     paddingVertical: Spacing["spacing-4"],
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["5"],
     borderWidth: 1,
     height: 80,
   },

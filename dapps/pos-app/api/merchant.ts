@@ -1,3 +1,4 @@
+import { useLogsStore } from "@/store/useLogsStore";
 import { merchantClient } from "./client";
 
 export type MerchantAccounts = {
@@ -24,8 +25,17 @@ export async function getMerchantAccounts(
     );
 
     return data;
-  } catch {
-    console.error("Failed to get merchant accounts", merchantId);
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    useLogsStore
+      .getState()
+      .addLog(
+        "error",
+        `${errorMessage} for merchant ${merchantId}`,
+        "merchant",
+        "getMerchantAccounts",
+      );
     return null;
   }
 }

@@ -37,8 +37,3 @@ export interface ApiError {
   code?: string;
   status?: number;
 }
-
-export interface MerchantAccountsResponse {
-  liquidationAddress: string | null;
-  solanaLiquidationAddress: string | null;
-}

@@ -81,7 +81,7 @@ function LogItem({ item }: { item: LogEntry }) {
   );
 }
 
-export default function Logs() {
+export default function LogsScreen() {
   const Theme = useTheme();
   const logs = useLogsStore((state) => state.logs);
   const clearLogs = useLogsStore((state) => state.clearLogs);
