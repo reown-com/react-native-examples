@@ -56,6 +56,7 @@ function QrCode_({
           height: size,
           width: size,
           backgroundColor: Theme["bg-primary"],
+          borderColor: Theme["foreground-tertiary"],
         },
         style,
       ]}
@@ -100,6 +101,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: BorderRadius["5"],
+    borderWidth: StyleSheet.hairlineWidth,
     alignSelf: "center",
   },
   icon: {
