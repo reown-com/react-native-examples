@@ -156,8 +156,7 @@ export const useSettingsStore = create<SettingsStore>()(
           delete persistedState.showVariantLogo;
         }
         if (version < 5) {
-          persistedState.merchantId =
-            persistedState.merchantId ?? "test_merchant_111";
+          persistedState.merchantId = persistedState.merchantId ?? null;
         }
         if (version < 6) {
           // Initialize PIN protection fields

@@ -105,7 +105,17 @@ export function useMerchantFlow() {
     }
 
     hasRefetchedMerchant.current = true;
-    void fetchMerchantAccounts(storedMerchantId);
+    fetchMerchantAccounts(storedMerchantId).catch((error) => {
+      useLogsStore
+        .getState()
+        .addLog(
+          "error",
+          "Failed to fetch merchant accounts:",
+          "merchant",
+          "fetchMerchantAccounts",
+          { error },
+        );
+    });
   }, [_hasHydrated, storedMerchantId, fetchMerchantAccounts]);
 
   const handleInputChange = useCallback(

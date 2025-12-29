@@ -1,3 +1,4 @@
+import { useLogsStore } from "@/store/useLogsStore";
 import * as LocalAuthentication from "expo-local-authentication";
 import { Platform } from "react-native";
 
@@ -36,13 +37,13 @@ export async function getBiometricStatus(): Promise<BiometricStatus> {
     let biometricType: BiometricType = "none";
     if (
       supportedTypes.includes(
-        LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION
+        LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION,
       )
     ) {
       biometricType = "facial";
     } else if (
       supportedTypes.includes(
-        LocalAuthentication.AuthenticationType.FINGERPRINT
+        LocalAuthentication.AuthenticationType.FINGERPRINT,
       )
     ) {
       biometricType = "fingerprint";
@@ -57,7 +58,14 @@ export async function getBiometricStatus(): Promise<BiometricStatus> {
       biometricType,
       isEnrolled: enrolled,
     };
-  } catch {
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Biometric error";
+    useLogsStore
+      .getState()
+      .addLog("error", errorMessage, "biometrics", "getBiometricStatus", {
+        error,
+      });
     return {
       isAvailable: false,
       biometricType: "none",
@@ -67,7 +75,7 @@ export async function getBiometricStatus(): Promise<BiometricStatus> {
 }
 
 export async function authenticateWithBiometrics(
-  promptMessage = "Authenticate to continue"
+  promptMessage = "Authenticate to continue",
 ): Promise<boolean> {
   if (Platform.OS === "web") {
     return false;
