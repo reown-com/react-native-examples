@@ -8,6 +8,7 @@ import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { dollarsToCents } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast } from "@/utils/toast";
 import {
@@ -24,13 +25,6 @@ import { v4 as uuidv4 } from "uuid";
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
 }
-
-/**
- * Convert dollars to cents. Uses Math.round() to avoid floating-point issues (9.2 * 100 = 919.999...)
- * @see https://github.com/nijikokun/dollars-to-cents - Stripe ecosystem standard
- */
-const dollarsToCents = (amount: string): number =>
-  Math.round(parseFloat(amount) * 100);
 
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
