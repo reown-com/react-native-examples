@@ -8,6 +8,7 @@ import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { dollarsToCents } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast } from "@/utils/toast";
 import {
@@ -104,7 +105,7 @@ export default function ScanScreen() {
         const paymentRequest = {
           merchantId,
           refId: uuidv4(),
-          amount: Number(amount) * 100, // amount in cents i.e. $1 = 100
+          amount: dollarsToCents(amount),
           currency: "USD",
         };
 
