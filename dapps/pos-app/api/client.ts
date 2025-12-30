@@ -6,13 +6,6 @@ if (!API_BASE_URL) {
   throw new Error("EXPO_PUBLIC_API_URL environment variable is not configured");
 }
 
-const MERCHANT_API_BASE_URL = process.env.EXPO_PUBLIC_MERCHANTS_URL;
-if (!MERCHANT_API_BASE_URL) {
-  throw new Error(
-    "EXPO_PUBLIC_MERCHANTS_URL environment variable is not configured",
-  );
-}
-
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
 }
@@ -136,5 +129,3 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);
-
-export const merchantClient = new ApiClient(MERCHANT_API_BASE_URL);
