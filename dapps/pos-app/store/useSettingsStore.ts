@@ -1,7 +1,7 @@
 import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { VariantName, Variants } from "@/constants/variants";
+import { SECURE_STORAGE_KEYS, secureStorage } from "@/utils/secure-storage";
 import { storage } from "@/utils/storage";
-import { secureStorage, SECURE_STORAGE_KEYS } from "@/utils/secure-storage";
 import { Appearance } from "react-native";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -27,7 +27,7 @@ interface SettingsStore {
   _hasHydrated: boolean;
   merchantId: string | null;
 
-  // PIN protection (stored in secure storage, not in zustand)
+  // PIN protection
   pinFailedAttempts: number;
   pinLockoutUntil: number | null;
   biometricEnabled: boolean;
@@ -52,6 +52,7 @@ interface SettingsStore {
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
 
+  // Others
   getVariantPrinterLogo: () => string;
 }
 
@@ -92,7 +93,9 @@ export const useSettingsStore = create<SettingsStore>()(
         await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
       },
       getMerchantApiKey: async () => {
-        return await secureStorage.getItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
+        return await secureStorage.getItem(
+          SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+        );
       },
 
       // PIN methods
@@ -120,7 +123,8 @@ export const useSettingsStore = create<SettingsStore>()(
         const storedPinHash = await secureStorage.getItem(
           SECURE_STORAGE_KEYS.PIN_HASH,
         );
-        const isValid = storedPinHash !== null && hashPin(pin) === storedPinHash;
+        const isValid =
+          storedPinHash !== null && hashPin(pin) === storedPinHash;
 
         if (isValid) {
           set({ pinFailedAttempts: 0, pinLockoutUntil: null });
@@ -141,7 +145,9 @@ export const useSettingsStore = create<SettingsStore>()(
         return false;
       },
       isPinSet: async () => {
-        const pinHash = await secureStorage.getItem(SECURE_STORAGE_KEYS.PIN_HASH);
+        const pinHash = await secureStorage.getItem(
+          SECURE_STORAGE_KEYS.PIN_HASH,
+        );
         return pinHash !== null;
       },
       isLockedOut: () => {
