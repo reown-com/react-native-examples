@@ -80,13 +80,19 @@ export const useSettingsStore = create<SettingsStore>()(
       setMerchantId: (merchantId: string | null) => set({ merchantId }),
       clearMerchantId: () => set({ merchantId: null }),
       setMerchantApiKey: async (apiKey: string | null) => {
-        if (apiKey) {
-          await secureStorage.setItem(
-            SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
-            apiKey,
-          );
-        } else {
-          await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
+        try {
+          if (apiKey) {
+            await secureStorage.setItem(
+              SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+              apiKey,
+            );
+          } else {
+            await secureStorage.removeItem(
+              SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+            );
+          }
+        } catch {
+          throw new Error("Failed to save credentials securely");
         }
       },
       clearMerchantApiKey: async () => {
