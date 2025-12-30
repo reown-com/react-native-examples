@@ -46,3 +46,4 @@ app-example
 
 ios/*
 android/*
+.vercel
