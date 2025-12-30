@@ -26,6 +26,7 @@ import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
+import { clearStaleSecureStorage } from "@/utils/secure-storage";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect } from "react";
@@ -65,6 +66,10 @@ export default Sentry.wrap(function RootLayout() {
     "KH Teka Light": require("@/assets/fonts/KHTeka-Light.otf"),
     "KH Teka Medium": require("@/assets/fonts/KHTeka-Medium.otf"),
   });
+
+  useEffect(() => {
+    clearStaleSecureStorage();
+  }, []);
 
   useEffect(() => {
     async function getDeviceId() {
