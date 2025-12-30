@@ -1,0 +1,36 @@
+import * as SecureStore from "expo-secure-store";
+
+const KEYS = {
+  MERCHANT_API_KEY: "merchant_api_key",
+  PIN_HASH: "pin_hash",
+} as const;
+
+export const secureStorage = {
+  async getItem(key: string): Promise<string | null> {
+    try {
+      return await SecureStore.getItemAsync(key);
+    } catch (error) {
+      console.error(`Error getting secure item ${key}:`, error);
+      return null;
+    }
+  },
+
+  async setItem(key: string, value: string): Promise<void> {
+    try {
+      await SecureStore.setItemAsync(key, value);
+    } catch (error) {
+      console.error(`Error setting secure item ${key}:`, error);
+      throw error;
+    }
+  },
+
+  async removeItem(key: string): Promise<void> {
+    try {
+      await SecureStore.deleteItemAsync(key);
+    } catch (error) {
+      console.error(`Error removing secure item ${key}:`, error);
+    }
+  },
+};
+
+export const SECURE_STORAGE_KEYS = KEYS;

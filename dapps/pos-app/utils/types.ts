@@ -4,10 +4,11 @@ export type Namespace = "eip155" | "solana";
 export type PaymentStatus = "pending" | "completed" | "failed" | "processing";
 
 export interface StartPaymentRequest {
-  merchantId: string;
-  refId: string;
-  amount: number; // amount in cents i.e. $1 = 100
-  currency: string;
+  referenceId: string;
+  amount: {
+    value: string;
+    unit: string;
+  };
 }
 
 export interface StartPaymentResponse {

@@ -3,6 +3,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { memo } from "react";
 import {
   ImageSourcePropType,
+  Pressable,
   StyleSheet,
   View,
   type StyleProp,
@@ -21,6 +22,7 @@ export interface QrCodeProps {
   children?: React.ReactNode;
   logoSize?: number;
   logoBorderRadius?: number;
+  onPress?: () => void;
 }
 
 function QrCode_({
@@ -32,6 +34,7 @@ function QrCode_({
   children,
   logoSize,
   logoBorderRadius,
+  onPress,
 }: QrCodeProps) {
   const Theme = useTheme("light");
   const containerPadding = Spacing["spacing-4"];
@@ -49,7 +52,9 @@ function QrCode_({
   }
 
   return (
-    <View
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
       style={[
         styles.container,
         {
@@ -83,7 +88,7 @@ function QrCode_({
         logo={!arenaClear && children ? children : undefined}
       />
       {!arenaClear && <View style={styles.icon}>{children}</View>}
-    </View>
+    </Pressable>
   );
 }
 

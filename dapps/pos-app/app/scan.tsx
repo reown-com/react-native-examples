@@ -10,12 +10,13 @@ import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { dollarsToCents } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
-import { showErrorToast } from "@/utils/toast";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import {
   PaymentStatusErrorResponse,
   PaymentStatusResponse,
 } from "@/utils/types";
 import { useAssets } from "expo-asset";
+import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -86,6 +87,11 @@ export default function ScanScreen() {
     resetNavigation("/amount");
   };
 
+  const handleCopyPaymentUrl = async () => {
+    await Clipboard.setStringAsync(qrUri);
+    showSuccessToast("Payment URL copied");
+  };
+
   useEffect(() => {
     if (!deviceId || !amount) return;
 
@@ -103,16 +109,17 @@ export default function ScanScreen() {
 
       try {
         const paymentRequest = {
-          merchantId,
-          refId: uuidv4(),
-          amount: dollarsToCents(amount),
-          currency: "USD",
+          referenceId: uuidv4().replace(/-/g, ""),
+          amount: {
+            value: String(dollarsToCents(amount)),
+            unit: "iso4217/USD",
+          },
         };
 
         const data = await startPayment(paymentRequest);
 
         if (process.env.EXPO_PUBLIC_GATEWAY_URL) {
-          const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/${data.paymentId}`;
+          const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/?pid=${data.paymentId}`;
 
           addLog("info", "Payment started", "scan", "initiatePayment", {
             paymentId: data.paymentId,
@@ -197,7 +204,12 @@ export default function ScanScreen() {
               ${amount}
             </ThemedText>
           </View>
-          <QRCode size={300} uri={qrUri} logoBorderRadius={100}>
+          <QRCode
+            size={300}
+            uri={qrUri}
+            logoBorderRadius={100}
+            onPress={handleCopyPaymentUrl}
+          >
             <Image source={assets?.[0]} style={styles.logo} />
           </QRCode>
           <View style={{ flex: 1 }} />

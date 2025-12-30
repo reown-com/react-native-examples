@@ -2,13 +2,13 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { memo, useCallback, useEffect, useState } from "react";
 import {
-  Modal,
-  StyleSheet,
-  View,
-  Pressable,
   Animated,
   Easing,
+  Modal,
+  Pressable,
+  StyleSheet,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { ThemedText } from "./themed-text";
 
@@ -185,7 +185,7 @@ function PinModalBase({
                           { backgroundColor: theme["foreground-primary"] },
                         ]}
                       >
-                        <ThemedText style={styles.biometricIcon}>🔐</ThemedText>
+                        <ThemedText fontSize={16}>🔐</ThemedText>
                       </TouchableOpacity>
                     );
                   }
@@ -302,9 +302,6 @@ const styles = StyleSheet.create({
   keyText: {
     fontSize: 22,
     lineHeight: 26,
-  },
-  biometricIcon: {
-    fontSize: 24,
   },
   cancelButton: {
     marginTop: Spacing["spacing-5"],

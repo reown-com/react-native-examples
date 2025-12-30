@@ -1,6 +1,7 @@
 import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { VariantName, Variants } from "@/constants/variants";
 import { storage } from "@/utils/storage";
+import { secureStorage, SECURE_STORAGE_KEYS } from "@/utils/secure-storage";
 import { Appearance } from "react-native";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -26,8 +27,7 @@ interface SettingsStore {
   _hasHydrated: boolean;
   merchantId: string | null;
 
-  // PIN protection
-  pinHash: string | null;
+  // PIN protection (stored in secure storage, not in zustand)
   pinFailedAttempts: number;
   pinLockoutUntil: number | null;
   biometricEnabled: boolean;
@@ -39,11 +39,14 @@ interface SettingsStore {
   setVariant: (variant: VariantName) => void;
   setMerchantId: (merchantId: string | null) => void;
   clearMerchantId: () => void;
+  setMerchantApiKey: (apiKey: string | null) => Promise<void>;
+  clearMerchantApiKey: () => Promise<void>;
+  getMerchantApiKey: () => Promise<string | null>;
 
   // PIN actions
-  setPin: (pin: string) => void;
-  verifyPin: (pin: string) => boolean;
-  isPinSet: () => boolean;
+  setPin: (pin: string) => Promise<void>;
+  verifyPin: (pin: string) => Promise<boolean>;
+  isPinSet: () => Promise<boolean>;
   isLockedOut: () => boolean;
   getLockoutRemainingSeconds: () => number;
   resetPinAttempts: () => void;
@@ -60,7 +63,6 @@ export const useSettingsStore = create<SettingsStore>()(
       variant: "default",
       _hasHydrated: false,
       merchantId: null,
-      pinHash: null,
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
@@ -76,16 +78,33 @@ export const useSettingsStore = create<SettingsStore>()(
       },
       setMerchantId: (merchantId: string | null) => set({ merchantId }),
       clearMerchantId: () => set({ merchantId: null }),
+      setMerchantApiKey: async (apiKey: string | null) => {
+        if (apiKey) {
+          await secureStorage.setItem(
+            SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+            apiKey,
+          );
+        } else {
+          await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
+        }
+      },
+      clearMerchantApiKey: async () => {
+        await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
+      },
+      getMerchantApiKey: async () => {
+        return await secureStorage.getItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
+      },
 
       // PIN methods
-      setPin: (pin: string) => {
+      setPin: async (pin: string) => {
+        const hashedPin = hashPin(pin);
+        await secureStorage.setItem(SECURE_STORAGE_KEYS.PIN_HASH, hashedPin);
         set({
-          pinHash: hashPin(pin),
           pinFailedAttempts: 0,
           pinLockoutUntil: null,
         });
       },
-      verifyPin: (pin: string) => {
+      verifyPin: async (pin: string) => {
         const state = get();
 
         // Check if locked out
@@ -98,7 +117,10 @@ export const useSettingsStore = create<SettingsStore>()(
           set({ pinLockoutUntil: null, pinFailedAttempts: 0 });
         }
 
-        const isValid = hashPin(pin) === state.pinHash;
+        const storedPinHash = await secureStorage.getItem(
+          SECURE_STORAGE_KEYS.PIN_HASH,
+        );
+        const isValid = storedPinHash !== null && hashPin(pin) === storedPinHash;
 
         if (isValid) {
           set({ pinFailedAttempts: 0, pinLockoutUntil: null });
@@ -118,7 +140,10 @@ export const useSettingsStore = create<SettingsStore>()(
 
         return false;
       },
-      isPinSet: () => get().pinHash !== null,
+      isPinSet: async () => {
+        const pinHash = await secureStorage.getItem(SECURE_STORAGE_KEYS.PIN_HASH);
+        return pinHash !== null;
+      },
       isLockedOut: () => {
         const state = get();
         if (!state.pinLockoutUntil) return false;
@@ -145,7 +170,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 6,
+      version: 8,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -156,23 +181,58 @@ export const useSettingsStore = create<SettingsStore>()(
           delete persistedState.showVariantLogo;
         }
         if (version < 5) {
-          persistedState.merchantId = persistedState.merchantId ?? null;
+          persistedState.merchantId = null;
         }
         if (version < 6) {
-          // Initialize PIN protection fields
-          persistedState.pinHash = persistedState.pinHash ?? null;
-          persistedState.pinFailedAttempts =
-            persistedState.pinFailedAttempts ?? 0;
-          persistedState.pinLockoutUntil =
-            persistedState.pinLockoutUntil ?? null;
-          persistedState.biometricEnabled =
-            persistedState.biometricEnabled ?? false;
+          persistedState.pinFailedAttempts = 0;
+          persistedState.pinLockoutUntil = null;
+          persistedState.biometricEnabled = false;
         }
+        if (version < 7) {
+          // merchantApiKey was added but not migrated
+        }
+        if (version < 8) {
+          // Store pinHash and merchantApiKey temporarily for migration in onRehydrateStorage
+          // Remove from persisted state
+          const pinHash = persistedState.pinHash;
+          const merchantApiKey = persistedState.merchantApiKey;
+          delete persistedState.pinHash;
+          delete persistedState.merchantApiKey;
+          // Store in a temporary property for async migration
+          if (pinHash || merchantApiKey) {
+            (persistedState as any).__migrationData = {
+              pinHash,
+              merchantApiKey,
+            };
+          }
+        }
+
         return persistedState;
       },
-      onRehydrateStorage: () => (state, error) => {
+      onRehydrateStorage: () => async (state, error) => {
         if (error) {
           console.error("Settings hydration failed:", error);
+        }
+
+        // Migrate pinHash and merchantApiKey from old zustand storage to secure storage
+        if (state) {
+          const migrationData = (state as any).__migrationData;
+          if (migrationData) {
+            if (migrationData.pinHash) {
+              await secureStorage.setItem(
+                SECURE_STORAGE_KEYS.PIN_HASH,
+                migrationData.pinHash,
+              );
+            }
+            if (migrationData.merchantApiKey) {
+              await secureStorage.setItem(
+                SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+                migrationData.merchantApiKey,
+              );
+            }
+            // Clean up migration data
+            delete (state as any).__migrationData;
+          }
         }
 
         state?.setHasHydrated(true);
