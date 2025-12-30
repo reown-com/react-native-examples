@@ -11,10 +11,6 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { dollarsToCents } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
-import {
-  PaymentStatusErrorResponse,
-  PaymentStatusResponse,
-} from "@/utils/types";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
@@ -40,43 +36,25 @@ export default function ScanScreen() {
 
   const { amount } = params;
 
-  const onSuccess = useCallback(
-    (data: PaymentStatusResponse) => {
-      const {
+  const onSuccess = useCallback(() => {
+    router.dismiss();
+    router.replace({
+      pathname: "/payment-success",
+      params: {
+        amount,
         paymentId,
-        chainName,
-        token,
-        createdAt,
-        tokenAmount,
-        tokenDecimals,
-      } = data;
-
-      router.dismiss();
-      router.replace({
-        pathname: "/payment-success",
-        params: {
-          amount,
-          paymentId,
-          chainName: chainName || "Unknown",
-          token,
-          tokenAmount: tokenAmount || "0",
-          tokenDecimals: String(tokenDecimals || 0),
-          timestamp: new Date(createdAt * 1000).toISOString(),
-        },
-      });
-    },
-    [amount],
-  );
+      },
+    });
+  }, [paymentId, amount]);
 
   const onFailure = useCallback(
-    (errorCode?: string, errorMessage?: string) => {
+    (errorStatus?: string) => {
       router.dismiss();
       router.replace({
         pathname: "/payment-failure",
         params: {
           amount,
-          ...(errorCode && { errorCode }),
-          ...(errorMessage && { errorMessage }),
+          ...(errorStatus && { errorStatus }),
         },
       });
     },
@@ -144,7 +122,7 @@ export default function ScanScreen() {
           "initiatePayment",
           { error },
         );
-        onFailure(error?.code, (error as Error).message || "Unknown error");
+        onFailure();
       }
     }
 
@@ -155,19 +133,18 @@ export default function ScanScreen() {
   const { data: paymentStatusData } = usePaymentStatus(paymentId, {
     enabled: !!paymentId && !!qrUri,
     onTerminalState: (data) => {
-      if (data.status === "completed") {
+      if (data.status === "succeeded") {
         addLog("info", "Payment completed", "scan", "usePaymentStatus", {
           paymentId,
           data,
         });
-        onSuccess(data);
-      } else if (data.status === "failed") {
-        const error = data as PaymentStatusErrorResponse;
-        addLog("error", error.error, "scan", "usePaymentStatus", {
+        onSuccess();
+      } else if (data.status === "failed" || data.status === "expired") {
+        addLog("error", data.status, "scan", "usePaymentStatus", {
           paymentId,
           data,
         });
-        onFailure(error.error);
+        onFailure(data.status);
       }
     },
   });

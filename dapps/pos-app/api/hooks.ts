@@ -1,6 +1,5 @@
 import {
   PaymentStatus,
-  PaymentStatusErrorResponse,
   PaymentStatusResponse,
   StartPaymentRequest,
   StartPaymentResponse,
@@ -12,7 +11,7 @@ import { getPaymentStatus, startPayment } from "./payment";
 /**
  * Terminal payment statuses that indicate polling should stop
  */
-const TERMINAL_STATUSES: PaymentStatus[] = ["completed", "failed"];
+const TERMINAL_STATUSES: PaymentStatus[] = ["succeeded", "failed", "expired"];
 
 /**
  * Hook to start a payment
@@ -38,9 +37,7 @@ interface UsePaymentStatusOptions {
   /**
    * Callback when payment reaches a terminal state
    */
-  onTerminalState?: (
-    data: PaymentStatusResponse | PaymentStatusErrorResponse,
-  ) => void;
+  onTerminalState?: (data: PaymentStatusResponse) => void;
 }
 
 /**

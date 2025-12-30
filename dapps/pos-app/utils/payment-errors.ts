@@ -1,21 +1,19 @@
 /**
- * Converts payment error codes to user-friendly error messages
- * @param errorCode - The error code from the API (e.g., "INSUFFICIENT_BALANCE")
+ * Converts payment error statuses to user-friendly error messages
+ * @param errorStatus - The error status from the API (e.g., "expired")
  * @returns User-friendly error message
  */
-export function getPaymentErrorMessage(errorCode?: string): string {
-  if (!errorCode) {
+export function getPaymentErrorMessage(errorStatus?: string): string {
+  if (!errorStatus) {
     return "The payment couldn't be completed due to an error. Please try again or use a different payment method.";
   }
 
   const errorMessages: Record<string, string> = {
-    INSUFFICIENT_BALANCE:
-      "Insufficient balance. Please ensure you have enough funds to complete this payment.",
-    // Add more error codes as needed
+    expired: "The payment has expired.",
   };
 
   return (
-    errorMessages[errorCode] ||
+    errorMessages[errorStatus] ||
     "The payment couldn't be completed due to an error. Please try again or use a different payment method."
   );
 }

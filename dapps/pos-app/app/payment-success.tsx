@@ -57,16 +57,16 @@ export default function PaymentSuccessScreen() {
 
   const handlePrintReceipt = async () => {
     try {
-      await printReceipt(
-        params.paymentId,
-        Number(amount),
-        params.token,
-        params.tokenAmount,
-        Number(params.tokenDecimals),
-        params.chainName,
-        params.timestamp,
-        getVariantPrinterLogo(),
-      );
+      await printReceipt({
+        txnId: params.paymentId,
+        amountUsd: Number(amount),
+        tokenSymbol: params.token,
+        tokenAmount: params.tokenAmount,
+        tokenDecimals: Number(params.tokenDecimals),
+        networkName: params.chainName,
+        date: params.timestamp,
+        logoBase64: getVariantPrinterLogo(),
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);

@@ -120,16 +120,16 @@ export default function SettingsScreen() {
         showErrorToast(error || "Failed to connect to printer");
         return;
       }
-      await printReceipt(
-        "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
-        15,
-        "USDC",
-        "15",
-        6,
-        "Base",
-        new Date().toLocaleDateString("en-GB"),
-        getVariantPrinterLogo(),
-      );
+      await printReceipt({
+        txnId: "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
+        amountUsd: 15,
+        tokenSymbol: "USDC",
+        tokenAmount: "15",
+        tokenDecimals: 6,
+        networkName: "Base",
+        date: new Date().toLocaleDateString("en-GB"),
+        logoBase64: getVariantPrinterLogo(),
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);

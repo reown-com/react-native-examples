@@ -1,7 +1,12 @@
 export type Namespace = "eip155" | "solana";
 
 // Payment API Types
-export type PaymentStatus = "pending" | "completed" | "failed" | "processing";
+export type PaymentStatus =
+  | "requires_action"
+  | "processing"
+  | "succeeded"
+  | "failed"
+  | "expired";
 
 export interface StartPaymentRequest {
   referenceId: string;
@@ -17,20 +22,8 @@ export interface StartPaymentResponse {
 
 export interface PaymentStatusResponse {
   status: PaymentStatus;
-  paymentId: string;
-  chainName?: string;
-  chainId?: number;
-  token: string;
-  amount: number;
-  referenceId: string;
-  createdAt: number;
-  tokenAmount?: string; // Token amount in smallest unit (e.g., "100000" for 0.0001 SOL)
-  tokenDecimals?: number; // Token decimals (e.g., 9 for SOL, 6 for USDC)
-}
-
-export interface PaymentStatusErrorResponse {
-  status: "failed";
-  error: string; // Error code (e.g., "INSUFFICIENT_BALANCE")
+  isFinal: boolean;
+  pollInMs: number;
 }
 
 export interface ApiError {
