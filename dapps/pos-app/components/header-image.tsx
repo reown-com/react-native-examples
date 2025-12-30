@@ -10,7 +10,7 @@ interface HeaderImageProps {
 
 export default function HeaderImage({ tintColor, padding }: HeaderImageProps) {
   const variant = useSettingsStore((state) => state.variant);
-  const brandLogo = Variants[variant].brandLogo;
+  const brandLogo = Variants[variant].brandLogo as string;
   return (
     <Image
       source={brandLogo}
@@ -20,7 +20,7 @@ export default function HeaderImage({ tintColor, padding }: HeaderImageProps) {
       tintColor={tintColor}
       style={{
         height: 18,
-        width: 185,
+        width: Variants[variant].brandLogoWidth ?? 185,
         marginTop: Spacing["spacing-1"],
         tintColor: tintColor,
         marginRight: padding ? Spacing["spacing-2"] : 0,

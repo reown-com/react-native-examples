@@ -26,6 +26,7 @@ interface SettingsStore {
   variant: VariantName;
   _hasHydrated: boolean;
   merchantId: string | null;
+  isMerchantApiKeySet: boolean;
 
   // PIN protection
   pinFailedAttempts: number;
@@ -64,6 +65,7 @@ export const useSettingsStore = create<SettingsStore>()(
       variant: "default",
       _hasHydrated: false,
       merchantId: null,
+      isMerchantApiKeySet: false,
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
@@ -86,6 +88,7 @@ export const useSettingsStore = create<SettingsStore>()(
               SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
               apiKey,
             );
+            set({ isMerchantApiKeySet: true });
           } else {
             await secureStorage.removeItem(
               SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
@@ -97,6 +100,7 @@ export const useSettingsStore = create<SettingsStore>()(
       },
       clearMerchantApiKey: async () => {
         await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
+        set({ isMerchantApiKeySet: false });
       },
       getMerchantApiKey: async () => {
         return await secureStorage.getItem(
@@ -201,6 +205,8 @@ export const useSettingsStore = create<SettingsStore>()(
           persistedState.biometricEnabled = false;
         }
         if (version < 8) {
+          persistedState.isMerchantApiKeySet = false;
+
           // Store pinHash temporarily for migration in onRehydrateStorage
           const pinHash = persistedState.pinHash;
           delete persistedState.pinHash;
