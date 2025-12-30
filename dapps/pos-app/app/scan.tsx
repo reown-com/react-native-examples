@@ -1,5 +1,5 @@
-import { usePaymentStatus } from "@/api/hooks";
-import { startPayment } from "@/api/payment";
+import { usePaymentStatus } from "@/services/hooks";
+import { startPayment } from "@/services/payment";
 import { CloseButton } from "@/components/close-button";
 import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";

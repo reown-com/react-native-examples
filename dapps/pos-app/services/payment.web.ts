@@ -104,3 +104,4 @@ export async function getPaymentStatus(
 
   return data as PaymentStatusResponse;
 }
+
