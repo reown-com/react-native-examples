@@ -1,14 +1,7 @@
 {
   "cleanUrls": true,
+  "outputDirectory": "dist",
   "rewrites": [
-    {
-      "source": "/api/payment",
-      "destination": "/vercel-functions/api/payment"
-    },
-    {
-      "source": "/api/payment-status",
-      "destination": "/vercel-functions/api/payment-status"
-    },
     {
       "source": "/_expo/static/js/web/canvaskit.wasm",
       "destination": "/canvaskit.wasm"
