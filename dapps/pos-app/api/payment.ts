@@ -18,11 +18,11 @@ async function getApiHeaders(): Promise<Record<string, string>> {
     SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
   );
 
-  if (!merchantId) {
+  if (!merchantId || merchantId.trim().length === 0) {
     throw new Error("Merchant ID is not configured");
   }
 
-  if (!merchantApiKey) {
+  if (!merchantApiKey || merchantApiKey.trim().length === 0) {
     throw new Error("Merchant API key is not configured");
   }
 
@@ -32,7 +32,6 @@ async function getApiHeaders(): Promise<Record<string, string>> {
     "Sdk-Name": "pos-device",
     "Sdk-Version": "1.0.0",
     "Sdk-Platform": "react-native",
-    "Content-Type": "application/json",
   };
 }
 
@@ -63,7 +62,7 @@ export async function getPaymentStatus(
   }
   const headers = await getApiHeaders();
   return apiClient.get<PaymentStatusResponse>(
-    `merchant/payment/${paymentId}/status`,
+    `/merchant/payment/${paymentId}/status`,
     { headers },
   );
 }

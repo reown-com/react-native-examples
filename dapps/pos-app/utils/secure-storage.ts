@@ -10,7 +10,7 @@ export const secureStorage = {
     try {
       return await SecureStore.getItemAsync(key);
     } catch (error) {
-      console.error(`Error getting secure item ${key}:`, error);
+      console.error(`Error getting secure item`, error);
       return null;
     }
   },
@@ -19,7 +19,7 @@ export const secureStorage = {
     try {
       await SecureStore.setItemAsync(key, value);
     } catch (error) {
-      console.error(`Error setting secure item ${key}:`, error);
+      console.error(`Error setting secure item`, error);
       throw error;
     }
   },
@@ -28,7 +28,7 @@ export const secureStorage = {
     try {
       await SecureStore.deleteItemAsync(key);
     } catch (error) {
-      console.error(`Error removing secure item ${key}:`, error);
+      console.error(`Error removing secure item`, error);
     }
   },
 };

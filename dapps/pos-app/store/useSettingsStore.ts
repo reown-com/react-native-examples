@@ -194,21 +194,15 @@ export const useSettingsStore = create<SettingsStore>()(
           persistedState.pinLockoutUntil = null;
           persistedState.biometricEnabled = false;
         }
-        if (version < 7) {
-          persistedState.merchantApiKey = null;
-        }
         if (version < 8) {
-          // Store pinHash and merchantApiKey temporarily for migration in onRehydrateStorage
+          // Store pinHash temporarily for migration in onRehydrateStorage
           const pinHash = persistedState.pinHash;
-          const merchantApiKey = persistedState.merchantApiKey;
           delete persistedState.pinHash;
-          delete persistedState.merchantApiKey;
 
           // Store in a temporary property for async migration
-          if (pinHash || merchantApiKey) {
+          if (pinHash) {
             (persistedState as any).__migrationData = {
               pinHash,
-              merchantApiKey,
             };
           }
         }
@@ -220,7 +214,7 @@ export const useSettingsStore = create<SettingsStore>()(
           console.error("Settings hydration failed:", error);
         }
 
-        // Migrate pinHash and merchantApiKey from zustand storage to secure storage
+        // Migrate pinHash from zustand storage to secure storage
         if (state) {
           const migrationData = (state as any).__migrationData;
           if (migrationData) {
@@ -230,12 +224,7 @@ export const useSettingsStore = create<SettingsStore>()(
                 migrationData.pinHash,
               );
             }
-            if (migrationData.merchantApiKey) {
-              await secureStorage.setItem(
-                SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
-                migrationData.merchantApiKey,
-              );
-            }
+
             // Clean up migration data
             delete (state as any).__migrationData;
           }

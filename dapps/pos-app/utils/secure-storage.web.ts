@@ -1,3 +1,15 @@
+/**
+ * ⚠️ SECURITY WARNING - WEB PLATFORM LIMITATION
+ *
+ * This web implementation uses localStorage which stores data in PLAIN TEXT. For development purposes only.
+ *
+ * Sensitive data stored here (API keys, PIN hashes) can be read by anyone
+ * with access to the browser. For production web deployments, consider:
+ * - Using Web Crypto API for encryption
+ * - Server-side storage with secure session tokens
+ * - Limiting web usage to non-sensitive operations
+ */
+
 // Check if we're in a browser environment
 const isBrowser =
   typeof window !== "undefined" && typeof window.localStorage !== "undefined";
@@ -21,13 +33,14 @@ export const secureStorage = {
   async getItem(key: string): Promise<string | null> {
     try {
       const storage = getStorage();
+      const prefixedKey = getKey(key);
       if (storage) {
-        const value = storage.getItem(getKey(key));
+        const value = storage.getItem(prefixedKey);
         return value ?? null;
       }
-      return fallbackStorage.get(key) ?? null;
+      return fallbackStorage.get(prefixedKey) ?? null;
     } catch (error) {
-      console.error(`Error getting secure item ${key}:`, error);
+      console.error(`Error getting secure item`, error);
       return null;
     }
   },
@@ -35,13 +48,14 @@ export const secureStorage = {
   async setItem(key: string, value: string): Promise<void> {
     try {
       const storage = getStorage();
+      const prefixedKey = getKey(key);
       if (storage) {
-        storage.setItem(getKey(key), value);
+        storage.setItem(prefixedKey, value);
       } else {
-        fallbackStorage.set(key, value);
+        fallbackStorage.set(prefixedKey, value);
       }
     } catch (error) {
-      console.error(`Error setting secure item ${key}:`, error);
+      console.error(`Error setting secure item`, error);
       throw error;
     }
   },
@@ -49,13 +63,14 @@ export const secureStorage = {
   async removeItem(key: string): Promise<void> {
     try {
       const storage = getStorage();
+      const prefixedKey = getKey(key);
       if (storage) {
-        storage.removeItem(getKey(key));
+        storage.removeItem(prefixedKey);
       } else {
-        fallbackStorage.delete(key);
+        fallbackStorage.delete(prefixedKey);
       }
     } catch (error) {
-      console.error(`Error removing secure item ${key}:`, error);
+      console.error(`Error removing secure item`, error);
     }
   },
 };
