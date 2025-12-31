@@ -29,6 +29,8 @@ const SECURE_STORAGE_PREFIX = "__secure__";
 
 const getKey = (key: string) => `${SECURE_STORAGE_PREFIX}${key}`;
 
+export async function clearStaleSecureStorage(): Promise<void> {}
+
 export const secureStorage = {
   async getItem(key: string): Promise<string | null> {
     try {

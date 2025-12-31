@@ -13,7 +13,7 @@ import { useAssets } from "expo-asset";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
-  errorStatus: string; // Error status from API (e.g., "expired")
+  errorCode: string; // Error status from API (e.g., "expired") or error code (e.g., "invalid_api_key")
 }
 
 export default function PaymentFailureScreen() {
@@ -44,7 +44,7 @@ export default function PaymentFailureScreen() {
         <ThemedText
           style={[styles.failedDescription, { color: Theme["text-secondary"] }]}
         >
-          {getPaymentErrorMessage(params.errorStatus)}
+          {getPaymentErrorMessage(params.errorCode)}
         </ThemedText>
       </View>
       <View style={styles.buttonContainer}>

@@ -10,6 +10,8 @@ export function getPaymentErrorMessage(errorStatus?: string): string {
 
   const errorMessages: Record<string, string> = {
     expired: "The payment has expired.",
+    invalid_api_key:
+      "The API key is invalid. Please check your credentials and try again.",
   };
 
   return (

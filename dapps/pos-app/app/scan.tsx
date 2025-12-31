@@ -1,11 +1,11 @@
-import { usePaymentStatus } from "@/services/hooks";
-import { startPayment } from "@/services/payment";
 import { CloseButton } from "@/components/close-button";
 import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { usePaymentStatus } from "@/services/hooks";
+import { startPayment } from "@/services/payment";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { dollarsToCents } from "@/utils/currency";
@@ -48,13 +48,13 @@ export default function ScanScreen() {
   }, [paymentId, amount]);
 
   const onFailure = useCallback(
-    (errorStatus?: string) => {
+    (errorCode?: string) => {
       router.dismiss();
       router.replace({
         pathname: "/payment-failure",
         params: {
           amount,
-          ...(errorStatus && { errorStatus }),
+          ...(errorCode && { errorCode }),
         },
       });
     },
@@ -122,7 +122,7 @@ export default function ScanScreen() {
           "initiatePayment",
           { error },
         );
-        onFailure();
+        onFailure(error.code);
       }
     }
 
