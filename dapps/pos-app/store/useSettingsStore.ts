@@ -2,19 +2,16 @@ import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { VariantName, Variants } from "@/constants/variants";
 import { SECURE_STORAGE_KEYS, secureStorage } from "@/utils/secure-storage";
 import { storage } from "@/utils/storage";
+import * as Crypto from "expo-crypto";
 import { Appearance } from "react-native";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Simple hash function for PIN (not cryptographically secure, but sufficient for local protection)
-function hashPin(pin: string): string {
-  let hash = 0;
-  for (let i = 0; i < pin.length; i++) {
-    const char = pin.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
-  }
-  return hash.toString(16);
+async function hashPin(pin: string): Promise<string> {
+  return await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    pin,
+  );
 }
 
 const MAX_PIN_ATTEMPTS = 3;
@@ -110,7 +107,7 @@ export const useSettingsStore = create<SettingsStore>()(
 
       // PIN methods
       setPin: async (pin: string) => {
-        const hashedPin = hashPin(pin);
+        const hashedPin = await hashPin(pin);
         await secureStorage.setItem(SECURE_STORAGE_KEYS.PIN_HASH, hashedPin);
         set({
           pinFailedAttempts: 0,
@@ -133,8 +130,8 @@ export const useSettingsStore = create<SettingsStore>()(
         const storedPinHash = await secureStorage.getItem(
           SECURE_STORAGE_KEYS.PIN_HASH,
         );
-        const isValid =
-          storedPinHash !== null && hashPin(pin) === storedPinHash;
+        const hashedPin = await hashPin(pin);
+        const isValid = storedPinHash !== null && hashedPin === storedPinHash;
 
         if (isValid) {
           set({ pinFailedAttempts: 0, pinLockoutUntil: null });
@@ -186,7 +183,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 8,
+      version: 9,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -217,6 +214,11 @@ export const useSettingsStore = create<SettingsStore>()(
               pinHash,
             };
           }
+        }
+        if (version < 9) {
+          // Remove old pinHash created with simple hash function and let user set a new pin
+          persistedState.pinHash = null;
+          secureStorage.removeItem(SECURE_STORAGE_KEYS.PIN_HASH);
         }
 
         return persistedState;
