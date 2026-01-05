@@ -13,11 +13,11 @@ export function useBiometricAuth() {
   const setBiometricEnabled = useSettingsStore(
     (state) => state.setBiometricEnabled,
   );
-  const pinHash = useSettingsStore((state) => state.pinHash);
-  const isPinSetValue = pinHash !== null;
+  const isPinSet = useSettingsStore((state) => state.isPinSet);
 
   const [biometricStatus, setBiometricStatus] =
     useState<BiometricStatus | null>(null);
+  const [isPinSetValue, setIsPinSetValue] = useState(false);
 
   useEffect(() => {
     const checkBiometrics = async () => {
@@ -26,6 +26,14 @@ export function useBiometricAuth() {
     };
     checkBiometrics();
   }, []);
+
+  useEffect(() => {
+    const checkPin = async () => {
+      const pinExists = await isPinSet();
+      setIsPinSetValue(pinExists);
+    };
+    checkPin();
+  }, [isPinSet]);
 
   const biometricLabel = biometricStatus
     ? getBiometricLabel(biometricStatus.biometricType)

@@ -1,3 +1,4 @@
+import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { useLogsStore } from "@/store/useLogsStore";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import {
@@ -79,16 +80,27 @@ const formatTokenAmount = (rawAmount: string, decimals: number): string => {
   return `${integerPart}.${trimmedDecimal}`;
 };
 
-export const printReceipt = async (
-  txnId: string,
-  amountUsd: number,
-  tokenSymbol: string,
-  tokenAmount: string,
-  tokenDecimals: number,
-  networkName: string,
+interface PrintReceiptProps {
+  txnId: string;
+  amountUsd: number;
+  tokenSymbol?: string;
+  tokenAmount?: string;
+  tokenDecimals?: number;
+  networkName?: string;
+  date?: string;
+  logoBase64?: string;
+}
+
+export const printReceipt = async ({
+  txnId,
+  amountUsd,
+  tokenSymbol,
+  tokenAmount,
+  tokenDecimals,
+  networkName,
   date = new Date().toLocaleDateString("en-GB"),
-  logoBase64: string,
-) => {
+  logoBase64 = DEFAULT_LOGO_BASE64,
+}: PrintReceiptProps) => {
   try {
     await ReactNativePosPrinter.initializePrinter(); // resets + UTF-8
 
@@ -119,14 +131,18 @@ export const printReceipt = async (
     await ReactNativePosPrinter.printText("AMOUNT    ", normal);
     await ReactNativePosPrinter.printText(`$${amountUsd.toFixed(2)}\n`, bold);
 
-    await ReactNativePosPrinter.printText("PAID WITH ", normal);
-    await ReactNativePosPrinter.printText(
-      `${tokenSymbol} ${formatTokenAmount(tokenAmount, tokenDecimals)}\n`,
-      bold,
-    );
+    if (tokenSymbol && tokenAmount && tokenDecimals) {
+      await ReactNativePosPrinter.printText("PAID WITH ", normal);
+      await ReactNativePosPrinter.printText(
+        `${tokenSymbol} ${formatTokenAmount(tokenAmount, tokenDecimals)}\n`,
+        bold,
+      );
+    }
 
-    await ReactNativePosPrinter.printText("NETWORK   ", normal);
-    await ReactNativePosPrinter.printText(`${networkName}\n`, bold);
+    if (networkName) {
+      await ReactNativePosPrinter.printText("NETWORK   ", normal);
+      await ReactNativePosPrinter.printText(`${networkName}\n`, bold);
+    }
 
     await ReactNativePosPrinter.newLine(1);
     await ReactNativePosPrinter.printText("--------------------------------\n");

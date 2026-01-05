@@ -13,8 +13,7 @@ import { useAssets } from "expo-asset";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
-  errorCode: string; // Error code from API (e.g., "INSUFFICIENT_BALANCE")
-  errorMessage: string;
+  errorCode: string; // Error status from API (e.g., "expired") or error code (e.g., "invalid_api_key")
 }
 
 export default function PaymentFailureScreen() {

@@ -1,21 +1,18 @@
-import { usePaymentStatus } from "@/api/hooks";
-import { startPayment } from "@/api/payment";
 import { CloseButton } from "@/components/close-button";
 import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { usePaymentStatus } from "@/services/hooks";
+import { startPayment } from "@/services/payment";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { dollarsToCents } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
-import { showErrorToast } from "@/utils/toast";
-import {
-  PaymentStatusErrorResponse,
-  PaymentStatusResponse,
-} from "@/utils/types";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
+import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -39,43 +36,25 @@ export default function ScanScreen() {
 
   const { amount } = params;
 
-  const onSuccess = useCallback(
-    (data: PaymentStatusResponse) => {
-      const {
+  const onSuccess = useCallback(() => {
+    router.dismiss();
+    router.replace({
+      pathname: "/payment-success",
+      params: {
+        amount,
         paymentId,
-        chainName,
-        token,
-        createdAt,
-        tokenAmount,
-        tokenDecimals,
-      } = data;
-
-      router.dismiss();
-      router.replace({
-        pathname: "/payment-success",
-        params: {
-          amount,
-          paymentId,
-          chainName: chainName || "Unknown",
-          token,
-          tokenAmount: tokenAmount || "0",
-          tokenDecimals: String(tokenDecimals || 0),
-          timestamp: new Date(createdAt * 1000).toISOString(),
-        },
-      });
-    },
-    [amount],
-  );
+      },
+    });
+  }, [paymentId, amount]);
 
   const onFailure = useCallback(
-    (errorCode?: string, errorMessage?: string) => {
+    (errorCode?: string) => {
       router.dismiss();
       router.replace({
         pathname: "/payment-failure",
         params: {
           amount,
           ...(errorCode && { errorCode }),
-          ...(errorMessage && { errorMessage }),
         },
       });
     },
@@ -84,6 +63,11 @@ export default function ScanScreen() {
 
   const handleOnClosePress = () => {
     resetNavigation("/amount");
+  };
+
+  const handleCopyPaymentUrl = async () => {
+    await Clipboard.setStringAsync(qrUri);
+    showSuccessToast("Payment URL copied");
   };
 
   useEffect(() => {
@@ -103,16 +87,17 @@ export default function ScanScreen() {
 
       try {
         const paymentRequest = {
-          merchantId,
-          refId: uuidv4(),
-          amount: dollarsToCents(amount),
-          currency: "USD",
+          referenceId: uuidv4().replace(/-/g, ""),
+          amount: {
+            value: String(dollarsToCents(amount)),
+            unit: "iso4217/USD",
+          },
         };
 
         const data = await startPayment(paymentRequest);
 
         if (process.env.EXPO_PUBLIC_GATEWAY_URL) {
-          const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/${data.paymentId}`;
+          const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/?pid=${data.paymentId}`;
 
           addLog("info", "Payment started", "scan", "initiatePayment", {
             paymentId: data.paymentId,
@@ -137,7 +122,7 @@ export default function ScanScreen() {
           "initiatePayment",
           { error },
         );
-        onFailure(error?.code, (error as Error).message || "Unknown error");
+        onFailure(error.code);
       }
     }
 
@@ -148,19 +133,18 @@ export default function ScanScreen() {
   const { data: paymentStatusData } = usePaymentStatus(paymentId, {
     enabled: !!paymentId && !!qrUri,
     onTerminalState: (data) => {
-      if (data.status === "completed") {
+      if (data.status === "succeeded") {
         addLog("info", "Payment completed", "scan", "usePaymentStatus", {
           paymentId,
           data,
         });
-        onSuccess(data);
-      } else if (data.status === "failed") {
-        const error = data as PaymentStatusErrorResponse;
-        addLog("error", error.error, "scan", "usePaymentStatus", {
+        onSuccess();
+      } else if (data.status === "failed" || data.status === "expired") {
+        addLog("error", data.status, "scan", "usePaymentStatus", {
           paymentId,
           data,
         });
-        onFailure(error.error);
+        onFailure(data.status);
       }
     },
   });
@@ -197,7 +181,12 @@ export default function ScanScreen() {
               ${amount}
             </ThemedText>
           </View>
-          <QRCode size={300} uri={qrUri} logoBorderRadius={100}>
+          <QRCode
+            size={300}
+            uri={qrUri}
+            logoBorderRadius={100}
+            onPress={handleCopyPaymentUrl}
+          >
             <Image source={assets?.[0]} style={styles.logo} />
           </QRCode>
           <View style={{ flex: 1 }} />

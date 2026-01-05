@@ -2,8 +2,6 @@ import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 import { CloseButton } from "@/components/close-button";
 import { Dropdown, DropdownOption } from "@/components/dropdown";
-import { MerchantAddressRow } from "@/components/merchant-address-row";
-import { MerchantConfirmModal } from "@/components/merchant-confirm-modal";
 import { PinModal } from "@/components/pin-modal";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
@@ -54,21 +52,19 @@ export default function SettingsScreen() {
 
   const {
     merchantIdInput,
-    merchantLookupResult,
-    merchantLookupError,
-    isLoading,
+    merchantApiKeyInput,
     activeModal,
     pinError,
-    pendingMerchantId,
-    pendingMerchantAccounts,
-    isConfirmDisabled,
-    isPinSet,
-    handleInputChange,
-    handleMerchantConfirm,
+    isMerchantIdConfirmDisabled,
+    isMerchantApiKeyConfirmDisabled,
+    hasStoredMerchantApiKey,
+    handleMerchantIdInputChange,
+    handleMerchantApiKeyInputChange,
+    handleMerchantIdConfirm,
+    handleMerchantApiKeyConfirm,
     handlePinVerifyComplete,
     handleBiometricAuthSuccess,
     handleBiometricAuthFailure,
-    handleConfirmMerchant,
     handlePinSetupComplete,
     handleCancelSecurityFlow,
   } = useMerchantFlow();
@@ -124,16 +120,16 @@ export default function SettingsScreen() {
         showErrorToast(error || "Failed to connect to printer");
         return;
       }
-      await printReceipt(
-        "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
-        15,
-        "USDC",
-        "15",
-        6,
-        "Base",
-        new Date().toLocaleDateString("en-GB"),
-        getVariantPrinterLogo(),
-      );
+      await printReceipt({
+        txnId: "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
+        amountUsd: 15,
+        tokenSymbol: "USDC",
+        tokenAmount: "15",
+        tokenDecimals: 6,
+        networkName: "Base",
+        date: new Date().toLocaleDateString("en-GB"),
+        logoBase64: getVariantPrinterLogo(),
+      });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
@@ -143,7 +139,7 @@ export default function SettingsScreen() {
 
   const handleBiometricAuth = async () => {
     const success = await authenticate(
-      `Use ${biometricLabel} to change merchant ID`,
+      `Use ${biometricLabel} to change merchant settings`,
     );
 
     if (success) {
@@ -203,7 +199,7 @@ export default function SettingsScreen() {
           <View style={styles.merchantInputRow}>
             <TextInput
               value={merchantIdInput}
-              onChangeText={handleInputChange}
+              onChangeText={handleMerchantIdInputChange}
               placeholder="Enter merchant ID"
               placeholderTextColor={theme["text-tertiary"]}
               autoCapitalize="none"
@@ -218,12 +214,12 @@ export default function SettingsScreen() {
               ]}
             />
             <Button
-              onPress={handleMerchantConfirm}
-              disabled={isConfirmDisabled}
+              onPress={handleMerchantIdConfirm}
+              disabled={isMerchantIdConfirmDisabled}
               style={[
                 styles.confirmButton,
                 {
-                  backgroundColor: isConfirmDisabled
+                  backgroundColor: isMerchantIdConfirmDisabled
                     ? theme["foreground-tertiary"]
                     : theme["bg-accent-primary"],
                 },
@@ -235,34 +231,60 @@ export default function SettingsScreen() {
                 color="text-white"
                 style={styles.confirmButtonLabel}
               >
-                {isLoading ? "Loading..." : "Save"}
+                Save
               </ThemedText>
             </Button>
           </View>
+        </Card>
 
-          {merchantLookupError ? (
-            <ThemedText
-              fontSize={12}
-              lineHeight={14}
-              color="text-tertiary"
-              style={styles.errorText}
+        <Card style={styles.merchantCard}>
+          <ThemedText fontSize={16} lineHeight={18}>
+            Merchant API Key
+          </ThemedText>
+          <View style={styles.merchantInputRow}>
+            <TextInput
+              value={merchantApiKeyInput}
+              onChangeText={handleMerchantApiKeyInputChange}
+              placeholder={
+                hasStoredMerchantApiKey
+                  ? "****************"
+                  : "Enter merchant API key"
+              }
+              placeholderTextColor={theme["text-tertiary"]}
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={true}
+              style={[
+                styles.merchantInput,
+                {
+                  borderColor: theme["border-primary"],
+                  color: theme["text-primary"],
+                  backgroundColor: theme["foreground-secondary"],
+                },
+              ]}
+            />
+            <Button
+              onPress={handleMerchantApiKeyConfirm}
+              disabled={isMerchantApiKeyConfirmDisabled}
+              style={[
+                styles.confirmButton,
+                {
+                  backgroundColor: isMerchantApiKeyConfirmDisabled
+                    ? theme["foreground-tertiary"]
+                    : theme["bg-accent-primary"],
+                },
+              ]}
             >
-              {merchantLookupError}
-            </ThemedText>
-          ) : null}
-
-          {merchantLookupResult ? (
-            <View style={styles.merchantResult}>
-              <MerchantAddressRow
-                label="EVM"
-                value={merchantLookupResult.liquidationAddress}
-              />
-              <MerchantAddressRow
-                label="Solana"
-                value={merchantLookupResult.solanaLiquidationAddress}
-              />
-            </View>
-          ) : null}
+              <ThemedText
+                fontSize={14}
+                lineHeight={16}
+                color="text-white"
+                style={styles.confirmButtonLabel}
+              >
+                Save
+              </ThemedText>
+            </Button>
+          </View>
         </Card>
 
         {/* Biometric toggle - only show if PIN is set and biometrics available */}
@@ -311,11 +333,11 @@ export default function SettingsScreen() {
       />
       <CloseButton style={styles.closeButton} onPress={resetNavigation} />
 
-      {/* PIN Verification Modal - for changing existing merchant ID */}
+      {/* PIN Verification Modal */}
       <PinModal
         visible={activeModal === "pin-verify"}
         title="Enter PIN"
-        subtitle="Enter your PIN to change the merchant ID"
+        subtitle="Enter your PIN to save merchant settings"
         onComplete={handlePinVerifyComplete}
         onCancel={handleCancelSecurityFlow}
         error={pinError}
@@ -323,23 +345,13 @@ export default function SettingsScreen() {
         onBiometricPress={handleBiometricAuth}
       />
 
-      {/* PIN Setup Modal - for first-time merchant setup */}
+      {/* PIN Setup Modal */}
       <PinModal
         visible={activeModal === "pin-setup"}
         title="Create PIN"
         subtitle="Set a 4-digit PIN to protect merchant settings"
         onComplete={handlePinSetupComplete}
         onCancel={handleCancelSecurityFlow}
-      />
-
-      {/* Merchant Confirmation Modal */}
-      <MerchantConfirmModal
-        visible={activeModal === "confirm"}
-        merchantId={pendingMerchantId ?? ""}
-        merchantAccounts={pendingMerchantAccounts}
-        onConfirm={handleConfirmMerchant}
-        onCancel={handleCancelSecurityFlow}
-        isFirstSetup={!isPinSet()}
       />
     </View>
   );

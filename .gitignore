@@ -27,3 +27,5 @@ fastlane/report.xml
 
 # Expo
 .expo
+.vercel
+.env*.local
