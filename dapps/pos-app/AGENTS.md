@@ -591,6 +591,33 @@ await secureStorage.setItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY, apiKey);
 const apiKey = await secureStorage.getItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
 ```
 
+## Code Quality Guidelines
+
+### Debugging and Logging
+
+**⚠️ Important: Do NOT leave `console.log()` statements in production code.**
+
+- **Use the logging system**: For debugging, use the app's built-in logging system via `useLogsStore`:
+  ```typescript
+  import { useLogsStore } from "@/store/useLogsStore";
+  
+  const addLog = useLogsStore((state) => state.addLog);
+  addLog("info", "Payment completed", "payment-success", "handlePrintReceipt");
+  ```
+
+- **Remove console.logs before committing**: Always remove any `console.log()`, `console.error()`, or other console statements before committing code.
+
+- **View logs in app**: Users can view logs in the Settings screen → View Logs
+
+- **Production builds**: Console statements can impact performance and expose sensitive information in production builds.
+
+### Code Style
+
+- Follow TypeScript best practices
+- Use ESLint and Prettier for consistent formatting
+- Prefer functional components with hooks
+- Use TypeScript types/interfaces for all props and data structures
+
 ## Troubleshooting
 
 ### Printer Issues

@@ -75,18 +75,6 @@ export default function PaymentSuccessScreen() {
     }
   };
 
-  console.log({
-    txnId: params.paymentId,
-    amountUsd: Number(amount),
-    tokenSymbol: params.token,
-    tokenAmount: params.tokenAmount,
-    tokenDecimals: Number(params.tokenDecimals),
-    networkName: params.chainName,
-    date: params.timestamp,
-  });
-  console.log(Number(params.amount));
-  console.log(getDate());
-
   useEffect(() => {
     let isMounted = true;
 
