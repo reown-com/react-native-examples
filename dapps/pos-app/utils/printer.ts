@@ -129,7 +129,7 @@ export const printReceipt = async ({
     await ReactNativePosPrinter.printText("METHOD    ", normal);
     await ReactNativePosPrinter.printText("WalletConnect Pay\n", bold);
 
-    if (amountUsd) {  
+    if (amountUsd) {
       await ReactNativePosPrinter.printText("AMOUNT    ", normal);
       await ReactNativePosPrinter.printText(`$${amountUsd.toFixed(2)}\n`, bold);
     }
