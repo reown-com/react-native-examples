@@ -42,8 +42,6 @@ export function renderWithProviders(
 
   const result = render(ui, { wrapper: Wrapper, ...options });
 
-  // Cleanup function to close QueryClient when component unmounts
-  // Wrap in try/finally to ensure QueryClient cleanup even if unmount throws
   const originalUnmount = result.unmount;
   result.unmount = () => {
     try {
