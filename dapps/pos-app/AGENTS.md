@@ -625,6 +625,8 @@ const apiKey = await secureStorage.getItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY)
 - Prefer functional components with hooks
 - Use TypeScript types/interfaces for all props and data structures
 - **No trailing whitespace**: New code must not have trailing whitespace at the end of lines. Most editors can be configured to remove trailing whitespace on save.
+- **Run lint after changing code**: Always run `npm run lint` after making code changes to ensure code quality and catch any formatting or linting issues before committing.
+- **Check TypeScript errors**: Always run `npx tsc --noEmit` after making code changes to check for TypeScript errors. Fix any TypeScript errors in files you've modified before committing. Note: Pre-existing TypeScript errors in other files can be ignored if they're unrelated to your changes.
 
 ## Troubleshooting
 

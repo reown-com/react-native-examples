@@ -9,4 +9,19 @@ module.exports = defineConfig([
   {
     ignores: ["dist/*", ".expo", "node_modules", "android", "ios"],
   },
+  {
+    files: ["**/*.test.{ts,tsx}", "jest.setup.js"],
+    languageOptions: {
+      globals: {
+        jest: "readonly",
+        describe: "readonly",
+        it: "readonly",
+        expect: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
+        beforeAll: "readonly",
+        afterAll: "readonly",
+      },
+    },
+  },
 ]);
