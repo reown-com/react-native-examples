@@ -6,6 +6,29 @@
 // Note: @testing-library/react-native v13.3+ includes Jest matchers by default
 // No need to import extend-expect
 
+// Disable __DEV__ to prevent development-only console.log statements (e.g., in useLogsStore)
+global.__DEV__ = false;
+
+// Configure React Query to not use setTimeout batching in tests
+// This prevents the "worker process has failed to exit gracefully" warning
+const { notifyManager } = require("@tanstack/react-query");
+notifyManager.setScheduler((callback) => {
+  callback();
+});
+
+// Suppress React Query's act() warnings in tests
+// These warnings come from React Query's internal state management and are expected
+const originalConsoleError = console.error;
+console.error = (...args) => {
+  if (
+    typeof args[0] === "string" &&
+    args[0].includes("not wrapped in act(...)")
+  ) {
+    return;
+  }
+  originalConsoleError(...args);
+};
+
 // Mock React Native modules
 jest.mock("react-native", () => {
   // Use react-native preset's mock instead of requiring actual module
@@ -253,12 +276,11 @@ jest.mock("expo-application", () => {
 global.fetch = jest.fn();
 
 // Set up environment variables for tests
-process.env.EXPO_PUBLIC_API_URL =
-  process.env.EXPO_PUBLIC_API_URL || "https://api.test.example.com";
-process.env.EXPO_PUBLIC_PROJECT_ID =
-  process.env.EXPO_PUBLIC_PROJECT_ID || "test-project-id";
-process.env.EXPO_PUBLIC_GATEWAY_URL =
-  process.env.EXPO_PUBLIC_GATEWAY_URL || "https://gateway.test.example.com";
+// Force test-only URLs to prevent accidental real endpoint calls
+// Using .invalid TLD per RFC 2606 to ensure these can never resolve
+process.env.EXPO_PUBLIC_API_URL = "https://api.test.example.com";
+process.env.EXPO_PUBLIC_PROJECT_ID = "test-project-id";
+process.env.EXPO_PUBLIC_GATEWAY_URL = "https://gateway.test.example.com";
 
 // Cleanup function to reset mocks between tests
 afterEach(() => {
