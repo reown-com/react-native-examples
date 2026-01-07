@@ -521,8 +521,13 @@ export const Variants: Record<VariantName, Variant> = {
 
 ### Version Management
 
-- Update `expo.android.versionCode` in `app.json` for each release
-- Current version code: 15
+**⚠️ Important: For every new feature or change, you MUST update the Android version code in `app.json`.**
+
+- **Increment version code**: Update `expo.android.versionCode` in `app.json` for each change
+- **Current version code**: Check the current value in `app.json` and increment by 1
+- **Why**: Android requires a unique version code for each release. Without incrementing, new builds cannot be installed over previous versions
+- **Example**: If current version code is `15`, change it to `16` for your changes
+- Current version code: 16
 
 ## Key Dependencies & Their Purposes
 
