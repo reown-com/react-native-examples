@@ -3,7 +3,7 @@
  * This file runs before each test file and sets up mocks and global test configuration
  */
 
-// Note: @testing-library/react-native v12.4+ includes Jest matchers by default
+// Note: @testing-library/react-native v13.3+ includes Jest matchers by default
 // No need to import extend-expect
 
 // Mock React Native modules
