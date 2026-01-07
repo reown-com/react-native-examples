@@ -32,6 +32,7 @@ describe("Payment Hooks", () => {
         queries: {
           retry: false,
           gcTime: 0,
+          staleTime: 0,
         },
         mutations: {
           retry: false,
@@ -56,8 +57,9 @@ describe("Payment Hooks", () => {
   afterEach(async () => {
     await clearTestMerchant();
     if (queryClient) {
-      // Cancel any pending queries to prevent test pollution
-      await queryClient.cancelQueries();
+      // Cancel all queries and clear cache to prevent leaks
+      queryClient.cancelQueries();
+      queryClient.removeQueries();
       queryClient.clear();
     }
   });

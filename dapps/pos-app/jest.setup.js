@@ -9,6 +9,13 @@
 // Disable __DEV__ to prevent development-only console.log statements (e.g., in useLogsStore)
 global.__DEV__ = false;
 
+// Configure React Query to not use setTimeout batching in tests
+// This prevents the "worker process has failed to exit gracefully" warning
+const { notifyManager } = require("@tanstack/react-query");
+notifyManager.setScheduler((callback) => {
+  callback();
+});
+
 // Suppress React Query's act() warnings in tests
 // These warnings come from React Query's internal state management and are expected
 const originalConsoleError = console.error;
