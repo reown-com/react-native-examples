@@ -181,4 +181,52 @@ describe("useLogsStore", () => {
       expect(useLogsStore.getState()._hasHydrated).toBe(false);
     });
   });
+
+  describe("persistence and hydration", () => {
+    it("should track hydration state correctly", () => {
+      // Initial state should not be hydrated (reset in beforeEach)
+      expect(useLogsStore.getState()._hasHydrated).toBe(false);
+
+      // Simulate hydration completion
+      useLogsStore.getState().setHasHydrated(true);
+      expect(useLogsStore.getState()._hasHydrated).toBe(true);
+    });
+
+    it("should preserve logs through hydration state changes", () => {
+      const { addLog } = useLogsStore.getState();
+
+      // Add logs before hydration
+      addLog("info", "Pre-hydration log");
+
+      // Simulate hydration
+      useLogsStore.getState().setHasHydrated(true);
+
+      // Add logs after hydration
+      addLog("info", "Post-hydration log");
+
+      // Both logs should exist
+      const logs = useLogsStore.getState().logs;
+      expect(logs).toHaveLength(2);
+      expect(logs[0].message).toBe("Pre-hydration log");
+      expect(logs[1].message).toBe("Post-hydration log");
+    });
+
+    it("should allow clearing logs regardless of hydration state", () => {
+      const { addLog, clearLogs, setHasHydrated } = useLogsStore.getState();
+
+      // Add logs
+      addLog("info", "Test log 1");
+      addLog("info", "Test log 2");
+
+      // Hydrate
+      setHasHydrated(true);
+
+      // Clear should work
+      clearLogs();
+      expect(useLogsStore.getState().logs).toEqual([]);
+
+      // Hydration state should be preserved
+      expect(useLogsStore.getState()._hasHydrated).toBe(true);
+    });
+  });
 });

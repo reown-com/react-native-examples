@@ -14,6 +14,30 @@ async function hashPin(pin: string): Promise<string> {
   );
 }
 
+/**
+ * Timing-safe string comparison to prevent timing attacks on PIN verification.
+ * Always compares all characters regardless of where differences occur.
+ */
+function timingSafeEqual(a: string, b: string): boolean {
+  // Length check - but still perform full comparison to maintain constant time
+  const lengthMatch = a.length === b.length;
+
+  // Use the longer string length to ensure we always do the same amount of work
+  const maxLength = Math.max(a.length, b.length);
+
+  let result = 0;
+  for (let i = 0; i < maxLength; i++) {
+    // Use charCodeAt with fallback to 0 for out-of-bounds
+    const charA = i < a.length ? a.charCodeAt(i) : 0;
+    const charB = i < b.length ? b.charCodeAt(i) : 0;
+    // XOR accumulates any differences
+    result |= charA ^ charB;
+  }
+
+  // Both length must match AND all characters must be equal (result === 0)
+  return lengthMatch && result === 0;
+}
+
 const MAX_PIN_ATTEMPTS = 3;
 const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -131,7 +155,9 @@ export const useSettingsStore = create<SettingsStore>()(
           SECURE_STORAGE_KEYS.PIN_HASH,
         );
         const hashedPin = await hashPin(pin);
-        const isValid = storedPinHash !== null && hashedPin === storedPinHash;
+        // Use timing-safe comparison to prevent timing attacks
+        const isValid =
+          storedPinHash !== null && timingSafeEqual(hashedPin, storedPinHash);
 
         if (isValid) {
           set({ pinFailedAttempts: 0, pinLockoutUntil: null });

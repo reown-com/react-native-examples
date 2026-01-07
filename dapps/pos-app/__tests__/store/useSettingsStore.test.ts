@@ -325,6 +325,34 @@ describe("useSettingsStore", () => {
         expect(useSettingsStore.getState().pinLockoutUntil).toBeNull();
         expect(useSettingsStore.getState().pinFailedAttempts).toBe(0);
       });
+
+      it("should use timing-safe comparison for PIN verification", async () => {
+        // This test verifies the behavior is correct regardless of timing
+        // The actual timing-safe implementation prevents timing attacks
+        await useSettingsStore.getState().setPin("1234");
+
+        // Test with correct PIN
+        const correctResult = await useSettingsStore.getState().verifyPin("1234");
+        expect(correctResult).toBe(true);
+
+        // Test with wrong PIN of same length
+        const wrongSameLength = await useSettingsStore.getState().verifyPin("5678");
+        expect(wrongSameLength).toBe(false);
+
+        // Reset attempts for next test
+        useSettingsStore.getState().resetPinAttempts();
+
+        // Test with wrong PIN of different length
+        const wrongDiffLength = await useSettingsStore.getState().verifyPin("12345");
+        expect(wrongDiffLength).toBe(false);
+
+        // Reset attempts
+        useSettingsStore.getState().resetPinAttempts();
+
+        // Test with empty PIN
+        const emptyPin = await useSettingsStore.getState().verifyPin("");
+        expect(emptyPin).toBe(false);
+      });
     });
 
     describe("isPinSet", () => {
@@ -468,6 +496,75 @@ describe("useSettingsStore", () => {
       useSettingsStore.getState().setHasHydrated(true);
       useSettingsStore.getState().setHasHydrated(false);
       expect(useSettingsStore.getState()._hasHydrated).toBe(false);
+    });
+  });
+
+  describe("persistence and hydration", () => {
+    it("should maintain state after setting multiple values", () => {
+      // Set multiple state values
+      useSettingsStore.getState().setThemeMode("dark");
+      useSettingsStore.getState().setMerchantId("merchant-persist-123");
+      useSettingsStore.getState().setDeviceId("device-persist-456");
+      useSettingsStore.getState().setVariant("solflare");
+
+      // Verify all values are maintained
+      const state = useSettingsStore.getState();
+      expect(state.themeMode).toBe("dark");
+      expect(state.merchantId).toBe("merchant-persist-123");
+      expect(state.deviceId).toBe("device-persist-456");
+      expect(state.variant).toBe("solflare");
+    });
+
+    it("should track hydration state correctly", () => {
+      // Initial state should not be hydrated (reset in beforeEach)
+      expect(useSettingsStore.getState()._hasHydrated).toBe(false);
+
+      // Simulate hydration completion
+      useSettingsStore.getState().setHasHydrated(true);
+      expect(useSettingsStore.getState()._hasHydrated).toBe(true);
+
+      // Setting other state should not affect hydration flag
+      useSettingsStore.getState().setThemeMode("dark");
+      expect(useSettingsStore.getState()._hasHydrated).toBe(true);
+    });
+
+    it("should allow state changes before hydration", () => {
+      // Before hydration
+      expect(useSettingsStore.getState()._hasHydrated).toBe(false);
+
+      // State changes should still work
+      useSettingsStore.getState().setThemeMode("dark");
+      expect(useSettingsStore.getState().themeMode).toBe("dark");
+
+      // After hydration, state should persist
+      useSettingsStore.getState().setHasHydrated(true);
+      expect(useSettingsStore.getState().themeMode).toBe("dark");
+    });
+
+    it("should preserve PIN-related state through state updates", async () => {
+      // Set up PIN state
+      await useSettingsStore.getState().setPin("1234");
+      useSettingsStore.setState({ pinFailedAttempts: 2 });
+
+      // Update other state
+      useSettingsStore.getState().setThemeMode("dark");
+      useSettingsStore.getState().setMerchantId("test-merchant");
+
+      // PIN state should be preserved
+      expect(useSettingsStore.getState().pinFailedAttempts).toBe(2);
+      const isPinSet = await useSettingsStore.getState().isPinSet();
+      expect(isPinSet).toBe(true);
+    });
+
+    it("should preserve biometric setting through other state changes", () => {
+      useSettingsStore.getState().setBiometricEnabled(true);
+
+      // Change other settings
+      useSettingsStore.getState().setThemeMode("dark");
+      useSettingsStore.getState().setVariant("binance");
+
+      // Biometric should still be enabled
+      expect(useSettingsStore.getState().biometricEnabled).toBe(true);
     });
   });
 });

@@ -233,6 +233,57 @@ describe("ApiClient", () => {
     });
   });
 
+  describe("timeout handling", () => {
+    it("should use AbortController signal for fetch", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockResolvedValue({ success: true }),
+      });
+
+      await apiClient.get("/test");
+
+      // Verify fetch was called with an AbortSignal
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          signal: expect.any(AbortSignal),
+        }),
+      );
+    });
+
+    it("should handle AbortError as timeout", async () => {
+      // Simulate an AbortError (what happens when fetch is aborted)
+      const abortError = new Error("The operation was aborted");
+      abortError.name = "AbortError";
+      (global.fetch as jest.Mock).mockRejectedValueOnce(abortError);
+
+      await expect(apiClient.get("/aborted-request")).rejects.toMatchObject({
+        message: expect.stringMatching(/timeout/i),
+        code: "TIMEOUT",
+      });
+    });
+
+    it("should log timeout errors", async () => {
+      const abortError = new Error("The operation was aborted");
+      abortError.name = "AbortError";
+      (global.fetch as jest.Mock).mockRejectedValueOnce(abortError);
+
+      try {
+        await apiClient.get("/timeout-endpoint");
+      } catch {
+        // Expected
+      }
+
+      const logs = useLogsStore.getState().logs;
+      const timeoutLog = logs.find((log) =>
+        log.message.toLowerCase().includes("timeout"),
+      );
+      expect(timeoutLog).toBeDefined();
+      expect(timeoutLog?.level).toBe("error");
+    });
+  });
+
   describe("logging", () => {
     it("should log successful API requests", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({

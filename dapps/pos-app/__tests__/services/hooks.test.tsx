@@ -274,5 +274,131 @@ describe("Payment Hooks", () => {
 
       expect(result.current.data?.status).toBe("expired");
     });
+
+    describe("polling behavior", () => {
+      it("should stop polling when payment reaches terminal state (succeeded)", async () => {
+        let callCount = 0;
+        (getPaymentStatus as jest.Mock).mockImplementation(() => {
+          callCount++;
+          // Return processing for first 2 calls, then succeeded
+          if (callCount < 3) {
+            return Promise.resolve({
+              status: "processing",
+              isFinal: false,
+              pollInMs: 100, // Short interval for testing
+            });
+          }
+          return Promise.resolve({
+            status: "succeeded",
+            isFinal: true,
+            pollInMs: 0,
+          });
+        });
+
+        const { result } = renderHook(
+          () => usePaymentStatus("pay_polling", { pollingInterval: 100 }),
+          { wrapper: createWrapper() },
+        );
+
+        // Wait for terminal state
+        await waitFor(
+          () => {
+            expect(result.current.data?.status).toBe("succeeded");
+          },
+          { timeout: 5000 },
+        );
+
+        // Verify polling occurred (at least 3 calls)
+        expect(callCount).toBeGreaterThanOrEqual(3);
+
+        // Store the call count
+        const finalCallCount = callCount;
+
+        // Wait a bit more to ensure polling stopped
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        // Call count should not have increased (polling stopped)
+        expect(callCount).toBe(finalCallCount);
+      });
+
+      it("should stop polling when payment reaches terminal state (failed)", async () => {
+        let callCount = 0;
+        (getPaymentStatus as jest.Mock).mockImplementation(() => {
+          callCount++;
+          if (callCount < 2) {
+            return Promise.resolve({
+              status: "processing",
+              isFinal: false,
+              pollInMs: 100,
+            });
+          }
+          return Promise.resolve({
+            status: "failed",
+            isFinal: true,
+            pollInMs: 0,
+          });
+        });
+
+        const { result } = renderHook(
+          () => usePaymentStatus("pay_fail_poll", { pollingInterval: 100 }),
+          { wrapper: createWrapper() },
+        );
+
+        await waitFor(
+          () => {
+            expect(result.current.data?.status).toBe("failed");
+          },
+          { timeout: 5000 },
+        );
+
+        expect(callCount).toBeGreaterThanOrEqual(2);
+      });
+
+      it("should call onTerminalState callback when polling completes", async () => {
+        const onTerminalState = jest.fn();
+        let callCount = 0;
+
+        (getPaymentStatus as jest.Mock).mockImplementation(() => {
+          callCount++;
+          if (callCount < 2) {
+            return Promise.resolve({
+              status: "processing",
+              isFinal: false,
+              pollInMs: 100,
+            });
+          }
+          return Promise.resolve({
+            status: "succeeded",
+            isFinal: true,
+            pollInMs: 0,
+          });
+        });
+
+        renderHook(
+          () =>
+            usePaymentStatus("pay_callback", {
+              pollingInterval: 100,
+              onTerminalState,
+            }),
+          { wrapper: createWrapper() },
+        );
+
+        await waitFor(
+          () => {
+            expect(onTerminalState).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        expect(onTerminalState).toHaveBeenCalledWith(
+          expect.objectContaining({
+            status: "succeeded",
+            isFinal: true,
+          }),
+        );
+        // Should only be called once
+        expect(onTerminalState).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 });

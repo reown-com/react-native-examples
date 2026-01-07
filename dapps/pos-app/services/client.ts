@@ -8,7 +8,10 @@ if (!API_BASE_URL) {
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
+  timeout?: number;
 }
+
+const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds
 
 class ApiClient {
   private baseUrl: string;
@@ -21,7 +24,7 @@ class ApiClient {
     endpoint: string,
     options: RequestOptions = {},
   ): Promise<T> {
-    const { body, headers, ...fetchOptions } = options;
+    const { body, headers, timeout, ...fetchOptions } = options;
 
     // Normalize URL construction: remove trailing slash from baseUrl and ensure endpoint starts with /
     const normalizedBaseUrl = this.baseUrl.replace(/\/+$/, "");
@@ -35,9 +38,15 @@ class ApiClient {
       ...headers,
     };
 
+    // Set up timeout with AbortController
+    const controller = new AbortController();
+    const timeoutMs = timeout ?? DEFAULT_TIMEOUT_MS;
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
     const config: RequestInit = {
       ...fetchOptions,
       headers: requestHeaders,
+      signal: controller.signal,
     };
 
     if (body) {
@@ -46,6 +55,7 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await this.parseErrorResponse(response);
@@ -68,6 +78,23 @@ class ApiClient {
         });
       return data as T;
     } catch (error) {
+      clearTimeout(timeoutId);
+
+      // Handle timeout/abort errors
+      if (error instanceof Error && error.name === "AbortError") {
+        const timeoutError: ApiError = {
+          message: `Request timeout after ${timeoutMs}ms`,
+          code: "TIMEOUT",
+        };
+        useLogsStore
+          .getState()
+          .addLog("error", timeoutError.message, "api", "request", {
+            endpoint,
+            body,
+          });
+        throw timeoutError;
+      }
+
       if (error && typeof error === "object" && "status" in error) {
         const apiError = error as ApiError;
         useLogsStore
