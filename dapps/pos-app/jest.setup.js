@@ -66,7 +66,9 @@ jest.mock("react-native", () => {
           testID,
           ref,
           style,
-          onClick: disabled ? undefined : onPress,
+          // Use onPress (not onClick) to match React Native API
+          // Set to undefined when disabled so fireEvent.press won't find a handler
+          onPress: disabled ? undefined : onPress,
           accessibilityRole,
           accessibilityState: { ...accessibilityState, disabled },
           ...props,

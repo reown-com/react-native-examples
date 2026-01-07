@@ -89,6 +89,21 @@ describe("Button", () => {
   });
 
   describe("disabled state", () => {
+    it("sets onPress to undefined when disabled", () => {
+      // Verify that the PressableScale mock doesn't receive an onPress handler when disabled
+      // The actual press blocking is handled by pressto's PressableScale in production
+      const { toJSON } = render(
+        <Button onPress={() => {}} disabled>
+          <Text>Disabled Button</Text>
+        </Button>,
+      );
+
+      const tree = toJSON();
+      // When disabled, the mock should not have an onPress handler
+      // Note: fireEvent.press bypasses this check, so we verify the prop directly
+      expect(tree.props.onPress).toBeUndefined();
+    });
+
     it("has correct accessibility state when disabled", () => {
       const { toJSON } = render(
         <Button onPress={() => {}} disabled>
