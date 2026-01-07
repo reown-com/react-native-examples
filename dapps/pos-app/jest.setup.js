@@ -353,9 +353,7 @@ jest.mock("pressto", () => {
         {
           testID,
           style,
-          // Use onClick (not onPress) so fireEvent.press (which triggers a click) works correctly
-          // Only provide the click handler when enabled
-          onClick: handlePress,
+          onPress: handlePress,
           accessibilityRole: "button",
           accessibilityState: { disabled: !enabled },
           ...props,
