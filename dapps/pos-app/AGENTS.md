@@ -1,5 +1,7 @@
 # Agent Documentation: POS App
 
+This file provides guidance to AI agents when working with code in this repository.
+
 ## Project Overview
 
 **WPay Mobile POS** is a React Native point-of-sale application that enables merchants to accept cryptocurrency payments via WalletConnect. The app allows merchants to:
