@@ -6,6 +6,9 @@
 // Note: @testing-library/react-native v13.3+ includes Jest matchers by default
 // No need to import extend-expect
 
+// Disable __DEV__ to prevent development-only console.log statements (e.g., in useLogsStore)
+global.__DEV__ = false;
+
 // Mock React Native modules
 jest.mock("react-native", () => {
   // Use react-native preset's mock instead of requiring actual module
