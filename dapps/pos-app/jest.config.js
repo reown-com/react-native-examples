@@ -30,5 +30,7 @@ module.exports = {
       statements: 70,
     },
   },
+  // React Native tests use node environment (not jsdom) since RN doesn't use DOM.
+  // The react-native preset handles the necessary environment setup.
   testEnvironment: "node",
 };

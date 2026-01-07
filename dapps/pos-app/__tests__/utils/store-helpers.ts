@@ -43,11 +43,12 @@ export function resetAllStores() {
 
 /**
  * Set up a test merchant configuration
+ * @returns Cleanup function to clear merchant configuration
  */
 export async function setupTestMerchant(
   merchantId: string = "test-merchant-id",
   apiKey: string = "test-api-key",
-) {
+): Promise<() => Promise<void>> {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const SecureStore = require("expo-secure-store");
   await SecureStore.setItemAsync("merchant_api_key", apiKey);
@@ -56,6 +57,9 @@ export async function setupTestMerchant(
     merchantId,
     isMerchantApiKeySet: true,
   });
+
+  // Return cleanup function for use in afterEach or manual cleanup
+  return () => clearTestMerchant();
 }
 
 /**
