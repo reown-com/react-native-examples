@@ -6,7 +6,6 @@
 
 import { renderHook, waitFor, act } from "@testing-library/react-native";
 import { useStartPayment, usePaymentStatus } from "@/services/hooks";
-import { createTestQueryClient } from "../utils";
 import {
   resetSettingsStore,
   setupTestMerchant,
@@ -15,13 +14,13 @@ import {
 import React from "react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
+import { startPayment, getPaymentStatus } from "@/services/payment";
+
 // Mock the payment service functions
 jest.mock("@/services/payment", () => ({
   startPayment: jest.fn(),
   getPaymentStatus: jest.fn(),
 }));
-
-import { startPayment, getPaymentStatus } from "@/services/payment";
 
 describe("Payment Hooks", () => {
   let queryClient: QueryClient;
