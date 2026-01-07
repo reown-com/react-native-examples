@@ -243,14 +243,6 @@ jest.mock("expo-router", () => {
 jest.mock("react-native-reanimated", () => {
   const React = require("react");
 
-  // Create mock animated values and functions
-  const mockAnimatedValue = (value) => ({
-    value,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
-    removeAllListeners: jest.fn(),
-  });
-
   return {
     __esModule: true,
     default: {
