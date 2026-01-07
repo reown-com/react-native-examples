@@ -24,8 +24,11 @@ jest.mock("react-native", () => {
 });
 
 // Mock Expo Secure Store
+// Each test gets isolated storage via beforeEach cleanup in afterEach hook
 jest.mock("expo-secure-store", () => {
-  const secureStore = new Map();
+  // Shared storage instance - cleared between tests via __clearMockStorage
+  let secureStore = new Map();
+
   return {
     getItemAsync: jest.fn((key) => {
       return Promise.resolve(secureStore.get(key) || null);
@@ -38,23 +41,25 @@ jest.mock("expo-secure-store", () => {
       secureStore.delete(key);
       return Promise.resolve();
     }),
-    // Helper to clear mock storage between tests
-    __clearMockStorage: () => secureStore.clear(),
+    // Helper to clear mock storage between tests - called in afterEach
+    __clearMockStorage: () => {
+      secureStore = new Map();
+    },
   };
 });
 
 // Mock Expo Crypto
 jest.mock("expo-crypto", () => {
-  // Simple mock hash function for testing
+  // Deterministic mock hash function for testing
+  // Returns predictable values based on input content for proper PIN/hash comparisons
   const mockHash = jest.fn(async (algorithm, data) => {
-    // Return a deterministic hash for testing
+    // Create a simple deterministic hash based on content
+    // This ensures different inputs produce different outputs (important for PIN tests)
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
-      const char = data.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash = hash & hash; // Convert to 32-bit integer
+      hash = (hash * 31 + data.charCodeAt(i)) >>> 0; // Unsigned 32-bit
     }
-    return Math.abs(hash).toString(16);
+    return `${algorithm}-${hash.toString(16)}`;
   });
 
   return {
@@ -87,25 +92,30 @@ jest.mock("react-native-device-info", () => {
 });
 
 // Mock React Native MMKV (storage)
+// Each createMMKV() call gets its own isolated storage instance for proper test isolation
 jest.mock("react-native-mmkv", () => {
-  const storage = new Map();
   return {
-    createMMKV: jest.fn(() => ({
-      set: jest.fn((key, value) => {
-        storage.set(key, value);
-      }),
-      getString: jest.fn((key) => {
-        return storage.get(key) || undefined;
-      }),
-      getAllKeys: jest.fn(() => {
-        return Array.from(storage.keys());
-      }),
-      remove: jest.fn((key) => {
-        storage.delete(key);
-      }),
-      // Helper to clear mock storage between tests
-      __clearMockStorage: () => storage.clear(),
-    })),
+    createMMKV: jest.fn(() => {
+      // Create new storage instance per call for test isolation
+      const storage = new Map();
+      return {
+        set: jest.fn((key, value) => {
+          storage.set(key, value);
+        }),
+        getString: jest.fn((key) => {
+          return storage.get(key) || undefined;
+        }),
+        getAllKeys: jest.fn(() => {
+          return Array.from(storage.keys());
+        }),
+        remove: jest.fn((key) => {
+          storage.delete(key);
+        }),
+        clearAll: jest.fn(() => {
+          storage.clear();
+        }),
+      };
+    }),
   };
 });
 
@@ -242,14 +252,6 @@ jest.mock("expo-application", () => {
 // Mock global fetch for API client tests
 global.fetch = jest.fn();
 
-// Suppress console warnings/errors in tests (optional - comment out if you want to see them)
-global.console = {
-  ...console,
-  // Uncomment to ignore specific console methods
-  // warn: jest.fn(),
-  // error: jest.fn(),
-};
-
 // Set up environment variables for tests
 process.env.EXPO_PUBLIC_API_URL =
   process.env.EXPO_PUBLIC_API_URL || "https://api.test.example.com";
@@ -262,17 +264,14 @@ process.env.EXPO_PUBLIC_GATEWAY_URL =
 afterEach(() => {
   jest.clearAllMocks();
 
-  // Clear mock storage
+  // Clear SecureStore mock storage for test isolation
   const SecureStore = require("expo-secure-store");
   if (SecureStore.__clearMockStorage) {
     SecureStore.__clearMockStorage();
   }
 
-  const MMKV = require("react-native-mmkv");
-  const mmkvInstance = MMKV.createMMKV();
-  if (mmkvInstance.__clearMockStorage) {
-    mmkvInstance.__clearMockStorage();
-  }
+  // Note: MMKV mock creates new storage per createMMKV() call,
+  // so no global cleanup needed. Jest's clearAllMocks() resets the mock functions.
 
   // Reset fetch mock
   if (global.fetch) {
