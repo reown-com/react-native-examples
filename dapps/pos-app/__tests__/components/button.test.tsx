@@ -100,6 +100,22 @@ describe("Button", () => {
       expect(tree.props.onPress).toBeUndefined();
     });
 
+    it("does not call onPress when disabled button is pressed", () => {
+      const onPressMock = jest.fn();
+      const { getByTestId } = render(
+        <Button onPress={onPressMock} disabled>
+          <View testID="button-content">
+            <Text>Disabled Button</Text>
+          </View>
+        </Button>,
+      );
+
+      const button = getByTestId("button-content").parent!;
+      fireEvent.press(button);
+
+      expect(onPressMock).not.toHaveBeenCalled();
+    });
+
     it("has correct accessibility state when disabled", () => {
       const { toJSON } = render(
         <Button onPress={() => {}} disabled>

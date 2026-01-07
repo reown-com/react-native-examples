@@ -100,7 +100,7 @@ describe("QrCode", () => {
     });
 
     it("renders with arenaClear prop", () => {
-      const { getByTestId } = render(
+      const { getByTestId, queryByTestId } = render(
         <QrCode
           {...defaultProps}
           uri="https://example.com"
@@ -115,6 +115,8 @@ describe("QrCode", () => {
 
       // Component should render without crashing
       expect(getByTestId("qr-code")).toBeTruthy();
+      // When arenaClear is true, the logo should not be rendered in the absolute positioned View
+      expect(queryByTestId("logo-content")).toBeNull();
     });
   });
 
