@@ -9,6 +9,19 @@
 // Disable __DEV__ to prevent development-only console.log statements (e.g., in useLogsStore)
 global.__DEV__ = false;
 
+// Suppress React Query's act() warnings in tests
+// These warnings come from React Query's internal state management and are expected
+const originalConsoleError = console.error;
+console.error = (...args) => {
+  if (
+    typeof args[0] === "string" &&
+    args[0].includes("not wrapped in act(...)")
+  ) {
+    return;
+  }
+  originalConsoleError(...args);
+};
+
 // Mock React Native modules
 jest.mock("react-native", () => {
   // Use react-native preset's mock instead of requiring actual module
