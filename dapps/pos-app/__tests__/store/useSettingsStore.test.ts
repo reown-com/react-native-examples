@@ -332,18 +332,24 @@ describe("useSettingsStore", () => {
         await useSettingsStore.getState().setPin("1234");
 
         // Test with correct PIN
-        const correctResult = await useSettingsStore.getState().verifyPin("1234");
+        const correctResult = await useSettingsStore
+          .getState()
+          .verifyPin("1234");
         expect(correctResult).toBe(true);
 
         // Test with wrong PIN of same length
-        const wrongSameLength = await useSettingsStore.getState().verifyPin("5678");
+        const wrongSameLength = await useSettingsStore
+          .getState()
+          .verifyPin("5678");
         expect(wrongSameLength).toBe(false);
 
         // Reset attempts for next test
         useSettingsStore.getState().resetPinAttempts();
 
         // Test with wrong PIN of different length
-        const wrongDiffLength = await useSettingsStore.getState().verifyPin("12345");
+        const wrongDiffLength = await useSettingsStore
+          .getState()
+          .verifyPin("12345");
         expect(wrongDiffLength).toBe(false);
 
         // Reset attempts

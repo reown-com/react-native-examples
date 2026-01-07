@@ -282,6 +282,15 @@ describe("Payment Hooks", () => {
     });
 
     describe("polling behavior", () => {
+      beforeEach(() => {
+        jest.useFakeTimers();
+      });
+
+      afterEach(() => {
+        jest.runOnlyPendingTimers();
+        jest.useRealTimers();
+      });
+
       it("should stop polling when payment reaches terminal state (succeeded)", async () => {
         let callCount = 0;
         (getPaymentStatus as jest.Mock).mockImplementation(() => {
@@ -306,6 +315,34 @@ describe("Payment Hooks", () => {
           { wrapper: createWrapper() },
         );
 
+        // Initial fetch should happen immediately
+        await waitFor(
+          () => {
+            expect(result.current.data?.status).toBe("processing");
+          },
+          { timeout: 5000 },
+        );
+
+        // Advance time to trigger first poll (100ms) and flush promises
+        await act(async () => {
+          jest.advanceTimersByTime(100);
+          await Promise.resolve(); // Flush promises
+        });
+
+        // Wait for the poll to complete
+        await waitFor(
+          () => {
+            expect(callCount).toBeGreaterThanOrEqual(2);
+          },
+          { timeout: 5000 },
+        );
+
+        // Advance time to trigger second poll (another 100ms) and flush promises
+        await act(async () => {
+          jest.advanceTimersByTime(100);
+          await Promise.resolve(); // Flush promises
+        });
+
         // Wait for terminal state
         await waitFor(
           () => {
@@ -320,8 +357,17 @@ describe("Payment Hooks", () => {
         // Store the call count
         const finalCallCount = callCount;
 
-        // Wait a bit more to ensure polling stopped
-        await new Promise((resolve) => setTimeout(resolve, 300));
+        // Advance time significantly (multiple polling intervals) to ensure polling stopped
+        await act(async () => {
+          jest.advanceTimersByTime(500); // 5 polling intervals
+          await Promise.resolve(); // Flush promises
+        });
+
+        // Run any pending timers and flush promises
+        await act(async () => {
+          jest.runOnlyPendingTimers();
+          await Promise.resolve(); // Flush promises
+        });
 
         // Call count should not have increased (polling stopped)
         expect(callCount).toBe(finalCallCount);
@@ -350,6 +396,21 @@ describe("Payment Hooks", () => {
           { wrapper: createWrapper() },
         );
 
+        // Initial fetch should happen immediately
+        await waitFor(
+          () => {
+            expect(result.current.data?.status).toBe("processing");
+          },
+          { timeout: 5000 },
+        );
+
+        // Advance time to trigger poll (100ms) and flush promises
+        await act(async () => {
+          jest.advanceTimersByTime(100);
+          await Promise.resolve(); // Flush promises
+        });
+
+        // Wait for terminal state
         await waitFor(
           () => {
             expect(result.current.data?.status).toBe("failed");
@@ -358,6 +419,23 @@ describe("Payment Hooks", () => {
         );
 
         expect(callCount).toBeGreaterThanOrEqual(2);
+
+        // Store the call count
+        const finalCallCount = callCount;
+
+        // Advance time significantly to ensure polling stopped
+        await act(async () => {
+          jest.advanceTimersByTime(500); // 5 polling intervals
+          await Promise.resolve(); // Flush promises
+        });
+
+        await act(async () => {
+          jest.runOnlyPendingTimers();
+          await Promise.resolve(); // Flush promises
+        });
+
+        // Call count should not have increased (polling stopped)
+        expect(callCount).toBe(finalCallCount);
       });
 
       it("should call onTerminalState callback when polling completes", async () => {
@@ -389,6 +467,21 @@ describe("Payment Hooks", () => {
           { wrapper: createWrapper() },
         );
 
+        // Initial fetch should happen immediately
+        await waitFor(
+          () => {
+            expect(callCount).toBeGreaterThanOrEqual(1);
+          },
+          { timeout: 5000 },
+        );
+
+        // Advance time to trigger poll (100ms) and flush promises
+        await act(async () => {
+          jest.advanceTimersByTime(100);
+          await Promise.resolve(); // Flush promises
+        });
+
+        // Wait for callback to be called
         await waitFor(
           () => {
             expect(onTerminalState).toHaveBeenCalled();

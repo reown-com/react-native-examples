@@ -12,6 +12,8 @@ import {
   clearTestMerchant,
 } from "../utils/store-helpers";
 
+import { apiClient } from "@/services/client";
+
 // Get the mocked secure store
 const SecureStore = require("expo-secure-store");
 
@@ -22,8 +24,6 @@ jest.mock("@/services/client", () => ({
     post: jest.fn(),
   },
 }));
-
-import { apiClient } from "@/services/client";
 
 describe("Payment Service", () => {
   beforeEach(async () => {
@@ -202,9 +202,9 @@ describe("Payment Service", () => {
     });
 
     it("should throw error when paymentId is null/undefined", async () => {
-      await expect(
-        getPaymentStatus(null as unknown as string),
-      ).rejects.toThrow("paymentId is required");
+      await expect(getPaymentStatus(null as unknown as string)).rejects.toThrow(
+        "paymentId is required",
+      );
       await expect(
         getPaymentStatus(undefined as unknown as string),
       ).rejects.toThrow("paymentId is required");

@@ -1,4 +1,4 @@
-import { useLogsStore, LogEntry } from "@/store/useLogsStore";
+import { useLogsStore } from "@/store/useLogsStore";
 import { resetLogsStore } from "../utils/store-helpers";
 
 describe("useLogsStore", () => {

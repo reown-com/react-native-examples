@@ -16,7 +16,7 @@
     "web:build": "npm run web:setup && expo export -p web",
     "web:setup": "npx setup-skia-web && mkdir -p public && cp web/static/js/canvaskit.wasm public/",
     "lint": "expo lint",
-    "test": "jest --forceExit"
+    "test": "jest"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.4.0",
