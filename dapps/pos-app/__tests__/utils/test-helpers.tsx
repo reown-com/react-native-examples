@@ -40,8 +40,19 @@ export function renderWithProviders(
     );
   };
 
+  const result = render(ui, { wrapper: Wrapper, ...options });
+
+  // Cleanup function to close QueryClient when component unmounts
+  const originalUnmount = result.unmount;
+  result.unmount = () => {
+    queryClient.cancelQueries();
+    queryClient.removeQueries();
+    queryClient.clear();
+    originalUnmount();
+  };
+
   return {
-    ...render(ui, { wrapper: Wrapper, ...options }),
+    ...result,
     queryClient,
   };
 }

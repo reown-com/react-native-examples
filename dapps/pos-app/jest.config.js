@@ -32,4 +32,7 @@ module.exports = {
   },
   // The react-native preset handles the necessary environment setup.
   testEnvironment: "node",
+  // Force Jest to exit after tests complete
+  // This prevents hanging when React Query or other async libraries have open handles
+  forceExit: true,
 };

@@ -31,11 +31,78 @@ console.error = (...args) => {
 
 // Mock React Native modules
 jest.mock("react-native", () => {
-  // Use react-native preset's mock instead of requiring actual module
-  // This avoids native module dependencies
-  const RN = require("react-native/jest/mock");
+  const React = require("react");
+
+  // Create mock components that render as simple Views
+  const createMockComponent = (name) => {
+    const Component = React.forwardRef(
+      ({ children, testID, ...props }, ref) => {
+        return React.createElement("View", { testID, ref, ...props }, children);
+      },
+    );
+    Component.displayName = name;
+    return Component;
+  };
+
+  const View = createMockComponent("View");
+  const Text = createMockComponent("Text");
+  const Pressable = React.forwardRef(
+    (
+      {
+        children,
+        onPress,
+        disabled,
+        accessibilityRole,
+        testID,
+        style,
+        accessibilityState,
+        ...props
+      },
+      ref,
+    ) => {
+      return React.createElement(
+        "View",
+        {
+          testID,
+          ref,
+          style,
+          onClick: disabled ? undefined : onPress,
+          accessibilityRole,
+          accessibilityState: { ...accessibilityState, disabled },
+          ...props,
+        },
+        typeof children === "function"
+          ? children({ pressed: false })
+          : children,
+      );
+    },
+  );
+  Pressable.displayName = "Pressable";
+  const Image = createMockComponent("Image");
+  const TouchableOpacity = createMockComponent("TouchableOpacity");
+
   return {
-    ...RN,
+    View,
+    Text,
+    Pressable,
+    Image,
+    TouchableOpacity,
+    ScrollView: createMockComponent("ScrollView"),
+    SafeAreaView: createMockComponent("SafeAreaView"),
+    ActivityIndicator: createMockComponent("ActivityIndicator"),
+    TextInput: createMockComponent("TextInput"),
+    FlatList: createMockComponent("FlatList"),
+    ImageSourcePropType: {},
+    StyleSheet: {
+      create: (styles) => styles,
+      flatten: (style) => {
+        if (Array.isArray(style)) {
+          return Object.assign({}, ...style.filter(Boolean));
+        }
+        return style || {};
+      },
+      hairlineWidth: 1,
+    },
     Appearance: {
       getColorScheme: jest.fn(() => "light"),
     },
@@ -43,6 +110,11 @@ jest.mock("react-native", () => {
       OS: "ios",
       select: jest.fn((obj) => obj.ios || obj.default),
     },
+    Dimensions: {
+      get: jest.fn(() => ({ width: 375, height: 812 })),
+    },
+    useColorScheme: jest.fn(() => "light"),
+    useWindowDimensions: jest.fn(() => ({ width: 375, height: 812 })),
   };
 });
 
@@ -169,11 +241,58 @@ jest.mock("expo-router", () => {
 
 // Mock React Native Reanimated
 jest.mock("react-native-reanimated", () => {
-  const Reanimated = require("react-native-reanimated/mock");
-  // The mock for `call` immediately calls the callback which is incorrect
-  // So we override it with a no-op
-  Reanimated.default.call = () => {};
-  return Reanimated;
+  const React = require("react");
+
+  // Create mock animated values and functions
+  const mockAnimatedValue = (value) => ({
+    value,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    removeAllListeners: jest.fn(),
+  });
+
+  return {
+    __esModule: true,
+    default: {
+      View: ({ children, style, ...props }) =>
+        React.createElement("View", { style, ...props }, children),
+      Text: ({ children, style, ...props }) =>
+        React.createElement("View", { style, ...props }, children),
+      Image: (props) => React.createElement("View", props),
+      call: jest.fn(),
+      createAnimatedComponent: (Component) => Component,
+    },
+    View: ({ children, style, ...props }) =>
+      React.createElement("View", { style, ...props }, children),
+    Text: ({ children, style, ...props }) =>
+      React.createElement("View", { style, ...props }, children),
+    Image: (props) => React.createElement("View", props),
+    useSharedValue: (initialValue) => ({ value: initialValue }),
+    useAnimatedStyle: (styleFunc) => styleFunc(),
+    useDerivedValue: (valueFunc) => ({ value: valueFunc() }),
+    withTiming: (toValue) => toValue,
+    withSpring: (toValue) => toValue,
+    withDelay: (delay, animation) => animation,
+    withSequence: (...animations) => animations[0],
+    withRepeat: (animation) => animation,
+    runOnJS: (fn) => fn,
+    runOnUI: (fn) => fn,
+    interpolate: jest.fn((value) => value),
+    Extrapolate: { CLAMP: "clamp", EXTEND: "extend", IDENTITY: "identity" },
+    Extrapolation: { CLAMP: "clamp", EXTEND: "extend", IDENTITY: "identity" },
+    Easing: {
+      linear: jest.fn(),
+      ease: jest.fn(),
+      bezier: jest.fn(() => jest.fn()),
+      in: jest.fn(),
+      out: jest.fn(),
+      inOut: jest.fn(),
+    },
+    createAnimatedComponent: (Component) => Component,
+    FadeIn: { duration: jest.fn(() => ({ delay: jest.fn() })) },
+    FadeOut: { duration: jest.fn(() => ({ delay: jest.fn() })) },
+    Layout: {},
+  };
 });
 
 // Mock @shopify/react-native-skia (for QR code component)
@@ -209,11 +328,67 @@ jest.mock("@shopify/react-native-skia", () => {
 // Mock react-native-qrcode-skia
 jest.mock("react-native-qrcode-skia", () => {
   const React = require("react");
+  const QRCodeSkia = ({ value, testID, ...props }) => {
+    return React.createElement("View", {
+      testID: testID || "qr-code-skia",
+      "data-value": value,
+      ...props,
+    });
+  };
   return {
-    QRCode: ({ value, ...props }) => {
-      return React.createElement("div", {
-        "data-testid": "qr-code",
-        "data-value": value,
+    __esModule: true,
+    default: QRCodeSkia,
+    QRCode: QRCodeSkia,
+  };
+});
+
+// Mock pressto (PressableScale used by Button)
+jest.mock("pressto", () => {
+  const React = require("react");
+  return {
+    PressableScale: ({
+      children,
+      onPress,
+      enabled = true,
+      style,
+      testID,
+      ...props
+    }) => {
+      // Wrap onPress to respect enabled state
+      const handlePress = enabled ? onPress : undefined;
+      return React.createElement(
+        "View",
+        {
+          testID,
+          style,
+          // Use onPress (not onClick) so fireEvent.press works correctly
+          // Only provide onPress when enabled
+          onPress: handlePress,
+          accessibilityRole: "button",
+          accessibilityState: { disabled: !enabled },
+          ...props,
+        },
+        children,
+      );
+    },
+  };
+});
+
+// Mock expo-asset
+jest.mock("expo-asset", () => {
+  return {
+    useAssets: jest.fn(() => [[{ uri: "mock-asset-uri" }], null]),
+  };
+});
+
+// Mock expo-image
+jest.mock("expo-image", () => {
+  const React = require("react");
+  return {
+    Image: ({ testID, source, style, ...props }) => {
+      return React.createElement("View", {
+        testID: testID || "expo-image",
+        style,
         ...props,
       });
     },
@@ -299,4 +474,18 @@ afterEach(() => {
   if (global.fetch) {
     global.fetch.mockClear();
   }
+});
+
+// Final cleanup after all tests to ensure Jest exits
+afterAll(async () => {
+  // Reset React Query notifyManager scheduler
+  // This ensures any pending callbacks are executed
+  const { notifyManager } = require("@tanstack/react-query");
+  notifyManager.setScheduler((callback) => {
+    callback();
+  });
+
+  // Give any pending async operations time to complete
+  // Use a small delay to let React Query and other async operations finish
+  await new Promise((resolve) => setTimeout(resolve, 100));
 });
