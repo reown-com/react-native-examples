@@ -19,6 +19,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
 import { StatusBar } from "expo-status-bar";
+import { getDate } from "@/utils/misc";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
@@ -62,7 +63,7 @@ export default function PaymentSuccessScreen() {
         amountUsd: Number(amount),
         tokenSymbol: params.token,
         tokenAmount: params.tokenAmount,
-        tokenDecimals: Number(params.tokenDecimals),
+        tokenDecimals: params.tokenDecimals ? Number(params.tokenDecimals) : undefined,
         networkName: params.chainName,
         date: params.timestamp,
         logoBase64: getVariantPrinterLogo(),

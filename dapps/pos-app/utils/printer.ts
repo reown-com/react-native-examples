@@ -5,6 +5,7 @@ import {
   ReactNativePosPrinter,
   TextOptions,
 } from "react-native-thermal-pos-printer";
+import { getDate } from "./misc";
 
 export const requestBluetoothPermission = async () => {
   const result = await request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
@@ -98,7 +99,7 @@ export const printReceipt = async ({
   tokenAmount,
   tokenDecimals,
   networkName,
-  date = new Date().toLocaleDateString("en-GB"),
+  date = getDate(),
   logoBase64 = DEFAULT_LOGO_BASE64,
 }: PrintReceiptProps) => {
   try {
@@ -106,7 +107,6 @@ export const printReceipt = async ({
 
     // Logo
     await ReactNativePosPrinter.printImage(logoBase64, {
-      width: 340,
       align: "CENTER",
     });
 
@@ -118,9 +118,10 @@ export const printReceipt = async ({
     const normal = { size: 10 } as TextOptions;
     const normalCenter = { size: 10, align: "CENTER" } as TextOptions;
     const bold = { size: 10, bold: true } as TextOptions;
+    const idStyle = { size: 9, bold: true } as TextOptions;
 
     await ReactNativePosPrinter.printText("ID        ", normal);
-    await ReactNativePosPrinter.printText(`${txnId}\n`, bold);
+    await ReactNativePosPrinter.printText(`${txnId}\n`, idStyle);
 
     await ReactNativePosPrinter.printText("DATE      ", normal);
     await ReactNativePosPrinter.printText(`${date}\n`, bold);
@@ -128,8 +129,10 @@ export const printReceipt = async ({
     await ReactNativePosPrinter.printText("METHOD    ", normal);
     await ReactNativePosPrinter.printText("WalletConnect Pay\n", bold);
 
-    await ReactNativePosPrinter.printText("AMOUNT    ", normal);
-    await ReactNativePosPrinter.printText(`$${amountUsd.toFixed(2)}\n`, bold);
+    if (amountUsd) {
+      await ReactNativePosPrinter.printText("AMOUNT    ", normal);
+      await ReactNativePosPrinter.printText(`$${amountUsd.toFixed(2)}\n`, bold);
+    }
 
     if (tokenSymbol && tokenAmount && tokenDecimals) {
       await ReactNativePosPrinter.printText("PAID WITH ", normal);
@@ -150,7 +153,7 @@ export const printReceipt = async ({
     await ReactNativePosPrinter.newLine(2);
 
     await ReactNativePosPrinter.printText(
-      "Thank you for your purchase!\n",
+      "Thank you for your payment!\n",
       normalCenter,
     );
 

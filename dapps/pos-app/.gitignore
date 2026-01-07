@@ -47,3 +47,5 @@ app-example
 ios/*
 android/*
 .vercel
+
+PLAN.md
