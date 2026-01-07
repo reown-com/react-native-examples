@@ -566,5 +566,25 @@ describe("useSettingsStore", () => {
       // Biometric should still be enabled
       expect(useSettingsStore.getState().biometricEnabled).toBe(true);
     });
+
+    it("should have correct persist configuration", () => {
+      // Verify the store has persist middleware configured
+      const persistOptions = useSettingsStore.persist?.getOptions?.();
+
+      // Check persist name and version are set (for storage key)
+      expect(persistOptions?.name).toBe("settings");
+      expect(persistOptions?.version).toBe(9);
+
+      // Verify storage is configured (MMKV in production, mock in tests)
+      expect(persistOptions?.storage).toBeDefined();
+    });
+
+    it("should have rehydrate and persist methods available", () => {
+      // Verify persist API is available for manual control if needed
+      expect(useSettingsStore.persist).toBeDefined();
+      expect(typeof useSettingsStore.persist.rehydrate).toBe("function");
+      expect(typeof useSettingsStore.persist.hasHydrated).toBe("function");
+      expect(typeof useSettingsStore.persist.getOptions).toBe("function");
+    });
   });
 });

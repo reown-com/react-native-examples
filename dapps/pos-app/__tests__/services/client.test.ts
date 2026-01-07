@@ -122,6 +122,36 @@ describe("ApiClient", () => {
         }),
       );
     });
+
+    it("should serialize request body correctly preserving types", async () => {
+      const requestBody = {
+        amount: "10.00", // String type should be preserved
+        quantity: 5, // Number type should be preserved
+        enabled: true, // Boolean type should be preserved
+        metadata: { key: "value" }, // Nested object should be preserved
+      };
+
+      (global.fetch as jest.Mock).mockImplementation(
+        (url: string, options: RequestInit) => {
+          // Validate the serialized body can be parsed back correctly
+          const parsedBody = JSON.parse(options.body as string);
+          expect(parsedBody).toEqual(requestBody);
+          expect(typeof parsedBody.amount).toBe("string");
+          expect(typeof parsedBody.quantity).toBe("number");
+          expect(typeof parsedBody.enabled).toBe("boolean");
+          expect(typeof parsedBody.metadata).toBe("object");
+
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: jest.fn().mockResolvedValue({ success: true }),
+          });
+        },
+      );
+
+      await apiClient.post("/typed-body", requestBody);
+      expect(global.fetch).toHaveBeenCalled();
+    });
   });
 
   describe("PUT requests", () => {

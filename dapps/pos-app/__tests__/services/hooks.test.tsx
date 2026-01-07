@@ -55,7 +55,11 @@ describe("Payment Hooks", () => {
 
   afterEach(async () => {
     await clearTestMerchant();
-    queryClient?.clear();
+    if (queryClient) {
+      // Cancel any pending queries to prevent test pollution
+      await queryClient.cancelQueries();
+      queryClient.clear();
+    }
   });
 
   describe("useStartPayment", () => {
