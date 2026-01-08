@@ -1,7 +1,6 @@
 import React from 'react';
-import {View, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, Alert, Text} from 'react-native';
 import {useTheme} from '@/hooks/useTheme';
-import {Text} from '@reown/appkit-ui-react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 type Log = {
@@ -45,8 +44,8 @@ export function Log({value}: LogProps) {
         const item = jsonLog.log[key as keyof typeof jsonLog.log];
         return (
           <View key={key}>
-            <Text variant="small-600">
-              {key}: <Text variant="small-400">{formatValue(key, item)}</Text>
+            <Text style={styles.text}>
+              {key}: <Text style={styles.textSmall}>{formatValue(key, item)}</Text>
             </Text>
           </View>
         );
@@ -72,5 +71,13 @@ const styles = StyleSheet.create({
     marginVertical: 2,
     marginHorizontal: 16,
     padding: 16,
+  },
+  text: {
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  textSmall: {
+    fontSize: 10,
+    lineHeight: 16,
   },
 });

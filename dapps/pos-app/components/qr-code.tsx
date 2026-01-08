@@ -3,6 +3,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { memo } from "react";
 import {
   ImageSourcePropType,
+  Pressable,
   StyleSheet,
   View,
   type StyleProp,
@@ -21,6 +22,7 @@ export interface QrCodeProps {
   children?: React.ReactNode;
   logoSize?: number;
   logoBorderRadius?: number;
+  onPress?: () => void;
 }
 
 function QrCode_({
@@ -32,9 +34,10 @@ function QrCode_({
   children,
   logoSize,
   logoBorderRadius,
+  onPress,
 }: QrCodeProps) {
   const Theme = useTheme("light");
-  const containerPadding = Spacing["spacing-3"];
+  const containerPadding = Spacing["spacing-4"];
   const qrSize = size - containerPadding * 2;
   const _logoSize = arenaClear ? 0 : (logoSize ?? qrSize / 4);
   const logoAreaSize = _logoSize > 0 ? _logoSize + Spacing["spacing-6"] : 0;
@@ -49,13 +52,16 @@ function QrCode_({
   }
 
   return (
-    <View
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
       style={[
         styles.container,
         {
+          height: size,
           width: size,
           backgroundColor: Theme["bg-primary"],
-          padding: containerPadding,
+          borderColor: Theme["foreground-tertiary"],
         },
         style,
       ]}
@@ -69,21 +75,24 @@ function QrCode_({
         errorCorrectionLevel="Q"
         pathStyle="fill"
         shapeOptions={{
-          shape: "rounded",
-          eyePatternShape: "rounded",
-          gap: 0,
+          shape: "line",
+          eyeShape: "rounded",
+          pupilShape: "circle",
+          gap: 1.2,
           eyePatternGap: 0,
-          logoAreaBorderRadius: 100,
+          logoAreaBorderRadius: logoBorderRadius,
         }}
-        logoAreaSize={logoAreaSize > 0 ? logoAreaSize : undefined}
+        logoAreaSize={
+          !arenaClear && children && logoAreaSize > 0 ? logoAreaSize : undefined
+        }
         logo={!arenaClear && children ? children : undefined}
       />
       {!arenaClear && <View style={styles.icon}>{children}</View>}
-    </View>
+    </Pressable>
   );
 }
 
-export const QRCode = memo(QrCode_, (prevProps, nextProps) => {
+export default memo(QrCode_, (prevProps, nextProps) => {
   return (
     prevProps.size === nextProps.size &&
     prevProps.uri === nextProps.uri &&
@@ -97,6 +106,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: BorderRadius["5"],
+    borderWidth: StyleSheet.hairlineWidth,
     alignSelf: "center",
   },
   icon: {

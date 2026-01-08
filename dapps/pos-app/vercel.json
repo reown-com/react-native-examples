@@ -1,0 +1,11 @@
+{
+  "cleanUrls": true,
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/_expo/static/js/web/canvaskit.wasm",
+      "destination": "/canvaskit.wasm"
+    }
+  ]
+}
+

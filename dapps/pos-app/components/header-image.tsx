@@ -1,5 +1,6 @@
 import { Spacing } from "@/constants/spacing";
-import { useAssets } from "expo-asset";
+import { Variants } from "@/constants/variants";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { Image } from "expo-image";
 
 interface HeaderImageProps {
@@ -8,18 +9,21 @@ interface HeaderImageProps {
 }
 
 export default function HeaderImage({ tintColor, padding }: HeaderImageProps) {
-  const [assets] = useAssets([require("@/assets/images/brand.png")]);
+  const variant = useSettingsStore((state) => state.variant);
+  const brandLogo = Variants[variant].brandLogo as string;
   return (
     <Image
-      source={assets?.[0]}
+      source={brandLogo}
       cachePolicy="memory-disk"
       priority="high"
+      contentFit="contain"
+      tintColor={tintColor}
       style={{
         height: 18,
-        width: 185,
+        width: Variants[variant].brandLogoWidth ?? 185,
         marginTop: Spacing["spacing-1"],
         tintColor: tintColor,
-        paddingRight: padding ? Spacing["spacing-2"] : 0,
+        marginRight: padding ? Spacing["spacing-2"] : 0,
       }}
     />
   );

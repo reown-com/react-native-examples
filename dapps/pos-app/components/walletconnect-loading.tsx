@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/use-theme-color";
 import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, {
@@ -10,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 export function WalletConnectLoading({ size = 120 }: { size?: number }) {
+  const Theme = useTheme();
   const gap = 2; // 2px gap between squares
   const squareSize = (size - gap) / 2; // Each square takes half minus gap
 
@@ -216,14 +218,14 @@ export function WalletConnectLoading({ size = 120 }: { size?: number }) {
         ]}
       />
 
-      {/* Bottom right - Blue */}
+      {/* Bottom right - Accent Primary */}
       <Animated.View
         style={[
           styles.square,
           {
             width: squareSize,
             height: squareSize,
-            backgroundColor: "#0988F0",
+            backgroundColor: Theme["bg-accent-primary"],
             position: "absolute",
             top: squareSize + gap,
             left: squareSize + gap,

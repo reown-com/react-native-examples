@@ -49,6 +49,7 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                       tintColor: Theme["text-primary"],
                     },
                   ]}
+                  tintColor={Theme["text-primary"]}
                   cachePolicy="memory-disk"
                   priority="high"
                 />

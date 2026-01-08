@@ -1,152 +1,159 @@
 import { CloseButton } from "@/components/close-button";
-import { QRCode } from "@/components/qr-code";
+import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
-import { BorderRadius, Spacing } from "@/constants/spacing";
-import { usePOS } from "@/context/POSContext";
-import { usePOSListener } from "@/hooks/use-pos-listener";
+import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { usePaymentStatus } from "@/services/hooks";
+import { startPayment } from "@/services/payment";
+import { useLogsStore } from "@/store/useLogsStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { dollarsToCents } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
-import { getNetworkByCaipId, getTokenById, TokenKey } from "@/utils/networks";
-import { showErrorToast } from "@/utils/toast";
-import * as Sentry from "@sentry/react-native";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
+import { useAssets } from "expo-asset";
+import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { ImageBackground, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { v4 as uuidv4 } from "uuid";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
-  token: TokenKey;
-  networkCaipId: string;
-  recipientAddress: string;
 }
 
-export default function QRModalScreen() {
+export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
+  const [assets] = useAssets([require("@/assets/images/wc_logo_blue.png")]);
 
   const [qrUri, setQrUri] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const { posClient } = usePOS();
+  const [paymentId, setPaymentId] = useState<string | null>(null);
+
+  const { deviceId, merchantId } = useSettingsStore((state) => state);
+  const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
-  const { amount, token, networkCaipId, recipientAddress } = params;
+  const { amount } = params;
 
-  const networkData = getNetworkByCaipId(networkCaipId);
-  const tokenData = getTokenById(token);
-
-  const onFailure = useCallback(() => {
+  const onSuccess = useCallback(() => {
     router.dismiss();
-    router.replace({
-      pathname: "/payment-failure",
-      params: {
-        amount,
-        token,
-        networkCaipId,
-        recipientAddress,
-      },
-    });
-    setIsLoading(false);
-  }, [amount, token, networkCaipId, recipientAddress]);
-
-  usePOSListener("connection_failed", ({ error }) => {
-    showErrorToast(error?.message || "Payment failed");
-    Sentry.logger.error(error?.message || "Payment failed", { error });
-    posClient?.disconnect();
-    onFailure();
-  });
-
-  usePOSListener("connection_rejected", ({ error }) => {
-    showErrorToast(error?.message || "Payment failed");
-    Sentry.logger.error(error?.message || "Payment failed", { error });
-    posClient?.disconnect();
-    onFailure();
-  });
-
-  usePOSListener("qr_ready", async ({ uri }) => {
-    setQrUri(uri);
-  });
-
-  usePOSListener("connected", () => {
-    setIsLoading(true);
-  });
-
-  usePOSListener("payment_rejected", ({ error }) => {
-    showErrorToast(error?.message || "Payment failed");
-    Sentry.logger.error(error?.message || "Payment failed", { error });
-    posClient?.disconnect();
-    onFailure();
-  });
-
-  usePOSListener("payment_failed", ({ error }) => {
-    showErrorToast(error?.message || "Payment failed");
-    posClient?.disconnect();
-    onFailure();
-  });
-
-  usePOSListener("payment_successful", ({ transaction, result }) => {
-    const _networkData = getNetworkByCaipId(transaction.chainId);
-
-    const explorerUrl = _networkData?.blockExplorers?.default?.url;
-    const explorerLink = explorerUrl
-      ? `${explorerUrl}/tx/${result}`
-      : undefined;
-
     router.replace({
       pathname: "/payment-success",
       params: {
-        transactionHash: result,
-        explorerLink: explorerLink,
-        network: networkData?.name || "Unknown",
-        amount: amount,
-        token: token,
-        recipientAddress: recipientAddress,
+        amount,
+        paymentId,
       },
     });
-    setIsLoading(false);
-  });
+  }, [paymentId, amount]);
+
+  const onFailure = useCallback(
+    (errorCode?: string) => {
+      router.dismiss();
+      router.replace({
+        pathname: "/payment-failure",
+        params: {
+          amount,
+          ...(errorCode && { errorCode }),
+        },
+      });
+    },
+    [amount],
+  );
 
   const handleOnClosePress = () => {
     resetNavigation("/amount");
   };
 
+  const handleCopyPaymentUrl = async () => {
+    await Clipboard.setStringAsync(qrUri);
+    showSuccessToast("Payment URL copied");
+  };
+
   useEffect(() => {
-    const _networkData = getNetworkByCaipId(networkCaipId);
+    if (!deviceId || !amount) return;
 
-    if (!_networkData) {
-      showErrorToast("Network not found");
-      return;
+    async function initiatePayment() {
+      if (!merchantId) {
+        addLog(
+          "error",
+          "Merchant ID is not configured",
+          "scan",
+          "initiatePayment",
+        );
+        showErrorToast("Merchant ID is not configured");
+        return;
+      }
+
+      try {
+        const paymentRequest = {
+          referenceId: uuidv4().replace(/-/g, ""),
+          amount: {
+            value: String(dollarsToCents(amount)),
+            unit: "iso4217/USD",
+          },
+        };
+
+        const data = await startPayment(paymentRequest);
+
+        if (process.env.EXPO_PUBLIC_GATEWAY_URL) {
+          const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/?pid=${data.paymentId}`;
+
+          addLog("info", "Payment started", "scan", "initiatePayment", {
+            paymentId: data.paymentId,
+            gatewayUrl: url,
+          });
+          setQrUri(url);
+          setPaymentId(data.paymentId);
+        } else {
+          addLog(
+            "error",
+            "Gateway URL is not configured",
+            "scan",
+            "initiatePayment",
+          );
+          showErrorToast("Gateway URL is not configured");
+        }
+      } catch (error: any) {
+        addLog(
+          "error",
+          (error as Error).message || "Unknown error",
+          "scan",
+          "initiatePayment",
+          { error },
+        );
+        onFailure(error.code);
+      }
     }
 
-    const tokenStandard = tokenData?.standard[networkCaipId];
-    const tokenAddress = tokenData?.addresses[networkCaipId];
-
-    if (!tokenData || !tokenStandard || !tokenAddress) {
-      showErrorToast("Token not found");
-      return;
-    }
-
-    const paymentIntent = {
-      token: {
-        network: {
-          name: _networkData.name,
-          chainId: _networkData.caipNetworkId,
-        },
-        symbol: tokenData.symbol,
-        standard: tokenStandard,
-        address: tokenAddress,
-      },
-      amount,
-      recipient: `${_networkData.caipNetworkId}:${recipientAddress}`,
-    };
-
-    posClient?.createPaymentIntent({ paymentIntents: [paymentIntent] });
+    initiatePayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [deviceId, amount, merchantId]);
+
+  const { data: paymentStatusData } = usePaymentStatus(paymentId, {
+    enabled: !!paymentId && !!qrUri,
+    onTerminalState: (data) => {
+      if (data.status === "succeeded") {
+        addLog("info", "Payment completed", "scan", "usePaymentStatus", {
+          paymentId,
+          data,
+        });
+        onSuccess();
+      } else if (data.status === "failed" || data.status === "expired") {
+        addLog("error", data.status, "scan", "usePaymentStatus", {
+          paymentId,
+          data,
+        });
+        onFailure(data.status);
+      }
+    },
+  });
+
+  const isProcessing = paymentStatusData?.status === "processing";
 
   return (
     <View style={styles.container}>
-      {isLoading ? (
+      {isProcessing ? (
         <View style={styles.loadingContainer}>
           <WalletConnectLoading size={180} />
           <ThemedText
@@ -174,19 +181,13 @@ export default function QRModalScreen() {
               ${amount}
             </ThemedText>
           </View>
-          <QRCode size={300} uri={qrUri} logoBorderRadius={55}>
-            <ImageBackground
-              source={tokenData?.icon}
-              style={styles.tokenIcon}
-              resizeMode="contain"
-            >
-              <Image
-                source={networkData?.icon}
-                style={[styles.chainIcon, { borderColor: Theme["bg-primary"] }]}
-                cachePolicy="memory-disk"
-                priority="high"
-              />
-            </ImageBackground>
+          <QRCode
+            size={300}
+            uri={qrUri}
+            logoBorderRadius={100}
+            onPress={handleCopyPaymentUrl}
+          >
+            <Image source={assets?.[0]} style={styles.logo} />
           </QRCode>
           <View style={{ flex: 1 }} />
         </View>
@@ -214,6 +215,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  qrCodeContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    borderRadius: 6,
+    width: 280,
+    height: 280,
+  },
   amountContainer: {
     width: "100%",
     flex: 1,
@@ -231,19 +240,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 36,
   },
-  tokenIcon: {
+  logo: {
     width: 80,
     height: 80,
-    borderRadius: BorderRadius["5"],
-  },
-  chainIcon: {
-    width: 40,
-    height: 40,
-    borderWidth: 4,
-    borderRadius: BorderRadius["5"],
-    bottom: -2,
-    right: -2,
-    position: "absolute",
   },
   closeButton: {
     position: "absolute",

@@ -36,9 +36,17 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Skia Web artifacts
+public/
+web/
+
 app-example
 
 .env.local
 
 ios/*
 android/*
+.vercel
+
+PLAN.md
+TESTING_PLAN.md

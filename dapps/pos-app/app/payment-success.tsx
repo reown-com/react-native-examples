@@ -1,5 +1,5 @@
 import { UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -14,12 +14,20 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useLogsStore } from "@/store/useLogsStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { resetNavigation } from "@/utils/navigation";
+import { connectPrinter, printReceipt } from "@/utils/printer";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
+  chainName: string;
+  token: string;
+  timestamp: string;
+  paymentId: string;
+  tokenAmount: string;
+  tokenDecimals: string;
 }
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
@@ -29,11 +37,16 @@ const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
-  const Theme = useTheme();
+  const Theme = useTheme("light");
   const params = useLocalSearchParams<SuccessParams>();
+  const themeMode = useSettingsStore((state) => state.themeMode);
+  const getVariantPrinterLogo = useSettingsStore(
+    (state) => state.getVariantPrinterLogo,
+  );
+  const addLog = useLogsStore((state) => state.addLog);
   const { top } = useSafeAreaInsets();
-  const colorScheme = useColorScheme();
   const { amount } = params;
+  const [isPrinterConnected, setIsPrinterConnected] = useState(false);
 
   const circleScale = useSharedValue(1);
   const contentOpacity = useSharedValue(0);
@@ -41,6 +54,56 @@ export default function PaymentSuccessScreen() {
   const handleNewPayment = () => {
     resetNavigation("/amount");
   };
+
+  const handlePrintReceipt = async () => {
+    try {
+      await printReceipt({
+        txnId: params.paymentId,
+        amountUsd: Number(amount),
+        tokenSymbol: params.token,
+        tokenAmount: params.tokenAmount,
+        tokenDecimals: params.tokenDecimals
+          ? Number(params.tokenDecimals)
+          : undefined,
+        networkName: params.chainName,
+        date: params.timestamp,
+        logoBase64: getVariantPrinterLogo(),
+      });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      addLog("error", errorMessage, "payment-success", "handlePrintReceipt");
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const initPrinter = async () => {
+      try {
+        const { connected, error } = await connectPrinter();
+        if (isMounted) {
+          setIsPrinterConnected(connected);
+          if (!connected && error) {
+            addLog("error", error, "payment-success", "initPrinter");
+          }
+        }
+      } catch (error) {
+        if (isMounted) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          addLog("error", errorMessage, "payment-success", "initPrinter");
+          setIsPrinterConnected(false);
+        }
+      }
+    };
+
+    initPrinter();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [addLog]);
 
   useEffect(() => {
     circleScale.value = withTiming(finalScale, {
@@ -65,7 +128,7 @@ export default function PaymentSuccessScreen() {
         style={[
           styles.circle,
           {
-            backgroundColor: Theme["text-success"],
+            backgroundColor: Theme["bg-payment-success"],
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
@@ -80,33 +143,44 @@ export default function PaymentSuccessScreen() {
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <ThemedText
-            style={[styles.amountDescription, { color: Theme["text-invert"] }]}
+            style={[
+              styles.amountDescription,
+              { color: Theme["text-payment-success"] },
+            ]}
           >
             Payment Successful
           </ThemedText>
           <ThemedText
-            style={[styles.amountValue, { color: Theme["text-invert"] }]}
+            style={[
+              styles.amountValue,
+              { color: Theme["text-payment-success"] },
+            ]}
           >
             ${amount}
           </ThemedText>
         </View>
         <View style={styles.buttonContainer}>
-          {/* <Button
-            onPress={() => {}}
-            style={[
-              styles.button,
-              {
-                backgroundColor: Theme["text-success"],
-                borderColor: Theme["border-primary"],
-              },
-            ]}
-          >
-            <ThemedText
-              style={[styles.buttonText, { color: Theme["text-invert"] }]}
+          {isPrinterConnected && (
+            <Button
+              onPress={handlePrintReceipt}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: Theme["bg-payment-success"],
+                  borderColor: Theme["border-payment-success"],
+                },
+              ]}
             >
-              Send email receipt
-            </ThemedText>
-          </Button> */}
+              <ThemedText
+                style={[
+                  styles.buttonText,
+                  { color: Theme["text-payment-success"] },
+                ]}
+              >
+                Print receipt
+              </ThemedText>
+            </Button>
+          )}
 
           <Button
             style={[
@@ -126,7 +200,7 @@ export default function PaymentSuccessScreen() {
           </Button>
         </View>
       </Animated.View>
-      <StatusBar style={colorScheme} />
+      <StatusBar style={themeMode} />
     </View>
   );
 }

@@ -21,6 +21,8 @@ import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SUI_CHAINS, SUI_EVENTS, SUI_SIGNING_METHODS } from '@/constants/Sui';
 import { TON_CHAINS, TON_SIGNING_METHODS } from '@/constants/Ton';
 import { tonAddresses } from '@/utils/TonWalletUtil'
+import { tronAddresses } from '@/utils/TronWalletUtil'
+import { TRON_CHAINS, TRON_SIGNING_METHODS } from '@/constants/Tron';
 
 export default function SessionProposalModal() {
   const Theme = useTheme();
@@ -53,6 +55,11 @@ export default function SessionProposalModal() {
     const tonMethods = Object.values(TON_SIGNING_METHODS)
     const tonEvents = [] as string[]
 
+    // tron
+    const tronChains = Object.keys(TRON_CHAINS)
+    const tronMethods = Object.values(TRON_SIGNING_METHODS)
+    const tronEvents = [] as string[]
+
     return {
       eip155: {
         chains: eip155Chains,
@@ -73,6 +80,12 @@ export default function SessionProposalModal() {
         methods: tonMethods,
         events: tonEvents,
         accounts: tonChains.map(chain => `${chain}:${tonAddresses[0]}`).flat(),
+      },
+      tron: {
+        chains: tronChains,
+        methods: tronMethods,
+        events: tronEvents,
+        accounts: tronChains.map(chain => `${chain}:${tronAddresses[0]}`).flat(),
       },
     };
   }, []);

@@ -61,6 +61,7 @@
     "react-native-toast-message": "2.3.3",
     "react-native-vision-camera": "4.7.2",
     "stream-browserify": "3.0.0",
+    "tronweb": "^6.1.1",
     "valtio": "2.1.8"
   },
   "devDependencies": {
@@ -106,7 +107,11 @@
     "@ton/crypto-primitives@2.1.0": "patch:@ton/crypto-primitives@npm%3A2.1.0#./.yarn/patches/@ton-crypto-primitives-npm-2.1.0-3d1ea62176.patch",
     "@ethersproject/pbkdf2@5.8.0": "patch:@ethersproject/pbkdf2@npm%3A5.8.0#./.yarn/patches/@ethersproject-pbkdf2-npm-5.8.0-b720e81bcc.patch",
     "@ethersproject/pbkdf2@^5.8.0": "patch:@ethersproject/pbkdf2@npm%3A5.8.0#./.yarn/patches/@ethersproject-pbkdf2-npm-5.8.0-b720e81bcc.patch",
-    "bip39@3.1.0": "patch:bip39@npm%3A3.1.0#./.yarn/patches/bip39-npm-3.1.0-03958ed434.patch"
+    "bip39@3.1.0": "patch:bip39@npm%3A3.1.0#./.yarn/patches/bip39-npm-3.1.0-03958ed434.patch",
+    "glob": "10.5.0",
+    "valibot": "1.2.0",
+    "tar": "7.5.2",
+    "js-yaml": "4.1.1"
   },
   "packageManager": "yarn@3.8.7"
 }
