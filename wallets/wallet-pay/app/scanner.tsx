@@ -29,7 +29,20 @@ export default function Scanner() {
 
   const onCodeScanned = (result: BarcodeScanningResult) => {
     const uri = result.data;
-    console.log(uri);
+
+    // Validate WalletConnect URI format
+    if (!uri.startsWith('wc:')) {
+      if (__DEV__) {
+        console.warn('Invalid WalletConnect URI:', uri);
+      }
+      // TODO: Show error toast to user
+      return;
+    }
+
+    if (__DEV__) {
+      console.log('Scanned WC URI:', uri);
+    }
+    // TODO: Pair with walletKit
   };
 
   const goBack = () => {

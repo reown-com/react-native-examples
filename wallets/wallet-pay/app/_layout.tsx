@@ -28,11 +28,13 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const Theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
-  const walletReady = useWalletInitialization();
+  const { isReady: walletReady } = useWalletInitialization();
   useInitializeWalletKit(walletReady);
 
   useWalletKitListener('session_proposal', (args) => {
-    console.log('session_proposal', args);
+    if (__DEV__) {
+      console.log('session_proposal', args);
+    }
     router.push({
       pathname: '/session-proposal',
       params: { proposal: JSON.stringify(args) },

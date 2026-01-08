@@ -15,6 +15,7 @@ const core = new Core({
 });
 
 export let walletKit: IWalletKit | undefined;
+let isInitializing = false;
 const stateListeners = new Set<(value: boolean) => void>();
 
 /**
@@ -31,7 +32,13 @@ export function useInitializeWalletKit(walletReady: boolean = true) {
         return;
       }
 
-      if (!walletKit) {
+      // Prevent multiple simultaneous initialization attempts
+      if (walletKit || isInitializing) {
+        return;
+      }
+
+      isInitializing = true;
+      try {
         walletKit = await WalletKit.init({
           core,
           metadata: {
@@ -44,9 +51,13 @@ export function useInitializeWalletKit(walletReady: boolean = true) {
             },
           },
         });
-        console.log('WalletKit initialized with address:', evmAddress);
+        if (__DEV__) {
+          console.log('WalletKit initialized with address:', evmAddress);
+        }
 
         stateListeners.forEach((listener) => listener(true));
+      } finally {
+        isInitializing = false;
       }
     }
     init();
@@ -89,7 +100,9 @@ export function useWalletKitListener<E extends WalletKitTypes.Event>(
 
     if (isInitialized) {
       walletKit?.on(event, stableListener);
-      console.log('useWalletKitListener on', event, stableListener);
+      if (__DEV__) {
+        console.log('useWalletKitListener on', event);
+      }
     }
 
     return () => {

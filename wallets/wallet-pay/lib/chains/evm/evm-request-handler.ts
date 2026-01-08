@@ -26,8 +26,12 @@ function getTypedData(params: any[]): {
   primaryType: string;
   message: any;
 } {
-  const data =
-    typeof params[1] === 'string' ? JSON.parse(params[1]) : params[1];
+  let data;
+  try {
+    data = typeof params[1] === 'string' ? JSON.parse(params[1]) : params[1];
+  } catch {
+    throw new Error('Invalid typed data format');
+  }
 
   // Remove EIP712Domain from types as viem handles it automatically
   const types = { ...data.types };
@@ -58,8 +62,15 @@ export async function handleEvmRequest(
 
   try {
     switch (method) {
-      case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
+      // eth_sign is disabled for security - it can be used for phishing attacks
       case EIP155_SIGNING_METHODS.ETH_SIGN: {
+        return formatJsonRpcError(
+          id,
+          'eth_sign is disabled for security. Use personal_sign instead.',
+        );
+      }
+
+      case EIP155_SIGNING_METHODS.PERSONAL_SIGN: {
         const message = getSignMessage(method, params);
         const signature = await evmWallet.signMessage(message);
         return formatJsonRpcResult(id, signature);

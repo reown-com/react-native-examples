@@ -29,9 +29,16 @@ export class EvmWallet implements IWallet {
   /**
    * Create a new EVM wallet or restore from mnemonic.
    * Returns both the wallet and mnemonic - save mnemonic to secure storage immediately.
+   * @throws Error if provided mnemonic is invalid
    */
   static create(options?: WalletCreateOptions): EvmWalletCreateResult {
     const mnemonic = options?.mnemonic ?? mnemonicUtils.generate();
+
+    // Validate mnemonic if restoring from storage
+    if (options?.mnemonic && !mnemonicUtils.validate(mnemonic)) {
+      throw new Error('Invalid mnemonic provided');
+    }
+
     const account = mnemonicToAccount(mnemonic);
     return {
       wallet: new EvmWallet(account),
