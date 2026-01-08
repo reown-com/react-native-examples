@@ -624,9 +624,20 @@ const apiKey = await secureStorage.getItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY)
 - Use ESLint and Prettier for consistent formatting
 - Prefer functional components with hooks
 - Use TypeScript types/interfaces for all props and data structures
+- **Minimal comments**: Do not add comments unless absolutely necessary to understand the code. Code should be self-documenting through clear naming and structure. Avoid explanatory comments that describe what the code does - the code itself should be clear enough.
+- **No unused variables**: Ensure code changes do not leave unused variables, imports, or functions. ESLint will flag these - fix them before committing.
 - **No trailing whitespace**: New code must not have trailing whitespace at the end of lines. Most editors can be configured to remove trailing whitespace on save.
 - **Run lint after changing code**: Always run `npm run lint` after making code changes to ensure code quality and catch any formatting or linting issues before committing.
 - **Check TypeScript errors**: Always run `npx tsc --noEmit` after making code changes to check for TypeScript errors. Fix any TypeScript errors in files you've modified before committing. Note: Pre-existing TypeScript errors in other files can be ignored if they're unrelated to your changes.
+
+### Testing Guidelines
+
+- **Avoid testing mocked components**: Component tests that mock underlying UI primitives (PressableScale, Pressable, QRCodeSkia, etc.) don't provide real value - they just test that mocks work correctly, not actual component behavior. For meaningful component testing, either:
+  - Use the real components (may require native setup)
+  - Focus on testing business logic in hooks/utils instead
+  - Use E2E tests for UI behavior
+- **Focus on business logic**: Unit tests should focus on utilities, stores, services, and hooks that contain actual business logic rather than UI rendering.
+- **Use testID for E2E tests**: Always use `testID` props to identify components in E2E tests (Maestro). Prefer testID over text strings as text can change and may be localized. Add testID to interactive components (buttons, inputs, etc.) that need to be targeted by E2E tests.
 
 ## Troubleshooting
 
