@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - develop
     paths:
       - 'dapps/pos-app/**'
   pull_request:
