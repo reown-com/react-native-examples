@@ -630,6 +630,10 @@ const apiKey = await secureStorage.getItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY)
 - **Run lint after changing code**: Always run `npm run lint` after making code changes to ensure code quality and catch any formatting or linting issues before committing.
 - **Check TypeScript errors**: Always run `npx tsc --noEmit` after making code changes to check for TypeScript errors. Fix any TypeScript errors in files you've modified before committing. Note: Pre-existing TypeScript errors in other files can be ignored if they're unrelated to your changes.
 
+### Security Guidelines
+
+- **Never print secrets in CI logs**: When creating or modifying GitHub Actions workflows, ensure that environment variables, API keys, secrets, or any sensitive data are never printed to CI logs. Use output redirection (`2>/dev/null`), avoid `echo` statements that output secrets, and ensure file creation commands don't expose content. Always verify that sensitive values stored in GitHub secrets/variables are not accidentally logged during workflow execution.
+
 ### Testing Guidelines
 
 - **Avoid testing mocked components**: Component tests that mock underlying UI primitives (PressableScale, Pressable, QRCodeSkia, etc.) don't provide real value - they just test that mocks work correctly, not actual component behavior. For meaningful component testing, either:

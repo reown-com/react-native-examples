@@ -38,8 +38,9 @@ jobs:
 
       - name: Create env file
         run: |
-          touch dapps/pos-app/.env
-          echo ${{ vars.POS_DEV_ENV_FILE }} >> dapps/pos-app/.env
+          if [ -n "${{ vars.POS_DEV_ENV_FILE }}" ]; then
+            echo "${{ vars.POS_DEV_ENV_FILE }}" > dapps/pos-app/.env 2>/dev/null
+          fi
 
       - name: Expo Prebuild
         run: |
