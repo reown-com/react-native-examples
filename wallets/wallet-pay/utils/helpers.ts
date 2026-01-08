@@ -1,4 +1,5 @@
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/eip155';
+import { useWalletStore } from '@/stores/use-wallet-store';
 import { WalletKitTypes } from '@reown/walletkit';
 import {
   buildApprovedNamespaces,
@@ -52,21 +53,19 @@ export function getApprovedNamespaces(
   const eip155Chains = Object.keys(EIP155_CHAINS);
   const eip155Methods = Object.values(EIP155_SIGNING_METHODS);
 
-  // add solana
-  // add sui
-  // add ton
+  const { evmAddress } = useWalletStore.getState();
 
-  //TODO get addresses from wallet
-  const eip155Addresses = ['0x0000000000000000000000000000000000000000'];
+  if (!evmAddress) {
+    throw new Error('Wallet not initialized');
+  }
 
+  // Future: Add solana, sui, ton addresses here
   const supportedNamespaces = {
     eip155: {
       chains: eip155Chains,
       methods: eip155Methods,
       events: ['accountsChanged', 'chainChanged'],
-      accounts: eip155Chains
-        .map((chain) => `${chain}:${eip155Addresses[0]}`)
-        .flat(),
+      accounts: eip155Chains.map((chain) => `${chain}:${evmAddress}`),
     },
   };
 
