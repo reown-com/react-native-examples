@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "beta-wallet",
-    "slug": "beta-wallet",
+    "name": "expo-wallet",
+    "slug": "expo-wallet",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "betawallet",
+    "scheme": "expowallet",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.reown.betawallet"
+      "bundleIdentifier": "com.walletconnect.expowallet"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.reown.betawallet"
+      "package": "com.walletconnect.expowallet"
     },
     "web": {
       "output": "static",

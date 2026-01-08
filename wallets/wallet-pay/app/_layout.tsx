@@ -55,6 +55,7 @@ export default function RootLayout() {
                 presentation: 'transparentModal',
                 animation: 'none',
                 headerShown: false,
+                contentStyle: { backgroundColor: 'transparent' },
               }}
             />
           </Stack>

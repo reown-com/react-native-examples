@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 
 const core = new Core({
   projectId: process.env.EXPO_PUBLIC_PROJECT_ID,
-  customStoragePrefix: '@walletconnect/wallet-pay',
+  customStoragePrefix: '@walletconnect/expo-wallet',
   storage,
 });
 
@@ -21,9 +21,9 @@ export function useInitializeWalletKit() {
         walletKit = await WalletKit.init({
           core,
           metadata: {
-            name: 'Wallet Pay',
-            description: 'RN Wallet to interface with Dapps',
-            url: 'www.walletconnect.com',
+            name: 'Expo Wallet',
+            description: 'Expo Wallet to interface with Dapps',
+            url: 'https://walletconnect.com',
             icons: ['https://your_wallet_icon.png'],
             redirect: {
               native: 'yourwalletscheme://',
