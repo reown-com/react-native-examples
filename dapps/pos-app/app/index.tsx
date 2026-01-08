@@ -35,6 +35,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Button
+        testID="new-sale-button"
         onPress={handleStartPayment}
         style={[
           styles.actionButton,
@@ -50,6 +51,7 @@ export default function HomeScreen() {
         <ThemedText fontSize={18}>New sale</ThemedText>
       </Button>
       <Button
+        testID="settings-button"
         onPress={handleSettingsPress}
         style={[
           styles.actionButton,

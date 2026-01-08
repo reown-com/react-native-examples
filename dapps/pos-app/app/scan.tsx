@@ -16,7 +16,7 @@ import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Linking, StyleSheet, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 
 interface ScreenParams extends UnknownOutputParams {
@@ -65,9 +65,13 @@ export default function ScanScreen() {
     resetNavigation("/amount");
   };
 
-  const handleCopyPaymentUrl = async () => {
-    await Clipboard.setStringAsync(qrUri);
-    showSuccessToast("Payment URL copied");
+  const handleLogoPress = async () => {
+    try {
+      await Clipboard.setStringAsync(qrUri);
+      await Linking.openURL(qrUri);
+    } catch {
+      showErrorToast("Failed to open payment URL");
+    }
   };
 
   useEffect(() => {
@@ -182,10 +186,11 @@ export default function ScanScreen() {
             </ThemedText>
           </View>
           <QRCode
+            testID="qr-code"
             size={300}
             uri={qrUri}
             logoBorderRadius={100}
-            onPress={handleCopyPaymentUrl}
+            onPress={handleLogoPress}
           >
             <Image source={assets?.[0]} style={styles.logo} />
           </QRCode>
