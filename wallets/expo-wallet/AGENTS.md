@@ -113,7 +113,7 @@ flowchart LR
 ## Project Structure
 
 ```
-wallets/wallet-pay/
+wallets/expo-wallet/
 ├── app/                      # Expo Router pages
 │   ├── _layout.tsx          # Root layout (polyfills, init)
 │   ├── (tabs)/              # Tab navigation
