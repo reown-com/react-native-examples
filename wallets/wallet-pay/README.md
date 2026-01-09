@@ -2,73 +2,147 @@
 
 A sample WalletConnect wallet built with Expo and React Native, demonstrating secure key management and WalletKit integration.
 
-## Features
+<p align="center">
+  <img src="https://img.shields.io/badge/Expo-54-000020?logo=expo" alt="Expo 54" />
+  <img src="https://img.shields.io/badge/React_Native-0.81-61DAFB?logo=react" alt="React Native 0.81" />
+  <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/WalletConnect-v2-3B99FC?logo=walletconnect" alt="WalletConnect v2" />
+</p>
 
-- 🔐 Secure mnemonic storage using `expo-secure-store` (iOS Keychain / Android Keystore)
-- ⚡ Native crypto performance with `react-native-quick-crypto`
-- 🔗 WalletConnect WalletKit integration for dApp connections
-- 🏗️ Plugin-based architecture for multi-chain support (EVM now, Solana/Sui/TON/Tron later)
+## ✨ Features
 
-## Get Started
+- 🔐 **Secure Key Storage** — Mnemonic stored in iOS Keychain / Android Keystore via `expo-secure-store`
+- ⚡ **Native Crypto** — Fast cryptographic operations with `react-native-quick-crypto`
+- 🔗 **WalletConnect v2** — Full WalletKit integration for dApp connections
+- 🏗️ **Multi-Chain Ready** — Plugin architecture for EVM (now) and Solana/Sui/TON/Tron (future)
+- 📱 **QR Scanner** — Scan WalletConnect QR codes to connect
 
-1. Install dependencies
+## 🚀 Quick Start
 
-   ```bash
-   npm install
-   ```
+```bash
+# Install dependencies
+npm install
 
-2. Start the app
+# Start the app
+npx expo start
 
-   ```bash
-   npx expo start
-   ```
-
-## Architecture
-
-```
-lib/
-├── base/wallet-base.ts          # IWallet interface for all chains
-└── chains/evm/
-    ├── evm-wallet.ts            # EVM wallet (viem)
-    └── evm-request-handler.ts   # WalletKit request handlers
-
-stores/use-wallet-store.ts       # Zustand wallet state
-hooks/use-wallet-initialization.ts # Wallet init on startup
-utils/secure-storage.ts          # expo-secure-store wrapper
+# Run on specific platform
+npm run ios      # iOS Simulator
+npm run android  # Android Emulator
 ```
 
-## Security Considerations
+## 📁 Project Structure
 
-> ⚠️ **This is a sample/demo wallet for educational purposes.**
+```
+├── app/                    # Expo Router pages
+│   ├── (tabs)/            # Tab navigation (home, apps, settings)
+│   ├── scanner.tsx        # QR code scanner
+│   └── session-proposal.tsx
+├── lib/                    # Core wallet logic
+│   ├── base/              # IWallet interface
+│   └── chains/evm/        # EVM implementation (viem)
+├── stores/                 # Zustand state management
+├── hooks/                  # React hooks
+├── utils/                  # Utilities (storage, crypto, helpers)
+├── components/             # UI components
+└── constants/              # Theme, chains, spacing
+```
 
-### What's Protected
+## 🏛️ Architecture
+
+```mermaid
+graph TB
+    subgraph "App Entry"
+        A[_layout.tsx] --> B[Polyfills]
+        B --> C[useWalletInitialization]
+    end
+
+    subgraph "Secure Storage"
+        D[(expo-secure-store<br/>Mnemonic)]
+    end
+
+    subgraph "Wallet Layer"
+        E[EvmWallet<br/>viem HDAccount]
+        F[WalletStore<br/>Zustand]
+    end
+
+    subgraph "WalletConnect"
+        G[WalletKit]
+        H[Request Handlers]
+    end
+
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> E
+```
+
+### Initialization Flow
+
+1. **Polyfills loaded** — `crypto.subtle.digest` polyfilled for viem/WalletKit
+2. **Wallet initialized** — Mnemonic retrieved from secure storage (or generated)
+3. **WalletKit started** — Configured with wallet addresses
+4. **Ready for connections** — Scan QR or paste URI to connect
+
+## 🔒 Security
+
+> ⚠️ **This is a sample wallet for educational purposes.**
+
+### Data Protection
 
 | Data | Storage | Protection |
 |------|---------|------------|
-| Mnemonic | `expo-secure-store` | iOS Keychain / Android Keystore (encrypted at rest) |
-| Private Key | In-memory only | Never persisted to disk |
-| Addresses | Zustand store | Non-sensitive, public data |
+| **Mnemonic** | `expo-secure-store` | iOS Keychain / Android Keystore (encrypted) |
+| **Private Key** | Memory only | Never written to disk |
+| **Addresses** | Zustand | Public data, non-sensitive |
 
-### Known Limitations (Hot Wallet Trade-offs)
+### Security Measures
 
-This wallet keeps the derived private key (`HDAccount`) in memory while the app is running. This is **standard for all hot wallets** (MetaMask, Rainbow, Trust Wallet, etc.) and is required for signing operations.
+- ✅ Mnemonic validated before wallet restoration
+- ✅ WalletConnect URIs validated before pairing
+- ✅ `eth_sign` disabled (phishing attack vector)
+- ✅ Console logs wrapped with `__DEV__` checks
+- ✅ Race condition protection on WalletKit init
 
-**Mitigations provided by the platform:**
-- iOS/Android process isolation prevents other apps from reading memory
-- Mnemonic is encrypted at rest in secure storage
+### Hot Wallet Limitations
 
-**For production wallets, consider:**
-- Biometric authentication on app resume
-- Clearing sensitive data when app backgrounds
-- Hardware wallet integration for large holdings
-- Security audit before production release
+This wallet keeps the private key in memory while running — standard for all hot wallets (MetaMask, Rainbow, etc.). For production:
 
-### Disabled Features
+- Consider biometric auth on app resume
+- Clear sensitive data when backgrounded
+- Use hardware wallets for large holdings
 
-- `eth_sign` is disabled (auto-rejected) to prevent phishing attacks. Use `personal_sign` instead.
+## 🛠️ Tech Stack
 
-## Learn More
+| Category | Technology |
+|----------|------------|
+| Framework | Expo SDK 54, React Native 0.81 |
+| Language | TypeScript 5.9 (strict) |
+| Navigation | Expo Router |
+| State | Zustand |
+| Crypto | viem, react-native-quick-crypto |
+| Storage | expo-secure-store, react-native-mmkv |
+| WalletConnect | @reown/walletkit |
 
+## 📚 Documentation
+
+- [AGENTS.md](./AGENTS.md) — Detailed guide for developers and AI agents
 - [WalletConnect Docs](https://docs.walletconnect.com/)
 - [Expo Documentation](https://docs.expo.dev/)
 - [viem Documentation](https://viem.sh/)
+
+## 🗺️ Roadmap
+
+- [x] EVM wallet (Ethereum, Polygon, Arbitrum, etc.)
+- [ ] Transaction signing UI
+- [ ] WalletConnect Pay
+- [ ] Solana support
+- [ ] Sui support
+- [ ] TON support
+- [ ] Tron support
+
+## 📄 License
+
+Part of [react-native-examples](https://github.com/reown-com/react-native-examples) by WalletConnect.
