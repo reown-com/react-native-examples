@@ -1,4 +1,10 @@
-import type { TypedData, TypedDataDomain, TransactionSerializable } from 'viem';
+import type {
+  TypedData,
+  TypedDataDomain,
+  TransactionSerializable,
+  Hex,
+} from 'viem';
+import { isHex, hexToString } from 'viem';
 import { mnemonicToAccount, type HDAccount } from 'viem/accounts';
 import { IWallet, WalletCreateOptions } from '../../base/wallet-base';
 import { mnemonicUtils } from '@/utils/mnemonic';
@@ -54,10 +60,16 @@ export class EvmWallet implements IWallet {
   }
 
   /**
-   * Sign a message using personal_sign
+   * Sign a message using personal_sign.
+   * Handles hex-encoded UTF-8 messages from WalletConnect.
    */
   async signMessage(message: string): Promise<string> {
-    return await this.account.signMessage({ message });
+    // For personal_sign, message may come as hex-encoded UTF-8.
+    // Decode to UTF-8 string for correct Ethereum Signed Message handling.
+    const messageToSign = isHex(message)
+      ? hexToString(message as Hex)
+      : message;
+    return await this.account.signMessage({ message: messageToSign });
   }
 
   /**

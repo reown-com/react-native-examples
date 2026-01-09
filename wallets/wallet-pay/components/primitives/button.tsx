@@ -8,6 +8,7 @@ import { Text } from '@/components/primitives/text';
 export type ButtonProps = CustomPressableProps & {
   type?: 'primary' | 'secondary' | 'none';
   text?: string;
+  disabled?: boolean;
 };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -16,6 +17,7 @@ export const Button: React.FC<ButtonProps> = ({
   type = 'none',
   text,
   onPress,
+  disabled,
   ...props
 }) => {
   const Theme = useTheme();
@@ -28,6 +30,7 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <PressableScale
       {...props}
+      enabled={!disabled}
       style={[
         styles.button,
         { backgroundColor, borderColor },

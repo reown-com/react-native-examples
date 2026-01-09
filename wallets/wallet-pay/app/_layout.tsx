@@ -14,6 +14,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import {
   useInitializeWalletKit,
+  useWalletKit,
   useWalletKitListener,
 } from '@/hooks/use-walletkit';
 import { useWalletInitialization } from '@/hooks/use-wallet-initialization';
@@ -30,6 +31,7 @@ export default function RootLayout() {
 
   const { isReady: walletReady } = useWalletInitialization();
   useInitializeWalletKit(walletReady);
+  const { walletKit } = useWalletKit();
 
   useWalletKitListener('session_proposal', (args) => {
     if (__DEV__) {
@@ -38,6 +40,21 @@ export default function RootLayout() {
     router.push({
       pathname: '/session-proposal',
       params: { proposal: JSON.stringify(args) },
+    });
+  });
+
+  useWalletKitListener('session_request', (args) => {
+    if (__DEV__) {
+      console.log('session_request', args);
+    }
+    const session = walletKit?.getActiveSessions()[args.topic];
+    router.push({
+      pathname: '/session-request',
+      params: {
+        requestEvent: JSON.stringify(args),
+        session: JSON.stringify(session),
+        verifyContext: JSON.stringify(args.verifyContext),
+      },
     });
   });
 
@@ -57,6 +74,15 @@ export default function RootLayout() {
             />
             <Stack.Screen
               name="session-proposal"
+              options={{
+                presentation: 'transparentModal',
+                animation: 'none',
+                headerShown: false,
+                contentStyle: { backgroundColor: 'transparent' },
+              }}
+            />
+            <Stack.Screen
+              name="session-request"
               options={{
                 presentation: 'transparentModal',
                 animation: 'none',
