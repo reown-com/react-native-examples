@@ -5,6 +5,7 @@ import { CloseModalButton } from '@/components/close-modal-button';
 import { Modal, ModalRef } from '@/components/modal';
 import { Button } from '@/components/primitives/button';
 import { Text } from '@/components/primitives/text';
+import { VerifyBadge } from '@/components/verify-badge';
 import { BorderRadius, Spacing } from '@/constants/spacing';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import {
@@ -76,11 +77,11 @@ export default function ModalScreen() {
             style={styles.logo}
           />
           <Text
-            numberOfLines={1}
+            numberOfLines={2}
             fontSize={20}
             lineHeight={20}
             center
-            ellipsizeMode="middle">
+            ellipsizeMode="tail">
             Connect your wallet to{' '}
             {parsedProposal.params.proposer.metadata.name}
           </Text>
@@ -88,14 +89,13 @@ export default function ModalScreen() {
         <View
           style={[
             styles.card,
-            {
-              backgroundColor: cardBackgroundColor,
-              gap: Spacing['spacing-1'],
-            },
+            styles.domainCard,
+            { backgroundColor: cardBackgroundColor },
           ]}>
           <Text fontSize={16} lineHeight={18} color="text-tertiary">
             {parsedProposal.params.proposer.metadata.url?.split('//')[1]}
           </Text>
+          <VerifyBadge verifyContext={parsedProposal.verifyContext} />
         </View>
         <View
           style={[
@@ -160,6 +160,12 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: BorderRadius['5'],
     padding: Spacing['spacing-5'],
+  },
+  domainCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing['spacing-2'],
   },
   closeButton: {
     alignSelf: 'flex-end',
