@@ -10,7 +10,7 @@ interface VerifyBadgeProps {
 }
 
 export function VerifyBadge({ verifyContext }: VerifyBadgeProps) {
-  const successBg = 'rgba(48, 164, 107, 0.9)'; // Matches Figma design
+  const successBg = useThemeColor('icon-success');
   const warningBg = useThemeColor('bg-warning');
   const warningText = useThemeColor('text-warning');
   const errorBg = useThemeColor('bg-error');

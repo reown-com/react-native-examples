@@ -164,13 +164,11 @@ export function getSignParamsMessage(method: string, params: any[]): string {
  */
 function hexToUtf8(hex: string): string {
   try {
-    // Remove 0x prefix if present
     const cleanHex = hex.startsWith('0x') ? hex.slice(2) : hex;
-    // Convert hex to bytes
+    if (cleanHex.length % 2 !== 0) return hex; // Invalid hex length
     const bytes = new Uint8Array(
       cleanHex.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) || [],
     );
-    // Decode as UTF-8
     return new TextDecoder('utf-8').decode(bytes);
   } catch {
     return hex;

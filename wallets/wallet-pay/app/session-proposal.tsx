@@ -77,11 +77,11 @@ export default function ModalScreen() {
             style={styles.logo}
           />
           <Text
-            numberOfLines={1}
+            numberOfLines={2}
             fontSize={20}
             lineHeight={20}
             center
-            ellipsizeMode="middle">
+            ellipsizeMode="tail">
             Connect your wallet to{' '}
             {parsedProposal.params.proposer.metadata.name}
           </Text>

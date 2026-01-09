@@ -10,6 +10,7 @@ import {
   SignMessageContent,
 } from '@/components/modal-content';
 import { Text } from '@/components/primitives/text';
+import { Button } from '@/components/primitives/button';
 import { VerifyBadge } from '@/components/verify-badge';
 import { EIP155_SIGNING_METHODS } from '@/constants/eip155';
 import { BorderRadius, Spacing } from '@/constants/spacing';
@@ -134,8 +135,16 @@ export default function SessionRequestScreen() {
         );
       }
 
+      case EIP155_SIGNING_METHODS.ETH_SIGN: {
+        return (
+          <View>
+            <Text>eth_sign is disabled for security reasons</Text>
+            <Button onPress={handleDismiss} type="primary" text="Close" />
+          </View>
+        );
+      }
+
       case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-      case EIP155_SIGNING_METHODS.ETH_SIGN:
       case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
       case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
       case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
@@ -177,7 +186,7 @@ export default function SessionRequestScreen() {
             { backgroundColor: cardBackgroundColor },
           ]}>
           <Text fontSize={14} color="text-tertiary">
-            {peerMetadata.url?.split('//')[1]}
+            {peerMetadata.url?.split('//')[1] || peerMetadata.url || 'Unknown'}
           </Text>
           <VerifyBadge verifyContext={parsedVerifyContext} />
         </View>

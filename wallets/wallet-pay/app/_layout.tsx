@@ -48,6 +48,10 @@ export default function RootLayout() {
       console.log('session_request', args);
     }
     const session = walletKit?.getActiveSessions()[args.topic];
+    if (!session) {
+      console.error('Session not found for topic:', args.topic);
+      return;
+    }
     router.push({
       pathname: '/session-request',
       params: {
