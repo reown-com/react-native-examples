@@ -1,4 +1,4 @@
-import { TypedData, TypedDataDomain } from 'viem';
+import type { TypedData, TypedDataDomain, TransactionSerializable } from 'viem';
 import { mnemonicToAccount, type HDAccount } from 'viem/accounts';
 import { IWallet, WalletCreateOptions } from '../../base/wallet-base';
 import { mnemonicUtils } from '@/utils/mnemonic';
@@ -75,7 +75,7 @@ export class EvmWallet implements IWallet {
   /**
    * Sign a transaction
    */
-  async signTransaction(tx: any): Promise<string> {
+  async signTransaction(tx: TransactionSerializable): Promise<string> {
     return await this.account.signTransaction(tx);
   }
 
