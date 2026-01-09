@@ -1,5 +1,4 @@
 import { View, StyleSheet } from 'react-native';
-import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { BorderRadius, Spacing } from '@/constants/spacing';

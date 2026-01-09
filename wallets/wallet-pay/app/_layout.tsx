@@ -1,9 +1,11 @@
+// Polyfills MUST be imported first
+import '@/utils/polyfills';
+
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
-import '@walletconnect/react-native-compat';
 import { router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -14,8 +16,8 @@ import {
   useInitializeWalletKit,
   useWalletKitListener,
 } from '@/hooks/use-walletkit';
+import { useWalletInitialization } from '@/hooks/use-wallet-initialization';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { Header } from '@/components/header';
 import { Colors } from '@/constants/theme';
 
 export const unstable_settings = {
@@ -25,10 +27,14 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const Theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
-  useInitializeWalletKit();
+
+  const { isReady: walletReady } = useWalletInitialization();
+  useInitializeWalletKit(walletReady);
 
   useWalletKitListener('session_proposal', (args) => {
-    console.log('session_proposal', args);
+    if (__DEV__) {
+      console.log('session_proposal', args);
+    }
     router.push({
       pathname: '/session-proposal',
       params: { proposal: JSON.stringify(args) },

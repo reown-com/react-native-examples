@@ -1,8 +1,15 @@
-# Welcome to your Expo app 👋
+# Expo Wallet
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A sample WalletConnect wallet built with Expo and React Native, demonstrating secure key management and WalletKit integration.
 
-## Get started
+## Features
+
+- 🔐 Secure mnemonic storage using `expo-secure-store` (iOS Keychain / Android Keystore)
+- ⚡ Native crypto performance with `react-native-quick-crypto`
+- 🔗 WalletConnect WalletKit integration for dApp connections
+- 🏗️ Plugin-based architecture for multi-chain support (EVM now, Solana/Sui/TON/Tron later)
+
+## Get Started
 
 1. Install dependencies
 
@@ -16,35 +23,52 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Architecture
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+```
+lib/
+├── base/wallet-base.ts          # IWallet interface for all chains
+└── chains/evm/
+    ├── evm-wallet.ts            # EVM wallet (viem)
+    └── evm-request-handler.ts   # WalletKit request handlers
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+stores/use-wallet-store.ts       # Zustand wallet state
+hooks/use-wallet-initialization.ts # Wallet init on startup
+utils/secure-storage.ts          # expo-secure-store wrapper
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Security Considerations
 
-## Learn more
+> ⚠️ **This is a sample/demo wallet for educational purposes.**
 
-To learn more about developing your project with Expo, look at the following resources:
+### What's Protected
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+| Data | Storage | Protection |
+|------|---------|------------|
+| Mnemonic | `expo-secure-store` | iOS Keychain / Android Keystore (encrypted at rest) |
+| Private Key | In-memory only | Never persisted to disk |
+| Addresses | Zustand store | Non-sensitive, public data |
 
-## Join the community
+### Known Limitations (Hot Wallet Trade-offs)
 
-Join our community of developers creating universal apps.
+This wallet keeps the derived private key (`HDAccount`) in memory while the app is running. This is **standard for all hot wallets** (MetaMask, Rainbow, Trust Wallet, etc.) and is required for signing operations.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**Mitigations provided by the platform:**
+- iOS/Android process isolation prevents other apps from reading memory
+- Mnemonic is encrypted at rest in secure storage
+
+**For production wallets, consider:**
+- Biometric authentication on app resume
+- Clearing sensitive data when app backgrounds
+- Hardware wallet integration for large holdings
+- Security audit before production release
+
+### Disabled Features
+
+- `eth_sign` is disabled (auto-rejected) to prevent phishing attacks. Use `personal_sign` instead.
+
+## Learn More
+
+- [WalletConnect Docs](https://docs.walletconnect.com/)
+- [Expo Documentation](https://docs.expo.dev/)
+- [viem Documentation](https://viem.sh/)
