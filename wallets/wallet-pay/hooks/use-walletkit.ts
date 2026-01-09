@@ -15,11 +15,12 @@ const core = new Core({
 });
 
 export let walletKit: IWalletKit | undefined;
-let isInitializing = false;
+let initPromise: Promise<IWalletKit> | null = null;
 const stateListeners = new Set<(value: boolean) => void>();
 
 /**
  * Initialize WalletKit with wallet addresses.
+ * Uses Promise-based singleton to prevent race conditions.
  * @param walletReady - Whether the wallet has been initialized
  */
 export function useInitializeWalletKit(walletReady: boolean = true) {
@@ -32,32 +33,39 @@ export function useInitializeWalletKit(walletReady: boolean = true) {
         return;
       }
 
-      // Prevent multiple simultaneous initialization attempts
-      if (walletKit || isInitializing) {
+      // Already initialized
+      if (walletKit) {
         return;
       }
 
-      isInitializing = true;
-      try {
-        walletKit = await WalletKit.init({
-          core,
-          metadata: {
-            name: 'Expo Wallet',
-            description: 'Expo Wallet to interface with Dapps',
-            url: 'https://walletconnect.com',
-            icons: ['https://your_wallet_icon.png'],
-            redirect: {
-              native: 'expowallet://',
-            },
+      // Another initialization is in progress - wait for it
+      if (initPromise) {
+        await initPromise;
+        return;
+      }
+
+      // Start initialization with Promise-based lock
+      initPromise = WalletKit.init({
+        core,
+        metadata: {
+          name: 'Expo Wallet',
+          description: 'Expo Wallet to interface with Dapps',
+          url: 'https://walletconnect.com',
+          icons: ['https://avatars.githubusercontent.com/u/179229932'],
+          redirect: {
+            native: 'expowallet://',
           },
-        });
+        },
+      });
+
+      try {
+        walletKit = await initPromise;
         if (__DEV__) {
           console.log('WalletKit initialized with address:', evmAddress);
         }
-
         stateListeners.forEach((listener) => listener(true));
       } finally {
-        isInitializing = false;
+        initPromise = null;
       }
     }
     init();

@@ -72,7 +72,12 @@ export default function SessionRequestScreen() {
   const onApprove = useCallback(async () => {
     setIsLoadingApprove(true);
     try {
-      const response = await handleEvmRequest(id, method, requestParams);
+      const response = await handleEvmRequest(
+        id,
+        method,
+        requestParams,
+        chainId,
+      );
       await walletKit?.respondSessionRequest({
         topic,
         response,
@@ -89,7 +94,7 @@ export default function SessionRequestScreen() {
       setIsLoadingApprove(false);
       handleDismiss();
     }
-  }, [id, method, requestParams, topic, walletKit, handleDismiss]);
+  }, [id, method, requestParams, chainId, topic, walletKit, handleDismiss]);
 
   const onReject = useCallback(async () => {
     setIsLoadingReject(true);

@@ -3,8 +3,15 @@ import type {
   TypedDataDomain,
   TransactionSerializable,
   Hex,
+  SendTransactionParameters,
 } from 'viem';
-import { isHex, hexToString } from 'viem';
+import {
+  isHex,
+  hexToString,
+  createWalletClient,
+  http,
+  defineChain,
+} from 'viem';
 import { mnemonicToAccount, type HDAccount } from 'viem/accounts';
 import { IWallet, WalletCreateOptions } from '../../base/wallet-base';
 import { mnemonicUtils } from '@/utils/mnemonic';
@@ -89,6 +96,39 @@ export class EvmWallet implements IWallet {
    */
   async signTransaction(tx: TransactionSerializable): Promise<string> {
     return await this.account.signTransaction(tx);
+  }
+
+  /**
+   * Send a transaction to the network.
+   * Signs and broadcasts the transaction, returning the transaction hash.
+   * @param tx - Transaction parameters
+   * @param chainId - Numeric chain ID (e.g., 1 for mainnet)
+   * @param rpcUrl - RPC endpoint URL for the chain
+   * @returns Transaction hash
+   */
+  async sendTransaction(
+    tx: SendTransactionParameters,
+    chainId: number,
+    rpcUrl: string,
+  ): Promise<Hex> {
+    // Create a minimal chain definition for the wallet client
+    const chain = defineChain({
+      id: chainId,
+      name: `Chain ${chainId}`,
+      nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+      rpcUrls: {
+        default: { http: [rpcUrl] },
+      },
+    });
+
+    const walletClient = createWalletClient({
+      account: this.account,
+      chain,
+      transport: http(rpcUrl),
+    });
+
+    const hash = await walletClient.sendTransaction(tx);
+    return hash;
   }
 
   /**

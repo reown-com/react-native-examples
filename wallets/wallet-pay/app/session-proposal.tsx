@@ -44,7 +44,9 @@ export default function ModalScreen() {
       namespaces,
     });
     // TODO save session if needed
-    console.log('session', session);
+    if (__DEV__) {
+      console.log('session', session);
+    }
     // walletKit.getActiveSessions();
 
     //TODO: redirect back to the app if possible

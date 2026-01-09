@@ -161,11 +161,13 @@ export function getSignParamsMessage(method: string, params: any[]): string {
 /**
  * Convert a hex string to UTF-8 text.
  * Falls back to the original string if conversion fails.
+ * Limits input to ~5KB to prevent memory issues.
  */
 function hexToUtf8(hex: string): string {
   try {
     const cleanHex = hex.startsWith('0x') ? hex.slice(2) : hex;
     if (cleanHex.length % 2 !== 0) return hex; // Invalid hex length
+    if (cleanHex.length > 10000) return hex; // Max ~5KB to prevent memory issues
     const bytes = new Uint8Array(
       cleanHex.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) || [],
     );

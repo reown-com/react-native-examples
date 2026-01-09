@@ -1,7 +1,7 @@
 import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import { getSdkError } from '@walletconnect/utils';
 import { useWalletStore } from '@/stores/use-wallet-store';
-import { EIP155_SIGNING_METHODS } from '@/constants/eip155';
+import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/eip155';
 
 /**
  * Get the message to sign from request params.
@@ -48,11 +48,16 @@ function getTypedData(params: any[]): {
 /**
  * Handle EVM signing requests from WalletKit.
  * Routes to the appropriate signing method based on the request method.
+ * @param id - JSON-RPC request ID
+ * @param method - The signing method (e.g., personal_sign, eth_sendTransaction)
+ * @param params - Method parameters
+ * @param chainId - Chain identifier in CAIP-2 format (e.g., "eip155:1")
  */
 export async function handleEvmRequest(
   id: number,
   method: string,
   params: any[],
+  chainId?: string,
 ) {
   const { evmWallet } = useWalletStore.getState();
 
@@ -91,12 +96,25 @@ export async function handleEvmRequest(
       }
 
       case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION: {
-        // For send transaction, we need to sign and broadcast
-        // This requires a provider connection which we'll handle separately
-        // For now, just sign the transaction
+        // Get chain data for RPC URL
+        const chainData = chainId ? EIP155_CHAINS[chainId] : undefined;
+        if (!chainData) {
+          return formatJsonRpcError(
+            id,
+            `Unsupported chain: ${chainId || 'unknown'}`,
+          );
+        }
+
         const txParams = params[0];
-        const signature = await evmWallet.signTransaction(txParams);
-        return formatJsonRpcResult(id, signature);
+        const numericChainId = parseInt(chainData.chainId, 10);
+
+        // Send transaction (signs and broadcasts)
+        const txHash = await evmWallet.sendTransaction(
+          txParams,
+          numericChainId,
+          chainData.rpcUrl,
+        );
+        return formatJsonRpcResult(id, txHash);
       }
 
       default:
