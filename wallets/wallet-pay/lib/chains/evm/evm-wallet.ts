@@ -1,7 +1,7 @@
+import { TypedData, TypedDataDomain } from 'viem';
 import { mnemonicToAccount, type HDAccount } from 'viem/accounts';
 import { IWallet, WalletCreateOptions } from '../../base/wallet-base';
 import { mnemonicUtils } from '@/utils/mnemonic';
-
 /**
  * Result from wallet creation, includes mnemonic for initial storage.
  * The mnemonic should be saved to secure storage and NOT kept in memory.
@@ -64,8 +64,8 @@ export class EvmWallet implements IWallet {
    * Sign EIP-712 typed data
    */
   async signTypedData(params: {
-    domain: any;
-    types: any;
+    domain: TypedDataDomain;
+    types: TypedData;
     primaryType: string;
     message: any;
   }): Promise<string> {
