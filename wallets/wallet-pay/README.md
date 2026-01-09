@@ -136,7 +136,7 @@ This wallet keeps the private key in memory while running — standard for all h
 ## 🗺️ Roadmap
 
 - [x] EVM wallet (Ethereum, Polygon, Arbitrum, etc.)
-- [ ] Transaction signing UI
+- [x] Transaction signing UI
 - [ ] WalletConnect Pay
 - [ ] Solana support
 - [ ] Sui support
