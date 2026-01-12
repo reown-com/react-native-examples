@@ -1,0 +1,32 @@
+# Stub workflow to enable dispatch from feature branches
+# Real implementation is on chore/ci-improvements branch
+name: Release WalletKit
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to build'
+        required: true
+        type: choice
+        options:
+          - android
+          - ios
+      release-type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - internal
+          - production
+      e2e-build:
+        description: 'Build for E2E tests (uploads to S3 for AppKit SDK repo tests)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  stub:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This is a stub. Run from feature branch with --ref"

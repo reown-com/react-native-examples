@@ -1,0 +1,27 @@
+# Stub workflow to enable dispatch from feature branches
+# Real implementation is on chore/ci-improvements branch
+name: Release Mobile POS
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to build'
+        required: true
+        type: choice
+        options:
+          - android
+          - ios
+      variant:
+        description: 'App variant'
+        required: true
+        type: choice
+        options:
+          - production
+          - legacy
+
+jobs:
+  stub:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This is a stub. Run from feature branch with --ref"
