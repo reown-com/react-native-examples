@@ -1,5 +1,6 @@
-import {SessionTypes, SignClientTypes} from '@walletconnect/types';
-import {proxy, ref} from 'valtio';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import { proxy, ref } from 'valtio';
+import type { PaymentOptionsResponse } from '@walletconnect/pay';
 
 /**
  * Types
@@ -11,6 +12,7 @@ interface ModalData {
   authRequest?: SignClientTypes.EventArguments['session_authenticate'];
   loadingMessage?: string;
   errorMessage?: string;
+  paymentOptions?: PaymentOptionsResponse;
 }
 
 interface State {
@@ -29,7 +31,9 @@ interface State {
     | 'SessionSuiSignAndExecuteTransactionModal'
     | 'SessionTonSendMessageModal'
     | 'SessionSignTronModal'
-    | 'SessionTonSignDataModal';
+    | 'SessionTonSignDataModal'
+    | 'PaymentOptionsModal'
+    | 'ImportWalletModal';
   data?: ModalData;
 }
 

@@ -1,16 +1,17 @@
-import {useCallback, useEffect} from 'react';
+import { useCallback, useEffect } from 'react';
 import Config from 'react-native-config';
-import {Linking, Platform, StatusBar, useColorScheme} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import { Linking, Platform, StatusBar, useColorScheme } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
 import Toast from 'react-native-toast-message';
-import {RELAYER_EVENTS} from '@walletconnect/core';
+import { RELAYER_EVENTS } from '@walletconnect/core';
 
-import {RootStackNavigator} from '@/navigators/RootStackNavigator';
+import { RootStackNavigator } from '@/navigators/RootStackNavigator';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
+import useInitializePaySDK from '@/hooks/useInitializePaySDK';
 import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
-import {walletKit} from '@/utils/WalletKitUtil';
+import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
 
@@ -46,9 +47,12 @@ const App = () => {
   // Step 2 - Once initialized, set up wallet connect event manager
   useWalletKitEventsManager(initialized);
 
+  // Step 3 - Initialize WalletConnect Pay SDK
+  useInitializePaySDK();
+
   useEffect(() => {
     if (initialized) {
-      BootSplash.hide({fade: true});
+      BootSplash.hide({ fade: true });
 
       walletKit.core.relayer.on(RELAYER_EVENTS.connect, () => {
         Toast.show({
@@ -76,10 +80,10 @@ const App = () => {
 
   const pair = useCallback(async (uri: string) => {
     try {
-      ModalStore.open('LoadingModal', {loadingMessage: 'Pairing...'});
+      ModalStore.open('LoadingModal', { loadingMessage: 'Pairing...' });
 
       await SettingsStore.state.initPromise;
-      await walletKit.pair({uri});
+      await walletKit.pair({ uri });
     } catch (error: any) {
       ModalStore.open('LoadingModal', {
         errorMessage: error?.message || 'There was an error pairing',
@@ -88,7 +92,7 @@ const App = () => {
   }, []);
 
   const deeplinkHandler = useCallback(
-    ({url}: {url: string}) => {
+    ({ url }: { url: string }) => {
       const isLinkMode = url.includes('wc_ev');
       SettingsStore.setIsLinkModeRequest(isLinkMode);
 
@@ -100,7 +104,9 @@ const App = () => {
       } else if (url.includes('wc:')) {
         pair(url);
       } else if (url.includes('wc?')) {
-        ModalStore.open('LoadingModal', {loadingMessage: 'Loading request...'});
+        ModalStore.open('LoadingModal', {
+          loadingMessage: 'Loading request...',
+        });
       }
     },
     [pair],
@@ -124,7 +130,7 @@ const App = () => {
         return;
       }
 
-      deeplinkHandler({url: initialUrl});
+      deeplinkHandler({ url: initialUrl });
     }
 
     const sub = Linking.addEventListener('url', deeplinkHandler);
@@ -141,7 +147,7 @@ const App = () => {
       <RootStackNavigator />
       <Toast
         position="top"
-        topOffset={Platform.select({ios: 80, android: 0})}
+        topOffset={Platform.select({ ios: 80, android: 0 })}
       />
     </NavigationContainer>
   );
