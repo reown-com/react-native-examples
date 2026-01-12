@@ -4133,9 +4133,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.23.0":
-  version: 2.23.0
-  resolution: "@walletconnect/react-native-compat@npm:2.23.0"
+"@walletconnect/react-native-compat@npm:2.23.1":
+  version: 2.23.1
+  resolution: "@walletconnect/react-native-compat@npm:2.23.1"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -4149,7 +4149,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: 6dee8efd1be29e4c2f4d9ea58c9b24e6ffeabb6253b9a68f3608398add6e2d8a9adb7af87f13325b2b93c47e4cc53bf6cdcbe25afe3b86f1c6f3e14eb24a5489
+  checksum: fc3f2fc3acd4686c0a0703e84cacf1f7f417b6bf2dd333c39b8409d297ebe0bf3c9e0926b6a8c05a60401989a09e91cffe0679573c94aa93ef587e67999766cf
   languageName: node
   linkType: hard
 
@@ -4320,7 +4320,7 @@ __metadata:
     "@types/lodash.clonedeep": ^4.5.9
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
-    "@walletconnect/react-native-compat": 2.23.0
+    "@walletconnect/react-native-compat": 2.23.1
     babel-plugin-module-resolver: ^5.0.0
     bip39: 3.1.0
     dayjs: 1.11.11

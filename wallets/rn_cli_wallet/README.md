@@ -4,6 +4,35 @@
 
 >**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
+## Prerequisites: Ruby Setup (for iOS)
+
+This project requires **Ruby 3.3.0** for CocoaPods. macOS ships with an outdated system Ruby (2.6) that doesn't work with newer Xcode versions. You'll need to install a modern Ruby version using a version manager like rbenv.
+
+### Install rbenv and Ruby 3.3.0
+
+1. **Install rbenv via Homebrew:**
+```bash
+brew install rbenv ruby-build
+```
+
+2. **Initialize rbenv in your shell:**
+```bash
+echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+3. **Install Ruby 3.3.0:**
+```bash
+rbenv install 3.3.0
+```
+
+4. **Verify installation** (from the project directory):
+```bash
+ruby -v  # Should show ruby 3.3.0
+```
+
+The `.ruby-version` file in this project will automatically tell rbenv to use 3.3.0.
+
 ## Step 1: Install Dependencies
 
 ```bash
