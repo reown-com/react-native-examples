@@ -71,6 +71,8 @@ on:
         required: false
       sentry-dsn:
         required: false
+      pay-api-key:
+        required: false
       sentry-file:
         required: true
       apple-username:
@@ -174,7 +176,7 @@ jobs:
             echo "$ENV_FILE_CONTENT" > "$ENV_FILE_PATH"
           else
             touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
-            echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+            echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}\nENV_PAY_API_KEY=${{ secrets.pay-api-key }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
           fi
 
       # Create sentry file
