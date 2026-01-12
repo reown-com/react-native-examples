@@ -25,7 +25,7 @@ jobs:
       apple-id: '6446700301'
       project-type: 'dapp'
     secrets:
-      env-file: ${{ vars.APPKIT_ENV_FILE }}
+      env-file: ${{ secrets.APPKIT_ENV_FILE }}
       sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
       apple-username: ${{ secrets.APPLE_USERNAME }}
       apple-key-id: ${{ secrets.APPLE_KEY_ID }}
