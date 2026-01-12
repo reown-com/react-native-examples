@@ -96,6 +96,10 @@ jobs:
       # Create env file
       - name: Create env file
         run: |
+          if [ -z "${{ secrets.env-file }}" ]; then
+            echo "Error: env-file secret is empty or not set"
+            exit 1
+          fi
           echo "${{ secrets.env-file }}" > ${{ inputs.root-path }}/.env
 
       - name: Copy variant files
