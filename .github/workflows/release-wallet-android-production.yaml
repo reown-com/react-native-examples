@@ -16,9 +16,7 @@ jobs:
       project-type: 'wallet'
       output-path: 'wallets/rn_cli_wallet/android/app/build/outputs/apk/release/app-release.apk'
     secrets:
-      project-id: ${{ vars.WALLETKIT_PROJECT_ID }}
-      relay-url: ${{ secrets.ENV_RELAY_URL }}
-      sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
+      env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
       sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
       firebase-app-id: ${{ secrets.W3W_ANDROID_PROD_FIREBASE_APP_ID }}

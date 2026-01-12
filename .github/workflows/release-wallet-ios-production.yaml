@@ -25,9 +25,7 @@ jobs:
       apple-id: '6449264964'
       project-type: 'wallet'
     secrets:
-      project-id: ${{ vars.WALLETKIT_PROJECT_ID }}
-      relay-url: ${{ secrets.ENV_RELAY_URL }}
-      sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
+      env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
       sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
       apple-username: ${{ secrets.APPLE_USERNAME }}
       apple-key-id: ${{ secrets.APPLE_KEY_ID }}

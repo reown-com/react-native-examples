@@ -17,9 +17,7 @@ jobs:
       output-path: 'wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk'
       upload-to-bucket: true
     secrets:
-      project-id: ${{ vars.WALLETKIT_PROJECT_ID }}
-      relay-url: ${{ secrets.ENV_RELAY_URL }}
-      sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
+      env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
       sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
       firebase-app-id: ${{ secrets.W3W_ANDROID_INTERNAL_FIREBASE_APP_ID }}

@@ -17,8 +17,12 @@ In order to build the app successfuly, you'll need some extra files
 chmod +x ./scripts/copy-sample-files.sh && ./scripts/copy-sample-files.sh
 ```
 
-## Step 3: Open .env.debug file and replace **ENV_PROJECT_ID with your [Cloud Project ID](https://cloud.reown.com/)
+## Step 3: Configure environment variables
 
+Open `.env` file and set the following values:
+- **ENV_PROJECT_ID**: Your [Project ID](https://dashboard.reown.com/)
+- **ENV_SENTRY_DSN** (optional): Get it from your [Sentry dashboard](https://sentry.io/) or run `npx @sentry/wizard@latest -i reactNative` to set up Sentry
+- **ENV_TON_CENTER_API_KEY** (optional): Your [TON Center API key](https://toncenter.com/) for TON blockchain support
 
 ## Step 4: Start your Application
 

@@ -16,9 +16,7 @@ jobs:
       project-type: 'dapp'
       output-path: 'dapps/W3MWagmi/android/app/build/outputs/apk/release/app-release.apk'
     secrets:
-      project-id: ${{ vars.APPKIT_PROJECT_ID }}
-      relay-url: ${{ secrets.ENV_RELAY_URL }}
-      sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
+      env-file: ${{ vars.APPKIT_ENV_FILE }}
       sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
       firebase-app-id: ${{ secrets.APPKIT_ANDROID_PROD_FIREBASE_APP_ID }}

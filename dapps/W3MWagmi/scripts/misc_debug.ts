@@ -11,3 +11,5 @@ export const getMetadata = () => {
     },
   };
 };
+
+export const SENTRY_TAG = 'debug';

@@ -10,7 +10,7 @@ export async function createWalletKit(relayerRegionURL: string) {
   const core = new Core({
     projectId: Config.ENV_PROJECT_ID,
     storage,
-    relayUrl: relayerRegionURL ?? Config.ENV_RELAY_URL,
+    relayUrl: relayerRegionURL || undefined,
   });
   walletKit = await WalletKit.init({
     core,

@@ -27,9 +27,7 @@ jobs:
       build-for-simulator: ${{ inputs.build-for-simulator }}
       upload-to-bucket: ${{ inputs.build-for-simulator }}
     secrets:
-      project-id: ${{ vars.APPKIT_PROJECT_ID }}
-      relay-url: ${{ secrets.ENV_RELAY_URL }}
-      sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
+      env-file: ${{ vars.APPKIT_ENV_FILE }}
       sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
       apple-username: ${{ secrets.APPLE_USERNAME }}
       apple-key-id: ${{ secrets.APPLE_KEY_ID }}

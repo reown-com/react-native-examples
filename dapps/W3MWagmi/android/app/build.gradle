@@ -10,12 +10,7 @@ project.ext.sentryCli = [
 
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 
-project.ext.defaultEnvFile = ".env.debug"
-project.ext.envConfigFiles = [
-    debug: ".env.debug",
-    internal: ".env.internal",
-    release: ".env.production",
-]
+project.ext.defaultEnvFile = ".env"
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 

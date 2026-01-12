@@ -13,11 +13,12 @@ import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
 import {walletKit} from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
+import { SENTRY_TAG } from '@/utils/misc';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
   dsn: Config.ENV_SENTRY_DSN,
-  environment: Config.ENV_SENTRY_TAG,
+  environment: SENTRY_TAG,
   sendDefaultPii: true,
   // Enable Logs
   enableLogs: true,
