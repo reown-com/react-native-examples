@@ -39,10 +39,6 @@ on:
         required: false
         default: false
         type: boolean
-      env-file-path:
-        description: "Path + name of the env file"
-        required: false
-        type: string
       upload-to-bucket:
         description: "Upload to S3"
         required: false
