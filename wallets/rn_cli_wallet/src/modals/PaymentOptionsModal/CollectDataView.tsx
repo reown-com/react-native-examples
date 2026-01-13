@@ -2,17 +2,16 @@ import {
   View,
   Text,
   TextInput,
-  Image,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
 } from 'react-native';
 import type { CollectDataAction, PaymentInfo } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
-import { styles } from './styles';
-import { formatAmount } from './utils';
+import { MerchantInfo } from './MerchantInfo';
 
 interface CollectDataViewProps {
   collectData: CollectDataAction;
@@ -42,7 +41,6 @@ export function CollectDataView({
       keyboardVerticalOffset={0}
     >
       <ScrollView
-        contentContainerStyle={styles.collectDataContentContainer}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
@@ -50,29 +48,7 @@ export function CollectDataView({
           Additional Information
         </Text>
 
-        {/* Payment Info */}
-        {info?.merchant && (
-          <View style={styles.merchantContainer}>
-            {info.merchant.iconUrl && (
-              <Image
-                source={{ uri: info.merchant.iconUrl }}
-                style={styles.merchantIcon}
-              />
-            )}
-            <Text style={[styles.merchantName, { color: Theme['fg-100'] }]}>
-              {info.merchant.name}
-            </Text>
-          </View>
-        )}
-
-        {info?.amount && (
-          <View style={styles.amountContainer}>
-            <Text style={[styles.amountValue, { color: Theme['fg-100'] }]}>
-              $
-              {formatAmount(info.amount.value, info.amount.display.decimals, 2)}
-            </Text>
-          </View>
-        )}
+        <MerchantInfo info={info} />
 
         {/* Collect Data Form */}
         <View style={styles.collectDataScrollContent}>
@@ -144,3 +120,68 @@ export function CollectDataView({
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
+    paddingTop: 20,
+    paddingBottom: 20,
+    maxHeight: '80%',
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  errorContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  collectDataScrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+  },
+  fieldContainer: {
+    marginBottom: 16,
+  },
+  fieldLabel: {
+    fontSize: 14,
+    marginBottom: 6,
+  },
+  fieldInput: {
+    height: 44,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    fontSize: 16,
+  },
+  confirmButtonsContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    gap: 8,
+  },
+  approveButton: {
+    width: '100%',
+    height: 48,
+    borderRadius: 100,
+  },
+  approveButtonText: {
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  closeButton: {
+    width: '100%',
+    height: 48,
+    borderRadius: 100,
+  },
+  closeButtonText: {
+    fontWeight: '600',
+    fontSize: 16,
+  },
+});

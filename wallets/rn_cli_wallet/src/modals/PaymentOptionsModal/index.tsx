@@ -17,7 +17,11 @@ import { ErrorView } from './ErrorView';
 import { CollectDataView } from './CollectDataView';
 import { ConfirmPaymentView } from './ConfirmPaymentView';
 import { PaymentOptionsView } from './PaymentOptionsView';
-import { formatDateInput, isValidDateOfBirth } from './utils';
+import {
+  formatDateInput,
+  isValidDateOfBirth,
+  validateRequiredFields,
+} from './utils';
 
 export default function PaymentOptionsModal() {
   const { data } = useSnapshot(ModalStore.state);
@@ -107,9 +111,10 @@ export default function PaymentOptionsModal() {
       return;
     }
 
-    const missingFields = paymentData.collectData.fields
-      .filter(field => field.required && !collectedData[field.id]?.trim())
-      .map(field => field.name);
+    const missingFields = validateRequiredFields(
+      paymentData.collectData.fields,
+      collectedData,
+    );
 
     if (missingFields.length > 0) {
       setCollectDataError(`Please fill in: ${missingFields.join(', ')}`);
@@ -156,11 +161,12 @@ export default function PaymentOptionsModal() {
       return;
     }
 
+    // Defensive validation for payment flows
     if (paymentData.collectData) {
-      const missingFields = paymentData.collectData.fields
-        .filter(field => field.required && !collectedData[field.id]?.trim())
-        .map(field => field.name);
-
+      const missingFields = validateRequiredFields(
+        paymentData.collectData.fields,
+        collectedData,
+      );
       if (missingFields.length > 0) {
         setActionsError(
           `Please fill in required fields: ${missingFields.join(', ')}`,

@@ -68,6 +68,7 @@ export default function Connections({ route }: Props) {
   const onDialogConnect = useCallback(
     (uri: string) => {
       setCopyDialogVisible(false);
+      // Timeout added because of an issue with modal lib
       setTimeout(() => {
         // Check if it's a payment link
         if (isPaymentLink(uri)) {

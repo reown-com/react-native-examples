@@ -1,8 +1,7 @@
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
-import { styles } from './styles';
 
 interface ErrorViewProps {
   message: string;
@@ -35,3 +34,41 @@ export function ErrorView({ message, onClose }: ErrorViewProps) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
+    paddingTop: 20,
+    paddingBottom: 20,
+    maxHeight: '80%',
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  errorContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  footerContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    alignItems: 'center',
+  },
+  closeButton: {
+    width: '100%',
+    height: 48,
+    borderRadius: 100,
+  },
+  closeButtonText: {
+    fontWeight: '600',
+    fontSize: 16,
+  },
+});

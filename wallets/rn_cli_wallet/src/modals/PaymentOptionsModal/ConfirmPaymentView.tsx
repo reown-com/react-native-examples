@@ -1,9 +1,8 @@
-import { View, Text, Image, ActivityIndicator } from 'react-native';
+import { View, Text, Image, ActivityIndicator, StyleSheet } from 'react-native';
 import type { PaymentOption } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
-import { styles } from './styles';
 import { formatAmount } from './utils';
 
 interface ConfirmPaymentViewProps {
@@ -107,3 +106,86 @@ export function ConfirmPaymentView({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
+    paddingTop: 20,
+    paddingBottom: 20,
+    maxHeight: '80%',
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  loadingContainer: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+  },
+  errorContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  confirmationContainer: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+  },
+  confirmIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginBottom: 12,
+  },
+  confirmAmount: {
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  confirmNetwork: {
+    fontSize: 14,
+    marginTop: 4,
+  },
+  actionsContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  actionsLabel: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  confirmButtonsContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    gap: 8,
+  },
+  approveButton: {
+    width: '100%',
+    height: 48,
+    borderRadius: 100,
+  },
+  approveButtonText: {
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  closeButton: {
+    width: '100%',
+    height: 48,
+    borderRadius: 100,
+  },
+  closeButtonText: {
+    fontWeight: '600',
+    fontSize: 16,
+  },
+});

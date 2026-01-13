@@ -4,13 +4,14 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  StyleSheet,
 } from 'react-native';
 import type { PaymentOption, PaymentInfo } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
-import { styles } from './styles';
 import { formatAmount } from './utils';
+import { MerchantInfo } from './MerchantInfo';
 
 interface PaymentOptionsViewProps {
   info?: PaymentInfo;
@@ -33,32 +34,7 @@ export function PaymentOptionsView({
         Payment Request
       </Text>
 
-      {/* Merchant Info */}
-      {info?.merchant && (
-        <View style={styles.merchantContainer}>
-          {info.merchant.iconUrl && (
-            <Image
-              source={{ uri: info.merchant.iconUrl }}
-              style={styles.merchantIcon}
-            />
-          )}
-          <Text style={[styles.merchantName, { color: Theme['fg-100'] }]}>
-            {info.merchant.name}
-          </Text>
-        </View>
-      )}
-
-      {/* Amount */}
-      {info?.amount && (
-        <View style={styles.amountContainer}>
-          <Text style={[styles.amountValue, { color: Theme['fg-100'] }]}>
-            ${formatAmount(info.amount.value, info.amount.display.decimals, 2)}
-          </Text>
-          <Text style={[styles.amountLabel, { color: Theme['fg-200'] }]}>
-            {info.amount.display.assetName}
-          </Text>
-        </View>
-      )}
+      <MerchantInfo info={info} showAssetName />
 
       {/* Payment Options */}
       <Text style={[styles.sectionTitle, { color: Theme['fg-100'] }]}>
@@ -115,3 +91,77 @@ export function PaymentOptionsView({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
+    paddingTop: 20,
+    paddingBottom: 20,
+    maxHeight: '80%',
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 12,
+  },
+  optionsContainer: {
+    paddingHorizontal: 20,
+    maxHeight: 300,
+  },
+  optionCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 8,
+  },
+  optionInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  optionIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 12,
+  },
+  optionDetails: {
+    flex: 1,
+  },
+  optionAmount: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  optionNetwork: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  optionEta: {
+    fontSize: 12,
+  },
+  footerContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    alignItems: 'center',
+  },
+  closeButton: {
+    width: '100%',
+    height: 48,
+    borderRadius: 100,
+  },
+  closeButtonText: {
+    fontWeight: '600',
+    fontSize: 16,
+  },
+});

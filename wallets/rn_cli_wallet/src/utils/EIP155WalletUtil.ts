@@ -3,12 +3,10 @@ import { storage } from './storage';
 import SettingsStore from '@/store/SettingsStore';
 
 export let wallet1: EIP155Lib;
-export let wallet2: EIP155Lib;
 export let eip155Wallets: Record<string, EIP155Lib>;
 export let eip155Addresses: string[];
 
 let address1: string;
-// let address2: string;
 
 export async function createOrRestoreEIP155Wallet() {
   const mnemonic1 = await storage.getItem('EIP155_MNEMONIC_1');

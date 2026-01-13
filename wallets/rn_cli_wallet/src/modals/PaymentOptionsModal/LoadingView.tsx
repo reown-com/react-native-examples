@@ -1,7 +1,6 @@
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
-import { styles } from './styles';
 
 interface LoadingViewProps {
   message?: string;
@@ -21,3 +20,22 @@ export function LoadingView({ message }: LoadingViewProps) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
+    paddingTop: 20,
+    paddingBottom: 20,
+    maxHeight: '80%',
+  },
+  loadingContainer: {
+    padding: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+  },
+});

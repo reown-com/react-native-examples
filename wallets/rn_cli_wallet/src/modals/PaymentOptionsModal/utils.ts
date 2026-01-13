@@ -36,6 +36,16 @@ export function isValidDateOfBirth(dateStr: string): boolean {
   );
 }
 
+// Validate required fields and return missing field names
+export function validateRequiredFields(
+  fields: { id: string; name: string; required?: boolean }[],
+  data: Record<string, string>,
+): string[] {
+  return fields
+    .filter(field => field.required && !data[field.id]?.trim())
+    .map(field => field.name);
+}
+
 // Format amount with decimals
 export function formatAmount(
   value: string,

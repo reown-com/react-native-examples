@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Config from 'react-native-config';
 
 import PayStore from '@/store/PayStore';
@@ -13,16 +13,9 @@ const PAY_CONFIG = {
 };
 
 export default function useInitializePaySDK() {
-  const [initialized, setInitialized] = useState(false);
-
   useEffect(() => {
-    if (initialized) {
-      return;
+    if (!PayStore.isAvailable()) {
+      PayStore.initialize(PAY_CONFIG);
     }
-
-    PayStore.initialize(PAY_CONFIG);
-    setInitialized(PayStore.isAvailable());
-  }, [initialized]);
-
-  return initialized;
+  }, []);
 }
