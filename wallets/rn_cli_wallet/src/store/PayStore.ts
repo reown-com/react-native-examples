@@ -1,32 +1,32 @@
-import { PayClient } from '@walletconnect/pay';
-import type { PayClientOptions } from '@walletconnect/pay';
+import { WalletConnectPay } from '@walletconnect/pay';
+import type { WalletConnectPayOptions } from '@walletconnect/pay';
 
-type PayClientInstance = InstanceType<typeof PayClient>;
+type WalletConnectPayInstance = InstanceType<typeof WalletConnectPay>;
 
 // Store client outside of valtio proxy since class instances don't work well with proxies
-let clientInstance: PayClientInstance | null = null;
+let clientInstance: WalletConnectPayInstance | null = null;
 
 const PayStore = {
-  initialize(options: PayClientOptions) {
+  initialize(options: WalletConnectPayOptions) {
     // Check availability at call time, not import time
-    if (!PayClient.isAvailable()) {
+    if (!WalletConnectPay.isAvailable()) {
       console.warn('[PayStore] Native provider not available');
       return;
     }
 
     try {
-      clientInstance = new PayClient(options);
+      clientInstance = new WalletConnectPay(options);
       console.log(
-        '[PayStore] PayClient initialized with projectId:',
+        '[PayStore] WalletConnectPay initialized with projectId:',
         clientInstance.projectId,
       );
     } catch (error) {
-      console.error('[PayStore] Failed to initialize PayClient:', error);
+      console.error('[PayStore] Failed to initialize WalletConnectPay:', error);
       clientInstance = null;
     }
   },
 
-  getClient(): PayClientInstance | null {
+  getClient(): WalletConnectPayInstance | null {
     return clientInstance;
   },
 

@@ -4143,9 +4143,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/pay@npm:0.0.0-canary.1":
-  version: 0.0.0-canary.1
-  resolution: "@walletconnect/pay@npm:0.0.0-canary.1"
+"@walletconnect/pay@npm:0.0.0-canary.2":
+  version: 0.0.0-canary.2
+  resolution: "@walletconnect/pay@npm:0.0.0-canary.2"
   dependencies:
     "@walletconnect/logger": 3.0.1
     "@walletconnect/types": 2.23.1
@@ -4155,13 +4155,13 @@ __metadata:
   peerDependenciesMeta:
     react-native:
       optional: true
-  checksum: 2b479b02f46212cffd175ebc076512461b92b7d72c342eb1f60692ea68accc14cfca85ef64d71ac3287cb5d9a1f5e75995f9402be34be29855552923ea7647a8
+  checksum: cf12b336c0a165bed3fcce4ec0ce418c8971df62df1950078789f94b81dabb9bd03939e99cf02a9c441004732157d0ff0e1333500511967f7046c15fe7a4ad53
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.23.1-canary.1":
-  version: 2.23.1-canary.1
-  resolution: "@walletconnect/react-native-compat@npm:2.23.1-canary.1"
+"@walletconnect/react-native-compat@npm:2.23.2-canary.1":
+  version: 2.23.2-canary.1
+  resolution: "@walletconnect/react-native-compat@npm:2.23.2-canary.1"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -4175,7 +4175,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: ed6bfd844e375d664b5c298660d50ee3067c2e095b5d3eb7c072abb1ed51ef29aa233db7e9657c1568420cba037502daa75e32c2b4649a9162e8416f490535c5
+  checksum: ba99af3b25caadafaab8d014f8c9ab6a7815a44729d3ead8f4d30b4d10e2c77abe8ae22fb17f9e877b71ed871b596f97975fa92e1cbd6db80e867e56d1a82328
   languageName: node
   linkType: hard
 
@@ -4388,8 +4388,8 @@ __metadata:
     "@types/lodash.clonedeep": ^4.5.9
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
-    "@walletconnect/pay": 0.0.0-canary.1
-    "@walletconnect/react-native-compat": 2.23.1-canary.1
+    "@walletconnect/pay": 0.0.0-canary.2
+    "@walletconnect/react-native-compat": 2.23.2-canary.1
     babel-plugin-module-resolver: ^5.0.0
     bip39: 3.1.0
     dayjs: 1.11.11
