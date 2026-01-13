@@ -4,7 +4,7 @@ permissions:
   id-token: write
   contents: read
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       build-for-simulator:
@@ -18,12 +18,12 @@ jobs:
     uses: ./.github/workflows/release-ios-base.yaml
     with:
       name: WalletKit React Native
-      root-path: 'wallets/rn_cli_wallet'
-      release-type: 'internal'
-      scheme-name: 'RNWallet-Internal'
-      bundle-id: 'com.walletconnect.web3wallet.rnsample.internal'
-      apple-id: '6499165794'
-      project-type: 'wallet'
+      root-path: "wallets/rn_cli_wallet"
+      release-type: "internal"
+      scheme-name: "RNWallet-Internal"
+      bundle-id: "com.walletconnect.web3wallet.rnsample.internal"
+      apple-id: "6499165794"
+      project-type: "wallet"
       build-for-simulator: ${{ inputs.build-for-simulator }}
       upload-to-bucket: ${{ inputs.build-for-simulator }}
     secrets:
@@ -43,3 +43,4 @@ jobs:
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
       testflight-url: ${{ vars.TESTFLIGHT_WALLETKIT_INTERNAL_URL }}
+      pay-api-key: ${{ secrets.ENV_PAY_API_KEY }}

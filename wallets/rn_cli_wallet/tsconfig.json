@@ -17,7 +17,8 @@
       "@/modals/*": ["./src/modals/*"],
       "@/utils/*": ["./src/utils/*"],
       "@/provider/*": ["./src/provider/*"],
-      "@/store/*": ["./src/store/*"]
+      "@/store/*": ["./src/store/*"],
+      "@/lib/*": ["./src/lib/*"]
     }
   }
 }
