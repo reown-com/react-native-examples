@@ -159,9 +159,7 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
-  collectDataScrollView: {
-    flexShrink: 1,
-  },
+  collectDataContentContainer: {},
   collectDataScrollContent: {
     paddingHorizontal: 20,
     paddingBottom: 16,

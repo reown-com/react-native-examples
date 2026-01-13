@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useSnapshot } from 'valtio';
+import Toast from 'react-native-toast-message';
 
 import ModalStore from '@/store/ModalStore';
 import PayStore from '@/store/PayStore';
@@ -226,6 +227,12 @@ export default function PaymentOptionsModal() {
 
         console.log('[Pay] Payment confirmed:', confirmResult);
       }
+
+      Toast.show({
+        type: 'success',
+        text1: 'Payment Successful',
+        text2: 'Your payment has been confirmed',
+      });
 
       ModalStore.close();
     } catch (error: any) {
