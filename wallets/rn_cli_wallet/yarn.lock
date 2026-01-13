@@ -4409,6 +4409,7 @@ __metadata:
     react-native-get-random-values: 1.11.0
     react-native-mmkv: 3.3.3
     react-native-modal: 14.0.0-rc.1
+    react-native-nfc-manager: ^3.17.2
     react-native-quick-base64: 2.2.2
     react-native-quick-crypto: 0.7.17
     react-native-safe-area-context: 5.6.1
@@ -10465,6 +10466,18 @@ __metadata:
     react: "*"
     react-native: ">=0.70.0"
   checksum: 19bca96dde148c14ed4cc0e52fedd0a12ca952815e4dcbea31d0a98962d75dc3c011c677f5f9cd15f2b88f78ccd03134647b280724bc6de148c25e28eea1a7e4
+  languageName: node
+  linkType: hard
+
+"react-native-nfc-manager@npm:^3.17.2":
+  version: 3.17.2
+  resolution: "react-native-nfc-manager@npm:3.17.2"
+  peerDependencies:
+    "@expo/config-plugins": "*"
+  peerDependenciesMeta:
+    "@expo/config-plugins":
+      optional: true
+  checksum: 7435840e0ddd190b442dbe4972e318da2423c953648f917ba515d99a92aba27a477d738fb0f75db89bc64fc52201b9e6880d74e5c7f800d75195c77f4c20cde3
   languageName: node
   linkType: hard
 

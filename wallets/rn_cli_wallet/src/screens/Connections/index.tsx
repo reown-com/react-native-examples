@@ -114,6 +114,17 @@ export default function Connections({ route }: Props) {
     }
   }, [route.params?.uri, handlePaymentLink]);
 
+  const handleNfcUri = useCallback(
+    (uri: string) => {
+      if (isPaymentLink(uri)) {
+        handlePaymentLink(uri);
+      } else {
+        pair(uri);
+      }
+    },
+    [handlePaymentLink],
+  );
+
   return (
     <>
       <Sessions />
@@ -122,7 +133,10 @@ export default function Connections({ route }: Props) {
         onCancel={onDialogCancel}
         visible={copyDialogVisible}
       />
-      <ActionButtons setCopyDialog={setCopyDialogVisible} />
+      <ActionButtons
+        setCopyDialog={setCopyDialogVisible}
+        onNfcUri={handleNfcUri}
+      />
     </>
   );
 }
