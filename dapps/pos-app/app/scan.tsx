@@ -10,6 +10,12 @@ import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { dollarsToCents } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
+import {
+  isHceSupported,
+  isNfcAvailable,
+  startHceBroadcast,
+  stopHceBroadcast,
+} from "@/utils/nfc-hce";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
@@ -29,12 +35,35 @@ export default function ScanScreen() {
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [nfcEnabled, setNfcEnabled] = useState(false);
 
   const { deviceId, merchantId } = useSettingsStore((state) => state);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
   const { amount } = params;
+
+  useEffect(() => {
+    if (isHceSupported()) {
+      isNfcAvailable().then(setNfcEnabled);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (qrUri && nfcEnabled) {
+      startHceBroadcast(qrUri).then((success) => {
+        if (success) {
+          addLog("info", "NFC broadcast started", "scan", "startHceBroadcast");
+        }
+      });
+    }
+
+    return () => {
+      if (nfcEnabled) {
+        stopHceBroadcast();
+      }
+    };
+  }, [qrUri, nfcEnabled, addLog]);
 
   const onSuccess = useCallback(() => {
     router.dismiss();
@@ -62,6 +91,7 @@ export default function ScanScreen() {
   );
 
   const handleOnClosePress = () => {
+    stopHceBroadcast();
     resetNavigation("/amount");
   };
 
@@ -170,7 +200,7 @@ export default function ScanScreen() {
             <ThemedText
               style={[styles.amountText, { color: Theme["text-tertiary"] }]}
             >
-              Scan to pay
+              {nfcEnabled ? "Scan or Tap to pay" : "Scan to pay"}
             </ThemedText>
             <ThemedText
               style={[
