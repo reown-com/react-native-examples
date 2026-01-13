@@ -1,3 +1,5 @@
+import { utils } from 'ethers';
+
 import EIP155Lib from '../lib/EIP155Lib';
 import { storage } from './storage';
 import SettingsStore from '@/store/SettingsStore';
@@ -39,11 +41,41 @@ export function loadEIP155Wallet(input: string): {
   wallet: EIP155Lib;
 } {
   const trimmedInput = input.trim();
-  const isPrivateKey =
+
+  // Validate input and determine type
+  const isPrivateKeyWith0x =
     trimmedInput.startsWith('0x') && trimmedInput.length === 66;
+  const isPrivateKeyWithout0x =
+    !trimmedInput.startsWith('0x') &&
+    trimmedInput.length === 64 &&
+    /^[0-9a-fA-F]+$/.test(trimmedInput);
+  const isPrivateKey = isPrivateKeyWith0x || isPrivateKeyWithout0x;
+
+  if (isPrivateKey) {
+    // Validate hex characters for private keys with 0x prefix
+    if (isPrivateKeyWith0x && !/^0x[0-9a-fA-F]{64}$/.test(trimmedInput)) {
+      throw new Error('Private key must contain only hexadecimal characters');
+    }
+  } else {
+    // Validate mnemonic
+    const words = trimmedInput.split(/\s+/).filter(w => w.length > 0);
+    if (![12, 15, 18, 21, 24].includes(words.length)) {
+      throw new Error(
+        `Mnemonic must be 12, 15, 18, 21, or 24 words (got ${words.length})`,
+      );
+    }
+    if (!utils.isValidMnemonic(trimmedInput)) {
+      throw new Error('Invalid mnemonic phrase');
+    }
+  }
+
+  // Normalize private key to include 0x prefix
+  const normalizedInput = isPrivateKeyWithout0x
+    ? `0x${trimmedInput}`
+    : trimmedInput;
 
   const newWallet = isPrivateKey
-    ? EIP155Lib.init({ privateKey: trimmedInput })
+    ? EIP155Lib.init({ privateKey: normalizedInput })
     : EIP155Lib.init({ mnemonic: trimmedInput });
 
   const newAddress = newWallet.getAddress();

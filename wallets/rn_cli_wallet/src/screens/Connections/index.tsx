@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 
-import { walletKit } from '@/utils/WalletKitUtil';
+import { walletKit, isPaymentLink } from '@/utils/WalletKitUtil';
 import Sessions from '@/screens/Connections/components/Sessions';
 import ActionButtons from '@/screens/Connections/components/ActionButtons';
 import { CopyURIDialog } from '@/components/CopyURIDialog';
@@ -10,11 +10,6 @@ import SettingsStore from '@/store/SettingsStore';
 import PayStore from '@/store/PayStore';
 
 type Props = ConnectionsStackScreenProps<'Connections'>;
-
-// Check if a URI is a WalletConnect Pay payment link
-function isPaymentLink(uri: string): boolean {
-  return uri.includes('pay.walletconnect.com') && uri.includes('pid=');
-}
 
 export default function Connections({ route }: Props) {
   const [copyDialogVisible, setCopyDialogVisible] = useState(false);
