@@ -18,7 +18,8 @@
       "infoPlist": {
         "NFCReaderUsageDescription": "This app requires NFC to send messages",
         "NSLocationWhenInUseUsageDescription": "This app requires location when using the camera",
-        "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts"
+        "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts",
+        "NSFaceIDUsageDescription": "Allow WPay to use Face ID for secure authentication"
       },
       "entitlements": {
         "com.apple.developer.nfc.readersession.formats": [
