@@ -18,8 +18,7 @@
       "infoPlist": {
         "NFCReaderUsageDescription": "This app requires NFC to send messages",
         "NSLocationWhenInUseUsageDescription": "This app requires location when using the camera",
-        "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts",
-        "NSFaceIDUsageDescription": "Allow WPay to use Face ID for secure authentication"
+        "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts"
       },
       "entitlements": {
         "com.apple.developer.nfc.readersession.formats": [
@@ -125,6 +124,13 @@
           "iosPermissions": [
             "Bluetooth"
           ]
+        }
+      ],
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true,
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
       ]
     ],
