@@ -38,13 +38,13 @@ jobs:
       project-type: 'wallet'
       output-path: ${{ inputs.release-type == 'internal' && 'wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk' || 'wallets/rn_cli_wallet/android/app/build/outputs/apk/release/app-release.apk' }}
       upload-to-bucket: ${{ inputs.e2e-build }}
+      firebase-app-id: ${{ inputs.release-type == 'internal' && vars.WALLETKIT_ANDROID_INTERNAL_FIREBASE_APP_ID || vars.WALLETKIT_ANDROID_PROD_FIREBASE_APP_ID }}
     secrets:
       env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
-      sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
+      sentry-file: ${{ secrets.WALLETKIT_SENTRY_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
-      firebase-app-id: ${{ inputs.release-type == 'internal' && secrets.W3W_ANDROID_INTERNAL_FIREBASE_APP_ID || secrets.W3W_ANDROID_PROD_FIREBASE_APP_ID }}
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-      keystore-name: ${{ inputs.release-type == 'internal' && secrets.WC_INTERNAL_KEYSTORE_NAME || vars.WC_PROD_KEYSTORE_NAME }}
+      keystore-name: ${{ inputs.release-type == 'internal' && vars.WC_INTERNAL_KEYSTORE_NAME || vars.WC_PROD_KEYSTORE_NAME }}
       keystore: ${{ inputs.release-type == 'internal' && secrets.WC_INTERNAL_KEYSTORE || secrets.WC_PROD_KEYSTORE }}
       google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
@@ -66,7 +66,7 @@ jobs:
       upload-to-bucket: ${{ inputs.e2e-build }}
     secrets:
       env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
-      sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
+      sentry-file: ${{ secrets.WALLETKIT_SENTRY_FILE }}
       apple-username: ${{ secrets.APPLE_USERNAME }}
       apple-key-id: ${{ secrets.APPLE_KEY_ID }}
       apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
@@ -75,7 +75,7 @@ jobs:
       match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
       match-git-url: ${{ secrets.MATCH_GIT_URL }}
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
-      google-services-file: ${{ inputs.release-type == 'internal' && secrets.W3W_IOS_INTERNAL_GOOGLE_SERVICES_FILE || secrets.W3W_IOS_PROD_GOOGLE_SERVICES_FILE }}
+      google-services-file: ${{ inputs.release-type == 'internal' && secrets.WALLETKIT_IOS_INTERNAL_GOOGLE_SERVICES_FILE || secrets.WALLETKIT_IOS_PROD_GOOGLE_SERVICES_FILE }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
       testflight-url: ${{ inputs.release-type == 'internal' && vars.TESTFLIGHT_WALLETKIT_INTERNAL_URL || vars.TESTFLIGHT_WALLETKIT_PROD_URL }}
