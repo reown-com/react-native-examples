@@ -64,17 +64,20 @@ bundle install
 
 ### Creating Certificates for a New App
 
-Use the provided script to create new certificates and provisioning profiles. The script handles creating a branch, running fastlane match, and merging via PR (required since the certificates repo has branch protection):
+Use the provided script to create new certificates and provisioning profiles. The script handles creating a branch, running fastlane match, and creating a PR (required since the certificates repo has branch protection):
 
 ```bash
 # Make the script executable (first time only)
 chmod +x scripts/create-certificates.sh
 
-# Create App Store certificates
+# Create App Store certificates (creates PR for manual review)
 ./scripts/create-certificates.sh <certificates_repo> <bundle_id> <apple_email> appstore
 
 # Create development certificates
 ./scripts/create-certificates.sh <certificates_repo> <bundle_id> <apple_email> development
+
+# Auto-merge the PR (skip manual review)
+./scripts/create-certificates.sh <certificates_repo> <bundle_id> <apple_email> appstore --auto-merge
 ```
 
 **Example:**
@@ -84,7 +87,7 @@ chmod +x scripts/create-certificates.sh
 ./scripts/create-certificates.sh reown-com/mobile-certificates com.reown.myapp dev@reown.com development
 ```
 
-> **Note:** Requires [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated.
+> **Note:** Requires [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated. By default, the script creates a PR that requires manual merge. Use `--auto-merge` to automatically merge.
 
 ### Downloading Certificates Locally
 
