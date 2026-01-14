@@ -125,17 +125,17 @@ auth.token=<your-auth-token>
 
 ### Google Services Files (for GitHub Secrets)
 
-**Android (`google-services.json`):** Store as plain text in GitHub Secrets - just copy/paste the JSON file content directly.
-
-**iOS (`GoogleService-Info.plist`):** Must be base64-encoded due to XML structure issues with shell parsing:
+Both Android and iOS Google Services files should be base64-encoded before storing in GitHub Secrets:
 
 ```bash
-# Encode plist to base64 (copies to clipboard on macOS)
-base64 -i /path/to/GoogleService-Info.plist | pbcopy
+# Android - encode google-services.json
+base64 -i /path/to/google-services.json | pbcopy
 
-# Or just output to terminal
-base64 -i /path/to/GoogleService-Info.plist
+# iOS - encode GoogleService-Info.plist  
+base64 -i /path/to/GoogleService-Info.plist | pbcopy
 ```
+
+The workflows will automatically decode them during the build process.
 
 ## Support
 
