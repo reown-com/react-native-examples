@@ -1,6 +1,8 @@
-# Stub workflow to enable dispatch from feature branches
-# Real implementation is on chore/ci-improvements branch
 name: Release AppKit
+
+permissions:
+  id-token: write
+  contents: read
 
 on:
   workflow_dispatch:
@@ -26,7 +28,52 @@ on:
         default: false
 
 jobs:
-  stub:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "This is a stub. Run from feature branch with --ref"
+  release-android:
+    if: ${{ inputs.platform == 'android' }}
+    uses: ./.github/workflows/release-android-base.yaml
+    with:
+      name: AppKit React Native
+      root-path: 'dapps/W3MWagmi'
+      release-type: ${{ inputs.release-type }}
+      project-type: 'dapp'
+      output-path: ${{ inputs.release-type == 'internal' && 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk' || 'dapps/W3MWagmi/android/app/build/outputs/apk/release/app-release.apk' }}
+      upload-to-bucket: ${{ inputs.e2e-build }}
+    secrets:
+      env-file: ${{ secrets.APPKIT_ENV_FILE }}
+      sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
+      secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+      firebase-app-id: ${{ inputs.release-type == 'internal' && secrets.W3M_WAGMI_ANDROID_INTERNAL_FIREBASE_APP_ID || secrets.APPKIT_ANDROID_PROD_FIREBASE_APP_ID }}
+      gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+      keystore-name: ${{ inputs.release-type == 'internal' && secrets.WC_INTERNAL_KEYSTORE_NAME || vars.WC_PROD_KEYSTORE_NAME }}
+      keystore: ${{ inputs.release-type == 'internal' && secrets.WC_INTERNAL_KEYSTORE || secrets.WC_PROD_KEYSTORE }}
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      firebase-url: ${{ inputs.release-type == 'internal' && vars.FIREBASE_APPKIT_INTERNAL_URL || vars.FIREBASE_APPKIT_PROD_URL }}
+
+  release-ios:
+    if: ${{ inputs.platform == 'ios' }}
+    uses: ./.github/workflows/release-ios-base.yaml
+    with:
+      name: AppKit React Native
+      root-path: 'dapps/W3MWagmi'
+      release-type: ${{ inputs.release-type }}
+      scheme-name: ${{ inputs.release-type == 'internal' && 'W3MWagmi Internal' || 'W3MWagmi' }}
+      bundle-id: ${{ inputs.release-type == 'internal' && 'com.walletconnect.web3modal.rnsample.internal' || 'com.walletconnect.web3modal.rnsample' }}
+      apple-id: ${{ inputs.release-type == 'internal' && '6479817037' || '6446700301' }}
+      project-type: 'dapp'
+      build-for-simulator: ${{ inputs.e2e-build }}
+      upload-to-bucket: ${{ inputs.e2e-build }}
+    secrets:
+      env-file: ${{ secrets.APPKIT_ENV_FILE }}
+      sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
+      apple-username: ${{ secrets.APPLE_USERNAME }}
+      apple-key-id: ${{ secrets.APPLE_KEY_ID }}
+      apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
+      apple-issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
+      match-username: ${{ secrets.MATCH_USERNAME }}
+      match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+      match-git-url: ${{ secrets.MATCH_GIT_URL }}
+      match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      testflight-url: ${{ inputs.release-type == 'internal' && vars.TESTFLIGHT_APPKIT_INTERNAL_URL || vars.TESTFLIGHT_APPKIT_PROD_URL }}

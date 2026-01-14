@@ -4,12 +4,7 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 apply plugin: "com.google.gms.google-services"
 
-project.ext.defaultEnvFile = ".env.debug"
-project.ext.envConfigFiles = [
-    debug: ".env.debug",
-    internal: ".env.internal",
-    release: ".env.production",
-]
+project.ext.defaultEnvFile = ".env"
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
