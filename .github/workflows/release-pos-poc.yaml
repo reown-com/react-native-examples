@@ -51,7 +51,6 @@ jobs:
       apple-id: '6757806391'
       project-type: 'dapp'
       package-manager: 'npm'
-      testflight-groups: 'External'
       is-expo-project: true
     secrets:
       env-file: ${{ secrets.POC_POS_ENV_FILE }}
