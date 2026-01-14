@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "WPay",
-    "slug": "mobile-pos",
+    "slug": "mobile-pos-poc",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/app_icons/icon.png",
@@ -10,20 +10,14 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.reown.mobilepos",
+      "bundleIdentifier": "com.walletconnect.mobilepos.poc",
       "appleTeamId": "W5R8AG9K22",
       "config": {
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NFCReaderUsageDescription": "This app requires NFC to send messages",
         "NSLocationWhenInUseUsageDescription": "This app requires location when using the camera",
         "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts"
-      },
-      "entitlements": {
-        "com.apple.developer.nfc.readersession.formats": [
-          "TAG"
-        ]
       }
     },
     "android": {
@@ -35,9 +29,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.reown.mobilepos",
+      "package": "com.walletconnect.mobilepos.poc",
       "permissions": [
-        "android.permission.NFC",
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
         "android.permission.BLUETOOTH_CONNECT",
@@ -67,7 +60,7 @@
         {
           "url": "https://sentry.io/",
           "note": "Use SENTRY_AUTH_TOKEN env to authenticate with Sentry.",
-          "project": "mobile-pos-react-native",
+          "project": "mobile-pos-poc",
           "organization": "walletconnect"
         }
       ],
@@ -124,13 +117,6 @@
           "iosPermissions": [
             "Bluetooth"
           ]
-        }
-      ],
-      [
-        "expo-secure-store",
-        {
-          "configureAndroidBackup": true,
-          "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
       ]
     ],
