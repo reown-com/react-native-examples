@@ -1,4 +1,5 @@
 name: Release Mobile POS
+run-name: "Mobile POS - ${{ inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }}"
 
 permissions:
   id-token: write

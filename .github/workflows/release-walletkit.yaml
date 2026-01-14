@@ -1,4 +1,5 @@
 name: Release WalletKit
+run-name: "WalletKit - ${{ inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }} (${{ inputs.release-type }})"
 
 permissions:
   id-token: write
