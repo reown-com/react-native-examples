@@ -1,0 +1,128 @@
+{
+  "expo": {
+    "name": "WPay",
+    "slug": "mobile-pos-poc",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/app_icons/icon.png",
+    "scheme": "WPay",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.walletconnect.mobilepos.poc",
+      "appleTeamId": "W5R8AG9K22",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app requires location when using the camera",
+        "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/app_icons/android_icon_foreground.png",
+        "backgroundImage": "./assets/app_icons/android_icon_background.png",
+        "monochromeImage": "./assets/app_icons/android_icon_monochrome.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.walletconnect.mobilepos.poc",
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_ADVERTISE",
+        "android.permission.USB_PERMISSION"
+      ],
+      "versionCode": 14
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/app_icons/icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/app_icons/splash_icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#000000"
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "note": "Use SENTRY_AUTH_TOKEN env to authenticate with Sentry.",
+          "project": "mobile-pos-poc",
+          "organization": "walletconnect"
+        }
+      ],
+      "./scripts/withAndroidReleaseSigningConfig.js",
+      [
+        "expo-font",
+        {
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "KH Teka",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/KHTeka-Light.otf",
+                    "weight": 300
+                  },
+                  {
+                    "path": "./assets/fonts/KHTeka-Regular.otf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/KHTeka-Medium.otf",
+                    "weight": 500
+                  }
+                ]
+              }
+            ]
+          },
+          "ios": {
+            "fonts": [
+              "./assets/fonts/KHTeka-Light.otf",
+              "./assets/fonts/KHTeka-Regular.otf",
+              "./assets/fonts/KHTeka-Medium.otf"
+            ]
+          }
+        }
+      ],
+      [
+        "expo-asset",
+        {
+          "assets": [
+            "./assets/images",
+            "./assets/images/tokens",
+            "./assets/images/chains",
+            "./assets/images/payment_methods",
+            "./assets/images/variants",
+            "./assets/app_icons"
+          ]
+        }
+      ],
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": [
+            "Bluetooth"
+          ]
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
