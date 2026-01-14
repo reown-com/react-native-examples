@@ -1,22 +1,24 @@
-import {useSnapshot} from 'valtio';
-import {useEffect, useState} from 'react';
-import {Text, View, Alert, ScrollView} from 'react-native';
+import { useSnapshot } from 'valtio';
+import { useEffect, useState } from 'react';
+import { Text, View, Alert, ScrollView } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {getVersion, getBuildNumber} from 'react-native-device-info';
+import { getVersion, getBuildNumber } from 'react-native-device-info';
 
-import {eip155Wallets} from '@/utils/EIP155WalletUtil';
+import { eip155Wallets } from '@/utils/EIP155WalletUtil';
 import SettingsStore from '@/store/SettingsStore';
-import {Card} from '@/components/Card';
-import {useTheme} from '@/hooks/useTheme';
+import ModalStore from '@/store/ModalStore';
+import { Card } from '@/components/Card';
+import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
-import {SettingsStackScreenProps} from '@/utils/TypesUtil';
+import { SettingsStackScreenProps } from '@/utils/TypesUtil';
 import { storage } from '@/utils/storage';
 
 type Props = SettingsStackScreenProps<'Settings'>;
 
-export default function Settings({navigation}: Props) {
+export default function Settings({ navigation }: Props) {
   const Theme = useTheme();
-  const {eip155Address, suiAddress, tonAddress, tronAddress, socketStatus} = useSnapshot(SettingsStore.state);
+  const { eip155Address, suiAddress, tonAddress, tronAddress, socketStatus } =
+    useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
 
   useEffect(() => {
@@ -38,8 +40,9 @@ export default function Settings({navigation}: Props) {
     <ScrollView
       style={[styles.container]}
       contentContainerStyle={[styles.content]}
-      contentInsetAdjustmentBehavior="automatic">
-      <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Account</Text>
+      contentInsetAdjustmentBehavior="automatic"
+    >
+      <Text style={[styles.subtitle, { color: Theme['fg-100'] }]}>Account</Text>
       <View style={styles.sectionContainer}>
         <Card
           title="EVM Address"
@@ -68,8 +71,13 @@ export default function Settings({navigation}: Props) {
           }
           value={eip155Wallets[eip155Address]?.getMnemonic?.() ?? ''}
         />
+        <Card
+          title="Import EVM Wallet"
+          onPress={() => ModalStore.open('ImportWalletModal', {})}
+          icon="chevronRight"
+        />
       </View>
-      <Text style={[styles.subtitle, {color: Theme['fg-100']}]}>Device</Text>
+      <Text style={[styles.subtitle, { color: Theme['fg-100'] }]}>Device</Text>
       <View style={styles.sectionContainer}>
         <Card
           title="Client ID"

@@ -1,9 +1,9 @@
-import {useState} from 'react';
-import {Dimensions, StyleSheet, TextInput, View} from 'react-native';
+import { useState } from 'react';
+import { Dimensions, StyleSheet, TextInput, View } from 'react-native';
 import Dialog from 'react-native-dialog';
 
-import {useTheme} from '@/hooks/useTheme';
-import {ConnectButton} from './ConnectButton';
+import { useTheme } from '@/hooks/useTheme';
+import { ConnectButton } from './ConnectButton';
 
 interface copyURIDialogProps {
   visible: boolean;
@@ -41,16 +41,17 @@ export function CopyURIDialog({
       useNativeDriver
       contentStyle={[
         styles.mainContainer,
-        {maxWidth: windowWidth * 0.9, backgroundColor: Theme['bg-175']},
-      ]}>
+        { maxWidth: windowWidth * 0.9, backgroundColor: Theme['bg-175'] },
+      ]}
+    >
       <View>
-        <Dialog.Title style={[styles.titleText, {color: Theme['fg-100']}]}>
-          Enter a WalletConnect URI
+        <Dialog.Title style={[styles.titleText, { color: Theme['fg-100'] }]}>
+          Paste URI or Payment Link
         </Dialog.Title>
         <Dialog.Description
-          style={[styles.descriptionText, {color: Theme['fg-150']}]}>
-          To get the URI press the copy to clipboard button from your dapp's
-          WalletConnect interface.
+          style={[styles.descriptionText, { color: Theme['fg-150'] }]}
+        >
+          Paste a WalletConnect URI or a WalletConnect Pay link to continue.
         </Dialog.Description>
 
         <View style={styles.flexRow}>
@@ -66,7 +67,7 @@ export function CopyURIDialog({
             ]}
             placeholderTextColor={Theme['fg-300']}
             onChangeText={setUri}
-            placeholder="wc://a13aef..."
+            placeholder="wc://... or https://pay.walletconnect.com/..."
             clearButtonMode="always"
             enablesReturnKeyAutomatically
             autoCapitalize="none"
@@ -80,7 +81,7 @@ export function CopyURIDialog({
         />
         <View style={styles.cancelContainer}>
           <Dialog.Button
-            style={[styles.cancelText, {color: Theme['accent-100']}]}
+            style={[styles.cancelText, { color: Theme['accent-100'] }]}
             label="Cancel"
             onPress={handleCancel}
           />

@@ -73,3 +73,7 @@ yarn ios
 If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly.
 
 This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+
+## TODOs
+
+- [ ] Unify wallet addresses into a single source of truth (currently split between module-level exports in *WalletUtil files and SettingsStore)

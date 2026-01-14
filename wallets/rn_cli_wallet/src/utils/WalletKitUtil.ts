@@ -30,6 +30,20 @@ export async function createWalletKit(relayerRegionURL: string) {
   }
 }
 
+// Check if a URI is a WalletConnect Pay payment link
+export function isPaymentLink(uri: string): boolean {
+  try {
+    const url = new URL(uri);
+    const hostname = url.hostname.toLowerCase();
+    const isPayHost =
+      hostname === 'pay.walletconnect.com' ||
+      hostname === 'www.pay.walletconnect.com';
+    return isPayHost && url.searchParams.has('pid');
+  } catch {
+    return false;
+  }
+}
+
 export async function updateSignClientChainId(
   chainId: string,
   address: string,

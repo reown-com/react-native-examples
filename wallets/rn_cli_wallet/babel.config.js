@@ -20,6 +20,7 @@ module.exports = {
           '@/utils': './src/utils',
           '@/provider': './src/provider',
           '@/store': './src/store',
+          '@/lib': './src/lib',
         },
       },
     ],

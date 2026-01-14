@@ -1,6 +1,6 @@
-import {useSnapshot} from 'valtio';
-import {useCallback, useMemo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import { useSnapshot } from 'valtio';
+import { useCallback, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import RNModal from 'react-native-modal';
 
 import ModalStore from '@/store/ModalStore';
@@ -8,7 +8,7 @@ import SessionProposalModal from '@/modals/SessionProposalModal';
 import SessionSignModal from '@/modals/SessionSignModal';
 import SessionSendTransactionModal from '@/modals/SessionSendTransactionModal';
 import SessionSignTypedDataModal from '@/modals/SessionSignTypedDataModal';
-import {LoadingModal} from '@/modals/LoadingModal';
+import { LoadingModal } from '@/modals/LoadingModal';
 import SessionAuthenticateModal from '@/modals/SessionAuthenticateModal';
 import SessionSignSuiPersonalMessageModal from '@/modals/SessionSuiSignPersonalMessageModal';
 import SessionSignSuiTransactionModal from '@/modals/SessionSuiSignTransactionModal';
@@ -16,9 +16,11 @@ import SessionSignAndExecuteSuiTransactionModal from '@/modals/SessionSuiSignAnd
 import SessionTonSendMessageModal from '@/modals/SessionTonSendMessageModal';
 import SessionTonSignDataModal from '@/modals/SessionTonSignDataModal';
 import SessionSignTronModal from '@/modals/SessionSignTronModal';
+import PaymentOptionsModal from '@/modals/PaymentOptionsModal';
+import ImportWalletModal from '@/modals/ImportWalletModal';
 
 export default function Modal() {
-  const {open, view} = useSnapshot(ModalStore.state);
+  const { open, view } = useSnapshot(ModalStore.state);
   // handle the modal being closed by click outside
   const onClose = useCallback(() => {
     if (open) {
@@ -47,11 +49,15 @@ export default function Modal() {
       case 'SessionSuiSignAndExecuteTransactionModal':
         return <SessionSignAndExecuteSuiTransactionModal />;
       case 'SessionTonSendMessageModal':
-          return <SessionTonSendMessageModal />
+        return <SessionTonSendMessageModal />;
       case 'SessionTonSignDataModal':
-          return <SessionTonSignDataModal />
+        return <SessionTonSignDataModal />;
       case 'SessionSignTronModal':
-          return <SessionSignTronModal />
+        return <SessionSignTronModal />;
+      case 'PaymentOptionsModal':
+        return <PaymentOptionsModal />;
+      case 'ImportWalletModal':
+        return <ImportWalletModal />;
       default:
         return <View />;
     }
@@ -67,7 +73,8 @@ export default function Modal() {
       onBackdropPress={onClose}
       onModalHide={onClose}
       style={styles.modal}
-      isVisible={open}>
+      isVisible={open}
+    >
       {componentView}
     </RNModal>
   );

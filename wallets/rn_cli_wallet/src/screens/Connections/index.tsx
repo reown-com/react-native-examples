@@ -1,31 +1,87 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
-import {walletKit} from '@/utils/WalletKitUtil';
+import { walletKit, isPaymentLink } from '@/utils/WalletKitUtil';
 import Sessions from '@/screens/Connections/components/Sessions';
 import ActionButtons from '@/screens/Connections/components/ActionButtons';
-import {CopyURIDialog} from '@/components/CopyURIDialog';
-import {ConnectionsStackScreenProps} from '@/utils/TypesUtil';
+import { CopyURIDialog } from '@/components/CopyURIDialog';
+import { ConnectionsStackScreenProps } from '@/utils/TypesUtil';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
+import PayStore from '@/store/PayStore';
 
 type Props = ConnectionsStackScreenProps<'Connections'>;
 
-export default function Connections({route}: Props) {
+export default function Connections({ route }: Props) {
   const [copyDialogVisible, setCopyDialogVisible] = useState(false);
 
-  const onDialogConnect = (uri: string) => {
-    setCopyDialogVisible(false);
-    setTimeout(() => {
-      pair(uri);
-    }, 1000);
-  };
+  const handlePaymentLink = useCallback(async (paymentLink: string) => {
+    const payClient = PayStore.getClient();
+    console.log(
+      '[Pay] PayClient available:',
+      PayStore.isAvailable(),
+      payClient,
+    );
+    if (!payClient) {
+      console.error('[Pay] PayClient not initialized');
+      ModalStore.open('LoadingModal', {
+        errorMessage: 'Pay SDK not initialized. Please restart the app.',
+      });
+      return;
+    }
+
+    // Show loading modal
+    ModalStore.open('PaymentOptionsModal', {
+      loadingMessage: 'Fetching payment options...',
+    });
+
+    try {
+      // Get wallet accounts - Base only for testing
+      const eip155Address = SettingsStore.state.eip155Address;
+      const accounts = eip155Address ? [`eip155:8453:${eip155Address}`] : [];
+
+      console.log('[Pay] Fetching payment options for:', paymentLink);
+      console.log('[Pay] Accounts:', accounts);
+
+      const paymentOptions = await payClient.getPaymentOptions({
+        paymentLink,
+        accounts,
+        includePaymentInfo: true,
+      });
+
+      console.log('[Pay] Payment options received:', paymentOptions);
+
+      // Show payment options modal
+      ModalStore.open('PaymentOptionsModal', { paymentOptions });
+    } catch (error: any) {
+      console.error('[Pay] Error fetching payment options:', error);
+      ModalStore.open('PaymentOptionsModal', {
+        errorMessage: error?.message || 'Failed to fetch payment options',
+      });
+    }
+  }, []);
+
+  const onDialogConnect = useCallback(
+    (uri: string) => {
+      setCopyDialogVisible(false);
+      // Timeout added because of an issue with modal lib
+      setTimeout(() => {
+        // Check if it's a payment link
+        if (isPaymentLink(uri)) {
+          handlePaymentLink(uri);
+        } else {
+          pair(uri);
+        }
+      }, 500);
+    },
+    [handlePaymentLink],
+  );
 
   const onDialogCancel = () => {
     setCopyDialogVisible(false);
   };
 
   async function pair(uri: string) {
-    ModalStore.open('LoadingModal', {loadingMessage: 'Pairing...'});
+    ModalStore.open('LoadingModal', { loadingMessage: 'Pairing...' });
 
     /**
      * Wait for settings walletKit to be initialized before calling pair
@@ -34,7 +90,7 @@ export default function Connections({route}: Props) {
 
     try {
       setCopyDialogVisible(false);
-      await walletKit.pair({uri});
+      await walletKit.pair({ uri });
     } catch (error: any) {
       ModalStore.open('LoadingModal', {
         errorMessage: error?.message || 'There was an error pairing',
@@ -45,9 +101,14 @@ export default function Connections({route}: Props) {
   useEffect(() => {
     // URI received from QR code scanner
     if (route.params?.uri) {
-      pair(route.params.uri);
+      const uri = route.params.uri;
+      if (isPaymentLink(uri)) {
+        handlePaymentLink(uri);
+      } else {
+        pair(uri);
+      }
     }
-  }, [route.params?.uri]);
+  }, [route.params?.uri, handlePaymentLink]);
 
   return (
     <>
