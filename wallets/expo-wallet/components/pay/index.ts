@@ -1,0 +1,9 @@
+export { PayHeader } from './pay-header';
+export { IntroStep } from './intro-step';
+export { CollectNameStep } from './collect-name-step';
+export { CollectDobStep } from './collect-dob-step';
+export { CollectPobStep } from './collect-pob-step';
+export { ConfirmStep } from './confirm-step';
+export { ProcessingStep } from './processing-step';
+export { ResultStep } from './result-step';
+export { MerchantCard } from './merchant-card';

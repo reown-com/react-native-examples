@@ -11,7 +11,7 @@ declare module 'react-native-quick-crypto' {
     salt: Buffer | Uint8Array,
     iterations: number,
     keylen: number,
-    digest: string
+    digest: string,
   ): Buffer;
   export function pbkdf2(
     password: Buffer | Uint8Array,
@@ -19,7 +19,7 @@ declare module 'react-native-quick-crypto' {
     iterations: number,
     keylen: number,
     digest: string,
-    callback: (err: Error | null, derivedKey: Buffer) => void
+    callback: (err: Error | null, derivedKey: Buffer) => void,
   ): void;
   export function install(): void;
   const crypto: any;

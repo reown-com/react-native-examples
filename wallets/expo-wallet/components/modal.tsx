@@ -82,7 +82,9 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function InnerModal(
         onChange={handleSheetChanges}
         backdropComponent={renderBackdrop}
         handleComponent={null}
+        enableDynamicSizing
         animationConfigs={animationConfigs}
+        keyboardBlurBehavior="restore"
         backgroundStyle={{
           backgroundColor,
           borderTopLeftRadius: BorderRadius['6'],

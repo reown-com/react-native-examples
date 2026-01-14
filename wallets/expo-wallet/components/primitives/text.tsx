@@ -25,6 +25,7 @@ export function Text({
   return (
     <RNText
       style={[
+        styles.base,
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
@@ -44,10 +45,12 @@ export function Text({
 }
 
 const styles = StyleSheet.create({
+  base: {
+    fontFamily: 'KH Teka',
+  },
   default: {
     fontSize: 16,
     lineHeight: 24,
-    fontFamily: 'KH Teka',
   },
   defaultSemiBold: {
     fontSize: 16,

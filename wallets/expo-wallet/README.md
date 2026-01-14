@@ -92,11 +92,11 @@ graph TB
 
 ### Data Protection
 
-| Data | Storage | Protection |
-|------|---------|------------|
-| **Mnemonic** | `expo-secure-store` | iOS Keychain / Android Keystore (encrypted) |
-| **Private Key** | Memory only | Never written to disk |
-| **Addresses** | Zustand | Public data, non-sensitive |
+| Data            | Storage             | Protection                                  |
+| --------------- | ------------------- | ------------------------------------------- |
+| **Mnemonic**    | `expo-secure-store` | iOS Keychain / Android Keystore (encrypted) |
+| **Private Key** | Memory only         | Never written to disk                       |
+| **Addresses**   | Zustand             | Public data, non-sensitive                  |
 
 ### Security Measures
 
@@ -116,15 +116,15 @@ This wallet keeps the private key in memory while running — standard for all h
 
 ## 🛠️ Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| Framework | Expo SDK 54, React Native 0.81 |
-| Language | TypeScript 5.9 (strict) |
-| Navigation | Expo Router |
-| State | Zustand |
-| Crypto | viem, react-native-quick-crypto |
-| Storage | expo-secure-store, react-native-mmkv |
-| WalletConnect | @reown/walletkit |
+| Category      | Technology                           |
+| ------------- | ------------------------------------ |
+| Framework     | Expo SDK 54, React Native 0.81       |
+| Language      | TypeScript 5.9 (strict)              |
+| Navigation    | Expo Router                          |
+| State         | Zustand                              |
+| Crypto        | viem, react-native-quick-crypto      |
+| Storage       | expo-secure-store, react-native-mmkv |
+| WalletConnect | @reown/walletkit                     |
 
 ## 📚 Documentation
 
@@ -137,7 +137,7 @@ This wallet keeps the private key in memory while running — standard for all h
 
 - [x] EVM wallet (Ethereum, Polygon, Arbitrum, etc.)
 - [x] Transaction signing UI
-- [ ] WalletConnect Pay
+- [x] WalletConnect Pay SDK integration
 - [ ] Unit tests for EvmWallet, handleEvmRequest, and utility functions
 - [ ] Solana support
 - [ ] Sui support

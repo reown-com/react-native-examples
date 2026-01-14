@@ -1,3 +1,119 @@
+import type { PaymentOptionsResponse } from '@walletconnect/pay';
+
+/**
+ * Mock payment response for testing the collectData flow.
+ * Enable by setting EXPO_PUBLIC_MOCK_PAYMENT="true" in .env
+ */
+export const mockPaymentResponse: PaymentOptionsResponse = {
+  paymentId: 'pay_mock_12345',
+  info: {
+    status: 'requires_action',
+    expiresAt: Date.now() + 30 * 60 * 1000, // 30 minutes from now
+    merchant: {
+      name: 'Test Coffee Shop',
+      iconUrl: 'https://avatars.githubusercontent.com/u/37784886',
+    },
+    amount: {
+      unit: 'USD',
+      value: '5.99',
+      display: {
+        assetSymbol: 'USD',
+        assetName: 'US Dollar',
+        decimals: 2,
+      },
+    },
+  },
+  options: [
+    {
+      id: 'option_usdc_base',
+      etaS: 30,
+      amount: {
+        unit: 'USDC',
+        value: '5990000',
+        display: {
+          assetSymbol: 'USDC',
+          assetName: 'USD Coin',
+          decimals: 6,
+          iconUrl:
+            'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png',
+          networkName: 'Base',
+        },
+      },
+      actions: [
+        {
+          walletRpc: {
+            chainId: 'eip155:8453',
+            method: 'eth_sendTransaction',
+            params: JSON.stringify({
+              to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+              data: '0x',
+              value: '0x0',
+            }),
+          },
+        },
+      ],
+    },
+    {
+      id: 'option_usdc_arbitrum',
+      etaS: 30,
+      amount: {
+        unit: 'USDC',
+        value: '5990000',
+        display: {
+          assetSymbol: 'USDC',
+          assetName: 'USD Coin',
+          decimals: 6,
+          iconUrl:
+            'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png',
+          networkName: 'Arbitrum One',
+        },
+      },
+      actions: [
+        {
+          walletRpc: {
+            chainId: 'eip155:42161',
+            method: 'eth_sendTransaction',
+            params: JSON.stringify({
+              to: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+              data: '0x',
+              value: '0x0',
+            }),
+          },
+        },
+      ],
+    },
+  ],
+  collectData: {
+    fields: [
+      {
+        id: 'firstName',
+        fieldType: 'text',
+        name: 'First Name',
+        required: true,
+      },
+      { id: 'lastName', fieldType: 'text', name: 'Last Name', required: true },
+      {
+        id: 'dateOfBirth',
+        fieldType: 'date',
+        name: 'Date of Birth',
+        required: true,
+      },
+      {
+        id: 'placeOfBirthCity',
+        fieldType: 'text',
+        name: 'City of Birth',
+        required: true,
+      },
+      {
+        id: 'placeOfBirthCountry',
+        fieldType: 'text',
+        name: 'Country of Birth',
+        required: true,
+      },
+    ],
+  },
+};
+
 export const mockedProposal = {
   id: 123,
   params: {

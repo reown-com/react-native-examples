@@ -8,16 +8,16 @@ Expo Wallet is a sample WalletConnect wallet demonstrating secure key management
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| Framework | Expo SDK 54, React Native 0.81 |
-| Language | TypeScript 5.9 (strict mode) |
-| Navigation | Expo Router (file-based) |
-| State | Zustand |
-| Styling | React Native StyleSheet |
-| Crypto | viem, react-native-quick-crypto, bip39 (patched) |
-| Storage | expo-secure-store (sensitive), react-native-mmkv (non-sensitive) |
-| WalletConnect | @reown/walletkit |
+| Category      | Technology                                                       |
+| ------------- | ---------------------------------------------------------------- |
+| Framework     | Expo SDK 54, React Native 0.81                                   |
+| Language      | TypeScript 5.9 (strict mode)                                     |
+| Navigation    | Expo Router (file-based)                                         |
+| State         | Zustand                                                          |
+| Styling       | React Native StyleSheet                                          |
+| Crypto        | viem, react-native-quick-crypto, bip39 (patched)                 |
+| Storage       | expo-secure-store (sensitive), react-native-mmkv (non-sensitive) |
+| WalletConnect | @reown/walletkit                                                 |
 
 ## Architecture
 
@@ -121,19 +121,29 @@ wallets/expo-wallet/
 │   │   ├── connected-apps.tsx
 │   │   └── settings.tsx
 │   ├── scanner.tsx          # QR code scanner
+│   ├── pay.tsx              # Payment flow screen
 │   └── session-proposal.tsx # WC session approval modal
 ├── lib/                      # Core wallet logic
 │   ├── base/
 │   │   └── wallet-base.ts   # IWallet interface
-│   └── chains/
-│       └── evm/
-│           ├── evm-wallet.ts           # viem wallet implementation
-│           └── evm-request-handler.ts  # Signing request handlers
+│   ├── chains/
+│   │   └── evm/
+│   │       ├── evm-wallet.ts           # viem wallet implementation
+│   │       └── evm-request-handler.ts  # Signing request handlers
+│   └── pay/                  # WalletConnect Pay SDK
+│       ├── index.ts         # Entry point
+│       ├── types.ts         # Types + reducer actions
+│       ├── pay-client.ts    # SDK re-exports
+│       ├── sign-payment.ts  # Signing utility
+│       └── format-currency.ts
 ├── stores/                   # Zustand stores
 │   ├── use-wallet-store.ts  # Wallet state
+│   ├── use-pay-store.ts     # Pay SDK client singleton
 │   └── useSettingsStore.ts  # App settings
 ├── hooks/                    # React hooks
 │   ├── use-wallet-initialization.ts  # Wallet init on startup
+│   ├── use-initialize-pay-sdk.ts     # Pay SDK init
+│   ├── use-payment-flow.ts           # Payment flow state + logic
 │   ├── use-walletkit.ts              # WalletKit hooks
 │   └── use-theme-color.ts            # Theme utilities
 ├── utils/
@@ -157,11 +167,13 @@ wallets/expo-wallet/
 ## Conventions
 
 ### File Naming
+
 - **Files**: `kebab-case.ts` (e.g., `evm-wallet.ts`, `use-wallet-store.ts`)
 - **Components**: `kebab-case.tsx` (e.g., `scanner-frame.tsx`)
 - **Hooks**: `use-*.ts` prefix
 
 ### Code Style
+
 - **Classes**: `PascalCase` (e.g., `EvmWallet`)
 - **Interfaces**: `PascalCase` with `I` prefix for contracts (e.g., `IWallet`)
 - **Functions**: `camelCase` (e.g., `handleEvmRequest`)
@@ -169,17 +181,20 @@ wallets/expo-wallet/
 - **Types**: `PascalCase` (e.g., `WalletCreateOptions`)
 
 ### Import Aliases
+
 ```typescript
-import { something } from '@/lib/...';      // ./lib/
-import { something } from '@/stores/...';   // ./stores/
-import { something } from '@/hooks/...';    // ./hooks/
-import { something } from '@/utils/...';    // ./utils/
+import { something } from '@/lib/...'; // ./lib/
+import { something } from '@/stores/...'; // ./stores/
+import { something } from '@/hooks/...'; // ./hooks/
+import { something } from '@/utils/...'; // ./utils/
 import { something } from '@/constants/...'; // ./constants/
 import { something } from '@/components/...'; // ./components/
 ```
 
 ### Console Logging
+
 Always wrap with `__DEV__` check:
+
 ```typescript
 if (__DEV__) {
   console.log('Debug info:', data);
@@ -189,6 +204,7 @@ if (__DEV__) {
 ## Key Patterns
 
 ### 1. Polyfills Must Be First
+
 ```typescript
 // app/_layout.tsx - CORRECT
 import '@/utils/polyfills';  // MUST be first import
@@ -196,6 +212,7 @@ import { ... } from 'react';
 ```
 
 ### 2. Wallet Creation Returns Mnemonic Separately
+
 ```typescript
 // Mnemonic is NOT stored in EvmWallet class
 const { wallet, mnemonic } = EvmWallet.create();
@@ -204,6 +221,7 @@ await secureStorage.saveMnemonic(mnemonic);
 ```
 
 ### 3. Error Handling Pattern
+
 ```typescript
 try {
   // operation
@@ -215,6 +233,7 @@ try {
 ```
 
 ### 4. WalletKit Initialization Lock
+
 ```typescript
 let isInitializing = false;
 // Prevents race conditions in React strict mode
@@ -226,23 +245,70 @@ try { ... } finally { isInitializing = false; }
 ## Security Notes
 
 ### Protected Data
-| Data | Storage | Notes |
-|------|---------|-------|
-| Mnemonic | expo-secure-store | iOS Keychain / Android Keystore |
-| Private Key | Memory only | HDAccount from viem, never persisted |
-| Addresses | Zustand | Public, non-sensitive |
+
+| Data        | Storage           | Notes                                |
+| ----------- | ----------------- | ------------------------------------ |
+| Mnemonic    | expo-secure-store | iOS Keychain / Android Keystore      |
+| Private Key | Memory only       | HDAccount from viem, never persisted |
+| Addresses   | Zustand           | Public, non-sensitive                |
 
 ### Disabled Methods
+
 - `eth_sign` - Auto-rejected (phishing vector)
 
 ### Validation Points
+
 - Mnemonic validated before wallet restoration
 - WalletConnect URI validated before pairing (`wc:` prefix)
 - JSON.parse wrapped in try-catch for typed data
 
+## WalletConnect Pay SDK Integration
+
+The app includes WalletConnect Pay SDK integration for processing payments.
+
+### Architecture
+
+```
+lib/pay/
+├── index.ts          # Entry point, re-exports everything
+├── types.ts          # Type definitions + reducer actions
+├── pay-client.ts     # SDK re-exports + URL helpers
+├── sign-payment.ts   # Payment signing utility
+└── format-currency.ts # Currency formatting
+
+hooks/
+├── use-initialize-pay-sdk.ts  # SDK init at app startup
+└── use-payment-flow.ts        # Complete payment flow (state + logic)
+
+stores/
+└── use-pay-store.ts  # PayClient singleton
+```
+
+### Key Files for External Developers
+
+| File                              | Purpose                               |
+| --------------------------------- | ------------------------------------- |
+| `hooks/use-initialize-pay-sdk.ts` | How to initialize the SDK             |
+| `hooks/use-payment-flow.ts`       | Complete payment flow with useReducer |
+| `lib/pay/sign-payment.ts`         | How to sign payment actions           |
+| `stores/use-pay-store.ts`         | PayClient singleton pattern           |
+
+### Payment Flow
+
+1. **Initialize**: `useInitializePaySDK()` in root layout
+2. **Start payment**: Navigate to `/pay?paymentLink=<url>`
+3. **Get options**: `payClient.getPaymentOptions({ paymentLink, accounts })`
+4. **Collect data**: If required, gather name/DOB
+5. **Get actions**: `payClient.getRequiredPaymentActions({ paymentId, optionId })`
+6. **Sign**: Use `signPaymentActions(actions, wallet)`
+7. **Confirm**: `payClient.confirmPayment({ paymentId, signatures, collectedData })`
+
+---
+
 ## Common Tasks
 
 ### Adding a New Chain
+
 1. Create `lib/chains/{chain}/{chain}-wallet.ts` implementing `IWallet`
 2. Create `lib/chains/{chain}/{chain}-request-handler.ts`
 3. Add chain state to `stores/use-wallet-store.ts`
@@ -250,6 +316,7 @@ try { ... } finally { isInitializing = false; }
 5. Add chain constants to `constants/`
 
 ### Adding a New Signing Method
+
 1. Add method to `constants/eip155.ts`
 2. Add case in `lib/chains/evm/evm-request-handler.ts`
 3. Add method to `EvmWallet` class if needed
@@ -272,4 +339,5 @@ npm run prettier     # Format code
 - **bip39**: Mnemonic generation (patched for quick-crypto)
 - **expo-secure-store**: Keychain/Keystore access
 - **@reown/walletkit**: WalletConnect v2 wallet SDK
+- **@walletconnect/pay**: WalletConnect Pay SDK for payments
 - **zustand**: Lightweight state management

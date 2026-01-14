@@ -1,9 +1,10 @@
 import { CloseModalButton } from '@/components/close-modal-button';
 import { ScannerFrame } from '@/components/scanner-frame';
 import { Spacing } from '@/constants/spacing';
+import { isPaymentLink, extractPaymentLink } from '@/lib/pay';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import {
   SafeAreaView,
@@ -24,21 +25,47 @@ const scanAreaBottom = ((height - SCAN_AREA_SIZE) * 2) / 3;
 
 export default function Scanner() {
   const { top } = useSafeAreaInsets();
+  const hasNavigated = useRef(false);
 
   const [permission, requestPermission] = useCameraPermissions();
 
   const onCodeScanned = (result: BarcodeScanningResult) => {
+    // Prevent multiple navigations
+    if (hasNavigated.current) {
+      return;
+    }
+
     const uri = result.data;
+
+    // Check if it's a WalletConnect Pay link
+    if (isPaymentLink(uri)) {
+      const paymentLink = extractPaymentLink(uri);
+      if (paymentLink) {
+        hasNavigated.current = true;
+        if (__DEV__) {
+          console.log('Scanned Pay link:', paymentLink);
+        }
+        router.replace({
+          pathname: '/pay',
+          params: { paymentLink },
+        });
+        return;
+      }
+    }
 
     // Validate WalletConnect URI format
     if (!uri.startsWith('wc:')) {
       if (__DEV__) {
-        console.warn('Invalid WalletConnect URI:', uri);
+        console.warn(
+          'Invalid QR code - not a WalletConnect URI or Pay link:',
+          uri,
+        );
       }
       // TODO: Show error toast to user
       return;
     }
 
+    hasNavigated.current = true;
     if (__DEV__) {
       console.log('Scanned WC URI:', uri);
     }
@@ -132,7 +159,7 @@ export default function Scanner() {
         ]}>
         <Text style={styles.instructionText}>
           {permission?.granted
-            ? 'Find a WalletConnect QR Code to scan'
+            ? 'Scan a WalletConnect or Pay QR code'
             : 'Camera not available'}
         </Text>
       </View>

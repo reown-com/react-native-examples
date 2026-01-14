@@ -18,6 +18,7 @@ import {
   useWalletKitListener,
 } from '@/hooks/use-walletkit';
 import { useWalletInitialization } from '@/hooks/use-wallet-initialization';
+import { useInitializePaySDK } from '@/hooks/use-initialize-pay-sdk';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Colors } from '@/constants/theme';
 
@@ -32,6 +33,9 @@ export default function RootLayout() {
   const { isReady: walletReady } = useWalletInitialization();
   useInitializeWalletKit(walletReady);
   const { walletKit } = useWalletKit();
+
+  // Initialize WalletConnect Pay SDK
+  useInitializePaySDK();
 
   useWalletKitListener('session_proposal', (args) => {
     if (__DEV__) {
@@ -87,6 +91,15 @@ export default function RootLayout() {
             />
             <Stack.Screen
               name="session-request"
+              options={{
+                presentation: 'transparentModal',
+                animation: 'none',
+                headerShown: false,
+                contentStyle: { backgroundColor: 'transparent' },
+              }}
+            />
+            <Stack.Screen
+              name="pay"
               options={{
                 presentation: 'transparentModal',
                 animation: 'none',
