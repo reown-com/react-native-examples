@@ -1,7 +1,7 @@
-import {WalletKit, IWalletKit} from '@reown/walletkit';
-import {Core} from '@walletconnect/core';
+import { WalletKit, IWalletKit } from '@reown/walletkit';
+import { Core } from '@walletconnect/core';
 import Config from 'react-native-config';
-import {getMetadata} from './misc';
+import { getMetadata } from './misc';
 import { storage } from './storage';
 
 export let walletKit: IWalletKit;
@@ -32,13 +32,34 @@ export async function createWalletKit(relayerRegionURL: string) {
 
 // Check if a URI is a WalletConnect Pay payment link
 export function isPaymentLink(uri: string): boolean {
+  // Handle WC URI with pay= parameter (e.g., wc:...&pay=https://pay.walletconnect.com/...)
+  if (uri.startsWith('wc:')) {
+    const queryStart = uri.indexOf('?');
+    if (queryStart === -1) {
+      return false;
+    }
+    const queryString = uri.substring(queryStart + 1);
+    const params = new URLSearchParams(queryString);
+    const payParam = params.get('pay');
+    if (payParam) {
+      const decodedPayUrl = decodeURIComponent(payParam);
+      return isPaymentUrl(decodedPayUrl);
+    }
+    return false;
+  }
+
+  // Handle direct payment URL
+  return isPaymentUrl(uri);
+}
+
+function isPaymentUrl(url: string): boolean {
   try {
-    const url = new URL(uri);
-    const hostname = url.hostname.toLowerCase();
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
     const isPayHost =
       hostname === 'pay.walletconnect.com' ||
       hostname === 'www.pay.walletconnect.com';
-    return isPayHost && url.searchParams.has('pid');
+    return isPayHost && parsed.searchParams.has('pid');
   } catch {
     return false;
   }
