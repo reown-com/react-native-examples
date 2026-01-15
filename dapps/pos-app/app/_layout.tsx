@@ -26,6 +26,7 @@ import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
+import { requestBluetoothPermission } from "@/utils/printer";
 import { clearStaleSecureStorage } from "@/utils/secure-storage";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -81,6 +82,13 @@ export default Sentry.wrap(function RootLayout() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceId]);
+
+  // Request Bluetooth permission on first app load (Android only)
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      requestBluetoothPermission();
+    }
+  }, []);
 
   if (!_hasHydrated || !fontsLoaded) {
     return (
