@@ -106,9 +106,10 @@ export const printReceipt = async (
     const normal = { size: 10 } as TextOptions;
     const normalCenter = { size: 10, align: "CENTER" } as TextOptions;
     const bold = { size: 10, bold: true } as TextOptions;
+    const idStyle = { size: 9, bold: true } as TextOptions;
 
     await ReactNativePosPrinter.printText("ID        ", normal);
-    await ReactNativePosPrinter.printText(`${txnId}\n`, bold);
+    await ReactNativePosPrinter.printText(`${txnId}\n`, idStyle);
 
     await ReactNativePosPrinter.printText("DATE      ", normal);
     await ReactNativePosPrinter.printText(`${date}\n`, bold);
@@ -134,7 +135,7 @@ export const printReceipt = async (
     await ReactNativePosPrinter.newLine(2);
 
     await ReactNativePosPrinter.printText(
-      "Thank you for your purchase!\n",
+      "Thank you for your payment!\n",
       normalCenter,
     );
 
