@@ -24,9 +24,11 @@ import * as Sentry from "@sentry/react-native";
 
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
+import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
 import { requestBluetoothPermission } from "@/utils/printer";
+import { showInfoToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect } from "react";
@@ -80,9 +82,33 @@ export default Sentry.wrap(function RootLayout() {
 
   // Request Bluetooth permission on first app load (Android only)
   useEffect(() => {
-    if (Platform.OS === "android") {
-      requestBluetoothPermission();
+    async function checkBluetoothPermission() {
+      if (Platform.OS !== "android") return;
+
+      try {
+        const granted = await requestBluetoothPermission();
+        if (!granted) {
+          useLogsStore
+            .getState()
+            .addLog(
+              "error",
+              "Bluetooth permission denied",
+              "layout",
+              "checkBluetoothPermission",
+            );
+          showInfoToast("Bluetooth permission is needed to connect to printer");
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        useLogsStore
+          .getState()
+          .addLog("error", errorMessage, "layout", "checkBluetoothPermission", {
+            error,
+          });
+      }
     }
+    checkBluetoothPermission();
   }, []);
 
   if (!_hasHydrated || !fontsLoaded) {
