@@ -42,9 +42,11 @@ on:
         required: false
         default: false
         type: boolean
-    secrets:
       firebase-app-id:
+        description: "Firebase App ID for distribution"
         required: true
+        type: string
+    secrets:
       gsa-key:
         required: true
       sentry-file:
@@ -119,12 +121,13 @@ jobs:
       - name: Add Keystore file
         run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
 
-      # Add Google Services file -> to create it run: base64 -i path/to/GoogleService-Info.plist
+      # Add Google Services file (base64 encoded)
+      # To encode: base64 -i path/to/google-services.json | pbcopy
       - name: Add Google Services file
         env:
           google-services-file: ${{ secrets.google-services-file }}
         if: ${{ env.google-services-file != '' }}
-        run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/android/app/google-services.json
+        run: echo "${{ secrets.google-services-file }}" | base64 --decode > ${{ inputs.root-path }}/android/app/google-services.json
 
       - name: Optimize Gradle for CI
         run: |
@@ -162,7 +165,7 @@ jobs:
         id: firebase-upload
         continue-on-error: false
         env:
-          APP_ID: ${{ secrets.firebase-app-id }}
+          APP_ID: ${{ inputs.firebase-app-id }}
         run: |
           firebase appdistribution:distribute ${{ inputs.output-path }} \
             --app $APP_ID \

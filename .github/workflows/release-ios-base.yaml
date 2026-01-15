@@ -173,7 +173,8 @@ jobs:
       # Create sentry file
       - run: touch ${{ inputs.root-path }}/ios/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/ios/sentry.properties
 
-      # Add Google Services file -> to create it run: base64 -i path/to/GoogleService-Info.plist
+      # Add Google Services file (base64 encoded due to XML structure)
+      # To encode: base64 -i path/to/GoogleService-Info.plist | pbcopy
       - name: Create Google Services file
         env:
           google-services-file: ${{ secrets.google-services-file }}

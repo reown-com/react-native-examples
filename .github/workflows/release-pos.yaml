@@ -1,4 +1,5 @@
 name: Release Mobile POS
+run-name: "Mobile POS - ${{ inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }}"
 
 permissions:
   id-token: write
@@ -30,11 +31,11 @@ jobs:
       output-path: 'dapps/pos-app/android/app/build/outputs/apk/release/app-release.apk'
       package-manager: 'npm'
       is-expo-project: true
+      firebase-app-id: ${{ vars.POS_ANDROID_FIREBASE_APP_ID }}
     secrets:
       env-file: ${{ secrets.POS_ENV_FILE }}
       sentry-file: ${{ secrets.POS_SENTRY_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
-      firebase-app-id: ${{ secrets.POS_ANDROID_FIREBASE_APP_ID }}
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
       keystore-name: ${{ vars.WC_PROD_KEYSTORE_NAME }}
       keystore: ${{ secrets.WC_PROD_KEYSTORE }}
