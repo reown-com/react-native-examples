@@ -1,9 +1,8 @@
-import {ImageSourcePropType} from 'react-native';
+import { ImageSourcePropType } from 'react-native';
 import { TON_CHAINS, TON_NETWORKS_IMAGES } from '@/constants/Ton';
 import { SUI_CHAINS, SUI_NETWORKS_IMAGES } from '@/constants/Sui';
 import { EIP155_CHAINS, EIP155_NETWORK_IMAGES } from '@/constants/Eip155';
 import { TRON_CHAINS, TRON_NETWORKS_IMAGES } from '@/constants/Tron';
-
 
 const NetworkImages: Record<string, ImageSourcePropType> = {
   ...EIP155_NETWORK_IMAGES,
@@ -11,7 +10,6 @@ const NetworkImages: Record<string, ImageSourcePropType> = {
   ...TON_NETWORKS_IMAGES,
   ...TRON_NETWORKS_IMAGES,
 };
-
 
 export const ALL_CHAINS = {
   ...EIP155_CHAINS,
@@ -21,18 +19,39 @@ export const ALL_CHAINS = {
 };
 
 export const PresetsUtil = {
-  getChainLogo: (chainId: string | number) => {
+  getChainIconById: (chainId: string | number) => {
     const logo = NetworkImages[chainId];
     if (!logo) {
       return undefined;
     }
     return logo;
   },
-  getChainData: (chainId?: string) => {
-    if (!chainId) return
-    const [namespace, reference] = chainId.toString().split(':')
+  getIconLogoByName: (name?: string) => {
+    if (!name) {
+      return undefined;
+    }
+
+    const chainData = Object.values(ALL_CHAINS).find(
+      chain => chain.name?.toLowerCase() === name.toLowerCase(),
+    );
+
+    const chainId = `${chainData?.namespace}:${chainData?.chainId}`;
+    if (!chainId) {
+      return undefined;
+    }
+
+    const logo = NetworkImages[chainId];
+    if (!logo) {
+      return undefined;
+    }
+
+    return logo;
+  },
+  getChainDataById: (chainId?: string) => {
+    if (!chainId) return;
+    const [namespace, reference] = chainId.toString().split(':');
     return Object.values(ALL_CHAINS).find(
-      chain => chain.chainId === reference && chain.namespace === namespace
-    )
-  }
+      chain => chain.chainId === reference && chain.namespace === namespace,
+    );
+  },
 };

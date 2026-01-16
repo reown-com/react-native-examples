@@ -1,6 +1,6 @@
-import {utils} from 'ethers';
-import {ProposalTypes} from '@walletconnect/types';
-import {PresetsUtil} from './PresetsUtil';
+import { utils } from 'ethers';
+import { ProposalTypes } from '@walletconnect/types';
+import { PresetsUtil } from './PresetsUtil';
 
 /**
  * Truncates string (in the middle) via given lenght value
@@ -125,6 +125,6 @@ export function getSupportedChains(
   const chains = [...required.flat(), ...optional.flat()];
 
   return chains
-    .map(chain => PresetsUtil.getChainData(chain))
+    .map(chain => PresetsUtil.getChainDataById(chain))
     .filter(chain => chain !== undefined);
 }

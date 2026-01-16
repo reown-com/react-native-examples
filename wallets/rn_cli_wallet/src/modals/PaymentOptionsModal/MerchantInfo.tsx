@@ -3,40 +3,34 @@ import type { PaymentInfo } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
 import { formatAmount } from './utils';
+import SealCheck from '@/assets/SealCheck';
 
 interface MerchantInfoProps {
   info?: PaymentInfo;
-  showAssetName?: boolean;
 }
 
-export function MerchantInfo({ info, showAssetName }: MerchantInfoProps) {
+export function MerchantInfo({ info }: MerchantInfoProps) {
   const Theme = useTheme();
+  const amount = formatAmount(info?.amount?.value || '0', info?.amount?.display?.decimals || 0, 2);
 
   return (
     <>
       {info?.merchant && (
         <View style={styles.merchantContainer}>
-          {info.merchant.iconUrl && (
+          {info.merchant.iconUrl ? (
             <Image
               source={{ uri: info.merchant.iconUrl }}
-              style={styles.merchantIcon}
+              style={[styles.merchantIcon, { backgroundColor: Theme['bg-300'] }]}
             />
+          ) : (
+            <View style={[styles.merchantIcon, { backgroundColor: Theme['bg-300'] }]} />
           )}
-          <Text style={[styles.merchantName, { color: Theme['fg-100'] }]}>
-            {info.merchant.name}
+          <View style={styles.paymentInfoContainer}>
+          <Text style={[styles.paymentInfo, { color: Theme['fg-100'] }]} numberOfLines={1} ellipsizeMode="tail">
+            Pay ${amount} to {info.merchant.name}
           </Text>
-        </View>
-      )}
-      {info?.amount && (
-        <View style={styles.amountContainer}>
-          <Text style={[styles.amountValue, { color: Theme['fg-100'] }]}>
-            ${formatAmount(info.amount.value, info.amount.display.decimals, 2)}
-          </Text>
-          {showAssetName && (
-            <Text style={[styles.amountLabel, { color: Theme['fg-200'] }]}>
-              {info.amount.display.assetName}
-            </Text>
-          )}
+          <SealCheck width={22} height={22} fill={Theme['accent-100']} />
+          </View>
         </View>
       )}
     </>
@@ -45,32 +39,23 @@ export function MerchantInfo({ info, showAssetName }: MerchantInfoProps) {
 
 const styles = StyleSheet.create({
   merchantContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    gap: 16,
+    paddingHorizontal: 60,
   },
   merchantIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
+    width: 64,
+    height: 64,
+    borderRadius: 16,
   },
-  merchantName: {
-    fontSize: 18,
-    fontWeight: '600',
+  paymentInfoContainer: {
+    flexDirection: 'row',
+    gap: 4,
   },
-  amountContainer: {
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  amountValue: {
-    fontSize: 32,
-    fontWeight: '700',
-  },
-  amountLabel: {
-    fontSize: 14,
-    marginTop: 4,
+  paymentInfo: {
+    fontSize: 20,
+    fontWeight: '400',
+    textAlign: 'center',
   },
 });
