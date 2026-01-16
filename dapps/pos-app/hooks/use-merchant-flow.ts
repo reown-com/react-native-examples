@@ -29,6 +29,7 @@ const initialState: MerchantFlowState = {
 export function useMerchantFlow() {
   const storedMerchantId = useSettingsStore((state) => state.merchantId);
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);
+  const clearMerchantId = useSettingsStore((state) => state.clearMerchantId);
   const getMerchantApiKey = useSettingsStore(
     (state) => state.getMerchantApiKey,
   );
@@ -123,16 +124,14 @@ export function useMerchantFlow() {
 
   const handleMerchantIdConfirm = useCallback(async () => {
     const trimmedMerchantId = state.merchantIdInput.trim();
-    if (!trimmedMerchantId) {
-      return;
-    }
 
     // Check if value changed
     if (trimmedMerchantId === storedMerchantId) {
       return;
     }
 
-    await initiateSave(trimmedMerchantId, "merchant-id");
+    // Pass empty string to indicate clearing (will reset to default)
+    await initiateSave(trimmedMerchantId || "", "merchant-id");
   }, [state.merchantIdInput, storedMerchantId, initiateSave]);
 
   const handleMerchantApiKeyConfirm = useCallback(async () => {
@@ -145,20 +144,37 @@ export function useMerchantFlow() {
   }, [state.merchantApiKeyInput, initiateSave]);
 
   const completeSave = useCallback(async () => {
-    if (!state.pendingValue || !state.pendingAction) {
+    if (state.pendingValue === null || !state.pendingAction) {
       return;
     }
 
     try {
       if (state.pendingAction === "merchant-id") {
-        setMerchantId(state.pendingValue);
-        showSuccessToast("Merchant ID saved successfully");
-        addLog(
-          "info",
-          `Merchant ID updated to: ${state.pendingValue}`,
-          "settings",
-          "completeSave",
-        );
+        if (state.pendingValue === "") {
+          // Clear merchant ID and API key (resets both to env defaults)
+          const newMerchantId = await clearMerchantId();
+          // Sync local input with the new default value
+          setState((prev) => ({
+            ...prev,
+            merchantIdInput: newMerchantId ?? "",
+          }));
+          showSuccessToast("Merchant credentials reset to default");
+          addLog(
+            "info",
+            "Merchant credentials reset to default",
+            "settings",
+            "completeSave",
+          );
+        } else {
+          setMerchantId(state.pendingValue);
+          showSuccessToast("Merchant ID saved successfully");
+          addLog(
+            "info",
+            `Merchant ID updated to: ${state.pendingValue}`,
+            "settings",
+            "completeSave",
+          );
+        }
       } else if (state.pendingAction === "merchant-api-key") {
         await setMerchantApiKey(state.pendingValue);
         setState((prev) => ({
@@ -186,6 +202,7 @@ export function useMerchantFlow() {
     state.pendingValue,
     state.pendingAction,
     setMerchantId,
+    clearMerchantId,
     setMerchantApiKey,
     addLog,
   ]);
@@ -257,9 +274,9 @@ export function useMerchantFlow() {
     }));
   }, [storedMerchantId]);
 
+  // Enable save when value has changed (including clearing to reset to default)
   const isMerchantIdConfirmDisabled =
-    state.merchantIdInput.trim().length === 0 ||
-    state.merchantIdInput.trim() === storedMerchantId;
+    state.merchantIdInput.trim() === (storedMerchantId ?? "");
 
   const isMerchantApiKeyConfirmDisabled =
     state.merchantApiKeyInput.trim().length === 0;

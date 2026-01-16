@@ -1,5 +1,6 @@
 import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { VariantName, Variants } from "@/constants/variants";
+import { MerchantConfig } from "@/utils/merchant-config";
 import { SECURE_STORAGE_KEYS, secureStorage } from "@/utils/secure-storage";
 import { storage } from "@/utils/storage";
 import * as Crypto from "expo-crypto";
@@ -60,7 +61,7 @@ interface SettingsStore {
   setHasHydrated: (state: boolean) => void;
   setVariant: (variant: VariantName) => void;
   setMerchantId: (merchantId: string | null) => void;
-  clearMerchantId: () => void;
+  clearMerchantId: () => Promise<string | null>;
   setMerchantApiKey: (apiKey: string | null) => Promise<void>;
   clearMerchantApiKey: () => Promise<void>;
   getMerchantApiKey: () => Promise<string | null>;
@@ -100,8 +101,31 @@ export const useSettingsStore = create<SettingsStore>()(
           set({ themeMode: variantData.defaultTheme });
         }
       },
-      setMerchantId: (merchantId: string | null) => set({ merchantId }),
-      clearMerchantId: () => set({ merchantId: null }),
+      setMerchantId: (merchantId: string | null) => {
+        // If clearing, reset to env default
+        if (!merchantId || merchantId.trim() === "") {
+          set({ merchantId: MerchantConfig.getDefaultMerchantId() });
+        } else {
+          set({ merchantId });
+        }
+      },
+      clearMerchantId: async () => {
+        // Reset both merchant ID and API key to env defaults
+        const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
+        set({ merchantId: defaultMerchantId });
+        const defaultApiKey = MerchantConfig.getDefaultMerchantApiKey();
+        if (defaultApiKey) {
+          await secureStorage.setItem(
+            SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+            defaultApiKey,
+          );
+          set({ isMerchantApiKeySet: true });
+        } else {
+          await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
+          set({ isMerchantApiKeySet: false });
+        }
+        return defaultMerchantId;
+      },
       setMerchantApiKey: async (apiKey: string | null) => {
         try {
           if (apiKey) {
@@ -267,6 +291,18 @@ export const useSettingsStore = create<SettingsStore>()(
 
             // Clean up migration data
             delete (state as any).__migrationData;
+          }
+
+          // Initialize merchant defaults from env if not set
+          const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
+          const defaultApiKey = MerchantConfig.getDefaultMerchantApiKey();
+
+          if (!state.merchantId && defaultMerchantId) {
+            state.setMerchantId(defaultMerchantId);
+          }
+
+          if (!state.isMerchantApiKeySet && defaultApiKey) {
+            await state.setMerchantApiKey(defaultApiKey);
           }
         }
 

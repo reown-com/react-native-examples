@@ -1,5 +1,4 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { SECURE_STORAGE_KEYS, secureStorage } from "@/utils/secure-storage";
 import {
   PaymentStatusResponse,
   StartPaymentRequest,
@@ -14,9 +13,7 @@ import { apiClient } from "./client";
  */
 async function getApiHeaders(): Promise<Record<string, string>> {
   const merchantId = useSettingsStore.getState().merchantId;
-  const merchantApiKey = await secureStorage.getItem(
-    SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
-  );
+  const merchantApiKey = await useSettingsStore.getState().getMerchantApiKey();
 
   if (!merchantId || merchantId.trim().length === 0) {
     throw new Error("Merchant ID is not configured");
