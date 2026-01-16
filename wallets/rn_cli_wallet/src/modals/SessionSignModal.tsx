@@ -1,25 +1,25 @@
-import {useSnapshot} from 'valtio';
-import {useCallback, useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import {SignClientTypes} from '@walletconnect/types';
+import { useSnapshot } from 'valtio';
+import { useCallback, useState } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
+import { SignClientTypes } from '@walletconnect/types';
 
-import {Methods} from '@/components/Modal/Methods';
-import {Message} from '@/components/Modal/Message';
-import {getSignParamsMessage} from '@/utils/HelperUtil';
+import { Methods } from '@/components/Modal/Methods';
+import { Message } from '@/components/Modal/Message';
+import { getSignParamsMessage } from '@/utils/HelperUtil';
 import {
   approveEIP155Request,
   rejectEIP155Request,
 } from '@/utils/EIP155RequestHandlerUtil';
-import {walletKit} from '@/utils/WalletKitUtil';
-import {handleRedirect} from '@/utils/LinkingUtils';
+import { walletKit } from '@/utils/WalletKitUtil';
+import { handleRedirect } from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
-import {RequestModal} from './RequestModal';
-import {Chains} from '@/components/Modal/Chains';
-import {PresetsUtil} from '@/utils/PresetsUtil';
+import { RequestModal } from './RequestModal';
+import { Chains } from '@/components/Modal/Chains';
+import { PresetsUtil } from '@/utils/PresetsUtil';
 
 export default function SessionSignModal() {
   // Get request and wallet data from store
-  const {data} = useSnapshot(ModalStore.state);
+  const { data } = useSnapshot(ModalStore.state);
   const requestEvent = data?.requestEvent;
   const session = data?.requestSession;
   const isLinkMode = session?.transportType === 'link_mode';
@@ -28,9 +28,9 @@ export default function SessionSignModal() {
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 
   // Get required request data
-  const {topic, params} = requestEvent!;
-  const {request, chainId} = params;
-  const chain = PresetsUtil.getChainData(chainId);
+  const { topic, params } = requestEvent!;
+  const { request, chainId } = params;
+  const chain = PresetsUtil.getChainDataById(chainId);
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
   const method = requestEvent?.params?.request?.method!;
 
@@ -100,7 +100,8 @@ export default function SessionSignModal() {
       onReject={onReject}
       isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
-      rejectLoader={isLoadingReject}>
+      rejectLoader={isLoadingReject}
+    >
       <View style={styles.container}>
         {chain ? <Chains chains={[chain]} /> : null}
         <Methods methods={[method]} />

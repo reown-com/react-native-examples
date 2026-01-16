@@ -1,26 +1,26 @@
-import {useSnapshot} from 'valtio';
-import {useCallback, useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import {SignClientTypes} from '@walletconnect/types';
+import { useSnapshot } from 'valtio';
+import { useCallback, useState } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
+import { SignClientTypes } from '@walletconnect/types';
 
-import {Methods} from '@/components/Modal/Methods';
-import {Message} from '@/components/Modal/Message';
+import { Methods } from '@/components/Modal/Methods';
+import { Message } from '@/components/Modal/Message';
 import {
   approveTonRequest,
   rejectTonRequest,
 } from '@/utils/TonRequestHandlerUtil';
-import {walletKit} from '@/utils/WalletKitUtil';
-import {handleRedirect} from '@/utils/LinkingUtils';
+import { walletKit } from '@/utils/WalletKitUtil';
+import { handleRedirect } from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
-import {RequestModal} from './RequestModal';
-import {Chains} from '@/components/Modal/Chains';
-import {PresetsUtil} from '@/utils/PresetsUtil';
-import {tonAddresses} from '@/utils/TonWalletUtil';
-import {useTheme} from '@/hooks/useTheme';
+import { RequestModal } from './RequestModal';
+import { Chains } from '@/components/Modal/Chains';
+import { PresetsUtil } from '@/utils/PresetsUtil';
+import { tonAddresses } from '@/utils/TonWalletUtil';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function SessionTonSignDataModal() {
   // Get request and wallet data from store
-  const {data} = useSnapshot(ModalStore.state);
+  const { data } = useSnapshot(ModalStore.state);
   const requestEvent = data?.requestEvent;
   const session = data?.requestSession;
   const isLinkMode = session?.transportType === 'link_mode';
@@ -31,9 +31,9 @@ export default function SessionTonSignDataModal() {
   const Theme = useTheme();
 
   // Get required request data
-  const {topic, params} = requestEvent!;
-  const {request, chainId} = params;
-  const chain = PresetsUtil.getChainData(chainId);
+  const { topic, params } = requestEvent!;
+  const { request, chainId } = params;
+  const chain = PresetsUtil.getChainDataById(chainId);
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
   const method = requestEvent?.params?.request?.method!;
 
@@ -108,7 +108,6 @@ export default function SessionTonSignDataModal() {
     }
   }, [requestEvent, topic, peerMetadata, isLinkMode]);
 
-
   // Ensure request and wallet are defined
   if (!requestEvent || !session) {
     return <Text>Missing request data</Text>;
@@ -122,17 +121,18 @@ export default function SessionTonSignDataModal() {
       onReject={onReject}
       isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
-      rejectLoader={isLoadingReject}>
+      rejectLoader={isLoadingReject}
+    >
       <View style={styles.container}>
         {chain ? <Chains chains={[chain]} /> : null}
         <Methods methods={[method]} />
-        
+
         {/* Sign with Address */}
-        <View style={[styles.section, {backgroundColor: Theme['bg-150']}]}>
-          <Text style={[styles.sectionTitle, {color: Theme['fg-150']}]}>
+        <View style={[styles.section, { backgroundColor: Theme['bg-150'] }]}>
+          <Text style={[styles.sectionTitle, { color: Theme['fg-150'] }]}>
             Sign with Address
           </Text>
-          <Text style={[styles.sectionContent, {color: Theme['fg-175']}]}>
+          <Text style={[styles.sectionContent, { color: Theme['fg-175'] }]}>
             {tonAddresses[0]}
           </Text>
         </View>

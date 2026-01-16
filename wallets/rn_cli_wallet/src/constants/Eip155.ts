@@ -15,11 +15,10 @@ import Moonbeam from '@/assets/chains/moonbeam.webp';
 import Moonriver from '@/assets/chains/moonriver.webp';
 import Zora from '@/assets/chains/zora.webp';
 import Celo from '@/assets/chains/celo.webp';
-import Base from '@/assets/chains/base.webp';
+import Base from '@/assets/chains/base.png';
 import Aurora from '@/assets/chains/aurora.webp';
 import { Chain } from '@/utils/TypesUtil';
 import { ImageSourcePropType } from 'react-native';
-
 
 // Helpers
 export const EIP155_CHAINS: Record<string, Chain> = {
@@ -38,7 +37,7 @@ export const EIP155_CHAINS: Record<string, Chain> = {
   'eip155:42161': {
     chainId: '42161',
     namespace: 'eip155',
-    name: 'Arbitrum One',
+    name: 'Arbitrum',
     rpcUrl: 'https://arb1.arbitrum.io/rpc',
   },
   'eip155:43114': {

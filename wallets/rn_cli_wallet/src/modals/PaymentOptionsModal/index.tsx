@@ -1,6 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useReducer, useEffect } from 'react';
 import { useSnapshot } from 'valtio';
-import Toast from 'react-native-toast-message';
 
 import ModalStore from '@/store/ModalStore';
 import PayStore from '@/store/PayStore';
@@ -13,62 +12,77 @@ import type {
 } from '@walletconnect/pay';
 
 import { LoadingView } from './LoadingView';
-import { ErrorView } from './ErrorView';
+import { IntroView } from './IntroView';
 import { CollectDataView } from './CollectDataView';
 import { ConfirmPaymentView } from './ConfirmPaymentView';
-import { PaymentOptionsView } from './PaymentOptionsView';
+import { ResultView } from './ResultView';
+import { ViewWrapper } from './ViewWrapper';
 import {
+  formatAmount,
   formatDateInput,
   isValidDateOfBirth,
   validateRequiredFields,
 } from './utils';
+import { paymentModalReducer, initialState } from './reducer';
 
 export default function PaymentOptionsModal() {
   const { data } = useSnapshot(ModalStore.state);
   const paymentData = data?.paymentOptions as
     | PaymentOptionsResponse
     | undefined;
-  const isLoading =
-    data?.loadingMessage !== undefined && !data?.errorMessage && !paymentData;
-  const errorMessage = data?.errorMessage;
+  const initialError = data?.errorMessage;
 
-  const [selectedOption, setSelectedOption] = useState<PaymentOption | null>(
-    null,
-  );
-  const [paymentActions, setPaymentActions] = useState<any[] | null>(null);
-  const [isLoadingActions, setIsLoadingActions] = useState(false);
-  const [isSigningPayment, setIsSigningPayment] = useState(false);
-  const [actionsError, setActionsError] = useState<string | null>(null);
-  const [collectedData, setCollectedData] = useState<Record<string, string>>(
-    {},
-  );
-  const [collectDataCompleted, setCollectDataCompleted] = useState(false);
-  const [collectDataError, setCollectDataError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(paymentModalReducer, initialState);
+
+  // Derived values
+  const hasCollectData =
+    paymentData?.collectData && paymentData.collectData.fields.length > 0;
+
+  // Transition from loading to intro when data is available
+  useEffect(() => {
+    if (state.step === 'loading') {
+      if (initialError) {
+        dispatch({
+          type: 'SET_RESULT',
+          payload: { status: 'error', message: initialError },
+        });
+        dispatch({ type: 'SET_STEP', payload: 'result' });
+      } else if (paymentData) {
+        dispatch({ type: 'SET_STEP', payload: 'intro' });
+      }
+    }
+  }, [state.step, paymentData, initialError]);
 
   const onClose = useCallback(() => {
-    setSelectedOption(null);
-    setPaymentActions(null);
-    setActionsError(null);
-    setCollectedData({});
-    setCollectDataCompleted(false);
-    setCollectDataError(null);
+    dispatch({ type: 'RESET' });
     ModalStore.close();
   }, []);
 
-  const onBack = useCallback(() => {
-    if (selectedOption) {
-      setSelectedOption(null);
-      setPaymentActions(null);
-      setActionsError(null);
+  const goBack = useCallback(() => {
+    switch (state.step) {
+      case 'collectData':
+        dispatch({ type: 'SET_STEP', payload: 'intro' });
+        break;
+      case 'confirm':
+        dispatch({ type: 'CLEAR_SELECTED_OPTION' });
+        dispatch({
+          type: 'SET_STEP',
+          payload: hasCollectData ? 'collectData' : 'intro',
+        });
+        break;
+      default:
+        onClose();
     }
-  }, [selectedOption]);
+  }, [state.step, hasCollectData, onClose]);
 
   const updateCollectedField = useCallback(
     (fieldId: string, value: string, fieldType?: string) => {
       const formattedValue =
         fieldType === 'date' ? formatDateInput(value) : value;
-      setCollectedData(prev => ({ ...prev, [fieldId]: formattedValue }));
-      setCollectDataError(null);
+      dispatch({
+        type: 'UPDATE_FIELD',
+        payload: { fieldId, value: formattedValue },
+      });
     },
     [],
   );
@@ -77,12 +91,15 @@ export default function PaymentOptionsModal() {
     async (option: PaymentOption) => {
       const payClient = PayStore.getClient();
       if (!payClient || !paymentData) {
-        setActionsError('Pay SDK not initialized');
+        dispatch({
+          type: 'SET_ACTIONS_ERROR',
+          payload: 'Pay SDK not initialized',
+        });
         return;
       }
 
-      setIsLoadingActions(true);
-      setActionsError(null);
+      dispatch({ type: 'SET_LOADING_ACTIONS', payload: true });
+      dispatch({ type: 'SET_ACTIONS_ERROR', payload: null });
 
       try {
         console.log(
@@ -94,68 +111,108 @@ export default function PaymentOptionsModal() {
           optionId: option.id,
         });
         console.log('[Pay] Required actions:', actions);
-        setPaymentActions(actions);
+        dispatch({ type: 'SET_PAYMENT_ACTIONS', payload: actions });
       } catch (error: any) {
         console.error('[Pay] Error getting payment actions:', error);
-        setActionsError(error?.message || 'Failed to get payment actions');
+        dispatch({
+          type: 'SET_ACTIONS_ERROR',
+          payload: error?.message || 'Failed to get payment actions',
+        });
       } finally {
-        setIsLoadingActions(false);
+        dispatch({ type: 'SET_LOADING_ACTIONS', payload: false });
       }
     },
     [paymentData],
   );
 
-  const onSaveCollectData = useCallback(() => {
+  // Navigation handlers
+  const handleIntroNext = useCallback(() => {
+    const options = paymentData?.options || [];
+
+    if (options.length === 0) {
+      dispatch({
+        type: 'SET_RESULT',
+        payload: { status: 'error', message: 'No payment options available' },
+      });
+      dispatch({ type: 'SET_STEP', payload: 'result' });
+      return;
+    }
+
+    dispatch({
+      type: 'SET_STEP',
+      payload: hasCollectData ? 'collectData' : 'confirm',
+    });
+  }, [hasCollectData, paymentData?.options]);
+
+  const handleCollectDataNext = useCallback(() => {
     if (!paymentData?.collectData) {
-      setCollectDataCompleted(true);
+      dispatch({ type: 'SET_STEP', payload: 'confirm' });
       return;
     }
 
-    const missingFields = validateRequiredFields(
-      paymentData.collectData.fields,
-      collectedData,
-    );
+    const fieldErrors: Record<string, string> = {};
 
-    if (missingFields.length > 0) {
-      setCollectDataError(`Please fill in: ${missingFields.join(', ')}`);
-      return;
-    }
+    // Check for missing required fields
+    paymentData.collectData.fields.forEach(field => {
+      if (!state.collectedData[field.id]?.trim()) {
+        fieldErrors[field.id] = 'Required';
+      }
+    });
 
-    const invalidDateFields = paymentData.collectData.fields
+    // Check for invalid date fields
+    paymentData.collectData.fields
       .filter(
         field =>
           field.fieldType === 'date' &&
-          collectedData[field.id]?.trim() &&
-          !isValidDateOfBirth(collectedData[field.id]),
+          state.collectedData[field.id]?.trim() &&
+          !isValidDateOfBirth(state.collectedData[field.id]),
       )
-      .map(field => field.name);
+      .forEach(field => {
+        fieldErrors[field.id] = 'Invalid date format (YYYY-MM-DD)';
+      });
 
-    if (invalidDateFields.length > 0) {
-      setCollectDataError(
-        `Invalid date format for: ${invalidDateFields.join(
-          ', ',
-        )}. Use YYYY-MM-DD (e.g., 1990-01-15)`,
-      );
+    if (Object.keys(fieldErrors).length > 0) {
+      dispatch({ type: 'SET_FIELD_ERRORS', payload: fieldErrors });
       return;
     }
 
-    setCollectDataError(null);
-    setCollectDataCompleted(true);
-  }, [paymentData, collectedData]);
+    dispatch({ type: 'SET_FIELD_ERRORS', payload: {} });
+    dispatch({ type: 'SET_STEP', payload: 'confirm' });
+  }, [paymentData, state.collectedData]);
 
   const onSelectOption = useCallback(
     (option: PaymentOption) => {
-      setSelectedOption(option);
+      dispatch({ type: 'SELECT_OPTION', payload: option });
       fetchPaymentActions(option);
     },
     [fetchPaymentActions],
   );
 
+  // Auto-select first payment option when entering confirm step
+  useEffect(() => {
+    if (state.step === 'confirm') {
+      const options = paymentData?.options || [];
+
+      if (options.length === 0) {
+        dispatch({
+          type: 'SET_RESULT',
+          payload: { status: 'error', message: 'No payment options available' },
+        });
+        dispatch({ type: 'SET_STEP', payload: 'result' });
+        return;
+      }
+
+      if (!state.selectedOption) {
+        onSelectOption(options[0]);
+      }
+    }
+  }, [state.step, paymentData?.options, state.selectedOption, onSelectOption]);
+
   const onApprovePayment = useCallback(async () => {
     if (
-      !paymentActions ||
-      paymentActions.length === 0 ||
-      !selectedOption ||
+      !state.paymentActions ||
+      state.paymentActions.length === 0 ||
+      !state.selectedOption ||
       !paymentData
     ) {
       return;
@@ -165,25 +222,28 @@ export default function PaymentOptionsModal() {
     if (paymentData.collectData) {
       const missingFields = validateRequiredFields(
         paymentData.collectData.fields,
-        collectedData,
+        state.collectedData,
       );
       if (missingFields.length > 0) {
-        setActionsError(
-          `Please fill in required fields: ${missingFields.join(', ')}`,
-        );
+        dispatch({
+          type: 'SET_ACTIONS_ERROR',
+          payload: `Please fill in required fields: ${missingFields.join(
+            ', ',
+          )}`,
+        });
         return;
       }
     }
 
-    setIsSigningPayment(true);
-    setActionsError(null);
+    dispatch({ type: 'SET_STEP', payload: 'confirming' });
+    dispatch({ type: 'SET_ACTIONS_ERROR', payload: null });
 
     try {
       const payClient = PayStore.getClient();
       const wallet = eip155Wallets[SettingsStore.state.eip155Address];
       const signatures: string[] = [];
 
-      for (const action of paymentActions) {
+      for (const action of state.paymentActions) {
         if (action.walletRpc) {
           const { method, params } = action.walletRpc;
           const parsedParams = JSON.parse(params);
@@ -212,10 +272,10 @@ export default function PaymentOptionsModal() {
       const collectedDataResults: CollectDataFieldResult[] =
         paymentData.collectData
           ? paymentData.collectData.fields
-              .filter(field => collectedData[field.id]?.trim())
+              .filter(field => state.collectedData[field.id]?.trim())
               .map(field => ({
                 id: field.id,
-                value: collectedData[field.id].trim(),
+                value: state.collectedData[field.id].trim(),
               }))
           : [];
 
@@ -225,7 +285,7 @@ export default function PaymentOptionsModal() {
 
         const confirmResult = await payClient.confirmPayment({
           paymentId: paymentData.paymentId,
-          optionId: selectedOption.id,
+          optionId: state.selectedOption.id,
           signatures,
           collectedData:
             collectedDataResults.length > 0 ? collectedDataResults : undefined,
@@ -234,80 +294,121 @@ export default function PaymentOptionsModal() {
         console.log('[Pay] Payment confirmed:', confirmResult);
       }
 
-      Toast.show({
-        type: 'success',
-        text1: 'Payment Successful',
-        text2: 'Your payment has been confirmed',
+      const amount = formatAmount(
+        state.selectedOption.amount.value,
+        state.selectedOption.amount.display.decimals,
+        2,
+      );
+      dispatch({
+        type: 'SET_RESULT',
+        payload: {
+          status: 'success',
+          message: `You've paid ${amount} ${state.selectedOption.amount.display.assetSymbol} to ${paymentData.info?.merchant?.name}`,
+        },
       });
-
-      ModalStore.close();
+      dispatch({ type: 'SET_STEP', payload: 'result' });
     } catch (error: any) {
       console.error('[Pay] Error signing payment:', error);
-      setActionsError(error?.message || 'Failed to sign payment');
-    } finally {
-      setIsSigningPayment(false);
+      dispatch({
+        type: 'SET_RESULT',
+        payload: {
+          status: 'error',
+          message: error?.message || 'Failed to sign payment',
+        },
+      });
+      dispatch({ type: 'SET_STEP', payload: 'result' });
     }
-  }, [paymentActions, selectedOption, paymentData, collectedData]);
+  }, [
+    state.paymentActions,
+    state.selectedOption,
+    state.collectedData,
+    paymentData,
+  ]);
 
-  // Loading state
-  if (isLoading) {
-    return <LoadingView message={data?.loadingMessage} />;
-  }
+  const renderContent = useCallback(() => {
+    switch (state.step) {
+      case 'loading':
+        return (
+          <LoadingView
+            message={data?.loadingMessage || 'Preparing your payment...'}
+          />
+        );
 
-  // Error state
-  if (errorMessage) {
-    return <ErrorView message={errorMessage} onClose={onClose} />;
-  }
+      case 'intro':
+        return (
+          <IntroView info={paymentData?.info} onContinue={handleIntroNext} />
+        );
 
-  // No data
-  if (!paymentData) {
-    return null;
-  }
+      case 'collectData':
+        return (
+          <CollectDataView
+            collectData={paymentData!.collectData!}
+            collectedData={state.collectedData}
+            fieldErrors={state.fieldErrors}
+            onUpdateField={updateCollectedField}
+            onContinue={handleCollectDataNext}
+          />
+        );
 
-  const { info, options } = paymentData;
-  const hasCollectData =
-    paymentData?.collectData && paymentData.collectData.fields.length > 0;
-  const showCollectDataForm = hasCollectData && !collectDataCompleted;
-  const showSigningView =
-    selectedOption && (!hasCollectData || collectDataCompleted);
+      case 'confirm':
+        return (
+          <ConfirmPaymentView
+            info={paymentData?.info}
+            options={paymentData?.options || []}
+            selectedOption={state.selectedOption}
+            isLoadingActions={state.isLoadingActions}
+            isSigningPayment={false}
+            error={state.actionsError}
+            onSelectOption={onSelectOption}
+            onApprove={onApprovePayment}
+          />
+        );
 
-  // Collect Data Form (first step if collectData exists)
-  if (showCollectDataForm) {
-    return (
-      <CollectDataView
-        collectData={paymentData.collectData!}
-        info={info}
-        collectedData={collectedData}
-        error={collectDataError}
-        onUpdateField={updateCollectedField}
-        onSave={onSaveCollectData}
-        onCancel={onClose}
-      />
-    );
-  }
+      case 'confirming':
+        return <LoadingView message="Confirming your payment..." />;
 
-  // Confirm Payment view (after selecting option)
-  if (showSigningView) {
-    return (
-      <ConfirmPaymentView
-        selectedOption={selectedOption}
-        paymentActions={paymentActions}
-        isLoadingActions={isLoadingActions}
-        isSigningPayment={isSigningPayment}
-        error={actionsError}
-        onApprove={onApprovePayment}
-        onBack={onBack}
-      />
-    );
-  }
+      case 'result':
+        return (
+          <ResultView
+            status={state.resultStatus}
+            message={state.resultMessage}
+            onClose={onClose}
+          />
+        );
 
-  // Payment Options view (default)
+      default:
+        return <LoadingView message="Loading..." />;
+    }
+  }, [
+    state.step,
+    state.collectedData,
+    state.fieldErrors,
+    state.selectedOption,
+    state.isLoadingActions,
+    state.actionsError,
+    state.resultStatus,
+    state.resultMessage,
+    data?.loadingMessage,
+    paymentData,
+    handleIntroNext,
+    updateCollectedField,
+    handleCollectDataNext,
+    onSelectOption,
+    onApprovePayment,
+    onClose,
+  ]);
+
   return (
-    <PaymentOptionsView
-      info={info}
-      options={options}
-      onSelectOption={onSelectOption}
-      onCancel={onClose}
-    />
+    <ViewWrapper
+      step={state.step}
+      hasCollectData={hasCollectData}
+      showBackButton={
+        !['intro', 'loading', 'confirming', 'result'].includes(state.step)
+      }
+      onBack={goBack}
+      onClose={onClose}
+    >
+      {renderContent()}
+    </ViewWrapper>
   );
 }

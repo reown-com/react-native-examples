@@ -8,6 +8,7 @@ import { ConnectionsStackScreenProps } from '@/utils/TypesUtil';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import PayStore from '@/store/PayStore';
+import { EIP155_CHAINS } from '@/constants/Eip155';
 
 type Props = ConnectionsStackScreenProps<'Connections'>;
 
@@ -31,13 +32,17 @@ export default function Connections({ route }: Props) {
 
     // Show loading modal
     ModalStore.open('PaymentOptionsModal', {
-      loadingMessage: 'Fetching payment options...',
+      loadingMessage: 'Preparing your payment...',
     });
 
     try {
-      // Get wallet accounts - Base only for testing
       const eip155Address = SettingsStore.state.eip155Address;
-      const accounts = eip155Address ? [`eip155:8453:${eip155Address}`] : [];
+
+      const accounts = eip155Address
+        ? Object.keys(EIP155_CHAINS).map(
+            chainKey => `${chainKey}:${eip155Address}`,
+          )
+        : [];
 
       console.log('[Pay] Fetching payment options for:', paymentLink);
       console.log('[Pay] Accounts:', accounts);

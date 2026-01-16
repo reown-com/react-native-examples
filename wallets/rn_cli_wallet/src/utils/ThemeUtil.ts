@@ -1,6 +1,6 @@
-import {ThemeKeys} from './TypesUtil';
+import { ThemeKeys } from './TypesUtil';
 
-export const LightTheme: {[key in ThemeKeys]: string} = {
+export const LightTheme: { [key in ThemeKeys]: string } = {
   'accent-100': '#3396ff',
   'accent-090': '#2d7dd2',
   'accent-020': '#2978cc',
@@ -21,6 +21,8 @@ export const LightTheme: {[key in ThemeKeys]: string} = {
   'fg-250': '#8b9797',
   'fg-275': '#95a0a0',
   'fg-300': '#9ea9a9',
+  'fg-primary': '#F3F3F3',
+  'fg-secondary': '#E9E9E9',
 
   'bg-100': '#ffffff',
   'bg-125': '#ffffff',
@@ -35,8 +37,12 @@ export const LightTheme: {[key in ThemeKeys]: string} = {
   'inverse-100': '#ffffff',
   'inverse-000': '#000000',
 
-  'success-100': '#26b562',
-  'error-100': '#f05142',
+  'success-100': '#30A46B',
+  'error-100': '#DF4A34',
+
+  'text-secondary': '#737373',
+  'text-tertiary': '#6C6C6C',
+  'border-secondary': '#D0D0D0',
 
   'gray-glass-001': 'rgba(255, 255, 255, 0.01)',
   'gray-glass-002': 'rgba(0, 0, 0, 0.02)',
@@ -51,12 +57,12 @@ export const LightTheme: {[key in ThemeKeys]: string} = {
   'gray-glass-090': 'rgba(0, 0, 0, 0.9)',
 
   'verify-unknown': '#FF800A',
-  'verify-invalid': '#ED4747',
+  'verify-invalid': '#DF4A34',
   'bg-verify-unknown': 'rgba(255, 128, 10, 0.10)',
   'bg-verify-invalid': 'rgba(237, 71, 71, 0.10)',
 };
 
-export const DarkTheme: {[key in ThemeKeys]: string} = {
+export const DarkTheme: { [key in ThemeKeys]: string } = {
   'accent-100': '#47a1ff',
   'accent-090': '#59aaff',
   'accent-020': '#6cb4ff',
@@ -77,6 +83,8 @@ export const DarkTheme: {[key in ThemeKeys]: string} = {
   'fg-250': '#788080',
   'fg-275': '#788181',
   'fg-300': '#6e7777',
+  'fg-primary': '#252525',
+  'fg-secondary': '#2A2A2A',
 
   'bg-100': '#141414',
   'bg-125': '#191a1a',
@@ -91,8 +99,12 @@ export const DarkTheme: {[key in ThemeKeys]: string} = {
   'inverse-100': '#ffffff',
   'inverse-000': '#000000',
 
-  'success-100': '#26d962',
-  'error-100': '#f25a67',
+  'success-100': '#30A46B',
+  'error-100': '#DF4A34',
+
+  'text-secondary': '#9A9A9A',
+  'text-tertiary': '#BBBBBB',
+  'border-secondary': '#4F4F4F',
 
   'gray-glass-001': 'rgba(255, 255, 255, 0.01)',
   'gray-glass-002': 'rgba(255, 255, 255, 0.02)',
@@ -107,7 +119,7 @@ export const DarkTheme: {[key in ThemeKeys]: string} = {
   'gray-glass-090': 'rgba(255, 255, 255, 0.9)',
 
   'verify-unknown': '#FF800A',
-  'verify-invalid': '#ED4747',
+  'verify-invalid': '#DF4A34',
   'bg-verify-unknown': 'rgba(255, 128, 10, 0.10)',
   'bg-verify-invalid': 'rgba(237, 71, 71, 0.10)',
 };
