@@ -61,7 +61,7 @@ interface SettingsStore {
   setHasHydrated: (state: boolean) => void;
   setVariant: (variant: VariantName) => void;
   setMerchantId: (merchantId: string | null) => void;
-  clearMerchantId: () => Promise<void>;
+  clearMerchantId: () => Promise<string | null>;
   setMerchantApiKey: (apiKey: string | null) => Promise<void>;
   clearMerchantApiKey: () => Promise<void>;
   getMerchantApiKey: () => Promise<string | null>;
@@ -111,7 +111,8 @@ export const useSettingsStore = create<SettingsStore>()(
       },
       clearMerchantId: async () => {
         // Reset both merchant ID and API key to env defaults
-        set({ merchantId: MerchantConfig.getDefaultMerchantId() });
+        const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
+        set({ merchantId: defaultMerchantId });
         const defaultApiKey = MerchantConfig.getDefaultMerchantApiKey();
         if (defaultApiKey) {
           await secureStorage.setItem(
@@ -123,6 +124,7 @@ export const useSettingsStore = create<SettingsStore>()(
           await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
           set({ isMerchantApiKeySet: false });
         }
+        return defaultMerchantId;
       },
       setMerchantApiKey: async (apiKey: string | null) => {
         try {

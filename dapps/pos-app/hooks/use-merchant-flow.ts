@@ -152,9 +152,8 @@ export function useMerchantFlow() {
       if (state.pendingAction === "merchant-id") {
         if (state.pendingValue === "") {
           // Clear merchant ID and API key (resets both to env defaults)
-          await clearMerchantId();
-          // Sync local input with the new default value from store
-          const newMerchantId = useSettingsStore.getState().merchantId;
+          const newMerchantId = await clearMerchantId();
+          // Sync local input with the new default value
           setState((prev) => ({
             ...prev,
             merchantIdInput: newMerchantId ?? "",
