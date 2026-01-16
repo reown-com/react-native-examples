@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { SvgProps } from 'react-native-svg';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -55,14 +56,13 @@ export function Icon({
   const Theme = useTheme();
 
   const IconComponent = iconComponents[name];
+  const resolvedWidth = width ?? sizePresets[size];
+  const resolvedHeight = height ?? sizePresets[size];
 
   if (!IconComponent) {
     console.warn(`Icon "${name}" not found`);
-    return null;
+    return <View style={{ width: resolvedWidth, height: resolvedHeight }} />;
   }
-
-  const resolvedWidth = width ?? sizePresets[size];
-  const resolvedHeight = height ?? sizePresets[size];
   const fillColor = Theme[color];
 
   return (

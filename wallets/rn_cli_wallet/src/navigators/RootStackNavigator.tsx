@@ -1,5 +1,4 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { Platform } from 'react-native';
 
 import { RootStackParamList } from '@/utils/TypesUtil';
 import { HomeTabNavigator } from './HomeTabNavigator';
@@ -9,14 +8,12 @@ import Modal from '@/components/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { LogList } from '@/screens/LogList';
 import { useLogs } from '@/hooks/useLogs';
+import { FontFamily } from '@/utils/ThemeUtil';
 
 const StackNavigator = createStackNavigator<RootStackParamList>();
 
 const headerTitleStyle = {
-  fontFamily: Platform.select({
-    ios: 'KHTeka-Medium',
-    android: 'KHTeka-Medium',
-  }),
+  fontFamily: FontFamily.medium,
   fontSize: 17,
 };
 

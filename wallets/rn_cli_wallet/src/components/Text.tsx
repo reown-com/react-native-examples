@@ -3,27 +3,11 @@ import {
   Text as RNText,
   TextProps as RNTextProps,
   StyleSheet,
-  Platform,
 } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ThemeKeys } from '@/utils/TypesUtil';
-
-// Font family names (must match the font file names without extension)
-const FontFamily = {
-  light: Platform.select({
-    ios: 'KHTeka-Light',
-    android: 'KHTeka-Light',
-  }),
-  regular: Platform.select({
-    ios: 'KHTeka-Regular',
-    android: 'KHTeka-Regular',
-  }),
-  medium: Platform.select({
-    ios: 'KHTeka-Medium',
-    android: 'KHTeka-Medium',
-  }),
-};
+import { FontFamily } from '@/utils/ThemeUtil';
 
 // Text variants matching Figma text styles
 // Format: {size}-{weight} where weight is 400 (Regular) or 500 (Medium)
@@ -61,7 +45,7 @@ export type TextVariant =
 
 interface VariantStyle {
   fontSize: number;
-  fontFamily: string | undefined;
+  fontFamily: string;
   letterSpacing: number;
   lineHeight: number;
 }

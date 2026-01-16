@@ -1,16 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Platform } from 'react-native';
 
 import Settings from '@/screens/Settings';
 import { useTheme } from '@/hooks/useTheme';
 import { SettingsStackParamList } from '@/utils/TypesUtil';
+import { FontFamily } from '@/utils/ThemeUtil';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
-
-const fontFamily = Platform.select({
-  ios: 'KHTeka-Medium',
-  android: 'KHTeka-Medium',
-});
 
 export default function SettingsStack() {
   const Theme = useTheme();
@@ -22,11 +17,11 @@ export default function SettingsStack() {
         headerStyle: { backgroundColor: Theme['bg-primary'] },
         headerTitleStyle: {
           color: Theme['text-primary'],
-          fontFamily,
+          fontFamily: FontFamily.medium,
         },
         headerLargeTitleStyle: {
           color: Theme['text-primary'],
-          fontFamily,
+          fontFamily: FontFamily.medium,
         },
         headerLargeTitleShadowVisible: false,
       }}

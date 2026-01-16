@@ -1,4 +1,25 @@
+import { Platform } from 'react-native';
+
 import { ThemeKeys } from './TypesUtil';
+
+// Font family names (must match the font file names without extension)
+export const FontFamily = {
+  light: Platform.select({
+    ios: 'KHTeka-Light',
+    android: 'KHTeka-Light',
+    default: 'System',
+  }),
+  regular: Platform.select({
+    ios: 'KHTeka-Regular',
+    android: 'KHTeka-Regular',
+    default: 'System',
+  }),
+  medium: Platform.select({
+    ios: 'KHTeka-Medium',
+    android: 'KHTeka-Medium',
+    default: 'System',
+  }),
+} as const;
 
 // Spacing constants (in pixels)
 export const Spacing = {

@@ -1,16 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Platform } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import Connections from '@/screens/Connections';
 import { ConnectionsStackParamList } from '@/utils/TypesUtil';
+import { FontFamily } from '@/utils/ThemeUtil';
 
 const Stack = createNativeStackNavigator<ConnectionsStackParamList>();
-
-const fontFamily = Platform.select({
-  ios: 'KHTeka-Medium',
-  android: 'KHTeka-Medium',
-});
 
 export default function ConnectionsStack() {
   const Theme = useTheme();
@@ -22,11 +17,11 @@ export default function ConnectionsStack() {
         headerStyle: { backgroundColor: Theme['bg-primary'] },
         headerTitleStyle: {
           color: Theme['text-primary'],
-          fontFamily,
+          fontFamily: FontFamily.medium,
         },
         headerLargeTitleStyle: {
           color: Theme['text-primary'],
-          fontFamily,
+          fontFamily: FontFamily.medium,
         },
         headerLargeTitleShadowVisible: false,
       }}
