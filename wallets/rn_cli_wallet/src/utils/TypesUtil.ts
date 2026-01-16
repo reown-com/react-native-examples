@@ -1,7 +1,7 @@
-import {NavigatorScreenParams} from '@react-navigation/native';
-import {StackScreenProps} from '@react-navigation/stack';
-import {CompositeScreenProps} from '@react-navigation/native';
-import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
+import { NavigatorScreenParams } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
+import { CompositeScreenProps } from '@react-navigation/native';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 export type ThemeKeys =
   | 'accent-100'
@@ -14,6 +14,8 @@ export type ThemeKeys =
   | 'accent-glass-010'
   | 'accent-glass-005'
   | 'accent-glass-002'
+  | 'fg-primary'
+  | 'fg-secondary'
   | 'fg-100'
   | 'fg-125'
   | 'fg-150'
@@ -35,6 +37,9 @@ export type ThemeKeys =
   | 'inverse-100'
   | 'inverse-000'
   | 'success-100'
+  | 'text-secondary'
+  | 'text-tertiary'
+  | 'border-secondary'
   | 'error-100'
   | 'gray-glass-001'
   | 'gray-glass-002'
@@ -62,7 +67,7 @@ declare global {
 export type RootStackParamList = {
   Onboarding: undefined;
   Home: NavigatorScreenParams<HomeTabParamList>; // Nested Navigator
-  SessionDetail: {topic: string};
+  SessionDetail: { topic: string };
   Scan: undefined;
   Logs: undefined;
 };
@@ -73,7 +78,7 @@ export type HomeTabParamList = {
 };
 
 export type ConnectionsStackParamList = {
-  Connections?: {uri: string};
+  Connections?: { uri: string };
 };
 
 export type SettingsStackParamList = {

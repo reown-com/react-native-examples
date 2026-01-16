@@ -7,7 +7,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface ActionButtonProps {
   onPress: () => void;
@@ -15,6 +15,8 @@ export interface ActionButtonProps {
   secondary?: boolean;
   loading?: boolean;
   disabled?: boolean;
+  /** When true, button expands to fill container width */
+  fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
 }
@@ -25,22 +27,34 @@ export function ActionButton({
   secondary = false,
   loading,
   disabled,
+  fullWidth = false,
   style,
   textStyle,
 }: ActionButtonProps) {
   const Theme = useTheme();
-  const backgroundColor = secondary ? Theme['bg-200'] : Theme['accent-100'];
+  const backgroundColor = disabled
+    ? Theme['accent-glass-080']
+    : secondary
+    ? Theme['bg-200']
+    : Theme['accent-100'];
   const textColor = secondary ? Theme['fg-100'] : Theme['inverse-100'];
   const loaderColor = secondary ? Theme['fg-100'] : Theme['inverse-100'];
+
   return (
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled || loading}
-      style={[styles.container, {backgroundColor}, style]}>
+      style={[
+        styles.container,
+        { backgroundColor },
+        fullWidth && styles.fullWidth,
+        style,
+      ]}
+    >
       {loading ? (
         <ActivityIndicator color={loaderColor} />
       ) : (
-        <Text style={[styles.text, {color: textColor}, textStyle]}>
+        <Text style={[styles.text, { color: textColor }, textStyle]}>
           {children}
         </Text>
       )}
@@ -54,8 +68,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 16,
     paddingHorizontal: 16,
-    height: 40,
+    height: 48,
     width: 100,
+  },
+  fullWidth: {
+    width: '100%',
   },
   text: {
     fontSize: 13,

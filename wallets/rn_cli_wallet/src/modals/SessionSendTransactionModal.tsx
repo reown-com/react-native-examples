@@ -1,23 +1,23 @@
-import {useSnapshot} from 'valtio';
-import {useCallback, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
-import {SignClientTypes} from '@walletconnect/types';
+import { useSnapshot } from 'valtio';
+import { useCallback, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { SignClientTypes } from '@walletconnect/types';
 
-import {Methods} from '@/components/Modal/Methods';
-import {Message} from '@/components/Modal/Message';
+import { Methods } from '@/components/Modal/Methods';
+import { Message } from '@/components/Modal/Message';
 import {
   approveEIP155Request,
   rejectEIP155Request,
 } from '@/utils/EIP155RequestHandlerUtil';
-import {walletKit} from '@/utils/WalletKitUtil';
-import {handleRedirect} from '@/utils/LinkingUtils';
+import { walletKit } from '@/utils/WalletKitUtil';
+import { handleRedirect } from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
-import {RequestModal} from '@/modals/RequestModal';
-import {Chains} from '@/components/Modal/Chains';
-import {PresetsUtil} from '@/utils/PresetsUtil';
+import { RequestModal } from '@/modals/RequestModal';
+import { Chains } from '@/components/Modal/Chains';
+import { PresetsUtil } from '@/utils/PresetsUtil';
 
 export default function SessionSendTransactionModal() {
-  const {data} = useSnapshot(ModalStore.state);
+  const { data } = useSnapshot(ModalStore.state);
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 
@@ -28,7 +28,7 @@ export default function SessionSendTransactionModal() {
   const topic = requestEvent?.topic;
   const params = requestEvent?.params;
   const chainId = params?.chainId;
-  const chain = PresetsUtil.getChainData(chainId || '');
+  const chain = PresetsUtil.getChainDataById(chainId || '');
   const request = params?.request;
   const transaction = request?.params[0];
   const method = requestEvent?.params?.request?.method!;
@@ -87,7 +87,8 @@ export default function SessionSendTransactionModal() {
       onReject={onReject}
       isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
-      rejectLoader={isLoadingReject}>
+      rejectLoader={isLoadingReject}
+    >
       <View style={styles.container}>
         {chain ? <Chains chains={[chain]} /> : null}
         <Methods methods={[method]} />
