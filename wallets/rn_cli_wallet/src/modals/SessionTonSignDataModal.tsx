@@ -137,7 +137,7 @@ export default function SessionTonSignDataModal() {
         <View
           style={[
             styles.section,
-            { backgroundColor: Theme['foreground-tertiary'] },
+            { backgroundColor: Theme['foreground-primary'] },
           ]}
         >
           <Text

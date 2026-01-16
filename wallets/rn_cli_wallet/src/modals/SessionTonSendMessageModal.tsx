@@ -145,7 +145,7 @@ export default function SessionTonSendMessageModal() {
         <View
           style={[
             styles.section,
-            { backgroundColor: Theme['foreground-tertiary'] },
+            { backgroundColor: Theme['foreground-primary'] },
           ]}
         >
           <Text
@@ -164,7 +164,7 @@ export default function SessionTonSendMessageModal() {
         <View
           style={[
             styles.section,
-            { backgroundColor: Theme['foreground-tertiary'] },
+            { backgroundColor: Theme['foreground-primary'] },
           ]}
         >
           <Text

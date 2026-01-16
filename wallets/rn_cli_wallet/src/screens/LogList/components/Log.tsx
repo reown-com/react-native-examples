@@ -43,7 +43,7 @@ export function Log({ value }: LogProps) {
       onPress={() => copyToClipboard(value)}
       style={[
         styles.container,
-        { backgroundColor: Theme['foreground-tertiary'] },
+        { backgroundColor: Theme['foreground-primary'] },
       ]}
     >
       {Object.keys(jsonLog.log).map(key => {
