@@ -34,15 +34,25 @@ export function IntroView({ info, onContinue }: IntroViewProps) {
         </View>
 
         <View style={styles.textContainer}>
-          <View style={{ gap: 4 }}>
+          <View style={styles.stepContainer}>
             <Text style={styles.stepTitle}>Provide information</Text>
-            <Text style={styles.stepDescription}>
+            <Text
+              style={[
+                styles.stepDescription,
+                { color: Theme['text-secondary'] },
+              ]}
+            >
               A quick one-time check required for regulated payments.
             </Text>
           </View>
-          <View style={{ gap: 4 }}>
+          <View style={styles.stepContainer}>
             <Text style={styles.stepTitle}>Confirm payment</Text>
-            <Text style={styles.stepDescription}>
+            <Text
+              style={[
+                styles.stepDescription,
+                { color: Theme['text-secondary'] },
+              ]}
+            >
               Review the details and approve the payment.
             </Text>
           </View>
@@ -74,6 +84,9 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 8,
   },
+  stepContainer: {
+    gap: 4,
+  },
   paymentInfoContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -86,7 +99,6 @@ const styles = StyleSheet.create({
   },
   stepDescription: {
     fontSize: 16,
-    color: '#9A9A9A',
   },
   stepIndicator: {
     marginVertical: 24,

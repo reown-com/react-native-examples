@@ -17,10 +17,14 @@ export function MerchantInfo({ info }: MerchantInfoProps) {
     <>
       {info?.merchant && (
         <View style={styles.merchantContainer}>
-          <Image
-            source={{ uri: info.merchant.iconUrl }}
-            style={[styles.merchantIcon, { backgroundColor: Theme['bg-300'] }]}
-          />
+          {info.merchant.iconUrl ? (
+            <Image
+              source={{ uri: info.merchant.iconUrl }}
+              style={[styles.merchantIcon, { backgroundColor: Theme['bg-300'] }]}
+            />
+          ) : (
+            <View style={[styles.merchantIcon, { backgroundColor: Theme['bg-300'] }]} />
+          )}
           <View style={styles.paymentInfoContainer}>
           <Text style={[styles.paymentInfo, { color: Theme['fg-100'] }]} numberOfLines={1} ellipsizeMode="tail">
             Pay ${amount} to {info.merchant.name}

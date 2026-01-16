@@ -163,7 +163,7 @@ export function ConfirmPaymentView({
         options.length,
       );
     }
-    if (options.length >= 1) {
+    if (options.length > 1) {
       setIsExpanded(prev => !prev);
     }
   }, [options.length]);
@@ -202,7 +202,7 @@ export function ConfirmPaymentView({
           <Text style={[styles.rowLabel, { color: Theme['text-tertiary'] }]}>
             Pay with
           </Text>
-          <View key={selectedOption?.id} style={styles.optionCard}>
+          <View style={styles.optionCard}>
             <Text style={[styles.optionAmount, { color: Theme['fg-100'] }]}>
               {formatAmount(
                 selectedOption?.amount?.value || '0',
@@ -287,17 +287,18 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   payWithContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     borderRadius: 20,
   },
   payWithContainerExpanded: {
-    paddingBottom: 20,
+    paddingBottom: 12,
   },
   payWithRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     height: 64,
+    paddingHorizontal: 8,
   },
   optionsContainer: {
     maxHeight: 300,

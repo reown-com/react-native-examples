@@ -243,28 +243,36 @@ export default function PaymentOptionsModal() {
       const wallet = eip155Wallets[SettingsStore.state.eip155Address];
       const signatures: string[] = [];
 
-      for (const action of state.paymentActions) {
+      for (const [index, action] of state.paymentActions.entries()) {
         if (action.walletRpc) {
-          const { method, params } = action.walletRpc;
-          const parsedParams = JSON.parse(params);
+          try {
+            const { method, params } = action.walletRpc;
+            const parsedParams = JSON.parse(params);
 
-          console.log('[Pay] Signing action:', method, parsedParams);
+            console.log('[Pay] Signing action:', method, parsedParams);
 
-          if (
-            method === 'eth_signTypedData_v4' ||
-            method === 'eth_signTypedData_v3' ||
-            method === 'eth_signTypedData'
-          ) {
-            const typedData = JSON.parse(parsedParams[1]);
-            const { domain, types, message: messageData } = typedData;
-            delete types.EIP712Domain;
-            const signature = await wallet._signTypedData(
-              domain,
-              types,
-              messageData,
-            );
-            console.log('[Pay] Signature:', signature);
-            signatures.push(signature);
+            if (
+              method === 'eth_signTypedData_v4' ||
+              method === 'eth_signTypedData_v3' ||
+              method === 'eth_signTypedData'
+            ) {
+              const typedData = JSON.parse(parsedParams[1]);
+              const { domain, types, message: messageData } = typedData;
+              delete types.EIP712Domain;
+              const signature = await wallet._signTypedData(
+                domain,
+                types,
+                messageData,
+              );
+              console.log('[Pay] Signature:', signature);
+              signatures.push(signature);
+            } else {
+              console.warn(`[Pay] Unsupported wallet RPC method: ${method}`);
+              throw new Error(`Unsupported signature method: ${method}`);
+            }
+          } catch (error: any) {
+            console.error(`[Pay] Error signing action ${index}:`, error);
+            throw new Error(`Failed to sign action ${index + 1}: ${error?.message || 'Unknown error'}`);
           }
         }
       }
