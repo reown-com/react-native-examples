@@ -272,7 +272,11 @@ export default function PaymentOptionsModal() {
             }
           } catch (error: any) {
             console.error(`[Pay] Error signing action ${index}:`, error);
-            throw new Error(`Failed to sign action ${index + 1}: ${error?.message || 'Unknown error'}`);
+            throw new Error(
+              `Failed to sign action ${index + 1}: ${
+                error?.message || 'Unknown error'
+              }`,
+            );
           }
         }
       }

@@ -1,5 +1,6 @@
-import { Text, StyleSheet, TextStyle, StyleProp } from 'react-native';
+import { TextStyle, StyleProp } from 'react-native';
 import { formatAmount } from './utils';
+import { Text } from '@/components/Text';
 
 interface AmountDisplayProps {
   /** Raw amount value as string (e.g., "1000000") */
@@ -41,17 +42,10 @@ export function AmountDisplay({
   const suffix = symbol ? ` ${symbol}` : '';
 
   return (
-    <Text style={[styles.amount, style]}>
+    <Text variant="lg-400" color="text-primary" style={style}>
       {prefix}
       {formattedAmount}
       {suffix}
     </Text>
   );
 }
-
-const styles = StyleSheet.create({
-  amount: {
-    fontSize: 16,
-    fontWeight: '400',
-  },
-});

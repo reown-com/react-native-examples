@@ -2,20 +2,21 @@ import {
   ScrollView,
   StyleProp,
   StyleSheet,
-  Text,
   View,
   ViewStyle,
 } from 'react-native';
 
-import {useTheme} from '@/hooks/useTheme';
-import {Tag} from '@/components/Tag';
+import { useTheme } from '@/hooks/useTheme';
+import { Tag } from '@/components/Tag';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface IMethodsProps {
   methods?: string[];
   style?: StyleProp<ViewStyle>;
 }
 
-export function Methods({methods, style}: IMethodsProps) {
+export function Methods({ methods, style }: IMethodsProps) {
   const Theme = useTheme();
 
   if (!methods?.length) {
@@ -25,9 +26,16 @@ export function Methods({methods, style}: IMethodsProps) {
   return (
     <ScrollView
       bounces={false}
-      style={[styles.container, {backgroundColor: Theme['bg-150']}, style]}
-      contentContainerStyle={styles.content}>
-      <Text style={[styles.title, {color: Theme['fg-150']}]}>Methods</Text>
+      style={[
+        styles.container,
+        { backgroundColor: Theme['foreground-primary'] },
+        style,
+      ]}
+      contentContainerStyle={styles.content}
+    >
+      <Text variant="sm-500" color="text-secondary" style={styles.title}>
+        Methods
+      </Text>
       <View style={styles.row}>
         {methods?.length &&
           methods?.map((method: string, index: number) => (
@@ -40,19 +48,16 @@ export function Methods({methods, style}: IMethodsProps) {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 20,
+    borderRadius: BorderRadius[5],
     maxHeight: 120,
   },
   content: {
     alignItems: 'flex-start',
     flexWrap: 'wrap',
-    padding: 8,
+    padding: Spacing[2],
   },
   title: {
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: '600',
-    margin: 4,
+    margin: Spacing[1],
   },
   row: {
     flexDirection: 'row',

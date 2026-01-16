@@ -1,4 +1,4 @@
-import Svg, {Path, type SvgProps} from 'react-native-svg';
+import Svg, { Path, type SvgProps } from 'react-native-svg';
 
 const SvgConnectTemplate = (props: SvgProps) => (
   <Svg viewBox="0 0 37 33" fill="none" {...props}>

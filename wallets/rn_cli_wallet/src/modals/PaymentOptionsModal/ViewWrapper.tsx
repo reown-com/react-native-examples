@@ -4,6 +4,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTheme } from '@/hooks/useTheme';
 import SvgArrowLeft from '@/assets/ArrowLeft';
 import SvgClose from '@/assets/Close';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 
 type Step =
   | 'loading'
@@ -41,7 +42,7 @@ export function ViewWrapper({
     step === 'collectData' ? 0 : step === 'confirm' ? 1 : -1;
 
   return (
-    <View style={[styles.container, { backgroundColor: Theme['bg-100'] }]}>
+    <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       {/* Header */}
       <View style={styles.header}>
         {/* Back Button */}
@@ -52,7 +53,11 @@ export function ViewWrapper({
               style={styles.iconButton}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <SvgArrowLeft width={38} height={38} fill={Theme['fg-100']} />
+              <SvgArrowLeft
+                width={38}
+                height={38}
+                fill={Theme['text-primary']}
+              />
             </TouchableOpacity>
           )}
         </View>
@@ -67,8 +72,8 @@ export function ViewWrapper({
                   {
                     backgroundColor:
                       currentPillIndex >= 0
-                        ? Theme['accent-100']
-                        : Theme['bg-300'],
+                        ? Theme['bg-accent-primary']
+                        : Theme['foreground-tertiary'],
                   },
                 ]}
               />
@@ -78,8 +83,8 @@ export function ViewWrapper({
                   {
                     backgroundColor:
                       currentPillIndex >= 1
-                        ? Theme['accent-100']
-                        : Theme['bg-300'],
+                        ? Theme['bg-accent-primary']
+                        : Theme['foreground-tertiary'],
                   },
                 ]}
               />
@@ -94,7 +99,7 @@ export function ViewWrapper({
             style={styles.iconButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <SvgClose width={38} height={38} fill={Theme['fg-100']} />
+            <SvgClose width={38} height={38} fill={Theme['text-primary']} />
           </TouchableOpacity>
         </View>
       </View>
@@ -113,18 +118,18 @@ export function ViewWrapper({
 
 const styles = StyleSheet.create({
   container: {
-    borderTopLeftRadius: 34,
-    borderTopRightRadius: 34,
-    paddingTop: 16,
+    borderTopLeftRadius: BorderRadius[8],
+    borderTopRightRadius: BorderRadius[8],
+    paddingTop: Spacing[4],
     paddingBottom: 30,
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing[5],
     maxHeight: '90%',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: Spacing[5],
   },
   headerLeft: {
     width: 38,
@@ -144,15 +149,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconButton: {
-    padding: 0,
+    padding: Spacing[0],
   },
   stepsContainer: {
     flexDirection: 'row',
-    gap: 8,
+    gap: Spacing[2],
   },
   stepPill: {
-    width: 36,
+    width: Spacing[9],
     height: 6,
-    borderRadius: 100,
+    borderRadius: BorderRadius.full,
   },
 });

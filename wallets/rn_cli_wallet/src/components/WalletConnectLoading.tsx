@@ -1,6 +1,6 @@
-import { useTheme } from "@/hooks/useTheme";
-import React, { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { useTheme } from '@/hooks/useTheme';
+import React, { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -8,7 +8,7 @@ import Animated, {
   withRepeat,
   withSequence,
   withTiming,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 
 export function WalletConnectLoading({ size = 120 }: { size?: number }) {
   const Theme = useTheme();
@@ -212,7 +212,7 @@ export function WalletConnectLoading({ size = 120 }: { size?: number }) {
           {
             width: squareSize,
             height: squareSize,
-            backgroundColor: Theme["accent-100"],
+            backgroundColor: Theme['bg-accent-primary'],
             top: squareSize + gap,
             left: squareSize + gap,
           },
@@ -225,30 +225,30 @@ export function WalletConnectLoading({ size = 120 }: { size?: number }) {
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "center",
-    alignItems: "center",
-    position: "relative",
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
   },
   square: {
     // Base square styles (size and position defined inline)
   },
   squareTopLeft: {
-    backgroundColor: "#E8E8E8",
-    position: "absolute",
+    backgroundColor: '#E8E8E8',
+    position: 'absolute',
     top: 0,
     left: 0,
   },
   squareTopRight: {
-    backgroundColor: "#363636",
-    position: "absolute",
+    backgroundColor: '#363636',
+    position: 'absolute',
     top: 0,
   },
   squareBottomLeft: {
-    backgroundColor: "#6C6C6C",
-    position: "absolute",
+    backgroundColor: '#6C6C6C',
+    position: 'absolute',
     left: 0,
   },
   squareBottomRight: {
-    position: "absolute",
-  }
+    position: 'absolute',
+  },
 });

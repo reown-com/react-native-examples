@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   Image,
   TouchableOpacity,
   StyleSheet,
@@ -22,6 +21,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { sharedStyles } from './styles';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 const OPTION_HEIGHT = 64;
 const OPTION_GAP = 8;
@@ -59,7 +60,9 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
       style={[
         styles.optionItem,
         {
-          backgroundColor: isSelected ? '#DCE9F3' : Theme['fg-secondary'],
+          backgroundColor: isSelected
+            ? Theme['foreground-accent-primary-10-solid']
+            : Theme['foreground-secondary'],
         },
       ]}
     >
@@ -74,21 +77,28 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
             style={[
               styles.optionChainIcon,
               {
-                borderColor: isSelected ? '#DCE9F3' : Theme['fg-secondary'],
+                borderColor: isSelected
+                  ? Theme['foreground-accent-primary-10-solid']
+                  : Theme['foreground-secondary'],
               },
             ]}
           />
         </View>
-        <Text style={[styles.optionText, { color: Theme['fg-100'] }]}>
+        <Text variant="lg-400" color="text-primary">
           {amount} {option.amount.display.assetSymbol}
         </Text>
       </View>
       {isSelected && (
-        <View style={[styles.radioOuter, { borderColor: Theme['accent-100'] }]}>
+        <View
+          style={[
+            styles.radioOuter,
+            { borderColor: Theme['bg-accent-primary'] },
+          ]}
+        >
           <View
             style={[
               styles.radioInner,
-              { backgroundColor: Theme['accent-100'] },
+              { backgroundColor: Theme['bg-accent-primary'] },
             ]}
           />
         </View>
@@ -181,12 +191,15 @@ export function ConfirmPaymentView({
       <MerchantInfo info={info} />
 
       <View
-        style={[styles.amountRow, { backgroundColor: Theme['fg-primary'] }]}
+        style={[
+          styles.amountRow,
+          { backgroundColor: Theme['foreground-primary'] },
+        ]}
       >
-        <Text style={[styles.rowLabel, { color: Theme['text-tertiary'] }]}>
+        <Text variant="lg-400" color="text-tertiary">
           Amount
         </Text>
-        <Text style={[styles.amountValue, { color: Theme['fg-100'] }]}>
+        <Text variant="lg-400" color="text-primary">
           ${amount}
         </Text>
       </View>
@@ -195,15 +208,15 @@ export function ConfirmPaymentView({
         style={[
           styles.payWithContainer,
           isExpanded && styles.payWithContainerExpanded,
-          { backgroundColor: Theme['fg-primary'] },
+          { backgroundColor: Theme['foreground-primary'] },
         ]}
       >
         <TouchableOpacity style={styles.payWithRow} onPress={toggleExpanded}>
-          <Text style={[styles.rowLabel, { color: Theme['text-tertiary'] }]}>
+          <Text variant="lg-400" color="text-tertiary">
             Pay with
           </Text>
           <View style={styles.optionCard}>
-            <Text style={[styles.optionAmount, { color: Theme['fg-100'] }]}>
+            <Text variant="lg-400" color="text-primary">
               {formatAmount(
                 selectedOption?.amount?.value || '0',
                 selectedOption?.amount?.display?.decimals || 0,
@@ -221,12 +234,16 @@ export function ConfirmPaymentView({
                   source={chainIcon}
                   style={[
                     styles.selectedOptionChainIcon,
-                    { borderColor: Theme['fg-primary'] },
+                    { borderColor: Theme['foreground-primary'] },
                   ]}
                 />
               </View>
             )}
-            <SvgCaretUpDown width={20} height={20} fill={Theme['fg-100']} />
+            <SvgCaretUpDown
+              width={20}
+              height={20}
+              fill={Theme['text-primary']}
+            />
           </View>
         </TouchableOpacity>
 
@@ -272,33 +289,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    height: 64,
-    borderRadius: 20,
-    marginBottom: 8,
-    marginTop: 16,
-  },
-  rowLabel: {
-    fontSize: 16,
-    fontWeight: '400',
-  },
-  amountValue: {
-    fontSize: 16,
-    fontWeight: '400',
+    paddingHorizontal: Spacing[5],
+    height: Spacing[13],
+    borderRadius: BorderRadius[5],
+    marginBottom: Spacing[2],
+    marginTop: Spacing[4],
   },
   payWithContainer: {
-    paddingHorizontal: 12,
-    borderRadius: 20,
+    paddingHorizontal: Spacing[3],
+    borderRadius: BorderRadius[5],
   },
   payWithContainerExpanded: {
-    paddingBottom: 12,
+    paddingBottom: Spacing[3],
   },
   payWithRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 64,
-    paddingHorizontal: 8,
+    height: Spacing[13],
+    paddingHorizontal: Spacing[2],
   },
   optionsContainer: {
     maxHeight: 300,
@@ -306,72 +315,64 @@ const styles = StyleSheet.create({
   optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing[2],
   },
   optionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
-    borderRadius: 16,
+    padding: Spacing[5],
+    borderRadius: BorderRadius[4],
     justifyContent: 'space-between',
   },
   optionItemContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing[2],
   },
   optionIconContainer: {
-    width: 32,
-    height: 32,
+    width: Spacing[8],
+    height: Spacing[8],
   },
   selectedOptionIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 100,
+    width: Spacing[6],
+    height: Spacing[6],
+    borderRadius: BorderRadius.full,
   },
   selectedOptionChainIcon: {
     height: 14,
     width: 14,
     position: 'absolute',
-    borderRadius: 100,
+    borderRadius: BorderRadius.full,
     borderWidth: 2,
     right: -1,
     bottom: -2,
   },
   optionIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 100,
+    width: Spacing[8],
+    height: Spacing[8],
+    borderRadius: BorderRadius.full,
   },
   optionChainIcon: {
     height: 18,
     width: 18,
     position: 'absolute',
-    borderRadius: 100,
+    borderRadius: BorderRadius.full,
     borderWidth: 2,
     right: -2,
     bottom: -2,
-  },
-  optionText: {
-    fontSize: 16,
-    fontWeight: '400',
-  },
-  optionAmount: {
-    fontSize: 16,
-    fontWeight: '400',
   },
   radioOuter: {
     height: 22,
     width: 22,
     borderWidth: 1,
-    borderRadius: 100,
+    borderRadius: BorderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
   radioInner: {
-    height: 12,
-    width: 12,
-    borderRadius: 100,
+    height: Spacing[3],
+    width: Spacing[3],
+    borderRadius: BorderRadius.full,
   },
   optionsScrollView: {
     flex: 1,

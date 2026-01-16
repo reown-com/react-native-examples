@@ -1,9 +1,12 @@
 import * as bip39 from 'bip39';
-import {Ed25519Keypair} from '@mysten/sui/keypairs/ed25519';
-import {verifyPersonalMessageSignature} from '@mysten/sui/verify';
-import {derivePath} from 'ed25519-hd-key';
-import {SerialTransactionExecutor, Transaction} from '@mysten/sui/transactions';
-import {SuiClient} from '@mysten/sui/client';
+import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
+import { verifyPersonalMessageSignature } from '@mysten/sui/verify';
+import { derivePath } from 'ed25519-hd-key';
+import {
+  SerialTransactionExecutor,
+  Transaction,
+} from '@mysten/sui/transactions';
+import { SuiClient } from '@mysten/sui/client';
 
 interface IInitArguments {
   mnemonic?: string;
@@ -37,14 +40,14 @@ export default class SuiLib {
   constructor(mnemonic?: string) {
     this.mnemonic = mnemonic ? mnemonic : bip39.generateMnemonic();
     const seed = bip39.mnemonicToSeedSync(this.mnemonic);
-    const {key} = derivePath(SUI_PATH, seed.toString('hex'));
+    const { key } = derivePath(SUI_PATH, seed.toString('hex'));
 
     this.keypair = Ed25519Keypair.fromSecretKey(new Uint8Array(key));
     this.address = this.keypair.getPublicKey().toSuiAddress();
     console.log('Sui Address:', this.address);
   }
 
-  static async init({mnemonic}: IInitArguments) {
+  static async init({ mnemonic }: IInitArguments) {
     return new SuiLib(mnemonic);
   }
 
@@ -56,7 +59,7 @@ export default class SuiLib {
     return this.mnemonic;
   }
 
-  public async signMessage({message}: ISignMessageArguments) {
+  public async signMessage({ message }: ISignMessageArguments) {
     const messageToSign = new TextEncoder().encode(message);
 
     const signature = await this.keypair.signPersonalMessage(messageToSign);
@@ -93,9 +96,9 @@ export default class SuiLib {
     });
     const client = this.getSuiClient(chainId);
     // console.log('tx', tx, {base64: transaction});
-    const signature = await tx.sign({signer: this.keypair, client});
+    const signature = await tx.sign({ signer: this.keypair, client });
     console.log('signature', signature);
-    const transactionBytes = Buffer.from(await tx.build({client})).toString(
+    const transactionBytes = Buffer.from(await tx.build({ client })).toString(
       'base64',
     );
     console.log('transactionBytes', transactionBytes);

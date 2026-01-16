@@ -1,4 +1,4 @@
-import Svg, {Path, type SvgProps} from 'react-native-svg';
+import Svg, { Path, type SvgProps } from 'react-native-svg';
 
 const SvgCopy = (props: SvgProps) => (
   <Svg viewBox="0 0 56 56" fill="none" {...props}>

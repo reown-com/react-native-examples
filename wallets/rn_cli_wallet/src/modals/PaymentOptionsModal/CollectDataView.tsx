@@ -1,11 +1,13 @@
 import { useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, TextInput, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import type { CollectDataAction } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
 import { sharedStyles } from './styles';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface CollectDataViewProps {
   collectData: CollectDataAction;
@@ -30,12 +32,12 @@ export function CollectDataView({
 
   const getBorderColor = (fieldId: string) => {
     if (fieldErrors[fieldId]) {
-      return Theme['error-100'];
+      return Theme['text-error'];
     }
     if (focusedField === fieldId) {
-      return Theme['accent-100'];
+      return Theme['bg-accent-primary'];
     }
-    return Theme['bg-300'];
+    return Theme['foreground-tertiary'];
   };
 
   const handleSubmitEditing = (index: number) => {
@@ -52,7 +54,12 @@ export function CollectDataView({
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
-      <Text style={[styles.headerTitle, { color: Theme['fg-100'] }]}>
+      <Text
+        variant="h6-400"
+        color="text-primary"
+        center
+        style={styles.headerTitle}
+      >
         Additional Information
       </Text>
 
@@ -67,8 +74,8 @@ export function CollectDataView({
               style={[
                 styles.fieldInput,
                 {
-                  backgroundColor: Theme['fg-primary'],
-                  color: Theme['fg-100'],
+                  backgroundColor: Theme['foreground-primary'],
+                  color: Theme['text-primary'],
                   borderColor: getBorderColor(field.id),
                 },
               ]}
@@ -113,23 +120,20 @@ export function CollectDataView({
 
 const styles = StyleSheet.create({
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '400',
-    textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: Spacing[5],
   },
   fieldContainer: {
-    marginBottom: 16,
+    marginBottom: Spacing[4],
   },
   fieldInput: {
     height: 60,
-    borderRadius: 16,
-    paddingHorizontal: 20,
+    borderRadius: BorderRadius[4],
+    paddingHorizontal: Spacing[5],
     borderWidth: 1,
     fontSize: 16,
   },
   confirmButtonContainer: {
-    paddingTop: 16,
-    gap: 8,
+    paddingTop: Spacing[4],
+    gap: Spacing[2],
   },
 });

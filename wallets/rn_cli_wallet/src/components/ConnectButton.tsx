@@ -1,11 +1,12 @@
 import {
   TouchableOpacity,
   StyleSheet,
-  Text,
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface IConnectButtonProps {
   onPress: () => void;
@@ -13,15 +14,24 @@ interface IConnectButtonProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function ConnectButton({onPress, disabled, style}: IConnectButtonProps) {
+export function ConnectButton({
+  onPress,
+  disabled,
+  style,
+}: IConnectButtonProps) {
   const Theme = useTheme();
-  const backgroundColor = disabled ? Theme['fg-300'] : Theme['accent-100'];
+  const backgroundColor = disabled
+    ? Theme['foreground-tertiary']
+    : Theme['bg-accent-primary'];
   return (
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled}
-      style={[styles.container, {backgroundColor}, style]}>
-      <Text style={styles.mainText}>Connect</Text>
+      style={[styles.container, { backgroundColor }, style]}
+    >
+      <Text variant="h6-500" color="text-invert">
+        Connect
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -30,14 +40,8 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20,
+    borderRadius: BorderRadius[5],
     height: 46,
-    marginTop: 16,
-  },
-  mainText: {
-    fontSize: 20,
-    lineHeight: 24,
-    fontWeight: '600',
-    color: 'white',
+    marginTop: Spacing[4],
   },
 });

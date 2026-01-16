@@ -2,7 +2,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
-import { Text } from '@reown/appkit-ui-react-native';
+import { Text } from '@/components/Text';
 import AlertCircle from '@/assets/AlertCircle';
 import CheckCircle from '@/assets/CheckCircle';
 import { sharedStyles } from './styles';
@@ -25,11 +25,17 @@ export function ResultView({ status, message, onClose }: ResultViewProps) {
     <>
       <View style={styles.contentContainer}>
         {isSuccess ? (
-          <CheckCircle width={48} height={48} fill={Theme['success-100']} />
+          <CheckCircle width={48} height={48} fill={Theme['text-success']} />
         ) : (
-          <AlertCircle width={48} height={48} fill={Theme['error-100']} />
+          <AlertCircle width={48} height={48} fill={Theme['text-error']} />
         )}
-        <Text style={styles.message} numberOfLines={isSuccess ? 1 : 3} center>
+        <Text
+          variant="large-600"
+          color="text-primary"
+          style={styles.message}
+          numberOfLines={isSuccess ? 1 : 3}
+          center
+        >
           {message || defaultMessage}
         </Text>
       </View>

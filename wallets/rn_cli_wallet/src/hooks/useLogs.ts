@@ -1,6 +1,6 @@
-import {useCallback, useEffect} from 'react';
+import { useCallback, useEffect } from 'react';
 import SettingsStore from '@/store/SettingsStore';
-import {walletKit} from '@/utils/WalletKitUtil';
+import { walletKit } from '@/utils/WalletKitUtil';
 
 export function useLogs() {
   const getLogs = useCallback(async () => {

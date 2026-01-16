@@ -1,6 +1,6 @@
 import { useSnapshot } from 'valtio';
 import { useEffect, useState } from 'react';
-import { Text, View, Alert, ScrollView } from 'react-native';
+import { View, Alert } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 
@@ -8,15 +8,15 @@ import { eip155Wallets } from '@/utils/EIP155WalletUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
 import { Card } from '@/components/Card';
-import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
 import { SettingsStackScreenProps } from '@/utils/TypesUtil';
 import { storage } from '@/utils/storage';
+import { Text } from '@/components/Text';
+import { ScrollView } from 'react-native-gesture-handler';
 
 type Props = SettingsStackScreenProps<'Settings'>;
 
 export default function Settings({ navigation }: Props) {
-  const Theme = useTheme();
   const { eip155Address, suiAddress, tonAddress, tronAddress, socketStatus } =
     useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
@@ -38,11 +38,13 @@ export default function Settings({ navigation }: Props) {
 
   return (
     <ScrollView
-      style={[styles.container]}
-      contentContainerStyle={[styles.content]}
+      style={styles.container}
+      contentContainerStyle={styles.content}
       contentInsetAdjustmentBehavior="automatic"
     >
-      <Text style={[styles.subtitle, { color: Theme['fg-100'] }]}>Account</Text>
+      <Text variant="lg-500" color="text-primary" style={styles.subtitle}>
+        Account
+      </Text>
       <View style={styles.sectionContainer}>
         <Card
           title="EVM Address"
@@ -77,7 +79,9 @@ export default function Settings({ navigation }: Props) {
           icon="chevronRight"
         />
       </View>
-      <Text style={[styles.subtitle, { color: Theme['fg-100'] }]}>Device</Text>
+      <Text variant="lg-500" color="text-primary" style={styles.subtitle}>
+        Device
+      </Text>
       <View style={styles.sectionContainer}>
         <Card
           title="Client ID"

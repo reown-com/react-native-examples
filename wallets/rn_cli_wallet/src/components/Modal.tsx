@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import RNModal from 'react-native-modal';
 
 import ModalStore from '@/store/ModalStore';
+import { Spacing } from '@/utils/ThemeUtil';
 import SessionProposalModal from '@/modals/SessionProposalModal';
 import SessionSignModal from '@/modals/SessionSignModal';
 import SessionSendTransactionModal from '@/modals/SessionSendTransactionModal';
@@ -82,7 +83,7 @@ export default function Modal() {
 
 const styles = StyleSheet.create({
   modal: {
-    margin: 0,
+    margin: Spacing[0],
     justifyContent: 'flex-end',
   },
 });

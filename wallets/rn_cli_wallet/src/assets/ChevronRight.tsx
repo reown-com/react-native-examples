@@ -1,4 +1,4 @@
-import Svg, {Path, type SvgProps} from 'react-native-svg';
+import Svg, { Path, type SvgProps } from 'react-native-svg';
 const SvgChevronRight = (props: SvgProps) => (
   <Svg viewBox="0 0 16 16" fill="none" {...props}>
     <Path

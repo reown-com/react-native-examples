@@ -1,6 +1,6 @@
 import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
 
 import { Methods } from '@/components/Modal/Methods';
@@ -16,6 +16,8 @@ import { Chains } from '@/components/Modal/Chains';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 import { tonAddresses } from '@/utils/TonWalletUtil';
 import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 export default function SessionTonSendMessageModal() {
   // Get request and wallet data from store
@@ -118,7 +120,11 @@ export default function SessionTonSendMessageModal() {
 
   // Ensure request and wallet are defined
   if (!requestEvent || !session) {
-    return <Text>Missing request data</Text>;
+    return (
+      <Text variant="md-400" color="text-error">
+        Missing request data
+      </Text>
+    );
   }
 
   return (
@@ -136,21 +142,39 @@ export default function SessionTonSendMessageModal() {
         <Methods methods={[method]} />
 
         {/* Sign with Address */}
-        <View style={[styles.section, { backgroundColor: Theme['bg-150'] }]}>
-          <Text style={[styles.sectionTitle, { color: Theme['fg-150'] }]}>
+        <View
+          style={[
+            styles.section,
+            { backgroundColor: Theme['foreground-primary'] },
+          ]}
+        >
+          <Text
+            variant="sm-500"
+            color="text-secondary"
+            style={styles.sectionTitle}
+          >
             Sign with Address
           </Text>
-          <Text style={[styles.sectionContent, { color: Theme['fg-175'] }]}>
+          <Text variant="sm-400" color="text-secondary">
             {tonAddresses[0]}
           </Text>
         </View>
 
         {/* Transaction Details */}
-        <View style={[styles.section, { backgroundColor: Theme['bg-150'] }]}>
-          <Text style={[styles.sectionTitle, { color: Theme['fg-150'] }]}>
+        <View
+          style={[
+            styles.section,
+            { backgroundColor: Theme['foreground-primary'] },
+          ]}
+        >
+          <Text
+            variant="sm-500"
+            color="text-secondary"
+            style={styles.sectionTitle}
+          >
             Transaction Details
           </Text>
-          <Text style={[styles.sectionContent, { color: Theme['fg-175'] }]}>
+          <Text variant="sm-400" color="text-secondary">
             {formatTransactionDetails()}
           </Text>
         </View>
@@ -162,23 +186,16 @@ export default function SessionTonSendMessageModal() {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginVertical: 8,
-    paddingHorizontal: 16,
-    rowGap: 8,
+    marginVertical: Spacing[2],
+    paddingHorizontal: Spacing[4],
+    rowGap: Spacing[2],
   },
   section: {
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    borderRadius: BorderRadius[5],
+    paddingVertical: Spacing[2],
+    paddingHorizontal: Spacing[4],
   },
   sectionTitle: {
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  sectionContent: {
-    fontSize: 12,
-    lineHeight: 18,
+    marginBottom: Spacing[1],
   },
 });

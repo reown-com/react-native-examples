@@ -1,60 +1,60 @@
-import { TronWeb, utils } from 'tronweb'
+import { TronWeb, utils } from 'tronweb';
 
 /**
  * Types
  */
 interface IInitArguments {
-  privateKey: string
+  privateKey: string;
 }
 
 /**
  * Library
  */
 export default class TronLib {
-  privateKey: string
-  tronWeb: TronWeb
+  privateKey: string;
+  tronWeb: TronWeb;
 
   constructor(privateKey: string) {
-    this.privateKey = privateKey
+    this.privateKey = privateKey;
     this.tronWeb = new TronWeb({
       // Nile TestNet, if you want to use in MainNet, change the fullHost to 'https://api.trongrid.io', or use tronWeb.setFullNode
       fullHost: 'https://nile.trongrid.io/',
-      privateKey: privateKey
-    })
+      privateKey: privateKey,
+    });
   }
 
   static async init({ privateKey }: IInitArguments) {
     if (!privateKey) {
-      const account = utils.accounts.generateAccount()
-      return new TronLib(account.privateKey)
+      const account = utils.accounts.generateAccount();
+      return new TronLib(account.privateKey);
     } else {
-      return new TronLib(privateKey)
+      return new TronLib(privateKey);
     }
   }
 
   public getAddress() {
-    return this.tronWeb.defaultAddress.base58
+    return this.tronWeb.defaultAddress.base58;
   }
 
   public createAccount() {
-    return this.tronWeb.createAccount()
+    return this.tronWeb.createAccount();
   }
 
   public setFullNode(node: string) {
-    return this.tronWeb.setFullNode(node)
+    return this.tronWeb.setFullNode(node);
   }
 
   public async signMessage(message: string) {
     if (!message || typeof message !== 'string') {
-      throw new Error('Invalid message: must be a non-empty string')
+      throw new Error('Invalid message: must be a non-empty string');
     }
-    const signedtxn = await this.tronWeb.trx.signMessageV2(message)
-    return signedtxn
+    const signedtxn = await this.tronWeb.trx.signMessageV2(message);
+    return signedtxn;
   }
 
   public async signTransaction(transaction: any) {
     // The transaction parameter is expected to be unwrapped already.
-    const signedtxn = await this.tronWeb.trx.sign(transaction)
-    return signedtxn
+    const signedtxn = await this.tronWeb.trx.sign(transaction);
+    return signedtxn;
   }
 }

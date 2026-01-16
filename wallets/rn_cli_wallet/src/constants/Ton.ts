@@ -3,7 +3,9 @@ import Ton from '@/assets/chains/ton.png';
 /**
  * Types
  */
-export type TTonChain = keyof typeof TON_MAINNET_CHAINS | keyof typeof TON_TEST_CHAINS
+export type TTonChain =
+  | keyof typeof TON_MAINNET_CHAINS
+  | keyof typeof TON_TEST_CHAINS;
 
 /**
  * Chains
@@ -14,8 +16,8 @@ export const TON_MAINNET_CHAINS = {
     namespace: 'ton',
     name: 'TON Mainnet',
     rpcUrl: 'https://toncenter.com/api/v2/jsonRPC',
-  }
-}
+  },
+};
 
 export const TON_TEST_CHAINS = {
   'ton:-3': {
@@ -23,10 +25,10 @@ export const TON_TEST_CHAINS = {
     namespace: 'ton',
     name: 'TON Testnet',
     rpcUrl: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-  }
-}
+  },
+};
 
-export const TON_CHAINS = { ...TON_MAINNET_CHAINS, ...TON_TEST_CHAINS }
+export const TON_CHAINS = { ...TON_MAINNET_CHAINS, ...TON_TEST_CHAINS };
 
 export const TON_NETWORKS_IMAGES = {
   'ton:-239': Ton,
@@ -38,5 +40,5 @@ export const TON_NETWORKS_IMAGES = {
  */
 export const TON_SIGNING_METHODS = {
   SEND_MESSAGE: 'ton_sendMessage',
-  SIGN_DATA: 'ton_signData'
-}
+  SIGN_DATA: 'ton_signData',
+};

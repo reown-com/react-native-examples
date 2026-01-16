@@ -85,5 +85,11 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>KHTeka-Medium.otf</string>
+		<string>KHTeka-Light.otf</string>
+		<string>KHTeka-Regular.otf</string>
+	</array>
 </dict>
 </plist>

@@ -1,21 +1,22 @@
-import {useCallback, useMemo, useState} from 'react';
-import {View, Text, ScrollView} from 'react-native';
-import {getSdkError} from '@walletconnect/utils';
-import {useNavigation} from '@react-navigation/native';
-import {walletKit} from '@/utils/WalletKitUtil';
-import {ModalHeader} from '@/components/Modal/ModalHeader';
-import {useTheme} from '@/hooks/useTheme';
-import {ActionButton} from '@/components/ActionButton';
-import {Methods} from '@/components/Modal/Methods';
-import {Events} from '@/components/Modal/Events';
+import { useCallback, useMemo, useState } from 'react';
+import { View, ScrollView } from 'react-native';
+import { getSdkError } from '@walletconnect/utils';
+import { useNavigation } from '@react-navigation/native';
+import { walletKit } from '@/utils/WalletKitUtil';
+import { ModalHeader } from '@/components/Modal/ModalHeader';
+import { useTheme } from '@/hooks/useTheme';
+import { ActionButton } from '@/components/ActionButton';
+import { Methods } from '@/components/Modal/Methods';
+import { Events } from '@/components/Modal/Events';
 import SettingsStore from '@/store/SettingsStore';
-import {RootStackScreenProps} from '@/utils/TypesUtil';
-import {DappInfo} from './components/DappInfo';
+import { RootStackScreenProps } from '@/utils/TypesUtil';
+import { DappInfo } from './components/DappInfo';
 import styles from './styles';
+import { Text } from '@/components/Text';
 
 type Props = RootStackScreenProps<'SessionDetail'>;
 
-export default function SessionDetail({route}: Props) {
+export default function SessionDetail({ route }: Props) {
   const Theme = useTheme();
   const topic = route.params.topic;
   const nativagor = useNavigation();
@@ -57,7 +58,7 @@ export default function SessionDetail({route}: Props) {
 
   const onSessionPing = useCallback(async () => {
     setPingLoading(true);
-    await walletKit.engine.signClient.ping({topic});
+    await walletKit.engine.signClient.ping({ topic });
     setPingLoading(false);
   }, [topic]);
 
@@ -68,7 +69,7 @@ export default function SessionDetail({route}: Props) {
       const chainId = session?.namespaces[namespace].chains?.[0];
       await walletKit.emitSessionEvent({
         topic,
-        event: {name: 'chainChanged', data: 'Hello World'},
+        event: { name: 'chainChanged', data: 'Hello World' },
         chainId: chainId!, // chainId: 'eip155:1'
       });
     } catch (e) {
@@ -108,23 +109,29 @@ export default function SessionDetail({route}: Props) {
   return (
     <ScrollView
       bounces={false}
-      style={[styles.container, {backgroundColor: Theme['bg-100']}]}
-      contentContainerStyle={styles.contentContainer}>
+      style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
+      contentContainerStyle={styles.contentContainer}
+    >
       <ModalHeader
         metadata={session?.peer.metadata}
         isLinkMode={isLinkMode}
         showVerifyContext={false}
       />
-      <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
+      <View
+        style={[
+          styles.divider,
+          { backgroundColor: Theme['foreground-tertiary'] },
+        ]}
+      />
       {namespaces &&
         Object.keys(namespaces).map(chain => {
           return (
             <View key={chain}>
               <Text
-                style={[
-                  styles.reviewText,
-                  {color: Theme['fg-100']},
-                ]}>{`Review ${chain} permissions`}</Text>
+                variant="lg-500"
+                color="text-primary"
+                style={styles.reviewText}
+              >{`Review ${chain} permissions`}</Text>
               <Methods
                 methods={namespaces[chain].methods}
                 style={styles.permissions}
@@ -134,52 +141,71 @@ export default function SessionDetail({route}: Props) {
                 style={styles.permissions}
               />
               <View
-                style={[styles.divider, {backgroundColor: Theme['bg-300']}]}
+                style={[
+                  styles.divider,
+                  { backgroundColor: Theme['foreground-tertiary'] },
+                ]}
               />
             </View>
           );
         })}
       <DappInfo session={session} />
-      <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
+      <View
+        style={[
+          styles.divider,
+          { backgroundColor: Theme['foreground-tertiary'] },
+        ]}
+      />
       <View style={styles.datesContainer}>
-        <Text style={[styles.dateText, {color: Theme['fg-100']}]}>Expiry</Text>
-        <Text style={{color: Theme['fg-175']}}>
+        <Text variant="lg-500" color="text-primary">
+          Expiry
+        </Text>
+        <Text variant="lg-400" color="text-secondary">
           {expiryDate.toDateString()} - {expiryDate.toLocaleTimeString()}
         </Text>
       </View>
       <View style={styles.datesContainer}>
-        <Text style={[styles.dateText, {color: Theme['fg-100']}]}>
+        <Text variant="lg-500" color="text-primary">
           Last updated
         </Text>
-        <Text style={{color: Theme['fg-175']}}>
+        <Text variant="lg-400" color="text-secondary">
           {updated.toDateString()} - {updated.toLocaleTimeString()}
         </Text>
       </View>
-      <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
+      <View
+        style={[
+          styles.divider,
+          { backgroundColor: Theme['foreground-tertiary'] },
+        ]}
+      />
       <View style={styles.actionsContainer}>
         <ActionButton
           style={styles.action}
           onPress={onSessionPing}
-          loading={pingLoading}>
-          <Text>Ping</Text>
+          loading={pingLoading}
+        >
+          Ping
         </ActionButton>
         <ActionButton
           style={styles.action}
           onPress={onSessionEmit}
-          loading={emitLoading}>
-          <Text>Emit</Text>
+          loading={emitLoading}
+        >
+          Emit
         </ActionButton>
         <ActionButton
           style={styles.action}
           onPress={onSessionUpdate}
-          loading={updateLoading}>
-          <Text>Update</Text>
+          loading={updateLoading}
+        >
+          Update
         </ActionButton>
         <ActionButton
-          style={[styles.action, {backgroundColor: Theme['error-100']}]}
+          style={[styles.action, { backgroundColor: Theme['text-error'] }]}
           onPress={onDeleteSession}
-          loading={deleteLoading}>
-          <Text>Delete</Text>
+          loading={deleteLoading}
+        >
+          Delete
         </ActionButton>
       </View>
     </ScrollView>

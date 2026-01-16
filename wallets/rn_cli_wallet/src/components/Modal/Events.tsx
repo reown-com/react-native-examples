@@ -2,20 +2,21 @@ import {
   ScrollView,
   StyleProp,
   StyleSheet,
-  Text,
   View,
   ViewStyle,
 } from 'react-native';
 
-import {useTheme} from '@/hooks/useTheme';
-import {Tag} from '@/components/Tag';
+import { useTheme } from '@/hooks/useTheme';
+import { Tag } from '@/components/Tag';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface IEventProps {
   events?: string[];
   style?: StyleProp<ViewStyle>;
 }
 
-export function Events({events, style}: IEventProps) {
+export function Events({ events, style }: IEventProps) {
   const Theme = useTheme();
 
   if (!events?.length) {
@@ -25,9 +26,16 @@ export function Events({events, style}: IEventProps) {
   return (
     <ScrollView
       bounces={false}
-      style={[styles.container, {backgroundColor: Theme['bg-150']}, style]}
-      contentContainerStyle={styles.content}>
-      <Text style={[styles.title, {color: Theme['fg-150']}]}>Events</Text>
+      style={[
+        styles.container,
+        { backgroundColor: Theme['foreground-primary'] },
+        style,
+      ]}
+      contentContainerStyle={styles.content}
+    >
+      <Text variant="sm-500" color="text-secondary" style={styles.title}>
+        Events
+      </Text>
       <View style={styles.row}>
         {events?.map((event: string, index: number) => (
           <Tag key={index} value={event} />
@@ -39,8 +47,8 @@ export function Events({events, style}: IEventProps) {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 20,
-    padding: 8,
+    borderRadius: BorderRadius[5],
+    padding: Spacing[2],
     maxHeight: 120,
   },
   content: {
@@ -48,10 +56,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   title: {
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: '600',
-    margin: 4,
+    margin: Spacing[1],
   },
   row: {
     flexDirection: 'row',
