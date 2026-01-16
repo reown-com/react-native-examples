@@ -1,10 +1,12 @@
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import type { PaymentInfo } from '@walletconnect/pay';
 
 import { ActionButton } from '@/components/ActionButton';
 import { MerchantInfo } from './MerchantInfo';
 import { sharedStyles } from './styles';
 import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface IntroViewProps {
   info?: PaymentInfo;
@@ -35,31 +37,32 @@ export function IntroView({ info, onContinue }: IntroViewProps) {
 
         <View style={styles.textContainer}>
           <View style={styles.stepContainer}>
-            <Text style={styles.stepTitle}>Provide information</Text>
-            <Text
-              style={[
-                styles.stepDescription,
-                { color: Theme['text-secondary'] },
-              ]}
-            >
+            <Text variant="lg-400" color="text-primary">
+              Provide information
+            </Text>
+            <Text variant="lg-400" color="text-secondary">
               A quick one-time check required for regulated payments.
             </Text>
           </View>
           <View style={styles.stepContainer}>
-            <Text style={styles.stepTitle}>Confirm payment</Text>
-            <Text
-              style={[
-                styles.stepDescription,
-                { color: Theme['text-secondary'] },
-              ]}
-            >
+            <Text variant="lg-400" color="text-primary">
+              Confirm payment
+            </Text>
+            <Text variant="lg-400" color="text-secondary">
               Review the details and approve the payment.
             </Text>
           </View>
         </View>
 
-        <View style={[styles.etaBadge]}>
-          <Text>≈2min</Text>
+        <View
+          style={[
+            styles.etaBadge,
+            { backgroundColor: Theme['foreground-secondary'] },
+          ]}
+        >
+          <Text variant="sm-400" color="text-secondary">
+            ≈2min
+          </Text>
         </View>
       </View>
 
@@ -80,36 +83,29 @@ const styles = StyleSheet.create({
   textContainer: {
     flex: 2,
     flexDirection: 'column',
-    gap: 32,
-    paddingLeft: 20,
-    paddingRight: 8,
+    gap: Spacing[8],
+    paddingLeft: Spacing[5],
+    paddingRight: Spacing[2],
   },
   stepContainer: {
-    gap: 4,
+    gap: Spacing[1],
   },
   paymentInfoContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 24,
-  },
-  stepTitle: {
-    fontSize: 16,
-    fontWeight: '400',
-  },
-  stepDescription: {
-    fontSize: 16,
+    marginVertical: Spacing[6],
   },
   stepIndicator: {
-    marginVertical: 24,
+    marginVertical: Spacing[6],
     alignItems: 'center',
-    width: 16,
+    width: Spacing[4],
   },
   stepDot: {
-    width: 16,
-    height: 16,
+    width: Spacing[4],
+    height: Spacing[4],
     borderWidth: 3,
-    borderRadius: 100,
+    borderRadius: BorderRadius.full,
   },
   stepLine: {
     width: 2,
@@ -117,10 +113,9 @@ const styles = StyleSheet.create({
   },
   etaBadge: {
     alignSelf: 'flex-start',
-    marginTop: 24,
-    paddingHorizontal: 6,
-    paddingVertical: 4,
-    borderRadius: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    marginTop: Spacing[6],
+    paddingHorizontal: Spacing[2],
+    paddingVertical: Spacing[1],
+    borderRadius: BorderRadius[2],
   },
 });

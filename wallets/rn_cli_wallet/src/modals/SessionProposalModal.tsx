@@ -1,33 +1,33 @@
-import {useSnapshot} from 'valtio';
-import {useCallback, useMemo, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
-import {SignClientTypes} from '@walletconnect/types';
-import {buildApprovedNamespaces, getSdkError} from '@walletconnect/utils';
+import { useSnapshot } from 'valtio';
+import { useCallback, useMemo, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { SignClientTypes } from '@walletconnect/types';
+import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
 import Toast from 'react-native-toast-message';
 
-import {Events} from '@/components/Modal/Events';
-import {Methods} from '@/components/Modal/Methods';
+import { Events } from '@/components/Modal/Events';
+import { Methods } from '@/components/Modal/Methods';
 import ModalStore from '@/store/ModalStore';
-import {eip155Addresses} from '@/utils/EIP155WalletUtil';
-import {walletKit} from '@/utils/WalletKitUtil';
+import { eip155Addresses } from '@/utils/EIP155WalletUtil';
+import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
-import {handleRedirect} from '@/utils/LinkingUtils';
-import {useTheme} from '@/hooks/useTheme';
-import {Chains} from '@/components/Modal/Chains';
-import {RequestModal} from './RequestModal';
-import {getSupportedChains} from '@/utils/HelperUtil';
-import {suiAddresses} from '@/utils/SuiWalletUtil';
+import { handleRedirect } from '@/utils/LinkingUtils';
+import { useTheme } from '@/hooks/useTheme';
+import { Chains } from '@/components/Modal/Chains';
+import { RequestModal } from './RequestModal';
+import { getSupportedChains } from '@/utils/HelperUtil';
+import { suiAddresses } from '@/utils/SuiWalletUtil';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SUI_CHAINS, SUI_EVENTS, SUI_SIGNING_METHODS } from '@/constants/Sui';
 import { TON_CHAINS, TON_SIGNING_METHODS } from '@/constants/Ton';
-import { tonAddresses } from '@/utils/TonWalletUtil'
-import { tronAddresses } from '@/utils/TronWalletUtil'
+import { tonAddresses } from '@/utils/TonWalletUtil';
+import { tronAddresses } from '@/utils/TronWalletUtil';
 import { TRON_CHAINS, TRON_SIGNING_METHODS } from '@/constants/Tron';
 
 export default function SessionProposalModal() {
   const Theme = useTheme();
   // Get proposal data and wallet address from store
-  const {data} = useSnapshot(ModalStore.state);
+  const { data } = useSnapshot(ModalStore.state);
   const proposal =
     data?.proposal as SignClientTypes.EventArguments['session_proposal'];
 
@@ -51,14 +51,14 @@ export default function SessionProposalModal() {
     const suiEvents = Object.values(SUI_EVENTS);
 
     // ton
-    const tonChains = Object.keys(TON_CHAINS)
-    const tonMethods = Object.values(TON_SIGNING_METHODS)
-    const tonEvents = [] as string[]
+    const tonChains = Object.keys(TON_CHAINS);
+    const tonMethods = Object.values(TON_SIGNING_METHODS);
+    const tonEvents = [] as string[];
 
     // tron
-    const tronChains = Object.keys(TRON_CHAINS)
-    const tronMethods = Object.values(TRON_SIGNING_METHODS)
-    const tronEvents = [] as string[]
+    const tronChains = Object.keys(TRON_CHAINS);
+    const tronMethods = Object.values(TRON_SIGNING_METHODS);
+    const tronEvents = [] as string[];
 
     return {
       eip155: {
@@ -85,7 +85,9 @@ export default function SessionProposalModal() {
         chains: tronChains,
         methods: tronMethods,
         events: tronEvents,
-        accounts: tronChains.map(chain => `${chain}:${tronAddresses[0]}`).flat(),
+        accounts: tronChains
+          .map(chain => `${chain}:${tronAddresses[0]}`)
+          .flat(),
       },
     };
   }, []);
@@ -163,8 +165,14 @@ export default function SessionProposalModal() {
       onApprove={onApprove}
       onReject={onReject}
       approveLoader={isLoadingApprove}
-      rejectLoader={isLoadingReject}>
-      <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
+      rejectLoader={isLoadingReject}
+    >
+      <View
+        style={[
+          styles.divider,
+          { backgroundColor: Theme['foreground-tertiary'] },
+        ]}
+      />
       <View style={styles.container}>
         <Chains chains={supportedChains} />
         <Methods methods={methods} />

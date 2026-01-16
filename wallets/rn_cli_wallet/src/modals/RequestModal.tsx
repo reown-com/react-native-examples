@@ -1,11 +1,11 @@
-import {ReactNode} from 'react';
-import {StyleSheet, View} from 'react-native';
-import {CoreTypes} from '@walletconnect/types';
+import { ReactNode } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { CoreTypes } from '@walletconnect/types';
 
-import {ModalHeader} from '@/components/Modal/ModalHeader';
-import {ModalFooter} from '@/components/Modal/ModalFooter';
-import {useTheme} from '@/hooks/useTheme';
-import {useSnapshot} from 'valtio';
+import { ModalHeader } from '@/components/Modal/ModalHeader';
+import { ModalFooter } from '@/components/Modal/ModalFooter';
+import { useTheme } from '@/hooks/useTheme';
+import { useSnapshot } from 'valtio';
 import SettingsStore from '@/store/SettingsStore';
 
 export interface RequestModalProps {
@@ -30,10 +30,10 @@ export function RequestModal({
   isLinkMode,
 }: RequestModalProps) {
   const Theme = useTheme();
-  const {currentRequestVerifyContext} = useSnapshot(SettingsStore.state);
+  const { currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
 
   return (
-    <View style={[styles.container, {backgroundColor: Theme['bg-125']}]}>
+    <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       <ModalHeader
         metadata={metadata}
         intention={intention}

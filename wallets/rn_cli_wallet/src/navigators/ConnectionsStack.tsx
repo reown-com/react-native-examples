@@ -1,10 +1,16 @@
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Platform } from 'react-native';
 
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 import Connections from '@/screens/Connections';
-import {ConnectionsStackParamList} from '@/utils/TypesUtil';
+import { ConnectionsStackParamList } from '@/utils/TypesUtil';
 
 const Stack = createNativeStackNavigator<ConnectionsStackParamList>();
+
+const fontFamily = Platform.select({
+  ios: 'KHTeka-Medium',
+  android: 'KHTeka-Medium',
+});
 
 export default function ConnectionsStack() {
   const Theme = useTheme();
@@ -12,15 +18,22 @@ export default function ConnectionsStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        contentStyle: {backgroundColor: Theme['bg-100']},
-        headerStyle: {backgroundColor: Theme['bg-100']},
+        contentStyle: { backgroundColor: Theme['bg-primary'] },
+        headerStyle: { backgroundColor: Theme['bg-primary'] },
         headerTitleStyle: {
-          color: Theme['fg-100'],
+          color: Theme['text-primary'],
+          fontFamily,
         },
-      }}>
+        headerLargeTitleStyle: {
+          color: Theme['text-primary'],
+          fontFamily,
+        },
+        headerLargeTitleShadowVisible: false,
+      }}
+    >
       <Stack.Screen
         name="Connections"
-        options={{headerTitle: 'Connections', headerLargeTitle: true}}
+        options={{ headerTitle: 'Connections', headerLargeTitle: true }}
         component={Connections}
       />
     </Stack.Navigator>

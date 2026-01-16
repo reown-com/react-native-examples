@@ -1,7 +1,8 @@
-import {ReactNode} from 'react';
-import {TouchableOpacity, StyleSheet} from 'react-native';
+import { ReactNode } from 'react';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 
 interface CircleActionButtonProps {
   children: ReactNode;
@@ -17,7 +18,11 @@ export function CircleActionButton({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      style={[styles.container, {backgroundColor: Theme['accent-100']}]}>
+      style={[
+        styles.container,
+        { backgroundColor: Theme['bg-accent-primary'] },
+      ]}
+    >
       {children}
     </TouchableOpacity>
   );
@@ -27,9 +32,9 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 28,
-    height: 56,
-    width: 56,
+    borderRadius: BorderRadius[7],
+    height: Spacing[12],
+    width: Spacing[12],
   },
   imageContainer: {
     width: 24,

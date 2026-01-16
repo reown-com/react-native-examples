@@ -1,31 +1,27 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Spacing } from '@/utils/ThemeUtil';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
   },
   contentContainer: {
-    padding: 16,
+    padding: Spacing[4],
   },
   reviewText: {
-    fontWeight: '600',
-    fontSize: 16,
-    marginBottom: 8,
+    marginBottom: Spacing[2],
   },
   datesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  dateText: {
-    fontWeight: '600',
-  },
   divider: {
     height: 1,
     width: '100%',
-    marginVertical: 16,
+    marginVertical: Spacing[4],
   },
   actionsContainer: {
-    rowGap: 16,
+    rowGap: Spacing[4],
     alignItems: 'center',
     width: '100%',
   },

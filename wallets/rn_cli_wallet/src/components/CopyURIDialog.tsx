@@ -4,6 +4,7 @@ import Dialog from 'react-native-dialog';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ConnectButton } from './ConnectButton';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 
 interface copyURIDialogProps {
   visible: boolean;
@@ -41,15 +42,20 @@ export function CopyURIDialog({
       useNativeDriver
       contentStyle={[
         styles.mainContainer,
-        { maxWidth: windowWidth * 0.9, backgroundColor: Theme['bg-175'] },
+        {
+          maxWidth: windowWidth * 0.9,
+          backgroundColor: Theme['foreground-secondary'],
+        },
       ]}
     >
       <View>
-        <Dialog.Title style={[styles.titleText, { color: Theme['fg-100'] }]}>
+        <Dialog.Title
+          style={[styles.titleText, { color: Theme['text-primary'] }]}
+        >
           Paste URI or Payment Link
         </Dialog.Title>
         <Dialog.Description
-          style={[styles.descriptionText, { color: Theme['fg-150'] }]}
+          style={[styles.descriptionText, { color: Theme['text-secondary'] }]}
         >
           Paste a WalletConnect URI or a WalletConnect Pay link to continue.
         </Dialog.Description>
@@ -61,11 +67,11 @@ export function CopyURIDialog({
               styles.textInput,
               {
                 width: windowWidth * 0.8,
-                backgroundColor: Theme['bg-100'],
-                color: Theme['fg-100'],
+                backgroundColor: Theme['bg-primary'],
+                color: Theme['text-primary'],
               },
             ]}
-            placeholderTextColor={Theme['fg-300']}
+            placeholderTextColor={Theme['text-secondary']}
             onChangeText={setUri}
             placeholder="wc://... or https://pay.walletconnect.com/..."
             clearButtonMode="always"
@@ -81,7 +87,7 @@ export function CopyURIDialog({
         />
         <View style={styles.cancelContainer}>
           <Dialog.Button
-            style={[styles.cancelText, { color: Theme['accent-100'] }]}
+            style={[styles.cancelText, { color: Theme['text-accent-primary'] }]}
             label="Cancel"
             onPress={handleCancel}
           />
@@ -96,15 +102,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'stretch',
     height: 320,
-    padding: 20,
+    padding: Spacing[5],
     width: '90%',
-    borderRadius: 34,
+    borderRadius: BorderRadius[8],
   },
   textInput: {
     height: 44,
-    borderRadius: 15,
-    padding: 10,
-    marginTop: 16,
+    borderRadius: BorderRadius[4],
+    padding: Spacing[3],
+    marginTop: Spacing[4],
   },
   titleText: {
     fontSize: 24,
@@ -112,7 +118,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     textAlign: 'center',
-    paddingVertical: 4,
+    paddingVertical: Spacing[1],
     fontSize: 14,
     lineHeight: 18,
   },
@@ -131,6 +137,6 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   connectButton: {
-    marginVertical: 4,
+    marginVertical: Spacing[1],
   },
 });

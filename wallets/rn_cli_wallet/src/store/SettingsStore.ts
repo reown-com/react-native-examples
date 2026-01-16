@@ -1,5 +1,5 @@
-import {proxy} from 'valtio';
-import {Verify, SessionTypes} from '@walletconnect/types';
+import { proxy } from 'valtio';
+import { Verify, SessionTypes } from '@walletconnect/types';
 
 import { storage } from '@/utils/storage';
 import EIP155Lib from '../lib/EIP155Lib';
@@ -14,8 +14,8 @@ interface State {
   eip155Address: string;
   suiAddress: string;
   suiWallet: SuiLib | null;
-  tonAddress: string
-  tronAddress: string
+  tonAddress: string;
+  tronAddress: string;
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -83,7 +83,7 @@ const SettingsStore = {
 
   setInitPromise() {
     state.initPromise = new Promise((resolve, reject) => {
-      state.initPromiseResolver = {resolve, reject};
+      state.initPromiseResolver = { resolve, reject };
     });
   },
 
@@ -117,11 +117,11 @@ const SettingsStore = {
   },
 
   setTonAddress(tonAddress: string) {
-    state.tonAddress = tonAddress
+    state.tonAddress = tonAddress;
   },
 
   setTronAddress(tronAddress: string) {
-    state.tronAddress = tronAddress
+    state.tronAddress = tronAddress;
   },
 };
 

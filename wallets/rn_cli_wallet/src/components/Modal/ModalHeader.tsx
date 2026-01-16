@@ -1,10 +1,12 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
-import {SignClientTypes, Verify} from '@walletconnect/types';
+import { SignClientTypes, Verify } from '@walletconnect/types';
 
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
 import VerifiedDomain from '@/assets/VerifiedDomain.png';
 import VerifyTag from '@/components/VerifyTag';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface ModalHeaderProps {
   metadata?: SignClientTypes.Metadata;
@@ -22,7 +24,6 @@ export function ModalHeader({
   isLinkMode,
 }: ModalHeaderProps) {
   const Theme = useTheme();
-  const color = Theme['fg-100'];
   const validation = verifyContext?.verified.validation;
   const isScam = verifyContext?.verified.isScam;
 
@@ -33,27 +34,34 @@ export function ModalHeader({
           style={[
             styles.linkModeContainer,
             {
-              backgroundColor: Theme['accent-100'],
+              backgroundColor: Theme['bg-accent-primary'],
             },
-          ]}>
-          <Text style={[styles.linkMode, {color: Theme['inverse-100']}]}>
+          ]}
+        >
+          <Text variant="sm-500" color="text-invert">
             LINK MODE
           </Text>
         </View>
       )}
       {metadata?.icons[0] && (
         <Image
-          source={{uri: metadata?.icons[0] ?? ''}}
-          style={[styles.logo, {borderColor: Theme['gray-glass-010']}]}
+          source={{ uri: metadata?.icons[0] ?? '' }}
+          style={[styles.logo, { borderColor: Theme['border-primary'] }]}
         />
       )}
-      <Text style={[styles.title, {color}]}>{metadata?.name || 'Unknown'}</Text>
-      {intention && <Text style={[styles.desc, {color}]}>{intention}</Text>}
+      <Text variant="h6-500" color="text-primary">
+        {metadata?.name || 'Unknown'}
+      </Text>
+      {intention && (
+        <Text variant="lg-500" color="text-primary">
+          {intention}
+        </Text>
+      )}
       <View style={styles.domainContainer}>
         {!isScam && validation === 'VALID' && (
           <Image source={VerifiedDomain} style={styles.icon} />
         )}
-        <Text style={[styles.domain, {color: Theme['fg-200']}]}>
+        <Text variant="sm-500" color="text-tertiary">
           {metadata?.url || 'unknown domain'}
         </Text>
       </View>
@@ -68,51 +76,35 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 16,
-    paddingTop: 16,
+    marginHorizontal: Spacing[4],
+    paddingTop: Spacing[4],
   },
   logo: {
     width: 60,
     height: 60,
-    borderRadius: 30,
+    borderRadius: BorderRadius.full,
     borderWidth: 1,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: '700',
-  },
-  desc: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
   domainContainer: {
-    marginTop: 6,
+    marginTop: Spacing[2],
     flexDirection: 'row',
     alignItems: 'center',
-    columnGap: 4,
-  },
-  domain: {
-    fontSize: 12,
-    fontWeight: '500',
+    columnGap: Spacing[1],
   },
   icon: {
     height: 16,
     width: 16,
   },
   tag: {
-    marginTop: 4,
+    marginTop: Spacing[1],
   },
   linkModeContainer: {
-    borderRadius: 20,
+    borderRadius: BorderRadius[5],
     height: 25,
     width: 100,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    marginBottom: 12,
-  },
-  linkMode: {
-    fontSize: 12,
-    fontWeight: '500',
+    marginBottom: Spacing[3],
   },
 });

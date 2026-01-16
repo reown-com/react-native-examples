@@ -1,10 +1,13 @@
-import {StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
-import {SvgProps} from 'react-native-svg';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { SvgProps } from 'react-native-svg';
 
 import AlertCircle from '@/assets/AlertCircle';
 import Warning from '@/assets/Warning';
 import WarningRisk from '@/assets/WarningRisk';
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
+import { ThemeKeys } from '@/utils/TypesUtil';
 
 interface Props {
   validation?: 'UNKNOWN' | 'VALID' | 'INVALID';
@@ -12,55 +15,51 @@ interface Props {
   style?: StyleProp<ViewStyle>;
 }
 
-export default function VerifyTag({validation, isScam, style}: Props) {
+export default function VerifyTag({ validation, isScam, style }: Props) {
   const Theme = useTheme();
-  let text;
+  let text: string;
   let Icon: (props: SvgProps) => React.JSX.Element;
-  let textColor;
-  let bgColor;
+  let textColorKey: ThemeKeys;
+  let bgColor: string;
+
   if (!isScam && validation === 'VALID') {
-    return;
+    return null;
   }
 
   if (isScam) {
     text = 'Potential threat';
     Icon = WarningRisk;
-    textColor = Theme['verify-invalid'];
-    bgColor = Theme['bg-verify-invalid'];
+    textColorKey = 'text-error';
+    bgColor = Theme['bg-error'];
   } else if (validation === 'INVALID') {
     text = 'Invalid domain';
     Icon = Warning;
-    textColor = Theme['verify-invalid'];
-    bgColor = Theme['bg-verify-invalid'];
+    textColorKey = 'text-error';
+    bgColor = Theme['bg-error'];
   } else {
     text = 'Cannot verify';
     Icon = AlertCircle;
-    textColor = Theme['verify-unknown'];
-    bgColor = Theme['bg-verify-unknown'];
+    textColorKey = 'text-warning';
+    bgColor = Theme['bg-warning'];
   }
 
   return (
-    <View style={[styles.verifyTag, {backgroundColor: bgColor}, style]}>
+    <View style={[styles.verifyTag, { backgroundColor: bgColor }, style]}>
       <Icon height={16} width={16} />
-      <Text style={[styles.verifyTagText, {color: textColor}]}>{text}</Text>
+      <Text variant="sm-400" color={textColorKey}>
+        {text}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  icon: {
-    height: 14,
-    width: 14,
-  },
   verifyTag: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    columnGap: 4,
-    borderRadius: 6,
-    padding: 5,
-  },
-  verifyTagText: {
-    fontSize: 12,
+    columnGap: Spacing[1],
+    borderRadius: BorderRadius[2],
+    padding: Spacing[1],
   },
 });

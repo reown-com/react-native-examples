@@ -8,11 +8,12 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Text } from '@reown/appkit-ui-react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
 import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
+import { Text } from '@/components/Text';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 
 export default function ImportWalletModal() {
   const Theme = useTheme();
@@ -46,12 +47,18 @@ export default function ImportWalletModal() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.keyboardView}
     >
-      <View style={[styles.container, { backgroundColor: Theme['bg-125'] }]}>
-        <Text variant="large-600" color="fg-100">
+      <View
+        style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
+      >
+        <Text variant="large-600" color="text-primary">
           Import EVM Wallet
         </Text>
 
-        <Text variant="small-400" color="fg-200" style={styles.description}>
+        <Text
+          variant="small-400"
+          color="text-secondary"
+          style={styles.description}
+        >
           Enter a mnemonic phrase or private key to import an existing wallet.
         </Text>
 
@@ -59,13 +66,13 @@ export default function ImportWalletModal() {
           style={[
             styles.input,
             {
-              backgroundColor: Theme['bg-175'],
-              color: Theme['fg-100'],
-              borderColor: Theme['bg-200'],
+              backgroundColor: Theme['foreground-secondary'],
+              color: Theme['text-primary'],
+              borderColor: Theme['foreground-tertiary'],
             },
           ]}
           placeholder="Enter mnemonic or private key (0x...)"
-          placeholderTextColor={Theme['fg-300']}
+          placeholderTextColor={Theme['text-secondary']}
           value={input}
           onChangeText={setInput}
           multiline
@@ -79,12 +86,11 @@ export default function ImportWalletModal() {
           <TouchableOpacity
             style={[
               styles.button,
-              styles.cancelButton,
-              { backgroundColor: Theme['bg-200'] },
+              { backgroundColor: Theme['foreground-tertiary'] },
             ]}
             onPress={() => ModalStore.close()}
           >
-            <Text variant="paragraph-600" color="fg-100">
+            <Text variant="paragraph-600" color="text-primary">
               Cancel
             </Text>
           </TouchableOpacity>
@@ -92,13 +98,15 @@ export default function ImportWalletModal() {
           <TouchableOpacity
             style={[
               styles.button,
-              styles.importButton,
-              { opacity: isLoading ? 0.6 : 1 },
+              {
+                opacity: isLoading ? 0.6 : 1,
+                backgroundColor: Theme['bg-accent-primary'],
+              },
             ]}
             onPress={handleImport}
             disabled={isLoading}
           >
-            <Text variant="paragraph-600" color="inverse-100">
+            <Text variant="paragraph-600" color="text-invert">
               {isLoading ? 'Importing...' : 'Import'}
             </Text>
           </TouchableOpacity>
@@ -114,34 +122,30 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '100%',
-    padding: 20,
-    borderTopLeftRadius: 34,
-    borderTopRightRadius: 34,
-    rowGap: 16,
+    padding: Spacing[5],
+    borderTopLeftRadius: BorderRadius[8],
+    borderTopRightRadius: BorderRadius[8],
+    rowGap: Spacing[4],
   },
   description: {
     textAlign: 'center',
   },
   input: {
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: BorderRadius[3],
+    padding: Spacing[4],
     minHeight: 100,
     textAlignVertical: 'top',
     fontSize: 14,
   },
   buttonContainer: {
     flexDirection: 'row',
-    gap: 12,
+    gap: Spacing[3],
   },
   button: {
     flex: 1,
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: BorderRadius[3],
     alignItems: 'center',
-  },
-  cancelButton: {},
-  importButton: {
-    backgroundColor: '#3396FF',
   },
 });

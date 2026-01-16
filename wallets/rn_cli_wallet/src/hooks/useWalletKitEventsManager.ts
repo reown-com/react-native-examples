@@ -1,12 +1,11 @@
-import {useCallback, useEffect} from 'react';
-import {SignClientTypes} from '@walletconnect/types';
+import { useCallback, useEffect } from 'react';
+import { SignClientTypes } from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
-
 
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
-import {walletKit} from '@/utils/WalletKitUtil';
-import {getSupportedChains} from '@/utils/HelperUtil';
+import { walletKit } from '@/utils/WalletKitUtil';
+import { getSupportedChains } from '@/utils/HelperUtil';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SUI_SIGNING_METHODS } from '@/constants/Sui';
 import { TON_SIGNING_METHODS } from '@/constants/Ton';
@@ -28,9 +27,9 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       );
 
       if (chains.length === 0) {
-        ModalStore.open('LoadingModal', {errorMessage: 'Unsupported chains'});
+        ModalStore.open('LoadingModal', { errorMessage: 'Unsupported chains' });
       } else {
-        ModalStore.open('SessionProposalModal', {proposal});
+        ModalStore.open('SessionProposalModal', { proposal });
       }
     },
     [],
@@ -43,8 +42,8 @@ export default function useWalletKitEventsManager(initialized: boolean) {
   const onSessionRequest = useCallback(
     async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
       console.log('onSessionRequest', requestEvent);
-      const {topic, params, verifyContext} = requestEvent;
-      const {request} = params;
+      const { topic, params, verifyContext } = requestEvent;
+      const { request } = params;
       const requestSession = walletKit.engine.signClient.session.get(topic);
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(verifyContext);
@@ -90,13 +89,19 @@ export default function useWalletKitEventsManager(initialized: boolean) {
         case TON_SIGNING_METHODS.SIGN_DATA:
           return ModalStore.open('SessionTonSignDataModal', {
             requestEvent,
-            requestSession
-          })
+            requestSession,
+          });
         case TON_SIGNING_METHODS.SEND_MESSAGE:
-          return ModalStore.open('SessionTonSendMessageModal', { requestEvent, requestSession })
+          return ModalStore.open('SessionTonSendMessageModal', {
+            requestEvent,
+            requestSession,
+          });
         case TRON_SIGNING_METHODS.TRON_SIGN_MESSAGE:
         case TRON_SIGNING_METHODS.TRON_SIGN_TRANSACTION:
-          return ModalStore.open('SessionSignTronModal', { requestEvent, requestSession })
+          return ModalStore.open('SessionSignTronModal', {
+            requestEvent,
+            requestSession,
+          });
         default:
           return ModalStore.open('SessionUnsuportedMethodModal', {
             requestEvent,
@@ -115,9 +120,9 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       );
 
       if (chains.length === 0) {
-        ModalStore.open('LoadingModal', {errorMessage: 'Unsupported chains'});
+        ModalStore.open('LoadingModal', { errorMessage: 'Unsupported chains' });
       } else {
-        ModalStore.open('SessionAuthenticateModal', {authRequest});
+        ModalStore.open('SessionAuthenticateModal', { authRequest });
       }
     },
     [],

@@ -11,7 +11,7 @@ export async function createOrRestoreSuiWallet() {
   const mnemonic1 = await storage.getItem('SUI_MNEMONIC_1');
 
   if (mnemonic1) {
-    wallet1 = await SuiLib.init({mnemonic: mnemonic1});
+    wallet1 = await SuiLib.init({ mnemonic: mnemonic1 });
   } else {
     wallet1 = await SuiLib.init({});
     // Don't store private keys in local storage in a production project!

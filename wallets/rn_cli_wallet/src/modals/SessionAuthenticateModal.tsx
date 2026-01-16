@@ -1,31 +1,33 @@
-import {useSnapshot} from 'valtio';
-import {useCallback, useEffect, useMemo, useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import {SignClientTypes, AuthTypes} from '@walletconnect/types';
-import {buildAuthObject, populateAuthPayload} from '@walletconnect/utils';
+import { useSnapshot } from 'valtio';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { SignClientTypes, AuthTypes } from '@walletconnect/types';
+import { buildAuthObject, populateAuthPayload } from '@walletconnect/utils';
 
 import ModalStore from '@/store/ModalStore';
-import {eip155Addresses, eip155Wallets} from '@/utils/EIP155WalletUtil';
-import {walletKit} from '@/utils/WalletKitUtil';
+import { eip155Addresses, eip155Wallets } from '@/utils/EIP155WalletUtil';
+import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
-import {handleRedirect} from '@/utils/LinkingUtils';
-import {useTheme} from '@/hooks/useTheme';
+import { handleRedirect } from '@/utils/LinkingUtils';
+import { useTheme } from '@/hooks/useTheme';
 
-import {RequestModal} from './RequestModal';
-import {Message} from '@/components/Modal/Message';
+import { RequestModal } from './RequestModal';
+import { Message } from '@/components/Modal/Message';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
+import { Text } from '@/components/Text';
+import { Spacing } from '@/utils/ThemeUtil';
 
 export default function SessionAuthenticateModal() {
   const Theme = useTheme();
-  const {data} = useSnapshot(ModalStore.state);
-  const {isLinkModeRequest} = useSnapshot(SettingsStore.state);
+  const { data } = useSnapshot(ModalStore.state);
+  const { isLinkModeRequest } = useSnapshot(SettingsStore.state);
 
   const authRequest =
     data?.authRequest as SignClientTypes.EventArguments['session_authenticate'];
 
-  const {account} = useSnapshot(SettingsStore.state);
+  const { account } = useSnapshot(SettingsStore.state);
   const [messages, setMessages] = useState<
-    {authPayload: any; message: string; id: number; iss: string}[]
+    { authPayload: any; message: string; id: number; iss: string }[]
   >([]);
 
   // the chains that are supported by the wallet from the proposal
@@ -79,7 +81,7 @@ export default function SessionAuthenticateModal() {
 
         handleRedirect({
           peerRedirect: authRequest.params.requester?.metadata?.redirect,
-          isLinkMode: isLinkModeRequest
+          isLinkMode: isLinkModeRequest,
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
@@ -132,7 +134,7 @@ export default function SessionAuthenticateModal() {
           request: authPayload,
           iss,
         });
-        setMessages([{authPayload, message, id: authRequest.id, iss}]);
+        setMessages([{ authPayload, message, id: authRequest.id, iss }]);
       } else if (signStrategy === 'all') {
         const messagesToSign: any[] = [];
         authPayload.chains.forEach((chain: string) => {
@@ -140,7 +142,12 @@ export default function SessionAuthenticateModal() {
             request: authPayload,
             iss: `${chain}:${address}`,
           });
-          messagesToSign.push({authPayload, message, id: authRequest.id, iss});
+          messagesToSign.push({
+            authPayload,
+            message,
+            id: authRequest.id,
+            iss,
+          });
         });
         setMessages(messagesToSign);
       }
@@ -155,10 +162,19 @@ export default function SessionAuthenticateModal() {
       onReject={onReject}
       isLinkMode={isLinkModeRequest}
       approveLoader={isLoadingApprove}
-      rejectLoader={isLoadingReject}>
-      <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
+      rejectLoader={isLoadingReject}
+    >
+      <View
+        style={[
+          styles.divider,
+          { backgroundColor: Theme['foreground-tertiary'] },
+        ]}
+      />
       <View style={styles.container}>
-        <Text>{`Messages to sign (${messages?.length})`}</Text>
+        <Text
+          variant="md-400"
+          color="text-primary"
+        >{`Messages to sign (${messages?.length})`}</Text>
         <Message
           showTitle={false}
           message={messages.map(m => `${m.message}\n\n`).toString()}
@@ -173,12 +189,12 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     width: '100%',
-    marginVertical: 16,
+    marginVertical: Spacing[4],
   },
   container: {
-    paddingHorizontal: 16,
-    marginBottom: 8,
-    rowGap: 8,
+    paddingHorizontal: Spacing[4],
+    marginBottom: Spacing[2],
+    rowGap: Spacing[2],
   },
   messageContainer: {
     maxHeight: 250,

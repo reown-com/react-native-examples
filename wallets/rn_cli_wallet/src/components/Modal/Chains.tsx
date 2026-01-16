@@ -1,8 +1,10 @@
-import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Chain } from '@/utils/TypesUtil';
 import { PresetsUtil } from '@/utils/PresetsUtil';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface Props {
   chains?: Chain[];
@@ -14,10 +16,13 @@ export function Chains({ chains }: Props) {
   return (
     <ScrollView
       bounces={false}
-      style={[styles.container, { backgroundColor: Theme['bg-150'] }]}
+      style={[
+        styles.container,
+        { backgroundColor: Theme['foreground-primary'] },
+      ]}
       contentContainerStyle={styles.content}
     >
-      <Text style={[styles.title, { color: Theme['fg-150'] }]}>
+      <Text variant="sm-500" color="text-secondary" style={styles.title}>
         Blockchain(s)
       </Text>
       <View style={styles.row}>
@@ -28,13 +33,19 @@ export function Chains({ chains }: Props) {
           return (
             <View
               key={chain.name}
-              style={[styles.chain, { borderColor: Theme['bg-300'] }]}
+              style={[
+                styles.chain,
+                { borderColor: Theme['foreground-tertiary'] },
+              ]}
             >
               <Image
                 source={logo}
-                style={[styles.chainLogo, { backgroundColor: Theme['bg-300'] }]}
+                style={[
+                  styles.chainLogo,
+                  { backgroundColor: Theme['foreground-tertiary'] },
+                ]}
               />
-              <Text style={[styles.chainName, { color: Theme['fg-150'] }]}>
+              <Text variant="sm-500" color="text-secondary">
                 {chain.name}
               </Text>
             </View>
@@ -47,46 +58,39 @@ export function Chains({ chains }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 20,
+    borderRadius: BorderRadius[5],
     maxHeight: 120,
   },
   content: {
-    padding: 8,
+    padding: Spacing[2],
     alignItems: 'flex-start',
     flexWrap: 'wrap',
   },
   chainLogo: {
     height: 18,
     width: 18,
-    borderRadius: 100,
-  },
-  chainName: {
-    fontWeight: '500',
-    fontSize: 12,
+    borderRadius: BorderRadius.full,
   },
   title: {
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: '600',
-    margin: 4,
+    margin: Spacing[1],
   },
   row: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    columnGap: 12,
-    rowGap: 8,
-    paddingHorizontal: 4,
+    columnGap: Spacing[3],
+    rowGap: Spacing[2],
+    paddingHorizontal: Spacing[1],
   },
   chain: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing[2],
     borderWidth: 1,
-    borderRadius: 100,
-    paddingVertical: 4,
-    paddingLeft: 4,
-    paddingRight: 10,
+    borderRadius: BorderRadius.full,
+    paddingVertical: Spacing[1],
+    paddingLeft: Spacing[1],
+    paddingRight: Spacing[3],
   },
 });

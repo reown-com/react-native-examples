@@ -1,7 +1,9 @@
 import React from 'react';
-import {View, StyleSheet, TouchableOpacity, Alert, Text} from 'react-native';
-import {useTheme} from '@/hooks/useTheme';
+import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useTheme } from '@/hooks/useTheme';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 type Log = {
   timestamp: string;
@@ -16,7 +18,7 @@ type Log = {
     data: object;
     subscription?: {
       topic: string;
-      relay: {protocol: 'string'};
+      relay: { protocol: 'string' };
       id: string;
     };
   };
@@ -26,7 +28,7 @@ export interface LogProps {
   value: string;
 }
 
-export function Log({value}: LogProps) {
+export function Log({ value }: LogProps) {
   const Theme = useTheme();
   const jsonLog: Log = JSON.parse(value);
 
@@ -39,13 +41,24 @@ export function Log({value}: LogProps) {
     <TouchableOpacity
       key={jsonLog.timestamp}
       onPress={() => copyToClipboard(value)}
-      style={[styles.container, {backgroundColor: Theme['bg-300']}]}>
+      style={[
+        styles.container,
+        { backgroundColor: Theme['foreground-tertiary'] },
+      ]}
+    >
       {Object.keys(jsonLog.log).map(key => {
         const item = jsonLog.log[key as keyof typeof jsonLog.log];
         return (
           <View key={key}>
-            <Text style={styles.text}>
-              {key}: <Text style={styles.textSmall}>{formatValue(key, item)}</Text>
+            <Text variant="sm-400" color="text-primary">
+              {key}:{' '}
+              <Text
+                variant="sm-400"
+                color="text-secondary"
+                style={styles.textSmall}
+              >
+                {formatValue(key, item)}
+              </Text>
             </Text>
           </View>
         );
@@ -67,17 +80,12 @@ const formatValue = (key: any, value: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 20,
-    marginVertical: 2,
-    marginHorizontal: 16,
-    padding: 16,
-  },
-  text: {
-    fontSize: 12,
-    lineHeight: 18,
+    borderRadius: BorderRadius[5],
+    marginVertical: Spacing['05'],
+    marginHorizontal: Spacing[4],
+    padding: Spacing[4],
   },
   textSmall: {
     fontSize: 10,
-    lineHeight: 16,
   },
 });

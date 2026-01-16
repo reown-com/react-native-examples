@@ -1,5 +1,4 @@
 import {
-  Text,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -8,6 +7,8 @@ import {
   TextStyle,
 } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 export interface ActionButtonProps {
   onPress: () => void;
@@ -33,12 +34,12 @@ export function ActionButton({
 }: ActionButtonProps) {
   const Theme = useTheme();
   const backgroundColor = disabled
-    ? Theme['accent-glass-080']
+    ? Theme['foreground-accent-primary-60']
     : secondary
-    ? Theme['bg-200']
-    : Theme['accent-100'];
-  const textColor = secondary ? Theme['fg-100'] : Theme['inverse-100'];
-  const loaderColor = secondary ? Theme['fg-100'] : Theme['inverse-100'];
+    ? Theme['foreground-tertiary']
+    : Theme['bg-accent-primary'];
+  const textColor = secondary ? Theme['text-primary'] : Theme['text-invert'];
+  const loaderColor = secondary ? Theme['text-primary'] : Theme['text-invert'];
 
   return (
     <TouchableOpacity
@@ -54,7 +55,7 @@ export function ActionButton({
       {loading ? (
         <ActivityIndicator color={loaderColor} />
       ) : (
-        <Text style={[styles.text, { color: textColor }, textStyle]}>
+        <Text variant="md-500" style={[{ color: textColor }, textStyle]}>
           {children}
         </Text>
       )}
@@ -66,16 +67,12 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    height: 48,
+    borderRadius: BorderRadius[4],
+    paddingHorizontal: Spacing[4],
+    height: Spacing[11],
     width: 100,
   },
   fullWidth: {
     width: '100%',
-  },
-  text: {
-    fontSize: 13,
-    fontWeight: '600',
   },
 });

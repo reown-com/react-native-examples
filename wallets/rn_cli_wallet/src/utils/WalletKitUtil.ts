@@ -1,7 +1,7 @@
-import {WalletKit, IWalletKit} from '@reown/walletkit';
-import {Core} from '@walletconnect/core';
+import { WalletKit, IWalletKit } from '@reown/walletkit';
+import { Core } from '@walletconnect/core';
 import Config from 'react-native-config';
-import {getMetadata} from './misc';
+import { getMetadata } from './misc';
 import { storage } from './storage';
 
 export let walletKit: IWalletKit;

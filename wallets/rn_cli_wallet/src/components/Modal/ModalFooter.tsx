@@ -1,9 +1,10 @@
-import {View, StyleSheet} from 'react-native';
-import {Verify} from '@walletconnect/types';
+import { View, StyleSheet } from 'react-native';
+import { Verify } from '@walletconnect/types';
 
-import {ActionButton} from '@/components/ActionButton';
+import { ActionButton } from '@/components/ActionButton';
 import VerifyInfoBox from '@/components/VerifyInfoBox';
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 
 export interface ModalFooterProps {
   onApprove: () => void;
@@ -26,10 +27,10 @@ export function ModalFooter({
 
   const bgColor =
     isScam || validation === 'INVALID'
-      ? Theme['verify-invalid']
+      ? Theme['text-error']
       : validation === 'VALID'
-      ? Theme['accent-100']
-      : Theme['verify-unknown'];
+      ? Theme['bg-accent-primary']
+      : Theme['text-warning'];
 
   return (
     <View style={styles.container}>
@@ -41,15 +42,17 @@ export function ModalFooter({
           style={styles.button}
           textStyle={styles.rejectText}
           onPress={onReject}
-          secondary>
+          secondary
+        >
           Reject
         </ActionButton>
         <ActionButton
           loading={approveLoader}
           disabled={approveLoader || rejectLoader}
-          style={[styles.button, {backgroundColor: bgColor}]}
+          style={[styles.button, { backgroundColor: bgColor }]}
           textStyle={styles.approveText}
-          onPress={onApprove}>
+          onPress={onApprove}
+        >
           Approve
         </ActionButton>
       </View>
@@ -60,19 +63,19 @@ export function ModalFooter({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginHorizontal: 16,
-    paddingBottom: 32,
+    marginHorizontal: Spacing[4],
+    paddingBottom: Spacing[8],
   },
   buttonContainer: {
-    marginTop: 16,
+    marginTop: Spacing[4],
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
   },
   button: {
     width: '48%',
-    height: 48,
-    borderRadius: 100,
+    height: Spacing[11],
+    borderRadius: BorderRadius.full,
   },
   rejectText: {
     fontWeight: '500',

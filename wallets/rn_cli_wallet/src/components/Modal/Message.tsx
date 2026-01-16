@@ -1,6 +1,8 @@
-import {ScrollView, StyleProp, StyleSheet, Text, ViewStyle} from 'react-native';
+import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface IMessageProps {
   message: string;
@@ -8,7 +10,7 @@ interface IMessageProps {
   showTitle?: boolean;
 }
 
-export function Message({message, style, showTitle = true}: IMessageProps) {
+export function Message({ message, style, showTitle = true }: IMessageProps) {
   const Theme = useTheme();
 
   if (!message) {
@@ -18,41 +20,37 @@ export function Message({message, style, showTitle = true}: IMessageProps) {
   return (
     <ScrollView
       bounces={false}
-      style={[styles.container, {backgroundColor: Theme['bg-150']}, style]}
-      contentContainerStyle={styles.content}>
+      style={[
+        styles.container,
+        { backgroundColor: Theme['foreground-primary'] },
+        style,
+      ]}
+      contentContainerStyle={styles.content}
+    >
       {showTitle && (
-        <Text style={[styles.title, {color: Theme['fg-150']}]}>Message</Text>
+        <Text variant="sm-500" color="text-secondary" style={styles.title}>
+          Message
+        </Text>
       )}
-      <Text style={[styles.message, {color: Theme['fg-175']}]}>{message}</Text>
+      <Text variant="sm-400" color="text-secondary">
+        {message}
+      </Text>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 20,
+    borderRadius: BorderRadius[5],
     maxHeight: 120,
   },
   content: {
     alignItems: 'flex-start',
     flexWrap: 'wrap',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: Spacing[2],
+    paddingHorizontal: Spacing[4],
   },
   title: {
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  message: {
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  row: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    marginBottom: Spacing[1],
   },
 });

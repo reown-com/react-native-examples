@@ -1,27 +1,35 @@
 import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface Props {
   session?: any;
 }
 
-export function DappInfo({session}: Props) {
+export function DappInfo({ session }: Props) {
   const metadata = session?.peer?.metadata;
 
   return (
     <>
       {metadata.redirect?.native && (
         <>
-          <Text style={[styles.boldText]}>Deep link:</Text>
-          <Text>{metadata.redirect?.native}</Text>
+          <Text variant="md-500" color="text-primary">
+            Deep link:
+          </Text>
+          <Text variant="md-400" color="text-secondary">
+            {metadata.redirect?.native}
+          </Text>
         </>
       )}
       {metadata.redirect?.universal && (
         <>
-          <Text style={[styles.boldText, styles.subtitle]}>
+          <Text variant="md-500" color="text-primary" style={styles.subtitle}>
             Universal link:
           </Text>
-          <Text>{metadata.redirect?.universal}</Text>
+          <Text variant="md-400" color="text-secondary">
+            {metadata.redirect?.universal}
+          </Text>
         </>
       )}
     </>
@@ -32,19 +40,16 @@ const styles = StyleSheet.create({
   image: {
     height: 25,
     width: 25,
-    marginRight: 4,
-    borderRadius: 100,
+    marginRight: Spacing[1],
+    borderRadius: BorderRadius.full,
   },
   dappContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
-    marginBottom: 8,
-  },
-  boldText: {
-    fontWeight: '500',
+    marginTop: Spacing[1],
+    marginBottom: Spacing[2],
   },
   subtitle: {
-    marginTop: 8,
+    marginTop: Spacing[2],
   },
 });

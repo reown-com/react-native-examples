@@ -1,21 +1,21 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Spacing } from '@/utils/ThemeUtil';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
   },
   content: {
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing[4],
+    paddingBottom: Spacing[4],
   },
   smallMarginTop: {
-    marginTop: 16,
+    marginTop: Spacing[4],
   },
   subtitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 16,
+    marginVertical: Spacing[4],
   },
   sectionContainer: {
-    rowGap: 8,
+    rowGap: Spacing[2],
   },
 });

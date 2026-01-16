@@ -1,6 +1,6 @@
 import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
 
 import { Methods } from '@/components/Modal/Methods';
@@ -16,6 +16,8 @@ import {
   approveSuiRequest,
   rejectSuiRequest,
 } from '@/utils/SuiRequestHandlerUtil';
+import { Text } from '@/components/Text';
+import { Spacing } from '@/utils/ThemeUtil';
 
 export default function SessionSignSuiPersonalMessageModal() {
   // Get request and wallet data from store
@@ -88,7 +90,11 @@ export default function SessionSignSuiPersonalMessageModal() {
 
   // Ensure request and wallet are defined
   if (!requestEvent || !session) {
-    return <Text>Missing request data</Text>;
+    return (
+      <Text variant="md-400" color="text-error">
+        Missing request data
+      </Text>
+    );
   }
 
   return (
@@ -113,8 +119,8 @@ export default function SessionSignSuiPersonalMessageModal() {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginVertical: 8,
-    paddingHorizontal: 16,
-    rowGap: 8,
+    marginVertical: Spacing[2],
+    paddingHorizontal: Spacing[4],
+    rowGap: Spacing[2],
   },
 });
