@@ -7,6 +7,7 @@ interface Props {
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
   disabled?: boolean;
+  testID?: string;
 }
 
 export const Button: React.FC<Props> = ({
@@ -14,9 +15,15 @@ export const Button: React.FC<Props> = ({
   style,
   onPress,
   disabled,
+  testID,
 }) => {
   return (
-    <PressableScale style={style} onPress={onPress} enabled={!disabled}>
+    <PressableScale
+      testID={testID}
+      style={style}
+      onPress={onPress}
+      enabled={!disabled}
+    >
       {children}
     </PressableScale>
   );

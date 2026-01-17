@@ -33,6 +33,7 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
           {row.map((key) => (
             <Button
               key={key}
+              testID={key === "." ? "key-dot" : `key-${key}`}
               onPress={() => handlePress(key)}
               style={[
                 styles.key,
@@ -41,7 +42,6 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
             >
               {key === "erase" ? (
                 <Image
-                  testID="key-erase"
                   source={assets?.[0]}
                   style={[
                     styles.backspace,
@@ -55,7 +55,6 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                 />
               ) : (
                 <ThemedText
-                  testID={`key-${key}`}
                   style={[styles.keyText, { color: Theme["text-primary"] }]}
                 >
                   {key}

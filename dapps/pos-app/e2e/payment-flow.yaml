@@ -1,0 +1,39 @@
+appId: com.reown.mobilepos
+---
+- launchApp
+
+# Step 1: Start new sale from home screen
+- tapOn:
+    id: "new-sale-button"
+
+# Step 2: Enter amount $0.01
+- tapOn:
+    id: "key-0"
+- tapOn:
+    id: "key-dot"
+- tapOn:
+    id: "key-0"
+- tapOn:
+    id: "key-1"
+
+# Step 3: Tap charge button
+- tapOn:
+    id: "charge-button"
+
+# Step 4: Wait for QR code to appear (give API time to respond)
+- extendedWaitUntil:
+    visible:
+      id: "qr-code"
+    timeout: 10000
+
+# Step 5: Tap QR code to open payment URL in browser
+- tapOn:
+    id: "qr-code"
+
+# Step 6: Verify amount is $0.01
+- assertVisible:
+    text: "0.01 USD"
+
+# TODO: Next steps (pending discussion on payment simulation)
+# - Simulate wallet connection and payment
+# - Go back and verify payment success screen on pos app

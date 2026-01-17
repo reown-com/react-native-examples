@@ -116,6 +116,7 @@ export default function AmountScreen() {
         )}
       />
       <Button
+        testID="charge-button"
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid}
         style={[
