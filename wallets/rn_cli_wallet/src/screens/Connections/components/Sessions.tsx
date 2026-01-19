@@ -36,6 +36,7 @@ function Sessions() {
             name={name}
             url={url}
             topic={item.topic}
+            session={item}
           />
         );
       }}

@@ -67,11 +67,7 @@ export function IntroView({ info, onContinue }: IntroViewProps) {
       </View>
 
       <View style={sharedStyles.footerContainer}>
-        <ActionButton
-          style={sharedStyles.primaryButton}
-          textStyle={sharedStyles.primaryButtonText}
-          onPress={onContinue}
-        >
+        <ActionButton onPress={onContinue} fullWidth>
           Let's start
         </ActionButton>
       </View>

@@ -40,11 +40,7 @@ export function ResultView({ status, message, onClose }: ResultViewProps) {
         </Text>
       </View>
       <View style={sharedStyles.footerContainer}>
-        <ActionButton
-          style={sharedStyles.primaryButton}
-          textStyle={sharedStyles.primaryButtonText}
-          onPress={onClose}
-        >
+        <ActionButton onPress={onClose} fullWidth>
           {isSuccess ? 'Got it!' : 'Close'}
         </ActionButton>
       </View>

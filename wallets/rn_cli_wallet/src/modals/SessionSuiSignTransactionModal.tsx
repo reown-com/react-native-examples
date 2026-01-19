@@ -3,15 +3,14 @@ import { useCallback, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
 
-import { Methods } from '@/components/Modal/Methods';
 import { Message } from '@/components/Modal/Message';
+import { AppInfoCard } from '@/components/AppInfoCard';
 
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
+import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
-import { Chains } from '@/components/Modal/Chains';
-import { PresetsUtil } from '@/utils/PresetsUtil';
 import {
   approveSuiRequest,
   rejectSuiRequest,
@@ -23,6 +22,7 @@ import { Spacing } from '@/utils/ThemeUtil';
 export default function SessionSignSuiPersonalMessageModal() {
   // Get request and wallet data from store
   const { data } = useSnapshot(ModalStore.state);
+  const { currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
   const requestEvent = data?.requestEvent;
   const session = data?.requestSession;
   const isLinkMode = session?.transportType === 'link_mode';
@@ -31,12 +31,12 @@ export default function SessionSignSuiPersonalMessageModal() {
   const [isLoadingReject, setIsLoadingReject] = useState(false);
   const [transaction, setTransaction] = useState<string>('');
 
+  const { validation, isScam } = currentRequestVerifyContext?.verified || {};
+
   // Get required request data
   const { topic, params } = requestEvent!;
-  const { request, chainId } = params;
-  const chain = PresetsUtil.getChainDataById(chainId);
+  const { request } = params;
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
-  const method = requestEvent?.params?.request?.method!;
 
   // transaction is a base64 encoded BCS transaction
   useMemo(async () => {
@@ -109,17 +109,21 @@ export default function SessionSignSuiPersonalMessageModal() {
 
   return (
     <RequestModal
-      intention="wants to sign a transaction"
+      intention="Sign a transaction for"
       metadata={peerMetadata}
       onApprove={onApprove}
       onReject={onReject}
       isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}
+      approveLabel="Sign"
     >
       <View style={styles.container}>
-        {chain ? <Chains chains={[chain]} /> : null}
-        <Methods methods={[method]} />
+        <AppInfoCard
+          url={peerMetadata?.url}
+          validation={validation}
+          isScam={isScam}
+        />
         <Message message={transaction} />
       </View>
     </RequestModal>
