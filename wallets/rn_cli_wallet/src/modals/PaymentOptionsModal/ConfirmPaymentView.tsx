@@ -272,10 +272,9 @@ export function ConfirmPaymentView({
       {/* Action Buttons */}
       <View style={sharedStyles.buttonContainer}>
         <ActionButton
-          style={sharedStyles.primaryButton}
-          textStyle={sharedStyles.primaryButtonText}
           onPress={onApprove}
           disabled={isSigningPayment || isLoadingActions || !selectedOption}
+          fullWidth
         >
           Pay ${amount}
         </ActionButton>

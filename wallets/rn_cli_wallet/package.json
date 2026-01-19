@@ -46,7 +46,7 @@
     "fast-xml-parser": "4.4.1",
     "react": "19.1.1",
     "react-native": "0.82.0",
-    "react-native-bootsplash": "5.5.3",
+    "react-native-bootsplash": "^6.3.12",
     "react-native-config": "1.5.5",
     "react-native-device-info": "14.1.1",
     "react-native-dialog": "9.3.0",

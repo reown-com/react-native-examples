@@ -2,7 +2,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { RootStackParamList } from '@/utils/TypesUtil';
 import { HomeTabNavigator } from './HomeTabNavigator';
-import SessionDetail from '@/screens/SessionDetail';
 import Scan from '@/screens/Scan';
 import Modal from '@/components/Modal';
 import { useTheme } from '@/hooks/useTheme';
@@ -41,19 +40,6 @@ export function RootStackNavigator() {
           }}
           name="Home"
           component={HomeTabNavigator}
-        />
-        <StackNavigator.Screen
-          name="SessionDetail"
-          component={SessionDetail}
-          options={{
-            headerShown: true,
-            headerTitle: 'Session Details',
-            headerBackTitle: '',
-            headerTintColor: Theme['text-primary'],
-            headerTitleStyle: {
-              fontWeight: '400',
-            },
-          }}
         />
         <StackNavigator.Screen
           name="Scan"

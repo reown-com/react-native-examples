@@ -10,10 +10,13 @@ import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 
+type ButtonVariant = 'primary' | 'secondary';
+
 export interface ActionButtonProps {
   onPress: () => void;
   children: React.ReactNode;
-  secondary?: boolean;
+  /** Button variant: 'primary' (accent/blue) or 'secondary' (gray outline) */
+  variant?: ButtonVariant;
   loading?: boolean;
   disabled?: boolean;
   /** When true, button expands to fill container width */
@@ -25,7 +28,7 @@ export interface ActionButtonProps {
 export function ActionButton({
   onPress,
   children,
-  secondary = false,
+  variant = 'primary',
   loading,
   disabled,
   fullWidth = false,
@@ -33,13 +36,33 @@ export function ActionButton({
   textStyle,
 }: ActionButtonProps) {
   const Theme = useTheme();
-  const backgroundColor = disabled
-    ? Theme['foreground-accent-primary-60']
-    : secondary
-    ? Theme['foreground-tertiary']
-    : Theme['bg-accent-primary'];
-  const textColor = secondary ? Theme['text-primary'] : Theme['text-invert'];
-  const loaderColor = secondary ? Theme['text-primary'] : Theme['text-invert'];
+
+  const getButtonStyles = () => {
+    if (variant === 'primary') {
+      // Primary: Blue filled button (accent color)
+      return {
+        backgroundColor: disabled
+          ? Theme['foreground-accent-primary-60']
+          : Theme['bg-accent-primary'],
+        textColor: Theme['text-invert'],
+        borderColor: disabled
+          ? Theme['foreground-accent-primary-60']
+          : Theme['bg-accent-primary'],
+      };
+    }
+
+    // Secondary: Gray outline button
+    return {
+      backgroundColor: Theme['bg-primary'],
+      textColor: disabled ? Theme['text-secondary'] : Theme['text-primary'],
+      borderColor: disabled
+        ? Theme['border-primary']
+        : Theme['border-secondary'],
+    };
+  };
+
+  const { backgroundColor, textColor, borderColor } = getButtonStyles();
+  const loaderColor = textColor;
 
   return (
     <TouchableOpacity
@@ -47,7 +70,7 @@ export function ActionButton({
       disabled={disabled || loading}
       style={[
         styles.container,
-        { backgroundColor },
+        { backgroundColor, borderColor },
         fullWidth && styles.fullWidth,
         style,
       ]}
@@ -55,7 +78,7 @@ export function ActionButton({
       {loading ? (
         <ActivityIndicator color={loaderColor} />
       ) : (
-        <Text variant="md-500" style={[{ color: textColor }, textStyle]}>
+        <Text variant="lg-400" style={[{ color: textColor }, textStyle]}>
           {children}
         </Text>
       )}
@@ -71,6 +94,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing[4],
     height: Spacing[11],
     width: 100,
+    borderWidth: 1,
   },
   fullWidth: {
     width: '100%',

@@ -1,34 +1,42 @@
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { SignClientTypes, Verify } from '@walletconnect/types';
+import { SignClientTypes } from '@walletconnect/types';
 
 import { useTheme } from '@/hooks/useTheme';
-import VerifiedDomain from '@/assets/VerifiedDomain.png';
-import VerifyTag from '@/components/VerifyTag';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import SvgClose from '@/assets/Close';
 
 interface ModalHeaderProps {
   metadata?: SignClientTypes.Metadata;
   intention?: string;
-  verifyContext?: Verify.Context;
-  showVerifyContext?: boolean;
   isLinkMode?: boolean;
+  onClose?: () => void;
 }
 
 export function ModalHeader({
   metadata,
   intention,
-  verifyContext,
-  showVerifyContext = true,
   isLinkMode,
+  onClose,
 }: ModalHeaderProps) {
   const Theme = useTheme();
-  const validation = verifyContext?.verified.validation;
-  const isScam = verifyContext?.verified.isScam;
+
+  // Build the title - e.g., "Sign a message for Aave"
+  const title = intention
+    ? `${intention} ${metadata?.name || 'Unknown'}`
+    : metadata?.name || 'Unknown';
 
   return (
     <View style={styles.container}>
+      {/* Close button */}
+      {onClose && (
+        <TouchableOpacity style={[styles.closeButton, { borderColor: Theme['border-secondary'] }]} onPress={onClose}>
+          <SvgClose width={38} height={38} fill={Theme['text-primary']} />
+        </TouchableOpacity>
+      )}
+
+      {/* Link mode badge */}
       {isLinkMode && (
         <View
           style={[
@@ -38,36 +46,24 @@ export function ModalHeader({
             },
           ]}
         >
-          <Text variant="sm-500" color="text-invert">
+          <Text variant="sm-400" color="text-invert">
             LINK MODE
           </Text>
         </View>
       )}
+
+      {/* App icon */}
       {metadata?.icons[0] && (
         <Image
           source={{ uri: metadata?.icons[0] ?? '' }}
           style={[styles.logo, { borderColor: Theme['border-primary'] }]}
         />
       )}
-      <Text variant="h6-500" color="text-primary">
-        {metadata?.name || 'Unknown'}
+
+      {/* Title */}
+      <Text variant="h6-400" color="text-primary" style={styles.title}>
+        {title}
       </Text>
-      {intention && (
-        <Text variant="lg-500" color="text-primary">
-          {intention}
-        </Text>
-      )}
-      <View style={styles.domainContainer}>
-        {!isScam && validation === 'VALID' && (
-          <Image source={VerifiedDomain} style={styles.icon} />
-        )}
-        <Text variant="sm-500" color="text-tertiary">
-          {metadata?.url || 'unknown domain'}
-        </Text>
-      </View>
-      {showVerifyContext && (
-        <VerifyTag validation={validation} isScam={isScam} style={styles.tag} />
-      )}
     </View>
   );
 }
@@ -76,35 +72,36 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: Spacing[4],
     paddingTop: Spacing[4],
+    paddingHorizontal: Spacing[4],
+    width: '100%',
+  },
+  closeButton: {
+    marginRight: Spacing[1],
+    marginTop: Spacing[1],
+    borderWidth: 1,
+    borderRadius: BorderRadius[3],
+    alignSelf: 'flex-end',
   },
   logo: {
-    width: 60,
-    height: 60,
-    borderRadius: BorderRadius.full,
+    width: 64,
+    height: 64,
+    borderRadius: BorderRadius[4],
     borderWidth: 1,
+    marginVertical: Spacing[2],
   },
-  domainContainer: {
-    marginTop: Spacing[2],
-    flexDirection: 'row',
-    alignItems: 'center',
-    columnGap: Spacing[1],
-  },
-  icon: {
-    height: 16,
-    width: 16,
-  },
-  tag: {
-    marginTop: Spacing[1],
+  title: {
+    marginVertical: Spacing[2],
+    textAlign: 'center',
   },
   linkModeContainer: {
-    borderRadius: BorderRadius[5],
+    position: 'absolute',
+    borderRadius: BorderRadius[2],
     height: 25,
     width: 100,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    marginBottom: Spacing[3],
+    top: 24,
   },
 });
