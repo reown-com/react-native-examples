@@ -60,7 +60,6 @@ declare global {
 export type RootStackParamList = {
   Onboarding: undefined;
   Home: NavigatorScreenParams<HomeTabParamList>; // Nested Navigator
-  SessionDetail: { topic: string };
   Scan: undefined;
   Logs: undefined;
 };

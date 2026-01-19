@@ -19,6 +19,7 @@ import SessionTonSignDataModal from '@/modals/SessionTonSignDataModal';
 import SessionSignTronModal from '@/modals/SessionSignTronModal';
 import PaymentOptionsModal from '@/modals/PaymentOptionsModal';
 import ImportWalletModal from '@/modals/ImportWalletModal';
+import SessionDetailModal from '@/modals/SessionDetailModal';
 
 export default function Modal() {
   const { open, view } = useSnapshot(ModalStore.state);
@@ -59,6 +60,8 @@ export default function Modal() {
         return <PaymentOptionsModal />;
       case 'ImportWalletModal':
         return <ImportWalletModal />;
+      case 'SessionDetailModal':
+        return <SessionDetailModal />;
       default:
         return <View />;
     }

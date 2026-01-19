@@ -3,8 +3,7 @@ import { Verify } from '@walletconnect/types';
 
 import { ActionButton } from '@/components/ActionButton';
 import VerifyInfoBox from '@/components/VerifyInfoBox';
-import { useTheme } from '@/hooks/useTheme';
-import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Spacing } from '@/utils/ThemeUtil';
 
 export interface ModalFooterProps {
   onApprove: () => void;
@@ -12,6 +11,9 @@ export interface ModalFooterProps {
   approveLoader?: boolean;
   rejectLoader?: boolean;
   verifyContext?: Verify.Context;
+  approveLabel?: string;
+  rejectLabel?: string;
+  disabled?: boolean;
 }
 
 export function ModalFooter({
@@ -20,17 +22,12 @@ export function ModalFooter({
   approveLoader,
   rejectLoader,
   verifyContext,
+  approveLabel = 'Connect',
+  rejectLabel = 'Cancel',
+  disabled,
 }: ModalFooterProps) {
-  const Theme = useTheme();
   const validation = verifyContext?.verified.validation;
   const isScam = verifyContext?.verified.isScam;
-
-  const bgColor =
-    isScam || validation === 'INVALID'
-      ? Theme['text-error']
-      : validation === 'VALID'
-      ? Theme['bg-accent-primary']
-      : Theme['text-warning'];
 
   return (
     <View style={styles.container}>
@@ -40,20 +37,18 @@ export function ModalFooter({
           loading={rejectLoader}
           disabled={approveLoader || rejectLoader}
           style={styles.button}
-          textStyle={styles.rejectText}
           onPress={onReject}
           secondary
         >
-          Reject
+          {rejectLabel}
         </ActionButton>
         <ActionButton
           loading={approveLoader}
-          disabled={approveLoader || rejectLoader}
-          style={[styles.button, { backgroundColor: bgColor }]}
-          textStyle={styles.approveText}
+          disabled={disabled || approveLoader || rejectLoader}
+          style={styles.button}
           onPress={onApprove}
         >
-          Approve
+          {approveLabel}
         </ActionButton>
       </View>
     </View>
@@ -65,6 +60,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: Spacing[4],
     paddingBottom: Spacing[8],
+    width: '100%',
+    paddingHorizontal: Spacing[4],
   },
   buttonContainer: {
     marginTop: Spacing[4],
@@ -73,16 +70,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    width: '48%',
-    height: Spacing[11],
-    borderRadius: BorderRadius.full,
-  },
-  rejectText: {
-    fontWeight: '500',
-    fontSize: 16,
-  },
-  approveText: {
-    fontWeight: '600',
-    fontSize: 16,
+    width: '48%'
   },
 });

@@ -1,44 +1,77 @@
-import { useNavigation } from '@react-navigation/native';
+import { useMemo } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { SessionTypes } from '@walletconnect/types';
 
-import SvgChevronRight from '@/assets/ChevronRight';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { ChainIcons } from '@/components/ChainIcons';
+import ModalStore from '@/store/ModalStore';
+
+type SessionLike = {
+  topic: string;
+  namespaces: {
+    [key: string]: {
+      chains?: readonly string[] | string[];
+      accounts: readonly string[] | string[];
+      methods: readonly string[] | string[];
+      events: readonly string[] | string[];
+    };
+  };
+  peer: {
+    metadata: {
+      name: string;
+      icons: readonly string[] | string[];
+      url: string;
+      description: string;
+    };
+  };
+};
 
 interface IndividualSessionProps {
   name: string | undefined;
   icons: string;
   url: string;
   topic: string;
+  session: SessionLike;
 }
 
 const IndividualSession = ({
   name,
   icons,
   url,
-  topic,
+  session,
 }: IndividualSessionProps) => {
   const icon = icons ? icons : null;
-  const navigator = useNavigation();
   const Theme = useTheme();
 
+  const chainIds = useMemo(() => {
+    if (!session?.namespaces) return [];
+    return Object.values(session.namespaces).flatMap(ns => ns.chains || []);
+  }, [session]);
+
   const onPress = () => {
-    navigator.navigate('SessionDetail', { topic: topic });
+    ModalStore.open('SessionDetailModal', { session: session as SessionTypes.Struct });
   };
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.container, { backgroundColor: Theme['foreground-primary'] }]}
+      onPress={onPress}
+    >
       <View style={styles.flexRow}>
         {icon ? (
-          <Image source={{ uri: icon }} style={styles.iconContainer} />
+          <Image
+            source={{ uri: icon }}
+            style={[styles.iconContainer, { backgroundColor: Theme['foreground-tertiary'] }]}
+          />
         ) : null}
         <View style={styles.textContainer}>
-          <Text variant="h6-500" color="text-primary">
+          <Text variant="lg-500" color="text-primary">
             {name ? name : 'No Name'}
           </Text>
           <Text
-            variant="md-400"
+            variant="sm-400"
             color="text-secondary"
             numberOfLines={1}
             ellipsizeMode="middle"
@@ -46,11 +79,7 @@ const IndividualSession = ({
             {url}
           </Text>
         </View>
-        <SvgChevronRight
-          fill={Theme['text-secondary']}
-          height={16}
-          width={16}
-        />
+        <ChainIcons chainIds={chainIds} size={24} overlap={8} />
       </View>
     </TouchableOpacity>
   );
@@ -60,16 +89,15 @@ export default IndividualSession;
 
 const styles = StyleSheet.create({
   container: {
-    height: Spacing['extra-1'],
     paddingVertical: Spacing[3],
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    paddingHorizontal: Spacing[4],
+    borderRadius: BorderRadius[4],
+    marginBottom: Spacing[2],
   },
   iconContainer: {
-    height: 60,
-    width: 60,
-    borderRadius: BorderRadius.full,
+    height: 48,
+    width: 48,
+    borderRadius: BorderRadius[3],
   },
   flexRow: {
     flexDirection: 'row',
@@ -77,7 +105,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     paddingLeft: Spacing[3],
-    marginRight: Spacing[3],
+    marginRight: Spacing[2],
     flex: 1,
   },
 });

@@ -28,11 +28,11 @@ export function Message({ message, style, showTitle = true }: IMessageProps) {
       contentContainerStyle={styles.content}
     >
       {showTitle && (
-        <Text variant="sm-500" color="text-secondary" style={styles.title}>
+        <Text variant="lg-400" color="text-tertiary" style={styles.title}>
           Message
         </Text>
       )}
-      <Text variant="sm-400" color="text-secondary">
+      <Text variant="md-400" color="text-primary">
         {message}
       </Text>
     </ScrollView>
@@ -41,14 +41,14 @@ export function Message({ message, style, showTitle = true }: IMessageProps) {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: BorderRadius[5],
+    borderRadius: BorderRadius[4],
     maxHeight: 120,
   },
   content: {
+    rowGap: Spacing[2],
     alignItems: 'flex-start',
     flexWrap: 'wrap',
-    paddingVertical: Spacing[2],
-    paddingHorizontal: Spacing[4],
+    padding: Spacing[5],
   },
   title: {
     marginBottom: Spacing[1],
