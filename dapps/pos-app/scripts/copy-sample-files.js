@@ -5,12 +5,18 @@ function copyIfMissing(src, dest) {
   const srcPath = path.join(process.cwd(), src);
   const destPath = path.join(process.cwd(), dest);
 
-  if (!fs.existsSync(destPath) && fs.existsSync(srcPath)) {
-    fs.copyFileSync(srcPath, destPath);
-    console.log(`✔ Copied: ${dest}`);
-  } else if (fs.existsSync(destPath)) {
-    console.log(`⏭ Skipped (exists): ${dest}`);
+  if (!fs.existsSync(srcPath)) {
+    console.log(`⏭ Skipped (source not found): ${src}`);
+    return;
   }
+
+  if (fs.existsSync(destPath)) {
+    console.log(`⏭ Skipped (exists): ${dest}`);
+    return;
+  }
+
+  fs.copyFileSync(srcPath, destPath);
+  console.log(`✔ Copied: ${dest}`);
 }
 
 copyIfMissing(".env.example", ".env");
