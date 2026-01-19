@@ -4,12 +4,16 @@
 copy_if_missing() {
     local src="$1"
     local dest="$2"
-    if [ ! -f "$dest" ]; then
-        cp "$src" "$dest"
-        echo "Copied: $dest"
-    else
-        echo "Skipped (exists): $dest"
+    if [ ! -f "$src" ]; then
+        echo "Skipped (source not found): $src"
+        return
     fi
+    if [ -f "$dest" ]; then
+        echo "Skipped (exists): $dest"
+        return
+    fi
+    cp "$src" "$dest"
+    echo "Copied: $dest"
 }
 
 copy_if_missing .env.example .env
