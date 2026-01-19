@@ -28,6 +28,7 @@
 		AEED8FBFAF0F40FB2AF6B6D0 /* libPods-App-RNWallet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F0ADF9FBB4DFB43D9B42D14 /* libPods-App-RNWallet.a */; };
 		BC55FDB92B7D243600340DDB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
 		CEC19D7E905244D0A0217718 /* KHTeka-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4FBAB7122BF343DBAF0BB7F7 /* KHTeka-Medium.otf */; };
+		FBF705DA54BB45279B06435E /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7AE83AB305C04F529AD8275C /* Colors.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +49,7 @@
 		3F16776DD2AD1459C80F97BA /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		4FBAB7122BF343DBAF0BB7F7 /* KHTeka-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "KHTeka-Medium.otf"; path = "../assets/fonts/KHTeka-Medium.otf"; sourceTree = "<group>"; };
 		540B49B18EE9B4B3211A85F1 /* Pods-App-RNWallet Debug.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Debug.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug.debug.xcconfig"; sourceTree = "<group>"; };
+		7AE83AB305C04F529AD8275C /* Colors.xcassets */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = folder.assetcatalog; name = Colors.xcassets; path = RNWeb3Wallet/Colors.xcassets; sourceTree = "<group>"; };
 		7F0ADF9FBB4DFB43D9B42D14 /* libPods-App-RNWallet.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWallet.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8987A5832B077AEB1770930B /* Pods-App-RNWallet Internal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Internal.debug.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal.debug.xcconfig"; sourceTree = "<group>"; };
 		936277491F1F3293104F8AD2 /* libPods-App-RNWallet Internal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-App-RNWallet Internal.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -100,6 +102,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */,
+				7AE83AB305C04F529AD8275C /* Colors.xcassets */,
 			);
 			name = RNWeb3Wallet;
 			sourceTree = "<group>";
@@ -298,6 +301,7 @@
 				CEC19D7E905244D0A0217718 /* KHTeka-Medium.otf in Resources */,
 				705ED4580BA7485D980B6725 /* KHTeka-Light.otf in Resources */,
 				850070D3B9C94E2E960A8670 /* KHTeka-Regular.otf in Resources */,
+				FBF705DA54BB45279B06435E /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
