@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { useSnapshot } from 'valtio';
 import ModalStore from '@/store/ModalStore';
+import SettingsStore from '@/store/SettingsStore';
 // import { styledToast } from '@/utils/HelperUtil'
 import {
   approveTronRequest,
@@ -10,20 +12,21 @@ import { RequestModal } from './RequestModal';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Message } from '@/components/Modal/Message';
-import { Chains } from '@/components/Modal/Chains';
-import { Methods } from '@/components/Modal/Methods';
-import { PresetsUtil } from '@/utils/PresetsUtil';
+import { AppInfoCard } from '@/components/AppInfoCard';
 import Toast from 'react-native-toast-message';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 
 export default function SessionSignTronModal() {
   // Get request and wallet data from store
+  const { currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
   const requestEvent = ModalStore.state.data?.requestEvent;
   const requestSession = ModalStore.state.data?.requestSession;
   const isLinkMode = requestSession?.transportType === 'link_mode';
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
+
+  const { validation, isScam } = currentRequestVerifyContext?.verified || {};
 
   // Ensure request and wallet are defined
   if (!requestEvent || !requestSession) {
@@ -36,9 +39,7 @@ export default function SessionSignTronModal() {
 
   // Get required request data
   const { topic, params } = requestEvent;
-  const { request, chainId } = params;
-  const chain = PresetsUtil.getChainDataById(chainId);
-  const method = requestEvent?.params?.request?.method!;
+  const { request } = params;
   // Handle approve action (logic varies based on request method)
   const onApprove = useCallback(async () => {
     try {
@@ -88,17 +89,21 @@ export default function SessionSignTronModal() {
 
   return (
     <RequestModal
-      intention="sign a Tron message"
+      intention="Sign a message for"
       metadata={requestSession.peer.metadata}
       onApprove={onApprove}
       onReject={onReject}
       isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}
+      approveLabel="Sign"
     >
       <View style={styles.container}>
-        {chain ? <Chains chains={[chain]} /> : null}
-        <Methods methods={[method]} />
+        <AppInfoCard
+          url={requestSession?.peer?.metadata?.url}
+          validation={validation}
+          isScam={isScam}
+        />
         <Message message={JSON.stringify(request.params, null, 2)} />
       </View>
     </RequestModal>
