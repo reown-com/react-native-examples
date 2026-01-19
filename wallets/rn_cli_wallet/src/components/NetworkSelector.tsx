@@ -29,7 +29,7 @@ export function NetworkSelector({
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.listContent}>
         {availableChains.map(chain => {
           const chainId = `${chain.namespace}:${chain.chainId}`;
@@ -75,9 +75,6 @@ export function NetworkSelector({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-  },
   listContent: {
     gap: Spacing[2],
   },

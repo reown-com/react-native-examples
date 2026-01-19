@@ -26,8 +26,8 @@ export function AppPermissions() {
 
   return (
     <View style={styles.container}>
-      {PERMISSIONS.map((permission, index) => (
-        <View key={index} style={styles.row}>
+      {PERMISSIONS.map((permission) => (
+        <View key={permission.text} style={styles.row}>
           {permission.allowed ? (
             <SvgCheckCircle
               width={20}
@@ -35,7 +35,7 @@ export function AppPermissions() {
               fill={Theme['icon-success']}
             />
           ) : (
-            <SvgXCircle width={20} height={20} fill={Theme['icon-error']} />           
+            <SvgXCircle width={20} height={20} fill={Theme['icon-error']} />
           )}
           <Text variant="md-400" color="text-primary">
             {permission.text}

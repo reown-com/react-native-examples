@@ -8,32 +8,12 @@ import { Text } from '@/components/Text';
 import { ChainIcons } from '@/components/ChainIcons';
 import ModalStore from '@/store/ModalStore';
 
-type SessionLike = {
-  topic: string;
-  namespaces: {
-    [key: string]: {
-      chains?: readonly string[] | string[];
-      accounts: readonly string[] | string[];
-      methods: readonly string[] | string[];
-      events: readonly string[] | string[];
-    };
-  };
-  peer: {
-    metadata: {
-      name: string;
-      icons: readonly string[] | string[];
-      url: string;
-      description: string;
-    };
-  };
-};
-
 interface IndividualSessionProps {
   name: string | undefined;
   icons: string;
   url: string;
   topic: string;
-  session: SessionLike;
+  session: SessionTypes.Struct;
 }
 
 const IndividualSession = ({

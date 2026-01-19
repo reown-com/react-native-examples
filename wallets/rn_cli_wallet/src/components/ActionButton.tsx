@@ -10,17 +10,12 @@ import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 
-type ButtonType = 'accent' | 'secondary';
 type ButtonVariant = 'primary' | 'secondary';
 
 export interface ActionButtonProps {
   onPress: () => void;
   children: React.ReactNode;
-  /** @deprecated Use `buttonType` and `variant` instead */
-  secondary?: boolean;
-  /** Button type: 'accent' (blue) or 'secondary' (gray/white) */
-  buttonType?: ButtonType;
-  /** Button variant: 'primary' (filled) or 'secondary' (outlined) */
+  /** Button variant: 'primary' (accent/blue) or 'secondary' (gray outline) */
   variant?: ButtonVariant;
   loading?: boolean;
   disabled?: boolean;
@@ -33,9 +28,7 @@ export interface ActionButtonProps {
 export function ActionButton({
   onPress,
   children,
-  secondary = false,
-  buttonType,
-  variant,
+  variant = 'primary',
   loading,
   disabled,
   fullWidth = false,
@@ -44,16 +37,9 @@ export function ActionButton({
 }: ActionButtonProps) {
   const Theme = useTheme();
 
-  // Support legacy `secondary` prop while allowing new buttonType/variant
-  const resolvedType: ButtonType = buttonType ?? (secondary ? 'secondary' : 'accent');
-  const resolvedVariant: ButtonVariant = variant ?? (secondary ? 'secondary' : 'primary');
-
   const getButtonStyles = () => {
-    const isAccent = resolvedType === 'accent';
-    const isPrimary = resolvedVariant === 'primary';
-
-    if (isAccent && isPrimary) {
-      // Accent/Primary: Blue filled button
+    if (variant === 'primary') {
+      // Primary: Blue filled button (accent color)
       return {
         backgroundColor: disabled
           ? Theme['foreground-accent-primary-60']
@@ -65,35 +51,7 @@ export function ActionButton({
       };
     }
 
-    if (isAccent && !isPrimary) {
-      // Accent/Secondary: Blue outline button
-      return {
-        backgroundColor: disabled
-          ? Theme['foreground-accent-primary-10']
-          : Theme['bg-primary'],
-        textColor: disabled
-          ? Theme['foreground-accent-primary-60']
-          : Theme['text-accent-primary'],
-        borderColor: disabled
-          ? Theme['foreground-accent-primary-40']
-          : Theme['border-accent-primary'],
-      };
-    }
-
-    if (!isAccent && isPrimary) {
-      // Secondary/Primary: Gray filled button
-      return {
-        backgroundColor: disabled
-          ? Theme['foreground-tertiary']
-          : Theme['foreground-secondary'],
-        textColor: disabled ? Theme['text-secondary'] : Theme['text-primary'],
-        borderColor: disabled
-          ? Theme['foreground-tertiary']
-          : Theme['foreground-secondary'],
-      };
-    }
-
-    // Secondary/Secondary: White with gray border (outline button)
+    // Secondary: Gray outline button
     return {
       backgroundColor: Theme['bg-primary'],
       textColor: disabled ? Theme['text-secondary'] : Theme['text-primary'],

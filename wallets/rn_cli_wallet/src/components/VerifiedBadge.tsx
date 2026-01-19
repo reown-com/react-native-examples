@@ -30,7 +30,7 @@ export function VerifiedBadge({ validation, isScam }: VerifiedBadgeProps) {
 
   return (
     <View style={[styles.badge, { backgroundColor: bg }]}>
-      <Text variant="md-500"  color="text-invert">
+      <Text variant="md-500" color="text-invert">
         {label}
       </Text>
     </View>

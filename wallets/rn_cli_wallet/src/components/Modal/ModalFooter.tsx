@@ -38,7 +38,7 @@ export function ModalFooter({
           disabled={approveLoader || rejectLoader}
           style={styles.button}
           onPress={onReject}
-          secondary
+          variant="secondary"
         >
           {rejectLabel}
         </ActionButton>
@@ -58,7 +58,6 @@ export function ModalFooter({
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginHorizontal: Spacing[4],
     paddingBottom: Spacing[8],
     width: '100%',
     paddingHorizontal: Spacing[4],

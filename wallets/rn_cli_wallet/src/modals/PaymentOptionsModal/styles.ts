@@ -15,18 +15,7 @@ export const sharedStyles = StyleSheet.create({
   buttonContainer: {
     paddingTop: 16,
     gap: 8,
-  },
-
-  // Full-width primary button
-  primaryButton: {
-    width: '100%',
-  },
-
-  // Primary button text style
-  primaryButtonText: {
-    fontWeight: '400',
-    fontSize: 16,
-  },
+  }
 });
 
 // Common dimensions

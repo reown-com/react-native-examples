@@ -102,6 +102,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    top:24,
+    top: 24,
   },
 });

@@ -127,7 +127,7 @@ export default function SessionProposalModal() {
         supportedChains.map(c => `${c.namespace}:${c.chainId}`),
       );
     }
-  }, [supportedChains]);
+  }, [supportedChains, proposal.id]);
 
   // Calculate network accordion height based on chain count (capped at MAX_VISIBLE_NETWORKS)
   const networkHeight = useMemo(() => {
