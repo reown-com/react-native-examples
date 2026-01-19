@@ -60,11 +60,8 @@ echo ""
 
 # Run copy-sample-files scripts for projects that have them
 echo "Running copy-sample-files scripts..."
-for project in "dapps/poc-pos-app" "dapps/pos-app" "dapps/W3MWagmi" "wallets/rn_cli_wallet"; do
-    if [ -f "$project/scripts/copy-sample-files.js" ]; then
-        echo "Running $project/scripts/copy-sample-files.js"
-        (cd "$project" && node scripts/copy-sample-files.js)
-    elif [ -f "$project/scripts/copy-sample-files.sh" ]; then
+for project in "dapps/W3MWagmi" "wallets/rn_cli_wallet"; do
+    if [ -f "$project/scripts/copy-sample-files.sh" ]; then
         echo "Running $project/scripts/copy-sample-files.sh"
         (cd "$project" && zsh scripts/copy-sample-files.sh)
     fi
