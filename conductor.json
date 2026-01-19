@@ -1,0 +1,4 @@
+{
+  "setupScript": "./scripts/setup-worktree.sh",
+  "archiveScript": "./scripts/cleanup-worktree.sh"
+}

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "postinstall": "./scripts/copy-sample-files.sh",
     "android": "yarn run copy:debug && react-native run-android --mode=debug --appId com.walletconnect.web3wallet.rnsample.debug",
     "android:build": "yarn run copy:production && cd android && ./gradlew clean && ./gradlew assembleRelease",
     "android:build:internal": "yarn run copy:internal && cd android && ./gradlew clean && ./gradlew assembleInternal",

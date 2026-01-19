@@ -13,5 +13,4 @@ copy_if_missing() {
 }
 
 copy_if_missing .env.example .env
-copy_if_missing android/app/debug.keystore.mock android/app/debug.keystore
-copy_if_missing android/secrets.properties.mock android/secrets.properties
+copy_if_missing secrets.properties.mock android/secrets.properties
