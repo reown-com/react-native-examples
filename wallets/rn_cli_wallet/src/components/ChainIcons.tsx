@@ -9,14 +9,12 @@ interface ChainIconsProps {
   chainIds: string[];
   size?: number;
   overlap?: number;
-  maxCount?: number; // Fixed width based on max icons to prevent layout shift
 }
 
 export function ChainIcons({
   chainIds,
   size = 24,
   overlap = 8,
-  maxCount,
 }: ChainIconsProps) {
   const Theme = useTheme();
 
@@ -25,22 +23,16 @@ export function ChainIcons({
   }, [chainIds]);
 
   const containerWidth = useMemo(() => {
-    const count = maxCount ?? uniqueChainIds.length;
+    const count = uniqueChainIds.length;
     if (count === 0) return 0;
     return size + (count - 1) * (size - overlap);
-  }, [uniqueChainIds.length, maxCount, size, overlap]);
-
-  // Calculate offset to right-align icons when maxCount is specified
-  const rightAlignOffset = useMemo(() => {
-    if (!maxCount) return 0;
-    return (maxCount - uniqueChainIds.length) * (size - overlap);
-  }, [maxCount, uniqueChainIds.length, size, overlap]);
+  }, [uniqueChainIds.length, size, overlap]);
 
   return (
     <View style={[styles.container, { width: containerWidth, height: size }]}>
       {uniqueChainIds.map((chainId, index) => {
         const logo = PresetsUtil.getChainIconById(chainId);
-        const leftOffset = rightAlignOffset + index * (size - overlap);
+        const leftOffset = index * (size - overlap);
 
         return (
           <View

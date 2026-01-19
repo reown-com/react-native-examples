@@ -272,7 +272,7 @@ export default function SessionProposalModal() {
               Network
             </Text>
           }
-          rightContent={<ChainIcons chainIds={selectedChainIds} maxCount={supportedChains.length} />}
+          rightContent={<ChainIcons chainIds={selectedChainIds} />}
           isExpanded={expandedAccordion === 'network'}
           onPress={() => toggleAccordion('network')}
           expandedHeight={networkHeight}
