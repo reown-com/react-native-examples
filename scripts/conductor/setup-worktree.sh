@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # Setup script for Conductor workspaces
 # Creates symlinks for environment files and sentry.properties from the main repo
