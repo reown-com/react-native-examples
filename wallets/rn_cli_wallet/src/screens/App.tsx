@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import Config from 'react-native-config';
-import { Linking, Platform, StatusBar, useColorScheme } from 'react-native';
+import { Linking, Platform, StatusBar } from 'react-native';
+import { useSnapshot } from 'valtio';
 import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import * as Sentry from '@sentry/react-native';
@@ -15,6 +16,7 @@ import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
 import { SENTRY_TAG } from '@/utils/misc';
+import { toastConfig } from '@/components/ToastConfig';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
@@ -40,7 +42,12 @@ Sentry.init({
 });
 
 const App = () => {
-  const scheme = useColorScheme();
+  const { themeMode, eip155Address } = useSnapshot(SettingsStore.state);
+
+  // Load saved theme mode on startup
+  useEffect(() => {
+    SettingsStore.loadThemeMode();
+  }, []);
 
   // Step 1 - Initialize wallets and wallet connect client
   const initialized = useInitializeWalletKit();
@@ -48,10 +55,16 @@ const App = () => {
   // Step 2 - Once initialized, set up wallet connect event manager
   useWalletKitEventsManager(initialized);
 
+  // Hide splash screen once wallets are initialized and addresses are loaded
+  useEffect(() => {
+    if (initialized && eip155Address) {
+      BootSplash.hide({ fade: true });
+    }
+  }, [initialized, eip155Address]);
+
+  // Set up relayer event listeners once initialized
   useEffect(() => {
     if (initialized) {
-      BootSplash.hide({ fade: true });
-
       walletKit.core.relayer.on(RELAYER_EVENTS.connect, () => {
         Toast.show({
           type: 'success',
@@ -141,10 +154,11 @@ const App = () => {
     <KeyboardProvider>
       <NavigationContainer>
         <StatusBar
-          barStyle={scheme === 'light' ? 'dark-content' : 'light-content'}
+          barStyle={themeMode === 'light' ? 'dark-content' : 'light-content'}
         />
         <RootStackNavigator />
         <Toast
+          config={toastConfig}
           position="top"
           topOffset={Platform.select({ ios: 80, android: 0 })}
         />

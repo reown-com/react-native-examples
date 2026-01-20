@@ -1,4 +1,5 @@
 import { proxy } from 'valtio';
+import { Appearance } from 'react-native';
 import { Verify, SessionTypes } from '@walletconnect/types';
 
 import { storage } from '@/utils/storage';
@@ -29,6 +30,7 @@ interface State {
   socketStatus: 'connected' | 'disconnected' | 'stalled' | 'unknown';
   logs: string[];
   isLinkModeRequest: boolean;
+  themeMode: 'light' | 'dark';
 }
 
 /**
@@ -49,6 +51,7 @@ const state = proxy<State>({
   socketStatus: 'unknown',
   logs: [],
   isLinkModeRequest: false,
+  themeMode: Appearance.getColorScheme() === 'dark' ? 'dark' : 'light',
 });
 
 /**
@@ -122,6 +125,18 @@ const SettingsStore = {
 
   setTronAddress(tronAddress: string) {
     state.tronAddress = tronAddress;
+  },
+
+  setThemeMode(value: 'light' | 'dark') {
+    state.themeMode = value;
+    storage.setItem('THEME_MODE', value);
+  },
+
+  async loadThemeMode() {
+    const saved = await storage.getItem<string>('THEME_MODE');
+    if (saved === 'light' || saved === 'dark') {
+      state.themeMode = saved;
+    }
   },
 };
 

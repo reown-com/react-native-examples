@@ -113,6 +113,9 @@ export const LightTheme: { [key in ThemeKeys]: string } = {
   'icon-success': '#30A46B',
   'icon-error': '#DF4A34',
   'icon-warning': '#F3A13F',
+
+  // Others
+  'white': '#FFFFFF',
 };
 
 export const DarkTheme: { [key in ThemeKeys]: string } = {
@@ -165,4 +168,7 @@ export const DarkTheme: { [key in ThemeKeys]: string } = {
   'icon-success': '#30A46B',
   'icon-error': '#DF4A34',
   'icon-warning': '#F3A13F',
+
+  // Others
+  'white': '#FFFFFF',
 };

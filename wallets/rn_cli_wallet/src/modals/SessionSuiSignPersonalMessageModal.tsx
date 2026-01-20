@@ -2,6 +2,7 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
+import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
@@ -43,8 +44,8 @@ export default function SessionSignSuiPersonalMessageModal() {
   const onApprove = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingApprove(true);
-      const response = await approveSuiRequest(requestEvent);
       try {
+        const response = await approveSuiRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
@@ -56,10 +57,15 @@ export default function SessionSignSuiPersonalMessageModal() {
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Signature failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
-      setIsLoadingApprove(false);
-      ModalStore.close();
     }
   }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
@@ -67,8 +73,8 @@ export default function SessionSignSuiPersonalMessageModal() {
   const onReject = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingReject(true);
-      const response = rejectSuiRequest(requestEvent);
       try {
+        const response = rejectSuiRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
@@ -79,12 +85,16 @@ export default function SessionSignSuiPersonalMessageModal() {
           error: 'User rejected personal message request',
         });
       } catch (e) {
-        setIsLoadingReject(false);
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic, peerMetadata, isLinkMode]);
 

@@ -13,3 +13,10 @@ export const getMetadata = () => {
 };
 
 export const SENTRY_TAG = 'debug';
+
+export function formatDomain(url: string | undefined): string {
+  if (!url) {
+    return 'unknown domain';
+  }
+  return url.replace(/^https?:\/\//, '').replace(/^www\./, '');
+}

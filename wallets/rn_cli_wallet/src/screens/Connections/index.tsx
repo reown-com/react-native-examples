@@ -1,19 +1,15 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 
 import { walletKit, isPaymentLink } from '@/utils/WalletKitUtil';
 import Sessions from '@/screens/Connections/components/Sessions';
-import ActionButtons from '@/screens/Connections/components/ActionButtons';
-import { CopyURIDialog } from '@/components/CopyURIDialog';
-import { ConnectionsStackScreenProps } from '@/utils/TypesUtil';
+import { HomeTabScreenProps } from '@/utils/TypesUtil';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { EIP155_CHAINS } from '@/constants/Eip155';
 
-type Props = ConnectionsStackScreenProps<'Connections'>;
+type Props = HomeTabScreenProps<'Connections'>;
 
 export default function Connections({ route }: Props) {
-  const [copyDialogVisible, setCopyDialogVisible] = useState(false);
-
   const handlePaymentLink = useCallback(async (paymentLink: string) => {
     const payClient = walletKit?.pay;
     console.log('[Pay] PayClient available:', !!payClient, payClient);
@@ -25,7 +21,6 @@ export default function Connections({ route }: Props) {
       return;
     }
 
-    // Show loading modal
     ModalStore.open('PaymentOptionsModal', {
       loadingMessage: 'Preparing your payment...',
     });
@@ -50,7 +45,6 @@ export default function Connections({ route }: Props) {
 
       console.log('[Pay] Payment options received:', paymentOptions);
 
-      // Show payment options modal
       ModalStore.open('PaymentOptionsModal', { paymentOptions });
     } catch (error: any) {
       console.error('[Pay] Error fetching payment options:', error);
@@ -60,36 +54,11 @@ export default function Connections({ route }: Props) {
     }
   }, []);
 
-  const onDialogConnect = useCallback(
-    (uri: string) => {
-      setCopyDialogVisible(false);
-      // Timeout added because of an issue with modal lib
-      setTimeout(() => {
-        // Check if it's a payment link
-        if (isPaymentLink(uri)) {
-          handlePaymentLink(uri);
-        } else {
-          pair(uri);
-        }
-      }, 500);
-    },
-    [handlePaymentLink],
-  );
-
-  const onDialogCancel = () => {
-    setCopyDialogVisible(false);
-  };
-
   async function pair(uri: string) {
     ModalStore.open('LoadingModal', { loadingMessage: 'Pairing...' });
-
-    /**
-     * Wait for settings walletKit to be initialized before calling pair
-     */
     await SettingsStore.state.initPromise;
 
     try {
-      setCopyDialogVisible(false);
       await walletKit.pair({ uri });
     } catch (error: any) {
       ModalStore.open('LoadingModal', {
@@ -110,15 +79,5 @@ export default function Connections({ route }: Props) {
     }
   }, [route.params?.uri, handlePaymentLink]);
 
-  return (
-    <>
-      <Sessions />
-      <CopyURIDialog
-        onConnect={onDialogConnect}
-        onCancel={onDialogCancel}
-        visible={copyDialogVisible}
-      />
-      <ActionButtons setCopyDialog={setCopyDialogVisible} />
-    </>
-  );
+  return <Sessions />;
 }

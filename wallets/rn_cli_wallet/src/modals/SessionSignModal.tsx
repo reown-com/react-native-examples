@@ -2,6 +2,7 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
+import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { getSignParamsMessage } from '@/utils/HelperUtil';
@@ -44,8 +45,8 @@ export default function SessionSignModal() {
   const onApprove = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingApprove(true);
-      const response = await approveEIP155Request(requestEvent);
       try {
+        const response = await approveEIP155Request(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
@@ -58,10 +59,15 @@ export default function SessionSignModal() {
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Signature failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
-      setIsLoadingApprove(false);
-      ModalStore.close();
     }
   }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
@@ -69,8 +75,8 @@ export default function SessionSignModal() {
   const onReject = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingReject(true);
-      const response = rejectEIP155Request(requestEvent);
       try {
+        const response = rejectEIP155Request(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
@@ -81,12 +87,16 @@ export default function SessionSignModal() {
           error: 'User rejected signature request',
         });
       } catch (e) {
-        setIsLoadingReject(false);
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic, peerMetadata, isLinkMode]);
 

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes, AuthTypes } from '@walletconnect/types';
 import { buildAuthObject, populateAuthPayload } from '@walletconnect/utils';
+import Toast from 'react-native-toast-message';
 
 import ModalStore from '@/store/ModalStore';
 import { eip155Addresses, eip155Wallets } from '@/utils/EIP155WalletUtil';
@@ -57,8 +58,8 @@ export default function SessionAuthenticateModal() {
   // Handle approve action, construct session namespace
   const onApprove = useCallback(async () => {
     if (messages.length > 0) {
+      setIsLoadingApprove(true);
       try {
-        setIsLoadingApprove(true);
         const signedAuths: AuthTypes.Cacao[] = [];
 
         messages.forEach(async message => {
@@ -88,19 +89,24 @@ export default function SessionAuthenticateModal() {
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Authentication failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        SettingsStore.setIsLinkModeRequest(false);
+        ModalStore.close();
       }
     }
-    setIsLoadingApprove(false);
-    SettingsStore.setIsLinkModeRequest(false);
-    ModalStore.close();
   }, [address, messages, authRequest, isLinkModeRequest]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
     if (authRequest) {
+      setIsLoadingReject(true);
       try {
-        setIsLoadingReject(true);
         await walletKit.rejectSessionAuthenticate({
           id: authRequest.id,
           reason: {
@@ -115,12 +121,17 @@ export default function SessionAuthenticateModal() {
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        SettingsStore.setIsLinkModeRequest(false);
+        ModalStore.close();
       }
     }
-    setIsLoadingReject(false);
-    SettingsStore.setIsLinkModeRequest(false);
-    ModalStore.close();
   }, [authRequest]);
 
   useEffect(() => {

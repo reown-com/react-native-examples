@@ -67,23 +67,23 @@ export default function SessionSignTronModal() {
   const onReject = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingReject(true);
-      const response = rejectTronRequest(requestEvent);
       try {
+        const response = rejectTronRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
       } catch (e) {
-        setIsLoadingReject(false);
-        Toast.show({
-          text1: (e as Error).message,
-          type: 'error',
-        });
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic]);
 

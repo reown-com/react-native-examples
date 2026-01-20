@@ -1,22 +1,23 @@
 import { View, StyleSheet, FlatList } from 'react-native';
 import { useSnapshot } from 'valtio';
+import { SessionTypes } from '@walletconnect/types';
 
 import SettingsStore from '@/store/SettingsStore';
-import ConnectTemplateSvg from '@/assets/ConnectTemplate';
 import IndividualSession from './IndividualSession';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { useTheme } from '@/hooks/useTheme';
 
 function Sessions() {
+  const Theme = useTheme();
   const { sessions } = useSnapshot(SettingsStore.state);
 
   if (!sessions?.length) {
     return (
-      <View style={styles.container}>
-        <ConnectTemplateSvg height={37} width={33} />
-        <Text variant="md-400" color="text-secondary" center>
-          Apps you connect with will appear here. To connect scan or paste the
-          code that is displayed in the app.
+      <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
+        <Text variant="h6-400" color="text-primary">No connected apps yet</Text>
+        <Text variant="lg-400" color="text-secondary" center>
+          Scan a WalletConnect QR code to get started.
         </Text>
       </View>
     );
@@ -25,7 +26,7 @@ function Sessions() {
   return (
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={styles.scrollViewContainer}
+      contentContainerStyle={[styles.scrollViewContainer]}
       data={sessions}
       renderItem={({ item }) => {
         const { name, icons, url } = item?.peer.metadata;
@@ -36,7 +37,7 @@ function Sessions() {
             name={name}
             url={url}
             topic={item.topic}
-            session={item}
+            session={item as SessionTypes.Struct}
           />
         );
       }}
@@ -53,8 +54,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    gap: Spacing[2],
     paddingTop: Spacing[4],
-    paddingHorizontal: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -30,8 +30,8 @@ export default function Scan({ navigation }: Props) {
   const onCodeScanned = (codes: Code[]) => {
     const uri = codes[0].value;
     navigation.navigate('Home', {
-      screen: 'ConnectionsStack',
-      params: { screen: 'Connections', params: { uri: uri! } },
+      screen: 'Connections',
+      params: { uri: uri! },
     });
   };
 

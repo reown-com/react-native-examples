@@ -2,6 +2,7 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
+import Toast from 'react-native-toast-message';
 
 import { AppInfoCard } from '@/components/AppInfoCard';
 import {
@@ -68,9 +69,9 @@ export default function SessionTonSendMessageModal() {
 
   // Handle approve action
   const onApprove = useCallback(async () => {
-    try {
-      if (requestEvent) {
-        setIsLoadingApprove(true);
+    if (requestEvent) {
+      setIsLoadingApprove(true);
+      try {
         const response = await approveTonRequest(requestEvent);
         console.log('response', response);
 
@@ -84,12 +85,17 @@ export default function SessionTonSendMessageModal() {
           isLinkMode: isLinkMode,
           error: 'error' in response ? response.error.message : undefined,
         });
+      } catch (e) {
+        console.log((e as Error).message, 'error');
+        Toast.show({
+          type: 'error',
+          text1: 'Send message failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
-    } catch (e) {
-      console.log((e as Error).message, 'error');
-    } finally {
-      setIsLoadingApprove(false);
-      ModalStore.close();
     }
   }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
@@ -97,8 +103,8 @@ export default function SessionTonSendMessageModal() {
   const onReject = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingReject(true);
-      const response = rejectTonRequest(requestEvent);
       try {
+        const response = rejectTonRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
@@ -109,12 +115,16 @@ export default function SessionTonSendMessageModal() {
           error: 'User rejected request',
         });
       } catch (e) {
-        setIsLoadingReject(false);
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic, peerMetadata, isLinkMode]);
 

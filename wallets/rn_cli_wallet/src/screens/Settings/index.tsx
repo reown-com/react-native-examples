@@ -1,25 +1,24 @@
 import { useSnapshot } from 'valtio';
 import { useEffect, useState } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, Switch, StyleSheet, TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
+import { useNavigation } from '@react-navigation/native';
 
-import { eip155Wallets } from '@/utils/EIP155WalletUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
 import { Card } from '@/components/Card';
-import styles from './styles';
-import { SettingsStackScreenProps } from '@/utils/TypesUtil';
 import { storage } from '@/utils/storage';
 import { Text } from '@/components/Text';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 
-type Props = SettingsStackScreenProps<'Settings'>;
-
-export default function Settings({ navigation }: Props) {
-  const { eip155Address, suiAddress, tonAddress, tronAddress, socketStatus } =
-    useSnapshot(SettingsStore.state);
+export default function Settings() {
+  const { socketStatus, themeMode } = useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
+  const navigation = useNavigation();
+  const Theme = useTheme();
 
   useEffect(() => {
     async function getAsyncData() {
@@ -36,42 +35,43 @@ export default function Settings({ navigation }: Props) {
     Alert.alert('Value copied to clipboard');
   };
 
+  const toggleDarkMode = () => {
+    const newMode = themeMode === 'dark' ? 'light' : 'dark';
+    SettingsStore.setThemeMode(newMode);
+  };
+
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
       contentContainerStyle={styles.content}
-      contentInsetAdjustmentBehavior="automatic"
-    >
+      contentInsetAdjustmentBehavior="automatic">
       <Text variant="lg-500" color="text-primary" style={styles.subtitle}>
-        Account
+        Preferences
       </Text>
       <View style={styles.sectionContainer}>
+        <TouchableOpacity
+          onPress={toggleDarkMode}
+          style={[
+            styles.switchCard,
+            { backgroundColor: Theme['foreground-primary'] },
+          ]}>
+          <Text variant="md-500" color="text-primary">
+            Dark mode
+          </Text>
+          <Switch
+            value={themeMode === 'dark'}
+            onValueChange={toggleDarkMode}
+            trackColor={{
+              false: Theme['foreground-tertiary'],
+              true: Theme['bg-accent-primary'],
+            }}
+            thumbColor={Theme['bg-primary']}
+          />
+        </TouchableOpacity>
         <Card
-          title="EVM Address"
-          value={eip155Address}
-          onPress={() => copyToClipboard(eip155Address)}
-        />
-        <Card
-          title="SUI Address"
-          value={suiAddress}
-          onPress={() => copyToClipboard(suiAddress)}
-        />
-        <Card
-          title="TON Address"
-          value={tonAddress}
-          onPress={() => copyToClipboard(tonAddress)}
-        />
-        <Card
-          title="Tron Address"
-          value={tronAddress}
-          onPress={() => copyToClipboard(tronAddress)}
-        />
-        <Card
-          title="EVM Seed Phrase"
-          onPress={() =>
-            copyToClipboard(eip155Wallets[eip155Address].getMnemonic())
-          }
-          value={eip155Wallets[eip155Address]?.getMnemonic?.() ?? ''}
+          title="Secret phrases"
+          onPress={() => navigation.navigate('SecretPhrase')}
+          icon="chevronRight"
         />
         <Card
           title="Import EVM Wallet"
@@ -102,3 +102,28 @@ export default function Settings({ navigation }: Props) {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    padding: Spacing[5],
+  },
+  subtitle: {
+    marginBottom: Spacing[3],
+    marginTop: Spacing[2],
+  },
+  sectionContainer: {
+    gap: Spacing[3],
+    marginBottom: Spacing[4],
+  },
+  switchCard: {
+    borderRadius: BorderRadius[4],
+    paddingVertical: Spacing[4],
+    paddingHorizontal: Spacing[4],
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+});

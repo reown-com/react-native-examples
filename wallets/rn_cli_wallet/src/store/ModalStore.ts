@@ -35,7 +35,9 @@ interface State {
     | 'SessionTonSignDataModal'
     | 'PaymentOptionsModal'
     | 'ImportWalletModal'
-    | 'SessionDetailModal';
+    | 'SessionDetailModal'
+    | 'ScannerOptionsModal'
+    | 'PasteURIModal';
   data?: ModalData;
 }
 

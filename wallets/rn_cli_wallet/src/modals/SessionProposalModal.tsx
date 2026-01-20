@@ -202,18 +202,20 @@ export default function SessionProposalModal() {
         console.log((e as Error).message, 'error');
         Toast.show({
           type: 'error',
-          text1: (e as Error).message,
+          text1: 'Connection failed',
+          text2: (e as Error).message,
         });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
     }
-    setIsLoadingApprove(false);
-    ModalStore.close();
   }, [proposal, supportedNamespaces, selectedChainIds, filterNamespacesByChains]);
 
   const onReject = useCallback(async () => {
     if (proposal) {
+      setIsLoadingReject(true);
       try {
-        setIsLoadingReject(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
         await walletKit.rejectSession({
           id: proposal.id,
@@ -226,11 +228,16 @@ export default function SessionProposalModal() {
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        ModalStore.close();
       }
     }
-    setIsLoadingReject(false);
-    ModalStore.close();
   }, [proposal]);
 
   return (

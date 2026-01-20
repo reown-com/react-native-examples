@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   TextInput,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
@@ -11,37 +10,79 @@ import {
 
 import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
-import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { ActionButton } from '@/components/ActionButton';
+import SettingsStore from '@/store/SettingsStore';
+import { walletKit, isPaymentLink } from '@/utils/WalletKitUtil';
+import { EIP155_CHAINS } from '@/constants/Eip155';
 import SvgClose from '@/assets/Close';
 
-export default function ImportWalletModal() {
+export default function PasteURIModal() {
   const Theme = useTheme();
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [uri, setUri] = useState('');
 
-  const handleImport = async () => {
-    if (!input.trim()) {
-      Alert.alert('Error', 'Please enter a mnemonic or private key');
+  const handlePaymentLink = async (paymentLink: string) => {
+    const payClient = walletKit?.pay;
+    if (!payClient) {
+      ModalStore.open('LoadingModal', {
+        errorMessage: 'Pay SDK not initialized. Please restart the app.',
+      });
       return;
     }
 
-    setIsLoading(true);
+    ModalStore.open('PaymentOptionsModal', {
+      loadingMessage: 'Preparing your payment...',
+    });
+
     try {
-      const { address } = loadEIP155Wallet(input);
-      Alert.alert('Success', `Wallet imported!\n\nNew address: ${address}`);
-      ModalStore.close();
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Invalid mnemonic or private key';
-      Alert.alert('Error', message);
-    } finally {
-      setIsLoading(false);
+      const eip155Address = SettingsStore.state.eip155Address;
+      const accounts = eip155Address
+        ? Object.keys(EIP155_CHAINS).map(
+            chainKey => `${chainKey}:${eip155Address}`,
+          )
+        : [];
+
+      const paymentOptions = await payClient.getPaymentOptions({
+        paymentLink,
+        accounts,
+        includePaymentInfo: true,
+      });
+
+      ModalStore.open('PaymentOptionsModal', { paymentOptions });
+    } catch (error: any) {
+      ModalStore.open('PaymentOptionsModal', {
+        errorMessage: error?.message || 'Failed to fetch payment options',
+      });
     }
+  };
+
+  const pair = async (pairUri: string) => {
+    ModalStore.open('LoadingModal', { loadingMessage: 'Pairing...' });
+    await SettingsStore.state.initPromise;
+
+    try {
+      await walletKit.pair({ uri: pairUri });
+    } catch (error: any) {
+      ModalStore.open('LoadingModal', {
+        errorMessage: error?.message || 'There was an error pairing',
+      });
+    }
+  };
+
+  const handleContinue = () => {
+    if (!uri.trim()) {
+      return;
+    }
+
+    ModalStore.close();
+    setTimeout(() => {
+      if (isPaymentLink(uri)) {
+        handlePaymentLink(uri);
+      } else {
+        pair(uri);
+      }
+    }, 500);
   };
 
   return (
@@ -65,7 +106,7 @@ export default function ImportWalletModal() {
         </View>
 
         <Text variant="h6-400" color="text-primary" center>
-          Import EVM Wallet
+          Paste URI or Payment Link
         </Text>
 
         <TextInput
@@ -77,15 +118,15 @@ export default function ImportWalletModal() {
               borderColor: Theme['foreground-tertiary'],
             },
           ]}
-          placeholder="Enter mnemonic or private key (0x...)"
+          placeholder="wc:// or https://pay.walletconnect.com/..."
           placeholderTextColor={Theme['text-secondary']}
-          value={input}
-          onChangeText={setInput}
+          value={uri}
+          onChangeText={setUri}
           multiline
           numberOfLines={4}
           autoCapitalize="none"
           autoCorrect={false}
-          secureTextEntry={false}
+          autoFocus
         />
 
         <View style={styles.buttonContainer}>
@@ -99,10 +140,10 @@ export default function ImportWalletModal() {
 
           <ActionButton
             style={styles.button}
-            onPress={handleImport}
-            disabled={isLoading || !input.trim()}
+            onPress={handleContinue}
+            disabled={!uri.trim()}
           >
-            {isLoading ? 'Importing...' : 'Import'}
+            Continue
           </ActionButton>
         </View>
       </View>
@@ -148,7 +189,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing[3],
     width: '100%',
-    marginTop: Spacing[4],
+    paddingTop: Spacing[4],
   },
   button: {
     flex: 1,
