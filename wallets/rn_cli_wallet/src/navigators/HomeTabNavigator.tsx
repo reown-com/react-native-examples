@@ -43,7 +43,10 @@ export function HomeTabNavigator() {
           fontFamily: FontFamily.regular,
         },
         tabBarActiveTintColor: Theme['text-primary'],
-        tabBarInactiveTintColor: Theme['text-secondary']
+        tabBarInactiveTintColor: Theme['text-secondary'],
+        sceneStyle: {
+          backgroundColor: Theme['bg-primary'],
+        },
       }}>
       <TabNav.Screen
         name="Wallets"
