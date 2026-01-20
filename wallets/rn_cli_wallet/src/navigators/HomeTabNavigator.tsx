@@ -9,6 +9,7 @@ import Wallets from '@/screens/Wallets';
 import Connections from '@/screens/Connections';
 import Settings from '@/screens/Settings';
 import { Header } from '@/components/Header';
+import { FontFamily } from '@/utils/ThemeUtil';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
@@ -38,14 +39,11 @@ export function HomeTabNavigator() {
           borderColor: Theme['foreground-tertiary'],
         },
         tabBarLabelStyle: {
-          fontWeight: '600',
           fontSize: 10,
+          fontFamily: FontFamily.regular,
         },
         tabBarActiveTintColor: Theme['text-primary'],
-        tabBarInactiveTintColor: Theme['text-secondary'],
-        sceneStyle: {
-          backgroundColor: Theme['bg-primary'],
-        },
+        tabBarInactiveTintColor: Theme['text-secondary']
       }}>
       <TabNav.Screen
         name="Wallets"

@@ -55,12 +55,12 @@ const App = () => {
   // Step 2 - Once initialized, set up wallet connect event manager
   useWalletKitEventsManager(initialized);
 
-  // Hide splash screen once wallets are initialized and addresses are loaded
+  // Hide splash screen once wallets are initialized, addresses are loaded and theme mode is set
   useEffect(() => {
-    if (initialized && eip155Address) {
+    if (initialized && eip155Address && themeMode) {
       BootSplash.hide({ fade: true });
     }
-  }, [initialized, eip155Address]);
+  }, [initialized, eip155Address, themeMode]);
 
   // Set up relayer event listeners once initialized
   useEffect(() => {
@@ -154,7 +154,8 @@ const App = () => {
     <KeyboardProvider>
       <NavigationContainer>
         <StatusBar
-          barStyle={themeMode === 'light' ? 'dark-content' : 'light-content'}
+          translucent={true}
+          barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
         />
         <RootStackNavigator />
         <Toast

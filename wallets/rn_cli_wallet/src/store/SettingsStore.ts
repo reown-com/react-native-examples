@@ -5,6 +5,17 @@ import { Verify, SessionTypes } from '@walletconnect/types';
 import { storage } from '@/utils/storage';
 import EIP155Lib from '../lib/EIP155Lib';
 import SuiLib from '../lib/SuiLib';
+import { MMKV } from 'react-native-mmkv';
+
+function getInitialThemeMode(): 'light' | 'dark' {
+  const mmkv = new MMKV();
+  const saved = mmkv.getString('THEME_MODE');
+  if (saved === 'light' || saved === 'dark') {
+    return saved;
+  }
+  
+  return Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+}
 
 /**
  * Types
@@ -51,7 +62,7 @@ const state = proxy<State>({
   socketStatus: 'unknown',
   logs: [],
   isLinkModeRequest: false,
-  themeMode: Appearance.getColorScheme() === 'dark' ? 'dark' : 'light',
+  themeMode: getInitialThemeMode(),
 });
 
 /**
