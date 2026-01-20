@@ -2,6 +2,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "postinstall": "./scripts/copy-sample-files.sh",
     "android": "yarn run copy:debug && react-native run-android --appId com.walletconnect.web3modal.rnsample.debug",
     "android:build": "yarn run copy:production && cd android && ./gradlew clean && ./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a",
     "android:build:internal": "yarn run copy:internal && cd android && ./gradlew clean && ./gradlew assembleInternal -PreactNativeArchitectures=arm64-v8a",
