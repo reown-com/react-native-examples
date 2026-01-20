@@ -1,6 +1,6 @@
 import { useSnapshot } from 'valtio';
 import { useEffect, useState } from 'react';
-import { View, Alert, Switch, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Switch, StyleSheet, TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { useNavigation } from '@react-navigation/native';
@@ -13,6 +13,7 @@ import { Text } from '@/components/Text';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import Toast from 'react-native-toast-message';
 
 export default function Settings() {
   const { socketStatus, themeMode } = useSnapshot(SettingsStore.state);
@@ -32,7 +33,10 @@ export default function Settings() {
 
   const copyToClipboard = (value: string) => {
     Clipboard.setString(value);
-    Alert.alert('Value copied to clipboard');
+    Toast.show({
+      type: 'info',
+      text1: 'Value copied to clipboard',
+    });
   };
 
   const toggleDarkMode = () => {
