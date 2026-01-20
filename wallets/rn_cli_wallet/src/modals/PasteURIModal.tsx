@@ -9,66 +9,17 @@ import {
 } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
+import { usePairing } from '@/hooks/usePairing';
 import ModalStore from '@/store/ModalStore';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { ActionButton } from '@/components/ActionButton';
-import SettingsStore from '@/store/SettingsStore';
-import { walletKit, isPaymentLink } from '@/utils/WalletKitUtil';
-import { EIP155_CHAINS } from '@/constants/Eip155';
 import SvgClose from '@/assets/Close';
 
 export default function PasteURIModal() {
   const Theme = useTheme();
   const [uri, setUri] = useState('');
-
-  const handlePaymentLink = async (paymentLink: string) => {
-    const payClient = walletKit?.pay;
-    if (!payClient) {
-      ModalStore.open('LoadingModal', {
-        errorMessage: 'Pay SDK not initialized. Please restart the app.',
-      });
-      return;
-    }
-
-    ModalStore.open('PaymentOptionsModal', {
-      loadingMessage: 'Preparing your payment...',
-    });
-
-    try {
-      const eip155Address = SettingsStore.state.eip155Address;
-      const accounts = eip155Address
-        ? Object.keys(EIP155_CHAINS).map(
-            chainKey => `${chainKey}:${eip155Address}`,
-          )
-        : [];
-
-      const paymentOptions = await payClient.getPaymentOptions({
-        paymentLink,
-        accounts,
-        includePaymentInfo: true,
-      });
-
-      ModalStore.open('PaymentOptionsModal', { paymentOptions });
-    } catch (error: any) {
-      ModalStore.open('PaymentOptionsModal', {
-        errorMessage: error?.message || 'Failed to fetch payment options',
-      });
-    }
-  };
-
-  const pair = async (pairUri: string) => {
-    ModalStore.open('LoadingModal', { loadingMessage: 'Pairing...' });
-    await SettingsStore.state.initPromise;
-
-    try {
-      await walletKit.pair({ uri: pairUri });
-    } catch (error: any) {
-      ModalStore.open('LoadingModal', {
-        errorMessage: error?.message || 'There was an error pairing',
-      });
-    }
-  };
+  const { handleUriOrPaymentLink } = usePairing();
 
   const handleContinue = () => {
     if (!uri.trim()) {
@@ -77,11 +28,7 @@ export default function PasteURIModal() {
 
     ModalStore.close();
     setTimeout(() => {
-      if (isPaymentLink(uri)) {
-        handlePaymentLink(uri);
-      } else {
-        pair(uri);
-      }
+      handleUriOrPaymentLink(uri);
     }, 500);
   };
 

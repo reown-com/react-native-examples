@@ -20,21 +20,13 @@ import { tonAddresses } from '@/utils/TonWalletUtil';
 import { tronAddresses } from '@/utils/TronWalletUtil';
 import { TRON_CHAINS, TRON_SIGNING_METHODS } from '@/constants/Tron';
 import { AccordionCard } from '@/components/AccordionCard';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
-import { AppPermissions } from '@/components/AppPermissions';
+import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkSelector } from '@/components/NetworkSelector';
 import { ChainIcons } from '@/components/ChainIcons';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
 
 // Height constants for accordion animation
-const PERMISSION_ROW_HEIGHT = 28;
-const PERMISSIONS_COUNT = 3;
-const PERMISSIONS_GAP = Spacing[2];
-const PERMISSIONS_HEIGHT =
-  PERMISSION_ROW_HEIGHT * PERMISSIONS_COUNT +
-  PERMISSIONS_GAP * (PERMISSIONS_COUNT - 1);
-
 const NETWORK_ROW_HEIGHT = 40;
 const NETWORK_GAP = Spacing[2];
 const MAX_VISIBLE_NETWORKS = 5;
@@ -253,24 +245,13 @@ export default function SessionProposalModal() {
     >
       <View style={styles.container}>
         {/* App Accordion */}
-        <AccordionCard
-          headerContent={
-            <Text
-              variant="lg-400"
-              color="text-tertiary"
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {requestMetadata?.url?.replace(/^https?:\/\//, '') || 'unknown domain'}
-            </Text>
-          }
-          rightContent={<VerifiedBadge validation={validation} isScam={isScam} />}
+        <AppInfoCard
+          url={requestMetadata?.url}
+          validation={validation}
+          isScam={isScam}
           isExpanded={expandedAccordion === 'app'}
           onPress={() => toggleAccordion('app')}
-          expandedHeight={PERMISSIONS_HEIGHT}
-        >
-          <AppPermissions />
-        </AccordionCard>
+        />
 
         {/* Network Accordion */}
         <AccordionCard

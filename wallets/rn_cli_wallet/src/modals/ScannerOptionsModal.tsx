@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     width: '100%',
-    padding: Spacing[5]
+    padding: Spacing[5],
   },
   closeButton: {
     borderWidth: 1,

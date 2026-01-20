@@ -11,7 +11,7 @@ import { formatDomain } from '@/utils/misc';
 const PERMISSION_ROW_HEIGHT = 28;
 const PERMISSIONS_COUNT = 3;
 const PERMISSIONS_GAP = Spacing[2];
-const PERMISSIONS_HEIGHT =
+export const APP_INFO_CARD_EXPANDED_HEIGHT =
   PERMISSION_ROW_HEIGHT * PERMISSIONS_COUNT +
   PERMISSIONS_GAP * (PERMISSIONS_COUNT - 1);
 
@@ -19,10 +19,27 @@ interface AppInfoCardProps {
   url?: string;
   validation?: 'UNKNOWN' | 'VALID' | 'INVALID';
   isScam?: boolean;
+  /** Optional external control for expanded state */
+  isExpanded?: boolean;
+  /** Optional onPress handler for external control */
+  onPress?: () => void;
 }
 
-export function AppInfoCard({ url, validation, isScam }: AppInfoCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+export function AppInfoCard({
+  url,
+  validation,
+  isScam,
+  isExpanded: externalIsExpanded,
+  onPress: externalOnPress,
+}: AppInfoCardProps) {
+  const [internalIsExpanded, setInternalIsExpanded] = useState(false);
+
+  // Use external control if provided, otherwise use internal state
+  const isControlled = externalIsExpanded !== undefined;
+  const isExpanded = isControlled ? externalIsExpanded : internalIsExpanded;
+  const onPress = isControlled
+    ? (externalOnPress ?? (() => {}))
+    : () => setInternalIsExpanded(prev => !prev);
 
   return (
     <AccordionCard
@@ -38,8 +55,8 @@ export function AppInfoCard({ url, validation, isScam }: AppInfoCardProps) {
       }
       rightContent={<VerifiedBadge validation={validation} isScam={isScam} />}
       isExpanded={isExpanded}
-      onPress={() => setIsExpanded(prev => !prev)}
-      expandedHeight={PERMISSIONS_HEIGHT}
+      onPress={onPress}
+      expandedHeight={APP_INFO_CARD_EXPANDED_HEIGHT}
     >
       <AppPermissions />
     </AccordionCard>

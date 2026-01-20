@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { View, Switch, StyleSheet, TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
@@ -14,11 +14,12 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import Toast from 'react-native-toast-message';
+import { RootStackParamList } from '@/utils/TypesUtil';
 
 export default function Settings() {
   const { socketStatus, themeMode } = useSnapshot(SettingsStore.state);
   const [clientId, setClientId] = useState('');
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const Theme = useTheme();
 
   useEffect(() => {
