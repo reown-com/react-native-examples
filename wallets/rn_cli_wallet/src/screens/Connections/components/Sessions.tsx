@@ -26,7 +26,8 @@ function Sessions() {
   return (
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerStyle={[styles.scrollViewContainer]}
+      style={styles.scrollView}
+      contentContainerStyle={styles.scrollViewContainer}
       data={sessions}
       renderItem={({ item }) => {
         const { name, icons, url } = item?.peer.metadata;
@@ -48,6 +49,9 @@ function Sessions() {
 export default Sessions;
 
 const styles = StyleSheet.create({
+  scrollView: {
+    paddingTop: Spacing[3],
+  },
   scrollViewContainer: {
     marginTop: Spacing[2],
     paddingHorizontal: Spacing[4],
