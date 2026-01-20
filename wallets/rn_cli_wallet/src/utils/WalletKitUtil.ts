@@ -1,8 +1,10 @@
-import { WalletKit, IWalletKit } from '@reown/walletkit';
+import { WalletKit, IWalletKit, isPaymentLink } from '@reown/walletkit';
 import { Core } from '@walletconnect/core';
 import Config from 'react-native-config';
 import { getMetadata } from './misc';
 import { storage } from './storage';
+
+export { isPaymentLink };
 
 export let walletKit: IWalletKit;
 
@@ -27,20 +29,6 @@ export async function createWalletKit(relayerRegionURL: string) {
       'Failed to set WalletConnect clientId in localStorage: ',
       error,
     );
-  }
-}
-
-// Check if a URI is a WalletConnect Pay payment link
-export function isPaymentLink(uri: string): boolean {
-  try {
-    const url = new URL(uri);
-    const hostname = url.hostname.toLowerCase();
-    const isPayHost =
-      hostname === 'pay.walletconnect.com' ||
-      hostname === 'www.pay.walletconnect.com';
-    return isPayHost && url.searchParams.has('pid');
-  } catch {
-    return false;
   }
 }
 

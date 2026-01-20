@@ -2,8 +2,8 @@ import { useCallback, useReducer, useEffect } from 'react';
 import { useSnapshot } from 'valtio';
 
 import ModalStore from '@/store/ModalStore';
-import PayStore from '@/store/PayStore';
 import SettingsStore from '@/store/SettingsStore';
+import { walletKit } from '@/utils/WalletKitUtil';
 import { eip155Wallets } from '@/utils/EIP155WalletUtil';
 import type {
   PaymentOptionsResponse,
@@ -89,7 +89,7 @@ export default function PaymentOptionsModal() {
 
   const fetchPaymentActions = useCallback(
     async (option: PaymentOption) => {
-      const payClient = PayStore.getClient();
+      const payClient = walletKit?.pay;
       if (!payClient || !paymentData) {
         dispatch({
           type: 'SET_ACTIONS_ERROR',
@@ -239,7 +239,7 @@ export default function PaymentOptionsModal() {
     dispatch({ type: 'SET_ACTIONS_ERROR', payload: null });
 
     try {
-      const payClient = PayStore.getClient();
+      const payClient = walletKit?.pay;
       const wallet = eip155Wallets[SettingsStore.state.eip155Address];
       const signatures: string[] = [];
 

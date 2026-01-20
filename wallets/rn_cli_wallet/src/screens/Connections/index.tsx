@@ -7,7 +7,6 @@ import { CopyURIDialog } from '@/components/CopyURIDialog';
 import { ConnectionsStackScreenProps } from '@/utils/TypesUtil';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
-import PayStore from '@/store/PayStore';
 import { EIP155_CHAINS } from '@/constants/Eip155';
 
 type Props = ConnectionsStackScreenProps<'Connections'>;
@@ -16,12 +15,8 @@ export default function Connections({ route }: Props) {
   const [copyDialogVisible, setCopyDialogVisible] = useState(false);
 
   const handlePaymentLink = useCallback(async (paymentLink: string) => {
-    const payClient = PayStore.getClient();
-    console.log(
-      '[Pay] PayClient available:',
-      PayStore.isAvailable(),
-      payClient,
-    );
+    const payClient = walletKit?.pay;
+    console.log('[Pay] PayClient available:', !!payClient, payClient);
     if (!payClient) {
       console.error('[Pay] PayClient not initialized');
       ModalStore.open('LoadingModal', {

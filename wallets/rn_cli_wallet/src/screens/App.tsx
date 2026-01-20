@@ -10,7 +10,6 @@ import { RELAYER_EVENTS } from '@walletconnect/core';
 
 import { RootStackNavigator } from '@/navigators/RootStackNavigator';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
-import useInitializePaySDK from '@/hooks/useInitializePaySDK';
 import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
@@ -48,9 +47,6 @@ const App = () => {
 
   // Step 2 - Once initialized, set up wallet connect event manager
   useWalletKitEventsManager(initialized);
-
-  // Step 3 - Initialize WalletConnect Pay SDK
-  useInitializePaySDK();
 
   useEffect(() => {
     if (initialized) {
