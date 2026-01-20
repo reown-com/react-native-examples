@@ -66,11 +66,6 @@ export default function Settings() {
           <Switch
             value={themeMode === 'dark'}
             onValueChange={toggleDarkMode}
-            trackColor={{
-              false: Theme['foreground-tertiary'],
-              true: Theme['bg-accent-primary'],
-            }}
-            thumbColor={Theme['bg-primary']}
           />
         </TouchableOpacity>
         <Card

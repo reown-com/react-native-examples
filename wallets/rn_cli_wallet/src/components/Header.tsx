@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -18,7 +18,7 @@ export function Header() {
     <View
       style={[
         styles.container,
-        { paddingTop: top + Spacing[2], backgroundColor: Theme['bg-primary'] },
+        { paddingTop: top + (StatusBar.currentHeight ?? Spacing[2]), backgroundColor: Theme['bg-primary'] },
       ]}>
       <View
         style={[
