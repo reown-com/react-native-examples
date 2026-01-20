@@ -7,6 +7,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
 import Toast from 'react-native-toast-message';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RELAYER_EVENTS } from '@walletconnect/core';
 
 import { RootStackNavigator } from '@/navigators/RootStackNavigator';
@@ -151,20 +152,22 @@ const App = () => {
   }, [deeplinkHandler]);
 
   return (
-    <KeyboardProvider>
-      <NavigationContainer>
-        <StatusBar
-          translucent={true}
-          barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
-        />
-        <RootStackNavigator />
-        <Toast
-          config={toastConfig}
-          position="top"
-          topOffset={Platform.select({ ios: 80, android: 0 })}
-        />
-      </NavigationContainer>
-    </KeyboardProvider>
+    <SafeAreaProvider>
+      <KeyboardProvider>
+        <NavigationContainer>
+          <StatusBar
+            translucent={true}
+            barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
+          />
+          <RootStackNavigator />
+          <Toast
+            config={toastConfig}
+            position="top"
+            topOffset={0}
+          />
+        </NavigationContainer>
+      </KeyboardProvider>
+    </SafeAreaProvider>
   );
 };
 

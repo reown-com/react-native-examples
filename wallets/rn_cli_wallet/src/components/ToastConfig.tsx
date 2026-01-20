@@ -1,5 +1,6 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, StatusBar } from 'react-native';
 import { ToastConfigParams } from 'react-native-toast-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
@@ -9,9 +10,10 @@ type ToastProps = ToastConfigParams<unknown>;
 
 function SuccessToast({ text1, text2 }: ToastProps) {
   const Theme = useTheme();
+  const { top } = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { backgroundColor: Theme['bg-success'] }]}>
+    <View style={[styles.container, { backgroundColor: Theme['bg-success'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}>
       <Text variant="md-500" color="text-success">
         {text1}
       </Text>
@@ -26,9 +28,10 @@ function SuccessToast({ text1, text2 }: ToastProps) {
 
 function ErrorToast({ text1, text2 }: ToastProps) {
   const Theme = useTheme();
+  const { top } = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { backgroundColor: Theme['bg-error'] }]}>
+    <View style={[styles.container, { backgroundColor: Theme['bg-error'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}>
       <Text variant="md-500" color="text-error">
         {text1}
       </Text>
@@ -43,10 +46,11 @@ function ErrorToast({ text1, text2 }: ToastProps) {
 
 function InfoToast({ text1, text2 }: ToastProps) {
   const Theme = useTheme();
+  const { top } = useSafeAreaInsets();
 
   return (
     <View
-      style={[styles.container, { backgroundColor: Theme['foreground-primary'] }]}
+      style={[styles.container, { backgroundColor: Theme['foreground-primary'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}
     >
       <Text variant="md-500" color="text-primary">
         {text1}
