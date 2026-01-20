@@ -5,7 +5,7 @@ import { VerifiedBadge } from '@/components/VerifiedBadge';
 import { AppPermissions } from '@/components/AppPermissions';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
-import { formatDomain } from '@/utils/misc';
+import { formatDomain } from '@/utils/WalletKitUtil';
 
 // Height constants for accordion animation
 const PERMISSION_ROW_HEIGHT = 28;
