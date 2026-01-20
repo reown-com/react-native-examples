@@ -4,17 +4,20 @@ import { View, Image, StyleSheet } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 import { BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface ChainIconsProps {
   chainIds: string[];
   size?: number;
   overlap?: number;
+  maxVisible?: number;
 }
 
 export function ChainIcons({
   chainIds,
   size = 24,
   overlap = 8,
+  maxVisible = 5,
 }: ChainIconsProps) {
   const Theme = useTheme();
 
@@ -22,15 +25,25 @@ export function ChainIcons({
     return [...new Set(chainIds)];
   }, [chainIds]);
 
+  const visibleChainIds = useMemo(() => {
+    return uniqueChainIds.slice(0, maxVisible);
+  }, [uniqueChainIds, maxVisible]);
+
+  const remainingCount = useMemo(() => {
+    return Math.max(0, uniqueChainIds.length - maxVisible);
+  }, [uniqueChainIds.length, maxVisible]);
+
   const containerWidth = useMemo(() => {
-    const count = uniqueChainIds.length;
-    if (count === 0) return 0;
-    return size + (count - 1) * (size - overlap);
-  }, [uniqueChainIds.length, size, overlap]);
+    const iconCount = visibleChainIds.length;
+    const hasMore = remainingCount > 0;
+    const totalCount = iconCount + (hasMore ? 1 : 0);
+    if (totalCount === 0) return 0;
+    return size + (totalCount - 1) * (size - overlap);
+  }, [visibleChainIds.length, remainingCount, size, overlap]);
 
   return (
     <View style={[styles.container, { width: containerWidth, height: size }]}>
-      {uniqueChainIds.map((chainId, index) => {
+      {visibleChainIds.map((chainId, index) => {
         const logo = PresetsUtil.getChainIconById(chainId);
         const leftOffset = index * (size - overlap);
 
@@ -43,7 +56,7 @@ export function ChainIcons({
                 left: leftOffset,
                 width: size,
                 height: size,
-                zIndex: uniqueChainIds.length - index,
+                zIndex: visibleChainIds.length - index + 1,
                 borderColor: Theme['bg-primary'],
               },
             ]}
@@ -75,6 +88,25 @@ export function ChainIcons({
           </View>
         );
       })}
+      {remainingCount > 0 && (
+        <View
+          style={[
+            styles.iconWrapper,
+            styles.moreIndicator,
+            {
+              left: visibleChainIds.length * (size - overlap),
+              width: size,
+              height: size,
+              backgroundColor: Theme['foreground-secondary'],
+              borderColor: Theme['foreground-secondary'],
+            },
+          ]}
+        >
+          <Text variant="sm-400" color="text-primary">
+            {' +' + remainingCount}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -93,5 +125,9 @@ const styles = StyleSheet.create({
   },
   icon: {
     borderRadius: BorderRadius.full,
+  },
+  moreIndicator: {
+    borderRadius: BorderRadius.full,
+    zIndex: 0,
   },
 });

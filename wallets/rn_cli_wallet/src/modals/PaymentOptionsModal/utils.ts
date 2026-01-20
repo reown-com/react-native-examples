@@ -46,14 +46,6 @@ export function validateRequiredFields(
     .map(field => field.name);
 }
 
-// Remove protocol (http/https) and www from URLs
-export function formatDomain(url: string | undefined): string {
-  if (!url) {
-    return 'unknown domain';
-  }
-  return url.replace(/^https?:\/\//, '').replace(/^www\./, '');
-}
-
 // Format amount with decimals
 export function formatAmount(
   value: string,

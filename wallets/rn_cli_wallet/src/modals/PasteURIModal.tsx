@@ -3,45 +3,33 @@ import {
   StyleSheet,
   View,
   TextInput,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
 } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
+import { usePairing } from '@/hooks/usePairing';
 import ModalStore from '@/store/ModalStore';
-import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { ActionButton } from '@/components/ActionButton';
 import SvgClose from '@/assets/Close';
 
-export default function ImportWalletModal() {
+export default function PasteURIModal() {
   const Theme = useTheme();
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [uri, setUri] = useState('');
+  const { handleUriOrPaymentLink } = usePairing();
 
-  const handleImport = async () => {
-    if (!input.trim()) {
-      Alert.alert('Error', 'Please enter a mnemonic or private key');
+  const handleContinue = () => {
+    if (!uri.trim()) {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      const { address } = loadEIP155Wallet(input);
-      Alert.alert('Success', `Wallet imported!\n\nNew address: ${address}`);
-      ModalStore.close();
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Invalid mnemonic or private key';
-      Alert.alert('Error', message);
-    } finally {
-      setIsLoading(false);
-    }
+    ModalStore.close();
+    setTimeout(() => {
+      handleUriOrPaymentLink(uri);
+    }, 500);
   };
 
   return (
@@ -65,7 +53,7 @@ export default function ImportWalletModal() {
         </View>
 
         <Text variant="h6-400" color="text-primary" center>
-          Import EVM Wallet
+          Paste URI or Payment Link
         </Text>
 
         <TextInput
@@ -77,15 +65,15 @@ export default function ImportWalletModal() {
               borderColor: Theme['foreground-tertiary'],
             },
           ]}
-          placeholder="Enter mnemonic or private key (0x...)"
+          placeholder="wc:// or https://pay.walletconnect.com/..."
           placeholderTextColor={Theme['text-secondary']}
-          value={input}
-          onChangeText={setInput}
+          value={uri}
+          onChangeText={setUri}
           multiline
           numberOfLines={4}
           autoCapitalize="none"
           autoCorrect={false}
-          secureTextEntry={false}
+          autoFocus
         />
 
         <View style={styles.buttonContainer}>
@@ -99,10 +87,10 @@ export default function ImportWalletModal() {
 
           <ActionButton
             style={styles.button}
-            onPress={handleImport}
-            disabled={isLoading || !input.trim()}
+            onPress={handleContinue}
+            disabled={!uri.trim()}
           >
-            {isLoading ? 'Importing...' : 'Import'}
+            Continue
           </ActionButton>
         </View>
       </View>
@@ -148,7 +136,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing[3],
     width: '100%',
-    marginTop: Spacing[4],
+    paddingTop: Spacing[4],
   },
   button: {
     flex: 1,

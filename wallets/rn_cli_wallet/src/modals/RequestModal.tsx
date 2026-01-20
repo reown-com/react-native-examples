@@ -5,8 +5,6 @@ import { CoreTypes } from '@walletconnect/types';
 import { ModalHeader } from '@/components/Modal/ModalHeader';
 import { ModalFooter } from '@/components/Modal/ModalFooter';
 import { useTheme } from '@/hooks/useTheme';
-import { useSnapshot } from 'valtio';
-import SettingsStore from '@/store/SettingsStore';
 
 export interface RequestModalProps {
   children: ReactNode;
@@ -36,7 +34,7 @@ export function RequestModal({
   approveDisabled,
 }: RequestModalProps) {
   const Theme = useTheme();
-  const { currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
+  // const { currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
 
   const onClose = () => {
     onReject();
@@ -56,7 +54,6 @@ export function RequestModal({
         onReject={onReject}
         approveLoader={approveLoader}
         rejectLoader={rejectLoader}
-        verifyContext={currentRequestVerifyContext}
         approveLabel={approveLabel}
         rejectLabel={rejectLabel}
         disabled={approveDisabled}

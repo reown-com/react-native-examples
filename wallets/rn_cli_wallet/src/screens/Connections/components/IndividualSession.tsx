@@ -47,7 +47,7 @@ const IndividualSession = ({
           />
         ) : null}
         <View style={styles.textContainer}>
-          <Text variant="lg-500" color="text-primary">
+          <Text variant="lg-500" color="text-primary" numberOfLines={1} ellipsizeMode="tail">
             {name ? name : 'No Name'}
           </Text>
           <Text

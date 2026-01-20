@@ -6,6 +6,7 @@ import Scan from '@/screens/Scan';
 import Modal from '@/components/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { LogList } from '@/screens/LogList';
+import SecretPhrase from '@/screens/SecretPhrase';
 import { useLogs } from '@/hooks/useLogs';
 import { FontFamily } from '@/utils/ThemeUtil';
 
@@ -29,7 +30,7 @@ export function RootStackNavigator() {
           headerStyle: {
             backgroundColor: Theme['bg-primary'],
           },
-          headerTitleStyle,
+          headerTitleStyle
         }}
       >
         <StackNavigator.Screen
@@ -52,6 +53,19 @@ export function RootStackNavigator() {
           options={{
             headerShown: true,
             title: 'Logs',
+            headerBackTitle: '',
+            headerTintColor: Theme['text-primary'],
+            headerTitleStyle: {
+              fontWeight: '400',
+            },
+          }}
+        />
+        <StackNavigator.Screen
+          name="SecretPhrase"
+          component={SecretPhrase}
+          options={{
+            headerShown: true,
+            title: 'Secret Phrase',
             headerBackTitle: '',
             headerTintColor: Theme['text-primary'],
             headerTitleStyle: {

@@ -1,9 +1,21 @@
 import { proxy } from 'valtio';
+import { Appearance } from 'react-native';
 import { Verify, SessionTypes } from '@walletconnect/types';
 
 import { storage } from '@/utils/storage';
 import EIP155Lib from '../lib/EIP155Lib';
 import SuiLib from '../lib/SuiLib';
+import { MMKV } from 'react-native-mmkv';
+
+function getInitialThemeMode(): 'light' | 'dark' {
+  const mmkv = new MMKV();
+  const saved = mmkv.getString('THEME_MODE');
+  if (saved === 'light' || saved === 'dark') {
+    return saved;
+  }
+  
+  return Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+}
 
 /**
  * Types
@@ -29,6 +41,7 @@ interface State {
   socketStatus: 'connected' | 'disconnected' | 'stalled' | 'unknown';
   logs: string[];
   isLinkModeRequest: boolean;
+  themeMode: 'light' | 'dark';
 }
 
 /**
@@ -49,6 +62,7 @@ const state = proxy<State>({
   socketStatus: 'unknown',
   logs: [],
   isLinkModeRequest: false,
+  themeMode: getInitialThemeMode(),
 });
 
 /**
@@ -122,6 +136,18 @@ const SettingsStore = {
 
   setTronAddress(tronAddress: string) {
     state.tronAddress = tronAddress;
+  },
+
+  setThemeMode(value: 'light' | 'dark') {
+    state.themeMode = value;
+    storage.setItem('THEME_MODE', value);
+  },
+
+  async loadThemeMode() {
+    const saved = await storage.getItem<string>('THEME_MODE');
+    if (saved === 'light' || saved === 'dark') {
+      state.themeMode = saved;
+    }
   },
 };
 

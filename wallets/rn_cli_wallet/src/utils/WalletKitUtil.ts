@@ -89,3 +89,11 @@ export async function updateSignClientChainId(
     await walletKit.emitSessionEvent(accountsChanged);
   });
 }
+
+export function formatDomain(url: string | undefined): string {
+  if (!url) {
+    return 'unknown domain';
+  }
+  return url.replace(/^https?:\/\//, '').replace(/^www\./, '');
+}
+
