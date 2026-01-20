@@ -1,7 +1,8 @@
 import { useSnapshot } from 'valtio';
-import { View, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ScrollView } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 
 import SettingsStore from '@/store/SettingsStore';
 import { eip155Wallets } from '@/utils/EIP155WalletUtil';
@@ -20,7 +21,10 @@ export default function SecretPhrase() {
   const copyMnemonic = () => {
     if (mnemonic) {
       Clipboard.setString(mnemonic);
-      Alert.alert('Secret phrase copied to clipboard');
+      Toast.show({
+        type: 'info',
+        text1: 'Secret phrase copied to clipboard',
+      });
     }
   };
 
