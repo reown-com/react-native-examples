@@ -192,11 +192,13 @@ All API requests include:
 Required environment variables (`.env`):
 
 ```bash
-EXPO_PUBLIC_PROJECT_ID=""          # WalletConnect project ID
-EXPO_PUBLIC_SENTRY_DSN=""          # Sentry error tracking DSN
-SENTRY_AUTH_TOKEN=""               # Sentry authentication token
-EXPO_PUBLIC_API_URL=""             # Payment API base URL
-EXPO_PUBLIC_GATEWAY_URL=""         # WalletConnect gateway URL
+EXPO_PUBLIC_PROJECT_ID=""              # WalletConnect project ID
+EXPO_PUBLIC_SENTRY_DSN=""              # Sentry error tracking DSN
+SENTRY_AUTH_TOKEN=""                   # Sentry authentication token
+EXPO_PUBLIC_API_URL=""                 # Payment API base URL
+EXPO_PUBLIC_GATEWAY_URL=""             # WalletConnect gateway URL
+EXPO_PUBLIC_DEFAULT_MERCHANT_ID=""     # Default merchant ID (optional)
+EXPO_PUBLIC_DEFAULT_MERCHANT_API_KEY="" # Default merchant API key (optional)
 ```
 
 Copy `.env.example` to `.env` and fill in values.
@@ -618,15 +620,25 @@ const apiKey = await secureStorage.getItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY)
 
 - **Production builds**: Console statements can impact performance and expose sensitive information in production builds.
 
+### After Making Changes
+
+**Always run these checks and fix any errors before committing:**
+
+```bash
+npm run lint          # Check and fix ESLint errors
+npx prettier --write . # Format code with Prettier
+npx tsc --noEmit      # Check for TypeScript errors
+```
+
+Fix any errors found. Pre-existing TypeScript errors in unrelated files can be ignored.
+
 ### Code Style
 
 - Follow TypeScript best practices
 - Use ESLint and Prettier for consistent formatting
 - Prefer functional components with hooks
 - Use TypeScript types/interfaces for all props and data structures
-- **No trailing whitespace**: New code must not have trailing whitespace at the end of lines. Most editors can be configured to remove trailing whitespace on save.
-- **Run lint after changing code**: Always run `npm run lint` after making code changes to ensure code quality and catch any formatting or linting issues before committing.
-- **Check TypeScript errors**: Always run `npx tsc --noEmit` after making code changes to check for TypeScript errors. Fix any TypeScript errors in files you've modified before committing. Note: Pre-existing TypeScript errors in other files can be ignored if they're unrelated to your changes.
+- No trailing whitespace
 
 ## Troubleshooting
 
