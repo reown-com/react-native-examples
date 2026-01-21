@@ -100,7 +100,7 @@ export default function AmountScreen() {
                 newDisplay = prev?.slice(0, -1) || "";
                 onChange?.(newDisplay);
               } else if (key === ".") {
-                if (prev.includes(".")) return; // Don't add multiple commas
+                if (prev.includes(".")) return; // Don't add multiple decimal separators
                 if (prev === "") {
                   newDisplay = "0.";
                 } else {
