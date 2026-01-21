@@ -108,6 +108,11 @@ export default function AmountScreen() {
                 }
                 onChange?.(newDisplay);
               } else {
+                // Limit to 2 decimal digits
+                if (prev.includes(".")) {
+                  const [, decimal] = prev.split(".");
+                  if (decimal.length >= 2) return;
+                }
                 const newDisplay = prev === "0" ? key : prev + key;
                 onChange?.(newDisplay);
               }
