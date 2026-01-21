@@ -22,7 +22,9 @@ import { Spacing } from '@/utils/ThemeUtil';
 export default function SessionAuthenticateModal() {
   const Theme = useTheme();
   const { data } = useSnapshot(ModalStore.state);
-  const { isLinkModeRequest, currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
+  const { isLinkModeRequest, currentRequestVerifyContext } = useSnapshot(
+    SettingsStore.state,
+  );
 
   const { validation, isScam } = currentRequestVerifyContext?.verified || {};
 

@@ -31,23 +31,36 @@ const IndividualSession = ({
   }, [session]);
 
   const onPress = () => {
-    ModalStore.open('SessionDetailModal', { session: session as SessionTypes.Struct });
+    ModalStore.open('SessionDetailModal', {
+      session: session as SessionTypes.Struct,
+    });
   };
 
   return (
     <TouchableOpacity
-      style={[styles.container, { backgroundColor: Theme['foreground-primary'] }]}
+      style={[
+        styles.container,
+        { backgroundColor: Theme['foreground-primary'] },
+      ]}
       onPress={onPress}
     >
       <View style={styles.flexRow}>
         {icon ? (
           <Image
             source={{ uri: icon }}
-            style={[styles.iconContainer, { backgroundColor: Theme['foreground-tertiary'] }]}
+            style={[
+              styles.iconContainer,
+              { backgroundColor: Theme['foreground-tertiary'] },
+            ]}
           />
         ) : null}
         <View style={styles.textContainer}>
-          <Text variant="lg-500" color="text-primary" numberOfLines={1} ellipsizeMode="tail">
+          <Text
+            variant="lg-500"
+            color="text-primary"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {name ? name : 'No Name'}
           </Text>
           <Text

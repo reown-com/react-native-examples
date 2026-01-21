@@ -5,7 +5,6 @@ import {
   TextInput,
   Alert,
   KeyboardAvoidingView,
-  Platform,
   TouchableOpacity,
 } from 'react-native';
 
@@ -45,10 +44,7 @@ export default function ImportWalletModal() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboardView}
-    >
+    <KeyboardAvoidingView behavior="padding">
       <View
         style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
       >
@@ -111,9 +107,6 @@ export default function ImportWalletModal() {
 }
 
 const styles = StyleSheet.create({
-  keyboardView: {
-    width: '100%',
-  },
   container: {
     width: '100%',
     borderTopLeftRadius: 34,

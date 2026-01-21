@@ -15,7 +15,7 @@ export const sharedStyles = StyleSheet.create({
   buttonContainer: {
     paddingTop: 16,
     gap: 8,
-  }
+  },
 });
 
 // Common dimensions

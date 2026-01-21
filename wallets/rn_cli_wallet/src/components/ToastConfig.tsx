@@ -13,7 +13,15 @@ function SuccessToast({ text1, text2 }: ToastProps) {
   const { top } = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { backgroundColor: Theme['bg-success'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: Theme['bg-success'],
+          marginTop: top + (StatusBar.currentHeight ?? Spacing[2]),
+        },
+      ]}
+    >
       <Text variant="md-500" color="text-success">
         {text1}
       </Text>
@@ -31,7 +39,15 @@ function ErrorToast({ text1, text2 }: ToastProps) {
   const { top } = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { backgroundColor: Theme['bg-error'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: Theme['bg-error'],
+          marginTop: top + (StatusBar.currentHeight ?? Spacing[2]),
+        },
+      ]}
+    >
       <Text variant="md-500" color="text-error">
         {text1}
       </Text>
@@ -50,7 +66,13 @@ function InfoToast({ text1, text2 }: ToastProps) {
 
   return (
     <View
-      style={[styles.container, { backgroundColor: Theme['foreground-primary'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: Theme['foreground-primary'],
+          marginTop: top + (StatusBar.currentHeight ?? Spacing[2]),
+        },
+      ]}
     >
       <Text variant="md-500" color="text-primary">
         {text1}

@@ -30,7 +30,7 @@ export function RootStackNavigator() {
           headerStyle: {
             backgroundColor: Theme['bg-primary'],
           },
-          headerTitleStyle
+          headerTitleStyle,
         }}
       >
         <StackNavigator.Screen

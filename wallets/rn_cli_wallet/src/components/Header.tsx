@@ -1,4 +1,10 @@
-import { View, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -18,13 +24,18 @@ export function Header() {
     <View
       style={[
         styles.container,
-        { paddingTop: top + (StatusBar.currentHeight ?? Spacing[2]), backgroundColor: Theme['bg-primary'] },
-      ]}>
+        {
+          paddingTop: top + (StatusBar.currentHeight ?? Spacing[2]),
+          backgroundColor: Theme['bg-primary'],
+        },
+      ]}
+    >
       <View
         style={[
           styles.logoContainer,
           { backgroundColor: Theme['bg-accent-primary'] },
-        ]}>
+        ]}
+      >
         <Image
           source={require('@/assets/icons/wc-brandmark.png')}
           resizeMode="contain"
@@ -33,7 +44,8 @@ export function Header() {
       </View>
       <TouchableOpacity
         onPress={onScannerPress}
-        style={[styles.scanButton, { backgroundColor: Theme['bg-invert'] }]}>
+        style={[styles.scanButton, { backgroundColor: Theme['bg-invert'] }]}
+      >
         <BarcodeSvg width={18} height={18} fill={Theme['text-invert']} />
       </TouchableOpacity>
     </View>

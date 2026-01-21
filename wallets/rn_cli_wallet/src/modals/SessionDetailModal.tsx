@@ -77,7 +77,10 @@ export default function SessionDetailModal() {
       {/* Header Row */}
       <View style={styles.header}>
         <TouchableOpacity
-          style={[styles.disconnectButton, { backgroundColor: Theme['bg-invert'] }]}
+          style={[
+            styles.disconnectButton,
+            { backgroundColor: Theme['bg-invert'] },
+          ]}
           onPress={onDisconnect}
           disabled={loading}
         >
@@ -90,7 +93,11 @@ export default function SessionDetailModal() {
                 height={14}
                 fill={Theme['text-invert']}
               />
-              <Text variant="md-400" color="text-invert" style={styles.disconnectText}>
+              <Text
+                variant="md-400"
+                color="text-invert"
+                style={styles.disconnectText}
+              >
                 Disconnect
               </Text>
             </>
@@ -103,16 +110,16 @@ export default function SessionDetailModal() {
 
       {/* App Info Card */}
       <View
-        style={[
-          styles.card,
-          { backgroundColor: Theme['foreground-primary'] },
-        ]}
+        style={[styles.card, { backgroundColor: Theme['foreground-primary'] }]}
       >
         <View style={styles.appInfoRow}>
           {metadata?.icons[0] && (
             <Image
               source={{ uri: metadata.icons[0] }}
-              style={[styles.appIcon, { backgroundColor: Theme['foreground-tertiary'] }]}
+              style={[
+                styles.appIcon,
+                { backgroundColor: Theme['foreground-tertiary'] },
+              ]}
             />
           )}
           <View style={styles.appInfoText}>

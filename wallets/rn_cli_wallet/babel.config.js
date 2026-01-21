@@ -21,6 +21,7 @@ module.exports = {
           '@/provider': './src/provider',
           '@/store': './src/store',
           '@/lib': './src/lib',
+          '@/services': './src/services',
         },
       },
     ],

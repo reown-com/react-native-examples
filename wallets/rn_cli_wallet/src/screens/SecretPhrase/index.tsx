@@ -35,14 +35,16 @@ export default function SecretPhrase() {
           styles.container,
           styles.centerContent,
           { backgroundColor: Theme['bg-primary'] },
-        ]}>
+        ]}
+      >
         <Text variant="lg-500" color="text-primary" style={styles.title}>
           No Secret Phrase Available
         </Text>
         <Text
           variant="md-400"
           color="text-secondary"
-          style={styles.description}>
+          style={styles.description}
+        >
           This wallet was imported using a private key, so there is no recovery
           phrase to display.
         </Text>
@@ -53,7 +55,8 @@ export default function SecretPhrase() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
-      contentContainerStyle={styles.content}>
+      contentContainerStyle={styles.content}
+    >
       <Text variant="lg-500" color="text-primary" style={styles.title}>
         Your Secret Recovery Phrase
       </Text>
@@ -62,7 +65,8 @@ export default function SecretPhrase() {
         style={[
           styles.warningContainer,
           { backgroundColor: Theme['bg-warning'] },
-        ]}>
+        ]}
+      >
         <Text variant="sm-500" color="text-primary">
           Never share this phrase with anyone. Anyone with this phrase can take
           your funds.
@@ -76,7 +80,8 @@ export default function SecretPhrase() {
             style={[
               styles.wordCard,
               { backgroundColor: Theme['foreground-primary'] },
-            ]}>
+            ]}
+          >
             <Text variant="sm-400" color="text-secondary">
               {index + 1}.
             </Text>
@@ -92,7 +97,8 @@ export default function SecretPhrase() {
         style={[
           styles.copyButton,
           { backgroundColor: Theme['foreground-primary'] },
-        ]}>
+        ]}
+      >
         <Text variant="lg-500" color="text-primary">
           Copy to clipboard
         </Text>

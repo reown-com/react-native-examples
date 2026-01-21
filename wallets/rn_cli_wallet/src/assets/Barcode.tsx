@@ -9,4 +9,3 @@ const SvgBarcode = (props: SvgProps) => (
   </Svg>
 );
 export default SvgBarcode;
-

@@ -1,98 +1,131 @@
+import { useEffect, useCallback, useMemo } from 'react';
 import { useSnapshot } from 'valtio';
-import { View, StyleSheet, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { ScrollView } from 'react-native-gesture-handler';
-import Toast from 'react-native-toast-message';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
 
 import SettingsStore from '@/store/SettingsStore';
+import WalletStore, { WalletAddresses } from '@/store/WalletStore';
 import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
-import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
-import CopySvg from '@/assets/Copy';
+import { Spacing } from '@/utils/ThemeUtil';
+import { TokenBalance } from '@/utils/BalanceTypes';
+import { TokenBalanceCard, ITEM_HEIGHT } from './components/TokenBalanceCard';
 
-// Chain icons
-const chainIcons: Record<string, ImageSourcePropType> = {
-  Ethereum: require('@/assets/chains/ethereum.webp'),
-  Sui: require('@/assets/chains/sui.webp'),
-  TON: require('@/assets/chains/ton.png'),
-  Tron: require('@/assets/chains/tron.png'),
-};
-
-function truncateAddress(address: string): string {
-  if (!address || address.length < 10) return address;
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-}
-
-interface WalletCardProps {
-  name: string;
-  address: string;
-  icon: ImageSourcePropType;
-  onCopy: () => void;
-}
-
-function WalletCard({ name, address, icon, onCopy }: WalletCardProps) {
-  const Theme = useTheme();
-
-  return (
-    <TouchableOpacity
-      onPress={onCopy}
-      style={[styles.card, { backgroundColor: Theme['foreground-primary'] }]}>
-      <View style={styles.iconContainer}>
-        <Image source={icon} style={styles.chainIcon} resizeMode="contain" />
-      </View>
-      <View style={styles.cardContent}>
-        <Text variant="lg-400" color="text-primary">
-          {name}
-        </Text>
-        <Text variant="lg-400" color="text-secondary">
-          {truncateAddress(address)}
-        </Text>
-      </View>
-      <View style={styles.copyButton}>
-        <CopySvg width={20} height={20} fill={Theme['text-primary']} />
-      </View>
-    </TouchableOpacity>
-  );
+function getAddressForChain(
+  chainId: string,
+  addresses: WalletAddresses,
+): string {
+  if (chainId.startsWith('ton:')) {
+    return addresses.tonAddress || '';
+  }
+  if (chainId.startsWith('tron:')) {
+    return addresses.tronAddress || '';
+  }
+  // Default to EIP155 address for all EVM chains
+  return addresses.eip155Address;
 }
 
 export default function Wallets() {
-  const { eip155Address, suiAddress, tonAddress, tronAddress } = useSnapshot(
+  const { eip155Address, tonAddress, tronAddress } = useSnapshot(
     SettingsStore.state,
   );
+  const { balances, isLoading } = useSnapshot(WalletStore.state);
   const Theme = useTheme();
 
-  const copyToClipboard = (name: string, value: string) => {
-    Clipboard.setString(value);
-    Toast.show({
-      type: 'info',
-      text1: `${name} address copied`,
-    });
-  };
+  const addresses: WalletAddresses = useMemo(
+    () => ({
+      eip155Address,
+      tonAddress,
+      tronAddress,
+    }),
+    [eip155Address, tonAddress, tronAddress],
+  );
 
-  const wallets = [
-    { name: 'Ethereum', address: eip155Address, icon: chainIcons.Ethereum },
-    { name: 'Sui', address: suiAddress, icon: chainIcons.Sui },
-    { name: 'TON', address: tonAddress, icon: chainIcons.TON },
-    { name: 'Tron', address: tronAddress, icon: chainIcons.Tron },
-  ];
+  const fetchBalances = useCallback(() => {
+    if (addresses.eip155Address) {
+      WalletStore.fetchBalances(addresses);
+    }
+  }, [addresses]);
+
+  useEffect(() => {
+    fetchBalances();
+  }, [fetchBalances]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: TokenBalance }) => (
+      <TokenBalanceCard
+        balance={item}
+        walletAddress={getAddressForChain(item.chainId, addresses)}
+      />
+    ),
+    [addresses],
+  );
+
+  const keyExtractor = useCallback(
+    (item: TokenBalance) => `${item.chainId}-${item.address || 'native'}`,
+    [],
+  );
+
+  const getItemLayout = useCallback(
+    (_data: ArrayLike<TokenBalance> | null | undefined, index: number) => ({
+      length: ITEM_HEIGHT,
+      offset: index * (ITEM_HEIGHT + Spacing[2]),
+      index,
+    }),
+    [],
+  );
+
+  const ListEmptyComponent = useCallback(() => {
+    if (isLoading) {
+      return (
+        <View style={styles.emptyContainer}>
+          <ActivityIndicator size="large" color={Theme['text-primary']} />
+          <Text
+            variant="lg-400"
+            color="text-secondary"
+            style={styles.emptyText}
+          >
+            Loading balances...
+          </Text>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.emptyContainer}>
+        <Text variant="lg-400" color="text-secondary" style={styles.emptyText}>
+          No balances found
+        </Text>
+      </View>
+    );
+  }, [isLoading, Theme]);
 
   return (
-    <ScrollView
+    <FlatList
+      data={balances}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      getItemLayout={getItemLayout}
+      ListEmptyComponent={ListEmptyComponent}
+      contentInsetAdjustmentBehavior="automatic"
       style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
-      contentContainerStyle={styles.content}
-      contentInsetAdjustmentBehavior="automatic">
-      <View style={styles.cardsContainer}>
-        {wallets.map(wallet => (
-          <WalletCard
-            key={wallet.name}
-            name={wallet.name}
-            address={wallet.address}
-            icon={wallet.icon}
-            onCopy={() => copyToClipboard(wallet.name, wallet.address)}
-          />
-        ))}
-      </View>
-    </ScrollView>
+      contentContainerStyle={[
+        styles.content,
+        balances.length === 0 && styles.emptyContent,
+      ]}
+      refreshControl={
+        <RefreshControl
+          refreshing={isLoading && balances.length > 0}
+          onRefresh={fetchBalances}
+          tintColor={Theme['text-primary']}
+        />
+      }
+    />
   );
 }
 
@@ -102,32 +135,18 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: Spacing[5],
+    rowGap: Spacing[2],
   },
-  cardsContainer: {
-    gap: Spacing[3],
-  },
-  card: {
-    borderRadius: BorderRadius[4],
-    padding: Spacing[6],
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconContainer: {
-    width: 38,
-    height: 38,
-    borderRadius: BorderRadius.full,
-    overflow: 'hidden',
-    marginRight: Spacing[3],
-  },
-  chainIcon: {
-    width: 40,
-    height: 40,
-  },
-  cardContent: {
+  emptyContent: {
     flex: 1,
-    gap: Spacing['05'],
+    justifyContent: 'center',
   },
-  copyButton: {
-    padding: Spacing[2],
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing[10],
+  },
+  emptyText: {
+    marginTop: Spacing[3],
   },
 });

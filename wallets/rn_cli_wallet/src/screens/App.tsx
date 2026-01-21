@@ -160,11 +160,7 @@ const App = () => {
             barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
           />
           <RootStackNavigator />
-          <Toast
-            config={toastConfig}
-            position="top"
-            topOffset={0}
-          />
+          <Toast config={toastConfig} position="top" topOffset={0} />
         </NavigationContainer>
       </KeyboardProvider>
     </SafeAreaProvider>

@@ -32,7 +32,11 @@ export default function ScannerOptionsModal() {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => ModalStore.close()}
-          style={[styles.closeButton, { borderColor: Theme['border-secondary'] }]}>
+          style={[
+            styles.closeButton,
+            { borderColor: Theme['border-secondary'] },
+          ]}
+        >
           <SvgClose width={38} height={38} fill={Theme['text-primary']} />
         </TouchableOpacity>
       </View>
@@ -40,7 +44,11 @@ export default function ScannerOptionsModal() {
       <View style={styles.optionsContainer}>
         <TouchableOpacity
           onPress={onScanPress}
-          style={[styles.optionButton, { backgroundColor: Theme['foreground-primary'] }]}>
+          style={[
+            styles.optionButton,
+            { backgroundColor: Theme['foreground-primary'] },
+          ]}
+        >
           <Text variant="lg-400" color="text-primary">
             Scan QR code
           </Text>
@@ -49,7 +57,11 @@ export default function ScannerOptionsModal() {
 
         <TouchableOpacity
           onPress={onPastePress}
-          style={[styles.optionButton, { backgroundColor: Theme['foreground-primary'] }]}>
+          style={[
+            styles.optionButton,
+            { backgroundColor: Theme['foreground-primary'] },
+          ]}
+        >
           <Text variant="lg-400" color="text-primary">
             Paste URI or Payment Link
           </Text>
