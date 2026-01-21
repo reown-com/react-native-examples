@@ -25,27 +25,28 @@ export default function ScannerOptionsModal() {
   };
 
   const onPastePress = () => {
-    Clipboard.getString().then((url) => {
-      if (!url.trim()) {
+    Clipboard.getString()
+      .then(url => {
+        if (!url.trim()) {
+          Toast.show({
+            type: 'info',
+            text1: 'No URL found in clipboard',
+          });
+          return;
+        }
+
+        ModalStore.close();
+        setTimeout(() => {
+          handleUriOrPaymentLink(url);
+        }, 300);
+      })
+      .catch(() => {
+        ModalStore.close();
         Toast.show({
-          type: 'info',
-          text1: 'No URL found in clipboard',
+          type: 'error',
+          text1: 'Failed to read clipboard',
         });
-        return;
-      }
-  
-      ModalStore.close();
-      setTimeout(() => {
-        handleUriOrPaymentLink(url);
-      }, 300);
-    })
-    .catch(() => {
-      ModalStore.close();
-      Toast.show({
-        type: 'error',
-        text1: 'Failed to read clipboard',
       });
-    });;
   };
 
   return (

@@ -25,7 +25,7 @@ async function fetchBalanceForChain(
 
   const url = `${baseUrl}${BALANCE_API_PATH}/${address}/balance?projectId=${encodeURIComponent(
     projectId,
-  )}&currency=usd&chainId=${chainId}&st=walletkit&sv=1.0.0`;
+  )}&currency=usd&chainId=${encodeURIComponent(chainId)}&st=walletkit&sv=1.0.0`;
 
   const response = await fetch(url.toString(), {
     headers: {

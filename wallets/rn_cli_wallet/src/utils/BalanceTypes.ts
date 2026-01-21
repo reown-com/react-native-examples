@@ -9,7 +9,7 @@ export interface TokenBalance {
     decimals: string;
     numeric: string;
   };
-  iconUrl: string;
+  iconUrl?: string;
 }
 
 export interface BalanceResponse {

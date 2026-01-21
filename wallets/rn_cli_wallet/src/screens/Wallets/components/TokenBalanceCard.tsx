@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-message';
@@ -32,7 +33,7 @@ function formatBalance(numeric: string, symbol: string): string {
   })} ${symbol}`;
 }
 
-export function TokenBalanceCard({
+export const TokenBalanceCard = React.memo(function TokenBalanceCard({
   balance,
   walletAddress,
 }: TokenBalanceCardProps) {
@@ -108,7 +109,7 @@ export function TokenBalanceCard({
       </View>
     </TouchableOpacity>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {

@@ -92,7 +92,7 @@ function processBalances(
         value: 0,
         price: 0,
         quantity: { decimals: '18', numeric: '0' },
-        iconUrl: '',
+        iconUrl: undefined,
       });
     }
   }
@@ -110,7 +110,7 @@ function processBalances(
         value: 0,
         price: 0,
         quantity: { decimals: '9', numeric: '0' },
-        iconUrl: '',
+        iconUrl: undefined,
       });
     }
   }
@@ -128,7 +128,7 @@ function processBalances(
         value: 0,
         price: 0,
         quantity: { decimals: '6', numeric: '0' },
-        iconUrl: '',
+        iconUrl: undefined,
       });
     }
   }

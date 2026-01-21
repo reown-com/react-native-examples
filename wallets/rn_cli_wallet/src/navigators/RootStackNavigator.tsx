@@ -33,7 +33,7 @@ export function RootStackNavigator() {
           headerTitleStyle,
           cardStyle: {
             backgroundColor: Theme['bg-primary'],
-          }
+          },
         }}
       >
         <StackNavigator.Screen

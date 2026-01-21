@@ -36,7 +36,7 @@ interface State {
     | 'PaymentOptionsModal'
     | 'ImportWalletModal'
     | 'SessionDetailModal'
-    | 'ScannerOptionsModal'
+    | 'ScannerOptionsModal';
   data?: ModalData;
 }
 
