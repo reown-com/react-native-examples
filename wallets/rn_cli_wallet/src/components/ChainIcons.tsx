@@ -3,7 +3,7 @@ import { View, Image, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { PresetsUtil } from '@/utils/PresetsUtil';
-import { BorderRadius } from '@/utils/ThemeUtil';
+import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 
 interface ChainIconsProps {
@@ -95,8 +95,8 @@ export function ChainIcons({
             styles.moreIndicator,
             {
               left: visibleChainIds.length * (size - overlap),
-              width: size + 8,
               height: size,
+              paddingHorizontal: Spacing[2],
               backgroundColor: Theme['foreground-tertiary'],
               borderColor: Theme['foreground-primary'],
             },

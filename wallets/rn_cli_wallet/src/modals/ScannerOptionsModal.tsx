@@ -37,8 +37,15 @@ export default function ScannerOptionsModal() {
       ModalStore.close();
       setTimeout(() => {
         handleUriOrPaymentLink(url);
-      }, 500);
-    });
+      }, 300);
+    })
+    .catch(() => {
+      ModalStore.close();
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to read clipboard',
+      });
+    });;
   };
 
   return (

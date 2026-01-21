@@ -151,7 +151,6 @@ const App = () => {
             translucent={true}
             barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
           />
-          {/* <ErrorToast text1="Network connection is restored" type="error" /> */}
           <RootStackNavigator />
           <Toast
             config={toastConfig}

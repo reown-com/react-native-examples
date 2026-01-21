@@ -20,7 +20,7 @@ function BaseToast({ text1, text2, type }: ToastProps) {
     <View style={[styles.container, { backgroundColor: Theme['foreground-primary'], borderColor: Theme['border-primary'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}>
       <Icon width={20} height={20} fill={iconColor} />
       <Text variant="lg-400" color="text-primary" numberOfLines={2} style={styles.text}>
-        {text1} - {text2}
+        {text1}{text2 ? ` - ${text2}` : ''}
       </Text>
     </View>
   );
