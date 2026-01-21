@@ -70,10 +70,6 @@ const App = () => {
         SettingsStore.setSocketStatus('connected');
       });
       walletKit.core.relayer.on(RELAYER_EVENTS.disconnect, () => {
-        Toast.show({
-          type: 'error',
-          text1: 'Network connection lost.',
-        });
         SettingsStore.setSocketStatus('disconnected');
       });
       walletKit.core.relayer.on(RELAYER_EVENTS.connection_stalled, () => {
