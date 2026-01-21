@@ -13,7 +13,7 @@ export function LoadingView({ message }: LoadingViewProps) {
     <View style={styles.loadingContainer}>
       <WalletConnectLoading size={120} />
       <Text variant="lg-400" color="text-primary" style={styles.loadingText}>
-        {message || 'Loading payment options'}
+        {message || 'Loading...'}
       </Text>
     </View>
   );

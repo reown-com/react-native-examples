@@ -37,7 +37,6 @@ interface State {
     | 'ImportWalletModal'
     | 'SessionDetailModal'
     | 'ScannerOptionsModal'
-    | 'PasteURIModal';
   data?: ModalData;
 }
 
