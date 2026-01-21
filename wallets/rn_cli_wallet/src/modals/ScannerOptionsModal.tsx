@@ -6,7 +6,7 @@ import ModalStore from '@/store/ModalStore';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import BarcodeSvg from '@/assets/Barcode';
-import CopySvg from '@/assets/Copy';
+import PasteSvg from '@/assets/Paste';
 import SvgClose from '@/assets/Close';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { usePairing } from '@/hooks/usePairing';
@@ -74,7 +74,7 @@ export default function ScannerOptionsModal() {
           <Text variant="lg-400" color="text-primary">
             Paste a URL
           </Text>
-          <CopySvg width={24} height={24} fill={Theme['text-primary']} />
+          <PasteSvg width={24} height={24} fill={Theme['text-primary']} />
         </TouchableOpacity>
       </View>
     </View>
@@ -113,7 +113,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: Spacing[5],
+    height: 76,
+    paddingHorizontal: Spacing[6],
     borderRadius: BorderRadius[4],
   },
 });
