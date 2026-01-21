@@ -13,7 +13,7 @@ import CopySvg from '@/assets/Copy';
 // Chain icons
 const chainIcons: Record<string, ImageSourcePropType> = {
   Ethereum: require('@/assets/chains/ethereum.webp'),
-  Sui: require('@/assets/chains/sui.webp'),
+  Sui: require('@/assets/chains/sui.jpeg'),
   TON: require('@/assets/chains/ton.png'),
   Tron: require('@/assets/chains/tron.png'),
 };
@@ -115,6 +115,8 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 38,
     height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: BorderRadius.full,
     overflow: 'hidden',
     marginRight: Spacing[3],

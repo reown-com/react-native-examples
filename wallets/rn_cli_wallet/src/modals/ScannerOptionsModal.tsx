@@ -6,12 +6,16 @@ import ModalStore from '@/store/ModalStore';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import BarcodeSvg from '@/assets/Barcode';
-import CopySvg from '@/assets/Copy';
+import PasteSvg from '@/assets/Paste';
 import SvgClose from '@/assets/Close';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { usePairing } from '@/hooks/usePairing';
+import Toast from 'react-native-toast-message';
 
 export default function ScannerOptionsModal() {
   const Theme = useTheme();
   const navigation = useNavigation();
+  const { handleUriOrPaymentLink } = usePairing();
 
   const onScanPress = () => {
     ModalStore.close();
@@ -21,10 +25,27 @@ export default function ScannerOptionsModal() {
   };
 
   const onPastePress = () => {
-    ModalStore.close();
-    setTimeout(() => {
-      ModalStore.open('PasteURIModal', {});
-    }, 300);
+    Clipboard.getString().then((url) => {
+      if (!url.trim()) {
+        Toast.show({
+          type: 'info',
+          text1: 'No URL found in clipboard',
+        });
+        return;
+      }
+  
+      ModalStore.close();
+      setTimeout(() => {
+        handleUriOrPaymentLink(url);
+      }, 300);
+    })
+    .catch(() => {
+      ModalStore.close();
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to read clipboard',
+      });
+    });;
   };
 
   return (
@@ -51,9 +72,9 @@ export default function ScannerOptionsModal() {
           onPress={onPastePress}
           style={[styles.optionButton, { backgroundColor: Theme['foreground-primary'] }]}>
           <Text variant="lg-400" color="text-primary">
-            Paste URI or Payment Link
+            Paste a URL
           </Text>
-          <CopySvg width={24} height={24} fill={Theme['text-primary']} />
+          <PasteSvg width={24} height={24} fill={Theme['text-primary']} />
         </TouchableOpacity>
       </View>
     </View>
@@ -92,7 +113,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: Spacing[5],
+    height: 76,
+    paddingHorizontal: Spacing[6],
     borderRadius: BorderRadius[4],
   },
 });

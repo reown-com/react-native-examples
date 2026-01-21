@@ -272,6 +272,22 @@ const { eip155Address } = useSnapshot(SettingsStore);
 
 ## Code Quality Guidelines
 
+### Android Version Code
+
+**Always increment the `versionCode` when creating a new feature, fix, or PR:**
+
+The Android `versionCode` is located in `android/app/build.gradle`. Before submitting a PR, increment this value by 1:
+
+```gradle
+android {
+    defaultConfig {
+        versionCode 57  // Increment this value
+    }
+}
+```
+
+This ensures each build has a unique version identifier for distribution and updates.
+
 ### After Making Changes
 
 **Always run these checks and fix any errors before committing:**

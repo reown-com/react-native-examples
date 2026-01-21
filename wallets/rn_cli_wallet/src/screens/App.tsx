@@ -67,24 +67,12 @@ const App = () => {
   useEffect(() => {
     if (initialized) {
       walletKit.core.relayer.on(RELAYER_EVENTS.connect, () => {
-        Toast.show({
-          type: 'success',
-          text1: 'Network connection is restored!',
-        });
         SettingsStore.setSocketStatus('connected');
       });
       walletKit.core.relayer.on(RELAYER_EVENTS.disconnect, () => {
-        Toast.show({
-          type: 'error',
-          text1: 'Network connection lost.',
-        });
         SettingsStore.setSocketStatus('disconnected');
       });
       walletKit.core.relayer.on(RELAYER_EVENTS.connection_stalled, () => {
-        Toast.show({
-          type: 'error',
-          text1: 'Network connection stalled.',
-        });
         SettingsStore.setSocketStatus('stalled');
       });
     }
@@ -92,7 +80,7 @@ const App = () => {
 
   const pair = useCallback(async (uri: string) => {
     try {
-      ModalStore.open('LoadingModal', { loadingMessage: 'Pairing...' });
+      ModalStore.open('LoadingModal', { loadingMessage: 'Preparing connection...' });
 
       await SettingsStore.state.initPromise;
       await walletKit.pair({ uri });

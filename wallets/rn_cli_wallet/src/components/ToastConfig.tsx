@@ -5,63 +5,37 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
 import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
+import SvgXCircle from '@/assets/XCircle';
+import SvgCheckCircle from '@/assets/CheckCircle';
 
 type ToastProps = ToastConfigParams<unknown>;
 
-function SuccessToast({ text1, text2 }: ToastProps) {
+function BaseToast({ text1, text2, type }: ToastProps) {
   const Theme = useTheme();
   const { top } = useSafeAreaInsets();
+  const Icon = type === 'error' ? SvgXCircle : SvgCheckCircle;
+  const iconColor = type === 'error' ? Theme['icon-error'] : Theme['icon-success'];
 
   return (
-    <View style={[styles.container, { backgroundColor: Theme['bg-success'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}>
-      <Text variant="md-500" color="text-success">
-        {text1}
+    <View style={[styles.container, { backgroundColor: Theme['foreground-primary'], borderColor: Theme['border-primary'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}>
+      <Icon width={20} height={20} fill={iconColor} />
+      <Text variant="lg-400" color="text-primary" numberOfLines={2} style={styles.text}>
+        {text1}{text2 ? ` - ${text2}` : ''}
       </Text>
-      {text2 && (
-        <Text variant="sm-400" color="text-success">
-          {text2}
-        </Text>
-      )}
     </View>
   );
 }
 
-function ErrorToast({ text1, text2 }: ToastProps) {
-  const Theme = useTheme();
-  const { top } = useSafeAreaInsets();
-
-  return (
-    <View style={[styles.container, { backgroundColor: Theme['bg-error'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}>
-      <Text variant="md-500" color="text-error">
-        {text1}
-      </Text>
-      {text2 && (
-        <Text variant="sm-400" color="text-error">
-          {text2}
-        </Text>
-      )}
-    </View>
-  );
+export function SuccessToast({ text1, text2, ...props }: ToastProps) {
+  return <BaseToast text1={text1} text2={text2} {...props} />;
 }
 
-function InfoToast({ text1, text2 }: ToastProps) {
-  const Theme = useTheme();
-  const { top } = useSafeAreaInsets();
+export function ErrorToast({ text1, text2, ...props }: ToastProps) {
+  return <BaseToast text1={text1} text2={text2} {...props} />;
+}
 
-  return (
-    <View
-      style={[styles.container, { backgroundColor: Theme['foreground-primary'], marginTop: top + (StatusBar.currentHeight ?? Spacing[2]) }]}
-    >
-      <Text variant="md-500" color="text-primary">
-        {text1}
-      </Text>
-      {text2 && (
-        <Text variant="sm-400" color="text-secondary">
-          {text2}
-        </Text>
-      )}
-    </View>
-  );
+export function InfoToast({ text1, text2, ...props }: ToastProps) {
+  return <BaseToast text1={text1} text2={text2} {...props} />;
 }
 
 export const toastConfig = {
@@ -72,12 +46,15 @@ export const toastConfig = {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: Spacing[4],
-    paddingVertical: Spacing[3],
-    borderRadius: BorderRadius[3],
-    marginHorizontal: Spacing[4],
-    minWidth: 200,
-    maxWidth: '90%',
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing[2],
+    padding: Spacing[5],
+    borderRadius: BorderRadius[3],
+    marginHorizontal: Spacing[5],
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  text: {
+    flex: 1,
   },
 });

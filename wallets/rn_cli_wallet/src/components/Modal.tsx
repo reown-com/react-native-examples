@@ -21,7 +21,6 @@ import PaymentOptionsModal from '@/modals/PaymentOptionsModal';
 import ImportWalletModal from '@/modals/ImportWalletModal';
 import SessionDetailModal from '@/modals/SessionDetailModal';
 import ScannerOptionsModal from '@/modals/ScannerOptionsModal';
-import PasteURIModal from '@/modals/PasteURIModal';
 
 export default function Modal() {
   const { open, view } = useSnapshot(ModalStore.state);
@@ -66,8 +65,6 @@ export default function Modal() {
         return <SessionDetailModal />;
       case 'ScannerOptionsModal':
         return <ScannerOptionsModal />;
-      case 'PasteURIModal':
-        return <PasteURIModal />;
       default:
         return <View />;
     }

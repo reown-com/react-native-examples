@@ -9,7 +9,8 @@ import Wallets from '@/screens/Wallets';
 import Connections from '@/screens/Connections';
 import Settings from '@/screens/Settings';
 import { Header } from '@/components/Header';
-import { FontFamily } from '@/utils/ThemeUtil';
+import { FontFamily, Spacing } from '@/utils/ThemeUtil';
+import { Platform } from 'react-native';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
@@ -37,6 +38,13 @@ export function HomeTabNavigator() {
         tabBarStyle: {
           backgroundColor: Theme['bg-primary'],
           borderColor: Theme['foreground-tertiary'],
+          paddingTop: Spacing[2],
+          ...Platform.select({
+            android: {
+              height: 70,
+            },
+            default: {},
+          }),
         },
         tabBarLabelStyle: {
           fontSize: 10,
