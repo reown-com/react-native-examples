@@ -3,7 +3,7 @@ import { View, Image, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { PresetsUtil } from '@/utils/PresetsUtil';
-import { BorderRadius } from '@/utils/ThemeUtil';
+import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 
 interface ChainIconsProps {
@@ -56,8 +56,8 @@ export function ChainIcons({
                 left: leftOffset,
                 width: size,
                 height: size,
-                zIndex: visibleChainIds.length - index + 1,
-                borderColor: Theme['bg-primary'],
+                zIndex: index + 1,
+                borderColor: Theme['foreground-primary'],
               },
             ]}
           >
@@ -67,8 +67,8 @@ export function ChainIcons({
                 style={[
                   styles.icon,
                   {
-                    width: size - 2,
-                    height: size - 2,
+                    width: size - 4,
+                    height: size - 4,
                     backgroundColor: Theme['foreground-tertiary'],
                   },
                 ]}
@@ -78,8 +78,8 @@ export function ChainIcons({
                 style={[
                   styles.icon,
                   {
-                    width: size - 2,
-                    height: size - 2,
+                    width: size - 4,
+                    height: size - 4,
                     backgroundColor: Theme['foreground-tertiary'],
                   },
                 ]}
@@ -95,15 +95,15 @@ export function ChainIcons({
             styles.moreIndicator,
             {
               left: visibleChainIds.length * (size - overlap),
-              width: size,
               height: size,
-              backgroundColor: Theme['foreground-secondary'],
-              borderColor: Theme['foreground-secondary'],
+              paddingHorizontal: Spacing[2],
+              backgroundColor: Theme['foreground-tertiary'],
+              borderColor: Theme['foreground-primary'],
             },
           ]}
         >
-          <Text variant="sm-400" color="text-primary">
-            {' +' + remainingCount}
+          <Text variant="sm-500" color="text-primary">
+            {'+' + remainingCount}
           </Text>
         </View>
       )}
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   iconWrapper: {
     position: 'absolute',
     borderRadius: BorderRadius.full,
-    borderWidth: 1,
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -128,6 +128,6 @@ const styles = StyleSheet.create({
   },
   moreIndicator: {
     borderRadius: BorderRadius.full,
-    zIndex: 0,
+    zIndex: 99,
   },
 });
