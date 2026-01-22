@@ -93,8 +93,19 @@ const App = () => {
 
       // 2. Redirection from app with encoded URI (wc?uri=)
       if (url.includes('wc?uri=')) {
-        const uri = url.split('wc?uri=')[1];
-        handleUriOrPaymentLink(decodeURIComponent(uri));
+        const encodedUri = url.split('wc?uri=')[1];
+        if (!encodedUri) {
+          return;
+        }
+
+        try {
+          const uri = decodeURIComponent(encodedUri);
+          handleUriOrPaymentLink(uri);
+        } catch {
+          ModalStore.open('LoadingModal', {
+            errorMessage: 'Invalid deeplink format',
+          });
+        }
         return;
       }
 
