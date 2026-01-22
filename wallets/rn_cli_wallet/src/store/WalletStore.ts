@@ -160,31 +160,46 @@ const WalletStore = {
     try {
       // Fetch EIP155 balances
       const eip155ChainIds = Object.keys(EIP155_CHAINS);
-      const eip155Balances = await fetchBalancesForChains(
+      const eip155Result = await fetchBalancesForChains(
         addresses.eip155Address,
         eip155ChainIds,
       );
 
       // Fetch TON balances if address exists
-      let tonBalances: TokenBalance[] = [];
+      let tonResult = { balances: [] as TokenBalance[], anySuccess: false };
       if (addresses.tonAddress) {
-        tonBalances = await fetchBalancesForChains(
+        tonResult = await fetchBalancesForChains(
           addresses.tonAddress,
           TON_SUPPORTED_CHAINS,
         );
       }
 
       // Fetch TRON balances if address exists
-      let tronBalances: TokenBalance[] = [];
+      let tronResult = { balances: [] as TokenBalance[], anySuccess: false };
       if (addresses.tronAddress) {
-        tronBalances = await fetchBalancesForChains(
+        tronResult = await fetchBalancesForChains(
           addresses.tronAddress,
           TRON_SUPPORTED_CHAINS,
         );
       }
 
+      // Only update state if at least one API call succeeded
+      const anySuccess =
+        eip155Result.anySuccess ||
+        tonResult.anySuccess ||
+        tronResult.anySuccess;
+
+      if (!anySuccess) {
+        console.warn('All balance API calls failed, keeping cached data');
+        return;
+      }
+
       // Combine all balances
-      const apiBalances = [...eip155Balances, ...tonBalances, ...tronBalances];
+      const apiBalances = [
+        ...eip155Result.balances,
+        ...tonResult.balances,
+        ...tronResult.balances,
+      ];
 
       // Filter 0-balance tokens and ensure mainnet natives are present
       const allBalances = processBalances(apiBalances, addresses);

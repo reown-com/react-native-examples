@@ -44,25 +44,32 @@ async function fetchBalanceForChain(
   return data.balances || [];
 }
 
+export interface FetchBalancesResult {
+  balances: TokenBalance[];
+  anySuccess: boolean;
+}
+
 /**
  * Fetches token balances for multiple chains in parallel
  * Fails silently for unsupported chains
  * @param address - Wallet address
  * @param chainIds - Array of CAIP-2 chain IDs
- * @returns Combined array of token balances from all chains
+ * @returns Object with combined balances and success flag
  */
 export async function fetchBalancesForChains(
   address: string,
   chainIds: string[],
-): Promise<TokenBalance[]> {
+): Promise<FetchBalancesResult> {
   const results = await Promise.allSettled(
     chainIds.map(chainId => fetchBalanceForChain(address, chainId)),
   );
 
   const allBalances: TokenBalance[] = [];
+  let anySuccess = false;
 
   results.forEach((result, index) => {
     if (result.status === 'fulfilled') {
+      anySuccess = true;
       allBalances.push(...result.value);
     } else {
       // Fail silently - API doesn't support all chains
@@ -73,5 +80,5 @@ export async function fetchBalancesForChains(
     }
   });
 
-  return allBalances;
+  return { balances: allBalances, anySuccess };
 }
