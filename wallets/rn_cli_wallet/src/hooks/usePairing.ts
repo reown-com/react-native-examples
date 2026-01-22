@@ -9,17 +9,18 @@ export { isPaymentLink };
 
 export function usePairing() {
   const handlePaymentLink = useCallback(async (paymentLink: string) => {
+    ModalStore.open('PaymentOptionsModal', {
+      loadingMessage: 'Preparing your payment...',
+    });
+    await SettingsStore.state.initPromise;
+
     const payClient = walletKit?.pay;
     if (!payClient) {
-      ModalStore.open('LoadingModal', {
+      ModalStore.open('PaymentOptionsModal', {
         errorMessage: 'Pay SDK not initialized. Please restart the app.',
       });
       return;
     }
-
-    ModalStore.open('PaymentOptionsModal', {
-      loadingMessage: 'Preparing your payment...',
-    });
 
     try {
       const eip155Address = SettingsStore.state.eip155Address;
