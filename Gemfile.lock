@@ -296,6 +296,7 @@ PLATFORMS
   arm64-darwin-22
   arm64-darwin-23
   arm64-darwin-24
+  arm64-darwin-25
 
 DEPENDENCIES
   cocoapods (= 1.14.3)

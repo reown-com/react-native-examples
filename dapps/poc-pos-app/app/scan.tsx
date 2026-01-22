@@ -5,6 +5,7 @@ import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
+import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -33,11 +34,27 @@ export default function ScanScreen() {
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
-  const { deviceId, merchantId } = useSettingsStore((state) => state);
+  const { deviceId, merchantId, nfcEnabled } = useSettingsStore((state) => state);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
   const { amount } = params;
+
+  // NFC integration - Android HCE or iOS VAS
+  const { isNfcActive, nfcMode } = useNfcPayment({
+    paymentUrl: qrUri,
+    enabled: !!qrUri && nfcEnabled,
+    onNfcReady: () => {
+      const modeLabel = nfcMode === "hce" ? "HCE" : nfcMode === "vas" ? "VAS" : "NFC";
+      addLog("info", `NFC ${modeLabel} activated`, "scan", "useNfcPayment", {
+        paymentUrl: qrUri,
+        nfcMode,
+      });
+    },
+    onNfcError: (error) => {
+      addLog("error", error.message, "scan", "useNfcPayment", { error, nfcMode });
+    },
+  });
 
   const onSuccess = useCallback(
     (data: PaymentStatusResponse) => {
@@ -167,6 +184,18 @@ export default function ScanScreen() {
 
   const isProcessing = paymentStatusData?.status === "processing";
 
+  // Determine instruction text based on NFC availability
+  // Show "Tap or scan" when NFC is active (HCE on Android or VAS on iOS)
+  const showNfcOption = nfcMode !== "none" && isNfcActive;
+  const instructionText = showNfcOption ? "Tap or scan to pay" : "Scan to pay";
+
+  // Get NFC mode label for display
+  const getNfcModeLabel = () => {
+    if (nfcMode === "hce") return "NFC Ready (HCE)";
+    if (nfcMode === "vas") return "NFC Ready (VAS)";
+    return "NFC Ready";
+  };
+
   return (
     <View style={styles.container}>
       {isProcessing ? (
@@ -186,8 +215,19 @@ export default function ScanScreen() {
             <ThemedText
               style={[styles.amountText, { color: Theme["text-tertiary"] }]}
             >
-              Scan to pay
+              {instructionText}
             </ThemedText>
+            {/* NFC Status Indicator (when HCE or VAS is active) */}
+            {showNfcOption && (
+              <View style={styles.nfcIndicator}>
+                <View style={[styles.nfcDot, { backgroundColor: "#4CAF50" }]} />
+                <ThemedText
+                  style={[styles.nfcText, { color: Theme["text-tertiary"] }]}
+                >
+                  {getNfcModeLabel()}
+                </ThemedText>
+              </View>
+            )}
             <ThemedText
               style={[
                 styles.amountValue,
@@ -258,5 +298,20 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
+  },
+  nfcIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing["spacing-2"],
+    marginTop: Spacing["spacing-2"],
+  },
+  nfcDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  nfcText: {
+    fontSize: 12,
+    fontWeight: "500",
   },
 });
