@@ -5,7 +5,6 @@ import type { CollectDataAction } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
-import { sharedStyles } from './styles';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 
@@ -106,11 +105,7 @@ export function CollectDataView({
       </View>
 
       <View style={styles.confirmButtonContainer}>
-        <ActionButton
-          style={sharedStyles.primaryButton}
-          textStyle={sharedStyles.primaryButtonText}
-          onPress={onContinue}
-        >
+        <ActionButton onPress={onContinue} fullWidth>
           Continue
         </ActionButton>
       </View>

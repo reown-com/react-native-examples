@@ -13,6 +13,7 @@ interface ModalData {
   loadingMessage?: string;
   errorMessage?: string;
   paymentOptions?: PaymentOptionsResponse;
+  session?: SessionTypes.Struct;
 }
 
 interface State {
@@ -33,7 +34,9 @@ interface State {
     | 'SessionSignTronModal'
     | 'SessionTonSignDataModal'
     | 'PaymentOptionsModal'
-    | 'ImportWalletModal';
+    | 'ImportWalletModal'
+    | 'SessionDetailModal'
+    | 'ScannerOptionsModal'
   data?: ModalData;
 }
 

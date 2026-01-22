@@ -3,19 +3,30 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTheme } from '@/hooks/useTheme';
 import SvgConnectionsTab from '@/assets/ConnectionsTab';
 import SvgSettingsTab from '@/assets/SettingsTab';
+import SvgWalletTab from '@/assets/WalletTab';
 import { HomeTabParamList } from '@/utils/TypesUtil';
-import SettingsStack from '@/navigators/SettingsStack';
-import ConnectionsStack from '@/navigators/ConnectionsStack';
+import Wallets from '@/screens/Wallets';
+import Connections from '@/screens/Connections';
+import Settings from '@/screens/Settings';
+import { Header } from '@/components/Header';
+import { FontFamily, Spacing } from '@/utils/ThemeUtil';
+import { Platform } from 'react-native';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
-const SettingsIcon = ({ color }: { color: string }) => (
-  <SvgSettingsTab height={24} width={24} fill={color} />
+const WalletsIcon = ({ color }: { color: string }) => (
+  <SvgWalletTab height={24} width={24} fill={color} />
 );
 
 const ConnectionsIcon = ({ color }: { color: string }) => (
   <SvgConnectionsTab height={24} width={24} fill={color} />
 );
+
+const SettingsIcon = ({ color }: { color: string }) => (
+  <SvgSettingsTab height={24} width={24} fill={color} />
+);
+
+const NavHeader = () => <Header />;
 
 export function HomeTabNavigator() {
   const Theme = useTheme();
@@ -23,36 +34,47 @@ export function HomeTabNavigator() {
   return (
     <TabNav.Navigator
       screenOptions={{
-        headerShown: false,
-        headerStyle: {
-          backgroundColor: Theme['bg-primary'],
-        },
+        header: NavHeader,
         tabBarStyle: {
           backgroundColor: Theme['bg-primary'],
           borderColor: Theme['foreground-tertiary'],
+          paddingTop: Spacing[2],
+          ...Platform.select({
+            android: {
+              height: 70,
+            },
+            default: {},
+          }),
         },
         tabBarLabelStyle: {
-          fontWeight: '600',
           fontSize: 10,
+          fontFamily: FontFamily.regular,
         },
         tabBarActiveTintColor: Theme['text-primary'],
         tabBarInactiveTintColor: Theme['text-secondary'],
-      }}
-    >
+        sceneStyle: {
+          backgroundColor: Theme['bg-primary'],
+        },
+      }}>
       <TabNav.Screen
-        name="ConnectionsStack"
-        component={ConnectionsStack}
+        name="Wallets"
+        component={Wallets}
         options={{
-          tabBarLabel: 'Connected Apps',
-          tabBarIcon: ConnectionsIcon,
-          headerStyle: {
-            backgroundColor: Theme['bg-primary'],
-          },
+          tabBarLabel: 'Wallets',
+          tabBarIcon: WalletsIcon,
         }}
       />
       <TabNav.Screen
-        name="SettingsStack"
-        component={SettingsStack}
+        name="Connections"
+        component={Connections}
+        options={{
+          tabBarLabel: 'Connected Apps',
+          tabBarIcon: ConnectionsIcon,
+        }}
+      />
+      <TabNav.Screen
+        name="Settings"
+        component={Settings}
         options={{
           tabBarLabel: 'Settings',
           tabBarIcon: SettingsIcon,

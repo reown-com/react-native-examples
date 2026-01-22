@@ -2,8 +2,9 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
+import Toast from 'react-native-toast-message';
 
-import { Methods } from '@/components/Modal/Methods';
+import { AppInfoCard } from '@/components/AppInfoCard';
 import {
   approveTonRequest,
   rejectTonRequest,
@@ -11,9 +12,8 @@ import {
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
+import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
-import { Chains } from '@/components/Modal/Chains';
-import { PresetsUtil } from '@/utils/PresetsUtil';
 import { tonAddresses } from '@/utils/TonWalletUtil';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
@@ -22,6 +22,7 @@ import { Text } from '@/components/Text';
 export default function SessionTonSendMessageModal() {
   // Get request and wallet data from store
   const { data } = useSnapshot(ModalStore.state);
+  const { currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
   const requestEvent = data?.requestEvent;
   const session = data?.requestSession;
   const isLinkMode = session?.transportType === 'link_mode';
@@ -29,14 +30,14 @@ export default function SessionTonSendMessageModal() {
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 
+  const { validation, isScam } = currentRequestVerifyContext?.verified || {};
+
   const Theme = useTheme();
 
   // Get required request data
   const { topic, params } = requestEvent!;
-  const { request, chainId } = params;
-  const chain = PresetsUtil.getChainDataById(chainId);
+  const { request } = params;
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
-  const method = requestEvent?.params?.request?.method!;
 
   // Extract message details for display (SendMessage spec)
   const tx = Array.isArray(request.params)
@@ -68,9 +69,9 @@ export default function SessionTonSendMessageModal() {
 
   // Handle approve action
   const onApprove = useCallback(async () => {
-    try {
-      if (requestEvent) {
-        setIsLoadingApprove(true);
+    if (requestEvent) {
+      setIsLoadingApprove(true);
+      try {
         const response = await approveTonRequest(requestEvent);
         console.log('response', response);
 
@@ -84,12 +85,17 @@ export default function SessionTonSendMessageModal() {
           isLinkMode: isLinkMode,
           error: 'error' in response ? response.error.message : undefined,
         });
+      } catch (e) {
+        console.log((e as Error).message, 'error');
+        Toast.show({
+          type: 'error',
+          text1: 'Send message failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
-    } catch (e) {
-      console.log((e as Error).message, 'error');
-    } finally {
-      setIsLoadingApprove(false);
-      ModalStore.close();
     }
   }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
@@ -97,8 +103,8 @@ export default function SessionTonSendMessageModal() {
   const onReject = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingReject(true);
-      const response = rejectTonRequest(requestEvent);
       try {
+        const response = rejectTonRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
@@ -109,12 +115,16 @@ export default function SessionTonSendMessageModal() {
           error: 'User rejected request',
         });
       } catch (e) {
-        setIsLoadingReject(false);
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic, peerMetadata, isLinkMode]);
 
@@ -129,17 +139,21 @@ export default function SessionTonSendMessageModal() {
 
   return (
     <RequestModal
-      intention="sign a transaction"
+      intention="Send a message for"
       metadata={peerMetadata}
       onApprove={onApprove}
       onReject={onReject}
       isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}
+      approveLabel="Send"
     >
       <View style={styles.container}>
-        {chain ? <Chains chains={[chain]} /> : null}
-        <Methods methods={[method]} />
+        <AppInfoCard
+          url={peerMetadata?.url}
+          validation={validation}
+          isScam={isScam}
+        />
 
         {/* Sign with Address */}
         <View
@@ -149,13 +163,13 @@ export default function SessionTonSendMessageModal() {
           ]}
         >
           <Text
-            variant="sm-500"
-            color="text-secondary"
+            variant="lg-400"
+            color="text-tertiary"
             style={styles.sectionTitle}
           >
             Sign with Address
           </Text>
-          <Text variant="sm-400" color="text-secondary">
+          <Text variant="md-400" color="text-primary">
             {tonAddresses[0]}
           </Text>
         </View>
@@ -168,13 +182,13 @@ export default function SessionTonSendMessageModal() {
           ]}
         >
           <Text
-            variant="sm-500"
-            color="text-secondary"
+            variant="lg-400"
+            color="text-tertiary"
             style={styles.sectionTitle}
           >
             Transaction Details
           </Text>
-          <Text variant="sm-400" color="text-secondary">
+          <Text variant="md-400" color="text-primary">
             {formatTransactionDetails()}
           </Text>
         </View>
@@ -191,9 +205,9 @@ const styles = StyleSheet.create({
     rowGap: Spacing[2],
   },
   section: {
-    borderRadius: BorderRadius[5],
-    paddingVertical: Spacing[2],
-    paddingHorizontal: Spacing[4],
+    borderRadius: BorderRadius[4],
+    rowGap: Spacing[2],
+    padding: Spacing[5],
   },
   sectionTitle: {
     marginBottom: Spacing[1],

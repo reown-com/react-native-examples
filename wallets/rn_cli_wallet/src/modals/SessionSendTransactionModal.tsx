@@ -2,9 +2,10 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
+import Toast from 'react-native-toast-message';
 
-import { Methods } from '@/components/Modal/Methods';
 import { Message } from '@/components/Modal/Message';
+import { AppInfoCard } from '@/components/AppInfoCard';
 import {
   approveEIP155Request,
   rejectEIP155Request,
@@ -12,14 +13,16 @@ import {
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
+import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from '@/modals/RequestModal';
-import { Chains } from '@/components/Modal/Chains';
-import { PresetsUtil } from '@/utils/PresetsUtil';
 
 export default function SessionSendTransactionModal() {
   const { data } = useSnapshot(ModalStore.state);
+  const { currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
+
+  const { validation, isScam } = currentRequestVerifyContext?.verified || {};
 
   // Get request and wallet data from store
   const requestEvent = data?.requestEvent;
@@ -27,11 +30,8 @@ export default function SessionSendTransactionModal() {
 
   const topic = requestEvent?.topic;
   const params = requestEvent?.params;
-  const chainId = params?.chainId;
-  const chain = PresetsUtil.getChainDataById(chainId || '');
   const request = params?.request;
   const transaction = request?.params[0];
-  const method = requestEvent?.params?.request?.method!;
   const isLinkMode = session?.transportType === 'link_mode';
 
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
@@ -53,10 +53,15 @@ export default function SessionSendTransactionModal() {
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Transaction failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
-      setIsLoadingApprove(false);
-      ModalStore.close();
     }
   }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
@@ -64,34 +69,43 @@ export default function SessionSendTransactionModal() {
   const onReject = useCallback(async () => {
     if (requestEvent && topic) {
       setIsLoadingReject(true);
-      const response = rejectEIP155Request(requestEvent);
       try {
+        const response = rejectEIP155Request(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic]);
 
   return (
     <RequestModal
-      intention="sign a transaction"
+      intention="Send a transaction for"
       metadata={peerMetadata}
       onApprove={onApprove}
       onReject={onReject}
       isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}
+      approveLabel="Send"
     >
       <View style={styles.container}>
-        {chain ? <Chains chains={[chain]} /> : null}
-        <Methods methods={[method]} />
+        <AppInfoCard
+          url={peerMetadata?.url}
+          validation={validation}
+          isScam={isScam}
+        />
         <Message message={JSON.stringify(transaction, null, 2)} />
       </View>
     </RequestModal>

@@ -15,10 +15,12 @@ import SvgChevronRight from '@/assets/ChevronRight';
 import { RootStackScreenProps } from '@/utils/TypesUtil';
 import styles from './styles';
 import { Text } from '@/components/Text';
+import { useTheme } from '@/hooks/useTheme';
 
 type Props = RootStackScreenProps<'Scan'>;
 
 export default function Scan({ navigation }: Props) {
+  const Theme = useTheme();
   const device = useCameraDevice('back', {
     physicalDevices: ['wide-angle-camera'],
   });
@@ -30,8 +32,8 @@ export default function Scan({ navigation }: Props) {
   const onCodeScanned = (codes: Code[]) => {
     const uri = codes[0].value;
     navigation.navigate('Home', {
-      screen: 'ConnectionsStack',
-      params: { screen: 'Connections', params: { uri: uri! } },
+      screen: 'Connections',
+      params: { uri: uri! },
     });
   };
 
@@ -51,7 +53,7 @@ export default function Scan({ navigation }: Props) {
   }, [hasPermission, requestPermission]);
 
   return (
-    <SafeAreaView style={StyleSheet.absoluteFill}>
+    <SafeAreaView style={[StyleSheet.absoluteFill, { backgroundColor: Theme['bg-primary'] }]}>
       <TouchableOpacity onPress={goBack} style={styles.backButton} hitSlop={40}>
         <SvgChevronRight
           fill="white"

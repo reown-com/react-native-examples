@@ -100,7 +100,7 @@ export default function AmountScreen() {
                 newDisplay = prev?.slice(0, -1) || "";
                 onChange?.(newDisplay);
               } else if (key === ".") {
-                if (prev.includes(".")) return; // Don't add multiple commas
+                if (prev.includes(".")) return; // Don't add multiple decimal separators
                 if (prev === "") {
                   newDisplay = "0.";
                 } else {
@@ -108,6 +108,11 @@ export default function AmountScreen() {
                 }
                 onChange?.(newDisplay);
               } else {
+                // Limit to 2 decimal digits
+                if (prev.includes(".")) {
+                  const [, decimal] = prev.split(".");
+                  if (decimal.length >= 2) return;
+                }
                 const newDisplay = prev === "0" ? key : prev + key;
                 onChange?.(newDisplay);
               }

@@ -1,8 +1,23 @@
-# bash script that copies the mock files to the correct location
+#!/bin/bash
+# Script that copies mock files to the correct location (skips if file exists)
 
-cp .env.example .env
-cp android/app/google-services.mock.json android/app/google-services.json
-cp android/app/debug.keystore.mock android/app/debug.keystore
-cp android/secrets.properties.mock android/secrets.properties
+copy_if_missing() {
+    local src="$1"
+    local dest="$2"
+    if [ ! -f "$src" ]; then
+        echo "Skipped (source not found): $src"
+        return
+    fi
+    if [ -f "$dest" ]; then
+        echo "Skipped (exists): $dest"
+        return
+    fi
+    cp "$src" "$dest"
+    echo "Copied: $dest"
+}
 
-cp ios/GoogleService/GoogleService-Info.mock.plist ios/GoogleService/GoogleService-Debug-Info.plist
+copy_if_missing .env.example .env
+copy_if_missing android/app/google-services.mock.json android/app/google-services.json
+copy_if_missing android/app/debug.keystore.mock android/app/debug.keystore
+copy_if_missing android/secrets.properties.mock android/secrets.properties
+copy_if_missing ios/GoogleService/GoogleService-Info.mock.plist ios/GoogleService/GoogleService-Debug-Info.plist

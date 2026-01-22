@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes, AuthTypes } from '@walletconnect/types';
 import { buildAuthObject, populateAuthPayload } from '@walletconnect/utils';
+import Toast from 'react-native-toast-message';
 
 import ModalStore from '@/store/ModalStore';
 import { eip155Addresses, eip155Wallets } from '@/utils/EIP155WalletUtil';
@@ -13,6 +14,7 @@ import { useTheme } from '@/hooks/useTheme';
 
 import { RequestModal } from './RequestModal';
 import { Message } from '@/components/Modal/Message';
+import { AppInfoCard } from '@/components/AppInfoCard';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
@@ -20,7 +22,9 @@ import { Spacing } from '@/utils/ThemeUtil';
 export default function SessionAuthenticateModal() {
   const Theme = useTheme();
   const { data } = useSnapshot(ModalStore.state);
-  const { isLinkModeRequest } = useSnapshot(SettingsStore.state);
+  const { isLinkModeRequest, currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
+
+  const { validation, isScam } = currentRequestVerifyContext?.verified || {};
 
   const authRequest =
     data?.authRequest as SignClientTypes.EventArguments['session_authenticate'];
@@ -54,8 +58,8 @@ export default function SessionAuthenticateModal() {
   // Handle approve action, construct session namespace
   const onApprove = useCallback(async () => {
     if (messages.length > 0) {
+      setIsLoadingApprove(true);
       try {
-        setIsLoadingApprove(true);
         const signedAuths: AuthTypes.Cacao[] = [];
 
         messages.forEach(async message => {
@@ -85,19 +89,24 @@ export default function SessionAuthenticateModal() {
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Authentication failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        SettingsStore.setIsLinkModeRequest(false);
+        ModalStore.close();
       }
     }
-    setIsLoadingApprove(false);
-    SettingsStore.setIsLinkModeRequest(false);
-    ModalStore.close();
   }, [address, messages, authRequest, isLinkModeRequest]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
     if (authRequest) {
+      setIsLoadingReject(true);
       try {
-        setIsLoadingReject(true);
         await walletKit.rejectSessionAuthenticate({
           id: authRequest.id,
           reason: {
@@ -112,12 +121,17 @@ export default function SessionAuthenticateModal() {
         });
       } catch (e) {
         console.log((e as Error).message, 'error');
-        return;
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        SettingsStore.setIsLinkModeRequest(false);
+        ModalStore.close();
       }
     }
-    setIsLoadingReject(false);
-    SettingsStore.setIsLinkModeRequest(false);
-    ModalStore.close();
   }, [authRequest]);
 
   useEffect(() => {
@@ -156,13 +170,14 @@ export default function SessionAuthenticateModal() {
 
   return (
     <RequestModal
-      intention="wants to request a signature"
+      intention="Sign a message for"
       metadata={authRequest.params.requester.metadata}
       onApprove={onApprove}
       onReject={onReject}
       isLinkMode={isLinkModeRequest}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}
+      approveLabel="Connect"
     >
       <View
         style={[
@@ -171,6 +186,11 @@ export default function SessionAuthenticateModal() {
         ]}
       />
       <View style={styles.container}>
+        <AppInfoCard
+          url={authRequest.params.requester.metadata?.url}
+          validation={validation}
+          isScam={isScam}
+        />
         <Text
           variant="md-400"
           color="text-primary"
