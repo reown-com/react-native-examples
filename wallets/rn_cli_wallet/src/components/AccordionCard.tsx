@@ -48,7 +48,10 @@ export function AccordionCard({
 
   return (
     <View
-      style={[styles.container, { backgroundColor: Theme['foreground-primary'] }]}
+      style={[
+        styles.container,
+        { backgroundColor: Theme['foreground-primary'] },
+      ]}
     >
       <TouchableOpacity style={styles.header} onPress={onPress}>
         <View style={styles.headerLeft}>{headerContent}</View>

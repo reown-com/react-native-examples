@@ -168,7 +168,7 @@ Required in `.env`:
 ENV_PROJECT_ID=""              # WalletConnect Project ID (required)
 ENV_SENTRY_DSN=""              # Sentry error tracking (optional)
 ENV_TON_CENTER_API_KEY=""      # TON blockchain API key (optional)
-ENV_PAY_API_KEY=""             # WalletConnect Pay API key (optional)
+ENV_BLOCKCHAIN_API_URL=""      # Blockchain API URL (to get wallet balances)
 SENTRY_DISABLE_AUTO_UPLOAD=true  # Disable Sentry auto upload for Android builds
 ```
 

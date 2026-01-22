@@ -13,7 +13,7 @@ function getInitialThemeMode(): 'light' | 'dark' {
   if (saved === 'light' || saved === 'dark') {
     return saved;
   }
-  
+
   return Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
 }
 

@@ -1,6 +1,12 @@
 import { useSnapshot } from 'valtio';
 import { useEffect, useState } from 'react';
-import { View, Switch, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import {
+  View,
+  Switch,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -49,7 +55,8 @@ export default function Settings() {
     <ScrollView
       style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
       contentContainerStyle={styles.content}
-      contentInsetAdjustmentBehavior="automatic">
+      contentInsetAdjustmentBehavior="automatic"
+    >
       <Text variant="lg-500" color="text-primary" style={styles.subtitle}>
         Preferences
       </Text>
@@ -59,18 +66,21 @@ export default function Settings() {
           style={[
             styles.switchCard,
             { backgroundColor: Theme['foreground-primary'] },
-          ]}>
+          ]}
+        >
           <Text variant="md-500" color="text-primary">
             Dark mode
           </Text>
           <Switch
             value={themeMode === 'dark'}
             onValueChange={toggleDarkMode}
-            trackColor={Platform.select({android:{
-              false: Theme['foreground-tertiary'],
-              true: Theme['bg-accent-primary'],
-            }})}
-            thumbColor={Platform.select({android: Theme.white})}
+            trackColor={Platform.select({
+              android: {
+                false: Theme['foreground-tertiary'],
+                true: Theme['bg-accent-primary'],
+              },
+            })}
+            thumbColor={Platform.select({ android: Theme.white })}
           />
         </TouchableOpacity>
         <Card

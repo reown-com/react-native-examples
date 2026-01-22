@@ -58,6 +58,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing[4],
   },
   button: {
-    width: '48%'
+    width: '48%',
   },
 });

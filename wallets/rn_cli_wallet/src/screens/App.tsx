@@ -80,7 +80,9 @@ const App = () => {
 
   const pair = useCallback(async (uri: string) => {
     try {
-      ModalStore.open('LoadingModal', { loadingMessage: 'Preparing connection...' });
+      ModalStore.open('LoadingModal', {
+        loadingMessage: 'Preparing connection...',
+      });
 
       await SettingsStore.state.initPromise;
       await walletKit.pair({ uri });
@@ -148,11 +150,7 @@ const App = () => {
             barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
           />
           <RootStackNavigator />
-          <Toast
-            config={toastConfig}
-            position="top"
-            topOffset={0}
-          />
+          <Toast config={toastConfig} position="top" topOffset={0} />
         </NavigationContainer>
       </KeyboardProvider>
     </SafeAreaProvider>

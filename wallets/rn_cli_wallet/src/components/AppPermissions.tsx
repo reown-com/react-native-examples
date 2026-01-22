@@ -26,7 +26,7 @@ export function AppPermissions() {
 
   return (
     <View style={styles.container}>
-      {PERMISSIONS.map((permission) => (
+      {PERMISSIONS.map(permission => (
         <View key={permission.text} style={styles.row}>
           {permission.allowed ? (
             <SvgCheckCircle

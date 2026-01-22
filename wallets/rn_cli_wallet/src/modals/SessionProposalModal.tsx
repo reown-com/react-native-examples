@@ -125,7 +125,8 @@ export default function SessionProposalModal() {
   const networkHeight = useMemo(() => {
     const chainCount = Math.min(supportedChains.length, MAX_VISIBLE_NETWORKS);
     return (
-      NETWORK_ROW_HEIGHT * chainCount + NETWORK_GAP * Math.max(0, chainCount - 1)
+      NETWORK_ROW_HEIGHT * chainCount +
+      NETWORK_GAP * Math.max(0, chainCount - 1)
     );
   }, [supportedChains.length]);
 
@@ -202,7 +203,12 @@ export default function SessionProposalModal() {
         ModalStore.close();
       }
     }
-  }, [proposal, supportedNamespaces, selectedChainIds, filterNamespacesByChains]);
+  }, [
+    proposal,
+    supportedNamespaces,
+    selectedChainIds,
+    filterNamespacesByChains,
+  ]);
 
   const onReject = useCallback(async () => {
     if (proposal) {

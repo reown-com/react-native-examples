@@ -5,12 +5,13 @@ import {
   TextInput,
   Alert,
   KeyboardAvoidingView,
-  Platform,
   TouchableOpacity,
 } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
+import SettingsStore from '@/store/SettingsStore';
+import WalletStore from '@/store/WalletStore';
 import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
@@ -31,6 +32,14 @@ export default function ImportWalletModal() {
     setIsLoading(true);
     try {
       const { address } = loadEIP155Wallet(input);
+
+      // Refetch balances with the new address
+      WalletStore.fetchBalances({
+        eip155Address: address,
+        tonAddress: SettingsStore.state.tonAddress,
+        tronAddress: SettingsStore.state.tronAddress,
+      });
+
       Alert.alert('Success', `Wallet imported!\n\nNew address: ${address}`);
       ModalStore.close();
     } catch (error: unknown) {
@@ -45,10 +54,7 @@ export default function ImportWalletModal() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboardView}
-    >
+    <KeyboardAvoidingView behavior="padding">
       <View
         style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
       >
@@ -111,9 +117,6 @@ export default function ImportWalletModal() {
 }
 
 const styles = StyleSheet.create({
-  keyboardView: {
-    width: '100%',
-  },
   container: {
     width: '100%',
     borderTopLeftRadius: 34,

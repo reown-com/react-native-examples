@@ -44,7 +44,9 @@ export function usePairing() {
   }, []);
 
   const pair = useCallback(async (uri: string) => {
-    ModalStore.open('LoadingModal', { loadingMessage: 'Preparing connection...' });
+    ModalStore.open('LoadingModal', {
+      loadingMessage: 'Preparing connection...',
+    });
     await SettingsStore.state.initPromise;
 
     try {

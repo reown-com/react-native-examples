@@ -55,7 +55,8 @@ export function HomeTabNavigator() {
         sceneStyle: {
           backgroundColor: Theme['bg-primary'],
         },
-      }}>
+      }}
+    >
       <TabNav.Screen
         name="Wallets"
         component={Wallets}

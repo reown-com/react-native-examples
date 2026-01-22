@@ -10,4 +10,3 @@ const SvgPaste = (props: SvgProps) => (
 );
 
 export default SvgPaste;
-

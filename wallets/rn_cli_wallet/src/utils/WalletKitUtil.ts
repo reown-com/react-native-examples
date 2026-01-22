@@ -96,4 +96,3 @@ export function formatDomain(url: string | undefined): string {
   }
   return url.replace(/^https?:\/\//, '').replace(/^www\./, '');
 }
-

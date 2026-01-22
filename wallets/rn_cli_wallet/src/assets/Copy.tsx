@@ -12,4 +12,3 @@ const SvgCopy = (props: SvgProps) => (
 );
 
 export default SvgCopy;
-

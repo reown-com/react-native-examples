@@ -31,7 +31,13 @@ export function ModalHeader({
     <View style={styles.container}>
       {/* Close button */}
       {onClose && (
-        <TouchableOpacity style={[styles.closeButton, { borderColor: Theme['border-secondary'] }]} onPress={onClose}>
+        <TouchableOpacity
+          style={[
+            styles.closeButton,
+            { borderColor: Theme['border-secondary'] },
+          ]}
+          onPress={onClose}
+        >
           <SvgClose width={38} height={38} fill={Theme['text-primary']} />
         </TouchableOpacity>
       )}
@@ -55,7 +61,7 @@ export function ModalHeader({
       {/* App icon */}
       {metadata?.icons[0] && (
         <Image
-          source={{ uri: metadata?.icons[0] ?? '' }}
+          source={{ uri: metadata?.icons[0] ?? '', cache: 'force-cache' }}
           style={[styles.logo, { borderColor: Theme['border-primary'] }]}
         />
       )}

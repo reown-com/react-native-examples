@@ -19,7 +19,10 @@ export function LoadingModal() {
 
   return (
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
-      <TouchableOpacity style={[styles.closeButton, { borderColor: Theme['border-secondary'] }]} onPress={onClose}>
+      <TouchableOpacity
+        style={[styles.closeButton, { borderColor: Theme['border-secondary'] }]}
+        onPress={onClose}
+      >
         <SvgClose width={38} height={38} fill={Theme['text-primary']} />
       </TouchableOpacity>
       {data?.errorMessage ? (

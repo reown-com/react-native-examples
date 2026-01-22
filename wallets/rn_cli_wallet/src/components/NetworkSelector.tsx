@@ -1,4 +1,10 @@
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Chain } from '@/utils/TypesUtil';
@@ -58,13 +64,14 @@ export function NetworkSelector({
                 style={[
                   styles.checkbox,
                   isSelected
-                    ? { backgroundColor: Theme['bg-accent-primary'], borderColor: Theme['bg-accent-primary'] }
+                    ? {
+                        backgroundColor: Theme['bg-accent-primary'],
+                        borderColor: Theme['bg-accent-primary'],
+                      }
                     : { borderColor: Theme['border-secondary'] },
                 ]}
               >
-                {isSelected && (
-                  <Checkmark width={12} height={9} />
-                )}
+                {isSelected && <Checkmark width={12} height={9} />}
               </View>
             </TouchableOpacity>
           );

@@ -53,7 +53,12 @@ export default function Scan({ navigation }: Props) {
   }, [hasPermission, requestPermission]);
 
   return (
-    <SafeAreaView style={[StyleSheet.absoluteFill, { backgroundColor: Theme['bg-primary'] }]}>
+    <SafeAreaView
+      style={[
+        StyleSheet.absoluteFill,
+        { backgroundColor: Theme['bg-primary'] },
+      ]}
+    >
       <TouchableOpacity onPress={goBack} style={styles.backButton} hitSlop={40}>
         <SvgChevronRight
           fill="white"

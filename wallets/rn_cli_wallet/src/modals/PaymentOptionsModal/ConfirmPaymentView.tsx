@@ -69,7 +69,10 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
       <View style={styles.optionItemContent}>
         <View style={styles.optionIconContainer}>
           <Image
-            source={{ uri: option.amount.display.iconUrl }}
+            source={{
+              uri: option.amount.display.iconUrl,
+              cache: 'force-cache',
+            }}
             style={styles.optionIcon}
           />
           <Image
@@ -227,7 +230,10 @@ export function ConfirmPaymentView({
             {selectedOption?.amount?.display?.iconUrl && (
               <View>
                 <Image
-                  source={{ uri: selectedOption?.amount?.display?.iconUrl }}
+                  source={{
+                    uri: selectedOption?.amount?.display?.iconUrl,
+                    cache: 'force-cache',
+                  }}
                   style={styles.selectedOptionIcon}
                 />
                 <Image

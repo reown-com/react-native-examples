@@ -18,7 +18,8 @@
       "@/utils/*": ["./src/utils/*"],
       "@/provider/*": ["./src/provider/*"],
       "@/store/*": ["./src/store/*"],
-      "@/lib/*": ["./src/lib/*"]
+      "@/lib/*": ["./src/lib/*"],
+      "@/services/*": ["./src/services/*"]
     }
   }
 }

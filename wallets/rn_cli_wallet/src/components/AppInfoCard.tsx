@@ -38,7 +38,7 @@ export function AppInfoCard({
   const isControlled = externalIsExpanded !== undefined;
   const isExpanded = isControlled ? externalIsExpanded : internalIsExpanded;
   const onPress = isControlled
-    ? (externalOnPress ?? (() => {}))
+    ? externalOnPress ?? (() => {})
     : () => setInternalIsExpanded(prev => !prev);
 
   return (

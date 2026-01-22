@@ -14,8 +14,12 @@ function Sessions() {
 
   if (!sessions?.length) {
     return (
-      <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
-        <Text variant="h6-400" color="text-primary">No connected apps yet</Text>
+      <View
+        style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
+      >
+        <Text variant="h6-400" color="text-primary">
+          No connected apps yet
+        </Text>
         <Text variant="lg-400" color="text-secondary" center>
           Scan a WalletConnect QR code to get started.
         </Text>
