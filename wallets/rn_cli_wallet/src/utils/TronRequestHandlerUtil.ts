@@ -52,6 +52,17 @@ export async function approveTronRequest(
 
         return formatJsonRpcResult(id, signedTransaction);
 
+      case TRON_SIGNING_METHODS.TRON_SEND_TRANSACTION:
+        // Accept unsigned transaction, sign it, and broadcast
+        const txToSend =
+          request.params.transaction?.transaction ?? request.params.transaction;
+        if (!txToSend) {
+          throw new Error('Missing transaction parameter');
+        }
+        const signedTxToSend = await wallet.signTransaction(txToSend);
+        const sendResult = await wallet.sendTransaction(signedTxToSend);
+        return formatJsonRpcResult(id, sendResult);
+
       default:
         throw new Error(getSdkError('INVALID_METHOD').message);
     }
