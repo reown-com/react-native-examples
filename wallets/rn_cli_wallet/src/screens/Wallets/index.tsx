@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: Spacing[5],
-    rowGap: Spacing[2]
+    rowGap: Spacing[2],
   },
   emptyContent: {
     flex: 1,
