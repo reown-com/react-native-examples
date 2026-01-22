@@ -76,7 +76,7 @@ export default function Wallets() {
   );
 
   const ListEmptyComponent = useCallback(() => {
-    if (!isLoading) {
+    if (isLoading) {
       return (
         <View style={styles.emptyContainer}>
           <WalletConnectLoading size={60} />
@@ -98,7 +98,7 @@ export default function Wallets() {
 
   return (
     <FlatList
-      data={[]}
+      data={balances}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       getItemLayout={getItemLayout}
