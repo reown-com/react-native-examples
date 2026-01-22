@@ -57,4 +57,12 @@ export default class TronLib {
     const signedtxn = await this.tronWeb.trx.sign(transaction);
     return signedtxn;
   }
+
+  public async sendTransaction(signedTransaction: any) {
+    const result = await this.tronWeb.trx.sendRawTransaction(signedTransaction);
+    return {
+      result: result.result ?? false,
+      txid: result.txid ?? signedTransaction.txID,
+    };
+  }
 }
