@@ -151,37 +151,33 @@ const WalletStore = {
 
   async fetchBalances(addresses: WalletAddresses) {
     if (!addresses.eip155Address) {
-      console.warn('No EIP155 address provided for balance fetch');
       return;
     }
 
     state.isLoading = true;
 
     try {
-      // Fetch EIP155 balances
+      // Fetch all balances in parallel for better performance and resilience
       const eip155ChainIds = Object.keys(EIP155_CHAINS);
-      const eip155Result = await fetchBalancesForChains(
-        addresses.eip155Address,
-        eip155ChainIds,
-      );
 
-      // Fetch TON balances if address exists
-      let tonResult = { balances: [] as TokenBalance[], anySuccess: false };
-      if (addresses.tonAddress) {
-        tonResult = await fetchBalancesForChains(
-          addresses.tonAddress,
-          TON_SUPPORTED_CHAINS,
-        );
-      }
-
-      // Fetch TRON balances if address exists
-      let tronResult = { balances: [] as TokenBalance[], anySuccess: false };
-      if (addresses.tronAddress) {
-        tronResult = await fetchBalancesForChains(
-          addresses.tronAddress,
-          TRON_SUPPORTED_CHAINS,
-        );
-      }
+      const [eip155Result, tonResult, tronResult] = await Promise.all([
+        // EIP155 balances
+        fetchBalancesForChains(addresses.eip155Address, eip155ChainIds),
+        // TON balances (or empty result if no address)
+        addresses.tonAddress
+          ? fetchBalancesForChains(addresses.tonAddress, TON_SUPPORTED_CHAINS)
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
+        // TRON balances (or empty result if no address)
+        addresses.tronAddress
+          ? fetchBalancesForChains(addresses.tronAddress, TRON_SUPPORTED_CHAINS)
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
+      ]);
 
       // Only update state if at least one API call succeeded
       const anySuccess =
@@ -190,7 +186,6 @@ const WalletStore = {
         tronResult.anySuccess;
 
       if (!anySuccess) {
-        console.warn('All balance API calls failed, keeping cached data');
         return;
       }
 
@@ -200,6 +195,13 @@ const WalletStore = {
         ...tonResult.balances,
         ...tronResult.balances,
       ];
+
+      // Protect against API returning empty data when we have valid cached data
+      const totalValue = apiBalances.reduce((s, b) => s + b.value, 0);
+      const cachedTotalValue = state.balances.reduce((s, b) => s + b.value, 0);
+      if (totalValue === 0 && cachedTotalValue > 0) {
+        return;
+      }
 
       // Filter 0-balance tokens and ensure mainnet natives are present
       const allBalances = processBalances(apiBalances, addresses);

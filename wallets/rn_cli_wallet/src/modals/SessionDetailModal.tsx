@@ -115,7 +115,7 @@ export default function SessionDetailModal() {
         <View style={styles.appInfoRow}>
           {metadata?.icons[0] && (
             <Image
-              source={{ uri: metadata.icons[0] }}
+              source={{ uri: metadata.icons[0], cache: 'force-cache' }}
               style={[
                 styles.appIcon,
                 { backgroundColor: Theme['foreground-tertiary'] },

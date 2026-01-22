@@ -61,7 +61,7 @@ export const TokenBalanceCard = React.memo(function TokenBalanceCard({
         {/* Token icon */}
         {balance.iconUrl ? (
           <Image
-            source={{ uri: balance.iconUrl }}
+            source={{ uri: balance.iconUrl, cache: 'force-cache' }}
             style={[styles.tokenIcon, { backgroundColor: Theme['bg-invert'] }]}
             resizeMode="contain"
           />

@@ -47,7 +47,7 @@ const IndividualSession = ({
       <View style={styles.flexRow}>
         {icon ? (
           <Image
-            source={{ uri: icon }}
+            source={{ uri: icon, cache: 'force-cache' }}
             style={[
               styles.iconContainer,
               { backgroundColor: Theme['foreground-tertiary'] },

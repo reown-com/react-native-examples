@@ -19,13 +19,12 @@ async function fetchBalanceForChain(
   const origin = DeviceInfo.getBundleId();
 
   if (!baseUrl || !projectId) {
-    console.warn('Missing ENV_BLOCKCHAIN_API_URL or ENV_PROJECT_ID');
     return [];
   }
 
   const url = `${baseUrl}${BALANCE_API_PATH}/${address}/balance?projectId=${encodeURIComponent(
     projectId,
-  )}&currency=usd&chainId=${encodeURIComponent(chainId)}&st=walletkit&sv=1.0.0`;
+  )}&currency=usd&chainId=${chainId}&st=walletkit&sv=1.0.0`;
 
   const response = await fetch(url.toString(), {
     headers: {
@@ -67,16 +66,10 @@ export async function fetchBalancesForChains(
   const allBalances: TokenBalance[] = [];
   let anySuccess = false;
 
-  results.forEach((result, index) => {
+  results.forEach(result => {
     if (result.status === 'fulfilled') {
       anySuccess = true;
       allBalances.push(...result.value);
-    } else {
-      // Fail silently - API doesn't support all chains
-      console.debug(
-        `Balance fetch failed for ${chainIds[index]}:`,
-        result.reason,
-      );
     }
   });
 

@@ -25,7 +25,7 @@ export function MerchantInfo({ info }: MerchantInfoProps) {
         <View style={styles.merchantContainer}>
           {info.merchant.iconUrl ? (
             <Image
-              source={{ uri: info.merchant.iconUrl }}
+              source={{ uri: info.merchant.iconUrl, cache: 'force-cache' }}
               style={[
                 styles.merchantIcon,
                 { backgroundColor: Theme['foreground-tertiary'] },

@@ -61,7 +61,7 @@ export function ModalHeader({
       {/* App icon */}
       {metadata?.icons[0] && (
         <Image
-          source={{ uri: metadata?.icons[0] ?? '' }}
+          source={{ uri: metadata?.icons[0] ?? '', cache: 'force-cache' }}
           style={[styles.logo, { borderColor: Theme['border-primary'] }]}
         />
       )}
