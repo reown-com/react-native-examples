@@ -239,7 +239,7 @@ export default function SettingsScreen() {
 
         <Card style={styles.merchantCard}>
           <ThemedText fontSize={16} lineHeight={18}>
-            Merchant API Key
+            Partner API Key
           </ThemedText>
           <View style={styles.merchantInputRow}>
             <TextInput
