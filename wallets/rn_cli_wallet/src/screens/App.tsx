@@ -13,6 +13,7 @@ import { RELAYER_EVENTS } from '@walletconnect/core';
 import { RootStackNavigator } from '@/navigators/RootStackNavigator';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
 import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
+import { usePairing } from '@/hooks/usePairing';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
@@ -56,6 +57,9 @@ const App = () => {
   // Step 2 - Once initialized, set up wallet connect event manager
   useWalletKitEventsManager(initialized);
 
+  // Get centralized URI/payment link handler
+  const { handleUriOrPaymentLink } = usePairing();
+
   // Hide splash screen once wallets are initialized, addresses are loaded and theme mode is set
   useEffect(() => {
     if (initialized && eip155Address && themeMode) {
@@ -78,40 +82,50 @@ const App = () => {
     }
   }, [initialized]);
 
-  const pair = useCallback(async (uri: string) => {
-    try {
-      ModalStore.open('LoadingModal', {
-        loadingMessage: 'Preparing connection...',
-      });
-
-      await SettingsStore.state.initPromise;
-      await walletKit.pair({ uri });
-    } catch (error: any) {
-      ModalStore.open('LoadingModal', {
-        errorMessage: error?.message || 'There was an error pairing',
-      });
-    }
-  }, []);
-
   const deeplinkHandler = useCallback(
     ({ url }: { url: string }) => {
+      // 1. Link mode (wc_ev) - SDK handles it, just set the flag
       const isLinkMode = url.includes('wc_ev');
       SettingsStore.setIsLinkModeRequest(isLinkMode);
-
       if (isLinkMode) {
         return;
-      } else if (url.includes('wc?uri=')) {
-        const uri = url.split('wc?uri=')[1];
-        pair(decodeURIComponent(uri));
-      } else if (url.includes('wc:')) {
-        pair(url);
-      } else if (url.includes('wc?')) {
+      }
+
+      // 2. Redirection from app with encoded URI (wc?uri=)
+      if (url.includes('wc?uri=')) {
+        const encodedUri = url.split('wc?uri=')[1];
+        if (!encodedUri) {
+          return;
+        }
+
+        try {
+          const uri = decodeURIComponent(encodedUri);
+          handleUriOrPaymentLink(uri);
+        } catch {
+          ModalStore.open('LoadingModal', {
+            errorMessage: 'Invalid deeplink format',
+          });
+        }
+        return;
+      }
+
+      // 3. Direct WC protocol URI (wc:)
+      // Extract from wc: onwards to remove app scheme prefix
+      if (url.includes('wc:')) {
+        const wcIndex = url.indexOf('wc:');
+        const uri = url.substring(wcIndex);
+        handleUriOrPaymentLink(uri);
+        return;
+      }
+
+      // 4. Request for already paired session (wc?)
+      if (url.includes('wc?')) {
         ModalStore.open('LoadingModal', {
           loadingMessage: 'Loading request...',
         });
       }
     },
-    [pair],
+    [handleUriOrPaymentLink],
   );
 
   useEffect(() => {
