@@ -1,17 +1,12 @@
 import { useEffect, useCallback, useMemo } from 'react';
 import { useSnapshot } from 'valtio';
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
+import { View, StyleSheet, FlatList, RefreshControl } from 'react-native';
 
 import SettingsStore from '@/store/SettingsStore';
 import WalletStore, { WalletAddresses } from '@/store/WalletStore';
 import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
+import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { TokenBalanceCard, ITEM_HEIGHT } from './components/TokenBalanceCard';
@@ -81,16 +76,12 @@ export default function Wallets() {
   );
 
   const ListEmptyComponent = useCallback(() => {
-    if (isLoading) {
+    if (!isLoading) {
       return (
         <View style={styles.emptyContainer}>
-          <ActivityIndicator size="large" color={Theme['text-primary']} />
-          <Text
-            variant="lg-400"
-            color="text-secondary"
-            style={styles.emptyText}
-          >
-            Loading balances...
+          <WalletConnectLoading size={60} />
+          <Text variant="lg-400" color="text-primary">
+            Loading balance...
           </Text>
         </View>
       );
@@ -98,16 +89,16 @@ export default function Wallets() {
 
     return (
       <View style={styles.emptyContainer}>
-        <Text variant="lg-400" color="text-secondary" style={styles.emptyText}>
+        <Text variant="lg-400" color="text-primary" style={styles.emptyText}>
           No balances found
         </Text>
       </View>
     );
-  }, [isLoading, Theme]);
+  }, [isLoading]);
 
   return (
     <FlatList
-      data={balances}
+      data={[]}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       getItemLayout={getItemLayout}
@@ -135,7 +126,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: Spacing[5],
-    rowGap: Spacing[2],
+    rowGap: Spacing[2]
   },
   emptyContent: {
     flex: 1,
