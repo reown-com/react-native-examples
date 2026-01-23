@@ -3,7 +3,7 @@ import { Core } from '@walletconnect/core';
 import Config from 'react-native-config';
 import { getMetadata } from './misc';
 import { storage } from './storage';
-import LogStore from '@/store/LogStore';
+import LogStore, { serializeError } from '@/store/LogStore';
 
 export { isPaymentLink };
 
@@ -27,7 +27,7 @@ export async function createWalletKit(relayerRegionURL: string) {
     storage.setItem('WALLETCONNECT_CLIENT_ID', clientId);
   } catch (error) {
     LogStore.error('Failed to set WalletConnect clientId in localStorage', 'WalletKitUtil', 'createWalletKit', {
-      error: String(error),
+      error: serializeError(error),
     });
   }
 }

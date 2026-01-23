@@ -59,9 +59,16 @@ export function LogList() {
       let timestamp: number;
       try {
         const parsed = JSON.parse(log);
-        timestamp = new Date(parsed.log?.time || parsed.timestamp).getTime();
+        const parsedTime = new Date(
+          parsed.log?.time || parsed.timestamp,
+        ).getTime();
+        if (isNaN(parsedTime)) {
+          throw new Error('Invalid date');
+        }
+        timestamp = parsedTime;
       } catch {
-        timestamp = Date.now();
+        // Use index-based timestamp to preserve relative order
+        timestamp = Date.now() - (walletKitLogs.length - index);
       }
       return {
         type: 'walletkit' as const,

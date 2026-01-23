@@ -3,7 +3,7 @@ import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import { SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 import SettingsStore from '@/store/SettingsStore';
-import LogStore from '@/store/LogStore';
+import LogStore, { serializeError } from '@/store/LogStore';
 import { TON_SIGNING_METHODS } from '@/constants/Ton';
 
 type RequestEventArgs = Omit<
@@ -29,7 +29,7 @@ export async function approveTonRequest(requestEvent: RequestEventArgs) {
         return formatJsonRpcResult(id, result);
       } catch (error: any) {
         LogStore.error(error.message, 'TonRequestHandler', 'signData', {
-          error: String(error),
+          error: serializeError(error),
         });
         return formatJsonRpcError(id, error.message);
       }
@@ -40,7 +40,7 @@ export async function approveTonRequest(requestEvent: RequestEventArgs) {
         return formatJsonRpcResult(id, result);
       } catch (error: any) {
         LogStore.error(error.message, 'TonRequestHandler', 'sendMessage', {
-          error: String(error),
+          error: serializeError(error),
         });
         return formatJsonRpcError(id, error.message);
       }

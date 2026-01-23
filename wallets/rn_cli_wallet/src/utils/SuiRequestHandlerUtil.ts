@@ -2,7 +2,7 @@ import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import { SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 
-import LogStore from '@/store/LogStore';
+import LogStore, { serializeError } from '@/store/LogStore';
 import { getWallet } from './SuiWalletUtil';
 import { SUI_SIGNING_METHODS } from '@/constants/Sui';
 
@@ -24,7 +24,7 @@ export async function approveSuiRequest(requestEvent: RequestEventArgs) {
         return formatJsonRpcResult(id, signedMessage);
       } catch (error: any) {
         LogStore.error(error.message, 'SuiRequestHandler', 'signPersonalMessage', {
-          error: String(error),
+          error: serializeError(error),
         });
         return formatJsonRpcError(id, error.message);
       }
@@ -37,7 +37,7 @@ export async function approveSuiRequest(requestEvent: RequestEventArgs) {
         return formatJsonRpcResult(id, result);
       } catch (error: any) {
         LogStore.error(error.message, 'SuiRequestHandler', 'signTransaction', {
-          error: String(error),
+          error: serializeError(error),
         });
         return formatJsonRpcError(id, error.message);
       }
@@ -50,7 +50,7 @@ export async function approveSuiRequest(requestEvent: RequestEventArgs) {
         return formatJsonRpcResult(id, result);
       } catch (error: any) {
         LogStore.error(error.message, 'SuiRequestHandler', 'signAndExecuteTransaction', {
-          error: String(error),
+          error: serializeError(error),
         });
         return formatJsonRpcError(id, error.message);
       }

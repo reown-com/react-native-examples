@@ -5,7 +5,7 @@ import {
 } from '@/constants/Tron';
 import { getWalletAddressFromParams } from '@/utils/HelperUtil';
 import { tronAddresses, tronWallets } from '@/utils/TronWalletUtil';
-import LogStore from '@/store/LogStore';
+import LogStore, { serializeError } from '@/store/LogStore';
 import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import { SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
@@ -72,7 +72,7 @@ export async function approveTronRequest(
       `TRON request approval failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       'TronRequestHandler',
       'approveTronRequest',
-      { error: String(error) },
+      { error: serializeError(error) },
     );
     throw new Error(
       `Failed to approve TRON request: ${

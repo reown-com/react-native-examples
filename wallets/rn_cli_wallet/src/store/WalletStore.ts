@@ -3,7 +3,7 @@ import { MMKV } from 'react-native-mmkv';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { fetchBalancesForChains } from '@/services/BalanceService';
 import { EIP155_CHAINS } from '@/constants/Eip155';
-import LogStore from '@/store/LogStore';
+import LogStore, { serializeError } from '@/store/LogStore';
 
 const mmkv = new MMKV();
 const STORAGE_KEY = 'WALLET_BALANCES';
@@ -32,7 +32,7 @@ function getInitialBalances(): TokenBalance[] {
     }
   } catch (error) {
     LogStore.warn('Failed to parse cached balances', 'WalletStore', 'getInitialBalances', {
-      error: String(error),
+      error: serializeError(error),
     });
   }
   return [];
@@ -49,7 +49,7 @@ function saveToStorage(balances: TokenBalance[]) {
     mmkv.set(STORAGE_KEY, JSON.stringify(balances));
   } catch (error) {
     LogStore.warn('Failed to save balances to storage', 'WalletStore', 'saveToStorage', {
-      error: String(error),
+      error: serializeError(error),
     });
   }
 }
@@ -222,7 +222,7 @@ const WalletStore = {
       WalletStore.setBalances(allBalances);
     } catch (error) {
       LogStore.error('Failed to fetch balances', 'WalletStore', 'fetchBalances', {
-        error: String(error),
+        error: serializeError(error),
       });
     } finally {
       state.isLoading = false;

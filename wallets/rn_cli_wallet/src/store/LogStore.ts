@@ -25,6 +25,18 @@ const STORAGE_KEY = 'APP_LOGS';
 
 const mmkv = new MMKV();
 
+/**
+ * Serialize an error for logging, preserving message and stack trace.
+ */
+export function serializeError(
+  error: unknown,
+): { message: string; stack?: string } | string {
+  if (error instanceof Error) {
+    return { message: error.message, stack: error.stack };
+  }
+  return String(error);
+}
+
 // Load initial logs from storage
 function getInitialLogs(): LogEntry[] {
   try {
@@ -137,6 +149,17 @@ const LogStore = {
   clearLogs() {
     state.logs = [];
     mmkv.delete(STORAGE_KEY);
+  },
+
+  /**
+   * Cleanup function to clear pending timeouts.
+   * Call this when the app is terminating or module is unloading.
+   */
+  cleanup() {
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+      saveTimeout = null;
+    }
   },
 };
 

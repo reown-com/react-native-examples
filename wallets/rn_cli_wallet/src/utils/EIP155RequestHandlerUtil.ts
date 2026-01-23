@@ -3,7 +3,7 @@ import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import { SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 
-import LogStore from '@/store/LogStore';
+import LogStore, { serializeError } from '@/store/LogStore';
 import { eip155Addresses, eip155Wallets } from '@/utils/EIP155WalletUtil';
 import {
   getSignParamsMessage,
@@ -35,7 +35,7 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
         return formatJsonRpcResult(id, signedMessage);
       } catch (error: any) {
         LogStore.error(error.message, 'EIP155RequestHandler', 'personalSign', {
-          error: String(error),
+          error: serializeError(error),
         });
         return formatJsonRpcError(id, error.message);
       }
@@ -55,7 +55,7 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
         return formatJsonRpcResult(id, signedData);
       } catch (error: any) {
         LogStore.error(error.message, 'EIP155RequestHandler', 'signTypedData', {
-          error: String(error),
+          error: serializeError(error),
         });
         return formatJsonRpcError(id, error.message);
       }
@@ -70,7 +70,7 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
         return formatJsonRpcResult(id, hash);
       } catch (error: any) {
         LogStore.error(error.message, 'EIP155RequestHandler', 'sendTransaction', {
-          error: String(error),
+          error: serializeError(error),
         });
         return formatJsonRpcError(id, error.message);
       }
@@ -82,7 +82,7 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
         return formatJsonRpcResult(id, signature);
       } catch (error: any) {
         LogStore.error(error.message, 'EIP155RequestHandler', 'signTransaction', {
-          error: String(error),
+          error: serializeError(error),
         });
         return formatJsonRpcError(id, error.message);
       }
