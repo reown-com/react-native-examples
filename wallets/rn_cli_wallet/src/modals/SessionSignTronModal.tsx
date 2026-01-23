@@ -16,6 +16,7 @@ import { AppInfoCard } from '@/components/AppInfoCard';
 import Toast from 'react-native-toast-message';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSignTronModal() {
   // Get request and wallet data from store
@@ -50,6 +51,7 @@ export default function SessionSignTronModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
       }
     } catch (e) {
       console.log((e as Error).message, 'error');
@@ -73,6 +75,7 @@ export default function SessionSignTronModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
       } catch (e) {
         console.log((e as Error).message, 'error');
         Toast.show({

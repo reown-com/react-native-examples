@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSnapshot } from 'valtio';
 
@@ -8,10 +9,17 @@ import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import SvgClose from '@/assets/Close';
+import { haptics } from '@/utils/haptics';
 
 export function LoadingModal() {
   const Theme = useTheme();
   const { data } = useSnapshot(ModalStore.state);
+
+  useEffect(() => {
+    if (data?.errorMessage) {
+      haptics.error();
+    }
+  }, [data?.errorMessage]);
 
   const onClose = () => {
     ModalStore.close();

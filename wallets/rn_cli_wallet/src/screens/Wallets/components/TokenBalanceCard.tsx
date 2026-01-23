@@ -9,6 +9,7 @@ import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import CopySvg from '@/assets/Copy';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { PresetsUtil } from '@/utils/PresetsUtil';
+import { haptics } from '@/utils/haptics';
 
 export const ITEM_HEIGHT = 86;
 
@@ -46,6 +47,7 @@ export const TokenBalanceCard = React.memo(function TokenBalanceCard({
 
   const copyToClipboard = () => {
     Clipboard.setString(walletAddress);
+    haptics.copyAddress();
     Toast.show({
       type: 'info',
       text1: `${chainName} address copied`,

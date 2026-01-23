@@ -19,6 +19,7 @@ import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SvgDisconnect from '@/assets/Disconnect';
 import SvgClose from '@/assets/Close';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionDetailModal() {
   const Theme = useTheme();
@@ -60,6 +61,7 @@ export default function SessionDetailModal() {
         topic: session.topic,
         reason: getSdkError('USER_DISCONNECTED'),
       });
+      haptics.requestResponse();
       SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
       ModalStore.close();
     } catch (e) {

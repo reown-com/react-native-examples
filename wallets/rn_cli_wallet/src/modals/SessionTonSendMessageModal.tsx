@@ -18,6 +18,7 @@ import { tonAddresses } from '@/utils/TonWalletUtil';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionTonSendMessageModal() {
   // Get request and wallet data from store
@@ -79,6 +80,7 @@ export default function SessionTonSendMessageModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
 
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
@@ -109,6 +111,7 @@ export default function SessionTonSendMessageModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,

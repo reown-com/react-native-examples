@@ -16,6 +16,7 @@ import { RootStackScreenProps } from '@/utils/TypesUtil';
 import styles from './styles';
 import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
+import { haptics } from '@/utils/haptics';
 
 type Props = RootStackScreenProps<'Scan'>;
 
@@ -30,6 +31,7 @@ export default function Scan({ navigation }: Props) {
   const isActive = useIsFocused();
 
   const onCodeScanned = (codes: Code[]) => {
+    haptics.scanSuccess();
     const uri = codes[0].value;
     navigation.navigate('Home', {
       screen: 'Connections',

@@ -18,6 +18,7 @@ import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSignTypedDataModal() {
   // Get request and wallet data from store
@@ -49,6 +50,7 @@ export default function SessionSignTypedDataModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
@@ -78,6 +80,7 @@ export default function SessionSignTypedDataModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
       } catch (e) {
         console.log((e as Error).message, 'error');
         Toast.show({

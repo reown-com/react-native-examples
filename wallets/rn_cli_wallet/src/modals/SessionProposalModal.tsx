@@ -25,6 +25,7 @@ import { NetworkSelector } from '@/components/NetworkSelector';
 import { ChainIcons } from '@/components/ChainIcons';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 // Height constants for accordion animation
 const NETWORK_ROW_HEIGHT = 40;
@@ -185,6 +186,7 @@ export default function SessionProposalModal() {
           id: proposal.id,
           namespaces,
         });
+        haptics.requestResponse();
         SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
 
         handleRedirect({
@@ -219,6 +221,7 @@ export default function SessionProposalModal() {
           id: proposal.id,
           reason: getSdkError('USER_REJECTED_METHODS'),
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: proposal.params.proposer.metadata.redirect,
           isLinkMode: false,

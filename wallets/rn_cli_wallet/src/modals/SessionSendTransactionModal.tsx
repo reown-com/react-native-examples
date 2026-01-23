@@ -15,6 +15,7 @@ import { handleRedirect } from '@/utils/LinkingUtils';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from '@/modals/RequestModal';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSendTransactionModal() {
   const { data } = useSnapshot(ModalStore.state);
@@ -46,6 +47,7 @@ export default function SessionSendTransactionModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
@@ -75,6 +77,7 @@ export default function SessionSendTransactionModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
       } catch (e) {
         console.log((e as Error).message, 'error');
         Toast.show({
