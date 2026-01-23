@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSnapshot } from 'valtio';
 

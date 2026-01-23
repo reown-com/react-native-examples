@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -11,6 +11,7 @@ import PasteSvg from '@/assets/Paste';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { usePairing } from '@/hooks/usePairing';
 import Toast from 'react-native-toast-message';
+import { Button } from '@/components/Button';
 
 export default function ScannerOptionsModal() {
   const Theme = useTheme();
@@ -56,7 +57,7 @@ export default function ScannerOptionsModal() {
       </View>
 
       <View style={styles.optionsContainer}>
-        <TouchableOpacity
+        <Button
           onPress={onScanPress}
           style={[
             styles.optionButton,
@@ -67,9 +68,9 @@ export default function ScannerOptionsModal() {
             Scan QR code
           </Text>
           <BarcodeSvg width={24} height={24} fill={Theme['text-primary']} />
-        </TouchableOpacity>
+        </Button>
 
-        <TouchableOpacity
+        <Button
           onPress={onPastePress}
           style={[
             styles.optionButton,
@@ -80,7 +81,7 @@ export default function ScannerOptionsModal() {
             Paste a URL
           </Text>
           <PasteSvg width={24} height={24} fill={Theme['text-primary']} />
-        </TouchableOpacity>
+        </Button>
       </View>
     </View>
   );

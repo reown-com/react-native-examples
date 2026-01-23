@@ -1,10 +1,4 @@
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
+import { View, Image, StyleSheet, ScrollView } from 'react-native';
 import type { PaymentInfo, PaymentOption } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -22,6 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
 
 const OPTION_HEIGHT = 64;
 const OPTION_GAP = 8;
@@ -54,7 +49,7 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
   );
 
   return (
-    <TouchableOpacity
+    <Button
       onPress={() => onSelect(option)}
       style={[
         styles.optionItem,
@@ -105,7 +100,7 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
           />
         </View>
       )}
-    </TouchableOpacity>
+    </Button>
   );
 }
 
@@ -213,7 +208,7 @@ export function ConfirmPaymentView({
           { backgroundColor: Theme['foreground-primary'] },
         ]}
       >
-        <TouchableOpacity
+        <Button
           style={styles.payWithRow}
           onPress={toggleExpanded}
           disabled={options.length <= 1}
@@ -256,7 +251,7 @@ export function ConfirmPaymentView({
               />
             )}
           </View>
-        </TouchableOpacity>
+        </Button>
 
         {/* Expandable Options List */}
         <Animated.View

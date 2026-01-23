@@ -87,7 +87,7 @@ export default function Wallets() {
         <View style={styles.emptyContainer}>
           <WalletConnectLoading size={60} />
           <Text variant="lg-400" color="text-primary">
-            Loading balance...
+            Loading balances...
           </Text>
         </View>
       );
@@ -142,6 +142,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: Spacing[10],
+    gap: Spacing[4],
   },
   emptyText: {
     marginTop: Spacing[3],

@@ -1,5 +1,4 @@
 import {
-  TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   StyleProp,
@@ -9,6 +8,7 @@ import {
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
 
 type ButtonVariant = 'primary' | 'secondary';
 
@@ -63,7 +63,7 @@ export function ActionButton({
   const loaderColor = textColor;
 
   return (
-    <TouchableOpacity
+    <Button
       onPress={onPress}
       disabled={disabled || loading}
       style={[
@@ -80,7 +80,7 @@ export function ActionButton({
           {children}
         </Text>
       )}
-    </TouchableOpacity>
+    </Button>
   );
 }
 
