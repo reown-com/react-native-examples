@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import Toast from 'react-native-toast-message';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
@@ -9,7 +8,7 @@ import { Text } from '@/components/Text';
 import { Button } from '@/components/Button';
 import { ThemeKeys } from '@/utils/TypesUtil';
 
-type Log = {
+type WalletKitLogData = {
   timestamp: string;
   log: {
     time: string;
@@ -45,25 +44,22 @@ const LEVEL_COLORS: Record<LogLevelName, ThemeKeys> = {
   error: 'text-error',
 };
 
-export interface LogProps {
+export interface WalletKitLogProps {
   value: string;
 }
 
-export function Log({ value }: LogProps) {
+export function WalletKitLog({ value }: WalletKitLogProps) {
   const Theme = useTheme();
 
   // Parse with error handling to prevent crash on invalid JSON
-  let jsonLog: Log;
+  let jsonLog: WalletKitLogData;
   try {
     jsonLog = JSON.parse(value);
   } catch {
     // If parsing fails, render a fallback
     return (
       <Button
-        onPress={() => {
-          Clipboard.setString(value);
-          Toast.show({ type: 'info', text1: 'Log copied to clipboard' });
-        }}
+        onPress={() => Clipboard.setString(value)}
         style={[
           styles.container,
           { backgroundColor: Theme['foreground-primary'] },
@@ -83,10 +79,6 @@ export function Log({ value }: LogProps) {
 
   const copyToClipboard = () => {
     Clipboard.setString(value);
-    Toast.show({
-      type: 'info',
-      text1: 'Log copied to clipboard',
-    });
   };
 
   const formatTime = (time: string) => {

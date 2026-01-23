@@ -1,14 +1,15 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { FlatList, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { useSnapshot } from 'valtio';
 
-import { Log } from './components/Log';
+import { WalletKitLog } from './components/WalletKitLog';
 import { AppLog } from './components/AppLog';
 import { useTheme } from '@/hooks/useTheme';
 import SettingsStore from '@/store/SettingsStore';
 import LogStore, { LogEntry } from '@/store/LogStore';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
 
 type LogSource = 'all' | 'app' | 'walletkit';
 
@@ -30,7 +31,7 @@ function FilterButton({
   const Theme = useTheme();
 
   return (
-    <TouchableOpacity
+    <Button
       onPress={() => onPress(value)}
       style={[
         styles.filterButton,
@@ -44,7 +45,7 @@ function FilterButton({
       <Text variant="sm-500" color={selected ? 'text-invert' : 'text-primary'}>
         {label}
       </Text>
-    </TouchableOpacity>
+    </Button>
   );
 }
 
@@ -105,7 +106,7 @@ export function LogList() {
       item.type === 'app' ? (
         <AppLog entry={item.data} />
       ) : (
-        <Log value={item.data} />
+        <WalletKitLog value={item.data} />
       ),
     [],
   );

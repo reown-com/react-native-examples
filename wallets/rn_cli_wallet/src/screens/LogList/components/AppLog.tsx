@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import Toast from 'react-native-toast-message';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { LogEntry, LogLevel } from '@/store/LogStore';
 import { ThemeKeys } from '@/utils/TypesUtil';
+import { Button } from '@/components/Button';
 
 const LEVEL_COLORS: Record<LogLevel, ThemeKeys> = {
   error: 'text-error',
@@ -25,10 +25,6 @@ export function AppLog({ entry }: AppLogProps) {
 
   const copyToClipboard = () => {
     Clipboard.setString(JSON.stringify(entry, null, 2));
-    Toast.show({
-      type: 'info',
-      text1: 'Log copied to clipboard',
-    });
   };
 
   const formatTime = (timestamp: number) => {
@@ -38,7 +34,7 @@ export function AppLog({ entry }: AppLogProps) {
   const levelColor = LEVEL_COLORS[entry.level];
 
   return (
-    <TouchableOpacity
+    <Button
       onPress={copyToClipboard}
       style={[
         styles.container,
@@ -69,7 +65,7 @@ export function AppLog({ entry }: AppLogProps) {
           {JSON.stringify(entry.data)}
         </Text>
       )}
-    </TouchableOpacity>
+    </Button>
   );
 }
 
