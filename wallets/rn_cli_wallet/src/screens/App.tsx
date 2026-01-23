@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import Config from 'react-native-config';
-import { Linking, Platform, StatusBar } from 'react-native';
+import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
 import { useSnapshot } from 'valtio';
 import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -157,7 +157,7 @@ const App = () => {
   }, [deeplinkHandler]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
         <KeyboardProvider>
           <NavigationContainer>
@@ -173,5 +173,11 @@ const App = () => {
     </GestureHandlerRootView>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});
 
 export default Sentry.wrap(App);

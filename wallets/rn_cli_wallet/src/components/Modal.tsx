@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     margin: Spacing[0],
   },
   gestureRoot: {
-    flex:1,
+    flex: 1,
     margin: Spacing[0],
     justifyContent: 'flex-end',
   },

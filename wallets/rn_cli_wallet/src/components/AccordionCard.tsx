@@ -56,11 +56,7 @@ export function AccordionCard({
         { backgroundColor: Theme['foreground-primary'] },
       ]}
     >
-      <Button
-        style={styles.header}
-        onPress={onPress}
-        disabled={hideExpand}
-      >
+      <Button style={styles.header} onPress={onPress} disabled={hideExpand}>
         <View style={styles.headerLeft}>{headerContent}</View>
         <View style={styles.headerRight}>
           {rightContent}

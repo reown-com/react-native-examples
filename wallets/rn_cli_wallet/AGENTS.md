@@ -334,8 +334,8 @@ This ensures each build has a unique version identifier for distribution and upd
 **Always run these checks and fix any errors before committing:**
 
 ```bash
-yarn lint             # Check and fix ESLint errors
-yarn prettier --write . # Format code with Prettier
+yarn format           # Format code with Prettier
+yarn lint             # Check for ESLint errors
 npx tsc --noEmit      # Check for TypeScript errors
 ```
 
