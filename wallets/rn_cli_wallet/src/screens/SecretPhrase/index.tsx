@@ -1,5 +1,5 @@
 import { useSnapshot } from 'valtio';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ScrollView } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
@@ -10,6 +10,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import CopySvg from '@/assets/Copy';
+import { Button } from '@/components/Button';
 
 export default function SecretPhrase() {
   const { eip155Address } = useSnapshot(SettingsStore.state);
@@ -88,7 +89,7 @@ export default function SecretPhrase() {
         ))}
       </View>
 
-      <TouchableOpacity
+      <Button
         onPress={copyMnemonic}
         style={[
           styles.copyButton,
@@ -99,7 +100,7 @@ export default function SecretPhrase() {
           Copy to clipboard
         </Text>
         <CopySvg width={20} height={20} fill={Theme['text-primary']} />
-      </TouchableOpacity>
+      </Button>
     </ScrollView>
   );
 }

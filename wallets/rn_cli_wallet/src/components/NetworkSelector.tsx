@@ -1,10 +1,4 @@
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Chain } from '@/utils/TypesUtil';
@@ -12,6 +6,7 @@ import { PresetsUtil } from '@/utils/PresetsUtil';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { Checkbox } from '@/components/Checkbox';
+import { Button } from '@/components/Button';
 
 interface NetworkSelectorProps {
   availableChains: Chain[];
@@ -45,7 +40,7 @@ export function NetworkSelector({
         const logo = PresetsUtil.getChainIconById(chainId);
 
         return (
-          <TouchableOpacity
+          <Button
             key={chainId}
             style={styles.row}
             onPress={() => toggleChain(chainId)}
@@ -66,7 +61,7 @@ export function NetworkSelector({
               checked={isSelected}
               onPress={() => toggleChain(chainId)}
             />
-          </TouchableOpacity>
+          </Button>
         );
       })}
     </ScrollView>

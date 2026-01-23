@@ -40,7 +40,6 @@ export default function SessionSignSuiPersonalMessageModal() {
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
 
   const message = request.params?.message || '';
-  LogStore.log('Sui personal message received', 'SessionSuiSignPersonalMessageModal', 'render');
 
   // Handle approve action (logic varies based on request method)
   const onApprove = useCallback(async () => {

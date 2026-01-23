@@ -37,12 +37,55 @@ export function serializeError(
   return String(error);
 }
 
+const VALID_LEVELS: LogLevel[] = ['log', 'info', 'warn', 'error'];
+
+/**
+ * Validate and sanitize a log entry from storage.
+ * Returns null if the entry is invalid.
+ */
+function validateLogEntry(item: unknown): LogEntry | null {
+  if (!item || typeof item !== 'object') {
+    return null;
+  }
+  const entry = item as Record<string, unknown>;
+
+  // Required fields
+  if (typeof entry.message !== 'string') {
+    return null;
+  }
+
+  const level = VALID_LEVELS.includes(entry.level as LogLevel)
+    ? (entry.level as LogLevel)
+    : 'log';
+
+  return {
+    id: typeof entry.id === 'string' ? entry.id : nanoid(),
+    timestamp:
+      typeof entry.timestamp === 'number' ? entry.timestamp : Date.now(),
+    level,
+    message: entry.message,
+    view: typeof entry.view === 'string' ? entry.view : undefined,
+    functionName:
+      typeof entry.functionName === 'string' ? entry.functionName : undefined,
+    data:
+      entry.data && typeof entry.data === 'object'
+        ? (entry.data as Record<string, unknown>)
+        : undefined,
+  };
+}
+
 // Load initial logs from storage
 function getInitialLogs(): LogEntry[] {
   try {
     const cached = mmkv.getString(STORAGE_KEY);
     if (cached) {
-      return JSON.parse(cached);
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed)) {
+        const validLogs = parsed
+          .map(validateLogEntry)
+          .filter((entry): entry is LogEntry => entry !== null);
+        return validLogs;
+      }
     }
   } catch {
     // Silent fail - start fresh
@@ -56,7 +99,7 @@ const state = proxy<LogState>({
 });
 
 // Persist logs on change (debounced)
-let saveTimeout: NodeJS.Timeout | null = null;
+let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 subscribe(state, () => {
   if (saveTimeout) {
     clearTimeout(saveTimeout);
@@ -147,8 +190,14 @@ const LogStore = {
   },
 
   clearLogs() {
+    // Clear any pending save to avoid race condition
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
+      saveTimeout = null;
+    }
     state.logs = [];
-    mmkv.delete(STORAGE_KEY);
+    // Use set instead of delete to avoid race with any queued saves
+    mmkv.set(STORAGE_KEY, JSON.stringify([]));
   },
 
   /**

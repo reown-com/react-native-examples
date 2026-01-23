@@ -1,12 +1,6 @@
 import { useSnapshot } from 'valtio';
 import { useEffect, useState } from 'react';
-import {
-  View,
-  Switch,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import { View, Switch, StyleSheet, Platform } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -22,6 +16,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import Toast from 'react-native-toast-message';
 import { RootStackParamList } from '@/utils/TypesUtil';
+import { Button } from '@/components/Button';
 
 export default function Settings() {
   const { socketStatus, themeMode } = useSnapshot(SettingsStore.state);
@@ -62,7 +57,7 @@ export default function Settings() {
         Preferences
       </Text>
       <View style={styles.sectionContainer}>
-        <TouchableOpacity
+        <Button
           onPress={toggleDarkMode}
           style={[
             styles.switchCard,
@@ -83,7 +78,7 @@ export default function Settings() {
             })}
             thumbColor={Platform.select({ android: Theme.white })}
           />
-        </TouchableOpacity>
+        </Button>
         <Card
           title="Secret phrases"
           onPress={() => navigation.navigate('SecretPhrase')}

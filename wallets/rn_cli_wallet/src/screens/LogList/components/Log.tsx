@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-message';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
 import { ThemeKeys } from '@/utils/TypesUtil';
 
 type Log = {
@@ -50,7 +51,34 @@ export interface LogProps {
 
 export function Log({ value }: LogProps) {
   const Theme = useTheme();
-  const jsonLog: Log = JSON.parse(value);
+
+  // Parse with error handling to prevent crash on invalid JSON
+  let jsonLog: Log;
+  try {
+    jsonLog = JSON.parse(value);
+  } catch {
+    // If parsing fails, render a fallback
+    return (
+      <Button
+        onPress={() => {
+          Clipboard.setString(value);
+          Toast.show({ type: 'info', text1: 'Log copied to clipboard' });
+        }}
+        style={[
+          styles.container,
+          { backgroundColor: Theme['foreground-primary'] },
+        ]}
+      >
+        <Text variant="sm-400" color="text-error">
+          [PARSE ERROR]
+        </Text>
+        <Text variant="sm-400" color="text-secondary" style={styles.data}>
+          {value}
+        </Text>
+      </Button>
+    );
+  }
+
   const { log } = jsonLog;
 
   const copyToClipboard = () => {
@@ -72,8 +100,7 @@ export function Log({ value }: LogProps) {
   const hasData = log.data && Object.keys(log.data).length > 0;
 
   return (
-    <TouchableOpacity
-      key={jsonLog.timestamp}
+    <Button
       onPress={copyToClipboard}
       style={[
         styles.container,
@@ -104,7 +131,7 @@ export function Log({ value }: LogProps) {
           {JSON.stringify(log.data)}
         </Text>
       )}
-    </TouchableOpacity>
+    </Button>
   );
 }
 

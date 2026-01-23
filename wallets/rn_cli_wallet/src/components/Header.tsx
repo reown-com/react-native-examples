@@ -1,10 +1,4 @@
-import {
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  StatusBar,
-} from 'react-native';
+import { View, StyleSheet, Image, StatusBar } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -12,6 +6,8 @@ import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
 
 import ModalStore from '@/store/ModalStore';
 import BarcodeSvg from '@/assets/Barcode';
+import { Button } from '@/components/Button';
+
 export function Header() {
   const { top } = useSafeAreaInsets();
   const Theme = useTheme();
@@ -42,12 +38,12 @@ export function Header() {
           style={styles.logo}
         />
       </View>
-      <TouchableOpacity
+      <Button
         onPress={onScannerPress}
         style={[styles.scanButton, { backgroundColor: Theme['bg-invert'] }]}
       >
         <BarcodeSvg width={18} height={18} fill={Theme['text-invert']} />
-      </TouchableOpacity>
+      </Button>
     </View>
   );
 }

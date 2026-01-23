@@ -1,11 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from 'react-native';
+import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { useSnapshot } from 'valtio';
 import { getSdkError } from '@walletconnect/utils';
 import { SessionTypes } from '@walletconnect/types';
@@ -21,6 +15,7 @@ import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SvgDisconnect from '@/assets/Disconnect';
 import { haptics } from '@/utils/haptics';
+import { Button } from '@/components/Button';
 
 export default function SessionDetailModal() {
   const Theme = useTheme();
@@ -79,7 +74,7 @@ export default function SessionDetailModal() {
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       {/* Header Row */}
       <View style={styles.header}>
-        <TouchableOpacity
+        <Button
           style={[
             styles.disconnectButton,
             { backgroundColor: Theme['bg-invert'] },
@@ -105,7 +100,7 @@ export default function SessionDetailModal() {
               </Text>
             </>
           )}
-        </TouchableOpacity>
+        </Button>
         <ModalCloseButton onPress={onClose} />
       </View>
 
