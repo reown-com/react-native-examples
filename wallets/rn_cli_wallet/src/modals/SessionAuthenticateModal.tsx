@@ -18,6 +18,7 @@ import { AppInfoCard } from '@/components/AppInfoCard';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionAuthenticateModal() {
   const Theme = useTheme();
@@ -82,6 +83,7 @@ export default function SessionAuthenticateModal() {
           id: messages[0].id,
           auths: signedAuths,
         });
+        haptics.requestResponse();
 
         SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
 
@@ -116,6 +118,7 @@ export default function SessionAuthenticateModal() {
             message: 'User rejected auth request',
           },
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: authRequest.params.requester?.metadata?.redirect,
           isLinkMode: SettingsStore.state.isLinkModeRequest,

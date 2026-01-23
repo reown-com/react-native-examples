@@ -2544,6 +2544,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mhpdev/react-native-haptics@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@mhpdev/react-native-haptics@npm:1.0.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 228caf51d58bef2c11daf8e77f447869bbfcacfef5dee721b814dc52b729f5d5df2b09ce3786c5839ecc06452c2fbd1410f42a894c2db86d68ea4dcf03058c38
+  languageName: node
+  linkType: hard
+
 "@msgpack/msgpack@npm:3.1.2":
   version: 3.1.2
   resolution: "@msgpack/msgpack@npm:3.1.2"
@@ -4420,6 +4430,7 @@ __metadata:
     "@babel/runtime": ^7.25.0
     "@craftzdog/react-native-buffer": 6.1.1
     "@json-rpc-tools/utils": 1.7.6
+    "@mhpdev/react-native-haptics": ^1.0.1
     "@mysten/sui": ^1.29.1
     "@react-native-async-storage/async-storage": 2.2.0
     "@react-native-clipboard/clipboard": 1.16.3

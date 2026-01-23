@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -5,6 +6,7 @@ import { ActionButton } from '@/components/ActionButton';
 import { Text } from '@/components/Text';
 import AlertCircle from '@/assets/AlertCircle';
 import CheckCircle from '@/assets/CheckCircle';
+import { haptics } from '@/utils/haptics';
 import { Spacing } from '@/utils/ThemeUtil';
 
 interface ResultViewProps {
@@ -15,6 +17,14 @@ interface ResultViewProps {
 
 export function ResultView({ status, message, onClose }: ResultViewProps) {
   const Theme = useTheme();
+
+  useEffect(() => {
+    if (status === 'success') {
+      haptics.success();
+    } else if (status === 'error') {
+      haptics.error();
+    }
+  }, [status]);
 
   const isSuccess = status === 'success';
   const defaultMessage = isSuccess

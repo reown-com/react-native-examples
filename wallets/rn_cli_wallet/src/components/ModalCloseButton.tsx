@@ -1,4 +1,9 @@
-import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import SvgClose from '@/assets/Close';
 import { useTheme } from '@/hooks/useTheme';
@@ -10,7 +15,11 @@ interface ModalCloseButtonProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function ModalCloseButton({ onPress, showBorder = true, style }: ModalCloseButtonProps) {
+export function ModalCloseButton({
+  onPress,
+  showBorder = true,
+  style,
+}: ModalCloseButtonProps) {
   const Theme = useTheme();
   return (
     <TouchableOpacity

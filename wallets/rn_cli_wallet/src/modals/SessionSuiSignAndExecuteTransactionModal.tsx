@@ -19,6 +19,7 @@ import {
 import { getWallet } from '@/utils/SuiWalletUtil';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSuiSignAndExecuteTransactionModal() {
   // Get request and wallet data from store
@@ -61,6 +62,7 @@ export default function SessionSuiSignAndExecuteTransactionModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
 
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
@@ -90,6 +92,7 @@ export default function SessionSuiSignAndExecuteTransactionModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,

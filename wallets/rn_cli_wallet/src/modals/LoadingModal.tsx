@@ -8,10 +8,17 @@ import { Text } from '@/components/Text';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
+import { haptics } from '@/utils/haptics';
 
 export function LoadingModal() {
   const Theme = useTheme();
   const { data } = useSnapshot(ModalStore.state);
+
+  useEffect(() => {
+    if (data?.errorMessage) {
+      haptics.error();
+    }
+  }, [data?.errorMessage]);
 
   const onClose = () => {
     ModalStore.close();

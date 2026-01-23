@@ -10,6 +10,7 @@ import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { TokenBalanceCard, ITEM_HEIGHT } from './components/TokenBalanceCard';
+import { haptics } from '@/utils/haptics';
 
 function getAddressForChain(
   chainId: string,
@@ -46,6 +47,11 @@ export default function Wallets() {
       WalletStore.fetchBalances(addresses);
     }
   }, [addresses]);
+
+  const handleRefresh = useCallback(() => {
+    haptics.pullToRefresh();
+    fetchBalances();
+  }, [fetchBalances]);
 
   useEffect(() => {
     fetchBalances();
@@ -112,7 +118,7 @@ export default function Wallets() {
       refreshControl={
         <RefreshControl
           refreshing={isLoading && balances.length > 0}
-          onRefresh={fetchBalances}
+          onRefresh={handleRefresh}
           tintColor={Theme['text-primary']}
         />
       }

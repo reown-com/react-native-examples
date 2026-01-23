@@ -3,9 +3,9 @@ import {
   StyleSheet,
   View,
   TextInput,
-  Alert,
   KeyboardAvoidingView,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
@@ -14,7 +14,7 @@ import WalletStore from '@/store/WalletStore';
 import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { Text } from '@/components/Text';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
-import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Spacing, BorderRadius, FontFamily } from '@/utils/ThemeUtil';
 import { ActionButton } from '@/components/ActionButton';
 
 export default function ImportWalletModal() {
@@ -24,7 +24,10 @@ export default function ImportWalletModal() {
 
   const handleImport = async () => {
     if (!input.trim()) {
-      Alert.alert('Error', 'Please enter a mnemonic or private key');
+      Toast.show({
+        type: 'error',
+        text1: 'Please enter a mnemonic or private key',
+      });
       return;
     }
 
@@ -39,14 +42,22 @@ export default function ImportWalletModal() {
         tronAddress: SettingsStore.state.tronAddress,
       });
 
-      Alert.alert('Success', `Wallet imported!\n\nNew address: ${address}`);
+      Toast.show({
+        type: 'success',
+        text1: 'Wallet imported!',
+        text2: `New address: ${address}`,
+      });
       ModalStore.close();
     } catch (error: unknown) {
       const message =
         error instanceof Error
           ? error.message
           : 'Invalid mnemonic or private key';
-      Alert.alert('Error', message);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: message,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -133,6 +144,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: Spacing[4],
     marginHorizontal: Spacing[4],
+    fontFamily: FontFamily.regular,
   },
   buttonContainer: {
     flexDirection: 'row',

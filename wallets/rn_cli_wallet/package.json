@@ -26,6 +26,7 @@
   "dependencies": {
     "@craftzdog/react-native-buffer": "6.1.1",
     "@json-rpc-tools/utils": "1.7.6",
+    "@mhpdev/react-native-haptics": "^1.0.1",
     "@mysten/sui": "^1.29.1",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-clipboard/clipboard": "1.16.3",

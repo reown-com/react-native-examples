@@ -35,37 +35,40 @@ export function NetworkSelector({
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.listContent}>
-        {availableChains.map(chain => {
-          const chainId = `${chain.namespace}:${chain.chainId}`;
-          const isSelected = selectedChainIds.includes(chainId);
-          const logo = PresetsUtil.getChainIconById(chainId);
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.listContent}
+    >
+      {availableChains.map(chain => {
+        const chainId = `${chain.namespace}:${chain.chainId}`;
+        const isSelected = selectedChainIds.includes(chainId);
+        const logo = PresetsUtil.getChainIconById(chainId);
 
-          return (
-            <TouchableOpacity
-              key={chainId}
-              style={styles.row}
-              onPress={() => toggleChain(chainId)}
-            >
-              <View style={styles.chainInfo}>
-                <Image
-                  source={logo}
-                  style={[
-                    styles.chainLogo,
-                    { backgroundColor: Theme['foreground-tertiary'] },
-                  ]}
-                />
-                <Text variant="md-400" color="text-primary">
-                  {chain.name}
-                </Text>
-              </View>
-              <Checkbox
-                checked={isSelected}
-                onPress={() => toggleChain(chainId)}
+        return (
+          <TouchableOpacity
+            key={chainId}
+            style={styles.row}
+            onPress={() => toggleChain(chainId)}
+          >
+            <View style={styles.chainInfo}>
+              <Image
+                source={logo}
+                style={[
+                  styles.chainLogo,
+                  { backgroundColor: Theme['foreground-tertiary'] },
+                ]}
               />
-            </TouchableOpacity>
-          );
-        })}
+              <Text variant="md-400" color="text-primary">
+                {chain.name}
+              </Text>
+            </View>
+            <Checkbox
+              checked={isSelected}
+              onPress={() => toggleChain(chainId)}
+            />
+          </TouchableOpacity>
+        );
+      })}
     </ScrollView>
   );
 }

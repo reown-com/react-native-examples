@@ -84,7 +84,7 @@ export function IntroView({ info, onContinue }: IntroViewProps) {
           >
             Terms and Conditions
           </Text>
-          {' '}and{' '}
+          {` and `}
           <Text
             variant="lg-400"
             color="text-tertiary"

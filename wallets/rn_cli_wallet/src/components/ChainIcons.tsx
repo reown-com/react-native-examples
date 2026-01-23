@@ -51,7 +51,13 @@ export function ChainIcons({
 
     // No badge: last icon starts at (iconCount - 1) * step, add wrapperSize for full width
     return wrapperSize + (iconCount - 1) * (wrapperSize - overlap);
-  }, [visibleChainIds.length, remainingCount, wrapperSize, overlap, moreIndicatorMinWidth]);
+  }, [
+    visibleChainIds.length,
+    remainingCount,
+    wrapperSize,
+    overlap,
+    moreIndicatorMinWidth,
+  ]);
 
   return (
     <View

@@ -18,6 +18,7 @@ import { RequestModal } from './RequestModal';
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSignModal() {
   // Get request and wallet data from store
@@ -51,6 +52,7 @@ export default function SessionSignModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
 
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
@@ -81,6 +83,7 @@ export default function SessionSignModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
