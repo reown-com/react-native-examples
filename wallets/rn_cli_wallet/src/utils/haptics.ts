@@ -1,23 +1,20 @@
 import Haptics from '@mhpdev/react-native-haptics';
 
+const safeHaptic = (fn: () => void) => {
+  try {
+    fn();
+  } catch {
+    // Fail silently - haptics are non-critical
+  }
+};
+
 export const haptics = {
-  // Modal/request appearance - medium impact to alert user
-  modalOpen: () => Haptics.impact('medium'),
-
-  // Request accepted/rejected - light impact after walletKit response
-  requestResponse: () => Haptics.impact('light'),
-
-  // Copy address - light impact for clipboard feedback
-  copyAddress: () => Haptics.impact('light'),
-
-  // Pull to refresh - soft impact, subtle confirmation
-  pullToRefresh: () => Haptics.impact('soft'),
-
-  // QR scan success - selection feedback for scan confirmation
-  scanSuccess: () => Haptics.selection(),
-
-  // Payment/transaction outcomes
-  success: () => Haptics.notification('success'),
-  error: () => Haptics.notification('error'),
-  warning: () => Haptics.notification('warning'),
+  modalOpen: () => safeHaptic(() => Haptics.impact('medium')),
+  requestResponse: () => safeHaptic(() => Haptics.impact('light')),
+  copyAddress: () => safeHaptic(() => Haptics.impact('light')),
+  pullToRefresh: () => safeHaptic(() => Haptics.impact('soft')),
+  scanSuccess: () => safeHaptic(() => Haptics.selection()),
+  success: () => safeHaptic(() => Haptics.notification('success')),
+  error: () => safeHaptic(() => Haptics.notification('error')),
+  warning: () => safeHaptic(() => Haptics.notification('warning')),
 };
