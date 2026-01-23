@@ -8,6 +8,7 @@ import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
 import Toast from 'react-native-toast-message';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { RELAYER_EVENTS } from '@walletconnect/core';
 
 import { RootStackNavigator } from '@/navigators/RootStackNavigator';
@@ -156,18 +157,20 @@ const App = () => {
   }, [deeplinkHandler]);
 
   return (
-    <SafeAreaProvider>
-      <KeyboardProvider>
-        <NavigationContainer>
-          <StatusBar
-            translucent={true}
-            barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
-          />
-          <RootStackNavigator />
-          <Toast config={toastConfig} position="top" topOffset={0} />
-        </NavigationContainer>
-      </KeyboardProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <KeyboardProvider>
+          <NavigationContainer>
+            <StatusBar
+              translucent={true}
+              barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
+            />
+            <RootStackNavigator />
+            <Toast config={toastConfig} position="top" topOffset={0} />
+          </NavigationContainer>
+        </KeyboardProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 };
 

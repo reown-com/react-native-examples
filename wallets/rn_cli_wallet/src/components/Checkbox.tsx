@@ -1,8 +1,9 @@
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { BorderRadius } from '@/utils/ThemeUtil';
 import Checkmark from '@/assets/Checkmark';
+import { Button } from '@/components/Button';
 
 interface CheckboxProps {
   checked: boolean;
@@ -12,7 +13,7 @@ interface CheckboxProps {
 export function Checkbox({ checked, onPress }: CheckboxProps) {
   const Theme = useTheme();
   return (
-    <TouchableOpacity
+    <Button
       onPress={onPress}
       style={[
         styles.checkbox,
@@ -25,7 +26,7 @@ export function Checkbox({ checked, onPress }: CheckboxProps) {
       ]}
     >
       {checked && <Checkmark width={12} height={9} />}
-    </TouchableOpacity>
+    </Button>
   );
 }
 

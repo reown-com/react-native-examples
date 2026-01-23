@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-message';
 
@@ -10,6 +10,7 @@ import CopySvg from '@/assets/Copy';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 import { haptics } from '@/utils/haptics';
+import { Button } from '@/components/Button';
 
 export const ITEM_HEIGHT = 86;
 
@@ -55,7 +56,7 @@ export const TokenBalanceCard = React.memo(function TokenBalanceCard({
   };
 
   return (
-    <TouchableOpacity
+    <Button
       onPress={copyToClipboard}
       style={[styles.card, { backgroundColor: Theme['foreground-primary'] }]}
     >
@@ -109,7 +110,7 @@ export const TokenBalanceCard = React.memo(function TokenBalanceCard({
       <View style={styles.copyButton}>
         <CopySvg width={20} height={20} fill={Theme['text-primary']} />
       </View>
-    </TouchableOpacity>
+    </Button>
   );
 });
 

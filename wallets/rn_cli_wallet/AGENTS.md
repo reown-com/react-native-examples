@@ -72,6 +72,7 @@ rn_cli_wallet/
 │   │   └── SettingsStack.tsx
 │   ├── components/
 │   │   ├── Modal/
+│   │   ├── Button.tsx           # Primary pressable (use instead of TouchableOpacity)
 │   │   ├── ActionButton.tsx
 │   │   ├── Card.tsx
 │   │   ├── ConnectButton.tsx
@@ -269,6 +270,46 @@ export const SettingsStore = proxy({
 // In component
 const { eip155Address } = useSnapshot(SettingsStore);
 ```
+
+### Pressable Components (Button)
+
+**Always use the custom `Button` component instead of `TouchableOpacity` or `Pressable`.**
+
+The app uses a custom `Button` component that wraps `PressableScale` from the `pressto` package, providing smooth scale animations on press.
+
+```typescript
+import { Button } from '@/components/Button';
+
+// Basic usage
+<Button onPress={handlePress} style={styles.myButton}>
+  <Text>Press me</Text>
+</Button>
+
+// With disabled state
+<Button onPress={handlePress} disabled={isLoading}>
+  <Text>Submit</Text>
+</Button>
+
+// With hitSlop for larger touch targets
+<Button onPress={handlePress} hitSlop={40}>
+  <Icon name="close" />
+</Button>
+```
+
+**Button Props:**
+- `children`: React.ReactNode (required)
+- `onPress`: () => void (required)
+- `style`: StyleProp<ViewStyle> (optional)
+- `disabled`: boolean (optional, default: false)
+- `hitSlop`: number | Insets (optional)
+- `testID`: string (optional)
+
+**Why not TouchableOpacity?**
+- `PressableScale` provides a native-feeling scale animation
+- Consistent UX across the app
+- Better performance with Reanimated-powered animations
+
+**Important:** The app wraps the root and modal content with `GestureHandlerRootView` (required for pressto to work on Android).
 
 ## Code Quality Guidelines
 

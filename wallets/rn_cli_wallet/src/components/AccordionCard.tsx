@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -10,6 +10,7 @@ import Animated, {
 import SvgCaretUpDown from '@/assets/CaretUpDown';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Button } from '@/components/Button';
 
 const ANIMATION_DURATION = 250;
 
@@ -55,7 +56,7 @@ export function AccordionCard({
         { backgroundColor: Theme['foreground-primary'] },
       ]}
     >
-      <TouchableOpacity
+      <Button
         style={styles.header}
         onPress={onPress}
         disabled={hideExpand}
@@ -71,7 +72,7 @@ export function AccordionCard({
             />
           )}
         </View>
-      </TouchableOpacity>
+      </Button>
       <Animated.View style={animatedStyle}>
         <View style={styles.content}>{children}</View>
       </Animated.View>
