@@ -5,6 +5,7 @@ import { SignClientTypes } from '@walletconnect/types';
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
 import Toast from 'react-native-toast-message';
 
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import { eip155Addresses } from '@/utils/EIP155WalletUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
@@ -194,7 +195,7 @@ export default function SessionProposalModal() {
           isLinkMode: session?.transportType === 'link_mode',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error((e as Error).message, 'SessionProposalModal', 'onApprove');
         Toast.show({
           type: 'error',
           text1: 'Connection failed',
@@ -228,7 +229,7 @@ export default function SessionProposalModal() {
           error: 'User rejected connect request',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error((e as Error).message, 'SessionProposalModal', 'onReject');
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

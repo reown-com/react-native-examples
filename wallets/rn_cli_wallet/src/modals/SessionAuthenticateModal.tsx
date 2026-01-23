@@ -5,6 +5,7 @@ import { SignClientTypes, AuthTypes } from '@walletconnect/types';
 import { buildAuthObject, populateAuthPayload } from '@walletconnect/utils';
 import Toast from 'react-native-toast-message';
 
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import { eip155Addresses, eip155Wallets } from '@/utils/EIP155WalletUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
@@ -92,7 +93,7 @@ export default function SessionAuthenticateModal() {
           isLinkMode: isLinkModeRequest,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error((e as Error).message, 'SessionAuthenticateModal', 'onApprove');
         Toast.show({
           type: 'error',
           text1: 'Authentication failed',
@@ -125,7 +126,7 @@ export default function SessionAuthenticateModal() {
           error: 'User rejected auth request',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error((e as Error).message, 'SessionAuthenticateModal', 'onReject');
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

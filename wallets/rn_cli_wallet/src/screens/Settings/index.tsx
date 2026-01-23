@@ -13,6 +13,7 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
+import LogStore from '@/store/LogStore';
 import { Card } from '@/components/Card';
 import { storage } from '@/utils/storage';
 import { Text } from '@/components/Text';
@@ -112,6 +113,16 @@ export default function Settings() {
           title="Read full logs"
           onPress={() => navigation.navigate('Logs')}
           icon="chevronRight"
+        />
+        <Card
+          title="Clear app logs"
+          onPress={() => {
+            LogStore.clearLogs();
+            Toast.show({
+              type: 'info',
+              text1: 'App logs cleared',
+            });
+          }}
         />
       </View>
     </ScrollView>

@@ -6,74 +6,39 @@ import Toast from 'react-native-toast-message';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { LogEntry, LogLevel } from '@/store/LogStore';
 import { ThemeKeys } from '@/utils/TypesUtil';
 
-type Log = {
-  timestamp: string;
-  log: {
-    time: string;
-    level: string;
-    context: string;
-    msg: string;
-    type?: string; // 'event' | 'method'
-    event?: string;
-    method?: string;
-    data: object;
-    subscription?: {
-      topic: string;
-      relay: { protocol: 'string' };
-      id: string;
-    };
-  };
-};
-
-// WalletKit uses numeric log levels
-type LogLevelName = 'debug' | 'info' | 'warn' | 'error';
-
-const LEVEL_MAP: Record<string, LogLevelName> = {
-  '10': 'debug',
-  '20': 'info',
-  '30': 'warn',
-  '40': 'error',
-};
-
-const LEVEL_COLORS: Record<LogLevelName, ThemeKeys> = {
-  debug: 'text-tertiary',
-  info: 'text-accent-primary',
-  warn: 'text-warning',
+const LEVEL_COLORS: Record<LogLevel, ThemeKeys> = {
   error: 'text-error',
+  warn: 'text-warning',
+  info: 'text-accent-primary',
+  log: 'text-tertiary',
 };
 
-export interface LogProps {
-  value: string;
+export interface AppLogProps {
+  entry: LogEntry;
 }
 
-export function Log({ value }: LogProps) {
+export function AppLog({ entry }: AppLogProps) {
   const Theme = useTheme();
-  const jsonLog: Log = JSON.parse(value);
-  const { log } = jsonLog;
 
   const copyToClipboard = () => {
-    Clipboard.setString(value);
+    Clipboard.setString(JSON.stringify(entry, null, 2));
     Toast.show({
       type: 'info',
       text1: 'Log copied to clipboard',
     });
   };
 
-  const formatTime = (time: string) => {
-    return new Date(time).toLocaleString();
+  const formatTime = (timestamp: number) => {
+    return new Date(timestamp).toLocaleString();
   };
 
-  const levelName = LEVEL_MAP[log.level] || 'info';
-  const levelColor = LEVEL_COLORS[levelName];
-
-  // Check if data has any meaningful content (not empty object)
-  const hasData = log.data && Object.keys(log.data).length > 0;
+  const levelColor = LEVEL_COLORS[entry.level];
 
   return (
     <TouchableOpacity
-      key={jsonLog.timestamp}
       onPress={copyToClipboard}
       style={[
         styles.container,
@@ -82,26 +47,26 @@ export function Log({ value }: LogProps) {
     >
       <View style={styles.header}>
         <Text variant="sm-500" color={levelColor}>
-          [{levelName.toUpperCase()}]
+          [{entry.level.toUpperCase()}]
         </Text>
         <Text variant="sm-400" color="text-secondary">
-          {formatTime(log.time)}
+          {formatTime(entry.timestamp)}
         </Text>
       </View>
 
       <Text variant="sm-400" color="text-primary">
-        {log.msg}
+        {entry.message}
       </Text>
 
-      {log.context && (
+      {(entry.view || entry.functionName) && (
         <Text variant="sm-400" color="text-secondary" style={styles.context}>
-          {log.context}
+          {[entry.view, entry.functionName].filter(Boolean).join(' > ')}
         </Text>
       )}
 
-      {hasData && (
+      {entry.data && Object.keys(entry.data).length > 0 && (
         <Text variant="sm-400" color="text-tertiary" style={styles.data}>
-          {JSON.stringify(log.data)}
+          {JSON.stringify(entry.data)}
         </Text>
       )}
     </TouchableOpacity>

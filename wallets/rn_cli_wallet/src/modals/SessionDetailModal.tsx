@@ -15,6 +15,7 @@ import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { ChainIcons } from '@/components/ChainIcons';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
@@ -65,7 +66,7 @@ export default function SessionDetailModal() {
       SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
       ModalStore.close();
     } catch (e) {
-      console.log((e as Error).message, 'error');
+      LogStore.error((e as Error).message, 'SessionDetailModal', 'onDisconnect');
     }
     setLoading(false);
   }, [session]);
