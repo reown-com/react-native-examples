@@ -57,8 +57,6 @@ on:
         required: true
       keystore:
         required: true
-      google-services-file:
-        required: false
       aws-account-id:
         required: false
       slack-webhook-url:
@@ -120,14 +118,6 @@ jobs:
 
       - name: Add Keystore file
         run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
-
-      # Add Google Services file (base64 encoded)
-      # To encode: base64 -i path/to/google-services.json | pbcopy
-      - name: Add Google Services file
-        env:
-          google-services-file: ${{ secrets.google-services-file }}
-        if: ${{ env.google-services-file != '' }}
-        run: echo "${{ secrets.google-services-file }}" | base64 --decode > ${{ inputs.root-path }}/android/app/google-services.json
 
       - name: Optimize Gradle for CI
         run: |

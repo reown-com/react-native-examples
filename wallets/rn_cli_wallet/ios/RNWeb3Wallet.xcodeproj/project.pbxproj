@@ -10,9 +10,7 @@
 		123D3DB96BA95F36888650CC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 3F16776DD2AD1459C80F97BA /* PrivacyInfo.xcprivacy */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		1FCDA2962B9B8E6200E0BF0C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		1FCDA2972B9B8E6200E0BF0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
 		1FCDA2AE2B9B8E6800E0BF0C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		1FCDA2AF2B9B8E6800E0BF0C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
 		1FEC46DE2BD9835300064EFF /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */; };
 		1FEC46DF2BD9835300064EFF /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */; };
 		1FF0B57A2E9838F100267F8F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF0B5792E9838F100267F8F /* AppDelegate.swift */; };
@@ -26,7 +24,6 @@
 		9685071820BFBBEE117DCE09 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0FF5517EE50A98CDBAD33515 /* PrivacyInfo.xcprivacy */; };
 		97927E27E3F047C29FBF2FD7 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C50482F22BB4C56ACE24EA8 /* BootSplash.storyboard */; };
 		AEED8FBFAF0F40FB2AF6B6D0 /* libPods-App-RNWallet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F0ADF9FBB4DFB43D9B42D14 /* libPods-App-RNWallet.a */; };
-		BC55FDB92B7D243600340DDB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */; };
 		CEC19D7E905244D0A0217718 /* KHTeka-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4FBAB7122BF343DBAF0BB7F7 /* KHTeka-Medium.otf */; };
 		FBF705DA54BB45279B06435E /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7AE83AB305C04F529AD8275C /* Colors.xcassets */; };
 /* End PBXBuildFile section */
@@ -56,7 +53,6 @@
 		ABEB231DA62E483992083356 /* KHTeka-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "KHTeka-Regular.otf"; path = "../assets/fonts/KHTeka-Regular.otf"; sourceTree = "<group>"; };
 		BC0E53642B7E95F80075EFC3 /* RNWeb3Wallet.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNWeb3Wallet.entitlements; path = RNWeb3Wallet/RNWeb3Wallet.entitlements; sourceTree = "<group>"; };
 		BC0E53652B7EAFF70075EFC3 /* RNWeb3WalletDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RNWeb3WalletDebug.entitlements; path = RNWeb3Wallet/RNWeb3WalletDebug.entitlements; sourceTree = "<group>"; };
-		BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C3A29D35A12B15C6680651C1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RNWeb3Wallet/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		CB59F9A39395D6988F6846F6 /* Pods-App-RNWallet Internal.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Internal.release.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Internal/Pods-App-RNWallet Internal.release.xcconfig"; sourceTree = "<group>"; };
 		E864288A5987AF57B9F4AF8F /* Pods-App-RNWallet Debug.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App-RNWallet Debug.release.xcconfig"; path = "Target Support Files/Pods-App-RNWallet Debug/Pods-App-RNWallet Debug.release.xcconfig"; sourceTree = "<group>"; };
@@ -128,7 +124,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				BC55FDB82B7D243600340DDB /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* RNWeb3Wallet */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -295,7 +290,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				BC55FDB92B7D243600340DDB /* GoogleService-Info.plist in Resources */,
 				97927E27E3F047C29FBF2FD7 /* BootSplash.storyboard in Resources */,
 				3D28D8B186B853F8087F5C78 /* PrivacyInfo.xcprivacy in Resources */,
 				CEC19D7E905244D0A0217718 /* KHTeka-Medium.otf in Resources */,
@@ -311,7 +305,6 @@
 			files = (
 				1FEC46DE2BD9835300064EFF /* BootSplash.storyboard in Resources */,
 				1FCDA2962B9B8E6200E0BF0C /* Images.xcassets in Resources */,
-				1FCDA2972B9B8E6200E0BF0C /* GoogleService-Info.plist in Resources */,
 				123D3DB96BA95F36888650CC /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -322,7 +315,6 @@
 			files = (
 				1FEC46DF2BD9835300064EFF /* BootSplash.storyboard in Resources */,
 				1FCDA2AE2B9B8E6800E0BF0C /* Images.xcassets in Resources */,
-				1FCDA2AF2B9B8E6800E0BF0C /* GoogleService-Info.plist in Resources */,
 				9685071820BFBBEE117DCE09 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
