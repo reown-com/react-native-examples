@@ -46,7 +46,7 @@ export function ActionButton({
           : Theme['bg-accent-primary'],
         textColor: Theme['text-invert'],
         borderColor: disabled
-          ? Theme['foreground-accent-primary-60']
+          ? 'transparent'
           : Theme['bg-accent-primary'],
       };
     }
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius[4],
     paddingHorizontal: Spacing[4],
     height: Spacing[11],
-    width: 100,
+    width: 100, //Todo: check if this is needed
     borderWidth: 1,
   },
   fullWidth: {

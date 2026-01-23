@@ -11,7 +11,7 @@ import { Chain } from '@/utils/TypesUtil';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
-import Checkmark from '@/assets/Checkmark';
+import { Checkbox } from '@/components/Checkbox';
 
 interface NetworkSelectorProps {
   availableChains: Chain[];
@@ -35,8 +35,7 @@ export function NetworkSelector({
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.listContent}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.listContent}>
         {availableChains.map(chain => {
           const chainId = `${chain.namespace}:${chain.chainId}`;
           const isSelected = selectedChainIds.includes(chainId);
@@ -60,23 +59,13 @@ export function NetworkSelector({
                   {chain.name}
                 </Text>
               </View>
-              <View
-                style={[
-                  styles.checkbox,
-                  isSelected
-                    ? {
-                        backgroundColor: Theme['bg-accent-primary'],
-                        borderColor: Theme['bg-accent-primary'],
-                      }
-                    : { borderColor: Theme['border-secondary'] },
-                ]}
-              >
-                {isSelected && <Checkmark width={12} height={9} />}
-              </View>
+              <Checkbox
+                checked={isSelected}
+                onPress={() => toggleChain(chainId)}
+              />
             </TouchableOpacity>
           );
         })}
-      </View>
     </ScrollView>
   );
 }
@@ -100,13 +89,5 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: BorderRadius.full,
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: BorderRadius[2],
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

@@ -270,6 +270,7 @@ export default function SessionProposalModal() {
           isExpanded={expandedAccordion === 'network'}
           onPress={() => toggleAccordion('network')}
           expandedHeight={networkHeight}
+          hideExpand={supportedChains.length <= 1}
         >
           <NetworkSelector
             availableChains={supportedChains}

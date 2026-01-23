@@ -5,7 +5,7 @@ import { ActionButton } from '@/components/ActionButton';
 import { Text } from '@/components/Text';
 import AlertCircle from '@/assets/AlertCircle';
 import CheckCircle from '@/assets/CheckCircle';
-import { sharedStyles } from './styles';
+import { Spacing } from '@/utils/ThemeUtil';
 
 interface ResultViewProps {
   status: 'success' | 'error';
@@ -25,21 +25,21 @@ export function ResultView({ status, message, onClose }: ResultViewProps) {
     <>
       <View style={styles.contentContainer}>
         {isSuccess ? (
-          <CheckCircle width={48} height={48} fill={Theme['text-success']} />
+          <CheckCircle width={40} height={40} fill={Theme['text-success']} />
         ) : (
-          <AlertCircle width={48} height={48} fill={Theme['text-error']} />
+          <AlertCircle width={40} height={40} fill={Theme['text-error']} />
         )}
         <Text
           variant="large-600"
           color="text-primary"
           style={styles.message}
-          numberOfLines={isSuccess ? 1 : 3}
+          numberOfLines={isSuccess ? 2 : 3}
           center
         >
           {message || defaultMessage}
         </Text>
       </View>
-      <View style={sharedStyles.footerContainer}>
+      <View style={styles.footerContainer}>
         <ActionButton onPress={onClose} fullWidth>
           {isSuccess ? 'Got it!' : 'Close'}
         </ActionButton>
@@ -50,7 +50,7 @@ export function ResultView({ status, message, onClose }: ResultViewProps) {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    gap: 8,
+    gap: Spacing[4],
     marginBottom: 30,
     alignItems: 'center',
   },
@@ -58,5 +58,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     fontSize: 20,
     fontWeight: '400',
+  },
+  footerContainer: {
+    paddingTop: Spacing[4],
+    alignItems: 'center',
   },
 });
