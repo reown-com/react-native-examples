@@ -64,7 +64,11 @@ export function AccordionCard({
         <View style={styles.headerRight}>
           {rightContent}
           {!hideExpand && (
-            <SvgCaretUpDown width={17} height={17} fill={Theme['icon-invert']} />
+            <SvgCaretUpDown
+              width={17}
+              height={17}
+              fill={Theme['icon-invert']}
+            />
           )}
         </View>
       </TouchableOpacity>

@@ -57,10 +57,6 @@ export default function SecretPhrase() {
       style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
       contentContainerStyle={styles.content}
     >
-      <Text variant="lg-500" color="text-primary" style={styles.title}>
-        Your Secret Recovery Phrase
-      </Text>
-
       <View
         style={[
           styles.warningContainer,

@@ -41,7 +41,11 @@ interface State {
   data?: ModalData;
 }
 
-const disableHapticViews: State['view'][] = ['ImportWalletModal', 'ScannerOptionsModal', 'SessionDetailModal'];
+const disableHapticViews: State['view'][] = [
+  'ImportWalletModal',
+  'ScannerOptionsModal',
+  'SessionDetailModal',
+];
 
 /**
  * State

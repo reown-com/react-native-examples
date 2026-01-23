@@ -45,9 +45,7 @@ export function ActionButton({
           ? Theme['foreground-accent-primary-60']
           : Theme['bg-accent-primary'],
         textColor: Theme['text-invert'],
-        borderColor: disabled
-          ? 'transparent'
-          : Theme['bg-accent-primary'],
+        borderColor: disabled ? 'transparent' : Theme['bg-accent-primary'],
       };
     }
 

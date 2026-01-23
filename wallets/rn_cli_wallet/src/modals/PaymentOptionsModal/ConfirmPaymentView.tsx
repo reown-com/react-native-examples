@@ -60,7 +60,7 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
         styles.optionItem,
         {
           backgroundColor: isSelected
-            ? Theme['foreground-accent-primary-10-solid']
+            ? Theme['foreground-accent-primary-10']
             : Theme['foreground-secondary'],
         },
       ]}
@@ -80,7 +80,7 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
               styles.optionChainIcon,
               {
                 borderColor: isSelected
-                  ? Theme['foreground-accent-primary-10-solid']
+                  ? Theme['foreground-accent-primary-10']
                   : Theme['foreground-secondary'],
               },
             ]}
