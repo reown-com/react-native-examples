@@ -1,13 +1,13 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSnapshot } from 'valtio';
 
 import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
 import { Icon } from '@/components/Icon';
 import { Text } from '@/components/Text';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
-import SvgClose from '@/assets/Close';
 
 export function LoadingModal() {
   const Theme = useTheme();
@@ -19,12 +19,7 @@ export function LoadingModal() {
 
   return (
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
-      <TouchableOpacity
-        style={[styles.closeButton, { borderColor: Theme['border-secondary'] }]}
-        onPress={onClose}
-      >
-        <SvgClose width={38} height={38} fill={Theme['text-primary']} />
-      </TouchableOpacity>
+      <ModalCloseButton onPress={onClose} style={styles.closeButton} />
       {data?.errorMessage ? (
         <Icon name="warningCircle" color="text-error" width={48} height={48} />
       ) : (
@@ -51,8 +46,6 @@ const styles = StyleSheet.create({
     marginRight: Spacing[1],
     marginTop: Spacing[1],
     marginBottom: Spacing[3],
-    borderWidth: 1,
-    borderRadius: BorderRadius[3],
     alignSelf: 'flex-end',
   },
 });

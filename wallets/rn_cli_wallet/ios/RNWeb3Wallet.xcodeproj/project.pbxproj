@@ -748,7 +748,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RNWeb3Wallet/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
+				INFOPLIST_KEY_CFBundleDisplayName = "React N. Wallet";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -838,7 +838,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = RNWeb3Wallet/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
+				INFOPLIST_KEY_CFBundleDisplayName = "React N. Wallet";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -929,7 +929,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Debug-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
+				INFOPLIST_KEY_CFBundleDisplayName = "React N. Wallet";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1018,7 +1018,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Debug-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
+				INFOPLIST_KEY_CFBundleDisplayName = "React N. Wallet";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1110,7 +1110,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Internal-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
+				INFOPLIST_KEY_CFBundleDisplayName = "React N. Wallet";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1202,7 +1202,7 @@
 					"\"$(SRCROOT)/../node_modules/react-native/Libraries/LinkingIOS\"",
 				);
 				INFOPLIST_FILE = "RNWeb3Wallet/Internal-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "RN Wallet";
+				INFOPLIST_KEY_CFBundleDisplayName = "React N. Wallet";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

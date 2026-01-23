@@ -20,6 +20,7 @@ interface AccordionCardProps {
   isExpanded: boolean;
   onPress: () => void;
   expandedHeight: number;
+  hideExpand?: boolean;
 }
 
 export function AccordionCard({
@@ -29,6 +30,7 @@ export function AccordionCard({
   isExpanded,
   onPress,
   expandedHeight,
+  hideExpand,
 }: AccordionCardProps) {
   const Theme = useTheme();
   const heightValue = useSharedValue(0);
@@ -53,11 +55,17 @@ export function AccordionCard({
         { backgroundColor: Theme['foreground-primary'] },
       ]}
     >
-      <TouchableOpacity style={styles.header} onPress={onPress}>
+      <TouchableOpacity
+        style={styles.header}
+        onPress={onPress}
+        disabled={hideExpand}
+      >
         <View style={styles.headerLeft}>{headerContent}</View>
         <View style={styles.headerRight}>
           {rightContent}
-          <SvgCaretUpDown width={17} height={17} fill={Theme['icon-invert']} />
+          {!hideExpand && (
+            <SvgCaretUpDown width={17} height={17} fill={Theme['icon-invert']} />
+          )}
         </View>
       </TouchableOpacity>
       <Animated.View style={animatedStyle}>

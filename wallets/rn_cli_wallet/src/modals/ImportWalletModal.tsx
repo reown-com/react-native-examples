@@ -5,7 +5,6 @@ import {
   TextInput,
   Alert,
   KeyboardAvoidingView,
-  TouchableOpacity,
 } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -14,9 +13,9 @@ import SettingsStore from '@/store/SettingsStore';
 import WalletStore from '@/store/WalletStore';
 import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { Text } from '@/components/Text';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { ActionButton } from '@/components/ActionButton';
-import SvgClose from '@/assets/Close';
 
 export default function ImportWalletModal() {
   const Theme = useTheme();
@@ -59,15 +58,7 @@ export default function ImportWalletModal() {
         style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
       >
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => ModalStore.close()}
-            style={[
-              styles.closeButton,
-              { borderColor: Theme['border-secondary'] },
-            ]}
-          >
-            <SvgClose width={38} height={38} fill={Theme['text-primary']} />
-          </TouchableOpacity>
+          <ModalCloseButton onPress={() => ModalStore.close()} />
         </View>
 
         <Text variant="h6-400" color="text-primary" center>
@@ -131,10 +122,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginBottom: Spacing[4],
-  },
-  closeButton: {
-    borderWidth: 1,
-    borderRadius: BorderRadius[3],
   },
   input: {
     borderWidth: 1,

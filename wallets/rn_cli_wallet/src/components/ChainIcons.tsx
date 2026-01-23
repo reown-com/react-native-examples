@@ -33,19 +33,33 @@ export function ChainIcons({
     return Math.max(0, uniqueChainIds.length - maxVisible);
   }, [uniqueChainIds.length, maxVisible]);
 
+  const wrapperSize = size + 4;
+  const moreIndicatorMinWidth = 36;
+
   const containerWidth = useMemo(() => {
     const iconCount = visibleChainIds.length;
     const hasMore = remainingCount > 0;
-    const totalCount = iconCount + (hasMore ? 1 : 0);
-    if (totalCount === 0) return 0;
-    return size + (totalCount - 1) * (size - overlap);
-  }, [visibleChainIds.length, remainingCount, size, overlap]);
+    if (iconCount === 0 && !hasMore) return 0;
+
+    // Calculate position where "+N" badge starts
+    const moreLeft = iconCount * (wrapperSize - overlap);
+
+    if (hasMore) {
+      // Width = badge position + badge width
+      return moreLeft + moreIndicatorMinWidth;
+    }
+
+    // No badge: last icon starts at (iconCount - 1) * step, add wrapperSize for full width
+    return wrapperSize + (iconCount - 1) * (wrapperSize - overlap);
+  }, [visibleChainIds.length, remainingCount, wrapperSize, overlap, moreIndicatorMinWidth]);
 
   return (
-    <View style={[styles.container, { width: containerWidth, height: size }]}>
+    <View
+      style={[styles.container, { width: containerWidth, height: wrapperSize }]}
+    >
       {visibleChainIds.map((chainId, index) => {
         const logo = PresetsUtil.getChainIconById(chainId);
-        const leftOffset = index * (size - overlap);
+        const leftOffset = index * (wrapperSize - overlap);
 
         return (
           <View
@@ -54,10 +68,11 @@ export function ChainIcons({
               styles.iconWrapper,
               {
                 left: leftOffset,
-                width: size,
-                height: size,
+                width: wrapperSize,
+                height: wrapperSize,
                 zIndex: index + 1,
                 borderColor: Theme['foreground-primary'],
+                backgroundColor: Theme['foreground-primary'],
               },
             ]}
           >
@@ -67,8 +82,8 @@ export function ChainIcons({
                 style={[
                   styles.icon,
                   {
-                    width: size - 4,
-                    height: size - 4,
+                    width: size,
+                    height: size,
                     backgroundColor: Theme['foreground-tertiary'],
                   },
                 ]}
@@ -78,8 +93,8 @@ export function ChainIcons({
                 style={[
                   styles.icon,
                   {
-                    width: size - 4,
-                    height: size - 4,
+                    width: size,
+                    height: size,
                     backgroundColor: Theme['foreground-tertiary'],
                   },
                 ]}
@@ -94,8 +109,9 @@ export function ChainIcons({
             styles.iconWrapper,
             styles.moreIndicator,
             {
-              left: visibleChainIds.length * (size - overlap),
-              height: size,
+              left: visibleChainIds.length * (wrapperSize - overlap),
+              minWidth: moreIndicatorMinWidth,
+              height: wrapperSize,
               paddingHorizontal: Spacing[2],
               backgroundColor: Theme['foreground-tertiary'],
               borderColor: Theme['foreground-primary'],
@@ -122,6 +138,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   icon: {
     borderRadius: BorderRadius.full,

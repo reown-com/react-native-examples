@@ -82,8 +82,7 @@ export default IndividualSession;
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: Spacing[3],
-    paddingHorizontal: Spacing[4],
+    padding: Spacing[5],
     borderRadius: BorderRadius[4],
     marginBottom: Spacing[2],
   },
