@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
 
 type Log = {
   timestamp: string;
@@ -38,8 +39,7 @@ export function Log({ value }: LogProps) {
   };
 
   return (
-    <TouchableOpacity
-      key={jsonLog.timestamp}
+    <Button
       onPress={() => copyToClipboard(value)}
       style={[
         styles.container,
@@ -63,7 +63,7 @@ export function Log({ value }: LogProps) {
           </View>
         );
       })}
-    </TouchableOpacity>
+    </Button>
   );
 }
 

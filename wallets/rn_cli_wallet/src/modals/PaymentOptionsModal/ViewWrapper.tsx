@@ -1,10 +1,11 @@
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { useTheme } from '@/hooks/useTheme';
 import SvgArrowLeft from '@/assets/ArrowLeft';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
+import { Button } from '@/components/Button';
 
 type Step =
   | 'loading'
@@ -48,7 +49,7 @@ export function ViewWrapper({
         {/* Back Button */}
         <View style={styles.headerLeft}>
           {showBackButton && (
-            <TouchableOpacity
+            <Button
               onPress={onBack}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
@@ -57,7 +58,7 @@ export function ViewWrapper({
                 height={38}
                 fill={Theme['text-primary']}
               />
-            </TouchableOpacity>
+            </Button>
           )}
         </View>
 

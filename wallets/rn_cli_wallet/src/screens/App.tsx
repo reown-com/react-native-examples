@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import Config from 'react-native-config';
-import { Linking, Platform, StatusBar } from 'react-native';
+import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
 import { useSnapshot } from 'valtio';
 import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -8,6 +8,7 @@ import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
 import Toast from 'react-native-toast-message';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { RELAYER_EVENTS } from '@walletconnect/core';
 
 import { RootStackNavigator } from '@/navigators/RootStackNavigator';
@@ -156,19 +157,27 @@ const App = () => {
   }, [deeplinkHandler]);
 
   return (
-    <SafeAreaProvider>
-      <KeyboardProvider>
-        <NavigationContainer>
-          <StatusBar
-            translucent={true}
-            barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
-          />
-          <RootStackNavigator />
-          <Toast config={toastConfig} position="top" topOffset={0} />
-        </NavigationContainer>
-      </KeyboardProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={styles.root}>
+      <SafeAreaProvider>
+        <KeyboardProvider>
+          <NavigationContainer>
+            <StatusBar
+              translucent={true}
+              barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
+            />
+            <RootStackNavigator />
+            <Toast config={toastConfig} position="top" topOffset={0} />
+          </NavigationContainer>
+        </KeyboardProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});
 
 export default Sentry.wrap(App);

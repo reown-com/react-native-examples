@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
   Camera,
@@ -17,6 +17,7 @@ import styles from './styles';
 import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
 import { haptics } from '@/utils/haptics';
+import { Button } from '@/components/Button';
 
 type Props = RootStackScreenProps<'Scan'>;
 
@@ -61,14 +62,14 @@ export default function Scan({ navigation }: Props) {
         { backgroundColor: Theme['bg-primary'] },
       ]}
     >
-      <TouchableOpacity onPress={goBack} style={styles.backButton} hitSlop={40}>
+      <Button onPress={goBack} style={styles.backButton} hitSlop={40}>
         <SvgChevronRight
           fill="white"
           height={24}
           width={24}
           style={styles.backIcon}
         />
-      </TouchableOpacity>
+      </Button>
 
       {hasPermission && device ? (
         <Camera

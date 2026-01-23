@@ -1,16 +1,11 @@
 import React from 'react';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  StyleProp,
-  ViewStyle,
-  View,
-} from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Icon, IconName } from '@/components/Icon';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
 
 export interface CardProps {
   title: string;
@@ -25,10 +20,10 @@ export function Card({ title, value, onPress, icon, style }: CardProps) {
   const backgroundColor = Theme['foreground-primary'];
 
   return (
-    <TouchableOpacity
+    <Button
       disabled={!onPress}
       style={[styles.container, { backgroundColor }, style]}
-      onPress={onPress}
+      onPress={onPress ?? (() => {})}
     >
       <View>
         <Text variant="md-500" color="text-primary">
@@ -41,7 +36,7 @@ export function Card({ title, value, onPress, icon, style }: CardProps) {
         )}
       </View>
       {icon && <Icon name={icon} size="sm" color="text-primary" />}
-    </TouchableOpacity>
+    </Button>
   );
 }
 
