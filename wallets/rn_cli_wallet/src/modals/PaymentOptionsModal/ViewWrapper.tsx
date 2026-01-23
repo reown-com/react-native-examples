@@ -93,10 +93,7 @@ export function ViewWrapper({
 
         {/* Close Button */}
         <View style={styles.headerRight}>
-          <ModalCloseButton
-            onPress={onClose}
-            showBorder={false}
-          />
+          <ModalCloseButton onPress={onClose} />
         </View>
       </View>
 
