@@ -2,6 +2,7 @@ import { View, Image, StyleSheet, ScrollView } from 'react-native';
 import type { PaymentInfo, PaymentOption } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
+import LogStore from '@/store/LogStore';
 import { ActionButton } from '@/components/ActionButton';
 import { formatAmount } from './utils';
 import { MerchantInfo } from './MerchantInfo';
@@ -164,12 +165,9 @@ export function ConfirmPaymentView({
   }));
 
   const toggleExpanded = useCallback(() => {
-    if (__DEV__) {
-      console.log(
-        '[ConfirmStep] Toggle pressed, options.length:',
-        options.length,
-      );
-    }
+    LogStore.log('Toggle payment options', 'ConfirmPaymentView', 'toggleExpanded', {
+      optionsLength: options.length,
+    });
     if (options.length > 1) {
       setIsExpanded(prev => !prev);
     }

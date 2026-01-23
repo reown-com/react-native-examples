@@ -12,6 +12,7 @@ import {
 } from '@/utils/TonRequestHandlerUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
@@ -80,7 +81,7 @@ export default function SessionTonSignDataModal() {
           error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error((e as Error).message, 'SessionTonSignDataModal', 'onApprove');
         Toast.show({
           type: 'error',
           text1: 'Signature failed',
@@ -110,7 +111,7 @@ export default function SessionTonSignDataModal() {
           error: 'User rejected request',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error((e as Error).message, 'SessionTonSignDataModal', 'onReject');
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

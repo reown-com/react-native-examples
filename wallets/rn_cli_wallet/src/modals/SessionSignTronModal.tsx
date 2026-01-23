@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useSnapshot } from 'valtio';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 // import { styledToast } from '@/utils/HelperUtil'
@@ -54,7 +55,7 @@ export default function SessionSignTronModal() {
         haptics.requestResponse();
       }
     } catch (e) {
-      console.log((e as Error).message, 'error');
+      LogStore.error((e as Error).message, 'SessionSignTronModal', 'onApprove');
       Toast.show({
         text1: (e as Error).message,
         type: 'error',
@@ -77,7 +78,7 @@ export default function SessionSignTronModal() {
         });
         haptics.requestResponse();
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error((e as Error).message, 'SessionSignTronModal', 'onReject');
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

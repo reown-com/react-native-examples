@@ -9,6 +9,8 @@ import { WalletContractV4, TonClient, internal, Address } from '@ton/ton';
 import { TON_MAINNET_CHAINS, TON_TEST_CHAINS } from '@/constants/Ton';
 import Config from 'react-native-config';
 
+import LogStore from '@/store/LogStore';
+
 /**
  * Types
  */
@@ -127,9 +129,11 @@ export default class TonLib {
         Buffer.from(result.signature, 'base64'),
         this.keypair.publicKey,
       );
-      console.log('TON signData verified:', verified);
+      LogStore.log('TON signData verified', 'TonLib', 'signData', { verified });
     } catch (e) {
-      console.warn('TON signData verification failed to run', e);
+      LogStore.warn('TON signData verification failed to run', 'TonLib', 'signData', {
+        error: String(e),
+      });
     }
     return result;
   }
