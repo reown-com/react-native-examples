@@ -14,11 +14,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { ChainIcons } from '@/components/ChainIcons';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SvgDisconnect from '@/assets/Disconnect';
-import SvgClose from '@/assets/Close';
 import { haptics } from '@/utils/haptics';
 
 export default function SessionDetailModal() {
@@ -105,9 +105,7 @@ export default function SessionDetailModal() {
             </>
           )}
         </TouchableOpacity>
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <SvgClose width={32} height={32} fill={Theme['text-primary']} />
-        </TouchableOpacity>
+        <ModalCloseButton onPress={onClose} />
       </View>
 
       {/* App Info Card */}
@@ -200,9 +198,6 @@ const styles = StyleSheet.create({
   },
   disconnectText: {
     marginLeft: Spacing[1],
-  },
-  closeButton: {
-    padding: Spacing[1],
   },
   card: {
     borderRadius: BorderRadius[4],

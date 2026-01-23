@@ -4,10 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
 import { Text } from '@/components/Text';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import BarcodeSvg from '@/assets/Barcode';
 import PasteSvg from '@/assets/Paste';
-import SvgClose from '@/assets/Close';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { usePairing } from '@/hooks/usePairing';
 import Toast from 'react-native-toast-message';
@@ -52,15 +52,7 @@ export default function ScannerOptionsModal() {
   return (
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => ModalStore.close()}
-          style={[
-            styles.closeButton,
-            { borderColor: Theme['border-secondary'] },
-          ]}
-        >
-          <SvgClose width={38} height={38} fill={Theme['text-primary']} />
-        </TouchableOpacity>
+        <ModalCloseButton onPress={() => ModalStore.close()} />
       </View>
 
       <View style={styles.optionsContainer}>
@@ -107,10 +99,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     padding: Spacing[5],
-  },
-  closeButton: {
-    borderWidth: 1,
-    borderRadius: BorderRadius[3],
   },
   title: {
     marginVertical: Spacing[4],
