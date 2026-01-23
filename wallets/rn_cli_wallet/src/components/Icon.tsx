@@ -4,6 +4,7 @@ import { SvgProps } from 'react-native-svg';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ThemeKeys } from '@/utils/TypesUtil';
+import LogStore from '@/store/LogStore';
 
 // Import SVG icons
 import SvgChevronRight from '@/assets/ChevronRight';
@@ -60,7 +61,7 @@ export function Icon({
   const resolvedHeight = height ?? sizePresets[size];
 
   if (!IconComponent) {
-    console.warn(`Icon "${name}" not found`);
+    LogStore.warn(`Icon "${name}" not found`, 'Icon', 'Icon');
     return <View style={{ width: resolvedWidth, height: resolvedHeight }} />;
   }
   const fillColor = Theme[color];

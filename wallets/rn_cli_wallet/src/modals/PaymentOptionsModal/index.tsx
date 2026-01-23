@@ -1,6 +1,7 @@
 import { useCallback, useReducer, useEffect } from 'react';
 import { useSnapshot } from 'valtio';
 
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
@@ -102,18 +103,21 @@ export default function PaymentOptionsModal() {
       dispatch({ type: 'SET_ACTIONS_ERROR', payload: null });
 
       try {
-        console.log(
-          '[Pay] Getting required payment actions for option:',
-          option.id,
-        );
+        LogStore.log('Getting required payment actions', 'PaymentOptionsModal', 'fetchPaymentActions', {
+          optionId: option.id,
+        });
         const actions = await payClient.getRequiredPaymentActions({
           paymentId: paymentData.paymentId,
           optionId: option.id,
         });
-        console.log('[Pay] Required actions:', actions);
+        LogStore.log('Required actions received', 'PaymentOptionsModal', 'fetchPaymentActions', {
+          actionsCount: actions.length,
+        });
         dispatch({ type: 'SET_PAYMENT_ACTIONS', payload: actions });
       } catch (error: any) {
-        console.error('[Pay] Error getting payment actions:', error);
+        LogStore.error('Error getting payment actions', 'PaymentOptionsModal', 'fetchPaymentActions', {
+          error: error?.message,
+        });
         dispatch({
           type: 'SET_ACTIONS_ERROR',
           payload: error?.message || 'Failed to get payment actions',
@@ -249,7 +253,7 @@ export default function PaymentOptionsModal() {
             const { method, params } = action.walletRpc;
             const parsedParams = JSON.parse(params);
 
-            console.log('[Pay] Signing action:', method, parsedParams);
+            LogStore.log('Signing action', 'PaymentOptionsModal', 'onApprovePayment', { method });
 
             if (
               method === 'eth_signTypedData_v4' ||
@@ -264,14 +268,16 @@ export default function PaymentOptionsModal() {
                 types,
                 messageData,
               );
-              console.log('[Pay] Signature:', signature);
+              LogStore.log('Signature received', 'PaymentOptionsModal', 'onApprovePayment');
               signatures.push(signature);
             } else {
-              console.warn(`[Pay] Unsupported wallet RPC method: ${method}`);
+              LogStore.warn(`Unsupported wallet RPC method: ${method}`, 'PaymentOptionsModal', 'onApprovePayment');
               throw new Error(`Unsupported signature method: ${method}`);
             }
           } catch (error: any) {
-            console.error(`[Pay] Error signing action ${index}:`, error);
+            LogStore.error(`Error signing action ${index}`, 'PaymentOptionsModal', 'onApprovePayment', {
+              error: error?.message,
+            });
             throw new Error(
               `Failed to sign action ${index + 1}: ${
                 error?.message || 'Unknown error'
@@ -292,8 +298,10 @@ export default function PaymentOptionsModal() {
           : [];
 
       if (payClient) {
-        console.log('[Pay] Confirming payment with signatures:', signatures);
-        console.log('[Pay] Collected data:', collectedDataResults);
+        LogStore.log('Confirming payment', 'PaymentOptionsModal', 'onApprovePayment', {
+          signaturesCount: signatures.length,
+          hasCollectedData: collectedDataResults.length > 0,
+        });
 
         const confirmResult = await payClient.confirmPayment({
           paymentId: paymentData.paymentId,
@@ -303,7 +311,7 @@ export default function PaymentOptionsModal() {
             collectedDataResults.length > 0 ? collectedDataResults : undefined,
         });
 
-        console.log('[Pay] Payment confirmed:', confirmResult);
+        LogStore.log('Payment confirmed', 'PaymentOptionsModal', 'onApprovePayment');
       }
 
       const amount = formatAmount(
@@ -320,7 +328,9 @@ export default function PaymentOptionsModal() {
       });
       dispatch({ type: 'SET_STEP', payload: 'result' });
     } catch (error: any) {
-      console.error('[Pay] Error signing payment:', error);
+      LogStore.error('Error signing payment', 'PaymentOptionsModal', 'onApprovePayment', {
+        error: error?.message,
+      });
       dispatch({
         type: 'SET_RESULT',
         payload: {
