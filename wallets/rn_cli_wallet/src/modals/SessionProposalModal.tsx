@@ -195,7 +195,11 @@ export default function SessionProposalModal() {
           isLinkMode: session?.transportType === 'link_mode',
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionProposalModal', 'onApprove');
+        LogStore.error(
+          (e as Error).message,
+          'SessionProposalModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Connection failed',
@@ -229,7 +233,11 @@ export default function SessionProposalModal() {
           error: 'User rejected connect request',
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionProposalModal', 'onReject');
+        LogStore.error(
+          (e as Error).message,
+          'SessionProposalModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

@@ -93,7 +93,11 @@ export default function SessionAuthenticateModal() {
           isLinkMode: isLinkModeRequest,
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionAuthenticateModal', 'onApprove');
+        LogStore.error(
+          (e as Error).message,
+          'SessionAuthenticateModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Authentication failed',
@@ -126,7 +130,11 @@ export default function SessionAuthenticateModal() {
           error: 'User rejected auth request',
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionAuthenticateModal', 'onReject');
+        LogStore.error(
+          (e as Error).message,
+          'SessionAuthenticateModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

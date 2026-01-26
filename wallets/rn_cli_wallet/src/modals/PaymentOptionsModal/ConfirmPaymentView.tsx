@@ -165,9 +165,14 @@ export function ConfirmPaymentView({
   }));
 
   const toggleExpanded = useCallback(() => {
-    LogStore.log('Toggle payment options', 'ConfirmPaymentView', 'toggleExpanded', {
-      optionsLength: options.length,
-    });
+    LogStore.log(
+      'Toggle payment options',
+      'ConfirmPaymentView',
+      'toggleExpanded',
+      {
+        optionsLength: options.length,
+      },
+    );
     if (options.length > 1) {
       setIsExpanded(prev => !prev);
     }

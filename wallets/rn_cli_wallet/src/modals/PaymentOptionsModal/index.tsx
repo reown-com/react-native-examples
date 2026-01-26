@@ -103,21 +103,36 @@ export default function PaymentOptionsModal() {
       dispatch({ type: 'SET_ACTIONS_ERROR', payload: null });
 
       try {
-        LogStore.log('Getting required payment actions', 'PaymentOptionsModal', 'fetchPaymentActions', {
-          optionId: option.id,
-        });
+        LogStore.log(
+          'Getting required payment actions',
+          'PaymentOptionsModal',
+          'fetchPaymentActions',
+          {
+            optionId: option.id,
+          },
+        );
         const actions = await payClient.getRequiredPaymentActions({
           paymentId: paymentData.paymentId,
           optionId: option.id,
         });
-        LogStore.log('Required actions received', 'PaymentOptionsModal', 'fetchPaymentActions', {
-          actionsCount: actions.length,
-        });
+        LogStore.log(
+          'Required actions received',
+          'PaymentOptionsModal',
+          'fetchPaymentActions',
+          {
+            actionsCount: actions.length,
+          },
+        );
         dispatch({ type: 'SET_PAYMENT_ACTIONS', payload: actions });
       } catch (error: any) {
-        LogStore.error('Error getting payment actions', 'PaymentOptionsModal', 'fetchPaymentActions', {
-          error: error?.message,
-        });
+        LogStore.error(
+          'Error getting payment actions',
+          'PaymentOptionsModal',
+          'fetchPaymentActions',
+          {
+            error: error?.message,
+          },
+        );
         dispatch({
           type: 'SET_ACTIONS_ERROR',
           payload: error?.message || 'Failed to get payment actions',
@@ -253,7 +268,12 @@ export default function PaymentOptionsModal() {
             const { method, params } = action.walletRpc;
             const parsedParams = JSON.parse(params);
 
-            LogStore.log('Signing action', 'PaymentOptionsModal', 'onApprovePayment', { method });
+            LogStore.log(
+              'Signing action',
+              'PaymentOptionsModal',
+              'onApprovePayment',
+              { method },
+            );
 
             if (
               method === 'eth_signTypedData_v4' ||
@@ -268,16 +288,29 @@ export default function PaymentOptionsModal() {
                 types,
                 messageData,
               );
-              LogStore.log('Signature received', 'PaymentOptionsModal', 'onApprovePayment');
+              LogStore.log(
+                'Signature received',
+                'PaymentOptionsModal',
+                'onApprovePayment',
+              );
               signatures.push(signature);
             } else {
-              LogStore.warn(`Unsupported wallet RPC method: ${method}`, 'PaymentOptionsModal', 'onApprovePayment');
+              LogStore.warn(
+                `Unsupported wallet RPC method: ${method}`,
+                'PaymentOptionsModal',
+                'onApprovePayment',
+              );
               throw new Error(`Unsupported signature method: ${method}`);
             }
           } catch (error: any) {
-            LogStore.error(`Error signing action ${index}`, 'PaymentOptionsModal', 'onApprovePayment', {
-              error: error?.message,
-            });
+            LogStore.error(
+              `Error signing action ${index}`,
+              'PaymentOptionsModal',
+              'onApprovePayment',
+              {
+                error: error?.message,
+              },
+            );
             throw new Error(
               `Failed to sign action ${index + 1}: ${
                 error?.message || 'Unknown error'
@@ -298,12 +331,17 @@ export default function PaymentOptionsModal() {
           : [];
 
       if (payClient) {
-        LogStore.log('Confirming payment', 'PaymentOptionsModal', 'onApprovePayment', {
-          signaturesCount: signatures.length,
-          hasCollectedData: collectedDataResults.length > 0,
-        });
+        LogStore.log(
+          'Confirming payment',
+          'PaymentOptionsModal',
+          'onApprovePayment',
+          {
+            signaturesCount: signatures.length,
+            hasCollectedData: collectedDataResults.length > 0,
+          },
+        );
 
-        const confirmResult = await payClient.confirmPayment({
+        await payClient.confirmPayment({
           paymentId: paymentData.paymentId,
           optionId: state.selectedOption.id,
           signatures,
@@ -311,7 +349,11 @@ export default function PaymentOptionsModal() {
             collectedDataResults.length > 0 ? collectedDataResults : undefined,
         });
 
-        LogStore.log('Payment confirmed', 'PaymentOptionsModal', 'onApprovePayment');
+        LogStore.log(
+          'Payment confirmed',
+          'PaymentOptionsModal',
+          'onApprovePayment',
+        );
       }
 
       const amount = formatAmount(
@@ -328,9 +370,14 @@ export default function PaymentOptionsModal() {
       });
       dispatch({ type: 'SET_STEP', payload: 'result' });
     } catch (error: any) {
-      LogStore.error('Error signing payment', 'PaymentOptionsModal', 'onApprovePayment', {
-        error: error?.message,
-      });
+      LogStore.error(
+        'Error signing payment',
+        'PaymentOptionsModal',
+        'onApprovePayment',
+        {
+          error: error?.message,
+        },
+      );
       dispatch({
         type: 'SET_RESULT',
         payload: {

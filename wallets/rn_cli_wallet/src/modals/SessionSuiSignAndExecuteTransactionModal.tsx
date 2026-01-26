@@ -70,7 +70,11 @@ export default function SessionSuiSignAndExecuteTransactionModal() {
           isLinkMode: isLinkMode,
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSuiSignAndExecuteTransactionModal', 'onApprove');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSuiSignAndExecuteTransactionModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Transaction failed',
@@ -100,7 +104,11 @@ export default function SessionSuiSignAndExecuteTransactionModal() {
           error: 'User rejected transaction request',
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSuiSignAndExecuteTransactionModal', 'onReject');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSuiSignAndExecuteTransactionModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',
