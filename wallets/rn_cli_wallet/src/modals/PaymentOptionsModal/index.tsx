@@ -386,8 +386,13 @@ export default function PaymentOptionsModal() {
           { status: confirmResult?.status },
         );
 
+        // Handle missing response
+        if (!confirmResult) {
+          throw new Error('Payment confirmation failed - no response received');
+        }
+
         // Handle expired payment from confirmPayment response
-        if (confirmResult?.status === 'expired') {
+        if (confirmResult.status === 'expired') {
           dispatch({
             type: 'SET_RESULT',
             payload: {

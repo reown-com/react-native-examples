@@ -79,7 +79,11 @@ export function ResultView({
     }
 
     if (!errorType) {
-      return null;
+      return (
+        <Text variant="h6-400" color="text-primary" center style={styles.title}>
+          {message || defaultMessage}
+        </Text>
+      );
     }
 
     return (

@@ -83,6 +83,13 @@ export type ErrorType =
 
 export function detectErrorType(message: string): ErrorType {
   const lowerMsg = message.toLowerCase();
+  if (
+    lowerMsg.includes('insufficient') ||
+    lowerMsg.includes('balance') ||
+    lowerMsg.includes('funds')
+  ) {
+    return 'insufficient_funds';
+  }
   if (lowerMsg.includes('expired') || lowerMsg.includes('timeout')) {
     return 'expired';
   }
