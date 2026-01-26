@@ -153,10 +153,17 @@ export default function PaymentOptionsModal() {
             error: error?.message,
           },
         );
+        const errorMessage = error?.message || 'Failed to get payment actions';
+        const errorType = detectErrorType(errorMessage);
         dispatch({
-          type: 'SET_ACTIONS_ERROR',
-          payload: error?.message || 'Failed to get payment actions',
+          type: 'SET_RESULT',
+          payload: {
+            status: 'error',
+            errorType,
+            message: getErrorMessage(errorType, errorMessage),
+          },
         });
+        dispatch({ type: 'SET_STEP', payload: 'result' });
       } finally {
         dispatch({ type: 'SET_LOADING_ACTIONS', payload: false });
       }
@@ -371,7 +378,7 @@ export default function PaymentOptionsModal() {
           },
         );
 
-        await payClient.confirmPayment({
+        const confirmResult = await payClient.confirmPayment({
           paymentId: paymentData.paymentId,
           optionId: state.selectedOption.id,
           signatures,
