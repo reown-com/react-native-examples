@@ -35,9 +35,7 @@ export function HomeTabNavigator() {
   return (
     <TabNav.Navigator
       screenListeners={{
-        tabPress: () => {
-          haptics.tabChange();
-        },
+        state: haptics.tabChange,
       }}
       screenOptions={{
         header: NavHeader,
