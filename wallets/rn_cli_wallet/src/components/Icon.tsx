@@ -9,14 +9,12 @@ import LogStore from '@/store/LogStore';
 // Import SVG icons
 import SvgChevronRight from '@/assets/ChevronRight';
 import SvgWarningCircle from '@/assets/WarningCircle';
-import SvgAlertCircle from '@/assets/AlertCircle';
 import SvgCheckCircle from '@/assets/CheckCircle';
 
 // Icon name to component mapping
 const iconComponents = {
   chevronRight: SvgChevronRight,
   warningCircle: SvgWarningCircle,
-  alertCircle: SvgAlertCircle,
   checkCircle: SvgCheckCircle,
 } as const;
 

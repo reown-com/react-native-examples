@@ -304,7 +304,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing[5],
   },
   payWithContainer: {
-    // paddingHorizontal: Spacing[3],
     borderRadius: BorderRadius[5],
   },
   payWithContainerExpanded: {

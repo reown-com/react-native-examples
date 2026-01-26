@@ -23,6 +23,8 @@ import {
   formatDateInput,
   isValidDateOfBirth,
   validateRequiredFields,
+  detectErrorType,
+  getErrorMessage,
 } from './utils';
 import { paymentModalReducer, initialState } from './reducer';
 
@@ -43,13 +45,31 @@ export default function PaymentOptionsModal() {
   useEffect(() => {
     if (state.step === 'loading') {
       if (initialError) {
+        const errorType = detectErrorType(initialError);
         dispatch({
           type: 'SET_RESULT',
-          payload: { status: 'error', message: initialError },
+          payload: {
+            status: 'error',
+            message: getErrorMessage(errorType, initialError),
+            errorType,
+          },
         });
         dispatch({ type: 'SET_STEP', payload: 'result' });
       } else if (paymentData) {
-        dispatch({ type: 'SET_STEP', payload: 'intro' });
+        // Check for empty options BEFORE going to intro
+        if (!paymentData.options || paymentData.options.length === 0) {
+          dispatch({
+            type: 'SET_RESULT',
+            payload: {
+              status: 'error',
+              errorType: 'insufficient_funds',
+              message: getErrorMessage('insufficient_funds'),
+            },
+          });
+          dispatch({ type: 'SET_STEP', payload: 'result' });
+        } else {
+          dispatch({ type: 'SET_STEP', payload: 'intro' });
+        }
       }
     }
   }, [state.step, paymentData, initialError]);
@@ -133,10 +153,17 @@ export default function PaymentOptionsModal() {
             error: error?.message,
           },
         );
+        const errorMessage = error?.message || 'Failed to get payment actions';
+        const errorType = detectErrorType(errorMessage);
         dispatch({
-          type: 'SET_ACTIONS_ERROR',
-          payload: error?.message || 'Failed to get payment actions',
+          type: 'SET_RESULT',
+          payload: {
+            status: 'error',
+            errorType,
+            message: getErrorMessage(errorType, errorMessage),
+          },
         });
+        dispatch({ type: 'SET_STEP', payload: 'result' });
       } finally {
         dispatch({ type: 'SET_LOADING_ACTIONS', payload: false });
       }
@@ -148,10 +175,15 @@ export default function PaymentOptionsModal() {
   const handleIntroNext = useCallback(() => {
     const options = paymentData?.options || [];
 
+    // Fallback check (main check is in useEffect)
     if (options.length === 0) {
       dispatch({
         type: 'SET_RESULT',
-        payload: { status: 'error', message: 'No payment options available' },
+        payload: {
+          status: 'error',
+          errorType: 'insufficient_funds',
+          message: getErrorMessage('insufficient_funds'),
+        },
       });
       dispatch({ type: 'SET_STEP', payload: 'result' });
       return;
@@ -212,10 +244,15 @@ export default function PaymentOptionsModal() {
     if (state.step === 'confirm') {
       const options = paymentData?.options || [];
 
+      // Fallback check (main check is in useEffect)
       if (options.length === 0) {
         dispatch({
           type: 'SET_RESULT',
-          payload: { status: 'error', message: 'No payment options available' },
+          payload: {
+            status: 'error',
+            errorType: 'insufficient_funds',
+            message: getErrorMessage('insufficient_funds'),
+          },
         });
         dispatch({ type: 'SET_STEP', payload: 'result' });
         return;
@@ -341,7 +378,7 @@ export default function PaymentOptionsModal() {
           },
         );
 
-        await payClient.confirmPayment({
+        const confirmResult = await payClient.confirmPayment({
           paymentId: paymentData.paymentId,
           optionId: state.selectedOption.id,
           signatures,
@@ -350,10 +387,30 @@ export default function PaymentOptionsModal() {
         });
 
         LogStore.log(
-          'Payment confirmed',
+          'Payment confirmation result',
           'PaymentOptionsModal',
           'onApprovePayment',
+          { status: confirmResult?.status },
         );
+
+        // Handle missing response
+        if (!confirmResult) {
+          throw new Error('Payment confirmation failed - no response received');
+        }
+
+        // Handle expired payment from confirmPayment response
+        if (confirmResult.status === 'expired') {
+          dispatch({
+            type: 'SET_RESULT',
+            payload: {
+              status: 'error',
+              errorType: 'expired',
+              message: getErrorMessage('expired'),
+            },
+          });
+          dispatch({ type: 'SET_STEP', payload: 'result' });
+          return;
+        }
       }
 
       const amount = formatAmount(
@@ -378,11 +435,14 @@ export default function PaymentOptionsModal() {
           error: error?.message,
         },
       );
+      const errorMessage = error?.message || 'Failed to sign payment';
+      const errorType = detectErrorType(errorMessage);
       dispatch({
         type: 'SET_RESULT',
         payload: {
           status: 'error',
-          message: error?.message || 'Failed to sign payment',
+          errorType,
+          message: getErrorMessage(errorType, errorMessage),
         },
       });
       dispatch({ type: 'SET_STEP', payload: 'result' });
@@ -440,6 +500,7 @@ export default function PaymentOptionsModal() {
         return (
           <ResultView
             status={state.resultStatus}
+            errorType={state.resultErrorType}
             message={state.resultMessage}
             onClose={onClose}
           />
@@ -456,6 +517,7 @@ export default function PaymentOptionsModal() {
     state.isLoadingActions,
     state.actionsError,
     state.resultStatus,
+    state.resultErrorType,
     state.resultMessage,
     data?.loadingMessage,
     paymentData,
