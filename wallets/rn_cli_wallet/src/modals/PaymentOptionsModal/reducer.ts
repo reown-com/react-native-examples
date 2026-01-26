@@ -1,5 +1,7 @@
 import type { PaymentOption } from '@walletconnect/pay';
 
+import type { ErrorType } from './utils';
+
 // ----- Step Types -----
 
 export type Step =
@@ -19,6 +21,7 @@ export interface PaymentModalState {
   // Result state
   resultStatus: 'success' | 'error';
   resultMessage: string;
+  resultErrorType: ErrorType | null;
 
   // Payment state
   selectedOption: PaymentOption | null;
@@ -38,6 +41,7 @@ export const initialState: PaymentModalState = {
   step: 'loading',
   resultStatus: 'success',
   resultMessage: '',
+  resultErrorType: null,
   selectedOption: null,
   paymentActions: null,
   isLoadingActions: false,
@@ -57,7 +61,11 @@ export type PaymentModalAction =
   // Result actions
   | {
       type: 'SET_RESULT';
-      payload: { status: 'success' | 'error'; message: string };
+      payload: {
+        status: 'success' | 'error';
+        message: string;
+        errorType?: ErrorType;
+      };
     }
 
   // Payment actions
@@ -93,6 +101,7 @@ export function paymentModalReducer(
         ...state,
         resultStatus: action.payload.status,
         resultMessage: action.payload.message,
+        resultErrorType: action.payload.errorType ?? null,
       };
 
     // Payment actions
