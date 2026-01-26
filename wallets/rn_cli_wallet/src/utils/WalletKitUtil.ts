@@ -23,12 +23,19 @@ export async function createWalletKit(relayerRegionURL: string) {
   try {
     const clientId =
       await walletKit.engine.signClient.core.crypto.getClientId();
-    LogStore.log('WalletConnect ClientID', 'WalletKitUtil', 'createWalletKit', { clientId });
+    LogStore.log('WalletConnect ClientID', 'WalletKitUtil', 'createWalletKit', {
+      clientId,
+    });
     storage.setItem('WALLETCONNECT_CLIENT_ID', clientId);
   } catch (error) {
-    LogStore.error('Failed to set WalletConnect clientId in localStorage', 'WalletKitUtil', 'createWalletKit', {
-      error: serializeError(error),
-    });
+    LogStore.error(
+      'Failed to set WalletConnect clientId in localStorage',
+      'WalletKitUtil',
+      'createWalletKit',
+      {
+        error: serializeError(error),
+      },
+    );
   }
 }
 

@@ -18,10 +18,15 @@ export default function useWalletKitEventsManager(initialized: boolean) {
    *****************************************************************************/
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-      LogStore.info('Session proposal received', 'WalletKitEvents', 'onSessionProposal', {
-        proposalId: proposal.id,
-        proposer: proposal.params.proposer?.metadata?.name,
-      });
+      LogStore.info(
+        'Session proposal received',
+        'WalletKitEvents',
+        'onSessionProposal',
+        {
+          proposalId: proposal.id,
+          proposer: proposal.params.proposer?.metadata?.name,
+        },
+      );
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(proposal.verifyContext);
 
@@ -45,10 +50,15 @@ export default function useWalletKitEventsManager(initialized: boolean) {
 
   const onSessionRequest = useCallback(
     async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-      LogStore.info('Session request received', 'WalletKitEvents', 'onSessionRequest', {
-        method: requestEvent.params.request.method,
-        topic: requestEvent.topic,
-      });
+      LogStore.info(
+        'Session request received',
+        'WalletKitEvents',
+        'onSessionRequest',
+        {
+          method: requestEvent.params.request.method,
+          topic: requestEvent.topic,
+        },
+      );
       const { topic, params, verifyContext } = requestEvent;
       const { request } = params;
       const requestSession = walletKit.engine.signClient.session.get(topic);
@@ -83,7 +93,11 @@ export default function useWalletKitEventsManager(initialized: boolean) {
             requestSession,
           });
         case SUI_SIGNING_METHODS.SUI_SIGN_PERSONAL_MESSAGE:
-          LogStore.log('Opening Sui personal message modal', 'WalletKitEvents', 'onSessionRequest');
+          LogStore.log(
+            'Opening Sui personal message modal',
+            'WalletKitEvents',
+            'onSessionRequest',
+          );
           return ModalStore.open('SessionSuiSignPersonalMessageModal', {
             requestEvent,
             requestSession,
@@ -122,10 +136,15 @@ export default function useWalletKitEventsManager(initialized: boolean) {
 
   const onSessionAuthenticate = useCallback(
     (authRequest: SignClientTypes.EventArguments['session_authenticate']) => {
-      LogStore.info('Session authenticate received', 'WalletKitEvents', 'onSessionAuthenticate', {
-        id: authRequest.id,
-        chains: authRequest.params.authPayload.chains,
-      });
+      LogStore.info(
+        'Session authenticate received',
+        'WalletKitEvents',
+        'onSessionAuthenticate',
+        {
+          id: authRequest.id,
+          chains: authRequest.params.authPayload.chains,
+        },
+      );
       const chains = authRequest.params.authPayload.chains.filter(
         chain => !!EIP155_CHAINS[chain.split(':')[1]],
       );
@@ -151,14 +170,21 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       walletKit.on('session_authenticate', onSessionAuthenticate);
 
       walletKit.engine.signClient.events.on('session_ping', data => {
-        LogStore.log('Session ping received', 'WalletKitEvents', 'session_ping', { topic: data.topic });
+        LogStore.log(
+          'Session ping received',
+          'WalletKitEvents',
+          'session_ping',
+          { topic: data.topic },
+        );
         Toast.show({
           type: 'info',
           text1: 'Session ping received',
         });
       });
       walletKit.on('session_delete', data => {
-        LogStore.info('Session deleted', 'WalletKitEvents', 'session_delete', { topic: data.topic });
+        LogStore.info('Session deleted', 'WalletKitEvents', 'session_delete', {
+          topic: data.topic,
+        });
         SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
       });
       // load sessions on init

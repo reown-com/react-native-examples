@@ -69,9 +69,14 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
         const { hash } = await connectedWallet.sendTransaction(sendTransaction);
         return formatJsonRpcResult(id, hash);
       } catch (error: any) {
-        LogStore.error(error.message, 'EIP155RequestHandler', 'sendTransaction', {
-          error: serializeError(error),
-        });
+        LogStore.error(
+          error.message,
+          'EIP155RequestHandler',
+          'sendTransaction',
+          {
+            error: serializeError(error),
+          },
+        );
         return formatJsonRpcError(id, error.message);
       }
 
@@ -81,9 +86,14 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
         const signature = await wallet.signTransaction(signTransaction);
         return formatJsonRpcResult(id, signature);
       } catch (error: any) {
-        LogStore.error(error.message, 'EIP155RequestHandler', 'signTransaction', {
-          error: serializeError(error),
-        });
+        LogStore.error(
+          error.message,
+          'EIP155RequestHandler',
+          'signTransaction',
+          {
+            error: serializeError(error),
+          },
+        );
         return formatJsonRpcError(id, error.message);
       }
 

@@ -34,7 +34,9 @@ export default function useInitializeWalletKit() {
       SettingsStore.state.initPromiseResolver?.resolve(undefined);
     } catch (err: unknown) {
       LogStore.error(
-        `Failed to initialize WalletKit: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        `Failed to initialize WalletKit: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
         'Initialization',
         'onInitialize',
         { error: String(err) },
@@ -49,7 +51,9 @@ export default function useInitializeWalletKit() {
       prevRelayerURLValue.current = relayerRegionURL;
     } catch (err: unknown) {
       LogStore.error(
-        `Failed to restart relayer transport: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        `Failed to restart relayer transport: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
         'Initialization',
         'onRelayerRegionChange',
         { error: String(err) },

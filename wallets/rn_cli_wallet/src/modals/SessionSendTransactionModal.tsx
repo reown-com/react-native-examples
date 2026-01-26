@@ -55,7 +55,11 @@ export default function SessionSendTransactionModal() {
           error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSendTransactionModal', 'onApprove');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSendTransactionModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Transaction failed',
@@ -80,7 +84,11 @@ export default function SessionSendTransactionModal() {
         });
         haptics.requestResponse();
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSendTransactionModal', 'onReject');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSendTransactionModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

@@ -58,7 +58,11 @@ export default function SessionSignTypedDataModal() {
           error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSignTypedDataModal', 'onApprove');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSignTypedDataModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Signature failed',
@@ -83,7 +87,11 @@ export default function SessionSignTypedDataModal() {
         });
         haptics.requestResponse();
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSignTypedDataModal', 'onReject');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSignTypedDataModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

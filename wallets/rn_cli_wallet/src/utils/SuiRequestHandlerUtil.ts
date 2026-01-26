@@ -23,9 +23,14 @@ export async function approveSuiRequest(requestEvent: RequestEventArgs) {
         const signedMessage = await wallet.signMessage({ message });
         return formatJsonRpcResult(id, signedMessage);
       } catch (error: any) {
-        LogStore.error(error.message, 'SuiRequestHandler', 'signPersonalMessage', {
-          error: serializeError(error),
-        });
+        LogStore.error(
+          error.message,
+          'SuiRequestHandler',
+          'signPersonalMessage',
+          {
+            error: serializeError(error),
+          },
+        );
         return formatJsonRpcError(id, error.message);
       }
     case SUI_SIGNING_METHODS.SUI_SIGN_TRANSACTION:
@@ -49,9 +54,14 @@ export async function approveSuiRequest(requestEvent: RequestEventArgs) {
         });
         return formatJsonRpcResult(id, result);
       } catch (error: any) {
-        LogStore.error(error.message, 'SuiRequestHandler', 'signAndExecuteTransaction', {
-          error: serializeError(error),
-        });
+        LogStore.error(
+          error.message,
+          'SuiRequestHandler',
+          'signAndExecuteTransaction',
+          {
+            error: serializeError(error),
+          },
+        );
         return formatJsonRpcError(id, error.message);
       }
     default:
