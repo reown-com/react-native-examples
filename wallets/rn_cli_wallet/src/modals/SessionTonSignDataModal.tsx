@@ -81,7 +81,11 @@ export default function SessionTonSignDataModal() {
           error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionTonSignDataModal', 'onApprove');
+        LogStore.error(
+          (e as Error).message,
+          'SessionTonSignDataModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Signature failed',
@@ -111,7 +115,11 @@ export default function SessionTonSignDataModal() {
           error: 'User rejected request',
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionTonSignDataModal', 'onReject');
+        LogStore.error(
+          (e as Error).message,
+          'SessionTonSignDataModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

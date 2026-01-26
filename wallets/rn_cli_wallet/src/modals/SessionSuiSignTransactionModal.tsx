@@ -69,7 +69,11 @@ export default function SessionSignSuiPersonalMessageModal() {
           isLinkMode: isLinkMode,
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSuiSignTransactionModal', 'onApprove');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSuiSignTransactionModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Transaction signing failed',
@@ -99,7 +103,11 @@ export default function SessionSignSuiPersonalMessageModal() {
           error: 'User rejected transaction request',
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSuiSignTransactionModal', 'onReject');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSuiSignTransactionModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

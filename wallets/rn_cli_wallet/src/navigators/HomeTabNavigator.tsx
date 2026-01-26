@@ -11,6 +11,7 @@ import Settings from '@/screens/Settings';
 import { Header } from '@/components/Header';
 import { FontFamily, Spacing } from '@/utils/ThemeUtil';
 import { Platform } from 'react-native';
+import { haptics } from '@/utils/haptics';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
@@ -33,6 +34,9 @@ export function HomeTabNavigator() {
 
   return (
     <TabNav.Navigator
+      screenListeners={{
+        state: haptics.tabChange,
+      }}
       screenOptions={{
         header: NavHeader,
         tabBarStyle: {

@@ -78,7 +78,11 @@ export default function SessionSignTronModal() {
         });
         haptics.requestResponse();
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSignTronModal', 'onReject');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSignTronModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

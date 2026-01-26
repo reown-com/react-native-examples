@@ -61,7 +61,11 @@ export default function SessionDetailModal() {
       SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
       ModalStore.close();
     } catch (e) {
-      LogStore.error((e as Error).message, 'SessionDetailModal', 'onDisconnect');
+      LogStore.error(
+        (e as Error).message,
+        'SessionDetailModal',
+        'onDisconnect',
+      );
     }
     setLoading(false);
   }, [session]);

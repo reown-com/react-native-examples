@@ -131,9 +131,14 @@ export default class TonLib {
       );
       LogStore.log('TON signData verified', 'TonLib', 'signData', { verified });
     } catch (e) {
-      LogStore.warn('TON signData verification failed to run', 'TonLib', 'signData', {
-        error: String(e),
-      });
+      LogStore.warn(
+        'TON signData verification failed to run',
+        'TonLib',
+        'signData',
+        {
+          error: String(e),
+        },
+      );
     }
     return result;
   }

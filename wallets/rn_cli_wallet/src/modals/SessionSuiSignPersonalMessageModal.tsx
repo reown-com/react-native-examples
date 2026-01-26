@@ -58,7 +58,11 @@ export default function SessionSignSuiPersonalMessageModal() {
           isLinkMode: isLinkMode,
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSuiSignPersonalMessageModal', 'onApprove');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSuiSignPersonalMessageModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Signature failed',
@@ -88,7 +92,11 @@ export default function SessionSignSuiPersonalMessageModal() {
           error: 'User rejected personal message request',
         });
       } catch (e) {
-        LogStore.error((e as Error).message, 'SessionSuiSignPersonalMessageModal', 'onReject');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSuiSignPersonalMessageModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

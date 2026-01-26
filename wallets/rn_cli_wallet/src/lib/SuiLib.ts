@@ -46,7 +46,9 @@ export default class SuiLib {
 
     this.keypair = Ed25519Keypair.fromSecretKey(new Uint8Array(key));
     this.address = this.keypair.getPublicKey().toSuiAddress();
-    LogStore.info('Sui wallet initialized', 'SuiLib', 'constructor', { address: this.address });
+    LogStore.info('Sui wallet initialized', 'SuiLib', 'constructor', {
+      address: this.address,
+    });
   }
 
   static async init({ mnemonic }: IInitArguments) {
@@ -86,7 +88,9 @@ export default class SuiLib {
     chainId,
   }: ISignTransactionArguments) {
     const tx = Transaction.from(transaction);
-    LogStore.log('Signing Sui transaction', 'SuiLib', 'signTransaction', { chainId });
+    LogStore.log('Signing Sui transaction', 'SuiLib', 'signTransaction', {
+      chainId,
+    });
     const client = this.getSuiClient(chainId);
     const signature = await tx.sign({ signer: this.keypair, client });
     const transactionBytes = Buffer.from(await tx.build({ client })).toString(
@@ -110,9 +114,14 @@ export default class SuiLib {
       client,
     });
     const result = await executor.executeTransaction(tx);
-    LogStore.log('Transaction executed', 'SuiLib', 'signAndExecuteTransaction', {
-      digest: result.digest,
-    });
+    LogStore.log(
+      'Transaction executed',
+      'SuiLib',
+      'signAndExecuteTransaction',
+      {
+        digest: result.digest,
+      },
+    );
     return result;
   }
 
@@ -149,9 +158,14 @@ export default class SuiLib {
       const jsonTx = await tx.toJSON();
       return jsonTx;
     } catch (e) {
-      LogStore.error('Error decoding transaction', 'SuiLib', 'getJsonTransactionFromBase64', {
-        error: String(e),
-      });
+      LogStore.error(
+        'Error decoding transaction',
+        'SuiLib',
+        'getJsonTransactionFromBase64',
+        {
+          error: String(e),
+        },
+      );
       return undefined;
     }
   }

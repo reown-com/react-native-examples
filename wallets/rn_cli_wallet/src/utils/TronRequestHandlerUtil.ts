@@ -69,7 +69,9 @@ export async function approveTronRequest(
     }
   } catch (error) {
     LogStore.error(
-      `TRON request approval failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      `TRON request approval failed: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`,
       'TronRequestHandler',
       'approveTronRequest',
       { error: serializeError(error) },

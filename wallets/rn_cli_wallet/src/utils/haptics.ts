@@ -17,4 +17,5 @@ export const haptics = {
   success: () => safeHaptic(() => Haptics.notification('success')),
   error: () => safeHaptic(() => Haptics.notification('error')),
   warning: () => safeHaptic(() => Haptics.notification('warning')),
+  tabChange: () => safeHaptic(() => Haptics.selection()),
 };

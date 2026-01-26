@@ -371,7 +371,7 @@ export default function PaymentOptionsModal() {
           },
         );
 
-        const confirmResult = await payClient.confirmPayment({
+        await payClient.confirmPayment({
           paymentId: paymentData.paymentId,
           optionId: state.selectedOption.id,
           signatures,
