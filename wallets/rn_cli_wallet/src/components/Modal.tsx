@@ -74,12 +74,12 @@ export default function Modal() {
   return (
     <RNModal
       backdropOpacity={0.6}
+      backdropTransitionOutTiming={1}
       hideModalContentWhileAnimating
       useNativeDriver
       statusBarTranslucent
       propagateSwipe
       onBackdropPress={onClose}
-      onModalHide={onClose}
       style={styles.modal}
       isVisible={open}
     >
