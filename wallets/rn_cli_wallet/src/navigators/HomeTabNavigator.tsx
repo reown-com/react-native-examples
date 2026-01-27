@@ -42,10 +42,9 @@ export function HomeTabNavigator() {
         tabBarStyle: {
           backgroundColor: Theme['bg-primary'],
           borderColor: Theme['foreground-tertiary'],
-          paddingTop: Spacing[2],
           ...Platform.select({
             android: {
-              height: 70,
+              height: 80,
             },
             default: {},
           }),
@@ -53,6 +52,9 @@ export function HomeTabNavigator() {
         tabBarLabelStyle: {
           fontSize: 10,
           fontFamily: FontFamily.regular,
+        },
+        tabBarItemStyle: {
+          paddingTop: Spacing[2],
         },
         tabBarActiveTintColor: Theme['text-primary'],
         tabBarInactiveTintColor: Theme['text-secondary'],

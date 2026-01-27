@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import Config from 'react-native-config';
-import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
+import { SystemBars } from 'react-native-edge-to-edge';
+import { Linking, Platform, StyleSheet } from 'react-native';
 import { useSnapshot } from 'valtio';
 import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -161,10 +162,7 @@ const App = () => {
       <SafeAreaProvider>
         <KeyboardProvider>
           <NavigationContainer>
-            <StatusBar
-              translucent={true}
-              barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
-            />
+            <SystemBars style={themeMode === 'dark' ? 'light' : 'dark'} />
             <RootStackNavigator />
             <Toast config={toastConfig} position="top" topOffset={0} />
           </NavigationContainer>

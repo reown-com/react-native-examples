@@ -1,9 +1,6 @@
 <resources>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- change to DayNight.NoActionBar when DarkMode is added -->
-               <!-- Customize your theme here. -->
-               <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
-               <item name="android:forceDarkAllowed">false</item> <!-- Remove this when DarkMode is added -->
+    <style name="AppTheme" parent="Theme.EdgeToEdge.Light">
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     </style>
 
     <style name="BootTheme" parent="Theme.BootSplash">
