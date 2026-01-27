@@ -1,12 +1,17 @@
+import { useLogsStore } from "@/store/useLogsStore";
 import {
+  PaymentRecord,
   PaymentStatus,
   PaymentStatusResponse,
   StartPaymentRequest,
   StartPaymentResponse,
+  TransactionFilterType,
+  TransactionsResponse,
 } from "@/utils/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { getPaymentStatus, startPayment } from "./payment";
+import { getTransactions, GetTransactionsOptions } from "./transactions";
 
 /**
  * Terminal payment statuses that indicate polling should stop
@@ -114,4 +119,80 @@ export function usePaymentStatus(
   }, [query.data]);
 
   return query;
+}
+
+interface UseTransactionsOptions {
+  /**
+   * Whether to enable the query
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Filter transactions by UI filter type
+   * @default "all"
+   */
+  filter?: TransactionFilterType;
+  /**
+   * Additional query options for the API
+   */
+  queryOptions?: GetTransactionsOptions;
+}
+
+/**
+ * Maps UI filter type to API status values
+ */
+function filterToStatusArray(
+  filter: TransactionFilterType,
+): string[] | undefined {
+  switch (filter) {
+    case "completed":
+      return ["succeeded"];
+    case "failed":
+      return ["failed", "expired"];
+    case "pending":
+      return ["requires_action", "processing"];
+    case "all":
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Hook to fetch merchant transactions with filtering
+ * @param options - Query options including filter type
+ * @returns Query result with filtered transactions
+ */
+export function useTransactions(options: UseTransactionsOptions = {}) {
+  const { enabled = true, filter = "all", queryOptions = {} } = options;
+
+  const addLog = useLogsStore.getState().addLog;
+
+  return useQuery<TransactionsResponse, Error, PaymentRecord[]>({
+    queryKey: ["transactions", filter, queryOptions],
+    queryFn: () => {
+      const statusFilter = filterToStatusArray(filter);
+      return getTransactions({
+        ...queryOptions,
+        status: statusFilter,
+        sortBy: "date",
+        sortDir: "desc",
+      });
+    },
+    enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes (formerly cacheTime)
+    retry: 2,
+    retryDelay: 1000,
+    select: (data) => data.data,
+    meta: {
+      onError: (error: Error) => {
+        addLog(
+          "error",
+          `Failed to fetch transactions: ${error.message}`,
+          "transactions",
+          "useTransactions",
+        );
+      },
+    },
+  });
 }

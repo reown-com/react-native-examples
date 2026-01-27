@@ -17,12 +17,14 @@ The app is built with **Expo** and **React Native**, supporting Android, iOS, an
 ## Tech Stack
 
 ### Core Technologies
+
 - **React Native**: 0.81.5
 - **Expo**: ^54.0.23 (with Expo Router for navigation)
 - **TypeScript**: ~5.9.2
 - **React**: 19.1.0
 
 ### Key Libraries
+
 - **@tanstack/react-query**: Data fetching and caching
 - **zustand**: State management (lightweight alternative to Redux)
 - **react-hook-form**: Form handling
@@ -35,6 +37,7 @@ The app is built with **Expo** and **React Native**, supporting Android, iOS, an
 - **@sentry/react-native**: Error tracking and monitoring
 
 ### Development Tools
+
 - **ESLint**: Code linting
 - **Prettier**: Code formatting
 - **Jest**: Testing framework
@@ -82,6 +85,7 @@ The app uses **Zustand** for state management with two main stores:
 ### Navigation
 
 Uses **Expo Router** with file-based routing:
+
 - Routes are defined by file structure in `app/` directory
 - Navigation via `router.push()`, `router.replace()`, `router.dismiss()`
 - Type-safe routing with TypeScript
@@ -169,11 +173,13 @@ Uses **Expo Router** with file-based routing:
 ### Payment Service (`services/payment.ts`)
 
 **`startPayment(request)`**
+
 - Creates new payment request
 - Requires merchant ID and API key
 - Returns payment ID and QR code URI
 
 **`getPaymentStatus(paymentId)`**
+
 - Polls payment status
 - Returns payment state (pending, completed, failed)
 - Includes transaction details when completed
@@ -181,6 +187,7 @@ Uses **Expo Router** with file-based routing:
 ### Authentication Headers
 
 All API requests include:
+
 - `Api-Key`: Merchant API key
 - `Merchant-Id`: Merchant identifier
 - `Sdk-Name`: "pos-device"
@@ -215,17 +222,20 @@ Copy `.env.example` to `.env` and fill in values.
 ### Getting Started
 
 1. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    # Edit .env with your values
    ```
 
 3. **Create native folders**
+
    ```bash
    npm run prebuild
    ```
@@ -324,6 +334,7 @@ This POS app supports a **variants system** that allows for minor UI customizati
 #### Variant Structure
 
 Each variant is defined with:
+
 - **name**: Display name (e.g., "Solflare", "Binance")
 - **brandLogo**: Image asset for UI branding (loaded via `require()`)
 - **brandLogoWidth**: Optional width override for brand logo
@@ -334,6 +345,7 @@ Each variant is defined with:
 #### Color Override System
 
 Variants can override any color from the base theme:
+
 - Colors are merged with base theme colors
 - Only specified colors are overridden; others use defaults
 - Both light and dark theme overrides are supported
@@ -373,6 +385,7 @@ solflare: {
 ### Key Color Tokens
 
 Commonly overridden colors in variants:
+
 - `bg-accent-primary`: Primary accent background
 - `bg-payment-success`: Payment success screen background
 - `icon-accent-primary`: Accent icon color
@@ -394,6 +407,7 @@ const Theme = useTheme();
 #### Variant Selection
 
 Variants are stored in Zustand store (`store/useSettingsStore.ts`):
+
 - Selected variant persists across app sessions
 - Can be changed in Settings screen
 - Affects all themed components immediately
@@ -510,9 +524,11 @@ export const Variants: Record<VariantName, Variant> = {
    - `android/app/wc_rn_upload.keystore`
 
 2. **Build Release APK**:
+
    ```bash
    npm run android:build
    ```
+
    Output: `android/app/build/outputs/apk/release/app-release.apk`
 
 3. **Install via USB**:
@@ -567,7 +583,7 @@ router.push("/amount");
 // Navigate with params
 router.push({
   pathname: "/scan",
-  params: { amount: "10.00" }
+  params: { amount: "10.00" },
 });
 
 // Replace current screen
@@ -597,7 +613,9 @@ import { secureStorage, SECURE_STORAGE_KEYS } from "@/utils/secure-storage";
 await secureStorage.setItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY, apiKey);
 
 // Retrieve
-const apiKey = await secureStorage.getItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
+const apiKey = await secureStorage.getItem(
+  SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+);
 ```
 
 ## Code Quality Guidelines
@@ -607,9 +625,10 @@ const apiKey = await secureStorage.getItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY)
 **⚠️ Important: Do NOT leave `console.log()` statements in production code.**
 
 - **Use the logging system**: For debugging, use the app's built-in logging system via `useLogsStore`:
+
   ```typescript
   import { useLogsStore } from "@/store/useLogsStore";
-  
+
   const addLog = useLogsStore((state) => state.addLog);
   addLog("info", "Payment completed", "payment-success", "handlePrintReceipt");
   ```

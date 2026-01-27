@@ -3,6 +3,7 @@ import { VariantName, Variants } from "@/constants/variants";
 import { MerchantConfig } from "@/utils/merchant-config";
 import { SECURE_STORAGE_KEYS, secureStorage } from "@/utils/secure-storage";
 import { storage } from "@/utils/storage";
+import { TransactionFilterType } from "@/utils/types";
 import * as Crypto from "expo-crypto";
 import { Appearance } from "react-native";
 import { create } from "zustand";
@@ -50,6 +51,9 @@ interface SettingsStore {
   merchantId: string | null;
   isMerchantApiKeySet: boolean;
 
+  // Transaction filter
+  transactionFilter: TransactionFilterType;
+
   // PIN protection
   pinFailedAttempts: number;
   pinLockoutUntil: number | null;
@@ -75,6 +79,9 @@ interface SettingsStore {
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
 
+  // Transaction filter
+  setTransactionFilter: (filter: TransactionFilterType) => void;
+
   // Others
   getVariantPrinterLogo: () => string;
 }
@@ -88,6 +95,7 @@ export const useSettingsStore = create<SettingsStore>()(
       _hasHydrated: false,
       merchantId: null,
       isMerchantApiKeySet: false,
+      transactionFilter: "all",
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
@@ -227,13 +235,16 @@ export const useSettingsStore = create<SettingsStore>()(
       setBiometricEnabled: (enabled: boolean) =>
         set({ biometricEnabled: enabled }),
 
+      setTransactionFilter: (filter: TransactionFilterType) =>
+        set({ transactionFilter: filter }),
+
       getVariantPrinterLogo: () => {
         return Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64;
       },
     }),
     {
       name: "settings",
-      version: 9,
+      version: 10,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -269,6 +280,9 @@ export const useSettingsStore = create<SettingsStore>()(
           // Remove old pinHash created with simple hash function and let user set a new pin
           persistedState.pinHash = null;
           secureStorage.removeItem(SECURE_STORAGE_KEYS.PIN_HASH);
+        }
+        if (version < 10) {
+          persistedState.transactionFilter = "all";
         }
 
         return persistedState;
