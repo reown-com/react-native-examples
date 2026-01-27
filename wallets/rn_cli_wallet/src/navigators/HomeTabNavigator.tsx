@@ -12,6 +12,7 @@ import { Header } from '@/components/Header';
 import { FontFamily, Spacing } from '@/utils/ThemeUtil';
 import { Platform } from 'react-native';
 import { haptics } from '@/utils/haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
@@ -31,6 +32,7 @@ const NavHeader = () => <Header />;
 
 export function HomeTabNavigator() {
   const Theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <TabNav.Navigator
@@ -44,7 +46,7 @@ export function HomeTabNavigator() {
           borderColor: Theme['foreground-tertiary'],
           ...Platform.select({
             android: {
-              height: 80,
+              height: 56 + insets.bottom,
             },
             default: {},
           }),
