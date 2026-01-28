@@ -4421,6 +4421,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zoontek/react-native-navigation-bar@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@zoontek/react-native-navigation-bar@npm:1.0.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 4a528df99f078083cfe4d432fb3b9ddcfcaf27a9524a66219e135bb0c58f808d72a1ac9d0208ae7e540d8426ea30d73bef95771dcaa87fc07b10706d87cb62fb
+  languageName: node
+  linkType: hard
+
 "RNWeb3Wallet@workspace:.":
   version: 0.0.0-use.local
   resolution: "RNWeb3Wallet@workspace:."
@@ -4457,6 +4467,7 @@ __metadata:
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
     "@walletconnect/react-native-compat": 2.23.3-canary.0
+    "@zoontek/react-native-navigation-bar": ^1.0.2
     babel-plugin-module-resolver: ^5.0.0
     bip39: 3.1.0
     dayjs: 1.11.11
@@ -4473,7 +4484,6 @@ __metadata:
     react-native-config: 1.5.5
     react-native-device-info: 14.1.1
     react-native-dialog: 9.3.0
-    react-native-edge-to-edge: ^1.7.0
     react-native-gesture-handler: 2.30.0
     react-native-get-random-values: 1.11.0
     react-native-keyboard-controller: ^1.20.6
@@ -10496,16 +10506,6 @@ __metadata:
   peerDependencies:
     react-native: ">=0.63.0"
   checksum: 148fcd9e4cb3001a8bbed02f465833329a83bc60efbf763a9bf227ec81208a41e03055e8bc213aea838933878f3cc7c3ca18a15446e819c17509cad75362d7ca
-  languageName: node
-  linkType: hard
-
-"react-native-edge-to-edge@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "react-native-edge-to-edge@npm:1.7.0"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 6f607286b38f181125cdd5644693b74ba03ff35539c9b34d95e83c1466ff96b8a94e7b64deceda78d459dc2ccc13bd66b982c2e654c42ffe974dad3c24c14f79
   languageName: node
   linkType: hard
 
