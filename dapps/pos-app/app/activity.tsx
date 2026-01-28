@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Platform,
   RefreshControl,
   StyleSheet,
   View,
@@ -161,7 +162,8 @@ export default function ActivityScreen() {
 const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-4"],
+    paddingTop: Spacing["spacing-4"],
+    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-6"],
     gap: Spacing["spacing-2"],
   },
   emptyListContent: {
