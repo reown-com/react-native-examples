@@ -56,6 +56,7 @@ pos-app/
 │   ├── payment-success.tsx # Success screen with receipt printing
 │   ├── payment-failure.tsx # Failure screen
 │   ├── settings.tsx       # Settings & configuration
+│   ├── activity.tsx       # Transaction history screen
 │   └── logs.tsx           # Debug logs viewer
 ├── components/            # Reusable UI components
 ├── constants/            # Theme, variants, spacing, etc.
@@ -77,6 +78,7 @@ The app uses **Zustand** for state management with two main stores:
    - Device ID
    - Biometric authentication settings
    - Printer connection status
+   - Transaction filter preference (for Activity screen)
 
 2. **`useLogsStore`** (`store/useLogsStore.ts`)
    - Debug logs for troubleshooting
@@ -96,6 +98,7 @@ Uses **Expo Router** with file-based routing:
 
 1. **Home Screen** (`app/index.tsx`)
    - "New sale" button to start payment
+   - "Activity" button to view transaction history
    - "Settings" button for configuration
    - Validates merchant setup before allowing payments
 
@@ -120,6 +123,13 @@ Uses **Expo Router** with file-based routing:
 5. **Payment Failure** (`app/payment-failure.tsx`)
    - Displays error information
    - Allows retry or return to home
+
+6. **Activity Screen** (`app/activity.tsx`)
+   - Transaction history list with pull-to-refresh
+   - Filter tabs: All, Failed, Pending, Completed
+   - Transaction detail modal on tap
+   - Empty state when no transactions
+   - Uses Merchant Portal API for data fetching
 
 ### 2. Receipt Printing
 
@@ -164,7 +174,7 @@ Uses **Expo Router** with file-based routing:
 
 ## Payment API Integration
 
-### API Client (`services/client.ts`)
+### Payment API Client (`services/client.ts`)
 
 - Base URL from `EXPO_PUBLIC_API_URL` environment variable
 - Request/response interceptors
@@ -186,13 +196,48 @@ Uses **Expo Router** with file-based routing:
 
 ### Authentication Headers
 
-All API requests include:
+All Payment API requests include:
 
 - `Api-Key`: Merchant API key
 - `Merchant-Id`: Merchant identifier
 - `Sdk-Name`: "pos-device"
 - `Sdk-Version`: "1.0.0"
 - `Sdk-Platform`: "react-native"
+
+## Merchant Portal API Integration
+
+The Merchant Portal API is a separate backend used for fetching transaction history (Activity screen).
+
+### Merchant API Client (`services/merchant-client.ts`)
+
+- Base URL from `EXPO_PUBLIC_MERCHANT_API_URL` environment variable
+- Uses different API key (`EXPO_PUBLIC_DEFAULT_MERCHANT_PORTAL_API_KEY`)
+- Header: `x-api-key` for authentication
+
+### Transactions Service (`services/transactions.ts`)
+
+**`getTransactions(options)`**
+
+- Fetches merchant transaction history
+- Endpoint: `GET /merchants/{merchant_id}/payments`
+- Supports filtering by status, date range, pagination
+- Returns array of `PaymentRecord` objects
+
+### useTransactions Hook (`services/hooks.ts`)
+
+```typescript
+import { useTransactions } from "@/services/hooks";
+
+const { data, isLoading, isError, refetch } = useTransactions({
+  filter: "all", // "all" | "completed" | "pending" | "failed"
+  enabled: true,
+});
+```
+
+- React Query hook with built-in caching (5 min stale time, 30 min cache)
+- Automatic retry on failure (2 retries)
+- Client-side filtering via `filter` option
+- Logs errors to `useLogsStore` for debugging
 
 ## Environment Variables
 
@@ -206,6 +251,8 @@ EXPO_PUBLIC_API_URL=""                 # Payment API base URL
 EXPO_PUBLIC_GATEWAY_URL=""             # WalletConnect gateway URL
 EXPO_PUBLIC_DEFAULT_MERCHANT_ID=""     # Default merchant ID (optional)
 EXPO_PUBLIC_DEFAULT_MERCHANT_API_KEY="" # Default merchant API key (optional)
+EXPO_PUBLIC_MERCHANT_API_URL=""        # Merchant Portal API base URL
+EXPO_PUBLIC_DEFAULT_MERCHANT_PORTAL_API_KEY="" # Merchant Portal API key (for Activity screen)
 ```
 
 Copy `.env.example` to `.env` and fill in values.
@@ -271,9 +318,11 @@ Copy `.env.example` to `.env` and fill in values.
 
 ### Services & API
 
-- **`services/client.ts`**: API client configuration
+- **`services/client.ts`**: Payment API client configuration
+- **`services/merchant-client.ts`**: Merchant Portal API client configuration
 - **`services/payment.ts`**: Payment API functions
-- **`services/hooks.ts`**: React Query hooks for API calls
+- **`services/transactions.ts`**: Transaction fetching service (Merchant Portal API)
+- **`services/hooks.ts`**: React Query hooks for API calls (including `useTransactions`)
 - **`api/payment.ts`**: Payment API types/interfaces
 - **`api/payment-status.ts`**: Payment status types
 
@@ -305,6 +354,11 @@ Copy `.env.example` to `.env` and fill in values.
 - **`components/pin-modal.tsx`**: PIN entry modal
 - **`components/button.tsx`**: Themed button component
 - **`components/themed-text.tsx`**: Theme-aware text component
+- **`components/status-badge.tsx`**: Transaction status badge (Completed/Pending/Failed)
+- **`components/transaction-card.tsx`**: Transaction list item
+- **`components/filter-tabs.tsx`**: Filter tabs for Activity screen
+- **`components/transaction-detail-modal.tsx`**: Transaction detail bottom sheet
+- **`components/empty-state.tsx`**: Reusable empty state component
 
 ## Variants System
 

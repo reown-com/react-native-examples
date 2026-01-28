@@ -100,7 +100,6 @@ class MerchantApiClient {
           "request",
           {
             endpoint,
-            response: data,
           },
         );
       return data as T;

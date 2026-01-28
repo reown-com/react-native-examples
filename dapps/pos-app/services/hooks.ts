@@ -8,7 +8,7 @@ import {
   TransactionFilterType,
   TransactionsResponse,
 } from "@/utils/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { getPaymentStatus, startPayment } from "./payment";
 import { getTransactions, GetTransactionsOptions } from "./transactions";
@@ -158,32 +158,35 @@ function filterToStatusArray(
 }
 
 /**
- * Hook to fetch merchant transactions with filtering
+ * Hook to fetch merchant transactions with filtering and infinite scrolling
  * @param options - Query options including filter type
- * @returns Query result with filtered transactions
+ * @returns Infinite query result with paginated transactions
  */
 export function useTransactions(options: UseTransactionsOptions = {}) {
   const { enabled = true, filter = "all", queryOptions = {} } = options;
 
   const addLog = useLogsStore.getState().addLog;
 
-  return useQuery<TransactionsResponse, Error, PaymentRecord[]>({
+  const query = useInfiniteQuery<TransactionsResponse, Error>({
     queryKey: ["transactions", filter, queryOptions],
-    queryFn: () => {
+    queryFn: ({ pageParam }) => {
       const statusFilter = filterToStatusArray(filter);
       return getTransactions({
         ...queryOptions,
         status: statusFilter,
         sortBy: "date",
         sortDir: "desc",
+        limit: 20,
+        cursor: pageParam as string | undefined,
       });
     },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
     enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes (formerly cacheTime)
     retry: 2,
     retryDelay: 1000,
-    select: (data) => data.data,
     meta: {
       onError: (error: Error) => {
         addLog(
@@ -195,4 +198,12 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
       },
     },
   });
+
+  // Flatten all pages into a single array
+  const transactions = query.data?.pages.flatMap((page) => page.data) ?? [];
+
+  return {
+    ...query,
+    transactions,
+  };
 }

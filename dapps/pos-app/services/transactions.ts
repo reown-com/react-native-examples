@@ -12,6 +12,7 @@ export interface GetTransactionsOptions {
 
 /**
  * Fetch merchant transactions from the Merchant Portal API
+ * Falls back to mock data in development or if API fails
  * @param options - Optional query parameters for filtering and pagination
  * @returns TransactionsResponse with list of payments and stats
  */
