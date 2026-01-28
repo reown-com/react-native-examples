@@ -1,5 +1,7 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { formatFiatAmount } from "@/utils/currency";
+import { formatShortDate } from "@/utils/misc";
 import { PaymentRecord } from "@/utils/types";
 import { memo } from "react";
 import { StyleSheet, View } from "react-native";
@@ -10,43 +12,6 @@ import { ThemedText } from "./themed-text";
 interface TransactionCardProps {
   payment: PaymentRecord;
   onPress: () => void;
-}
-
-/**
- * Format fiat amount from cents to display string
- */
-function formatAmount(amount?: number, currency?: string): string {
-  if (amount === undefined) return "-";
-
-  const value = amount / 100;
-  const currencyCode = extractCurrencyCode(currency);
-
-  // Get currency symbol
-  const symbol = currencyCode === "EUR" ? "\u20AC" : "$";
-
-  return `${value.toFixed(2)}${symbol}`;
-}
-
-/**
- * Extract currency code from CAIP format (e.g., "iso4217/USD" -> "USD")
- */
-function extractCurrencyCode(currency?: string): string {
-  if (!currency) return "USD";
-  return currency.includes("/") ? currency.split("/")[1] : currency;
-}
-
-/**
- * Format date to display string (e.g., "Oct 14, 25")
- */
-function formatDate(dateString?: string): string {
-  if (!dateString) return "-";
-
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-GB", {
-    month: "short",
-    day: "numeric",
-    year: "2-digit",
-  });
 }
 
 function TransactionCardBase({ payment, onPress }: TransactionCardProps) {
@@ -62,7 +27,7 @@ function TransactionCardBase({ payment, onPress }: TransactionCardProps) {
     >
       <View style={styles.leftContent}>
         <ThemedText fontSize={16} lineHeight={20} color="text-primary">
-          {formatAmount(payment.fiat_amount, payment.fiat_currency)}
+          {formatFiatAmount(payment.fiat_amount, payment.fiat_currency)}
         </ThemedText>
         <ThemedText
           fontSize={14}
@@ -70,7 +35,7 @@ function TransactionCardBase({ payment, onPress }: TransactionCardProps) {
           color="text-secondary"
           style={styles.date}
         >
-          {formatDate(payment.created_at)}
+          {formatShortDate(payment.created_at)}
         </ThemedText>
       </View>
       <StatusBadge status={payment.status} />

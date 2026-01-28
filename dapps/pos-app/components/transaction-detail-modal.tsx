@@ -1,5 +1,7 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { formatFiatAmount } from "@/utils/currency";
+import { formatDateTime } from "@/utils/misc";
 import { formatCryptoReceived, getTokenSymbol } from "@/utils/tokens";
 import { PaymentRecord } from "@/utils/types";
 import { memo } from "react";
@@ -17,47 +19,6 @@ interface TransactionDetailModalProps {
   visible: boolean;
   payment: PaymentRecord | null;
   onClose: () => void;
-}
-
-/**
- * Format fiat amount from cents to display string
- */
-function formatAmount(amount?: number, currency?: string): string {
-  if (amount === undefined) return "-";
-
-  const value = amount / 100;
-  const currencyCode = extractCurrencyCode(currency);
-  const symbol = currencyCode === "EUR" ? "\u20AC" : "$";
-
-  return `${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}${symbol}`;
-}
-
-/**
- * Extract currency code from CAIP format
- */
-function extractCurrencyCode(currency?: string): string {
-  if (!currency) return "USD";
-  return currency.includes("/") ? currency.split("/")[1] : currency;
-}
-
-/**
- * Format date to display string matching Figma (e.g., "Oct 14, 25 - 14:23")
- */
-function formatDateTime(dateString?: string): string {
-  if (!dateString) return "-";
-
-  const date = new Date(dateString);
-  const datePart = date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "2-digit",
-  });
-  const timePart = date.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  return `${datePart} - ${timePart}`;
 }
 
 /**
@@ -199,7 +160,10 @@ function TransactionDetailModalBase({
 
               <DetailRow
                 label="Amount"
-                value={formatAmount(payment.fiat_amount, payment.fiat_currency)}
+                value={formatFiatAmount(
+                  payment.fiat_amount,
+                  payment.fiat_currency,
+                )}
               />
 
               {payment.token_amount && payment.token_caip19 && (
@@ -215,12 +179,12 @@ function TransactionDetailModalBase({
                         payment.token_amount,
                       ) ?? payment.token_amount}
                     </ThemedText>
-                    {getTokenIcon(payment.token_caip19) && (
-                      <Image
-                        style={styles.tokenIcon}
-                        source={getTokenIcon(payment.token_caip19)!}
-                      />
-                    )}
+                    {(() => {
+                      const icon = getTokenIcon(payment.token_caip19);
+                      return icon ? (
+                        <Image style={styles.tokenIcon} source={icon} />
+                      ) : null;
+                    })()}
                   </View>
                 </DetailRow>
               )}
@@ -287,7 +251,6 @@ const styles = StyleSheet.create({
   },
   valueText: {
     textAlign: "right",
-    // maxWidth: "80%",
     flex: 1,
   },
   underlineText: {

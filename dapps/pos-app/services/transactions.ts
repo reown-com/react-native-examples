@@ -10,8 +10,7 @@ export interface GetTransactionsOptions {
   cursor?: string;
 }
 
-const MERCHANT_PORTAL_API_KEY =
-  process.env.EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY;
+const MERCHANT_PORTAL_API_KEY = process.env.EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY;
 
 /**
  * Fetch merchant transactions from the Merchant Portal API (native version)

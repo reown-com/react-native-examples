@@ -16,3 +16,37 @@ export const getDeviceIdentifier = async () => {
     return "unknown";
   }
 };
+
+/**
+ * Format date to short display string (e.g., "Oct 14, 25")
+ */
+export function formatShortDate(dateString?: string): string {
+  if (!dateString) return "-";
+
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "2-digit",
+  });
+}
+
+/**
+ * Format date with time (e.g., "Oct 14, 25 - 14:23")
+ */
+export function formatDateTime(dateString?: string): string {
+  if (!dateString) return "-";
+
+  const date = new Date(dateString);
+  const datePart = date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "2-digit",
+  });
+  const timePart = date.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return `${datePart} - ${timePart}`;
+}

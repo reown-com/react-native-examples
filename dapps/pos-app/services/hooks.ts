@@ -167,8 +167,11 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
 
   const addLog = useLogsStore.getState().addLog;
 
+  // Extract relevant fields for query key to avoid cache misses from object reference changes
+  const { sortBy, sortDir, limit } = queryOptions;
+
   const query = useInfiniteQuery<TransactionsResponse, Error>({
-    queryKey: ["transactions", filter, queryOptions],
+    queryKey: ["transactions", filter, sortBy, sortDir, limit],
     queryFn: ({ pageParam }) => {
       const statusFilter = filterToStatusArray(filter);
       return getTransactions({
@@ -187,17 +190,19 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
     gcTime: 30 * 60 * 1000, // 30 minutes (formerly cacheTime)
     retry: 2,
     retryDelay: 1000,
-    meta: {
-      onError: (error: Error) => {
-        addLog(
-          "error",
-          `Failed to fetch transactions: ${error.message}`,
-          "transactions",
-          "useTransactions",
-        );
-      },
-    },
   });
+
+  // Log errors when they occur
+  useEffect(() => {
+    if (query.error) {
+      addLog(
+        "error",
+        `Failed to fetch transactions: ${query.error.message}`,
+        "transactions",
+        "useTransactions",
+      );
+    }
+  }, [query.error, addLog]);
 
   // Flatten all pages into a single array
   const transactions = query.data?.pages.flatMap((page) => page.data) ?? [];

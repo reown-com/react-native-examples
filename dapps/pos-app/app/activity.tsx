@@ -176,15 +176,4 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing["spacing-4"],
     alignItems: "center",
   },
-  closeButton: {
-    position: "absolute",
-    alignSelf: "center",
-  },
-  gradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 200,
-  },
 });

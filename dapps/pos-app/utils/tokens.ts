@@ -5,6 +5,7 @@
 /**
  * Known token contract addresses mapped to their symbols and decimals
  * Format: { [chainId]: { [contractAddress]: { symbol, decimals } } }
+ * Note: Addresses are stored lowercase for case-insensitive comparison
  */
 const KNOWN_TOKENS: Record<
   string,
@@ -107,7 +108,7 @@ export function parseTokenCaip19(caip19?: string): TokenInfo | null {
  * @returns Formatted amount string (e.g., "0.10")
  */
 export function formatTokenAmount(rawAmount: string, decimals: number): string {
-  if (!rawAmount) return "0";
+  if (!rawAmount) return "0.00";
 
   // Handle the raw amount as a string to avoid precision issues
   const paddedAmount = rawAmount.padStart(decimals + 1, "0");
