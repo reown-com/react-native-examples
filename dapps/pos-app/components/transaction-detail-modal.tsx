@@ -5,8 +5,9 @@ import { formatDateTime } from "@/utils/misc";
 import { formatCryptoReceived, getTokenSymbol } from "@/utils/tokens";
 import { PaymentRecord } from "@/utils/types";
 import { memo } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Button } from "./button";
+import { FramedModal } from "./framed-modal";
 import { StatusBadge } from "./status-badge";
 import { ThemedText } from "./themed-text";
 import { Image } from "expo-image";
@@ -117,12 +118,7 @@ function TransactionDetailModalBase({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <FramedModal visible={visible} onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
         <Pressable
           style={[styles.container, { backgroundColor: theme["bg-primary"] }]}
@@ -209,7 +205,7 @@ function TransactionDetailModalBase({
         </Pressable>
       </Pressable>
       <Toast config={toastConfig} position="bottom" visibilityTime={6000} />
-    </Modal>
+    </FramedModal>
   );
 }
 

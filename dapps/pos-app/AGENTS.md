@@ -745,6 +745,127 @@ Fix any errors found. Pre-existing TypeScript errors in unrelated files can be i
 - Clear Metro cache: `npx expo start --clear`
 - Clean Android build: `cd android && ./gradlew clean`
 
+## Desktop Web Frame System
+
+When the app is viewed on desktop web browsers, it renders inside a simulated POS device frame to provide a realistic preview of the mobile experience. This system handles frame rendering, scaling, and modal positioning.
+
+### Architecture
+
+#### Core Components
+
+1. **Desktop Frame Wrapper** (`components/desktop-frame-wrapper.web.tsx`)
+   - Wraps the entire app in a device frame on desktop web
+   - Detects desktop vs mobile web using `useIsDesktopWeb` hook
+   - Auto-scales the frame to fit the browser window
+   - Provides modal portal context for rendering modals inside the frame
+   - On mobile web or native, renders children unchanged (no frame)
+
+2. **Desktop Frame Constants** (`constants/desktop-frame.ts`)
+   - Defines device dimensions (width, height)
+   - Bezel styling (width, color, radius)
+   - Screen radius for rounded corners
+   - Background colors for light/dark themes
+   - Box shadow for depth effect
+
+3. **useIsDesktopWeb Hook** (`hooks/use-is-desktop-web.ts`)
+   - Returns `true` when running on desktop web (window width > 768px)
+   - Returns `false` on mobile web or native platforms
+   - Listens for window resize events to update dynamically
+
+### Web Entry Point
+
+The desktop frame is applied in `index.web.tsx`:
+
+```typescript
+import { DesktopFrameWrapper } from "@/components/desktop-frame-wrapper.web";
+
+function WrappedApp() {
+  return (
+    <DesktopFrameWrapper>
+      <App />
+    </DesktopFrameWrapper>
+  );
+}
+```
+
+### Modal Portal System
+
+React Native's `<Modal>` component renders at the viewport level with fixed positioning, which causes modals to appear outside the device frame on desktop web. To solve this, a portal system renders modals inside the frame.
+
+#### Components
+
+1. **Modal Portal Context** (`components/modal-portal-context.tsx`)
+   - Provides a ref to the modal container element
+   - Used by web modals to render via `createPortal`
+
+2. **FramedModal** (`components/framed-modal.tsx` / `framed-modal.web.tsx`)
+   - Platform-specific modal wrapper
+   - **Native** (`framed-modal.tsx`): Uses React Native's `<Modal>` directly
+   - **Web** (`framed-modal.web.tsx`): Uses `createPortal` to render inside the frame container
+
+#### Usage
+
+Replace `<Modal>` with `<FramedModal>` for modals that should appear inside the device frame:
+
+```typescript
+import { FramedModal } from "./framed-modal";
+
+function MyModal({ visible, onClose, children }) {
+  return (
+    <FramedModal visible={visible} onRequestClose={onClose}>
+      {/* Modal content - include your own overlay and container */}
+      <Pressable style={styles.overlay} onPress={onClose}>
+        <View style={styles.container}>
+          {children}
+        </View>
+      </Pressable>
+    </FramedModal>
+  );
+}
+```
+
+#### How It Works
+
+1. `DesktopFrameWrapper` creates a container div with `ref={modalContainerRef}`
+2. `ModalPortalProvider` makes this ref available via context
+3. `FramedModal.web.tsx` uses `useModalPortal()` to get the container ref
+4. When visible, it renders children via `createPortal(content, containerRef.current)`
+5. This positions the modal inside the frame instead of at viewport level
+
+### Frame Scaling
+
+The frame automatically scales to fit the browser window:
+
+- Calculates available height (window height minus label)
+- Computes scale factor: `Math.min(1, availableHeight / totalFrameHeight)`
+- Applies CSS transform: `transform: scale(${scale})`
+- Maintains aspect ratio and centers the frame
+
+### Theme Support
+
+The frame adapts to light/dark mode:
+
+- Background color changes based on color scheme
+- Screen background matches app theme
+- Bezel color remains constant (device hardware appearance)
+
+### Related Files
+
+- `index.web.tsx`: Web entry point with DesktopFrameWrapper
+- `components/desktop-frame-wrapper.web.tsx`: Frame wrapper component
+- `components/modal-portal-context.tsx`: Modal portal context provider
+- `components/framed-modal.tsx`: Native modal wrapper
+- `components/framed-modal.web.tsx`: Web modal with portal support
+- `constants/desktop-frame.ts`: Frame dimension constants
+- `hooks/use-is-desktop-web.ts`: Desktop detection hook
+
+### Important Notes
+
+1. **Platform-specific files**: The `.web.tsx` suffix ensures the web version is used only on web platform
+2. **Modal children**: `FramedModal` only provides the container; children must include their own overlay and content styling
+3. **Escape key**: `FramedModal.web` handles Escape key to close modals
+4. **Mobile web fallback**: If no portal container exists (mobile web), the modal renders in place with absolute positioning
+
 ## Additional Resources
 
 - **README.md**: Setup and development instructions
