@@ -3,10 +3,9 @@ import {
   StyleSheet,
   View,
   TextInput,
-  Alert,
   KeyboardAvoidingView,
-  TouchableOpacity,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
@@ -14,9 +13,9 @@ import SettingsStore from '@/store/SettingsStore';
 import WalletStore from '@/store/WalletStore';
 import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { Text } from '@/components/Text';
-import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
+import { Spacing, BorderRadius, FontFamily } from '@/utils/ThemeUtil';
 import { ActionButton } from '@/components/ActionButton';
-import SvgClose from '@/assets/Close';
 
 export default function ImportWalletModal() {
   const Theme = useTheme();
@@ -25,7 +24,10 @@ export default function ImportWalletModal() {
 
   const handleImport = async () => {
     if (!input.trim()) {
-      Alert.alert('Error', 'Please enter a mnemonic or private key');
+      Toast.show({
+        type: 'error',
+        text1: 'Please enter a mnemonic or private key',
+      });
       return;
     }
 
@@ -40,14 +42,22 @@ export default function ImportWalletModal() {
         tronAddress: SettingsStore.state.tronAddress,
       });
 
-      Alert.alert('Success', `Wallet imported!\n\nNew address: ${address}`);
+      Toast.show({
+        type: 'success',
+        text1: 'Wallet imported!',
+        text2: `New address: ${address}`,
+      });
       ModalStore.close();
     } catch (error: unknown) {
       const message =
         error instanceof Error
           ? error.message
           : 'Invalid mnemonic or private key';
-      Alert.alert('Error', message);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: message,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -59,15 +69,7 @@ export default function ImportWalletModal() {
         style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
       >
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => ModalStore.close()}
-            style={[
-              styles.closeButton,
-              { borderColor: Theme['border-secondary'] },
-            ]}
-          >
-            <SvgClose width={38} height={38} fill={Theme['text-primary']} />
-          </TouchableOpacity>
+          <ModalCloseButton onPress={() => ModalStore.close()} />
         </View>
 
         <Text variant="h6-400" color="text-primary" center>
@@ -132,10 +134,6 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: Spacing[4],
   },
-  closeButton: {
-    borderWidth: 1,
-    borderRadius: BorderRadius[3],
-  },
   input: {
     borderWidth: 1,
     borderRadius: BorderRadius[3],
@@ -146,6 +144,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: Spacing[4],
     marginHorizontal: Spacing[4],
+    fontFamily: FontFamily.regular,
   },
   buttonContainer: {
     flexDirection: 'row',

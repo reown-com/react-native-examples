@@ -2544,6 +2544,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mhpdev/react-native-haptics@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@mhpdev/react-native-haptics@npm:1.0.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 228caf51d58bef2c11daf8e77f447869bbfcacfef5dee721b814dc52b729f5d5df2b09ce3786c5839ecc06452c2fbd1410f42a894c2db86d68ea4dcf03058c38
+  languageName: node
+  linkType: hard
+
 "@msgpack/msgpack@npm:3.1.2":
   version: 3.1.2
   resolution: "@msgpack/msgpack@npm:3.1.2"
@@ -4420,6 +4430,7 @@ __metadata:
     "@babel/runtime": ^7.25.0
     "@craftzdog/react-native-buffer": 6.1.1
     "@json-rpc-tools/utils": 1.7.6
+    "@mhpdev/react-native-haptics": ^1.0.1
     "@mysten/sui": ^1.29.1
     "@react-native-async-storage/async-storage": 2.2.0
     "@react-native-clipboard/clipboard": 1.16.3
@@ -4454,6 +4465,7 @@ __metadata:
     ethers: 5.8.0
     fast-xml-parser: 4.4.1
     jest: ^29.2.1
+    pressto: 0.6.0
     prettier: 2.8.8
     react: 19.1.1
     react-native: 0.82.0
@@ -10138,6 +10150,19 @@ __metadata:
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
   checksum: cd192ec0d0a8e4c6da3bb80e4f62afe336df3f76271ac6deb0e6a36187133b6073a19e9727a1ff108cd8b9982e4768850d413baa71214dd80c7979617dca827a
+  languageName: node
+  linkType: hard
+
+"pressto@npm:0.6.0":
+  version: 0.6.0
+  resolution: "pressto@npm:0.6.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-gesture-handler: "*"
+    react-native-reanimated: "*"
+    react-native-worklets: "*"
+  checksum: e5eefe7f175f6cfd310afd2b529eb4cf69e2013caa0707a284add8d4f01736cf40c1d5d87a99403dc5877e69845f7ece36a63960eb118fec873af78c5849ce4e
   languageName: node
   linkType: hard
 

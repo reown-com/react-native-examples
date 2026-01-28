@@ -10,6 +10,7 @@ import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { TokenBalanceCard, ITEM_HEIGHT } from './components/TokenBalanceCard';
+import { haptics } from '@/utils/haptics';
 
 function getAddressForChain(
   chainId: string,
@@ -47,6 +48,11 @@ export default function Wallets() {
     }
   }, [addresses]);
 
+  const handleRefresh = useCallback(() => {
+    haptics.pullToRefresh();
+    fetchBalances();
+  }, [fetchBalances]);
+
   useEffect(() => {
     fetchBalances();
   }, [fetchBalances]);
@@ -81,7 +87,7 @@ export default function Wallets() {
         <View style={styles.emptyContainer}>
           <WalletConnectLoading size={60} />
           <Text variant="lg-400" color="text-primary">
-            Loading balance...
+            Loading balances...
           </Text>
         </View>
       );
@@ -112,7 +118,7 @@ export default function Wallets() {
       refreshControl={
         <RefreshControl
           refreshing={isLoading && balances.length > 0}
-          onRefresh={fetchBalances}
+          onRefresh={handleRefresh}
           tintColor={Theme['text-primary']}
         />
       }
@@ -126,7 +132,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: Spacing[5],
-    rowGap: Spacing[2]
+    rowGap: Spacing[2],
   },
   emptyContent: {
     flex: 1,
@@ -136,6 +142,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: Spacing[10],
+    gap: Spacing[4],
   },
   emptyText: {
     marginTop: Spacing[3],

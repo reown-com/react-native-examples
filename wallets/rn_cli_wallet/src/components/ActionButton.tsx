@@ -1,5 +1,4 @@
 import {
-  TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   StyleProp,
@@ -9,6 +8,7 @@ import {
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
 
 type ButtonVariant = 'primary' | 'secondary';
 
@@ -45,9 +45,7 @@ export function ActionButton({
           ? Theme['foreground-accent-primary-60']
           : Theme['bg-accent-primary'],
         textColor: Theme['text-invert'],
-        borderColor: disabled
-          ? Theme['foreground-accent-primary-60']
-          : Theme['bg-accent-primary'],
+        borderColor: disabled ? 'transparent' : Theme['bg-accent-primary'],
       };
     }
 
@@ -65,7 +63,7 @@ export function ActionButton({
   const loaderColor = textColor;
 
   return (
-    <TouchableOpacity
+    <Button
       onPress={onPress}
       disabled={disabled || loading}
       style={[
@@ -82,7 +80,7 @@ export function ActionButton({
           {children}
         </Text>
       )}
-    </TouchableOpacity>
+    </Button>
   );
 }
 
@@ -93,7 +91,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius[4],
     paddingHorizontal: Spacing[4],
     height: Spacing[11],
-    width: 100,
+    width: 100, //Todo: check if this is needed
     borderWidth: 1,
   },
   fullWidth: {

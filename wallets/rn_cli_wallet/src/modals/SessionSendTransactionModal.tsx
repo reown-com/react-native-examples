@@ -12,9 +12,11 @@ import {
 } from '@/utils/EIP155RequestHandlerUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from '@/modals/RequestModal';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSendTransactionModal() {
   const { data } = useSnapshot(ModalStore.state);
@@ -46,13 +48,18 @@ export default function SessionSendTransactionModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSendTransactionModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Transaction failed',
@@ -75,8 +82,13 @@ export default function SessionSendTransactionModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSendTransactionModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

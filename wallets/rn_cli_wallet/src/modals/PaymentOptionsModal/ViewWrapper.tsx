@@ -1,10 +1,11 @@
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { useTheme } from '@/hooks/useTheme';
 import SvgArrowLeft from '@/assets/ArrowLeft';
-import SvgClose from '@/assets/Close';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
+import { Button } from '@/components/Button';
 
 type Step =
   | 'loading'
@@ -48,9 +49,8 @@ export function ViewWrapper({
         {/* Back Button */}
         <View style={styles.headerLeft}>
           {showBackButton && (
-            <TouchableOpacity
+            <Button
               onPress={onBack}
-              style={styles.iconButton}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <SvgArrowLeft
@@ -58,7 +58,7 @@ export function ViewWrapper({
                 height={38}
                 fill={Theme['text-primary']}
               />
-            </TouchableOpacity>
+            </Button>
           )}
         </View>
 
@@ -94,13 +94,7 @@ export function ViewWrapper({
 
         {/* Close Button */}
         <View style={styles.headerRight}>
-          <TouchableOpacity
-            onPress={onClose}
-            style={styles.iconButton}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <SvgClose width={38} height={38} fill={Theme['text-primary']} />
-          </TouchableOpacity>
+          <ModalCloseButton onPress={onClose} />
         </View>
       </View>
 
@@ -120,9 +114,8 @@ const styles = StyleSheet.create({
   container: {
     borderTopLeftRadius: BorderRadius[8],
     borderTopRightRadius: BorderRadius[8],
-    paddingTop: Spacing[4],
-    paddingBottom: 30,
-    paddingHorizontal: Spacing[5],
+    padding: Spacing[5],
+    paddingBottom: Spacing[8],
     maxHeight: '90%',
   },
   header: {
@@ -147,9 +140,6 @@ const styles = StyleSheet.create({
     height: 38,
     alignItems: 'flex-end',
     justifyContent: 'center',
-  },
-  iconButton: {
-    padding: Spacing[0],
   },
   stepsContainer: {
     flexDirection: 'row',

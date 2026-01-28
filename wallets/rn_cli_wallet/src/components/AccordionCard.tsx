@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -10,6 +10,7 @@ import Animated, {
 import SvgCaretUpDown from '@/assets/CaretUpDown';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Button } from '@/components/Button';
 
 const ANIMATION_DURATION = 250;
 
@@ -20,6 +21,7 @@ interface AccordionCardProps {
   isExpanded: boolean;
   onPress: () => void;
   expandedHeight: number;
+  hideExpand?: boolean;
 }
 
 export function AccordionCard({
@@ -29,6 +31,7 @@ export function AccordionCard({
   isExpanded,
   onPress,
   expandedHeight,
+  hideExpand,
 }: AccordionCardProps) {
   const Theme = useTheme();
   const heightValue = useSharedValue(0);
@@ -53,13 +56,19 @@ export function AccordionCard({
         { backgroundColor: Theme['foreground-primary'] },
       ]}
     >
-      <TouchableOpacity style={styles.header} onPress={onPress}>
+      <Button style={styles.header} onPress={onPress} disabled={hideExpand}>
         <View style={styles.headerLeft}>{headerContent}</View>
         <View style={styles.headerRight}>
           {rightContent}
-          <SvgCaretUpDown width={17} height={17} fill={Theme['icon-invert']} />
+          {!hideExpand && (
+            <SvgCaretUpDown
+              width={17}
+              height={17}
+              fill={Theme['icon-invert']}
+            />
+          )}
         </View>
-      </TouchableOpacity>
+      </Button>
       <Animated.View style={animatedStyle}>
         <View style={styles.content}>{children}</View>
       </Animated.View>

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { SessionTypes } from '@walletconnect/types';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -7,6 +7,7 @@ import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { ChainIcons } from '@/components/ChainIcons';
 import ModalStore from '@/store/ModalStore';
+import { Button } from '@/components/Button';
 
 interface IndividualSessionProps {
   name: string | undefined;
@@ -37,7 +38,7 @@ const IndividualSession = ({
   };
 
   return (
-    <TouchableOpacity
+    <Button
       style={[
         styles.container,
         { backgroundColor: Theme['foreground-primary'] },
@@ -74,7 +75,7 @@ const IndividualSession = ({
         </View>
         <ChainIcons chainIds={chainIds} size={24} overlap={8} />
       </View>
-    </TouchableOpacity>
+    </Button>
   );
 };
 
@@ -82,8 +83,7 @@ export default IndividualSession;
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: Spacing[3],
-    paddingHorizontal: Spacing[4],
+    padding: Spacing[5],
     borderRadius: BorderRadius[4],
     marginBottom: Spacing[2],
   },

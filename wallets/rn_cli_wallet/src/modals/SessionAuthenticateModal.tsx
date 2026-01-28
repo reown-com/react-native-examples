@@ -5,6 +5,7 @@ import { SignClientTypes, AuthTypes } from '@walletconnect/types';
 import { buildAuthObject, populateAuthPayload } from '@walletconnect/utils';
 import Toast from 'react-native-toast-message';
 
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import { eip155Addresses, eip155Wallets } from '@/utils/EIP155WalletUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
@@ -18,6 +19,7 @@ import { AppInfoCard } from '@/components/AppInfoCard';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionAuthenticateModal() {
   const Theme = useTheme();
@@ -82,6 +84,7 @@ export default function SessionAuthenticateModal() {
           id: messages[0].id,
           auths: signedAuths,
         });
+        haptics.requestResponse();
 
         SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
 
@@ -90,7 +93,11 @@ export default function SessionAuthenticateModal() {
           isLinkMode: isLinkModeRequest,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionAuthenticateModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Authentication failed',
@@ -116,13 +123,18 @@ export default function SessionAuthenticateModal() {
             message: 'User rejected auth request',
           },
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: authRequest.params.requester?.metadata?.redirect,
           isLinkMode: SettingsStore.state.isLinkModeRequest,
           error: 'User rejected auth request',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionAuthenticateModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

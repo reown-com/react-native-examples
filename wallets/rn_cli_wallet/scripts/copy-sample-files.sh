@@ -17,7 +17,5 @@ copy_if_missing() {
 }
 
 copy_if_missing .env.example .env
-copy_if_missing android/app/google-services.mock.json android/app/google-services.json
 copy_if_missing android/app/debug.keystore.mock android/app/debug.keystore
 copy_if_missing android/secrets.properties.mock android/secrets.properties
-copy_if_missing ios/GoogleService/GoogleService-Info.mock.plist ios/GoogleService/GoogleService-Debug-Info.plist

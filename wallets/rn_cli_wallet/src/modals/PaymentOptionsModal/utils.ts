@@ -72,3 +72,60 @@ export function formatAmount(
   }
   return `${integerPart}.${trimmedFractional}`;
 }
+
+// ----- Error Type Helpers -----
+
+export type ErrorType =
+  | 'insufficient_funds'
+  | 'expired'
+  | 'not_found'
+  | 'generic';
+
+export function detectErrorType(message: string): ErrorType {
+  const lowerMsg = message.toLowerCase();
+  if (
+    lowerMsg.includes('insufficient') ||
+    lowerMsg.includes('balance') ||
+    lowerMsg.includes('funds')
+  ) {
+    return 'insufficient_funds';
+  }
+  if (lowerMsg.includes('expired') || lowerMsg.includes('timeout')) {
+    return 'expired';
+  }
+  if (lowerMsg.includes('not found') || lowerMsg.includes('404')) {
+    return 'not_found';
+  }
+  return 'generic';
+}
+
+export function getErrorTitle(errorType: ErrorType): string {
+  switch (errorType) {
+    case 'insufficient_funds':
+      return 'Not enough funds';
+    case 'expired':
+      return 'Payment expired';
+    case 'not_found':
+      return 'Payment not found';
+    case 'generic':
+      return 'Transaction failed';
+  }
+}
+
+export function getErrorMessage(
+  errorType: ErrorType,
+  originalMessage?: string,
+): string {
+  switch (errorType) {
+    case 'insufficient_funds':
+      return "You don't have enough crypto to complete this payment.";
+    case 'expired':
+      return 'This payment took too long to approve and has expired.';
+    case 'not_found':
+      return 'This payment link is not valid or has already been completed.';
+    case 'generic':
+      return (
+        originalMessage || "The network couldn't complete this transaction."
+      );
+  }
+}

@@ -35,7 +35,6 @@ export type ThemeKeys =
   | 'foreground-secondary'
   | 'foreground-tertiary'
   | 'foreground-accent-primary-10'
-  | 'foreground-accent-primary-10-solid'
   | 'foreground-accent-primary-40'
   | 'foreground-accent-primary-60'
   | 'foreground-accent-secondary-10'

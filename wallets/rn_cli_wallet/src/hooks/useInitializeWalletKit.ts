@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSnapshot } from 'valtio';
 
+import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 import { createOrRestoreEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { createOrRestoreSuiWallet } from '@/utils/SuiWalletUtil';
@@ -32,7 +33,14 @@ export default function useInitializeWalletKit() {
       setInitialized(true);
       SettingsStore.state.initPromiseResolver?.resolve(undefined);
     } catch (err: unknown) {
-      console.log(err);
+      LogStore.error(
+        `Failed to initialize WalletKit: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
+        'Initialization',
+        'onInitialize',
+        { error: String(err) },
+      );
     }
   }, [relayerRegionURL]);
 
@@ -42,7 +50,14 @@ export default function useInitializeWalletKit() {
       walletKit.core.relayer.restartTransport(relayerRegionURL);
       prevRelayerURLValue.current = relayerRegionURL;
     } catch (err: unknown) {
-      console.log(err);
+      LogStore.error(
+        `Failed to restart relayer transport: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
+        'Initialization',
+        'onRelayerRegionChange',
+        { error: String(err) },
+      );
     }
   }, [relayerRegionURL]);
 

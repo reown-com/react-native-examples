@@ -1,11 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from 'react-native';
+import { View, StyleSheet, Image, ActivityIndicator } from 'react-native';
 import { useSnapshot } from 'valtio';
 import { getSdkError } from '@walletconnect/utils';
 import { SessionTypes } from '@walletconnect/types';
@@ -14,11 +8,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { ChainIcons } from '@/components/ChainIcons';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SvgDisconnect from '@/assets/Disconnect';
-import SvgClose from '@/assets/Close';
+import { haptics } from '@/utils/haptics';
+import { Button } from '@/components/Button';
 
 export default function SessionDetailModal() {
   const Theme = useTheme();
@@ -60,10 +57,15 @@ export default function SessionDetailModal() {
         topic: session.topic,
         reason: getSdkError('USER_DISCONNECTED'),
       });
+      haptics.requestResponse();
       SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
       ModalStore.close();
     } catch (e) {
-      console.log((e as Error).message, 'error');
+      LogStore.error(
+        (e as Error).message,
+        'SessionDetailModal',
+        'onDisconnect',
+      );
     }
     setLoading(false);
   }, [session]);
@@ -76,7 +78,7 @@ export default function SessionDetailModal() {
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       {/* Header Row */}
       <View style={styles.header}>
-        <TouchableOpacity
+        <Button
           style={[
             styles.disconnectButton,
             { backgroundColor: Theme['bg-invert'] },
@@ -102,10 +104,8 @@ export default function SessionDetailModal() {
               </Text>
             </>
           )}
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <SvgClose width={32} height={32} fill={Theme['text-primary']} />
-        </TouchableOpacity>
+        </Button>
+        <ModalCloseButton onPress={onClose} />
       </View>
 
       {/* App Info Card */}
@@ -198,9 +198,6 @@ const styles = StyleSheet.create({
   },
   disconnectText: {
     marginLeft: Spacing[1],
-  },
-  closeButton: {
-    padding: Spacing[1],
   },
   card: {
     borderRadius: BorderRadius[4],
