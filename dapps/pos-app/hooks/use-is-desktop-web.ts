@@ -17,12 +17,19 @@ export function useIsDesktopWeb(): boolean {
   useEffect(() => {
     if (Platform.OS !== "web" || typeof window === "undefined") return;
 
+    let timeoutId: ReturnType<typeof setTimeout>;
     const handleResize = () => {
-      setIsDesktop(window.innerWidth >= DesktopFrame.BREAKPOINT);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setIsDesktop(window.innerWidth >= DesktopFrame.BREAKPOINT);
+      }, 150);
     };
 
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   return isDesktop;

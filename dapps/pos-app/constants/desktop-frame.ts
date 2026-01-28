@@ -28,6 +28,12 @@ export const DesktopFrame = {
     dark: "#0A0A0A",
   },
 
+  /** Screen background colors */
+  SCREEN_BACKGROUND: {
+    light: "#FFFFFF",
+    dark: "#202020",
+  },
+
   /** Bezel color (dark in both themes for realistic device look) */
   BEZEL_COLOR: "#1A1A1A",
 

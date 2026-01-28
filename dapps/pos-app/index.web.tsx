@@ -15,6 +15,6 @@ function WrappedApp() {
   );
 }
 
-LoadSkiaWeb().then(async () => {
+LoadSkiaWeb().then(() => {
   renderRootComponent(WrappedApp);
 });

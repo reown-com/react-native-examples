@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { DesktopFrame } from "@/constants/desktop-frame";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -15,6 +15,25 @@ interface DesktopFrameWrapperProps {
 export function DesktopFrameWrapper({ children }: DesktopFrameWrapperProps) {
   const isDesktop = useIsDesktopWeb();
   const colorScheme = useColorScheme();
+  const [scale, setScale] = useState(1);
+
+  const totalWidth = DesktopFrame.DEVICE_WIDTH + DesktopFrame.BEZEL_WIDTH * 2;
+  const totalHeight = DesktopFrame.DEVICE_HEIGHT + DesktopFrame.BEZEL_WIDTH * 2;
+  const labelHeight = 50; // Approximate height for label + margin
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const calculateScale = () => {
+      const availableHeight = window.innerHeight - labelHeight;
+      const newScale = Math.min(1, availableHeight / totalHeight);
+      setScale(newScale);
+    };
+
+    calculateScale();
+    window.addEventListener("resize", calculateScale);
+    return () => window.removeEventListener("resize", calculateScale);
+  }, [totalHeight]);
 
   if (!isDesktop) {
     return <>{children}</>;
@@ -25,8 +44,10 @@ export function DesktopFrameWrapper({ children }: DesktopFrameWrapperProps) {
       ? DesktopFrame.BACKGROUND.dark
       : DesktopFrame.BACKGROUND.light;
 
-  const totalWidth = DesktopFrame.DEVICE_WIDTH + DesktopFrame.BEZEL_WIDTH * 2;
-  const totalHeight = DesktopFrame.DEVICE_HEIGHT + DesktopFrame.BEZEL_WIDTH * 2;
+  const screenBackground =
+    colorScheme === "dark"
+      ? DesktopFrame.SCREEN_BACKGROUND.dark
+      : DesktopFrame.SCREEN_BACKGROUND.light;
 
   return (
     <div
@@ -51,17 +72,18 @@ export function DesktopFrameWrapper({ children }: DesktopFrameWrapperProps) {
           boxShadow: DesktopFrame.SHADOW,
           padding: DesktopFrame.BEZEL_WIDTH,
           boxSizing: "border-box",
+          transform: `scale(${scale})`,
+          transformOrigin: "center center",
         }}
       >
         {/* Screen area */}
         <div
-          id="pos-screen"
           style={{
             width: DesktopFrame.DEVICE_WIDTH,
             height: DesktopFrame.DEVICE_HEIGHT,
             borderRadius: DesktopFrame.SCREEN_RADIUS,
             overflow: "hidden",
-            backgroundColor: colorScheme === "dark" ? "#202020" : "#FFFFFF",
+            backgroundColor: screenBackground,
             position: "relative",
           }}
         >
