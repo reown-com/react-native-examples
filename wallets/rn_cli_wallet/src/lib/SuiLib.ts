@@ -8,6 +8,8 @@ import {
 } from '@mysten/sui/transactions';
 import { SuiClient } from '@mysten/sui/client';
 
+import LogStore from '@/store/LogStore';
+
 interface IInitArguments {
   mnemonic?: string;
 }
@@ -44,7 +46,9 @@ export default class SuiLib {
 
     this.keypair = Ed25519Keypair.fromSecretKey(new Uint8Array(key));
     this.address = this.keypair.getPublicKey().toSuiAddress();
-    console.log('Sui Address:', this.address);
+    LogStore.info('Sui wallet initialized', 'SuiLib', 'constructor', {
+      address: this.address,
+    });
   }
 
   static async init({ mnemonic }: IInitArguments) {
@@ -64,19 +68,14 @@ export default class SuiLib {
 
     const signature = await this.keypair.signPersonalMessage(messageToSign);
 
-    // Output
-    console.log('Signature:', signature);
-    console.log('Public Key:', this.keypair.getPublicKey().toBase64());
-
     const verified = await verifyPersonalMessageSignature(
       messageToSign,
       signature.signature,
     );
-    console.log(
-      'Verified:',
-      verified,
-      verified.equals(this.keypair.getPublicKey()),
-    );
+    LogStore.log('Message signed', 'SuiLib', 'signMessage', {
+      publicKey: this.keypair.getPublicKey().toBase64(),
+      verified: verified.equals(this.keypair.getPublicKey()),
+    });
 
     return {
       signature: signature.signature,
@@ -89,19 +88,15 @@ export default class SuiLib {
     chainId,
   }: ISignTransactionArguments) {
     const tx = Transaction.from(transaction);
-    console.log('signing sui transaction', {
-      tx,
-      transactionbase64: transaction,
+    LogStore.log('Signing Sui transaction', 'SuiLib', 'signTransaction', {
       chainId,
     });
     const client = this.getSuiClient(chainId);
-    // console.log('tx', tx, {base64: transaction});
     const signature = await tx.sign({ signer: this.keypair, client });
-    console.log('signature', signature);
     const transactionBytes = Buffer.from(await tx.build({ client })).toString(
       'base64',
     );
-    console.log('transactionBytes', transactionBytes);
+    LogStore.log('Transaction signed', 'SuiLib', 'signTransaction');
     return {
       transactionBytes,
       signature: signature.signature,
@@ -119,7 +114,14 @@ export default class SuiLib {
       client,
     });
     const result = await executor.executeTransaction(tx);
-    console.log('result', result);
+    LogStore.log(
+      'Transaction executed',
+      'SuiLib',
+      'signAndExecuteTransaction',
+      {
+        digest: result.digest,
+      },
+    );
     return result;
   }
 
@@ -156,7 +158,14 @@ export default class SuiLib {
       const jsonTx = await tx.toJSON();
       return jsonTx;
     } catch (e) {
-      console.error('Error decoding transaction', e);
+      LogStore.error(
+        'Error decoding transaction',
+        'SuiLib',
+        'getJsonTransactionFromBase64',
+        {
+          error: String(e),
+        },
+      );
       return undefined;
     }
   }

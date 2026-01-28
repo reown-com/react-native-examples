@@ -13,11 +13,13 @@ import {
 } from '@/utils/EIP155RequestHandlerUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSignTypedDataModal() {
   // Get request and wallet data from store
@@ -49,13 +51,18 @@ export default function SessionSignTypedDataModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSignTypedDataModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Signature failed',
@@ -78,8 +85,13 @@ export default function SessionSignTypedDataModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSignTypedDataModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

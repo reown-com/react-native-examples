@@ -2,6 +2,7 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import RNModal from 'react-native-modal';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import ModalStore from '@/store/ModalStore';
 import { Spacing } from '@/utils/ThemeUtil';
@@ -73,22 +74,28 @@ export default function Modal() {
   return (
     <RNModal
       backdropOpacity={0.6}
+      backdropTransitionOutTiming={1}
       hideModalContentWhileAnimating
       useNativeDriver
       statusBarTranslucent
       propagateSwipe
       onBackdropPress={onClose}
-      onModalHide={onClose}
       style={styles.modal}
       isVisible={open}
     >
-      {componentView}
+      <GestureHandlerRootView style={styles.gestureRoot}>
+        {componentView}
+      </GestureHandlerRootView>
     </RNModal>
   );
 }
 
 const styles = StyleSheet.create({
   modal: {
+    margin: Spacing[0],
+  },
+  gestureRoot: {
+    flex: 1,
     margin: Spacing[0],
     justifyContent: 'flex-end',
   },

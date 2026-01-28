@@ -3,6 +3,7 @@ import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import { SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 
+import LogStore, { serializeError } from '@/store/LogStore';
 import { eip155Addresses, eip155Wallets } from '@/utils/EIP155WalletUtil';
 import {
   getSignParamsMessage,
@@ -33,8 +34,9 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
         const signedMessage = await wallet.signMessage(message);
         return formatJsonRpcResult(id, signedMessage);
       } catch (error: any) {
-        console.error(error);
-        console.log(error.message);
+        LogStore.error(error.message, 'EIP155RequestHandler', 'personalSign', {
+          error: serializeError(error),
+        });
         return formatJsonRpcError(id, error.message);
       }
 
@@ -52,8 +54,9 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
         const signedData = await wallet._signTypedData(domain, types, data);
         return formatJsonRpcResult(id, signedData);
       } catch (error: any) {
-        console.error(error);
-        console.log(error.message);
+        LogStore.error(error.message, 'EIP155RequestHandler', 'signTypedData', {
+          error: serializeError(error),
+        });
         return formatJsonRpcError(id, error.message);
       }
 
@@ -66,8 +69,14 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
         const { hash } = await connectedWallet.sendTransaction(sendTransaction);
         return formatJsonRpcResult(id, hash);
       } catch (error: any) {
-        console.error(error);
-        console.log(error.message);
+        LogStore.error(
+          error.message,
+          'EIP155RequestHandler',
+          'sendTransaction',
+          {
+            error: serializeError(error),
+          },
+        );
         return formatJsonRpcError(id, error.message);
       }
 
@@ -77,8 +86,14 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
         const signature = await wallet.signTransaction(signTransaction);
         return formatJsonRpcResult(id, signature);
       } catch (error: any) {
-        console.error(error);
-        console.log(error.message);
+        LogStore.error(
+          error.message,
+          'EIP155RequestHandler',
+          'signTransaction',
+          {
+            error: serializeError(error),
+          },
+        );
         return formatJsonRpcError(id, error.message);
       }
 

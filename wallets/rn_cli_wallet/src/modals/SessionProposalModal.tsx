@@ -5,6 +5,7 @@ import { SignClientTypes } from '@walletconnect/types';
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
 import Toast from 'react-native-toast-message';
 
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import { eip155Addresses } from '@/utils/EIP155WalletUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
@@ -25,6 +26,7 @@ import { NetworkSelector } from '@/components/NetworkSelector';
 import { ChainIcons } from '@/components/ChainIcons';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 // Height constants for accordion animation
 const NETWORK_ROW_HEIGHT = 40;
@@ -185,6 +187,7 @@ export default function SessionProposalModal() {
           id: proposal.id,
           namespaces,
         });
+        haptics.requestResponse();
         SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
 
         handleRedirect({
@@ -192,7 +195,11 @@ export default function SessionProposalModal() {
           isLinkMode: session?.transportType === 'link_mode',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionProposalModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Connection failed',
@@ -219,13 +226,18 @@ export default function SessionProposalModal() {
           id: proposal.id,
           reason: getSdkError('USER_REJECTED_METHODS'),
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: proposal.params.proposer.metadata.redirect,
           isLinkMode: false,
           error: 'User rejected connect request',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionProposalModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',
@@ -270,6 +282,7 @@ export default function SessionProposalModal() {
           isExpanded={expandedAccordion === 'network'}
           onPress={() => toggleAccordion('network')}
           expandedHeight={networkHeight}
+          hideExpand={supportedChains.length <= 1}
         >
           <NetworkSelector
             availableChains={supportedChains}

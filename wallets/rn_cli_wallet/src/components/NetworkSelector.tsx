@@ -1,17 +1,12 @@
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Chain } from '@/utils/TypesUtil';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
-import Checkmark from '@/assets/Checkmark';
+import { Checkbox } from '@/components/Checkbox';
+import { Button } from '@/components/Button';
 
 interface NetworkSelectorProps {
   availableChains: Chain[];
@@ -35,48 +30,40 @@ export function NetworkSelector({
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.listContent}>
-        {availableChains.map(chain => {
-          const chainId = `${chain.namespace}:${chain.chainId}`;
-          const isSelected = selectedChainIds.includes(chainId);
-          const logo = PresetsUtil.getChainIconById(chainId);
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.listContent}
+    >
+      {availableChains.map(chain => {
+        const chainId = `${chain.namespace}:${chain.chainId}`;
+        const isSelected = selectedChainIds.includes(chainId);
+        const logo = PresetsUtil.getChainIconById(chainId);
 
-          return (
-            <TouchableOpacity
-              key={chainId}
-              style={styles.row}
-              onPress={() => toggleChain(chainId)}
-            >
-              <View style={styles.chainInfo}>
-                <Image
-                  source={logo}
-                  style={[
-                    styles.chainLogo,
-                    { backgroundColor: Theme['foreground-tertiary'] },
-                  ]}
-                />
-                <Text variant="md-400" color="text-primary">
-                  {chain.name}
-                </Text>
-              </View>
-              <View
+        return (
+          <Button
+            key={chainId}
+            style={styles.row}
+            onPress={() => toggleChain(chainId)}
+          >
+            <View style={styles.chainInfo}>
+              <Image
+                source={logo}
                 style={[
-                  styles.checkbox,
-                  isSelected
-                    ? {
-                        backgroundColor: Theme['bg-accent-primary'],
-                        borderColor: Theme['bg-accent-primary'],
-                      }
-                    : { borderColor: Theme['border-secondary'] },
+                  styles.chainLogo,
+                  { backgroundColor: Theme['foreground-tertiary'] },
                 ]}
-              >
-                {isSelected && <Checkmark width={12} height={9} />}
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+              />
+              <Text variant="md-400" color="text-primary">
+                {chain.name}
+              </Text>
+            </View>
+            <Checkbox
+              checked={isSelected}
+              onPress={() => toggleChain(chainId)}
+            />
+          </Button>
+        );
+      })}
     </ScrollView>
   );
 }
@@ -100,13 +87,5 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: BorderRadius.full,
-  },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: BorderRadius[2],
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

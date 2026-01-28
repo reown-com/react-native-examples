@@ -1,13 +1,8 @@
-import {
-  View,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
+import { View, Image, StyleSheet, ScrollView } from 'react-native';
 import type { PaymentInfo, PaymentOption } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
+import LogStore from '@/store/LogStore';
 import { ActionButton } from '@/components/ActionButton';
 import { formatAmount } from './utils';
 import { MerchantInfo } from './MerchantInfo';
@@ -20,9 +15,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { sharedStyles } from './styles';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
 
 const OPTION_HEIGHT = 64;
 const OPTION_GAP = 8;
@@ -55,13 +50,13 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
   );
 
   return (
-    <TouchableOpacity
+    <Button
       onPress={() => onSelect(option)}
       style={[
         styles.optionItem,
         {
           backgroundColor: isSelected
-            ? Theme['foreground-accent-primary-10-solid']
+            ? Theme['foreground-accent-primary-10']
             : Theme['foreground-secondary'],
         },
       ]}
@@ -81,7 +76,7 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
               styles.optionChainIcon,
               {
                 borderColor: isSelected
-                  ? Theme['foreground-accent-primary-10-solid']
+                  ? Theme['foreground-accent-primary-10']
                   : Theme['foreground-secondary'],
               },
             ]}
@@ -106,7 +101,7 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
           />
         </View>
       )}
-    </TouchableOpacity>
+    </Button>
   );
 }
 
@@ -170,12 +165,14 @@ export function ConfirmPaymentView({
   }));
 
   const toggleExpanded = useCallback(() => {
-    if (__DEV__) {
-      console.log(
-        '[ConfirmStep] Toggle pressed, options.length:',
-        options.length,
-      );
-    }
+    LogStore.log(
+      'Toggle payment options',
+      'ConfirmPaymentView',
+      'toggleExpanded',
+      {
+        optionsLength: options.length,
+      },
+    );
     if (options.length > 1) {
       setIsExpanded(prev => !prev);
     }
@@ -214,7 +211,11 @@ export function ConfirmPaymentView({
           { backgroundColor: Theme['foreground-primary'] },
         ]}
       >
-        <TouchableOpacity style={styles.payWithRow} onPress={toggleExpanded}>
+        <Button
+          style={styles.payWithRow}
+          onPress={toggleExpanded}
+          disabled={options.length <= 1}
+        >
           <Text variant="lg-400" color="text-tertiary">
             Pay with
           </Text>
@@ -245,13 +246,15 @@ export function ConfirmPaymentView({
                 />
               </View>
             )}
-            <SvgCaretUpDown
-              width={20}
-              height={20}
-              fill={Theme['text-primary']}
-            />
+            {options.length > 1 && (
+              <SvgCaretUpDown
+                width={20}
+                height={20}
+                fill={Theme['text-primary']}
+              />
+            )}
           </View>
-        </TouchableOpacity>
+        </Button>
 
         {/* Expandable Options List */}
         <Animated.View
@@ -276,7 +279,7 @@ export function ConfirmPaymentView({
       </View>
 
       {/* Action Buttons */}
-      <View style={sharedStyles.buttonContainer}>
+      <View style={styles.buttonContainer}>
         <ActionButton
           onPress={onApprove}
           disabled={isSigningPayment || isLoadingActions || !selectedOption}
@@ -298,10 +301,9 @@ const styles = StyleSheet.create({
     height: Spacing[13],
     borderRadius: BorderRadius[5],
     marginBottom: Spacing[2],
-    marginTop: Spacing[4],
+    marginTop: Spacing[5],
   },
   payWithContainer: {
-    paddingHorizontal: Spacing[3],
     borderRadius: BorderRadius[5],
   },
   payWithContainerExpanded: {
@@ -312,7 +314,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     height: Spacing[13],
-    paddingHorizontal: Spacing[2],
+    paddingHorizontal: Spacing[5],
   },
   optionsContainer: {
     maxHeight: 300,
@@ -384,5 +386,10 @@ const styles = StyleSheet.create({
   },
   optionsScrollContent: {
     gap: OPTION_GAP,
+    paddingHorizontal: Spacing[5],
+  },
+  buttonContainer: {
+    marginTop: Spacing[5],
+    gap: Spacing[2],
   },
 });

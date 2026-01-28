@@ -1,18 +1,13 @@
 import { useSnapshot } from 'valtio';
 import { useEffect, useState } from 'react';
-import {
-  View,
-  Switch,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-} from 'react-native';
+import { View, Switch, StyleSheet, Platform } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
+import LogStore from '@/store/LogStore';
 import { Card } from '@/components/Card';
 import { storage } from '@/utils/storage';
 import { Text } from '@/components/Text';
@@ -21,6 +16,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import Toast from 'react-native-toast-message';
 import { RootStackParamList } from '@/utils/TypesUtil';
+import { Button } from '@/components/Button';
 
 export default function Settings() {
   const { socketStatus, themeMode } = useSnapshot(SettingsStore.state);
@@ -61,7 +57,7 @@ export default function Settings() {
         Preferences
       </Text>
       <View style={styles.sectionContainer}>
-        <TouchableOpacity
+        <Button
           onPress={toggleDarkMode}
           style={[
             styles.switchCard,
@@ -82,7 +78,7 @@ export default function Settings() {
             })}
             thumbColor={Platform.select({ android: Theme.white })}
           />
-        </TouchableOpacity>
+        </Button>
         <Card
           title="Secret phrases"
           onPress={() => navigation.navigate('SecretPhrase')}
@@ -112,6 +108,16 @@ export default function Settings() {
           title="Read full logs"
           onPress={() => navigation.navigate('Logs')}
           icon="chevronRight"
+        />
+        <Card
+          title="Clear app logs"
+          onPress={() => {
+            LogStore.clearLogs();
+            Toast.show({
+              type: 'info',
+              text1: 'App logs cleared',
+            });
+          }}
         />
       </View>
     </ScrollView>

@@ -12,12 +12,14 @@ import {
 } from '@/utils/EIP155RequestHandlerUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSignModal() {
   // Get request and wallet data from store
@@ -51,6 +53,7 @@ export default function SessionSignModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
 
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
@@ -58,7 +61,7 @@ export default function SessionSignModal() {
           error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error((e as Error).message, 'SessionSignModal', 'onApprove');
         Toast.show({
           type: 'error',
           text1: 'Signature failed',
@@ -81,13 +84,14 @@ export default function SessionSignModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'User rejected signature request',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error((e as Error).message, 'SessionSignModal', 'onReject');
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

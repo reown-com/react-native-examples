@@ -1,16 +1,17 @@
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
 import { Text } from '@/components/Text';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import BarcodeSvg from '@/assets/Barcode';
 import PasteSvg from '@/assets/Paste';
-import SvgClose from '@/assets/Close';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { usePairing } from '@/hooks/usePairing';
 import Toast from 'react-native-toast-message';
+import { Button } from '@/components/Button';
 
 export default function ScannerOptionsModal() {
   const Theme = useTheme();
@@ -52,19 +53,11 @@ export default function ScannerOptionsModal() {
   return (
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => ModalStore.close()}
-          style={[
-            styles.closeButton,
-            { borderColor: Theme['border-secondary'] },
-          ]}
-        >
-          <SvgClose width={38} height={38} fill={Theme['text-primary']} />
-        </TouchableOpacity>
+        <ModalCloseButton onPress={() => ModalStore.close()} />
       </View>
 
       <View style={styles.optionsContainer}>
-        <TouchableOpacity
+        <Button
           onPress={onScanPress}
           style={[
             styles.optionButton,
@@ -75,9 +68,9 @@ export default function ScannerOptionsModal() {
             Scan QR code
           </Text>
           <BarcodeSvg width={24} height={24} fill={Theme['text-primary']} />
-        </TouchableOpacity>
+        </Button>
 
-        <TouchableOpacity
+        <Button
           onPress={onPastePress}
           style={[
             styles.optionButton,
@@ -88,7 +81,7 @@ export default function ScannerOptionsModal() {
             Paste a URL
           </Text>
           <PasteSvg width={24} height={24} fill={Theme['text-primary']} />
-        </TouchableOpacity>
+        </Button>
       </View>
     </View>
   );
@@ -107,10 +100,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     padding: Spacing[5],
-  },
-  closeButton: {
-    borderWidth: 1,
-    borderRadius: BorderRadius[3],
   },
   title: {
     marginVertical: Spacing[4],

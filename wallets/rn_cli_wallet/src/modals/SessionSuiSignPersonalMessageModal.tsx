@@ -9,6 +9,7 @@ import { AppInfoCard } from '@/components/AppInfoCard';
 
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
@@ -18,6 +19,7 @@ import {
 } from '@/utils/SuiRequestHandlerUtil';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSignSuiPersonalMessageModal() {
   // Get request and wallet data from store
@@ -38,7 +40,6 @@ export default function SessionSignSuiPersonalMessageModal() {
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
 
   const message = request.params?.message || '';
-  console.log('sui message', message);
 
   // Handle approve action (logic varies based on request method)
   const onApprove = useCallback(async () => {
@@ -50,13 +51,18 @@ export default function SessionSignSuiPersonalMessageModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
 
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSuiSignPersonalMessageModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
           text1: 'Signature failed',
@@ -79,13 +85,18 @@ export default function SessionSignSuiPersonalMessageModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'User rejected personal message request',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionSuiSignPersonalMessageModal',
+          'onReject',
+        );
         Toast.show({
           type: 'error',
           text1: 'Rejection failed',

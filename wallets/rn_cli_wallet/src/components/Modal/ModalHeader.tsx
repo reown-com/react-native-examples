@@ -1,11 +1,11 @@
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import { SignClientTypes } from '@walletconnect/types';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
-import SvgClose from '@/assets/Close';
+import { ModalCloseButton } from '../ModalCloseButton';
 
 interface ModalHeaderProps {
   metadata?: SignClientTypes.Metadata;
@@ -31,15 +31,7 @@ export function ModalHeader({
     <View style={styles.container}>
       {/* Close button */}
       {onClose && (
-        <TouchableOpacity
-          style={[
-            styles.closeButton,
-            { borderColor: Theme['border-secondary'] },
-          ]}
-          onPress={onClose}
-        >
-          <SvgClose width={38} height={38} fill={Theme['text-primary']} />
-        </TouchableOpacity>
+        <ModalCloseButton style={styles.closeButton} onPress={onClose} />
       )}
 
       {/* Link mode badge */}
