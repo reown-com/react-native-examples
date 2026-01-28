@@ -1,6 +1,6 @@
 import { UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { Dimensions, Platform, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
-    paddingBottom: Spacing["spacing-5"],
+    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
   circle: {
     position: "absolute",
