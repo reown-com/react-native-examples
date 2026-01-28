@@ -7,7 +7,7 @@ import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   const [assets] = useAssets([
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
     paddingTop: Spacing["spacing-2"],
-    paddingBottom: Spacing["spacing-7"],
+    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-7"],
     justifyContent: "center",
     alignItems: "center",
     gap: Spacing["spacing-3"],
