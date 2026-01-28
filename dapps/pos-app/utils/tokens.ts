@@ -114,8 +114,9 @@ export function formatTokenAmount(rawAmount: string, decimals: number): string {
   const integerPart = paddedAmount.slice(0, -decimals) || "0";
   const decimalPart = paddedAmount.slice(-decimals);
 
-  // Format integer part with commas
-  const formattedInteger = parseInt(integerPart, 10).toLocaleString("en-US");
+  // Format integer part with commas using regex to avoid precision loss
+  const formattedInteger =
+    integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || "0";
 
   // Trim trailing zeros from decimal part but keep at least 2 decimals
   let trimmedDecimal = decimalPart.replace(/0+$/, "");

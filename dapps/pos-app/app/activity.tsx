@@ -136,6 +136,10 @@ export default function ActivityScreen() {
         ListFooterComponent={renderFooter}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        initialNumToRender={10}
+        windowSize={10}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
