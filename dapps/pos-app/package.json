@@ -15,6 +15,8 @@
     "web:serve": "npm run web:setup && expo serve",
     "web:build": "npm run web:setup && expo export -p web",
     "web:setup": "npx setup-skia-web && mkdir -p public && cp web/static/js/canvaskit.wasm public/",
+    "prettier:fix": "prettier --write .",
+    "prettier": "prettier --check .",
     "lint": "expo lint",
     "test": "jest"
   },
