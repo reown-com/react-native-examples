@@ -211,8 +211,16 @@ The Merchant Portal API is a separate backend used for fetching transaction hist
 ### Merchant API Client (`services/merchant-client.ts`)
 
 - Base URL from `EXPO_PUBLIC_MERCHANT_API_URL` environment variable
-- Uses different API key (`EXPO_PUBLIC_DEFAULT_MERCHANT_PORTAL_API_KEY`)
-- Header: `x-api-key` for authentication
+- Generic HTTP client (no credentials baked in)
+- API key passed per-request via headers
+- Used by native apps (iOS/Android) for direct API calls
+
+### Server-Side Proxy (`api/transactions.ts`)
+
+- Vercel serverless function that proxies requests to the Merchant Portal API (web only)
+- API key read from server-side env (`EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY`)
+- Client only sends `x-merchant-id` header
+- Avoids CORS issues by making requests server-side
 
 ### Transactions Service (`services/transactions.ts`)
 
@@ -252,7 +260,7 @@ EXPO_PUBLIC_GATEWAY_URL=""             # WalletConnect gateway URL
 EXPO_PUBLIC_DEFAULT_MERCHANT_ID=""     # Default merchant ID (optional)
 EXPO_PUBLIC_DEFAULT_MERCHANT_API_KEY="" # Default merchant API key (optional)
 EXPO_PUBLIC_MERCHANT_API_URL=""        # Merchant Portal API base URL
-EXPO_PUBLIC_DEFAULT_MERCHANT_PORTAL_API_KEY="" # Merchant Portal API key (for Activity screen)
+EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY="" # Merchant Portal API key (for Activity screen)
 ```
 
 Copy `.env.example` to `.env` and fill in values.
@@ -319,12 +327,14 @@ Copy `.env.example` to `.env` and fill in values.
 ### Services & API
 
 - **`services/client.ts`**: Payment API client configuration
-- **`services/merchant-client.ts`**: Merchant Portal API client configuration
+- **`services/merchant-client.ts`**: Merchant Portal API client (native)
 - **`services/payment.ts`**: Payment API functions
-- **`services/transactions.ts`**: Transaction fetching service (Merchant Portal API)
+- **`services/transactions.ts`**: Transaction fetching (native: direct API)
+- **`services/transactions.web.ts`**: Transaction fetching (web: server-side proxy)
 - **`services/hooks.ts`**: React Query hooks for API calls (including `useTransactions`)
-- **`api/payment.ts`**: Payment API types/interfaces
-- **`api/payment-status.ts`**: Payment status types
+- **`api/payment.ts`**: Vercel serverless function for payment creation (web)
+- **`api/payment-status.ts`**: Vercel serverless function for payment status (web)
+- **`api/transactions.ts`**: Vercel serverless function for transaction list (web)
 
 ### Utilities
 

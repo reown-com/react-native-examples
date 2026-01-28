@@ -161,8 +161,7 @@ export default function ActivityScreen() {
 const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: Spacing["spacing-5"],
-    paddingTop: Spacing["spacing-4"],
-    paddingBottom: Spacing["extra-spacing-2"],
+    paddingVertical: Spacing["spacing-4"],
     gap: Spacing["spacing-2"],
   },
   emptyListContent: {

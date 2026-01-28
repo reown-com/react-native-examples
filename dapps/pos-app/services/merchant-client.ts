@@ -2,8 +2,11 @@ import { useLogsStore } from "@/store/useLogsStore";
 import { ApiError } from "@/utils/types";
 
 const MERCHANT_API_BASE_URL = process.env.EXPO_PUBLIC_MERCHANT_API_URL;
-const MERCHANT_PORTAL_API_KEY =
-  process.env.EXPO_PUBLIC_DEFAULT_MERCHANT_PORTAL_API_KEY;
+if (!MERCHANT_API_BASE_URL) {
+  throw new Error(
+    "EXPO_PUBLIC_MERCHANT_API_URL environment variable is not configured",
+  );
+}
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
@@ -13,38 +16,16 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
 const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds
 
 class MerchantApiClient {
-  private baseUrl: string | undefined;
-  private apiKey: string | undefined;
+  private baseUrl: string;
 
-  constructor(baseUrl: string | undefined, apiKey: string | undefined) {
+  constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
-    this.apiKey = apiKey;
-  }
-
-  isConfigured(): boolean {
-    return !!this.baseUrl && !!this.apiKey;
   }
 
   private async request<T>(
     endpoint: string,
     options: RequestOptions = {},
   ): Promise<T> {
-    if (!this.baseUrl) {
-      const error: ApiError = {
-        message: "Merchant API URL is not configured",
-        code: "CONFIG_ERROR",
-      };
-      throw error;
-    }
-
-    if (!this.apiKey) {
-      const error: ApiError = {
-        message: "Merchant Portal API key is not configured",
-        code: "CONFIG_ERROR",
-      };
-      throw error;
-    }
-
     const { body, headers, timeout, ...fetchOptions } = options;
 
     // Normalize URL construction: remove trailing slash from baseUrl and ensure endpoint starts with /
@@ -56,7 +37,6 @@ class MerchantApiClient {
 
     const requestHeaders: HeadersInit = {
       "Content-Type": "application/json",
-      "x-api-key": this.apiKey,
       ...headers,
     };
 
@@ -161,7 +141,4 @@ class MerchantApiClient {
   }
 }
 
-export const merchantApiClient = new MerchantApiClient(
-  MERCHANT_API_BASE_URL,
-  MERCHANT_PORTAL_API_KEY,
-);
+export const merchantApiClient = new MerchantApiClient(MERCHANT_API_BASE_URL);

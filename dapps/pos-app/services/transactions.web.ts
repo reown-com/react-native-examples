@@ -1,6 +1,5 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { TransactionsResponse } from "@/utils/types";
-import { merchantApiClient } from "./merchant-client";
 
 export interface GetTransactionsOptions {
   status?: string | string[];
@@ -10,11 +9,9 @@ export interface GetTransactionsOptions {
   cursor?: string;
 }
 
-const MERCHANT_PORTAL_API_KEY =
-  process.env.EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY;
-
 /**
- * Fetch merchant transactions from the Merchant Portal API (native version)
+ * Fetch merchant transactions via server-side proxy (web version)
+ * API key is handled server-side, only merchantId is sent from client
  * @param options - Optional query parameters for filtering and pagination
  * @returns TransactionsResponse with list of payments and stats
  */
@@ -23,12 +20,8 @@ export async function getTransactions(
 ): Promise<TransactionsResponse> {
   const merchantId = useSettingsStore.getState().merchantId;
 
-  if (!merchantId) {
+  if (!merchantId || merchantId.trim().length === 0) {
     throw new Error("Merchant ID is not configured");
-  }
-
-  if (!MERCHANT_PORTAL_API_KEY) {
-    throw new Error("Merchant Portal API key is not configured");
   }
 
   // Build query string from options
@@ -59,11 +52,22 @@ export async function getTransactions(
   }
 
   const queryString = params.toString();
-  const endpoint = `/merchants/${merchantId}/payments${queryString ? `?${queryString}` : ""}`;
+  const url = `/api/transactions${queryString ? `?${queryString}` : ""}`;
 
-  return merchantApiClient.get<TransactionsResponse>(endpoint, {
+  const response = await fetch(url, {
+    method: "GET",
     headers: {
-      "x-api-key": MERCHANT_PORTAL_API_KEY,
+      "Content-Type": "application/json",
+      "x-merchant-id": merchantId,
     },
   });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      errorData.message || `Failed to fetch transactions: ${response.status}`,
+    );
+  }
+
+  return response.json();
 }
