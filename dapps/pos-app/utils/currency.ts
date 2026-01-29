@@ -1,4 +1,25 @@
 /**
+ * Currency configuration for POS app
+ */
+export interface Currency {
+  code: CurrencyCode;
+  name: string;
+  symbol: string;
+  unit: string;
+}
+
+export type CurrencyCode = "USD" | "EUR";
+
+export const CURRENCIES: Currency[] = [
+  { code: "USD", name: "US Dollar", symbol: "$", unit: "iso4217/USD" },
+  { code: "EUR", name: "Euro", symbol: "€", unit: "iso4217/EUR" },
+];
+
+export function getCurrency(code: CurrencyCode): Currency {
+  return CURRENCIES.find((c) => c.code === code) ?? CURRENCIES[0];
+}
+
+/**
  * Convert dollars to cents. Uses Math.round() to avoid floating-point issues (9.2 * 100 = 919.999...)
  * @see https://github.com/nijikokun/dollars-to-cents - Stripe ecosystem standard
  */
