@@ -1,5 +1,6 @@
 import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { VariantName, Variants } from "@/constants/variants";
+import { CurrencyCode } from "@/utils/currency";
 import { MerchantConfig } from "@/utils/merchant-config";
 import { SECURE_STORAGE_KEYS, secureStorage } from "@/utils/secure-storage";
 import { storage } from "@/utils/storage";
@@ -47,6 +48,7 @@ interface SettingsStore {
   themeMode: "light" | "dark";
   deviceId: string;
   variant: VariantName;
+  currency: CurrencyCode;
   _hasHydrated: boolean;
   merchantId: string | null;
   isMerchantApiKeySet: boolean;
@@ -64,6 +66,7 @@ interface SettingsStore {
   setDeviceId: (deviceId: string) => void;
   setHasHydrated: (state: boolean) => void;
   setVariant: (variant: VariantName) => void;
+  setCurrency: (currency: CurrencyCode) => void;
   setMerchantId: (merchantId: string | null) => void;
   clearMerchantId: () => Promise<string | null>;
   setMerchantApiKey: (apiKey: string | null) => Promise<void>;
@@ -92,6 +95,7 @@ export const useSettingsStore = create<SettingsStore>()(
       themeMode: Appearance.getColorScheme() || "light",
       deviceId: "",
       variant: "default",
+      currency: "USD",
       _hasHydrated: false,
       merchantId: null,
       isMerchantApiKeySet: false,
@@ -109,6 +113,7 @@ export const useSettingsStore = create<SettingsStore>()(
           set({ themeMode: variantData.defaultTheme });
         }
       },
+      setCurrency: (currency: CurrencyCode) => set({ currency }),
       setMerchantId: (merchantId: string | null) => {
         // If clearing, reset to env default
         if (!merchantId || merchantId.trim() === "") {
@@ -244,7 +249,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 10,
+      version: 11,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -283,6 +288,9 @@ export const useSettingsStore = create<SettingsStore>()(
         }
         if (version < 10) {
           persistedState.transactionFilter = "all";
+        }
+        if (version < 11) {
+          persistedState.currency = "USD";
         }
 
         return persistedState;

@@ -16,6 +16,7 @@ import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { getCurrency } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
 import { StatusBar } from "expo-status-bar";
@@ -40,6 +41,8 @@ export default function PaymentSuccessScreen() {
   const Theme = useTheme("light");
   const params = useLocalSearchParams<SuccessParams>();
   const themeMode = useSettingsStore((state) => state.themeMode);
+  const currencyCode = useSettingsStore((state) => state.currency);
+  const currency = getCurrency(currencyCode);
   const getVariantPrinterLogo = useSettingsStore(
     (state) => state.getVariantPrinterLogo,
   );
@@ -59,7 +62,8 @@ export default function PaymentSuccessScreen() {
     try {
       await printReceipt({
         txnId: params.paymentId,
-        amountUsd: Number(amount),
+        amountFiat: Number(amount),
+        currencySymbol: currency.symbol,
         tokenSymbol: params.token,
         tokenAmount: params.tokenAmount,
         tokenDecimals: params.tokenDecimals
@@ -156,7 +160,8 @@ export default function PaymentSuccessScreen() {
               { color: Theme["text-payment-success"] },
             ]}
           >
-            ${amount}
+            {currency.symbol}
+            {amount}
           </ThemedText>
         </View>
         <View style={styles.buttonContainer}>
