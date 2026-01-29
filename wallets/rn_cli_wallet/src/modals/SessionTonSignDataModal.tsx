@@ -2,6 +2,7 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
+import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
@@ -11,6 +12,7 @@ import {
 } from '@/utils/TonRequestHandlerUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
@@ -18,6 +20,7 @@ import { tonAddresses } from '@/utils/TonWalletUtil';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionTonSignDataModal() {
   // Get request and wallet data from store
@@ -62,26 +65,36 @@ export default function SessionTonSignDataModal() {
 
   // Handle approve action
   const onApprove = useCallback(async () => {
-    try {
-      if (requestEvent) {
-        setIsLoadingApprove(true);
+    if (requestEvent) {
+      setIsLoadingApprove(true);
+      try {
         const response = await approveTonRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
+        haptics.requestResponse();
 
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'error' in response ? response.error.message : undefined,
         });
+      } catch (e) {
+        LogStore.error(
+          (e as Error).message,
+          'SessionTonSignDataModal',
+          'onApprove',
+        );
+        Toast.show({
+          type: 'error',
+          text1: 'Signature failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
-    } catch (e) {
-      console.log((e as Error).message, 'error');
-    } finally {
-      setIsLoadingApprove(false);
-      ModalStore.close();
     }
   }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
@@ -89,24 +102,33 @@ export default function SessionTonSignDataModal() {
   const onReject = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingReject(true);
-      const response = rejectTonRequest(requestEvent);
       try {
+        const response = rejectTonRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'User rejected request',
         });
       } catch (e) {
+        LogStore.error(
+          (e as Error).message,
+          'SessionTonSignDataModal',
+          'onReject',
+        );
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
         setIsLoadingReject(false);
-        console.log((e as Error).message, 'error');
-        return;
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic, peerMetadata, isLinkMode]);
 

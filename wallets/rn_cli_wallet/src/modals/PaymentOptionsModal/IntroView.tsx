@@ -1,12 +1,13 @@
-import { View, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { View, StyleSheet, Linking } from 'react-native';
 import type { PaymentInfo } from '@walletconnect/pay';
 
 import { ActionButton } from '@/components/ActionButton';
 import { MerchantInfo } from './MerchantInfo';
-import { sharedStyles } from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { Checkbox } from '@/components/Checkbox';
 
 interface IntroViewProps {
   info?: PaymentInfo;
@@ -15,6 +16,8 @@ interface IntroViewProps {
 
 export function IntroView({ info, onContinue }: IntroViewProps) {
   const Theme = useTheme();
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
   return (
     <>
       <MerchantInfo info={info} />
@@ -66,8 +69,36 @@ export function IntroView({ info, onContinue }: IntroViewProps) {
         </View>
       </View>
 
-      <View style={sharedStyles.footerContainer}>
-        <ActionButton onPress={onContinue} fullWidth>
+      <View style={styles.termsContainer}>
+        <Checkbox
+          checked={termsAccepted}
+          onPress={() => setTermsAccepted(!termsAccepted)}
+        />
+        <Text variant="lg-400" color="text-tertiary" style={styles.termsText}>
+          You agree to the{' '}
+          <Text
+            variant="lg-400"
+            color="text-tertiary"
+            style={styles.termsLink}
+            onPress={() => Linking.openURL('https://walletconnect.com/terms')}
+          >
+            Terms and Conditions
+          </Text>
+          {` and `}
+          <Text
+            variant="lg-400"
+            color="text-tertiary"
+            style={styles.termsLink}
+            onPress={() => Linking.openURL('https://walletconnect.com/privacy')}
+          >
+            Privacy Policy
+          </Text>
+          .
+        </Text>
+      </View>
+
+      <View style={styles.footerContainer}>
+        <ActionButton onPress={onContinue} fullWidth disabled={!termsAccepted}>
           Let's start
         </ActionButton>
       </View>
@@ -90,7 +121,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: Spacing[6],
+    marginVertical: Spacing[8],
   },
   stepIndicator: {
     marginVertical: Spacing[6],
@@ -113,5 +144,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing[2],
     paddingVertical: Spacing[1],
     borderRadius: BorderRadius[2],
+  },
+  termsContainer: {
+    flexDirection: 'row',
+    gap: Spacing[4],
+    alignItems: 'center',
+  },
+  termsText: {
+    flex: 1,
+  },
+  termsLink: {
+    textDecorationLine: 'underline',
+  },
+  footerContainer: {
+    paddingTop: Spacing[8],
+    alignItems: 'center',
   },
 });

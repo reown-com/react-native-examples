@@ -2,6 +2,7 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
+import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { getSignParamsMessage } from '@/utils/HelperUtil';
@@ -11,12 +12,14 @@ import {
 } from '@/utils/EIP155RequestHandlerUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSignModal() {
   // Get request and wallet data from store
@@ -44,12 +47,13 @@ export default function SessionSignModal() {
   const onApprove = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingApprove(true);
-      const response = await approveEIP155Request(requestEvent);
       try {
+        const response = await approveEIP155Request(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
+        haptics.requestResponse();
 
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
@@ -57,11 +61,16 @@ export default function SessionSignModal() {
           error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
-        return;
+        LogStore.error((e as Error).message, 'SessionSignModal', 'onApprove');
+        Toast.show({
+          type: 'error',
+          text1: 'Signature failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
-      setIsLoadingApprove(false);
-      ModalStore.close();
     }
   }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
@@ -69,24 +78,29 @@ export default function SessionSignModal() {
   const onReject = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingReject(true);
-      const response = rejectEIP155Request(requestEvent);
       try {
+        const response = rejectEIP155Request(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'User rejected signature request',
         });
       } catch (e) {
+        LogStore.error((e as Error).message, 'SessionSignModal', 'onReject');
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
         setIsLoadingReject(false);
-        console.log((e as Error).message, 'error');
-        return;
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic, peerMetadata, isLinkMode]);
 

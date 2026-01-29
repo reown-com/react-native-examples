@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import {
   Camera,
@@ -15,10 +15,14 @@ import SvgChevronRight from '@/assets/ChevronRight';
 import { RootStackScreenProps } from '@/utils/TypesUtil';
 import styles from './styles';
 import { Text } from '@/components/Text';
+import { useTheme } from '@/hooks/useTheme';
+import { haptics } from '@/utils/haptics';
+import { Button } from '@/components/Button';
 
 type Props = RootStackScreenProps<'Scan'>;
 
 export default function Scan({ navigation }: Props) {
+  const Theme = useTheme();
   const device = useCameraDevice('back', {
     physicalDevices: ['wide-angle-camera'],
   });
@@ -28,10 +32,11 @@ export default function Scan({ navigation }: Props) {
   const isActive = useIsFocused();
 
   const onCodeScanned = (codes: Code[]) => {
+    haptics.scanSuccess();
     const uri = codes[0].value;
     navigation.navigate('Home', {
-      screen: 'ConnectionsStack',
-      params: { screen: 'Connections', params: { uri: uri! } },
+      screen: 'Connections',
+      params: { uri: uri! },
     });
   };
 
@@ -51,15 +56,20 @@ export default function Scan({ navigation }: Props) {
   }, [hasPermission, requestPermission]);
 
   return (
-    <SafeAreaView style={StyleSheet.absoluteFill}>
-      <TouchableOpacity onPress={goBack} style={styles.backButton} hitSlop={40}>
+    <SafeAreaView
+      style={[
+        StyleSheet.absoluteFill,
+        { backgroundColor: Theme['bg-primary'] },
+      ]}
+    >
+      <Button onPress={goBack} style={styles.backButton} hitSlop={40}>
         <SvgChevronRight
           fill="white"
           height={24}
           width={24}
           style={styles.backIcon}
         />
-      </TouchableOpacity>
+      </Button>
 
       {hasPermission && device ? (
         <Camera

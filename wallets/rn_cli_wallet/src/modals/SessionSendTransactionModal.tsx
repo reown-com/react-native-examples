@@ -2,6 +2,7 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
+import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
@@ -11,9 +12,11 @@ import {
 } from '@/utils/EIP155RequestHandlerUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from '@/modals/RequestModal';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSendTransactionModal() {
   const { data } = useSnapshot(ModalStore.state);
@@ -45,17 +48,27 @@ export default function SessionSendTransactionModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'error' in response ? response.error.message : undefined,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
-        return;
+        LogStore.error(
+          (e as Error).message,
+          'SessionSendTransactionModal',
+          'onApprove',
+        );
+        Toast.show({
+          type: 'error',
+          text1: 'Transaction failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
-      setIsLoadingApprove(false);
-      ModalStore.close();
     }
   }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
@@ -63,18 +76,28 @@ export default function SessionSendTransactionModal() {
   const onReject = useCallback(async () => {
     if (requestEvent && topic) {
       setIsLoadingReject(true);
-      const response = rejectEIP155Request(requestEvent);
       try {
+        const response = rejectEIP155Request(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
+        haptics.requestResponse();
       } catch (e) {
-        console.log((e as Error).message, 'error');
-        return;
+        LogStore.error(
+          (e as Error).message,
+          'SessionSendTransactionModal',
+          'onReject',
+        );
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic]);
 

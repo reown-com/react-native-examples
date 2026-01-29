@@ -1,6 +1,7 @@
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { proxy, ref } from 'valtio';
 import type { PaymentOptionsResponse } from '@walletconnect/pay';
+import { haptics } from '@/utils/haptics';
 
 /**
  * Types
@@ -35,9 +36,16 @@ interface State {
     | 'SessionTonSignDataModal'
     | 'PaymentOptionsModal'
     | 'ImportWalletModal'
-    | 'SessionDetailModal';
+    | 'SessionDetailModal'
+    | 'ScannerOptionsModal';
   data?: ModalData;
 }
+
+const disableHapticViews: State['view'][] = [
+  'ImportWalletModal',
+  'ScannerOptionsModal',
+  'SessionDetailModal',
+];
 
 /**
  * State
@@ -53,6 +61,9 @@ const ModalStore = {
   state,
 
   open(view: State['view'], data: State['data']) {
+    if (!disableHapticViews.includes(view)) {
+      haptics.modalOpen();
+    }
     state.view = view;
     state.data = data ? ref(data) : undefined;
     state.open = true;

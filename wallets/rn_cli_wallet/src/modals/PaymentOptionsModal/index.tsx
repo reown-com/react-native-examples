@@ -1,6 +1,7 @@
 import { useCallback, useReducer, useEffect } from 'react';
 import { useSnapshot } from 'valtio';
 
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
@@ -22,6 +23,8 @@ import {
   formatDateInput,
   isValidDateOfBirth,
   validateRequiredFields,
+  detectErrorType,
+  getErrorMessage,
 } from './utils';
 import { paymentModalReducer, initialState } from './reducer';
 
@@ -42,13 +45,43 @@ export default function PaymentOptionsModal() {
   useEffect(() => {
     if (state.step === 'loading') {
       if (initialError) {
+        LogStore.error(
+          'Payment failed with initial error',
+          'PaymentOptionsModal',
+          'useEffect',
+          { error: initialError },
+        );
+        const errorType = detectErrorType(initialError);
         dispatch({
           type: 'SET_RESULT',
-          payload: { status: 'error', message: initialError },
+          payload: {
+            status: 'error',
+            message: getErrorMessage(errorType, initialError),
+            errorType,
+          },
         });
         dispatch({ type: 'SET_STEP', payload: 'result' });
       } else if (paymentData) {
-        dispatch({ type: 'SET_STEP', payload: 'intro' });
+        // Check for empty options BEFORE going to intro
+        if (!paymentData.options || paymentData.options.length === 0) {
+          LogStore.warn(
+            'No payment options available',
+            'PaymentOptionsModal',
+            'useEffect',
+            { paymentId: paymentData.paymentId },
+          );
+          dispatch({
+            type: 'SET_RESULT',
+            payload: {
+              status: 'error',
+              errorType: 'insufficient_funds',
+              message: getErrorMessage('insufficient_funds'),
+            },
+          });
+          dispatch({ type: 'SET_STEP', payload: 'result' });
+        } else {
+          dispatch({ type: 'SET_STEP', payload: 'intro' });
+        }
       }
     }
   }, [state.step, paymentData, initialError]);
@@ -91,6 +124,11 @@ export default function PaymentOptionsModal() {
     async (option: PaymentOption) => {
       const payClient = walletKit?.pay;
       if (!payClient || !paymentData) {
+        LogStore.error(
+          'Pay SDK not initialized',
+          'PaymentOptionsModal',
+          'fetchPaymentActions',
+        );
         dispatch({
           type: 'SET_ACTIONS_ERROR',
           payload: 'Pay SDK not initialized',
@@ -102,22 +140,47 @@ export default function PaymentOptionsModal() {
       dispatch({ type: 'SET_ACTIONS_ERROR', payload: null });
 
       try {
-        console.log(
-          '[Pay] Getting required payment actions for option:',
-          option.id,
+        LogStore.log(
+          'Getting required payment actions',
+          'PaymentOptionsModal',
+          'fetchPaymentActions',
+          {
+            optionId: option.id,
+          },
         );
         const actions = await payClient.getRequiredPaymentActions({
           paymentId: paymentData.paymentId,
           optionId: option.id,
         });
-        console.log('[Pay] Required actions:', actions);
+        LogStore.log(
+          'Required actions received',
+          'PaymentOptionsModal',
+          'fetchPaymentActions',
+          {
+            actionsCount: actions.length,
+          },
+        );
         dispatch({ type: 'SET_PAYMENT_ACTIONS', payload: actions });
       } catch (error: any) {
-        console.error('[Pay] Error getting payment actions:', error);
+        LogStore.error(
+          'Error getting payment actions',
+          'PaymentOptionsModal',
+          'fetchPaymentActions',
+          {
+            error: error?.message,
+          },
+        );
+        const errorMessage = error?.message || 'Failed to get payment actions';
+        const errorType = detectErrorType(errorMessage);
         dispatch({
-          type: 'SET_ACTIONS_ERROR',
-          payload: error?.message || 'Failed to get payment actions',
+          type: 'SET_RESULT',
+          payload: {
+            status: 'error',
+            errorType,
+            message: getErrorMessage(errorType, errorMessage),
+          },
         });
+        dispatch({ type: 'SET_STEP', payload: 'result' });
       } finally {
         dispatch({ type: 'SET_LOADING_ACTIONS', payload: false });
       }
@@ -129,10 +192,15 @@ export default function PaymentOptionsModal() {
   const handleIntroNext = useCallback(() => {
     const options = paymentData?.options || [];
 
+    // Fallback check (main check is in useEffect)
     if (options.length === 0) {
       dispatch({
         type: 'SET_RESULT',
-        payload: { status: 'error', message: 'No payment options available' },
+        payload: {
+          status: 'error',
+          errorType: 'insufficient_funds',
+          message: getErrorMessage('insufficient_funds'),
+        },
       });
       dispatch({ type: 'SET_STEP', payload: 'result' });
       return;
@@ -193,10 +261,15 @@ export default function PaymentOptionsModal() {
     if (state.step === 'confirm') {
       const options = paymentData?.options || [];
 
+      // Fallback check (main check is in useEffect)
       if (options.length === 0) {
         dispatch({
           type: 'SET_RESULT',
-          payload: { status: 'error', message: 'No payment options available' },
+          payload: {
+            status: 'error',
+            errorType: 'insufficient_funds',
+            message: getErrorMessage('insufficient_funds'),
+          },
         });
         dispatch({ type: 'SET_STEP', payload: 'result' });
         return;
@@ -215,6 +288,16 @@ export default function PaymentOptionsModal() {
       !state.selectedOption ||
       !paymentData
     ) {
+      LogStore.warn(
+        'Cannot approve payment - missing required state',
+        'PaymentOptionsModal',
+        'onApprovePayment',
+        {
+          hasPaymentActions: !!state.paymentActions?.length,
+          hasSelectedOption: !!state.selectedOption,
+          hasPaymentData: !!paymentData,
+        },
+      );
       return;
     }
 
@@ -225,6 +308,12 @@ export default function PaymentOptionsModal() {
         state.collectedData,
       );
       if (missingFields.length > 0) {
+        LogStore.warn(
+          'Missing required fields',
+          'PaymentOptionsModal',
+          'onApprovePayment',
+          { missingFields },
+        );
         dispatch({
           type: 'SET_ACTIONS_ERROR',
           payload: `Please fill in required fields: ${missingFields.join(
@@ -240,6 +329,15 @@ export default function PaymentOptionsModal() {
 
     try {
       const payClient = walletKit?.pay;
+      if (!payClient) {
+        LogStore.error(
+          'Pay client not available for confirmation',
+          'PaymentOptionsModal',
+          'onApprovePayment',
+        );
+        throw new Error('Pay SDK not available');
+      }
+
       const wallet = eip155Wallets[SettingsStore.state.eip155Address];
       const signatures: string[] = [];
 
@@ -249,7 +347,12 @@ export default function PaymentOptionsModal() {
             const { method, params } = action.walletRpc;
             const parsedParams = JSON.parse(params);
 
-            console.log('[Pay] Signing action:', method, parsedParams);
+            LogStore.log(
+              'Signing action',
+              'PaymentOptionsModal',
+              'onApprovePayment',
+              { method },
+            );
 
             if (
               method === 'eth_signTypedData_v4' ||
@@ -264,14 +367,29 @@ export default function PaymentOptionsModal() {
                 types,
                 messageData,
               );
-              console.log('[Pay] Signature:', signature);
+              LogStore.log(
+                'Signature received',
+                'PaymentOptionsModal',
+                'onApprovePayment',
+              );
               signatures.push(signature);
             } else {
-              console.warn(`[Pay] Unsupported wallet RPC method: ${method}`);
+              LogStore.warn(
+                `Unsupported wallet RPC method: ${method}`,
+                'PaymentOptionsModal',
+                'onApprovePayment',
+              );
               throw new Error(`Unsupported signature method: ${method}`);
             }
           } catch (error: any) {
-            console.error(`[Pay] Error signing action ${index}:`, error);
+            LogStore.error(
+              `Error signing action ${index}`,
+              'PaymentOptionsModal',
+              'onApprovePayment',
+              {
+                error: error?.message,
+              },
+            );
             throw new Error(
               `Failed to sign action ${index + 1}: ${
                 error?.message || 'Unknown error'
@@ -291,19 +409,51 @@ export default function PaymentOptionsModal() {
               }))
           : [];
 
-      if (payClient) {
-        console.log('[Pay] Confirming payment with signatures:', signatures);
-        console.log('[Pay] Collected data:', collectedDataResults);
+      LogStore.log(
+        'Confirming payment',
+        'PaymentOptionsModal',
+        'onApprovePayment',
+        {
+          signaturesCount: signatures.length,
+          hasCollectedData: collectedDataResults.length > 0,
+        },
+      );
 
-        const confirmResult = await payClient.confirmPayment({
+      const confirmResult = await payClient.confirmPayment({
+        paymentId: paymentData.paymentId,
+        optionId: state.selectedOption.id,
+        signatures,
+        collectedData:
+          collectedDataResults.length > 0 ? collectedDataResults : undefined,
+      });
+
+      LogStore.log(
+        'Payment confirmation result',
+        'PaymentOptionsModal',
+        'onApprovePayment',
+        { status: confirmResult?.status },
+      );
+
+      // Handle missing response
+      if (!confirmResult) {
+        throw new Error('Payment confirmation failed - no response received');
+      }
+
+      // Handle expired payment from confirmPayment response
+      if (confirmResult.status === 'expired') {
+        LogStore.warn('Payment expired', 'PaymentOptionsModal', 'onApprovePayment', {
           paymentId: paymentData.paymentId,
-          optionId: state.selectedOption.id,
-          signatures,
-          collectedData:
-            collectedDataResults.length > 0 ? collectedDataResults : undefined,
         });
-
-        console.log('[Pay] Payment confirmed:', confirmResult);
+        dispatch({
+          type: 'SET_RESULT',
+          payload: {
+            status: 'error',
+            errorType: 'expired',
+            message: getErrorMessage('expired'),
+          },
+        });
+        dispatch({ type: 'SET_STEP', payload: 'result' });
+        return;
       }
 
       const amount = formatAmount(
@@ -320,12 +470,22 @@ export default function PaymentOptionsModal() {
       });
       dispatch({ type: 'SET_STEP', payload: 'result' });
     } catch (error: any) {
-      console.error('[Pay] Error signing payment:', error);
+      LogStore.error(
+        'Error signing payment',
+        'PaymentOptionsModal',
+        'onApprovePayment',
+        {
+          error: error?.message,
+        },
+      );
+      const errorMessage = error?.message || 'Failed to sign payment';
+      const errorType = detectErrorType(errorMessage);
       dispatch({
         type: 'SET_RESULT',
         payload: {
           status: 'error',
-          message: error?.message || 'Failed to sign payment',
+          errorType,
+          message: getErrorMessage(errorType, errorMessage),
         },
       });
       dispatch({ type: 'SET_STEP', payload: 'result' });
@@ -383,6 +543,7 @@ export default function PaymentOptionsModal() {
         return (
           <ResultView
             status={state.resultStatus}
+            errorType={state.resultErrorType}
             message={state.resultMessage}
             onClose={onClose}
           />
@@ -399,6 +560,7 @@ export default function PaymentOptionsModal() {
     state.isLoadingActions,
     state.actionsError,
     state.resultStatus,
+    state.resultErrorType,
     state.resultMessage,
     data?.loadingMessage,
     paymentData,

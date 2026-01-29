@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
 import { SessionTypes } from '@walletconnect/types';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -7,6 +7,7 @@ import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { ChainIcons } from '@/components/ChainIcons';
 import ModalStore from '@/store/ModalStore';
+import { Button } from '@/components/Button';
 
 interface IndividualSessionProps {
   name: string | undefined;
@@ -31,23 +32,36 @@ const IndividualSession = ({
   }, [session]);
 
   const onPress = () => {
-    ModalStore.open('SessionDetailModal', { session: session as SessionTypes.Struct });
+    ModalStore.open('SessionDetailModal', {
+      session: session as SessionTypes.Struct,
+    });
   };
 
   return (
-    <TouchableOpacity
-      style={[styles.container, { backgroundColor: Theme['foreground-primary'] }]}
+    <Button
+      style={[
+        styles.container,
+        { backgroundColor: Theme['foreground-primary'] },
+      ]}
       onPress={onPress}
     >
       <View style={styles.flexRow}>
         {icon ? (
           <Image
-            source={{ uri: icon }}
-            style={[styles.iconContainer, { backgroundColor: Theme['foreground-tertiary'] }]}
+            source={{ uri: icon, cache: 'force-cache' }}
+            style={[
+              styles.iconContainer,
+              { backgroundColor: Theme['foreground-tertiary'] },
+            ]}
           />
         ) : null}
         <View style={styles.textContainer}>
-          <Text variant="lg-500" color="text-primary">
+          <Text
+            variant="lg-500"
+            color="text-primary"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {name ? name : 'No Name'}
           </Text>
           <Text
@@ -61,7 +75,7 @@ const IndividualSession = ({
         </View>
         <ChainIcons chainIds={chainIds} size={24} overlap={8} />
       </View>
-    </TouchableOpacity>
+    </Button>
   );
 };
 
@@ -69,8 +83,7 @@ export default IndividualSession;
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: Spacing[3],
-    paddingHorizontal: Spacing[4],
+    padding: Spacing[5],
     borderRadius: BorderRadius[4],
     marginBottom: Spacing[2],
   },

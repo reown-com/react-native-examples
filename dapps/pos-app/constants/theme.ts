@@ -6,10 +6,14 @@ export const Colors = {
     "foreground-primary": "#F3F3F3",
     "foreground-secondary": "#E9E9E9",
     "foreground-tertiary": "#D0D0D0",
+    "foreground-accent-primary-10": "#0988F01A", // 10% opacity
+    "foreground-accent-primary-40": "#0988F040", // 40% opacity
+    "foreground-accent-primary-60": "#0988F060", // 60% opacity
 
     // Icon colors
     "icon-default": "#9A9A9A",
     "icon-invert": "#202020",
+    "icon-success": "#30A46B",
     "icon-accent-primary": "#0988F0",
     "icon-error": "#DF4A34",
 
@@ -29,17 +33,23 @@ export const Colors = {
 
     // Border colors
     "border-primary": "#E9E9E9",
+    "border-secondary": "#D0D0D0",
     "border-payment-success": "#E9E9E9",
+    "border-accent-primary": "#0988F0",
   },
   dark: {
     // Foreground colors
     "foreground-primary": "#252525",
     "foreground-secondary": "#2A2A2A",
     "foreground-tertiary": "#363636",
+    "foreground-accent-primary-10": "#0988F01A", // 10% opacity
+    "foreground-accent-primary-40": "#0988F040", // 40% opacity
+    "foreground-accent-primary-60": "#0988F060", // 60% opacity
 
     // Icon colors
     "icon-default": "#9A9A9A",
     "icon-invert": "#FFFFFF",
+    "icon-success": "#30A46B",
     "icon-accent-primary": "#0988F0",
     "icon-error": "#DF4A34",
 
@@ -59,7 +69,9 @@ export const Colors = {
 
     // Border colors
     "border-primary": "#363636",
+    "border-secondary": "#4F4F4F",
     "border-payment-success": "#E9E9E9",
+    "border-accent-primary": "#0988F0",
   },
 };
 

@@ -5,6 +5,7 @@ import { SignClientTypes } from '@walletconnect/types';
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
 import Toast from 'react-native-toast-message';
 
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import { eip155Addresses } from '@/utils/EIP155WalletUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
@@ -20,21 +21,14 @@ import { tonAddresses } from '@/utils/TonWalletUtil';
 import { tronAddresses } from '@/utils/TronWalletUtil';
 import { TRON_CHAINS, TRON_SIGNING_METHODS } from '@/constants/Tron';
 import { AccordionCard } from '@/components/AccordionCard';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
-import { AppPermissions } from '@/components/AppPermissions';
+import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkSelector } from '@/components/NetworkSelector';
 import { ChainIcons } from '@/components/ChainIcons';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 // Height constants for accordion animation
-const PERMISSION_ROW_HEIGHT = 28;
-const PERMISSIONS_COUNT = 3;
-const PERMISSIONS_GAP = Spacing[2];
-const PERMISSIONS_HEIGHT =
-  PERMISSION_ROW_HEIGHT * PERMISSIONS_COUNT +
-  PERMISSIONS_GAP * (PERMISSIONS_COUNT - 1);
-
 const NETWORK_ROW_HEIGHT = 40;
 const NETWORK_GAP = Spacing[2];
 const MAX_VISIBLE_NETWORKS = 5;
@@ -133,7 +127,8 @@ export default function SessionProposalModal() {
   const networkHeight = useMemo(() => {
     const chainCount = Math.min(supportedChains.length, MAX_VISIBLE_NETWORKS);
     return (
-      NETWORK_ROW_HEIGHT * chainCount + NETWORK_GAP * Math.max(0, chainCount - 1)
+      NETWORK_ROW_HEIGHT * chainCount +
+      NETWORK_GAP * Math.max(0, chainCount - 1)
     );
   }, [supportedChains.length]);
 
@@ -192,6 +187,7 @@ export default function SessionProposalModal() {
           id: proposal.id,
           namespaces,
         });
+        haptics.requestResponse();
         SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
 
         handleRedirect({
@@ -199,38 +195,59 @@ export default function SessionProposalModal() {
           isLinkMode: session?.transportType === 'link_mode',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
+        LogStore.error(
+          (e as Error).message,
+          'SessionProposalModal',
+          'onApprove',
+        );
         Toast.show({
           type: 'error',
-          text1: (e as Error).message,
+          text1: 'Connection failed',
+          text2: (e as Error).message,
         });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
     }
-    setIsLoadingApprove(false);
-    ModalStore.close();
-  }, [proposal, supportedNamespaces, selectedChainIds, filterNamespacesByChains]);
+  }, [
+    proposal,
+    supportedNamespaces,
+    selectedChainIds,
+    filterNamespacesByChains,
+  ]);
 
   const onReject = useCallback(async () => {
     if (proposal) {
+      setIsLoadingReject(true);
       try {
-        setIsLoadingReject(true);
         await new Promise(resolve => setTimeout(resolve, 1000));
         await walletKit.rejectSession({
           id: proposal.id,
           reason: getSdkError('USER_REJECTED_METHODS'),
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: proposal.params.proposer.metadata.redirect,
           isLinkMode: false,
           error: 'User rejected connect request',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
-        return;
+        LogStore.error(
+          (e as Error).message,
+          'SessionProposalModal',
+          'onReject',
+        );
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        ModalStore.close();
       }
     }
-    setIsLoadingReject(false);
-    ModalStore.close();
   }, [proposal]);
 
   return (
@@ -246,24 +263,13 @@ export default function SessionProposalModal() {
     >
       <View style={styles.container}>
         {/* App Accordion */}
-        <AccordionCard
-          headerContent={
-            <Text
-              variant="lg-400"
-              color="text-tertiary"
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {requestMetadata?.url?.replace(/^https?:\/\//, '') || 'unknown domain'}
-            </Text>
-          }
-          rightContent={<VerifiedBadge validation={validation} isScam={isScam} />}
+        <AppInfoCard
+          url={requestMetadata?.url}
+          validation={validation}
+          isScam={isScam}
           isExpanded={expandedAccordion === 'app'}
           onPress={() => toggleAccordion('app')}
-          expandedHeight={PERMISSIONS_HEIGHT}
-        >
-          <AppPermissions />
-        </AccordionCard>
+        />
 
         {/* Network Accordion */}
         <AccordionCard
@@ -276,6 +282,7 @@ export default function SessionProposalModal() {
           isExpanded={expandedAccordion === 'network'}
           onPress={() => toggleAccordion('network')}
           expandedHeight={networkHeight}
+          hideExpand={supportedChains.length <= 1}
         >
           <NetworkSelector
             availableChains={supportedChains}

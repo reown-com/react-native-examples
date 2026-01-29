@@ -8,7 +8,7 @@ import { usePaymentStatus } from "@/services/hooks";
 import { startPayment } from "@/services/payment";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { dollarsToCents } from "@/utils/currency";
+import { amountToCents, getCurrency } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
@@ -30,7 +30,12 @@ export default function ScanScreen() {
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
-  const { deviceId, merchantId } = useSettingsStore((state) => state);
+  const {
+    deviceId,
+    merchantId,
+    currency: currencyCode,
+  } = useSettingsStore((state) => state);
+  const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
@@ -89,8 +94,8 @@ export default function ScanScreen() {
         const paymentRequest = {
           referenceId: uuidv4().replace(/-/g, ""),
           amount: {
-            value: String(dollarsToCents(amount)),
-            unit: "iso4217/USD",
+            value: String(amountToCents(amount)),
+            unit: currency.unit,
           },
         };
 
@@ -178,7 +183,8 @@ export default function ScanScreen() {
                 { color: Theme["text-primary"], textTransform: "uppercase" },
               ]}
             >
-              ${amount}
+              {currency.symbol}
+              {amount}
             </ThemedText>
           </View>
           <QRCode

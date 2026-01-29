@@ -4,18 +4,17 @@ import { SvgProps } from 'react-native-svg';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ThemeKeys } from '@/utils/TypesUtil';
+import LogStore from '@/store/LogStore';
 
 // Import SVG icons
 import SvgChevronRight from '@/assets/ChevronRight';
 import SvgWarningCircle from '@/assets/WarningCircle';
-import SvgAlertCircle from '@/assets/AlertCircle';
 import SvgCheckCircle from '@/assets/CheckCircle';
 
 // Icon name to component mapping
 const iconComponents = {
   chevronRight: SvgChevronRight,
   warningCircle: SvgWarningCircle,
-  alertCircle: SvgAlertCircle,
   checkCircle: SvgCheckCircle,
 } as const;
 
@@ -60,7 +59,7 @@ export function Icon({
   const resolvedHeight = height ?? sizePresets[size];
 
   if (!IconComponent) {
-    console.warn(`Icon "${name}" not found`);
+    LogStore.warn(`Icon "${name}" not found`, 'Icon', 'Icon');
     return <View style={{ width: resolvedWidth, height: resolvedHeight }} />;
   }
   const fillColor = Theme[color];

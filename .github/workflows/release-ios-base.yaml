@@ -77,8 +77,6 @@ on:
         required: true
       match-ssh-key:
         required: true
-      google-services-file:
-        required: false
       aws-account-id:
         required: false
       slack-webhook-url:
@@ -172,14 +170,6 @@ jobs:
 
       # Create sentry file
       - run: touch ${{ inputs.root-path }}/ios/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/ios/sentry.properties
-
-      # Add Google Services file (base64 encoded due to XML structure)
-      # To encode: base64 -i path/to/GoogleService-Info.plist | pbcopy
-      - name: Create Google Services file
-        env:
-          google-services-file: ${{ secrets.google-services-file }}
-        if: ${{ env.google-services-file != '' }}
-        run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/ios/GoogleService-Info.plist
 
       - name: ${{ inputs.build-for-simulator && 'Build for simulator' || 'Build and Upload to TestFlight' }}
         id: build

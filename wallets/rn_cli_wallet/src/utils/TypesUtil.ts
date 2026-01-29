@@ -35,7 +35,6 @@ export type ThemeKeys =
   | 'foreground-secondary'
   | 'foreground-tertiary'
   | 'foreground-accent-primary-10'
-  | 'foreground-accent-primary-10-solid'
   | 'foreground-accent-primary-40'
   | 'foreground-accent-primary-60'
   | 'foreground-accent-secondary-10'
@@ -48,7 +47,9 @@ export type ThemeKeys =
   | 'icon-accent-secondary'
   | 'icon-success'
   | 'icon-error'
-  | 'icon-warning';
+  | 'icon-warning'
+  // Others
+  | 'white';
 
 // Navigation
 declare global {
@@ -59,21 +60,15 @@ declare global {
 
 export type RootStackParamList = {
   Onboarding: undefined;
-  Home: NavigatorScreenParams<HomeTabParamList>; // Nested Navigator
+  Home: NavigatorScreenParams<HomeTabParamList>;
   Scan: undefined;
   Logs: undefined;
+  SecretPhrase: undefined;
 };
 
 export type HomeTabParamList = {
-  ConnectionsStack: NavigatorScreenParams<ConnectionsStackParamList>;
-  SettingsStack: NavigatorScreenParams<SettingsStackParamList>;
-};
-
-export type ConnectionsStackParamList = {
+  Wallets: undefined;
   Connections?: { uri: string };
-};
-
-export type SettingsStackParamList = {
   Settings: undefined;
 };
 
@@ -85,19 +80,6 @@ export type HomeTabScreenProps<T extends keyof HomeTabParamList> =
   CompositeScreenProps<
     BottomTabScreenProps<HomeTabParamList, T>,
     RootStackScreenProps<keyof RootStackParamList>
-  >;
-
-export type ConnectionsStackScreenProps<
-  T extends keyof ConnectionsStackParamList,
-> = CompositeScreenProps<
-  StackScreenProps<ConnectionsStackParamList, T>,
-  HomeTabScreenProps<keyof HomeTabParamList>
->;
-
-export type SettingsStackScreenProps<T extends keyof SettingsStackParamList> =
-  CompositeScreenProps<
-    StackScreenProps<SettingsStackParamList, T>,
-    HomeTabScreenProps<keyof HomeTabParamList>
   >;
 
 export type Chain = {

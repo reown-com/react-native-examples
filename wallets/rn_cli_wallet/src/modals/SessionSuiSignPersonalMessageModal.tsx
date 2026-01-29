@@ -2,12 +2,14 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
+import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
 
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
@@ -17,6 +19,7 @@ import {
 } from '@/utils/SuiRequestHandlerUtil';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSignSuiPersonalMessageModal() {
   // Get request and wallet data from store
@@ -37,29 +40,38 @@ export default function SessionSignSuiPersonalMessageModal() {
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
 
   const message = request.params?.message || '';
-  console.log('sui message', message);
 
   // Handle approve action (logic varies based on request method)
   const onApprove = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingApprove(true);
-      const response = await approveSuiRequest(requestEvent);
       try {
+        const response = await approveSuiRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
+        haptics.requestResponse();
 
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
-        return;
+        LogStore.error(
+          (e as Error).message,
+          'SessionSuiSignPersonalMessageModal',
+          'onApprove',
+        );
+        Toast.show({
+          type: 'error',
+          text1: 'Signature failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
-      setIsLoadingApprove(false);
-      ModalStore.close();
     }
   }, [requestEvent, peerMetadata, topic, isLinkMode]);
 
@@ -67,24 +79,33 @@ export default function SessionSignSuiPersonalMessageModal() {
   const onReject = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingReject(true);
-      const response = rejectSuiRequest(requestEvent);
       try {
+        const response = rejectSuiRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'User rejected personal message request',
         });
       } catch (e) {
+        LogStore.error(
+          (e as Error).message,
+          'SessionSuiSignPersonalMessageModal',
+          'onReject',
+        );
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
         setIsLoadingReject(false);
-        console.log((e as Error).message, 'error');
-        return;
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic, peerMetadata, isLinkMode]);
 

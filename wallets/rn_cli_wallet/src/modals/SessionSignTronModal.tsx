@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useSnapshot } from 'valtio';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 // import { styledToast } from '@/utils/HelperUtil'
@@ -16,6 +17,7 @@ import { AppInfoCard } from '@/components/AppInfoCard';
 import Toast from 'react-native-toast-message';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionSignTronModal() {
   // Get request and wallet data from store
@@ -50,9 +52,10 @@ export default function SessionSignTronModal() {
           topic,
           response,
         });
+        haptics.requestResponse();
       }
     } catch (e) {
-      console.log((e as Error).message, 'error');
+      LogStore.error((e as Error).message, 'SessionSignTronModal', 'onApprove');
       Toast.show({
         text1: (e as Error).message,
         type: 'error',
@@ -67,23 +70,28 @@ export default function SessionSignTronModal() {
   const onReject = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingReject(true);
-      const response = rejectTronRequest(requestEvent);
       try {
+        const response = rejectTronRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
+        haptics.requestResponse();
       } catch (e) {
-        setIsLoadingReject(false);
+        LogStore.error(
+          (e as Error).message,
+          'SessionSignTronModal',
+          'onReject',
+        );
         Toast.show({
-          text1: (e as Error).message,
           type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
         });
-        console.log((e as Error).message, 'error');
-        return;
+      } finally {
+        setIsLoadingReject(false);
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic]);
 

@@ -7,19 +7,19 @@ import { ThemedText } from "./themed-text";
 
 interface ToastProps {
   message?: string;
-  type: "error" | "info";
+  type: "error" | "info" | "success" | "warning";
 }
 
 export function Toast({ message = "", type }: ToastProps) {
   const Theme = useTheme();
   const [assets] = useAssets([
     require("@/assets/images/error.png"),
-    require("@/assets/images/warning_circle.png"),
+    require("@/assets/images/check_circle.png"),
   ]);
 
   const image = type === "error" ? assets?.[0] : assets?.[1];
   const iconColor =
-    type === "error" ? Theme["icon-error"] : Theme["icon-accent-primary"];
+    type === "error" ? Theme["icon-error"] : Theme["icon-success"];
 
   return (
     <View

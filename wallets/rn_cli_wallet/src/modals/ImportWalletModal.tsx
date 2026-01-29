@@ -3,17 +3,19 @@ import {
   StyleSheet,
   View,
   TextInput,
-  TouchableOpacity,
-  Alert,
   KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
+import SettingsStore from '@/store/SettingsStore';
+import WalletStore from '@/store/WalletStore';
 import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { Text } from '@/components/Text';
-import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
+import { Spacing, BorderRadius, FontFamily } from '@/utils/ThemeUtil';
+import { ActionButton } from '@/components/ActionButton';
 
 export default function ImportWalletModal() {
   const Theme = useTheme();
@@ -22,51 +24,63 @@ export default function ImportWalletModal() {
 
   const handleImport = async () => {
     if (!input.trim()) {
-      Alert.alert('Error', 'Please enter a mnemonic or private key');
+      Toast.show({
+        type: 'error',
+        text1: 'Please enter a mnemonic or private key',
+      });
       return;
     }
 
     setIsLoading(true);
     try {
       const { address } = loadEIP155Wallet(input);
-      Alert.alert('Success', `Wallet imported!\n\nNew address: ${address}`);
+
+      // Refetch balances with the new address
+      WalletStore.fetchBalances({
+        eip155Address: address,
+        tonAddress: SettingsStore.state.tonAddress,
+        tronAddress: SettingsStore.state.tronAddress,
+      });
+
+      Toast.show({
+        type: 'success',
+        text1: 'Wallet imported!',
+        text2: `New address: ${address}`,
+      });
       ModalStore.close();
     } catch (error: unknown) {
       const message =
         error instanceof Error
           ? error.message
           : 'Invalid mnemonic or private key';
-      Alert.alert('Error', message);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: message,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboardView}
-    >
+    <KeyboardAvoidingView behavior="padding">
       <View
         style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
       >
-        <Text variant="large-600" color="text-primary">
-          Import EVM Wallet
-        </Text>
+        <View style={styles.header}>
+          <ModalCloseButton onPress={() => ModalStore.close()} />
+        </View>
 
-        <Text
-          variant="small-400"
-          color="text-secondary"
-          style={styles.description}
-        >
-          Enter a mnemonic phrase or private key to import an existing wallet.
+        <Text variant="h6-400" color="text-primary" center>
+          Import EVM Wallet
         </Text>
 
         <TextInput
           style={[
             styles.input,
             {
-              backgroundColor: Theme['foreground-secondary'],
+              backgroundColor: Theme['bg-primary'],
               color: Theme['text-primary'],
               borderColor: Theme['foreground-tertiary'],
             },
@@ -83,33 +97,21 @@ export default function ImportWalletModal() {
         />
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              { backgroundColor: Theme['foreground-tertiary'] },
-            ]}
+          <ActionButton
+            style={styles.button}
             onPress={() => ModalStore.close()}
+            variant="secondary"
           >
-            <Text variant="paragraph-600" color="text-primary">
-              Cancel
-            </Text>
-          </TouchableOpacity>
+            Cancel
+          </ActionButton>
 
-          <TouchableOpacity
-            style={[
-              styles.button,
-              {
-                opacity: isLoading ? 0.6 : 1,
-                backgroundColor: Theme['bg-accent-primary'],
-              },
-            ]}
+          <ActionButton
+            style={styles.button}
             onPress={handleImport}
-            disabled={isLoading}
+            disabled={isLoading || !input.trim()}
           >
-            <Text variant="paragraph-600" color="text-invert">
-              {isLoading ? 'Importing...' : 'Import'}
-            </Text>
-          </TouchableOpacity>
+            {isLoading ? 'Importing...' : 'Import'}
+          </ActionButton>
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -117,18 +119,20 @@ export default function ImportWalletModal() {
 }
 
 const styles = StyleSheet.create({
-  keyboardView: {
-    width: '100%',
-  },
   container: {
     width: '100%',
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
+    alignItems: 'center',
     padding: Spacing[5],
-    borderTopLeftRadius: BorderRadius[8],
-    borderTopRightRadius: BorderRadius[8],
-    rowGap: Spacing[4],
+    paddingBottom: Spacing[8],
   },
-  description: {
-    textAlign: 'center',
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: Spacing[4],
   },
   input: {
     borderWidth: 1,
@@ -137,10 +141,16 @@ const styles = StyleSheet.create({
     minHeight: 100,
     textAlignVertical: 'top',
     fontSize: 14,
+    width: '100%',
+    marginTop: Spacing[4],
+    marginHorizontal: Spacing[4],
+    fontFamily: FontFamily.regular,
   },
   buttonContainer: {
     flexDirection: 'row',
     gap: Spacing[3],
+    width: '100%',
+    marginTop: Spacing[4],
   },
   button: {
     flex: 1,

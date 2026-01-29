@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # Cleanup script for archiving worktrees
 # Removes node_modules, build artifacts, and Pods from all projects

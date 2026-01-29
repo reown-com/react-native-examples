@@ -21,9 +21,6 @@ DerivedData
 *.ipa
 *.xcuserstate
 **/.xcode.env.local
-ios/GoogleService-Info.plist
-ios/GoogleService/*
-!ios/GoogleService/GoogleService-Info.mock.plist
 
 # Android/IntelliJ
 #
@@ -35,7 +32,6 @@ local.properties
 *.hprof
 .cxx/
 *.keystore
-android/app/google-services.json
 .kotlin/
 
 # node.js

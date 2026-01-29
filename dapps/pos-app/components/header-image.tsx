@@ -23,7 +23,7 @@ export default function HeaderImage({ tintColor, padding }: HeaderImageProps) {
         width: Variants[variant].brandLogoWidth ?? 185,
         marginTop: Spacing["spacing-1"],
         tintColor: tintColor,
-        marginRight: padding ? Spacing["spacing-2"] : 0,
+        marginHorizontal: padding ? Spacing["spacing-2"] : 0,
       }}
     />
   );

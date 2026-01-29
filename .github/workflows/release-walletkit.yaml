@@ -47,7 +47,6 @@ jobs:
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
       keystore-name: ${{ inputs.release-type == 'internal' && vars.WC_INTERNAL_KEYSTORE_NAME || vars.WC_PROD_KEYSTORE_NAME }}
       keystore: ${{ inputs.release-type == 'internal' && secrets.WC_INTERNAL_KEYSTORE || secrets.WC_PROD_KEYSTORE }}
-      google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
       firebase-url: ${{ inputs.release-type == 'internal' && vars.FIREBASE_WALLETKIT_INTERNAL_URL || vars.FIREBASE_WALLETKIT_PROD_URL }}
@@ -76,7 +75,6 @@ jobs:
       match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
       match-git-url: ${{ secrets.MATCH_GIT_URL }}
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
-      google-services-file: ${{ inputs.release-type == 'internal' && secrets.WALLETKIT_IOS_INTERNAL_GOOGLE_SERVICES_FILE || secrets.WALLETKIT_IOS_PROD_GOOGLE_SERVICES_FILE }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
       testflight-url: ${{ inputs.release-type == 'internal' && vars.TESTFLIGHT_WALLETKIT_INTERNAL_URL || vars.TESTFLIGHT_WALLETKIT_PROD_URL }}

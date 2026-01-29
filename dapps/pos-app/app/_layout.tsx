@@ -158,10 +158,11 @@ export default Sentry.wrap(function RootLayout() {
                   },
                   contentStyle: {
                     backgroundColor: Theme["bg-primary"],
-                    paddingBottom:
-                      Platform.OS === "ios"
-                        ? Spacing["spacing-6"]
-                        : Spacing["spacing-12"],
+                    paddingBottom: Platform.select({
+                      ios: Spacing["spacing-6"],
+                      android: Spacing["spacing-12"],
+                      web: Spacing["spacing-4"],
+                    }),
                   },
                 };
               }}
@@ -182,6 +183,7 @@ export default Sentry.wrap(function RootLayout() {
                 }}
               />
               <Stack.Screen name="settings" />
+              <Stack.Screen name="activity" />
               <Stack.Screen name="logs" />
             </Stack>
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />

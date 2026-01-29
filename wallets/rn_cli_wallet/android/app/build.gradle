@@ -2,7 +2,6 @@ apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-apply plugin: "com.google.gms.google-services"
 
 project.ext.defaultEnvFile = ".env"
 

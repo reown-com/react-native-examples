@@ -39,8 +39,8 @@ The `.ruby-version` file in this project will automatically tell rbenv to use 3.
 yarn install
 ```
 
-## Step 2: Create mocked google-service files
-In order to build the app successfuly, you'll need some extra files
+## Step 2: Create sample configuration files
+In order to build the app successfully, you'll need some configuration files (env, keystore, secrets)
 
 ```bash
 chmod +x ./scripts/copy-sample-files.sh && ./scripts/copy-sample-files.sh

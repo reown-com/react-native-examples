@@ -64,6 +64,5 @@ jobs:
       match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
       match-git-url: ${{ secrets.MATCH_GIT_URL }}
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
-      google-services-file: ${{ secrets.POC_POS_IOS_GOOGLE_SERVICES_FILE_BASE64 }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
       testflight-url: ${{ vars.TESTFLIGHT_POC_POS_URL }}

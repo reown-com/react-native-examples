@@ -15,6 +15,8 @@
     "web:serve": "npm run web:setup && expo serve",
     "web:build": "npm run web:setup && expo export -p web",
     "web:setup": "npx setup-skia-web && mkdir -p public && cp web/static/js/canvaskit.wasm public/",
+    "prettier:fix": "prettier --write .",
+    "prettier": "prettier --check .",
     "lint": "expo lint",
     "test": "jest"
   },
@@ -81,11 +83,12 @@
     "typescript": "~5.9.2"
   },
   "overrides": {
-    "hono": "4.10.3",
+    "hono": "4.11.4",
     "tar": "7.5.2",
-    "node-forge": "1.3.2",
+    "node-forge": "1.3.3",
     "glob": "10.5.0",
-    "js-yaml": "4.1.1"
+    "js-yaml": "4.1.1",
+    "esbuild": "0.25.0"
   },
   "private": true
 }

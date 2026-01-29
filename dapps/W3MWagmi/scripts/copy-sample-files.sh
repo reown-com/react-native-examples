@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 # Script that copies mock files to the correct location (skips if file exists)
 
 copy_if_missing() {

@@ -2,7 +2,7 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
-import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { Platform, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { Button } from "./button";
 
 interface CloseButtonProps {
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     width: 64,
     alignItems: "center",
     justifyContent: "center",
-    bottom: Spacing["spacing-6"],
+    bottom: Platform.OS === "web" ? 0 : Spacing["spacing-6"],
   },
   image: {
     width: 24,

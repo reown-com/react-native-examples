@@ -3,18 +3,21 @@ import { View, Image, StyleSheet } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { PresetsUtil } from '@/utils/PresetsUtil';
-import { BorderRadius } from '@/utils/ThemeUtil';
+import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface ChainIconsProps {
   chainIds: string[];
   size?: number;
   overlap?: number;
+  maxVisible?: number;
 }
 
 export function ChainIcons({
   chainIds,
   size = 24,
   overlap = 8,
+  maxVisible = 5,
 }: ChainIconsProps) {
   const Theme = useTheme();
 
@@ -22,17 +25,47 @@ export function ChainIcons({
     return [...new Set(chainIds)];
   }, [chainIds]);
 
+  const visibleChainIds = useMemo(() => {
+    return uniqueChainIds.slice(0, maxVisible);
+  }, [uniqueChainIds, maxVisible]);
+
+  const remainingCount = useMemo(() => {
+    return Math.max(0, uniqueChainIds.length - maxVisible);
+  }, [uniqueChainIds.length, maxVisible]);
+
+  const wrapperSize = size + 4;
+  const moreIndicatorMinWidth = 36;
+
   const containerWidth = useMemo(() => {
-    const count = uniqueChainIds.length;
-    if (count === 0) return 0;
-    return size + (count - 1) * (size - overlap);
-  }, [uniqueChainIds.length, size, overlap]);
+    const iconCount = visibleChainIds.length;
+    const hasMore = remainingCount > 0;
+    if (iconCount === 0 && !hasMore) return 0;
+
+    // Calculate position where "+N" badge starts
+    const moreLeft = iconCount * (wrapperSize - overlap);
+
+    if (hasMore) {
+      // Width = badge position + badge width
+      return moreLeft + moreIndicatorMinWidth;
+    }
+
+    // No badge: last icon starts at (iconCount - 1) * step, add wrapperSize for full width
+    return wrapperSize + (iconCount - 1) * (wrapperSize - overlap);
+  }, [
+    visibleChainIds.length,
+    remainingCount,
+    wrapperSize,
+    overlap,
+    moreIndicatorMinWidth,
+  ]);
 
   return (
-    <View style={[styles.container, { width: containerWidth, height: size }]}>
-      {uniqueChainIds.map((chainId, index) => {
+    <View
+      style={[styles.container, { width: containerWidth, height: wrapperSize }]}
+    >
+      {visibleChainIds.map((chainId, index) => {
         const logo = PresetsUtil.getChainIconById(chainId);
-        const leftOffset = index * (size - overlap);
+        const leftOffset = index * (wrapperSize - overlap);
 
         return (
           <View
@@ -41,10 +74,11 @@ export function ChainIcons({
               styles.iconWrapper,
               {
                 left: leftOffset,
-                width: size,
-                height: size,
-                zIndex: uniqueChainIds.length - index,
-                borderColor: Theme['bg-primary'],
+                width: wrapperSize,
+                height: wrapperSize,
+                zIndex: index + 1,
+                borderColor: Theme['foreground-primary'],
+                backgroundColor: Theme['foreground-primary'],
               },
             ]}
           >
@@ -54,8 +88,8 @@ export function ChainIcons({
                 style={[
                   styles.icon,
                   {
-                    width: size - 2,
-                    height: size - 2,
+                    width: size,
+                    height: size,
                     backgroundColor: Theme['foreground-tertiary'],
                   },
                 ]}
@@ -65,8 +99,8 @@ export function ChainIcons({
                 style={[
                   styles.icon,
                   {
-                    width: size - 2,
-                    height: size - 2,
+                    width: size,
+                    height: size,
                     backgroundColor: Theme['foreground-tertiary'],
                   },
                 ]}
@@ -75,6 +109,26 @@ export function ChainIcons({
           </View>
         );
       })}
+      {remainingCount > 0 && (
+        <View
+          style={[
+            styles.iconWrapper,
+            styles.moreIndicator,
+            {
+              left: visibleChainIds.length * (wrapperSize - overlap),
+              minWidth: moreIndicatorMinWidth,
+              height: wrapperSize,
+              paddingHorizontal: Spacing[2],
+              backgroundColor: Theme['foreground-tertiary'],
+              borderColor: Theme['foreground-primary'],
+            },
+          ]}
+        >
+          <Text variant="sm-500" color="text-primary">
+            {'+' + remainingCount}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -87,11 +141,16 @@ const styles = StyleSheet.create({
   iconWrapper: {
     position: 'absolute',
     borderRadius: BorderRadius.full,
-    borderWidth: 1,
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   icon: {
     borderRadius: BorderRadius.full,
+  },
+  moreIndicator: {
+    borderRadius: BorderRadius.full,
+    zIndex: 99,
   },
 });

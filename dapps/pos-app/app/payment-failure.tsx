@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
-    paddingBottom: Spacing["spacing-5"],
+    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
   failedText: {
     fontSize: 26,

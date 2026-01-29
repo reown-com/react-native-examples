@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSnapshot } from 'valtio';
 
@@ -5,21 +6,34 @@ import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
 import { Icon } from '@/components/Icon';
 import { Text } from '@/components/Text';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { WalletConnectLoading } from '@/components/WalletConnectLoading';
+import { haptics } from '@/utils/haptics';
 
 export function LoadingModal() {
   const Theme = useTheme();
   const { data } = useSnapshot(ModalStore.state);
 
+  useEffect(() => {
+    if (data?.errorMessage) {
+      haptics.error();
+    }
+  }, [data?.errorMessage]);
+
+  const onClose = () => {
+    ModalStore.close();
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
+      <ModalCloseButton onPress={onClose} style={styles.closeButton} />
       {data?.errorMessage ? (
-        <Icon name="warningCircle" color="text-error" width={34} height={34} />
+        <Icon name="warningCircle" color="text-error" width={48} height={48} />
       ) : (
-        <LoadingSpinner size="xl" color="text-secondary" />
+        <WalletConnectLoading size={120} />
       )}
-      <Text center variant="paragraph-400" color="text-secondary">
+      <Text center variant="h6-400" color="text-primary">
         {data?.loadingMessage || data?.errorMessage || 'Loading...'}
       </Text>
     </View>
@@ -30,11 +44,16 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
-    height: '30%',
-    padding: Spacing[4],
+    padding: Spacing[5],
+    paddingBottom: Spacing[11],
     borderTopLeftRadius: BorderRadius[8],
     borderTopRightRadius: BorderRadius[8],
     rowGap: Spacing[4],
+  },
+  closeButton: {
+    marginRight: Spacing[1],
+    marginTop: Spacing[1],
+    marginBottom: Spacing[3],
+    alignSelf: 'flex-end',
   },
 });

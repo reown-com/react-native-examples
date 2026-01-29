@@ -3,6 +3,7 @@ import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import { SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 import SettingsStore from '@/store/SettingsStore';
+import LogStore, { serializeError } from '@/store/LogStore';
 import { TON_SIGNING_METHODS } from '@/constants/Ton';
 
 type RequestEventArgs = Omit<
@@ -27,7 +28,9 @@ export async function approveTonRequest(requestEvent: RequestEventArgs) {
         const result = await wallet.signData(payload);
         return formatJsonRpcResult(id, result);
       } catch (error: any) {
-        console.error(error);
+        LogStore.error(error.message, 'TonRequestHandler', 'signData', {
+          error: serializeError(error),
+        });
         return formatJsonRpcError(id, error.message);
       }
     case TON_SIGNING_METHODS.SEND_MESSAGE:
@@ -36,7 +39,9 @@ export async function approveTonRequest(requestEvent: RequestEventArgs) {
         const result = await wallet.sendMessage(txParams, chainId);
         return formatJsonRpcResult(id, result);
       } catch (error: any) {
-        console.error(error);
+        LogStore.error(error.message, 'TonRequestHandler', 'sendMessage', {
+          error: serializeError(error),
+        });
         return formatJsonRpcError(id, error.message);
       }
     default:
