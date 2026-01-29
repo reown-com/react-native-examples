@@ -3,14 +3,15 @@ import { useTheme } from "@/hooks/use-theme-color";
 import React, { useCallback, useState } from "react";
 import {
   FlatList,
-  Modal,
   Pressable,
   StyleProp,
   StyleSheet,
   View,
   ViewStyle,
 } from "react-native";
+import { FramedModal } from "./framed-modal";
 import { ThemedText } from "./themed-text";
+import { Button } from "./button";
 
 export interface DropdownOption<T extends string = string> {
   value: T;
@@ -22,6 +23,7 @@ interface DropdownProps<T extends string = string> {
   value: T;
   onChange: (value: T) => void;
   placeholder?: string;
+  label?: string;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -30,6 +32,7 @@ export function Dropdown<T extends string = string>({
   value,
   onChange,
   placeholder = "Select an option",
+  label,
   style,
 }: DropdownProps<T>) {
   const Theme = useTheme();
@@ -56,7 +59,7 @@ export function Dropdown<T extends string = string>({
   return (
     <View style={style}>
       {/* Trigger Button */}
-      <Pressable
+      <Button
         onPress={handleToggle}
         style={[
           styles.trigger,
@@ -66,13 +69,20 @@ export function Dropdown<T extends string = string>({
           },
         ]}
       >
-        <ThemedText
-          fontSize={16}
-          lineHeight={20}
-          color={selectedOption ? "text-primary" : "text-secondary"}
-        >
-          {selectedOption?.label ?? placeholder}
-        </ThemedText>
+        <View style={styles.triggerContent}>
+          {label && (
+            <ThemedText fontSize={16} lineHeight={18} color="text-primary">
+              {label}
+            </ThemedText>
+          )}
+          <ThemedText
+            fontSize={14}
+            lineHeight={16}
+            color={selectedOption ? "text-secondary" : "text-tertiary"}
+          >
+            {selectedOption?.label ?? placeholder}
+          </ThemedText>
+        </View>
         <ThemedText
           fontSize={12}
           color="text-secondary"
@@ -80,15 +90,10 @@ export function Dropdown<T extends string = string>({
         >
           ▼
         </ThemedText>
-      </Pressable>
+      </Button>
 
       {/* Dropdown Modal */}
-      <Modal
-        visible={isOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={handleBackdropPress}
-      >
+      <FramedModal visible={isOpen} onRequestClose={handleBackdropPress}>
         <Pressable style={styles.backdrop} onPress={handleBackdropPress}>
           <Pressable
             onPress={(e) => e.stopPropagation()}
@@ -145,7 +150,7 @@ export function Dropdown<T extends string = string>({
             />
           </Pressable>
         </Pressable>
-      </Modal>
+      </FramedModal>
     </View>
   );
 }
@@ -161,6 +166,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius["5"],
     borderWidth: 1,
     height: 80,
+  },
+  triggerContent: {
+    flex: 1,
+    gap: Spacing["spacing-1"],
   },
   chevron: {
     marginLeft: Spacing["spacing-2"],

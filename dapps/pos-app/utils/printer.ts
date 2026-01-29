@@ -83,7 +83,8 @@ const formatTokenAmount = (rawAmount: string, decimals: number): string => {
 
 interface PrintReceiptProps {
   txnId: string;
-  amountUsd: number;
+  amountFiat: number;
+  currencySymbol?: string;
   tokenSymbol?: string;
   tokenAmount?: string;
   tokenDecimals?: number;
@@ -94,7 +95,8 @@ interface PrintReceiptProps {
 
 export const printReceipt = async ({
   txnId,
-  amountUsd,
+  amountFiat,
+  currencySymbol = "$",
   tokenSymbol,
   tokenAmount,
   tokenDecimals,
@@ -129,9 +131,12 @@ export const printReceipt = async ({
     await ReactNativePosPrinter.printText("METHOD    ", normal);
     await ReactNativePosPrinter.printText("WalletConnect Pay\n", bold);
 
-    if (amountUsd) {
+    if (amountFiat) {
       await ReactNativePosPrinter.printText("AMOUNT    ", normal);
-      await ReactNativePosPrinter.printText(`$${amountUsd.toFixed(2)}\n`, bold);
+      await ReactNativePosPrinter.printText(
+        `${currencySymbol}${amountFiat.toFixed(2)}\n`,
+        bold,
+      );
     }
 
     if (tokenSymbol && tokenAmount && tokenDecimals) {

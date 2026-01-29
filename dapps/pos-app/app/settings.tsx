@@ -13,6 +13,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getBiometricLabel } from "@/utils/biometrics";
+import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import {
   connectPrinter,
@@ -33,6 +34,8 @@ export default function SettingsScreen() {
   const setThemeMode = useSettingsStore((state) => state.setThemeMode);
   const variant = useSettingsStore((state) => state.variant);
   const setVariant = useSettingsStore((state) => state.setVariant);
+  const currency = useSettingsStore((state) => state.currency);
+  const setCurrency = useSettingsStore((state) => state.setCurrency);
   const getVariantPrinterLogo = useSettingsStore(
     (state) => state.getVariantPrinterLogo,
   );
@@ -78,6 +81,15 @@ export default function SettingsScreen() {
     [],
   );
 
+  const currencyOptions: DropdownOption<CurrencyCode>[] = useMemo(
+    () =>
+      CURRENCIES.map((c) => ({
+        value: c.code,
+        label: `${c.name} (${c.symbol})`,
+      })),
+    [],
+  );
+
   const appVersion =
     Platform.OS === "web"
       ? (Constants.expoConfig?.version ?? "Unknown")
@@ -93,6 +105,10 @@ export default function SettingsScreen() {
 
   const handleVariantChange = (value: VariantName) => {
     setVariant(value);
+  };
+
+  const handleCurrencyChange = (value: CurrencyCode) => {
+    setCurrency(value);
   };
 
   const handleTestPrinterPress = async () => {
@@ -120,9 +136,11 @@ export default function SettingsScreen() {
         showErrorToast(error || "Failed to connect to printer");
         return;
       }
+      const currencyData = getCurrency(currency);
       await printReceipt({
         txnId: "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
-        amountUsd: 15,
+        amountFiat: 15,
+        currencySymbol: currencyData.symbol,
         tokenSymbol: "USDC",
         tokenAmount: "15",
         tokenDecimals: 6,
@@ -164,22 +182,13 @@ export default function SettingsScreen() {
           Version {appVersion} ({buildVersion})
         </ThemedText>
 
-        <View style={styles.dropdownSection}>
-          <ThemedText
-            fontSize={14}
-            lineHeight={16}
-            color="text-primary"
-            style={styles.sectionLabel}
-          >
-            Theme Variant
-          </ThemedText>
-          <Dropdown
-            options={variantOptions}
-            value={variant}
-            onChange={handleVariantChange}
-            placeholder="Select variant"
-          />
-        </View>
+        <Dropdown
+          label="Theme Variant"
+          options={variantOptions}
+          value={variant}
+          onChange={handleVariantChange}
+          placeholder="Select variant"
+        />
 
         <Card style={styles.card}>
           <ThemedText fontSize={16} lineHeight={18}>
@@ -191,6 +200,14 @@ export default function SettingsScreen() {
             onValueChange={handleThemeModeChange}
           />
         </Card>
+
+        <Dropdown
+          label="Currency"
+          options={currencyOptions}
+          value={currency}
+          onChange={handleCurrencyChange}
+          placeholder="Select currency"
+        />
 
         <Card style={styles.merchantCard}>
           <ThemedText fontSize={16} lineHeight={18}>
@@ -375,12 +392,6 @@ const styles = StyleSheet.create({
   },
   switch: {
     alignSelf: "center",
-  },
-  dropdownSection: {
-    gap: Spacing["spacing-2"],
-  },
-  sectionLabel: {
-    marginLeft: Spacing["spacing-2"],
   },
   closeButton: {
     position: "absolute",
