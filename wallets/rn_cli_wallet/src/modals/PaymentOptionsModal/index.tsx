@@ -45,6 +45,12 @@ export default function PaymentOptionsModal() {
   useEffect(() => {
     if (state.step === 'loading') {
       if (initialError) {
+        LogStore.error(
+          'Payment failed with initial error',
+          'PaymentOptionsModal',
+          'useEffect',
+          { error: initialError },
+        );
         const errorType = detectErrorType(initialError);
         dispatch({
           type: 'SET_RESULT',
@@ -58,6 +64,12 @@ export default function PaymentOptionsModal() {
       } else if (paymentData) {
         // Check for empty options BEFORE going to intro
         if (!paymentData.options || paymentData.options.length === 0) {
+          LogStore.warn(
+            'No payment options available',
+            'PaymentOptionsModal',
+            'useEffect',
+            { paymentId: paymentData.paymentId },
+          );
           dispatch({
             type: 'SET_RESULT',
             payload: {
@@ -112,6 +124,11 @@ export default function PaymentOptionsModal() {
     async (option: PaymentOption) => {
       const payClient = walletKit?.pay;
       if (!payClient || !paymentData) {
+        LogStore.error(
+          'Pay SDK not initialized',
+          'PaymentOptionsModal',
+          'fetchPaymentActions',
+        );
         dispatch({
           type: 'SET_ACTIONS_ERROR',
           payload: 'Pay SDK not initialized',
@@ -271,6 +288,16 @@ export default function PaymentOptionsModal() {
       !state.selectedOption ||
       !paymentData
     ) {
+      LogStore.warn(
+        'Cannot approve payment - missing required state',
+        'PaymentOptionsModal',
+        'onApprovePayment',
+        {
+          hasPaymentActions: !!state.paymentActions?.length,
+          hasSelectedOption: !!state.selectedOption,
+          hasPaymentData: !!paymentData,
+        },
+      );
       return;
     }
 
@@ -281,6 +308,12 @@ export default function PaymentOptionsModal() {
         state.collectedData,
       );
       if (missingFields.length > 0) {
+        LogStore.warn(
+          'Missing required fields',
+          'PaymentOptionsModal',
+          'onApprovePayment',
+          { missingFields },
+        );
         dispatch({
           type: 'SET_ACTIONS_ERROR',
           payload: `Please fill in required fields: ${missingFields.join(
@@ -296,6 +329,15 @@ export default function PaymentOptionsModal() {
 
     try {
       const payClient = walletKit?.pay;
+      if (!payClient) {
+        LogStore.error(
+          'Pay client not available for confirmation',
+          'PaymentOptionsModal',
+          'onApprovePayment',
+        );
+        throw new Error('Pay SDK not available');
+      }
+
       const wallet = eip155Wallets[SettingsStore.state.eip155Address];
       const signatures: string[] = [];
 
@@ -367,50 +409,51 @@ export default function PaymentOptionsModal() {
               }))
           : [];
 
-      if (payClient) {
-        LogStore.log(
-          'Confirming payment',
-          'PaymentOptionsModal',
-          'onApprovePayment',
-          {
-            signaturesCount: signatures.length,
-            hasCollectedData: collectedDataResults.length > 0,
-          },
-        );
+      LogStore.log(
+        'Confirming payment',
+        'PaymentOptionsModal',
+        'onApprovePayment',
+        {
+          signaturesCount: signatures.length,
+          hasCollectedData: collectedDataResults.length > 0,
+        },
+      );
 
-        const confirmResult = await payClient.confirmPayment({
+      const confirmResult = await payClient.confirmPayment({
+        paymentId: paymentData.paymentId,
+        optionId: state.selectedOption.id,
+        signatures,
+        collectedData:
+          collectedDataResults.length > 0 ? collectedDataResults : undefined,
+      });
+
+      LogStore.log(
+        'Payment confirmation result',
+        'PaymentOptionsModal',
+        'onApprovePayment',
+        { status: confirmResult?.status },
+      );
+
+      // Handle missing response
+      if (!confirmResult) {
+        throw new Error('Payment confirmation failed - no response received');
+      }
+
+      // Handle expired payment from confirmPayment response
+      if (confirmResult.status === 'expired') {
+        LogStore.warn('Payment expired', 'PaymentOptionsModal', 'onApprovePayment', {
           paymentId: paymentData.paymentId,
-          optionId: state.selectedOption.id,
-          signatures,
-          collectedData:
-            collectedDataResults.length > 0 ? collectedDataResults : undefined,
         });
-
-        LogStore.log(
-          'Payment confirmation result',
-          'PaymentOptionsModal',
-          'onApprovePayment',
-          { status: confirmResult?.status },
-        );
-
-        // Handle missing response
-        if (!confirmResult) {
-          throw new Error('Payment confirmation failed - no response received');
-        }
-
-        // Handle expired payment from confirmPayment response
-        if (confirmResult.status === 'expired') {
-          dispatch({
-            type: 'SET_RESULT',
-            payload: {
-              status: 'error',
-              errorType: 'expired',
-              message: getErrorMessage('expired'),
-            },
-          });
-          dispatch({ type: 'SET_STEP', payload: 'result' });
-          return;
-        }
+        dispatch({
+          type: 'SET_RESULT',
+          payload: {
+            status: 'error',
+            errorType: 'expired',
+            message: getErrorMessage('expired'),
+          },
+        });
+        dispatch({ type: 'SET_STEP', payload: 'result' });
+        return;
       }
 
       const amount = formatAmount(
