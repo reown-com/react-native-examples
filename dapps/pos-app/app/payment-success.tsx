@@ -62,7 +62,8 @@ export default function PaymentSuccessScreen() {
     try {
       await printReceipt({
         txnId: params.paymentId,
-        amountUsd: Number(amount),
+        amountFiat: Number(amount),
+        currencySymbol: currency.symbol,
         tokenSymbol: params.token,
         tokenAmount: params.tokenAmount,
         tokenDecimals: params.tokenDecimals

@@ -13,7 +13,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getBiometricLabel } from "@/utils/biometrics";
-import { CURRENCIES, CurrencyCode } from "@/utils/currency";
+import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import {
   connectPrinter,
@@ -136,9 +136,11 @@ export default function SettingsScreen() {
         showErrorToast(error || "Failed to connect to printer");
         return;
       }
+      const currencyData = getCurrency(currency);
       await printReceipt({
         txnId: "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
-        amountUsd: 15,
+        amountFiat: 15,
+        currencySymbol: currencyData.symbol,
         tokenSymbol: "USDC",
         tokenAmount: "15",
         tokenDecimals: 6,

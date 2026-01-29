@@ -274,6 +274,10 @@ Copy `.env.example` to `.env` and fill in values.
 - Xcode (for iOS development on macOS)
 - Expo CLI
 
+### Package Manager
+
+This project uses **npm** (not pnpm or yarn). Always use `npm` commands for installing dependencies and running scripts.
+
 ### Getting Started
 
 1. **Install dependencies**

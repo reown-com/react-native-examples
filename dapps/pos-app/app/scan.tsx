@@ -8,7 +8,7 @@ import { usePaymentStatus } from "@/services/hooks";
 import { startPayment } from "@/services/payment";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { dollarsToCents, getCurrency } from "@/utils/currency";
+import { amountToCents, getCurrency } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
@@ -94,7 +94,7 @@ export default function ScanScreen() {
         const paymentRequest = {
           referenceId: uuidv4().replace(/-/g, ""),
           amount: {
-            value: String(dollarsToCents(amount)),
+            value: String(amountToCents(amount)),
             unit: currency.unit,
           },
         };
