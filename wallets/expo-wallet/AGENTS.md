@@ -273,3 +273,17 @@ npm run prettier     # Format code
 - **expo-secure-store**: Keychain/Keystore access
 - **@reown/walletkit**: WalletConnect v2 wallet SDK
 - **zustand**: Lightweight state management
+
+## Dependency Security
+
+When Dependabot flags security vulnerabilities in transitive dependencies, fix them by adding `overrides` to package.json, not by editing package-lock.json directly.
+
+```json
+{
+  "overrides": {
+    "vulnerable-package": "fixed-version"
+  }
+}
+```
+
+Then run `npm install` to update the lockfile.
