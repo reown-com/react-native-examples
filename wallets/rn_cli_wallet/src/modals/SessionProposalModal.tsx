@@ -182,16 +182,16 @@ export default function SessionProposalModal() {
         supportedNamespaces: filteredNamespaces,
       });
 
-      // Build session properties for TON
-      const sessionProperties: Record<string, string> = {};
-
-      if (namespaces.ton) {
-        const tonWallet = await getWallet();
-        sessionProperties.ton_getPublicKey = tonWallet.getPublicKey();
-        sessionProperties.ton_getStateInit = tonWallet.getStateInit();
-      }
-
       try {
+        // Build session properties for TON
+        const sessionProperties: Record<string, string> = {};
+
+        if (namespaces.ton) {
+          const tonWallet = await getWallet();
+          sessionProperties.ton_getPublicKey = tonWallet.getPublicKey();
+          sessionProperties.ton_getStateInit = tonWallet.getStateInit();
+        }
+
         const session = await walletKit.approveSession({
           id: proposal.id,
           namespaces,

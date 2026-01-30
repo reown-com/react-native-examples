@@ -29,6 +29,8 @@ export async function validateTonRequest(requestEvent: RequestEventArgs) {
       case TON_SIGNING_METHODS.SEND_MESSAGE:
         wallet.validateSendMessage(payload);
         break;
+      default:
+        throw new Error(getSdkError('INVALID_METHOD').message);
     }
   } catch (error: any) {
     LogStore.error(error.message, 'TonRequestHandler', 'validateTonRequest', {
@@ -56,7 +58,12 @@ export async function approveTonRequest(
         const payload = Array.isArray(request.params)
           ? request.params[0]
           : request.params;
-        const domain = new URL(session.peer.metadata.url).hostname;
+        let domain: string;
+        try {
+          domain = new URL(session.peer.metadata.url).hostname;
+        } catch {
+          return formatJsonRpcError(id, 'Invalid peer metadata URL');
+        }
         const result = await wallet.signData(payload, domain, chainId);
         return formatJsonRpcResult(id, result);
       } catch (error: any) {
@@ -67,7 +74,9 @@ export async function approveTonRequest(
       }
     case TON_SIGNING_METHODS.SEND_MESSAGE:
       try {
-        const txParams = request.params;
+        const txParams = Array.isArray(request.params)
+          ? request.params[0]
+          : request.params;
         const result = await wallet.sendMessage(txParams, chainId);
         return formatJsonRpcResult(id, result);
       } catch (error: any) {

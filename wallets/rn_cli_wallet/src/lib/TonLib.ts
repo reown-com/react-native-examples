@@ -272,8 +272,7 @@ export default class TonLib {
   private parseTonMessages(params: TonLib.SendMessage['params']) {
     this.validateSendMessage(params);
     return params.messages.map(m => {
-      const amountBigInt =
-        typeof m.amount === 'string' ? BigInt(m.amount) : BigInt(m.amount);
+      const amountBigInt = BigInt(m.amount);
       return internal({
         to: Address.parse(m.address),
         bounce: Address.parseFriendly(m.address).isBounceable,
@@ -338,7 +337,7 @@ export default class TonLib {
     payload: string;
   }): Buffer {
     const wc = Buffer.alloc(4);
-    wc.writeUInt32BE(message.address.workChain);
+    wc.writeInt32BE(message.address.workChain);
 
     const ts = Buffer.alloc(8);
     ts.writeBigUInt64LE(BigInt(message.timestamp));
@@ -376,7 +375,7 @@ export default class TonLib {
     const dataToSign = this.createTonProofMessageBytes({
       address: this.wallet.address,
       domain: {
-        lengthBytes: domain.length,
+        lengthBytes: Buffer.byteLength(domain, 'utf8'),
         value: params.domain,
       },
       payload: params.payload,
