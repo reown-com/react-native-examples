@@ -8,9 +8,15 @@ interface IMessageProps {
   message: string;
   style?: StyleProp<ViewStyle>;
   showTitle?: boolean;
+  title?: string;
 }
 
-export function Message({ message, style, showTitle = true }: IMessageProps) {
+export function Message({
+  message,
+  style,
+  showTitle = true,
+  title = 'Message',
+}: IMessageProps) {
   const Theme = useTheme();
 
   if (!message) {
@@ -29,7 +35,7 @@ export function Message({ message, style, showTitle = true }: IMessageProps) {
     >
       {showTitle && (
         <Text variant="lg-400" color="text-tertiary" style={styles.title}>
-          Message
+          {title}
         </Text>
       )}
       <Text variant="md-400" color="text-primary">
