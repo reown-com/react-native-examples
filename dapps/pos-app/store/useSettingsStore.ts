@@ -2,7 +2,11 @@ import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { VariantName, Variants } from "@/constants/variants";
 import { CurrencyCode } from "@/utils/currency";
 import { MerchantConfig } from "@/utils/merchant-config";
-import { SECURE_STORAGE_KEYS, secureStorage } from "@/utils/secure-storage";
+import {
+  migratePartnerApiKey,
+  SECURE_STORAGE_KEYS,
+  secureStorage,
+} from "@/utils/secure-storage";
 import { storage } from "@/utils/storage";
 import { TransactionFilterType } from "@/utils/types";
 import * as Crypto from "expo-crypto";
@@ -308,6 +312,14 @@ export const useSettingsStore = create<SettingsStore>()(
 
             // Clean up migration data
             delete (state as any).__migrationData;
+          }
+
+          // Run partner API key migration before applying defaults
+          // This ensures existing users keep their API key during the rename
+          const migrated = await migratePartnerApiKey();
+          if (migrated) {
+            // Migration was performed, sync the flag
+            state.isPartnerApiKeySet = true;
           }
 
           // Initialize merchant defaults from env if not set

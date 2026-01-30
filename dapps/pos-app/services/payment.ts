@@ -7,9 +7,9 @@ import {
 import { apiClient } from "./client";
 
 /**
- * Get merchant API headers for authenticated requests
+ * Get API headers for authenticated requests
  * @returns Headers object with Api-Key, Merchant-Id, and SDK headers
- * @throws Error if API key or merchant ID is missing
+ * @throws Error if partner API key or merchant ID is missing
  */
 async function getApiHeaders(): Promise<Record<string, string>> {
   const merchantId = useSettingsStore.getState().merchantId;

@@ -82,19 +82,34 @@ export const SECURE_STORAGE_KEYS = {
   PIN_HASH: "pin_hash",
 } as const;
 
-export async function migratePartnerApiKey(): Promise<void> {
+const PARTNER_API_KEY_MIGRATION_KEY = "migration_partner_api_key_completed";
+
+/**
+ * Migrates partner API key from old storage key to new one.
+ * Tracks completion to avoid running on every app start.
+ * @returns true if migration was performed, false if skipped
+ */
+export async function migratePartnerApiKey(): Promise<boolean> {
+  const storage = getStorage();
+  if (!storage) return false;
+
+  const migrationCompleted = storage.getItem(PARTNER_API_KEY_MIGRATION_KEY);
+  if (migrationCompleted === "true") return false;
+
   const OLD_KEY = getKey("merchant_api_key");
   const NEW_KEY = getKey("partner_api_key");
 
-  const storage = getStorage();
-  if (!storage) return;
-
+  let migrated = false;
   const oldValue = storage.getItem(OLD_KEY);
   if (oldValue) {
     const newValue = storage.getItem(NEW_KEY);
     if (!newValue) {
       storage.setItem(NEW_KEY, oldValue);
+      migrated = true;
     }
     storage.removeItem(OLD_KEY);
   }
+
+  storage.setItem(PARTNER_API_KEY_MIGRATION_KEY, "true");
+  return migrated;
 }

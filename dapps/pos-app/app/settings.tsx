@@ -157,7 +157,7 @@ export default function SettingsScreen() {
 
   const handleBiometricAuth = async () => {
     const success = await authenticate(
-      `Use ${biometricLabel} to change merchant settings`,
+      `Use ${biometricLabel} to change partner settings`,
     );
 
     if (success) {
@@ -354,7 +354,7 @@ export default function SettingsScreen() {
       <PinModal
         visible={activeModal === "pin-verify"}
         title="Enter PIN"
-        subtitle="Enter your PIN to save merchant settings"
+        subtitle="Enter your PIN to save partner settings"
         onComplete={handlePinVerifyComplete}
         onCancel={handleCancelSecurityFlow}
         error={pinError}

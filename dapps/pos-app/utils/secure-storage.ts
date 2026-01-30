@@ -7,6 +7,7 @@ const KEYS = {
 } as const;
 
 const FRESH_INSTALL_KEY = "app_has_launched";
+const PARTNER_API_KEY_MIGRATION_KEY = "migration_partner_api_key_completed";
 
 export async function clearStaleSecureStorage(): Promise<void> {
   const hasLaunchedBefore = storage.getItem<boolean>(FRESH_INSTALL_KEY);
@@ -19,18 +20,33 @@ export async function clearStaleSecureStorage(): Promise<void> {
   }
 }
 
-export async function migratePartnerApiKey(): Promise<void> {
+/**
+ * Migrates partner API key from old storage key to new one.
+ * Tracks completion to avoid running on every app start.
+ * @returns true if migration was performed, false if skipped
+ */
+export async function migratePartnerApiKey(): Promise<boolean> {
+  const migrationCompleted = storage.getItem<boolean>(
+    PARTNER_API_KEY_MIGRATION_KEY,
+  );
+  if (migrationCompleted) return false;
+
   const OLD_KEY = "merchant_api_key";
   const NEW_KEY = "partner_api_key";
 
+  let migrated = false;
   const oldValue = await SecureStore.getItemAsync(OLD_KEY);
   if (oldValue) {
     const newValue = await SecureStore.getItemAsync(NEW_KEY);
     if (!newValue) {
       await SecureStore.setItemAsync(NEW_KEY, oldValue);
+      migrated = true;
     }
     await SecureStore.deleteItemAsync(OLD_KEY);
   }
+
+  storage.setItem(PARTNER_API_KEY_MIGRATION_KEY, true);
+  return migrated;
 }
 
 export const secureStorage = {

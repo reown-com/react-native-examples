@@ -28,10 +28,7 @@ import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
 import { requestBluetoothPermission } from "@/utils/printer";
-import {
-  clearStaleSecureStorage,
-  migratePartnerApiKey,
-} from "@/utils/secure-storage";
+import { clearStaleSecureStorage } from "@/utils/secure-storage";
 import { showInfoToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -74,17 +71,9 @@ export default Sentry.wrap(function RootLayout() {
   });
 
   useEffect(() => {
-    const initializeStorage = async () => {
-      clearStaleSecureStorage();
-      await migratePartnerApiKey();
-
-      // Sync isPartnerApiKeySet flag after migration in case a key was migrated
-      const apiKey = await useSettingsStore.getState().getPartnerApiKey();
-      if (apiKey && !useSettingsStore.getState().isPartnerApiKeySet) {
-        useSettingsStore.setState({ isPartnerApiKeySet: true });
-      }
-    };
-    initializeStorage();
+    // clearStaleSecureStorage handles fresh installs (clears secure storage on first launch)
+    // Migration is handled in useSettingsStore's onRehydrateStorage to avoid race conditions
+    clearStaleSecureStorage();
   }, []);
 
   useEffect(() => {
