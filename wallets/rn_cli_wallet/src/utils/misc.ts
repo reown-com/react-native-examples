@@ -5,11 +5,11 @@ export const getMetadata = () => {
     url: 'https://reown.com/walletkit',
     icons: ['https://avatars.githubusercontent.com/u/179229932'],
     redirect: {
-      native: 'rn-web3wallet://',
-      universal: 'https://lab.reown.com/rn_walletkit',
+      native: 'rn-web3wallet-debug://',
+      universal: 'https://lab.reown.com/rn_walletkit_debug',
       linkMode: true,
     },
   };
 };
 
-export const SENTRY_TAG = 'production';
+export const SENTRY_TAG = 'debug';

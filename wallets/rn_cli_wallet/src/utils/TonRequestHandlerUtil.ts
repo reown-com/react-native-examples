@@ -1,6 +1,6 @@
 import { getWallet } from '@/utils/TonWalletUtil';
 import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
-import { SignClientTypes } from '@walletconnect/types';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
 import SettingsStore from '@/store/SettingsStore';
 import LogStore, { serializeError } from '@/store/LogStore';
@@ -11,7 +11,36 @@ type RequestEventArgs = Omit<
   'verifyContext'
 >;
 
-export async function approveTonRequest(requestEvent: RequestEventArgs) {
+export async function validateTonRequest(requestEvent: RequestEventArgs) {
+  const { params, id } = requestEvent;
+  const { request } = params;
+
+  const payload = Array.isArray(request.params)
+    ? request.params[0]
+    : request.params || {};
+
+  const wallet = await getWallet();
+
+  try {
+    switch (request.method) {
+      case TON_SIGNING_METHODS.SIGN_DATA:
+        break;
+      case TON_SIGNING_METHODS.SEND_MESSAGE:
+        wallet.validateSendMessage(payload);
+    }
+  } catch (error: any) {
+    LogStore.error(error.message, 'TonRequestHandler', 'validateTonRequest', {
+      error: serializeError(error),
+      method: request.method,
+    });
+    return formatJsonRpcError(id, error.message);
+  }
+}
+
+export async function approveTonRequest(
+  requestEvent: RequestEventArgs,
+  session: SessionTypes.Struct,
+) {
   const { params, id } = requestEvent;
   const { chainId, request } = params;
 
@@ -25,7 +54,8 @@ export async function approveTonRequest(requestEvent: RequestEventArgs) {
         const payload = Array.isArray(request.params)
           ? request.params[0]
           : request.params;
-        const result = await wallet.signData(payload);
+        const domain = new URL(session.peer.metadata.url).hostname;
+        const result = await wallet.signData(payload, domain, chainId);
         return formatJsonRpcResult(id, result);
       } catch (error: any) {
         LogStore.error(error.message, 'TonRequestHandler', 'signData', {
