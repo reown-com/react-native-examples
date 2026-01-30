@@ -13,6 +13,7 @@ import * as Crypto from "expo-crypto";
 import { Appearance } from "react-native";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useLogsStore } from "./useLogsStore";
 
 async function hashPin(pin: string): Promise<string> {
   return await Crypto.digestStringAsync(
@@ -320,6 +321,12 @@ export const useSettingsStore = create<SettingsStore>()(
           if (migrated) {
             // Migration was performed, sync the flag
             state.isPartnerApiKeySet = true;
+            useLogsStore.getState().addLog(
+              "info",
+              "Partner API key migrated from merchant_api_key",
+              "Settings",
+              "onRehydrateStorage",
+            );
           }
 
           // Initialize merchant defaults from env if not set
