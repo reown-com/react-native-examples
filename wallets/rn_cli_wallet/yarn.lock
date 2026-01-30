@@ -4421,6 +4421,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zoontek/react-native-navigation-bar@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@zoontek/react-native-navigation-bar@npm:1.0.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 4a528df99f078083cfe4d432fb3b9ddcfcaf27a9524a66219e135bb0c58f808d72a1ac9d0208ae7e540d8426ea30d73bef95771dcaa87fc07b10706d87cb62fb
+  languageName: node
+  linkType: hard
+
 "RNWeb3Wallet@workspace:.":
   version: 0.0.0-use.local
   resolution: "RNWeb3Wallet@workspace:."
@@ -4458,6 +4468,7 @@ __metadata:
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
     "@walletconnect/react-native-compat": 2.23.3-canary.0
+    "@zoontek/react-native-navigation-bar": ^1.0.2
     babel-plugin-module-resolver: ^5.0.0
     bip39: 3.1.0
     crc-32: ^1.2.2
