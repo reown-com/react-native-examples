@@ -5,6 +5,7 @@ import { SignClientTypes } from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { Message } from '@/components/Modal/Message';
 import {
   approveTonRequest,
   rejectTonRequest,
@@ -219,23 +220,11 @@ export default function SessionTonSendMessageModal() {
         </View>
 
         {/* Transaction Details */}
-        <View
-          style={[
-            styles.section,
-            { backgroundColor: Theme['foreground-primary'] },
-          ]}
-        >
-          <Text
-            variant="lg-400"
-            color="text-tertiary"
-            style={styles.sectionTitle}
-          >
-            Transaction Details
-          </Text>
-          <Text variant="md-400" color="text-primary">
-            {formatTransactionDetails()}
-          </Text>
-        </View>
+        <Message
+          message={formatTransactionDetails()}
+          title="Transaction Details"
+          style={styles.transactionDetails}
+        />
       </View>
     </RequestModal>
   );
@@ -255,5 +244,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginBottom: Spacing[1],
+  },
+  transactionDetails: {
+    maxHeight: 200,
   },
 });
