@@ -212,6 +212,63 @@ export default class TonLib {
     }
   }
 
+  public validateSignData(params: unknown) {
+    if (typeof params !== 'object' || params === null) {
+      throw new TonValidationError('Invalid params');
+    }
+
+    if (!('type' in params)) {
+      throw new TonValidationError('Missing payload type.');
+    }
+
+    if (
+      params.type !== 'text' &&
+      params.type !== 'binary' &&
+      params.type !== 'cell'
+    ) {
+      throw new TonValidationError(
+        'Invalid payload type. Must be "text", "binary", or "cell".',
+      );
+    }
+
+    if (params.type === 'text') {
+      if (!('text' in params) || typeof params.text !== 'string') {
+        throw new TonValidationError('Text payload must have a "text" string.');
+      }
+    }
+
+    if (params.type === 'binary') {
+      if (!('bytes' in params) || typeof params.bytes !== 'string') {
+        throw new TonValidationError(
+          'Binary payload must have a "bytes" base64 string.',
+        );
+      }
+      try {
+        Buffer.from(params.bytes, 'base64');
+      } catch {
+        throw new TonValidationError('Invalid base64 encoding in bytes.');
+      }
+    }
+
+    if (params.type === 'cell') {
+      if (!('cell' in params) || typeof params.cell !== 'string') {
+        throw new TonValidationError(
+          'Cell payload must have a "cell" base64 string.',
+        );
+      }
+      if (!('schema' in params) || typeof params.schema !== 'string') {
+        throw new TonValidationError(
+          'Cell payload must have a "schema" TL-B string.',
+        );
+      }
+      try {
+        Cell.fromBase64(params.cell);
+      } catch {
+        throw new TonValidationError('Invalid cell encoding.');
+      }
+    }
+  }
+
   private parseTonMessages(params: TonLib.SendMessage['params']) {
     this.validateSendMessage(params);
     return params.messages.map(m => {

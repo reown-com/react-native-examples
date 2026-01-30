@@ -24,9 +24,11 @@ export async function validateTonRequest(requestEvent: RequestEventArgs) {
   try {
     switch (request.method) {
       case TON_SIGNING_METHODS.SIGN_DATA:
+        wallet.validateSignData(payload);
         break;
       case TON_SIGNING_METHODS.SEND_MESSAGE:
         wallet.validateSendMessage(payload);
+        break;
     }
   } catch (error: any) {
     LogStore.error(error.message, 'TonRequestHandler', 'validateTonRequest', {
