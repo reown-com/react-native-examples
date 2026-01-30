@@ -3,9 +3,11 @@ import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { getCurrency } from "@/utils/currency";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 interface FormData {
   amount: string;
@@ -30,6 +32,8 @@ const formatAmount = (amount: string) => {
 
 export default function AmountScreen() {
   const Theme = useTheme();
+  const currencyCode = useSettingsStore((state) => state.currency);
+  const currency = getCurrency(currencyCode);
   const {
     control,
     handleSubmit,
@@ -73,7 +77,8 @@ export default function AmountScreen() {
             },
           ]}
         >
-          ${watchAmount || "0.00"}
+          {currency.symbol}
+          {watchAmount || "0.00"}
         </ThemedText>
       </View>
       <Controller
@@ -136,7 +141,9 @@ export default function AmountScreen() {
           lineHeight={20}
           style={{ color: Theme["text-invert"] }}
         >
-          {isValid ? `Charge $${formatAmount(watchAmount)}` : "Enter amount"}
+          {isValid
+            ? `Charge ${currency.symbol}${formatAmount(watchAmount)}`
+            : "Enter amount"}
         </ThemedText>
       </Button>
     </View>
@@ -149,7 +156,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-5"],
+    paddingTop: Spacing["spacing-5"],
+    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
   amountContainer: {
     flex: 1,

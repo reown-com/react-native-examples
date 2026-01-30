@@ -5,6 +5,7 @@
 Before you begin, make sure you have set up your React Native development environment. This includes installing Node, Android Studio (for Android), and Xcode (for iOS on macOS).
 
 Follow the official React Native documentation to set up your environment:
+
 - [React Native Environment Setup](https://reactnative.dev/docs/set-up-your-environment?platform=android)
 
 ## Get started
@@ -52,6 +53,7 @@ Follow the official React Native documentation to set up your environment:
 For production Android releases, you'll need the actual `secrets.properties` file and `wc_rn_upload.keystore`. Get these from the mobile team or 1Password.
 
 **Required file locations:**
+
 - Place `secrets.properties` in the `android/` directory
 - Place `wc_rn_upload.keystore` in the `android/app/` directory
 
@@ -79,7 +81,7 @@ The release APK will be generated at `android/app/build/outputs/apk/release/app-
    ```bash
    adb devices
    ```
-   
+
    Example output: `V510BAC07114B000171`
 
 2. Build the release APK:
@@ -101,6 +103,7 @@ The release APK will be generated at `android/app/build/outputs/apk/release/app-
 To create a branded variant for a specific client:
 
 1. **Create a new branch**
+
    ```bash
    git checkout -b variant/<client-name>
    ```
@@ -157,11 +160,11 @@ To create a branded variant for a specific client:
      },
      ```
 
-
 5. **Update Android version code** in `app.json`
    - Increment `expo.android.versionCode`
 
 6. **Commit, push, and create a release tag (Devin only)**
+
    ```bash
    git add .
    git commit -m "feat: add <client-name> variant"
@@ -169,6 +172,7 @@ To create a branded variant for a specific client:
    git tag variant-<client-name>
    git push origin variant-<client-name>
    ```
+
    The tag will trigger the release workflow automatically.
 
 7. **Verify the release**
