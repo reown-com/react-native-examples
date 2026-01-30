@@ -3,10 +3,19 @@ import DeviceInfo from 'react-native-device-info';
 type Environment = 'debug' | 'internal' | 'production';
 
 export function getEnvironment(): Environment {
-  const bundleId = DeviceInfo.getBundleId();
-  if (bundleId.endsWith('.debug')) return 'debug';
-  if (bundleId.endsWith('.internal')) return 'internal';
-  return 'production';
+  try {
+    const bundleId = DeviceInfo.getBundleId();
+    if (!bundleId || typeof bundleId !== 'string') {
+      console.warn('Invalid bundle ID detected:', bundleId);
+      return 'production';
+    }
+    if (bundleId.endsWith('.debug')) return 'debug';
+    if (bundleId.endsWith('.internal')) return 'internal';
+    return 'production';
+  } catch (error) {
+    console.warn('Failed to detect environment from bundle ID, defaulting to production', error);
+    return 'production';
+  }
 }
 
 const ENV_CONFIG = {
@@ -15,21 +24,18 @@ const ENV_CONFIG = {
     description: 'AppKit + Multichain (debug)',
     native: 'w3mwagmisample-debug://',
     universal: 'https://lab.reown.com/rn_appkit_debug',
-    sentryTag: 'debug',
   },
   internal: {
     name: 'AppKit + Multichain (internal)',
     description: 'AppKit + Multichain (internal)',
     native: 'w3mwagmisample-internal://',
     universal: 'https://lab.reown.com/rn_appkit_internal',
-    sentryTag: 'internal',
   },
   production: {
     name: 'AppKit + Multichain',
     description: 'AppKit + Multichain',
     native: 'w3mwagmisample://',
     universal: 'https://lab.reown.com/rn_appkit',
-    sentryTag: 'production',
   },
 };
 
@@ -48,8 +54,6 @@ export const getMetadata = () => {
     },
   };
 };
-
-export const SENTRY_TAG = ENV_CONFIG[getEnvironment()].sentryTag;
 
 export function getEnvironmentLabel(): string {
   const env = getEnvironment();
