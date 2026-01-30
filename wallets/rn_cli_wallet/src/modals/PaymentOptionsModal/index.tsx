@@ -15,6 +15,7 @@ import type {
 import { LoadingView } from './LoadingView';
 import { IntroView } from './IntroView';
 import { CollectDataView } from './CollectDataView';
+import { CollectDataWebView } from './CollectDataWebView';
 import { ConfirmPaymentView } from './ConfirmPaymentView';
 import { ResultView } from './ResultView';
 import { ViewWrapper } from './ViewWrapper';
@@ -40,6 +41,10 @@ export default function PaymentOptionsModal() {
   // Derived values
   const hasCollectData =
     paymentData?.collectData && paymentData.collectData.fields.length > 0;
+  // The `url` property is a new addition to the API - cast to access it
+  const collectDataUrl = (
+    paymentData?.collectData as { url?: string } | undefined
+  )?.url;
 
   // Transition from loading to intro when data is available
   useEffect(() => {
@@ -96,17 +101,49 @@ export default function PaymentOptionsModal() {
       case 'collectData':
         dispatch({ type: 'SET_STEP', payload: 'intro' });
         break;
+      case 'collectDataWebView':
+        // Closing WebView means form was completed, move to confirm step
+        dispatch({ type: 'SET_STEP', payload: 'confirm' });
+        break;
       case 'confirm':
         dispatch({ type: 'CLEAR_SELECTED_OPTION' });
-        dispatch({
-          type: 'SET_STEP',
-          payload: hasCollectData ? 'collectData' : 'intro',
-        });
+        if (hasCollectData) {
+          // When going back from confirm, go to intro (not back to WebView)
+          dispatch({ type: 'SET_STEP', payload: 'intro' });
+        } else {
+          dispatch({ type: 'SET_STEP', payload: 'intro' });
+        }
         break;
       default:
         onClose();
     }
   }, [state.step, hasCollectData, onClose]);
+
+  const handleWebViewComplete = useCallback(() => {
+    LogStore.log(
+      'WebView data collection completed',
+      'PaymentOptionsModal',
+      'handleWebViewComplete',
+    );
+    dispatch({ type: 'SET_STEP', payload: 'confirm' });
+  }, []);
+
+  const handleWebViewError = useCallback((error: string) => {
+    LogStore.error(
+      'WebView data collection error',
+      'PaymentOptionsModal',
+      'handleWebViewError',
+      { error },
+    );
+    dispatch({
+      type: 'SET_RESULT',
+      payload: {
+        status: 'error',
+        message: error || 'Failed to complete data collection',
+      },
+    });
+    dispatch({ type: 'SET_STEP', payload: 'result' });
+  }, []);
 
   const updateCollectedField = useCallback(
     (fieldId: string, value: string, fieldType?: string) => {
@@ -206,11 +243,16 @@ export default function PaymentOptionsModal() {
       return;
     }
 
-    dispatch({
-      type: 'SET_STEP',
-      payload: hasCollectData ? 'collectData' : 'confirm',
-    });
-  }, [hasCollectData, paymentData?.options]);
+    if (hasCollectData) {
+      // Use WebView if URL is available, otherwise use native form
+      dispatch({
+        type: 'SET_STEP',
+        payload: collectDataUrl ? 'collectDataWebView' : 'collectData',
+      });
+    } else {
+      dispatch({ type: 'SET_STEP', payload: 'confirm' });
+    }
+  }, [hasCollectData, collectDataUrl, paymentData?.options]);
 
   const handleCollectDataNext = useCallback(() => {
     if (!paymentData?.collectData) {
@@ -522,6 +564,15 @@ export default function PaymentOptionsModal() {
           />
         );
 
+      case 'collectDataWebView':
+        return (
+          <CollectDataWebView
+            url={collectDataUrl!}
+            onComplete={handleWebViewComplete}
+            onError={handleWebViewError}
+          />
+        );
+
       case 'confirm':
         return (
           <ConfirmPaymentView
@@ -567,6 +618,9 @@ export default function PaymentOptionsModal() {
     handleIntroNext,
     updateCollectedField,
     handleCollectDataNext,
+    collectDataUrl,
+    handleWebViewComplete,
+    handleWebViewError,
     onSelectOption,
     onApprovePayment,
     onClose,

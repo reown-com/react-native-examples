@@ -8,6 +8,7 @@ export type Step =
   | 'loading'
   | 'intro'
   | 'collectData'
+  | 'collectDataWebView'
   | 'confirm'
   | 'confirming'
   | 'result';

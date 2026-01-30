@@ -36,6 +36,8 @@ export function usePairing() {
         includePaymentInfo: true,
       });
 
+      console.log('[Pay] getPaymentOptions response:', JSON.stringify(paymentOptions, null, 2));
+
       ModalStore.open('PaymentOptionsModal', { paymentOptions });
     } catch (error: any) {
       ModalStore.open('PaymentOptionsModal', {

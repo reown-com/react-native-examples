@@ -11,6 +11,7 @@ type Step =
   | 'loading'
   | 'intro'
   | 'collectData'
+  | 'collectDataWebView'
   | 'confirm'
   | 'confirming'
   | 'result';
@@ -38,17 +39,30 @@ export function ViewWrapper({
 
   // Determine if we should show step pills
   const showStepPills =
-    hasCollectData && (step === 'collectData' || step === 'confirm');
+    hasCollectData &&
+    (step === 'collectData' || step === 'collectDataWebView' || step === 'confirm');
   const currentPillIndex =
-    step === 'collectData' ? 0 : step === 'confirm' ? 1 : -1;
+    step === 'collectData' || step === 'collectDataWebView'
+      ? 0
+      : step === 'confirm'
+        ? 1
+        : -1;
+
+  const isWebViewStep = step === 'collectDataWebView';
 
   return (
-    <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
+    <View
+      style={[
+        styles.container,
+        isWebViewStep && styles.fullscreenContainer,
+        { backgroundColor: Theme['bg-primary'] },
+      ]}
+    >
       {/* Header */}
       <View style={styles.header}>
-        {/* Back Button */}
+        {/* Back Button - hidden in WebView step since X handles back */}
         <View style={styles.headerLeft}>
-          {showBackButton && (
+          {showBackButton && !isWebViewStep && (
             <Button
               onPress={onBack}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -92,15 +106,16 @@ export function ViewWrapper({
           )}
         </View>
 
-        {/* Close Button */}
+        {/* Close Button - in WebView step, X goes back instead of closing */}
         <View style={styles.headerRight}>
-          <ModalCloseButton onPress={onClose} />
+          <ModalCloseButton onPress={isWebViewStep ? onBack : onClose} />
         </View>
       </View>
 
       {/* Animated Content */}
       <Animated.View
         key={step}
+        style={step === 'collectDataWebView' ? styles.webViewContent : undefined}
         entering={FadeIn.duration(ANIMATION_DURATION)}
         exiting={FadeOut.duration(ANIMATION_DURATION)}
       >
@@ -117,6 +132,15 @@ const styles = StyleSheet.create({
     padding: Spacing[5],
     paddingBottom: Spacing[8],
     maxHeight: '90%',
+  },
+  fullscreenContainer: {
+    flex: 1,
+    maxHeight: '100%',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  webViewContent: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
