@@ -310,15 +310,16 @@ export default class TonLib {
     const message: Message = {
       info: {
         type: 'external-in',
-        dest: this.wallet.address,
-        importFee: 0n,
+        src: null,
+        dest: Address.parse(this.wallet.address.toString()),
+        importFee: BigInt(0),
       },
-      init: seqno === 0 ? this.wallet.init : undefined,
+      init: null,
       body: transfer,
     };
 
     const externalMessageCell = beginCell()
-      .store(storeMessage(message))
+      .store(storeMessage(message, { forceRef: true }))
       .endCell();
 
     return externalMessageCell.toBoc().toString('base64');
