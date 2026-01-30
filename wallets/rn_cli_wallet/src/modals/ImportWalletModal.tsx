@@ -8,6 +8,7 @@ import {
 import Toast from 'react-native-toast-message';
 
 import { useTheme } from '@/hooks/useTheme';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import WalletStore from '@/store/WalletStore';
@@ -50,7 +51,10 @@ export default function ImportWalletModal() {
   };
 
   const handleImport = async () => {
-    if (!input.trim()) {
+    // Normalize input: trim and collapse multiple whitespace to single space
+    const sanitizedInput = input.trim().replace(/\s+/g, ' ');
+
+    if (!sanitizedInput) {
       Toast.show({
         type: 'error',
         text1: EMPTY_INPUT_ERROR[selectedChain],
@@ -64,7 +68,7 @@ export default function ImportWalletModal() {
 
       switch (selectedChain) {
         case 'EVM': {
-          const result = loadEIP155Wallet(input);
+          const result = loadEIP155Wallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new EVM address
           WalletStore.fetchBalances({
@@ -76,7 +80,7 @@ export default function ImportWalletModal() {
           break;
         }
         case 'TON': {
-          const result = await loadTonWallet(input);
+          const result = await loadTonWallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new TON address
           WalletStore.fetchBalances({
@@ -88,7 +92,7 @@ export default function ImportWalletModal() {
           break;
         }
         case 'TRON': {
-          const result = await loadTronWallet(input);
+          const result = await loadTronWallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new TRON address
           WalletStore.fetchBalances({
@@ -100,7 +104,7 @@ export default function ImportWalletModal() {
           break;
         }
         case 'SUI': {
-          const result = await loadSuiWallet(input);
+          const result = await loadSuiWallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new SUI address
           WalletStore.fetchBalances({
@@ -110,6 +114,20 @@ export default function ImportWalletModal() {
             suiAddress: address,
           });
           break;
+        }
+        default: {
+          const unsupportedChain = selectedChain satisfies never;
+          LogStore.error(
+            `Unsupported chain: ${unsupportedChain}`,
+            'ImportWalletModal',
+            'handleImport',
+          );
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: `Unsupported chain: ${unsupportedChain}`,
+          });
+          return;
         }
       }
 

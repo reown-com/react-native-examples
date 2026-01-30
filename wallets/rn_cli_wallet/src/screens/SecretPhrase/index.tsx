@@ -6,9 +6,6 @@ import Toast from 'react-native-toast-message';
 
 import SettingsStore from '@/store/SettingsStore';
 import { eip155Wallets } from '@/utils/EIP155WalletUtil';
-import { wallet1 as suiWallet } from '@/utils/SuiWalletUtil';
-import { wallet1 as tonWallet } from '@/utils/TonWalletUtil';
-import { tronWeb1 as tronWallet } from '@/utils/TronWalletUtil';
 import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
@@ -117,7 +114,9 @@ function SecretSection({
 }
 
 export default function SecretPhrase() {
-  const { eip155Address } = useSnapshot(SettingsStore.state);
+  const { eip155Address, suiWallet, tonWallet, tronWallet } = useSnapshot(
+    SettingsStore.state,
+  );
   const Theme = useTheme();
 
   // Get EVM mnemonic

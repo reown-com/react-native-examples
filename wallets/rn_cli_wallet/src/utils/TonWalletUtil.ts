@@ -48,7 +48,9 @@ export async function loadTonWallet(input: string): Promise<{
 
   // Validate hex format
   if (!/^[0-9a-fA-F]+$/.test(trimmedInput)) {
-    throw new Error('Invalid format: must be hexadecimal characters only');
+    throw new Error(
+      'Invalid format: must be hexadecimal characters only (128 or 64 chars)',
+    );
   }
 
   // Determine if it's a secret key (128 hex = 64 bytes) or seed (64 hex = 32 bytes)
@@ -75,6 +77,11 @@ export async function loadTonWallet(input: string): Promise<{
 
   // Persist to storage (always store the secret key for consistency)
   await storage.setItem('TON_SECRET_KEY_1', newWallet.getSecretKey());
+  if (__DEV__) {
+    console.warn(
+      '[SECURITY] TON secret key stored unencrypted. Use secure enclave in production.',
+    );
+  }
 
   // Update store
   SettingsStore.setTonAddress(newAddress);
