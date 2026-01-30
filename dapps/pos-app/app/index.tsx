@@ -17,10 +17,10 @@ export default function HomeScreen() {
   ]);
 
   const Theme = useTheme();
-  const { merchantId, isMerchantApiKeySet } = useSettingsStore();
+  const { merchantId, isPartnerApiKeySet } = useSettingsStore();
 
   const handleStartPayment = () => {
-    if (!merchantId || !isMerchantApiKeySet) {
+    if (!merchantId || !isPartnerApiKeySet) {
       router.push("/settings");
       showErrorToast("Merchant information not configured");
       return;

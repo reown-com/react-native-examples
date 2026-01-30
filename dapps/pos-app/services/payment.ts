@@ -13,18 +13,18 @@ import { apiClient } from "./client";
  */
 async function getApiHeaders(): Promise<Record<string, string>> {
   const merchantId = useSettingsStore.getState().merchantId;
-  const merchantApiKey = await useSettingsStore.getState().getMerchantApiKey();
+  const partnerApiKey = await useSettingsStore.getState().getPartnerApiKey();
 
   if (!merchantId || merchantId.trim().length === 0) {
     throw new Error("Merchant ID is not configured");
   }
 
-  if (!merchantApiKey || merchantApiKey.trim().length === 0) {
-    throw new Error("Merchant API key is not configured");
+  if (!partnerApiKey || partnerApiKey.trim().length === 0) {
+    throw new Error("Partner API key is not configured");
   }
 
   return {
-    "Api-Key": merchantApiKey,
+    "Api-Key": partnerApiKey,
     "Merchant-Id": merchantId,
     "Sdk-Name": "pos-device",
     "Sdk-Version": "1.0.0",

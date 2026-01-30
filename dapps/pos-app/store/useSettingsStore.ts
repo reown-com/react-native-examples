@@ -51,7 +51,7 @@ interface SettingsStore {
   currency: CurrencyCode;
   _hasHydrated: boolean;
   merchantId: string | null;
-  isMerchantApiKeySet: boolean;
+  isPartnerApiKeySet: boolean;
 
   // Transaction filter
   transactionFilter: TransactionFilterType;
@@ -69,9 +69,9 @@ interface SettingsStore {
   setCurrency: (currency: CurrencyCode) => void;
   setMerchantId: (merchantId: string | null) => void;
   clearMerchantId: () => Promise<string | null>;
-  setMerchantApiKey: (apiKey: string | null) => Promise<void>;
-  clearMerchantApiKey: () => Promise<void>;
-  getMerchantApiKey: () => Promise<string | null>;
+  setPartnerApiKey: (apiKey: string | null) => Promise<void>;
+  clearPartnerApiKey: () => Promise<void>;
+  getPartnerApiKey: () => Promise<string | null>;
 
   // PIN actions
   setPin: (pin: string) => Promise<void>;
@@ -98,7 +98,7 @@ export const useSettingsStore = create<SettingsStore>()(
       currency: "USD",
       _hasHydrated: false,
       merchantId: null,
-      isMerchantApiKeySet: false,
+      isPartnerApiKeySet: false,
       transactionFilter: "all",
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
@@ -126,44 +126,41 @@ export const useSettingsStore = create<SettingsStore>()(
         // Reset both merchant ID and API key to env defaults
         const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
         set({ merchantId: defaultMerchantId });
-        const defaultApiKey = MerchantConfig.getDefaultMerchantApiKey();
+        const defaultApiKey = MerchantConfig.getDefaultPartnerApiKey();
         if (defaultApiKey) {
           await secureStorage.setItem(
-            SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+            SECURE_STORAGE_KEYS.PARTNER_API_KEY,
             defaultApiKey,
           );
-          set({ isMerchantApiKeySet: true });
+          set({ isPartnerApiKeySet: true });
         } else {
-          await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
-          set({ isMerchantApiKeySet: false });
+          await secureStorage.removeItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
+          set({ isPartnerApiKeySet: false });
         }
         return defaultMerchantId;
       },
-      setMerchantApiKey: async (apiKey: string | null) => {
+      setPartnerApiKey: async (apiKey: string | null) => {
         try {
           if (apiKey) {
             await secureStorage.setItem(
-              SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+              SECURE_STORAGE_KEYS.PARTNER_API_KEY,
               apiKey,
             );
-            set({ isMerchantApiKeySet: true });
+            set({ isPartnerApiKeySet: true });
           } else {
-            await secureStorage.removeItem(
-              SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
-            );
+            await secureStorage.removeItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
+            set({ isPartnerApiKeySet: false });
           }
         } catch {
           throw new Error("Failed to save credentials securely");
         }
       },
-      clearMerchantApiKey: async () => {
-        await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
-        set({ isMerchantApiKeySet: false });
+      clearPartnerApiKey: async () => {
+        await secureStorage.removeItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
+        set({ isPartnerApiKeySet: false });
       },
-      getMerchantApiKey: async () => {
-        return await secureStorage.getItem(
-          SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
-        );
+      getPartnerApiKey: async () => {
+        return await secureStorage.getItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
       },
 
       // PIN methods
@@ -268,8 +265,6 @@ export const useSettingsStore = create<SettingsStore>()(
           persistedState.biometricEnabled = false;
         }
         if (version < 8) {
-          persistedState.isMerchantApiKeySet = false;
-
           // Store pinHash temporarily for migration in onRehydrateStorage
           const pinHash = persistedState.pinHash;
           delete persistedState.pinHash;
@@ -317,14 +312,14 @@ export const useSettingsStore = create<SettingsStore>()(
 
           // Initialize merchant defaults from env if not set
           const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
-          const defaultApiKey = MerchantConfig.getDefaultMerchantApiKey();
+          const defaultApiKey = MerchantConfig.getDefaultPartnerApiKey();
 
           if (!state.merchantId && defaultMerchantId) {
             state.setMerchantId(defaultMerchantId);
           }
 
-          if (!state.isMerchantApiKeySet && defaultApiKey) {
-            await state.setMerchantApiKey(defaultApiKey);
+          if (!state.isPartnerApiKeySet && defaultApiKey) {
+            await state.setPartnerApiKey(defaultApiKey);
           }
         }
 

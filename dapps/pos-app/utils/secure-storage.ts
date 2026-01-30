@@ -2,7 +2,7 @@ import * as SecureStore from "expo-secure-store";
 import { storage } from "./storage";
 
 const KEYS = {
-  MERCHANT_API_KEY: "merchant_api_key",
+  PARTNER_API_KEY: "partner_api_key",
   PIN_HASH: "pin_hash",
 } as const;
 
@@ -12,10 +12,24 @@ export async function clearStaleSecureStorage(): Promise<void> {
   const hasLaunchedBefore = storage.getItem<boolean>(FRESH_INSTALL_KEY);
 
   if (!hasLaunchedBefore) {
-    await SecureStore.deleteItemAsync(KEYS.MERCHANT_API_KEY);
+    await SecureStore.deleteItemAsync(KEYS.PARTNER_API_KEY);
     await SecureStore.deleteItemAsync(KEYS.PIN_HASH);
 
     storage.setItem(FRESH_INSTALL_KEY, true);
+  }
+}
+
+export async function migratePartnerApiKey(): Promise<void> {
+  const OLD_KEY = "merchant_api_key";
+  const NEW_KEY = "partner_api_key";
+
+  const oldValue = await SecureStore.getItemAsync(OLD_KEY);
+  if (oldValue) {
+    const newValue = await SecureStore.getItemAsync(NEW_KEY);
+    if (!newValue) {
+      await SecureStore.setItemAsync(NEW_KEY, oldValue);
+    }
+    await SecureStore.deleteItemAsync(OLD_KEY);
   }
 }
 

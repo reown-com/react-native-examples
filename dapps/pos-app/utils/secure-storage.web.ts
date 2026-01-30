@@ -78,6 +78,23 @@ export const secureStorage = {
 };
 
 export const SECURE_STORAGE_KEYS = {
-  MERCHANT_API_KEY: "merchant_api_key",
+  PARTNER_API_KEY: "partner_api_key",
   PIN_HASH: "pin_hash",
 } as const;
+
+export async function migratePartnerApiKey(): Promise<void> {
+  const OLD_KEY = getKey("merchant_api_key");
+  const NEW_KEY = getKey("partner_api_key");
+
+  const storage = getStorage();
+  if (!storage) return;
+
+  const oldValue = storage.getItem(OLD_KEY);
+  if (oldValue) {
+    const newValue = storage.getItem(NEW_KEY);
+    if (!newValue) {
+      storage.setItem(NEW_KEY, oldValue);
+    }
+    storage.removeItem(OLD_KEY);
+  }
+}
