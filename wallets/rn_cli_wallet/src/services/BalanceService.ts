@@ -22,9 +22,12 @@ async function fetchBalanceForChain(
     return [];
   }
 
-  const url = `${baseUrl}${BALANCE_API_PATH}/${address}/balance?projectId=${encodeURIComponent(
-    projectId,
-  )}&currency=usd&chainId=${chainId}&st=walletkit&sv=1.0.0`;
+  const url = new URL(`${BALANCE_API_PATH}/${address}/balance`, baseUrl);
+  url.searchParams.set('projectId', projectId);
+  url.searchParams.set('currency', 'usd');
+  url.searchParams.set('chainId', chainId);
+  url.searchParams.set('st', 'walletkit');
+  url.searchParams.set('sv', '1.0.0');
 
   const response = await fetch(url.toString(), {
     headers: {
