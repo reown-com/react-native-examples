@@ -157,7 +157,7 @@ export default function SettingsScreen() {
 
   const handleBiometricAuth = async () => {
     const success = await authenticate(
-      `Use ${biometricLabel} to change partner settings`,
+      `Use ${biometricLabel} to change merchant settings`,
     );
 
     if (success) {
