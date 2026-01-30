@@ -1,13 +1,15 @@
 import { useSnapshot } from 'valtio';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { Message } from '@/components/Modal/Message';
 import {
   approveTonRequest,
   rejectTonRequest,
+  validateTonRequest,
 } from '@/utils/TonRequestHandlerUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
@@ -47,6 +49,29 @@ export default function SessionTonSendMessageModal() {
     : request.params || {};
   const messages = Array.isArray(tx.messages) ? tx.messages : [];
 
+  // Validate request on mount
+  useEffect(() => {
+    if (!requestEvent) {
+      return;
+    }
+    const effect = async () => {
+      const validationResult = await validateTonRequest(requestEvent);
+      if (validationResult) {
+        Toast.show({
+          type: 'error',
+          text1: 'Validation failed',
+          text2: validationResult.error.message,
+        });
+        await walletKit.respondSessionRequest({
+          topic,
+          response: validationResult,
+        });
+        ModalStore.close();
+      }
+    };
+    effect();
+  }, [requestEvent, topic]);
+
   // Format transaction details
   const formatTransactionDetails = () => {
     if (messages.length === 0) {
@@ -71,10 +96,14 @@ export default function SessionTonSendMessageModal() {
 
   // Handle approve action
   const onApprove = useCallback(async () => {
-    if (requestEvent) {
+    if (requestEvent && session) {
       setIsLoadingApprove(true);
       try {
-        const response = await approveTonRequest(requestEvent);
+        // Cast session to mutable type for approveTonRequest
+        const response = await approveTonRequest(
+          requestEvent,
+          session as unknown as Parameters<typeof approveTonRequest>[1],
+        );
         LogStore.log(
           'Ton send message response received',
           'SessionTonSendMessageModal',
@@ -108,7 +137,7 @@ export default function SessionTonSendMessageModal() {
         ModalStore.close();
       }
     }
-  }, [requestEvent, peerMetadata, topic, isLinkMode]);
+  }, [requestEvent, session, peerMetadata, topic, isLinkMode]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
@@ -191,23 +220,11 @@ export default function SessionTonSendMessageModal() {
         </View>
 
         {/* Transaction Details */}
-        <View
-          style={[
-            styles.section,
-            { backgroundColor: Theme['foreground-primary'] },
-          ]}
-        >
-          <Text
-            variant="lg-400"
-            color="text-tertiary"
-            style={styles.sectionTitle}
-          >
-            Transaction Details
-          </Text>
-          <Text variant="md-400" color="text-primary">
-            {formatTransactionDetails()}
-          </Text>
-        </View>
+        <Message
+          message={formatTransactionDetails()}
+          title="Transaction Details"
+          style={styles.transactionDetails}
+        />
       </View>
     </RequestModal>
   );
@@ -227,5 +244,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginBottom: Spacing[1],
+  },
+  transactionDetails: {
+    maxHeight: 200,
   },
 });

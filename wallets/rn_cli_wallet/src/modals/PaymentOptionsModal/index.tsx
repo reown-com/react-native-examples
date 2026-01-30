@@ -441,9 +441,14 @@ export default function PaymentOptionsModal() {
 
       // Handle expired payment from confirmPayment response
       if (confirmResult.status === 'expired') {
-        LogStore.warn('Payment expired', 'PaymentOptionsModal', 'onApprovePayment', {
-          paymentId: paymentData.paymentId,
-        });
+        LogStore.warn(
+          'Payment expired',
+          'PaymentOptionsModal',
+          'onApprovePayment',
+          {
+            paymentId: paymentData.paymentId,
+          },
+        );
         dispatch({
           type: 'SET_RESULT',
           payload: {
