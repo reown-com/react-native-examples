@@ -354,7 +354,7 @@ export default function SettingsScreen() {
       <PinModal
         visible={activeModal === "pin-verify"}
         title="Enter PIN"
-        subtitle="Enter your PIN to save partner settings"
+        subtitle="Enter your PIN to save merchant settings"
         onComplete={handlePinVerifyComplete}
         onCancel={handleCancelSecurityFlow}
         error={pinError}
