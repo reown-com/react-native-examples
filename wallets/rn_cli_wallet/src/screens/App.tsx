@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import Config from 'react-native-config';
 import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
+import { NavigationBar } from '@zoontek/react-native-navigation-bar';
 import { useSnapshot } from 'valtio';
 import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -162,7 +163,11 @@ const App = () => {
         <KeyboardProvider>
           <NavigationContainer>
             <StatusBar
-              translucent={true}
+              translucent
+              backgroundColor="transparent"
+              barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
+            />
+            <NavigationBar
               barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
             />
             <RootStackNavigator />
