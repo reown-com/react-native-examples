@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { View, Switch, StyleSheet, Platform } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { getVersion, getBuildNumber } from 'react-native-device-info';
+import { getEnvironmentLabel } from '@/utils/misc';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 import SettingsStore from '@/store/SettingsStore';
@@ -101,7 +102,7 @@ export default function Settings() {
         />
         <Card
           title="App version"
-          value={`${getVersion()} (${getBuildNumber()})`}
+          value={`${getVersion()} (${getBuildNumber()}) - ${getEnvironmentLabel()}`}
         />
         <Card title="Socket status" value={socketStatus} />
         <Card

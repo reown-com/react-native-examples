@@ -5,24 +5,6 @@
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
-      <PreActions>
-         <ExecutionAction
-            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
-            <ActionContent
-               title = "Copy misc file"
-               scriptText = "cp &quot;${PROJECT_DIR}/../scripts/misc_debug.ts&quot; &quot;${PROJECT_DIR}/../src/utils/misc.ts&quot;&#10;">
-               <EnvironmentBuildable>
-                  <BuildableReference
-                     BuildableIdentifier = "primary"
-                     BlueprintIdentifier = "1FCDA28C2B9B8E6200E0BF0C"
-                     BuildableName = "RNWallet Debug.app"
-                     BlueprintName = "RNWallet Debug"
-                     ReferencedContainer = "container:RNWeb3Wallet.xcodeproj">
-                  </BuildableReference>
-               </EnvironmentBuildable>
-            </ActionContent>
-         </ExecutionAction>
-      </PreActions>
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
