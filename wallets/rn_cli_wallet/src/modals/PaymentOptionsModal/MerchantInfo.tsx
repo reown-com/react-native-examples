@@ -2,7 +2,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import type { PaymentInfo } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
-import { formatAmount } from './utils';
+import { formatAmount, getCurrencySymbol } from './utils';
 import SealCheck from '@/assets/SealCheck';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
@@ -18,6 +18,7 @@ export function MerchantInfo({ info }: MerchantInfoProps) {
     info?.amount?.display?.decimals || 0,
     2,
   );
+  const currencySymbol = getCurrencySymbol(info?.amount?.display?.assetSymbol);
 
   return (
     <>
@@ -47,7 +48,8 @@ export function MerchantInfo({ info }: MerchantInfoProps) {
               ellipsizeMode="tail"
               center
             >
-              Pay ${amount} to {info.merchant.name}
+              Pay {currencySymbol}
+              {amount} to {info.merchant.name}
             </Text>
             <SealCheck
               width={22}

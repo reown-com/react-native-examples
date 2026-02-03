@@ -1,11 +1,29 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { WebView, WebViewNavigation } from 'react-native-webview';
+import { btoa } from 'react-native-quick-base64';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
 import LogStore from '@/store/LogStore';
+
+const PREFILL_DATA = {
+  fullName: 'John Doe',
+  dob: '1990-06-15',
+};
+
+function buildUrlWithPrefill(baseUrl: string): string {
+  const prefillJson = JSON.stringify(PREFILL_DATA);
+  const prefillBase64 = btoa(prefillJson);
+
+  if (baseUrl.includes('prefill=')) {
+    return baseUrl.replace(/prefill=([^&]*)/, `prefill=${prefillBase64}`);
+  }
+
+  const separator = baseUrl.includes('?') ? '&' : '?';
+  return `${baseUrl}${separator}prefill=${prefillBase64}`;
+}
 
 interface CollectDataWebViewProps {
   url: string;
@@ -23,15 +41,20 @@ export function CollectDataWebView({
   const [isLoading, setIsLoading] = useState(true);
   const isMountedRef = useRef(true);
 
+  const finalUrl = useMemo(() => {
+    const urlWithPrefill = buildUrlWithPrefill(url);
+    LogStore.log('WebView URL with prefill', 'CollectDataWebView', 'finalUrl', {
+      originalUrl: url,
+      finalUrl: urlWithPrefill,
+    });
+    return urlWithPrefill;
+  }, [url]);
+
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
-      LogStore.log(
-        'WebView unmounted',
-        'CollectDataWebView',
-        'cleanup',
-      );
+      LogStore.log('WebView unmounted', 'CollectDataWebView', 'cleanup');
     };
   }, []);
 
@@ -118,14 +141,18 @@ export function CollectDataWebView({
           ]}
         >
           <ActivityIndicator size="large" color={Theme['bg-accent-primary']} />
-          <Text variant="md-400" color="text-secondary" style={styles.loadingText}>
+          <Text
+            variant="md-400"
+            color="text-secondary"
+            style={styles.loadingText}
+          >
             Loading form...
           </Text>
         </View>
       )}
       <WebView
         ref={webViewRef}
-        source={{ uri: url }}
+        source={{ uri: finalUrl }}
         style={[styles.webView, { backgroundColor: Theme['bg-primary'] }]}
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={() => setIsLoading(false)}

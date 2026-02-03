@@ -343,8 +343,9 @@ export default function PaymentOptionsModal() {
       return;
     }
 
-    // Defensive validation for payment flows
-    if (paymentData.collectData) {
+    // Defensive validation for payment flows - skip if data was collected via WebView
+    const dataCollectedViaWebView = !!collectDataUrl;
+    if (paymentData.collectData && !dataCollectedViaWebView) {
       const missingFields = validateRequiredFields(
         paymentData.collectData.fields,
         state.collectedData,
@@ -483,9 +484,14 @@ export default function PaymentOptionsModal() {
 
       // Handle expired payment from confirmPayment response
       if (confirmResult.status === 'expired') {
-        LogStore.warn('Payment expired', 'PaymentOptionsModal', 'onApprovePayment', {
-          paymentId: paymentData.paymentId,
-        });
+        LogStore.warn(
+          'Payment expired',
+          'PaymentOptionsModal',
+          'onApprovePayment',
+          {
+            paymentId: paymentData.paymentId,
+          },
+        );
         dispatch({
           type: 'SET_RESULT',
           payload: {
@@ -537,6 +543,7 @@ export default function PaymentOptionsModal() {
     state.selectedOption,
     state.collectedData,
     paymentData,
+    collectDataUrl,
   ]);
 
   const renderContent = useCallback(() => {
