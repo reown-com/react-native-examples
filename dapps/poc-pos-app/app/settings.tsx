@@ -11,6 +11,7 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { VariantList, VariantName } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
+import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -38,8 +39,13 @@ export default function SettingsScreen() {
   const getVariantPrinterLogo = useSettingsStore(
     (state) => state.getVariantPrinterLogo,
   );
+  const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
+  const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
   const addLog = useLogsStore((state) => state.addLog);
   const theme = useTheme();
+
+  // NFC capabilities for toggle
+  const nfcCapabilities = useNfcCapabilities();
 
   // Custom hooks for biometrics and merchant flow
   const {
@@ -97,6 +103,42 @@ export default function SettingsScreen() {
 
   const handleVariantChange = (value: VariantName) => {
     setVariant(value);
+  };
+
+  const handleNfcToggle = (value: boolean) => {
+    // Only check NFC support when trying to enable
+    if (value) {
+      // Check platform-specific NFC support
+      if (Platform.OS === "android" && !nfcCapabilities.isHceSupported) {
+        showErrorToast("NFC not supported on this device");
+        return;
+      }
+      if (Platform.OS === "ios" && !nfcCapabilities.isVasAvailable) {
+        showErrorToast(nfcCapabilities.vasReason || "NFC not available");
+        return;
+      }
+    }
+    setNfcEnabled(value);
+  };
+
+  // Show NFC toggle on both platforms when mode is available
+  const isNfcModeAvailable = nfcCapabilities.nfcMode !== "none";
+  const showNfcToggle = Platform.OS === "android" || Platform.OS === "ios";
+
+  // Get NFC support description
+  const getNfcDescription = () => {
+    if (nfcCapabilities.isLoading) return "Checking NFC support...";
+    if (Platform.OS === "android") {
+      return nfcCapabilities.isHceSupported
+        ? "Tap to pay via NFC (HCE)"
+        : "HCE not supported";
+    }
+    if (Platform.OS === "ios") {
+      return nfcCapabilities.isVasAvailable
+        ? "Tap to pay via NFC (VAS)"
+        : "VAS not available";
+    }
+    return "NFC not supported";
   };
 
   const handleTestPrinterPress = async () => {
@@ -195,6 +237,28 @@ export default function SettingsScreen() {
             onValueChange={handleThemeModeChange}
           />
         </Card>
+
+        {/* NFC Support toggle - Android HCE / iOS VAS */}
+        {showNfcToggle && (
+          <Card style={styles.card}>
+            <View style={styles.biometricRow}>
+              <View style={styles.biometricLabel}>
+                <ThemedText fontSize={16} lineHeight={18}>
+                  NFC Support
+                </ThemedText>
+                <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
+                  {getNfcDescription()}
+                </ThemedText>
+              </View>
+              <Switch
+                style={styles.switch}
+                value={nfcEnabled && isNfcModeAvailable}
+                onValueChange={handleNfcToggle}
+                disabled={nfcCapabilities.isLoading}
+              />
+            </View>
+          </Card>
+        )}
 
         <Card style={styles.merchantCard}>
           <ThemedText fontSize={16} lineHeight={18}>
