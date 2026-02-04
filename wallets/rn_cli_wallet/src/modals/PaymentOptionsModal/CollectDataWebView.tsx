@@ -1,12 +1,22 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Linking } from 'react-native';
 import { WebView, WebViewNavigation } from 'react-native-webview';
+import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { btoa } from 'react-native-quick-base64';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
 import LogStore from '@/store/LogStore';
+
+function getBaseUrl(urlString: string): string {
+  try {
+    const urlObj = new URL(urlString);
+    return `${urlObj.protocol}//${urlObj.host}`;
+  } catch {
+    return urlString;
+  }
+}
 
 const PREFILL_DATA = {
   fullName: 'John Doe',
@@ -131,6 +141,28 @@ export function CollectDataWebView({
     [onComplete, onError],
   );
 
+  const baseUrl = useMemo(() => getBaseUrl(url), [url]);
+
+  const handleShouldStartLoadWithRequest = useCallback(
+    (request: ShouldStartLoadRequest): boolean => {
+      const requestBaseUrl = getBaseUrl(request.url);
+
+      if (requestBaseUrl !== baseUrl) {
+        LogStore.log(
+          'Opening external link in browser',
+          'CollectDataWebView',
+          'handleShouldStartLoadWithRequest',
+          { url: request.url },
+        );
+        Linking.openURL(request.url);
+        return false;
+      }
+
+      return true;
+    },
+    [baseUrl],
+  );
+
   return (
     <View style={styles.container}>
       {isLoading && (
@@ -157,6 +189,7 @@ export function CollectDataWebView({
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={() => setIsLoading(false)}
         onNavigationStateChange={handleNavigationStateChange}
+        onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
         onError={handleError}
         onMessage={handleMessage}
         javaScriptEnabled
