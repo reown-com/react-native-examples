@@ -92,7 +92,6 @@ describe("getCurrency", () => {
   });
 
   it("returns USD as fallback for unknown code", () => {
-    // @ts-expect-error - testing invalid code
     const currency = getCurrency("GBP");
     expect(currency.code).toBe("USD");
   });
