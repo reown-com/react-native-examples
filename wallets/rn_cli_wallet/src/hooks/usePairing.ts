@@ -4,6 +4,7 @@ import { walletKit, isPaymentLink } from '@/utils/WalletKitUtil';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { EIP155_CHAINS } from '@/constants/Eip155';
+import LogStore from '@/store/LogStore';
 
 export { isPaymentLink };
 
@@ -35,6 +36,7 @@ export function usePairing() {
         accounts,
         includePaymentInfo: true,
       });
+      LogStore.log('paymentOptions', 'usePairing', 'handlePaymentLink', { paymentOptions: JSON.stringify(paymentOptions) });
 
       ModalStore.open('PaymentOptionsModal', { paymentOptions });
     } catch (error: any) {
