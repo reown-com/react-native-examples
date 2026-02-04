@@ -4276,9 +4276,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.23.4-canary.1":
-  version: 2.23.4-canary.1
-  resolution: "@walletconnect/react-native-compat@npm:2.23.4-canary.1"
+"@walletconnect/react-native-compat@npm:2.23.4-canary.2":
+  version: 2.23.4-canary.2
+  resolution: "@walletconnect/react-native-compat@npm:2.23.4-canary.2"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -4292,7 +4292,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: 2985992654cbe4f8aee3f49c130cb2ecae00b94926751ffff33ad971cf319f471e41959be1bb60089be719c42068a742b1f093d03f850df0703dfffe33b47a0a
+  checksum: 5971c5b81206dcd0f441b16c292ea2e53722b40adf75d9d86361c829003947cb5859e034a104c6817de1b61c869ba87214c4d0e4d1935db42bb01b6745da309e
   languageName: node
   linkType: hard
 
@@ -4456,7 +4456,7 @@ __metadata:
     "@types/lodash.clonedeep": ^4.5.9
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
-    "@walletconnect/react-native-compat": 2.23.4-canary.1
+    "@walletconnect/react-native-compat": 2.23.4-canary.2
     babel-plugin-module-resolver: ^5.0.0
     bip39: 3.1.0
     dayjs: 1.11.11
