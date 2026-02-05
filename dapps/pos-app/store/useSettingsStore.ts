@@ -2,7 +2,11 @@ import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { VariantName, Variants } from "@/constants/variants";
 import { CurrencyCode } from "@/utils/currency";
 import { MerchantConfig } from "@/utils/merchant-config";
-import { SECURE_STORAGE_KEYS, secureStorage } from "@/utils/secure-storage";
+import {
+  clearStaleSecureStorage,
+  SECURE_STORAGE_KEYS,
+  secureStorage,
+} from "@/utils/secure-storage";
 import { storage } from "@/utils/storage";
 import { TransactionFilterType } from "@/utils/types";
 import * as Crypto from "expo-crypto";
@@ -296,6 +300,10 @@ export const useSettingsStore = create<SettingsStore>()(
         return persistedState;
       },
       onRehydrateStorage: () => async (state, error) => {
+        // Clear stale secure storage on fresh install BEFORE setting defaults
+        // This must happen before any defaults are written to secure storage
+        await clearStaleSecureStorage();
+
         if (error) {
           console.error("Settings hydration failed:", error);
         }
