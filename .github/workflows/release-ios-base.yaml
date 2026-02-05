@@ -92,7 +92,7 @@ jobs:
     runs-on: macos-latest-xlarge
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: webfactory/ssh-agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -138,18 +138,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ inputs.root-path }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(env.podfile_path) }}
+          key: ${{ runner.os }}-pods-${{ hashFiles(env.podfile_path) }}
           restore-keys: |
-            ${{ runner.os }}-pods-${{ github.ref_name }}-
+            ${{ runner.os }}-pods-
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.0
-          bundler-cache: false
-
-      - name: Install Gems
-        run: bundle install
+          bundler-cache: true
 
       # Create env file
       - name: Create env file
@@ -195,6 +192,7 @@ jobs:
           BRANCH_NAME: ${{ github.ref_name }}
           BUILD_FOR_SIMULATOR: ${{ inputs.build-for-simulator }}
           TESTFLIGHT_GROUPS: ${{ inputs.testflight-groups }}
+          PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
 
       - name: Configure AWS credentials
         id: aws-creds

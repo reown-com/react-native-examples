@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./.github/actions/ci-setup
@@ -125,13 +125,18 @@ jobs:
           echo "org.gradle.parallel=true" >> ${{ inputs.root-path }}/android/gradle.properties
           echo "org.gradle.caching=true" >> ${{ inputs.root-path }}/android/gradle.properties
 
+      - name: Configure ABI for internal builds
+        if: ${{ inputs.release-type == 'internal' }}
+        run: |
+          echo "reactNativeArchitectures=arm64-v8a,armeabi-v7a" >> ${{ inputs.root-path }}/android/gradle.properties
+
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-            ${{ inputs.is-expo-project == false && format('{0}/android/.gradle', inputs.root-path) || '' }}
+            ${{ inputs.root-path }}/android/.gradle
           key: ${{ runner.os }}-gradle-${{ inputs.name }}-${{ inputs.is-expo-project == true && hashFiles(format('{0}/package.json', inputs.root-path), format('{0}/app.json', inputs.root-path)) || hashFiles(format('{0}/android/**/*.gradle*', inputs.root-path), format('{0}/android/**/gradle-wrapper.properties', inputs.root-path)) }}
           restore-keys: |
             ${{ runner.os }}-gradle-${{ inputs.name }}-
@@ -140,9 +145,9 @@ jobs:
         id: build
         run: |
           if [ ${{ inputs.release-type }} = 'internal' ]; then
-            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} install && ${{ inputs.package-manager }} run android:build:internal
+            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} run android:build:internal
           else
-            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} install && ${{ inputs.package-manager }} run android:build
+            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} run android:build
           fi
   
       - name: Setup Firebase
