@@ -5,6 +5,7 @@ import {
   ReactNativePosPrinter,
   TextOptions,
 } from "react-native-thermal-pos-printer";
+import { Currency, formatAmountWithSymbol } from "./currency";
 import { getDate } from "./misc";
 
 export const requestBluetoothPermission = async () => {
@@ -84,7 +85,7 @@ const formatTokenAmount = (rawAmount: string, decimals: number): string => {
 interface PrintReceiptProps {
   txnId: string;
   amountFiat: number;
-  currencySymbol?: string;
+  currency: Currency;
   tokenSymbol?: string;
   tokenAmount?: string;
   tokenDecimals?: number;
@@ -96,7 +97,7 @@ interface PrintReceiptProps {
 export const printReceipt = async ({
   txnId,
   amountFiat,
-  currencySymbol = "$",
+  currency,
   tokenSymbol,
   tokenAmount,
   tokenDecimals,
@@ -133,10 +134,8 @@ export const printReceipt = async ({
 
     if (amountFiat) {
       await ReactNativePosPrinter.printText("AMOUNT    ", normal);
-      await ReactNativePosPrinter.printText(
-        `${currencySymbol}${amountFiat.toFixed(2)}\n`,
-        bold,
-      );
+      const formattedAmount = formatAmountWithSymbol(amountFiat.toFixed(2), currency);
+      await ReactNativePosPrinter.printText(`${formattedAmount}\n`, bold);
     }
 
     if (tokenSymbol && tokenAmount && tokenDecimals) {

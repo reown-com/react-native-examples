@@ -23,7 +23,7 @@ import * as Sentry from '@sentry/react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import {getMetadata, SENTRY_TAG} from '@/utils/misc';
+import {getMetadata, getEnvironment} from '@/utils/misc';
 import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import {chains} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
@@ -32,7 +32,7 @@ import { storage } from './utils/StorageUtil';
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
   dsn: Config.ENV_SENTRY_DSN,
-  environment: SENTRY_TAG,
+  environment: getEnvironment(),
   sendDefaultPii: true,
   // Enable Logs
   enableLogs: true,

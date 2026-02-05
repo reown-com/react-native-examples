@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import Config from 'react-native-config';
 import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
+import { NavigationBar } from '@zoontek/react-native-navigation-bar';
 import { useSnapshot } from 'valtio';
 import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -18,13 +19,13 @@ import { usePairing } from '@/hooks/usePairing';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
-import { SENTRY_TAG } from '@/utils/misc';
+import { getEnvironment } from '@/utils/misc';
 import { toastConfig } from '@/components/ToastConfig';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
   dsn: Config.ENV_SENTRY_DSN,
-  environment: SENTRY_TAG,
+  environment: getEnvironment(),
   sendDefaultPii: true,
   // Enable Logs
   enableLogs: true,
@@ -162,7 +163,11 @@ const App = () => {
         <KeyboardProvider>
           <NavigationContainer>
             <StatusBar
-              translucent={true}
+              translucent
+              backgroundColor="transparent"
+              barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
+            />
+            <NavigationBar
               barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
             />
             <RootStackNavigator />

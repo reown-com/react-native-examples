@@ -2694,7 +2694,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:1.8.0, @noble/hashes@npm:^1.2.0, @noble/hashes@npm:^1.8.0, @noble/hashes@npm:~1.8.0":
+"@noble/hashes@npm:1.8.0, @noble/hashes@npm:^1.2.0, @noble/hashes@npm:^1.3.0, @noble/hashes@npm:^1.8.0, @noble/hashes@npm:~1.8.0":
   version: 1.8.0
   resolution: "@noble/hashes@npm:1.8.0"
   checksum: c94e98b941963676feaba62475b1ccfa8341e3f572adbb3b684ee38b658df44100187fa0ef4220da580b13f8d27e87d5492623c8a02ecc61f23fb9960c7918f5
@@ -4421,6 +4421,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zoontek/react-native-navigation-bar@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@zoontek/react-native-navigation-bar@npm:1.0.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 4a528df99f078083cfe4d432fb3b9ddcfcaf27a9524a66219e135bb0c58f808d72a1ac9d0208ae7e540d8426ea30d73bef95771dcaa87fc07b10706d87cb62fb
+  languageName: node
+  linkType: hard
+
 "RNWeb3Wallet@workspace:.":
   version: 0.0.0-use.local
   resolution: "RNWeb3Wallet@workspace:."
@@ -4432,6 +4442,7 @@ __metadata:
     "@json-rpc-tools/utils": 1.7.6
     "@mhpdev/react-native-haptics": ^1.0.1
     "@mysten/sui": ^1.29.1
+    "@noble/hashes": ^1.3.0
     "@react-native-async-storage/async-storage": 2.2.0
     "@react-native-clipboard/clipboard": 1.16.3
     "@react-native-community/cli": ^20.0.0
@@ -4457,8 +4468,10 @@ __metadata:
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
     "@walletconnect/react-native-compat": 2.23.4-canary.2
+    "@zoontek/react-native-navigation-bar": ^1.0.2
     babel-plugin-module-resolver: ^5.0.0
     bip39: 3.1.0
+    crc-32: ^1.2.2
     dayjs: 1.11.11
     ed25519-hd-key: ^1.3.0
     eslint: ^8.19.0
@@ -5697,6 +5710,15 @@ __metadata:
     typescript:
       optional: true
   checksum: a30c424b53d442ea0bdd24cb1b3d0d8687c8dda4a17ab6afcdc439f8964438801619cdb66e8e79f63b9caa3e6586b60d8bab9ce203e72df6c5e80179b971fe8f
+  languageName: node
+  linkType: hard
+
+"crc-32@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "crc-32@npm:1.2.2"
+  bin:
+    crc32: bin/crc32.njs
+  checksum: ad2d0ad0cbd465b75dcaeeff0600f8195b686816ab5f3ba4c6e052a07f728c3e70df2e3ca9fd3d4484dc4ba70586e161ca5a2334ec8bf5a41bf022a6103ff243
   languageName: node
   linkType: hard
 
