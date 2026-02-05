@@ -38,10 +38,7 @@ export default function PaymentOptionsModal() {
 
   const [state, dispatch] = useReducer(paymentModalReducer, initialState);
 
-  // Derived values
-  const hasCollectData =
-    paymentData?.collectData && paymentData.collectData.fields.length > 0;
-  // The `url` property is a new addition to the API - cast to access it
+  // TODO: Update type when @walletconnect/pay adds `url` to CollectData type
   const collectDataUrl = (
     paymentData?.collectData as { url?: string } | undefined
   )?.url;
@@ -85,11 +82,16 @@ export default function PaymentOptionsModal() {
           });
           dispatch({ type: 'SET_STEP', payload: 'result' });
         } else {
-          dispatch({ type: 'SET_STEP', payload: 'intro' });
+          // If collectData URL exists, show intro first then WebView
+          // Otherwise, go directly to confirm
+          dispatch({
+            type: 'SET_STEP',
+            payload: collectDataUrl ? 'intro' : 'confirm',
+          });
         }
       }
     }
-  }, [state.step, paymentData, initialError]);
+  }, [state.step, paymentData, initialError, collectDataUrl]);
 
   const onClose = useCallback(() => {
     dispatch({ type: 'RESET' });
@@ -107,17 +109,18 @@ export default function PaymentOptionsModal() {
         break;
       case 'confirm':
         dispatch({ type: 'CLEAR_SELECTED_OPTION' });
-        if (hasCollectData) {
-          // When going back from confirm, go to intro (not back to WebView)
+        if (collectDataUrl) {
+          // Go back to intro if we came from WebView flow
           dispatch({ type: 'SET_STEP', payload: 'intro' });
         } else {
-          dispatch({ type: 'SET_STEP', payload: 'intro' });
+          // No previous step, close modal
+          onClose();
         }
         break;
       default:
         onClose();
     }
-  }, [state.step, hasCollectData, onClose]);
+  }, [state.step, collectDataUrl, onClose]);
 
   const handleWebViewComplete = useCallback(() => {
     LogStore.log(
@@ -243,16 +246,9 @@ export default function PaymentOptionsModal() {
       return;
     }
 
-    if (hasCollectData) {
-      // Use WebView if URL is available, otherwise use native form
-      dispatch({
-        type: 'SET_STEP',
-        payload: collectDataUrl ? 'collectDataWebView' : 'collectData',
-      });
-    } else {
-      dispatch({ type: 'SET_STEP', payload: 'confirm' });
-    }
-  }, [hasCollectData, collectDataUrl, paymentData?.options]);
+    // Intro is only shown when collectDataUrl exists, so always go to WebView
+    dispatch({ type: 'SET_STEP', payload: 'collectDataWebView' });
+  }, [paymentData?.options]);
 
   const handleCollectDataNext = useCallback(() => {
     if (!paymentData?.collectData) {
@@ -633,13 +629,15 @@ export default function PaymentOptionsModal() {
     onClose,
   ]);
 
+  // Show back button only when there's a previous step to go back to
+  const showBackButton =
+    state.step === 'collectDataWebView' ||
+    (state.step === 'confirm' && !!collectDataUrl);
+
   return (
     <ViewWrapper
       step={state.step}
-      hasCollectData={hasCollectData}
-      showBackButton={
-        !['intro', 'loading', 'confirming', 'result'].includes(state.step)
-      }
+      showBackButton={showBackButton}
       onBack={goBack}
       onClose={onClose}
     >

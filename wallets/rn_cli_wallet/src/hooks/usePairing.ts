@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 
 import { walletKit, isPaymentLink } from '@/utils/WalletKitUtil';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { EIP155_CHAINS } from '@/constants/Eip155';
@@ -36,7 +37,12 @@ export function usePairing() {
         includePaymentInfo: true,
       });
 
-      console.log('[Pay] getPaymentOptions response:', JSON.stringify(paymentOptions, null, 2));
+      LogStore.log(
+        'getPaymentOptions response',
+        'usePairing',
+        'handlePaymentLink',
+        { paymentOptions },
+      );
 
       ModalStore.open('PaymentOptionsModal', { paymentOptions });
     } catch (error: any) {

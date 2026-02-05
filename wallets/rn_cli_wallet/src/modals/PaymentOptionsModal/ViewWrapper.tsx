@@ -20,7 +20,6 @@ type Step =
 interface ViewWrapperProps {
   children: React.ReactNode;
   step: Step;
-  hasCollectData?: boolean;
   showBackButton: boolean;
   onBack: () => void;
   onClose: () => void;
@@ -31,24 +30,12 @@ const ANIMATION_DURATION = 250;
 export function ViewWrapper({
   children,
   step,
-  hasCollectData = false,
   showBackButton,
   onBack,
   onClose,
 }: ViewWrapperProps) {
   const Theme = useTheme();
   const insets = useSafeAreaInsets();
-
-  // Determine if we should show step pills
-  const showStepPills =
-    hasCollectData &&
-    (step === 'collectData' || step === 'collectDataWebView' || step === 'confirm');
-  const currentPillIndex =
-    step === 'collectData' || step === 'collectDataWebView'
-      ? 0
-      : step === 'confirm'
-        ? 1
-        : -1;
 
   const isWebViewStep = step === 'collectDataWebView';
 
@@ -72,35 +59,8 @@ export function ViewWrapper({
           )}
         </View>
 
-        {/* Step Pills */}
-        <View style={styles.headerCenter}>
-          {showStepPills && (
-            <View style={styles.stepsContainer}>
-              <View
-                style={[
-                  styles.stepPill,
-                  {
-                    backgroundColor:
-                      currentPillIndex >= 0
-                        ? Theme['bg-accent-primary']
-                        : Theme['foreground-tertiary'],
-                  },
-                ]}
-              />
-              <View
-                style={[
-                  styles.stepPill,
-                  {
-                    backgroundColor:
-                      currentPillIndex >= 1
-                        ? Theme['bg-accent-primary']
-                        : Theme['foreground-tertiary'],
-                  },
-                ]}
-              />
-            </View>
-          )}
-        </View>
+        {/* Spacer */}
+        <View style={styles.headerCenter} />
 
         {/* Close Button - in WebView step, X goes back instead of closing */}
         <View style={styles.headerRight}>
@@ -111,7 +71,9 @@ export function ViewWrapper({
       {/* Animated Content */}
       <Animated.View
         key={step}
-        style={step === 'collectDataWebView' ? styles.webViewContent : undefined}
+        style={
+          step === 'collectDataWebView' ? styles.webViewContent : undefined
+        }
         entering={FadeIn.duration(ANIMATION_DURATION)}
         exiting={FadeOut.duration(ANIMATION_DURATION)}
       >
@@ -134,9 +96,7 @@ export function ViewWrapper({
   }
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
-    >
+    <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       {content}
     </View>
   );
@@ -152,7 +112,6 @@ const styles = StyleSheet.create({
   },
   fullscreenContainer: {
     flex: 1,
-    paddingHorizontal: Spacing[3],
   },
   webViewContent: {
     flex: 1,
@@ -165,6 +124,7 @@ const styles = StyleSheet.create({
   },
   webViewHeader: {
     marginBottom: Spacing[2],
+    paddingHorizontal: Spacing[3],
   },
   headerLeft: {
     width: 38,
@@ -174,22 +134,11 @@ const styles = StyleSheet.create({
   },
   headerCenter: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   headerRight: {
     width: 38,
     height: 38,
     alignItems: 'flex-end',
     justifyContent: 'center',
-  },
-  stepsContainer: {
-    flexDirection: 'row',
-    gap: Spacing[2],
-  },
-  stepPill: {
-    width: Spacing[9],
-    height: 6,
-    borderRadius: BorderRadius.full,
   },
 });

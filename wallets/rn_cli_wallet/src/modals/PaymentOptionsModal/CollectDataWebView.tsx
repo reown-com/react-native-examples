@@ -5,7 +5,6 @@ import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTyp
 import { btoa } from 'react-native-quick-base64';
 
 import { useTheme } from '@/hooks/useTheme';
-import { Text } from '@/components/Text';
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
 import LogStore from '@/store/LogStore';
@@ -19,6 +18,7 @@ function getBaseUrl(urlString: string): string {
   }
 }
 
+// This is the data that will be prefilled in the webview
 const PREFILL_DATA = {
   fullName: 'John Doe',
   dob: '1990-06-15',
@@ -79,20 +79,8 @@ export function CollectDataWebView({
         'handleNavigationStateChange',
         { url: navState.url },
       );
-
-      if (
-        navState.url.includes('/success') ||
-        navState.url.includes('/complete')
-      ) {
-        LogStore.log(
-          'Data collection completed',
-          'CollectDataWebView',
-          'handleNavigationStateChange',
-        );
-        onComplete();
-      }
     },
-    [onComplete],
+    [],
   );
 
   const handleError = useCallback(
@@ -146,6 +134,18 @@ export function CollectDataWebView({
 
   const handleShouldStartLoadWithRequest = useCallback(
     (request: ShouldStartLoadRequest): boolean => {
+      LogStore.log(
+        'WebView load request',
+        'CollectDataWebView',
+        'handleShouldStartLoadWithRequest',
+        { url: request.url },
+      );
+
+      // Allow about:blank URL to load in WebView
+      if (request.url.startsWith('about:blank')) {
+        return true;
+      }
+
       const requestBaseUrl = getBaseUrl(request.url);
 
       if (requestBaseUrl !== baseUrl) {
@@ -173,19 +173,17 @@ export function CollectDataWebView({
             { backgroundColor: Theme['bg-primary'] },
           ]}
         >
-          <WalletConnectLoading size={60} />
-          <Text
-            variant="md-400"
-            color="text-secondary"
-            style={styles.loadingText}
-          >
-            Loading form...
-          </Text>
+          <WalletConnectLoading size={120} />
         </View>
       )}
       <WebView
         ref={webViewRef}
         source={{ uri: finalUrl }}
+        originWhitelist={[
+          'https://dev.pay.walletconnect.com',
+          'https://staging.pay.walletconnect.com',
+          'https://pay.walletconnect.com',
+        ]}
         style={[styles.webView, { backgroundColor: Theme['bg-primary'] }]}
         onLoadStart={() => setIsLoading(true)}
         onLoadEnd={() => setIsLoading(false)}
@@ -211,7 +209,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
