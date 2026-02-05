@@ -1,11 +1,12 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
-import { View, StyleSheet, ActivityIndicator, Linking } from 'react-native';
+import { View, StyleSheet, Linking } from 'react-native';
 import { WebView, WebViewNavigation } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { btoa } from 'react-native-quick-base64';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
+import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
 import LogStore from '@/store/LogStore';
 
@@ -172,7 +173,7 @@ export function CollectDataWebView({
             { backgroundColor: Theme['bg-primary'] },
           ]}
         >
-          <ActivityIndicator size="large" color={Theme['bg-accent-primary']} />
+          <WalletConnectLoading size={60} />
           <Text
             variant="md-400"
             color="text-secondary"

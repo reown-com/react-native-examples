@@ -1,4 +1,5 @@
 import { View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -50,16 +51,10 @@ export function ViewWrapper({
 
   const isWebViewStep = step === 'collectDataWebView';
 
-  return (
-    <View
-      style={[
-        styles.container,
-        isWebViewStep && styles.fullscreenContainer,
-        { backgroundColor: Theme['bg-primary'] },
-      ]}
-    >
+  const content = (
+    <>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, isWebViewStep && styles.webViewHeader]}>
         {/* Back Button - hidden in WebView step since X handles back */}
         <View style={styles.headerLeft}>
           {showBackButton && !isWebViewStep && (
@@ -121,6 +116,25 @@ export function ViewWrapper({
       >
         {children}
       </Animated.View>
+    </>
+  );
+
+  if (isWebViewStep) {
+    return (
+      <SafeAreaView
+        style={[styles.fullscreenContainer, { backgroundColor: Theme['bg-primary'] }]}
+        edges={['top']}
+      >
+        {content}
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <View
+      style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
+    >
+      {content}
     </View>
   );
 }
@@ -135,9 +149,7 @@ const styles = StyleSheet.create({
   },
   fullscreenContainer: {
     flex: 1,
-    maxHeight: '100%',
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
+    paddingHorizontal: Spacing[3],
   },
   webViewContent: {
     flex: 1,
@@ -147,6 +159,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing[5],
+  },
+  webViewHeader: {
+    marginBottom: Spacing[2],
   },
   headerLeft: {
     width: 38,
