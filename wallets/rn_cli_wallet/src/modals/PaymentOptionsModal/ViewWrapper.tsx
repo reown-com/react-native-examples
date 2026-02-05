@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -37,6 +37,7 @@ export function ViewWrapper({
   onClose,
 }: ViewWrapperProps) {
   const Theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   // Determine if we should show step pills
   const showStepPills =
@@ -121,12 +122,14 @@ export function ViewWrapper({
 
   if (isWebViewStep) {
     return (
-      <SafeAreaView
-        style={[styles.fullscreenContainer, { backgroundColor: Theme['bg-primary'] }]}
-        edges={['top']}
+      <View
+        style={[
+          styles.fullscreenContainer,
+          { backgroundColor: Theme['bg-primary'], paddingTop: insets.top },
+        ]}
       >
         {content}
-      </SafeAreaView>
+      </View>
     );
   }
 
