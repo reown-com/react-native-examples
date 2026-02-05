@@ -136,7 +136,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-            ${{ inputs.root-path }}/android/.gradle
+            ${{ inputs.is-expo-project == false && format('{0}/android/.gradle', inputs.root-path) || '' }}
           key: ${{ runner.os }}-gradle-${{ inputs.name }}-${{ inputs.is-expo-project == true && hashFiles(format('{0}/package.json', inputs.root-path), format('{0}/app.json', inputs.root-path)) || hashFiles(format('{0}/android/**/*.gradle*', inputs.root-path), format('{0}/android/**/gradle-wrapper.properties', inputs.root-path)) }}
           restore-keys: |
             ${{ runner.os }}-gradle-${{ inputs.name }}-
