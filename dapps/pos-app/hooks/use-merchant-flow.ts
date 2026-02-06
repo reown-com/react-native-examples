@@ -36,6 +36,9 @@ export function useMerchantFlow() {
   const setMerchantApiKey = useSettingsStore(
     (state) => state.setMerchantApiKey,
   );
+  const isMerchantApiKeySet = useSettingsStore(
+    (state) => state.isMerchantApiKeySet,
+  );
   const isPinSet = useSettingsStore((state) => state.isPinSet);
   const verifyPin = useSettingsStore((state) => state.verifyPin);
   const setPin = useSettingsStore((state) => state.setPin);
@@ -62,6 +65,7 @@ export function useMerchantFlow() {
   }, [storedMerchantId]);
 
   // Load merchant API key from secure storage (only store internally, don't show in input)
+  // Re-run when isMerchantApiKeySet changes to refresh local state after clearMerchantId
   useEffect(() => {
     const loadApiKey = async () => {
       const apiKey = await getMerchantApiKey();
@@ -71,7 +75,7 @@ export function useMerchantFlow() {
       }));
     };
     loadApiKey();
-  }, [getMerchantApiKey]);
+  }, [getMerchantApiKey, isMerchantApiKeySet]);
 
   const formatLockoutMessage = useCallback(() => {
     const remaining = getLockoutRemainingSeconds();

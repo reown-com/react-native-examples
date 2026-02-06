@@ -16,7 +16,7 @@ import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { getCurrency } from "@/utils/currency";
+import { formatAmountWithSymbol, getCurrency } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
 import { StatusBar } from "expo-status-bar";
@@ -63,7 +63,7 @@ export default function PaymentSuccessScreen() {
       await printReceipt({
         txnId: params.paymentId,
         amountFiat: Number(amount),
-        currencySymbol: currency.symbol,
+        currency,
         tokenSymbol: params.token,
         tokenAmount: params.tokenAmount,
         tokenDecimals: params.tokenDecimals
@@ -160,8 +160,7 @@ export default function PaymentSuccessScreen() {
               { color: Theme["text-payment-success"] },
             ]}
           >
-            {currency.symbol}
-            {amount}
+            {formatAmountWithSymbol(amount, currency)}
           </ThemedText>
         </View>
         <View style={styles.buttonContainer}>

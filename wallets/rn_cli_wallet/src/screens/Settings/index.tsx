@@ -81,12 +81,12 @@ export default function Settings() {
           />
         </Button>
         <Card
-          title="Secret phrases"
+          title="Secret Keys & Phrases"
           onPress={() => navigation.navigate('SecretPhrase')}
           icon="chevronRight"
         />
         <Card
-          title="Import EVM Wallet"
+          title="Import Wallet"
           onPress={() => ModalStore.open('ImportWalletModal', {})}
           icon="chevronRight"
         />
