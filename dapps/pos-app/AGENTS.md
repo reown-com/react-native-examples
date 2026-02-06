@@ -258,7 +258,7 @@ SENTRY_AUTH_TOKEN=""                   # Sentry authentication token
 EXPO_PUBLIC_API_URL=""                 # Payment API base URL
 EXPO_PUBLIC_GATEWAY_URL=""             # WalletConnect gateway URL
 EXPO_PUBLIC_DEFAULT_MERCHANT_ID=""     # Default merchant ID (optional)
-EXPO_PUBLIC_DEFAULT_MERCHANT_API_KEY="" # Default merchant API key (optional)
+EXPO_PUBLIC_DEFAULT_PARTNER_API_KEY="" # Default partner API key (optional)
 EXPO_PUBLIC_MERCHANT_API_URL=""        # Merchant Portal API base URL
 EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY="" # Merchant Portal API key (for Activity screen)
 ```
@@ -678,11 +678,11 @@ const { data, isLoading, error } = usePaymentStatus(paymentId, {
 import { secureStorage, SECURE_STORAGE_KEYS } from "@/utils/secure-storage";
 
 // Store
-await secureStorage.setItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY, apiKey);
+await secureStorage.setItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY, apiKey);
 
 // Retrieve
 const apiKey = await secureStorage.getItem(
-  SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+  SECURE_STORAGE_KEYS.PARTNER_API_KEY,
 );
 ```
 
