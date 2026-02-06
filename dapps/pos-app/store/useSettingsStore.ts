@@ -3,6 +3,7 @@ import { VariantName, Variants } from "@/constants/variants";
 import { CurrencyCode } from "@/utils/currency";
 import { MerchantConfig } from "@/utils/merchant-config";
 import {
+  clearStaleSecureStorage,
   migratePartnerApiKey,
   SECURE_STORAGE_KEYS,
   secureStorage,
@@ -296,6 +297,10 @@ export const useSettingsStore = create<SettingsStore>()(
         return persistedState;
       },
       onRehydrateStorage: () => async (state, error) => {
+        // Clear stale secure storage on fresh install BEFORE setting defaults
+        // This must happen before any defaults are written to secure storage
+        await clearStaleSecureStorage();
+
         if (error) {
           console.error("Settings hydration failed:", error);
         }

@@ -140,7 +140,7 @@ export default function SettingsScreen() {
       await printReceipt({
         txnId: "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
         amountFiat: 15,
-        currencySymbol: currencyData.symbol,
+        currency: currencyData,
         tokenSymbol: "USDC",
         tokenAmount: "15",
         tokenDecimals: 6,

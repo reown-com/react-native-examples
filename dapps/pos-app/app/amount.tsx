@@ -4,7 +4,7 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { getCurrency } from "@/utils/currency";
+import { formatAmountWithSymbol, getCurrency } from "@/utils/currency";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Platform, StyleSheet, View } from "react-native";
@@ -77,8 +77,7 @@ export default function AmountScreen() {
             },
           ]}
         >
-          {currency.symbol}
-          {watchAmount || "0.00"}
+          {formatAmountWithSymbol(watchAmount || "0.00", currency)}
         </ThemedText>
       </View>
       <Controller
@@ -142,7 +141,7 @@ export default function AmountScreen() {
           style={{ color: Theme["text-invert"] }}
         >
           {isValid
-            ? `Charge ${currency.symbol}${formatAmount(watchAmount)}`
+            ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
             : "Enter amount"}
         </ThemedText>
       </Button>

@@ -32,6 +32,9 @@ export function useMerchantFlow() {
   const clearMerchantId = useSettingsStore((state) => state.clearMerchantId);
   const getPartnerApiKey = useSettingsStore((state) => state.getPartnerApiKey);
   const setPartnerApiKey = useSettingsStore((state) => state.setPartnerApiKey);
+  const isPartnerApiKeySet = useSettingsStore(
+    (state) => state.isPartnerApiKeySet,
+  );
   const isPinSet = useSettingsStore((state) => state.isPinSet);
   const verifyPin = useSettingsStore((state) => state.verifyPin);
   const setPin = useSettingsStore((state) => state.setPin);
@@ -58,6 +61,7 @@ export function useMerchantFlow() {
   }, [storedMerchantId]);
 
   // Load partner API key from secure storage (only store internally, don't show in input)
+  // Re-run when isPartnerApiKeySet changes to refresh local state after clearMerchantId
   useEffect(() => {
     const loadApiKey = async () => {
       const apiKey = await getPartnerApiKey();
@@ -67,7 +71,7 @@ export function useMerchantFlow() {
       }));
     };
     loadApiKey();
-  }, [getPartnerApiKey]);
+  }, [getPartnerApiKey, isPartnerApiKeySet]);
 
   const formatLockoutMessage = useCallback(() => {
     const remaining = getLockoutRemainingSeconds();

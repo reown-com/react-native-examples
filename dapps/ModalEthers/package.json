@@ -23,7 +23,7 @@
     "cross-spawn": "^7.0.6",
     "elliptic": "^6.6.1",
     "ethers": "5.7.2",
-    "fast-xml-parser": "^5.0.9",
+    "fast-xml-parser": "^5.3.4",
     "ip": "^2.0.1",
     "micromatch": "^4.0.8",
     "nanoid": "^5.1.3",
