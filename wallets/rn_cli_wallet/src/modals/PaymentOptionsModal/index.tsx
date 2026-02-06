@@ -15,6 +15,7 @@ import type {
 import { LoadingView } from './LoadingView';
 import { IntroView } from './IntroView';
 import { CollectDataView } from './CollectDataView';
+import { CollectDataWebView } from './CollectDataWebView';
 import { ConfirmPaymentView } from './ConfirmPaymentView';
 import { ResultView } from './ResultView';
 import { ViewWrapper } from './ViewWrapper';
@@ -37,9 +38,10 @@ export default function PaymentOptionsModal() {
 
   const [state, dispatch] = useReducer(paymentModalReducer, initialState);
 
-  // Derived values
-  const hasCollectData =
-    paymentData?.collectData && paymentData.collectData.fields.length > 0;
+  // TODO: Update type when @walletconnect/pay adds `url` to CollectData type
+  const collectDataUrl = (
+    paymentData?.collectData as { url?: string } | undefined
+  )?.url;
 
   // Transition from loading to intro when data is available
   useEffect(() => {
@@ -80,11 +82,16 @@ export default function PaymentOptionsModal() {
           });
           dispatch({ type: 'SET_STEP', payload: 'result' });
         } else {
-          dispatch({ type: 'SET_STEP', payload: 'intro' });
+          // If collectData URL exists, show intro first then WebView
+          // Otherwise, go directly to confirm
+          dispatch({
+            type: 'SET_STEP',
+            payload: collectDataUrl ? 'intro' : 'confirm',
+          });
         }
       }
     }
-  }, [state.step, paymentData, initialError]);
+  }, [state.step, paymentData, initialError, collectDataUrl]);
 
   const onClose = useCallback(() => {
     dispatch({ type: 'RESET' });
@@ -96,17 +103,50 @@ export default function PaymentOptionsModal() {
       case 'collectData':
         dispatch({ type: 'SET_STEP', payload: 'intro' });
         break;
+      case 'collectDataWebView':
+        // Closing WebView means form was completed, move to confirm step
+        dispatch({ type: 'SET_STEP', payload: 'confirm' });
+        break;
       case 'confirm':
         dispatch({ type: 'CLEAR_SELECTED_OPTION' });
-        dispatch({
-          type: 'SET_STEP',
-          payload: hasCollectData ? 'collectData' : 'intro',
-        });
+        if (collectDataUrl) {
+          // Go back to intro if we came from WebView flow
+          dispatch({ type: 'SET_STEP', payload: 'intro' });
+        } else {
+          // No previous step, close modal
+          onClose();
+        }
         break;
       default:
         onClose();
     }
-  }, [state.step, hasCollectData, onClose]);
+  }, [state.step, collectDataUrl, onClose]);
+
+  const handleWebViewComplete = useCallback(() => {
+    LogStore.log(
+      'WebView data collection completed',
+      'PaymentOptionsModal',
+      'handleWebViewComplete',
+    );
+    dispatch({ type: 'SET_STEP', payload: 'confirm' });
+  }, []);
+
+  const handleWebViewError = useCallback((error: string) => {
+    LogStore.error(
+      'WebView data collection error',
+      'PaymentOptionsModal',
+      'handleWebViewError',
+      { error },
+    );
+    dispatch({
+      type: 'SET_RESULT',
+      payload: {
+        status: 'error',
+        message: error || 'Failed to complete data collection',
+      },
+    });
+    dispatch({ type: 'SET_STEP', payload: 'result' });
+  }, []);
 
   const updateCollectedField = useCallback(
     (fieldId: string, value: string, fieldType?: string) => {
@@ -206,11 +246,9 @@ export default function PaymentOptionsModal() {
       return;
     }
 
-    dispatch({
-      type: 'SET_STEP',
-      payload: hasCollectData ? 'collectData' : 'confirm',
-    });
-  }, [hasCollectData, paymentData?.options]);
+    // Intro is only shown when collectDataUrl exists, so always go to WebView
+    dispatch({ type: 'SET_STEP', payload: 'collectDataWebView' });
+  }, [paymentData?.options]);
 
   const handleCollectDataNext = useCallback(() => {
     if (!paymentData?.collectData) {
@@ -301,8 +339,9 @@ export default function PaymentOptionsModal() {
       return;
     }
 
-    // Defensive validation for payment flows
-    if (paymentData.collectData) {
+    // Defensive validation for payment flows - skip if data was collected via WebView
+    const dataCollectedViaWebView = !!collectDataUrl;
+    if (paymentData.collectData && !dataCollectedViaWebView) {
       const missingFields = validateRequiredFields(
         paymentData.collectData.fields,
         state.collectedData,
@@ -500,6 +539,7 @@ export default function PaymentOptionsModal() {
     state.selectedOption,
     state.collectedData,
     paymentData,
+    collectDataUrl,
   ]);
 
   const renderContent = useCallback(() => {
@@ -524,6 +564,15 @@ export default function PaymentOptionsModal() {
             fieldErrors={state.fieldErrors}
             onUpdateField={updateCollectedField}
             onContinue={handleCollectDataNext}
+          />
+        );
+
+      case 'collectDataWebView':
+        return (
+          <CollectDataWebView
+            url={collectDataUrl!}
+            onComplete={handleWebViewComplete}
+            onError={handleWebViewError}
           />
         );
 
@@ -572,18 +621,23 @@ export default function PaymentOptionsModal() {
     handleIntroNext,
     updateCollectedField,
     handleCollectDataNext,
+    collectDataUrl,
+    handleWebViewComplete,
+    handleWebViewError,
     onSelectOption,
     onApprovePayment,
     onClose,
   ]);
 
+  // Show back button only when there's a previous step to go back to
+  const showBackButton =
+    state.step === 'collectDataWebView' ||
+    (state.step === 'confirm' && !!collectDataUrl);
+
   return (
     <ViewWrapper
       step={state.step}
-      hasCollectData={hasCollectData}
-      showBackButton={
-        !['intro', 'loading', 'confirming', 'result'].includes(state.step)
-      }
+      showBackButton={showBackButton}
       onBack={goBack}
       onClose={onClose}
     >

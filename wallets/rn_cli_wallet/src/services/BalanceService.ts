@@ -19,16 +19,25 @@ async function fetchBalanceForChain(
   const projectId = Config.ENV_PROJECT_ID;
   const origin = DeviceInfo.getBundleId();
 
-  LogStore.log('fetchBalanceForChain called', 'BalanceService', 'fetchBalanceForChain', {
-    address,
-    chainId,
-    baseUrl,
-    projectId: projectId ? '***' : 'MISSING',
-    origin,
-  });
+  LogStore.log(
+    'fetchBalanceForChain called',
+    'BalanceService',
+    'fetchBalanceForChain',
+    {
+      address,
+      chainId,
+      baseUrl,
+      projectId: projectId ? '***' : 'MISSING',
+      origin,
+    },
+  );
 
   if (!baseUrl || !projectId) {
-    LogStore.warn('Missing baseUrl or projectId, returning []', 'BalanceService', 'fetchBalanceForChain');
+    LogStore.warn(
+      'Missing baseUrl or projectId, returning []',
+      'BalanceService',
+      'fetchBalanceForChain',
+    );
     return [];
   }
 
@@ -39,7 +48,9 @@ async function fetchBalanceForChain(
   url.searchParams.set('st', 'walletkit');
   url.searchParams.set('sv', '1.0.0');
 
-  LogStore.log('Fetching URL', 'BalanceService', 'fetchBalanceForChain', { url: url.toString() });
+  LogStore.log('Fetching URL', 'BalanceService', 'fetchBalanceForChain', {
+    url: url.toString(),
+  });
 
   const response = await fetch(url.toString(), {
     headers: {
@@ -47,11 +58,16 @@ async function fetchBalanceForChain(
     },
   });
 
-  LogStore.log('Response received', 'BalanceService', 'fetchBalanceForChain', { status: response.status });
+  LogStore.log('Response received', 'BalanceService', 'fetchBalanceForChain', {
+    status: response.status,
+  });
 
   if (!response.ok) {
     const errorText = await response.text();
-    LogStore.error('Error response', 'BalanceService', 'fetchBalanceForChain', { status: response.status, body: errorText });
+    LogStore.error('Error response', 'BalanceService', 'fetchBalanceForChain', {
+      status: response.status,
+      body: errorText,
+    });
     throw new Error(
       `Failed to fetch balance for ${chainId}: ${response.status}`,
     );
@@ -84,10 +100,15 @@ export async function fetchBalancesForChains(
   address: string,
   chainIds: string[],
 ): Promise<FetchBalancesResult> {
-  LogStore.log('fetchBalancesForChains called', 'BalanceService', 'fetchBalancesForChains', {
-    address,
-    chainIds,
-  });
+  LogStore.log(
+    'fetchBalancesForChains called',
+    'BalanceService',
+    'fetchBalancesForChains',
+    {
+      address,
+      chainIds,
+    },
+  );
 
   const results = await Promise.allSettled(
     chainIds.map(chainId => fetchBalanceForChain(address, chainId)),
@@ -100,14 +121,24 @@ export async function fetchBalancesForChains(
     const chainId = chainIds[index];
     if (result.status === 'fulfilled') {
       anySuccess = true;
-      LogStore.log(`Chain ${chainId} succeeded`, 'BalanceService', 'fetchBalancesForChains', {
-        balancesCount: result.value.length,
-      });
+      LogStore.log(
+        `Chain ${chainId} succeeded`,
+        'BalanceService',
+        'fetchBalancesForChains',
+        {
+          balancesCount: result.value.length,
+        },
+      );
       allBalances.push(...result.value);
     } else {
-      LogStore.error(`Chain ${chainId} failed`, 'BalanceService', 'fetchBalancesForChains', {
-        error: serializeError(result.reason),
-      });
+      LogStore.error(
+        `Chain ${chainId} failed`,
+        'BalanceService',
+        'fetchBalancesForChains',
+        {
+          error: serializeError(result.reason),
+        },
+      );
     }
   });
 

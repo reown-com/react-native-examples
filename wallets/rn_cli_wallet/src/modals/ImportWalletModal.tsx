@@ -138,8 +138,7 @@ export default function ImportWalletModal() {
       });
       ModalStore.close();
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : 'Invalid input';
+      const message = error instanceof Error ? error.message : 'Invalid input';
       Toast.show({
         type: 'error',
         text1: 'Error',
