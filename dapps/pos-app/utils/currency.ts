@@ -1,22 +1,37 @@
 /**
  * Currency configuration for POS app
  */
+export type SymbolPosition = "left" | "right";
+
 export interface Currency {
   code: CurrencyCode;
   name: string;
   symbol: string;
   unit: string;
+  symbolPosition: SymbolPosition;
 }
 
 export type CurrencyCode = "USD" | "EUR";
 
 export const CURRENCIES: Currency[] = [
-  { code: "USD", name: "US Dollar", symbol: "$", unit: "iso4217/USD" },
-  { code: "EUR", name: "Euro", symbol: "€", unit: "iso4217/EUR" },
+  { code: "USD", name: "US Dollar", symbol: "$", unit: "iso4217/USD", symbolPosition: "left" },
+  { code: "EUR", name: "Euro", symbol: "€", unit: "iso4217/EUR", symbolPosition: "right" },
 ];
 
-export function getCurrency(code: CurrencyCode): Currency {
+export function getCurrency(code: string): Currency {
   return CURRENCIES.find((c) => c.code === code) ?? CURRENCIES[0];
+}
+
+/**
+ * Format amount with currency symbol in correct position
+ * @param amount - The numeric amount as a string (e.g., "10.00")
+ * @param currency - Currency object with symbol and position info
+ * @returns Formatted string (e.g., "$10.00" for USD, "10.00€" for EUR)
+ */
+export function formatAmountWithSymbol(amount: string, currency: Currency): string {
+  return currency.symbolPosition === "left"
+    ? `${currency.symbol}${amount}`
+    : `${amount}${currency.symbol}`;
 }
 
 /**
@@ -35,17 +50,10 @@ export function extractCurrencyCode(currency?: string): string {
 }
 
 /**
- * Get currency symbol from currency code
- */
-export function getCurrencySymbol(currencyCode: string): string {
-  return currencyCode === "EUR" ? "\u20AC" : "$";
-}
-
-/**
  * Format fiat amount from cents to display string
  * @param amount - Amount in cents (e.g., 1000 = $10.00)
  * @param currency - Currency in CAIP format (e.g., "iso4217/USD")
- * @returns Formatted string (e.g., "10.00$")
+ * @returns Formatted string (e.g., "$10.00" for USD, "10.00€" for EUR)
  */
 export function formatFiatAmount(amount?: number, currency?: string): string {
   if (amount === undefined) return "-";
@@ -53,12 +61,12 @@ export function formatFiatAmount(amount?: number, currency?: string): string {
   // Convert cents to dollars
   const value = amount / 100;
   const currencyCode = extractCurrencyCode(currency);
-  const symbol = getCurrencySymbol(currencyCode);
+  const currencyData = getCurrency(currencyCode);
 
   const formattedValue = value.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
 
-  return `${formattedValue}${symbol}`;
+  return formatAmountWithSymbol(formattedValue, currencyData);
 }

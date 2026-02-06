@@ -11,11 +11,13 @@ const STORAGE_KEY = 'WALLET_BALANCES';
 // Supported chains by the blockchain API for non-EIP155
 const TON_SUPPORTED_CHAINS = ['ton:-239'];
 const TRON_SUPPORTED_CHAINS = ['tron:0x2b6653dc'];
+const SUI_SUPPORTED_CHAINS = ['sui:mainnet'];
 
 export interface WalletAddresses {
-  eip155Address: string;
+  eip155Address?: string;
   tonAddress?: string;
   tronAddress?: string;
+  suiAddress?: string;
 }
 
 interface WalletState {
@@ -69,6 +71,7 @@ const MAINNET_NATIVE_TOKENS = {
   'eip155:1': { name: 'Ethereum', symbol: 'ETH', decimals: '18' },
   'ton:-239': { name: 'Toncoin', symbol: 'TON', decimals: '9' },
   'tron:0x2b6653dc': { name: 'TRON', symbol: 'TRX', decimals: '6' },
+  'sui:mainnet': { name: 'Sui', symbol: 'SUI', decimals: '9' },
 };
 
 /**
@@ -148,6 +151,24 @@ function processBalances(
     }
   }
 
+  // SUI on mainnet
+  if (addresses.suiAddress) {
+    const hasSuiMainnet = result.some(
+      b => b.chainId === 'sui:mainnet' && !b.address,
+    );
+    if (!hasSuiMainnet) {
+      result.push({
+        name: 'Sui',
+        symbol: 'SUI',
+        chainId: 'sui:mainnet',
+        value: 0,
+        price: 0,
+        quantity: { decimals: '9', numeric: '0' },
+        iconUrl: undefined,
+      });
+    }
+  }
+
   return result;
 }
 
@@ -165,7 +186,13 @@ const WalletStore = {
   },
 
   async fetchBalances(addresses: WalletAddresses) {
-    if (!addresses.eip155Address) {
+    // Early return if no addresses are available
+    if (
+      !addresses.eip155Address &&
+      !addresses.tonAddress &&
+      !addresses.tronAddress &&
+      !addresses.suiAddress
+    ) {
       return;
     }
 
@@ -175,9 +202,14 @@ const WalletStore = {
       // Fetch all balances in parallel for better performance and resilience
       const eip155ChainIds = Object.keys(EIP155_CHAINS);
 
-      const [eip155Result, tonResult, tronResult] = await Promise.all([
-        // EIP155 balances
-        fetchBalancesForChains(addresses.eip155Address, eip155ChainIds),
+      const [eip155Result, tonResult, tronResult, suiResult] = await Promise.all([
+        // EIP155 balances (or empty result if no address)
+        addresses.eip155Address
+          ? fetchBalancesForChains(addresses.eip155Address, eip155ChainIds)
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
         // TON balances (or empty result if no address)
         addresses.tonAddress
           ? fetchBalancesForChains(addresses.tonAddress, TON_SUPPORTED_CHAINS)
@@ -192,13 +224,21 @@ const WalletStore = {
               balances: [] as TokenBalance[],
               anySuccess: false,
             }),
+        // SUI balances (or empty result if no address)
+        addresses.suiAddress
+          ? fetchBalancesForChains(addresses.suiAddress, SUI_SUPPORTED_CHAINS)
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
       ]);
 
       // Only update state if at least one API call succeeded
       const anySuccess =
         eip155Result.anySuccess ||
         tonResult.anySuccess ||
-        tronResult.anySuccess;
+        tronResult.anySuccess ||
+        suiResult.anySuccess;
 
       if (!anySuccess) {
         return;
@@ -209,6 +249,7 @@ const WalletStore = {
         ...eip155Result.balances,
         ...tonResult.balances,
         ...tronResult.balances,
+        ...suiResult.balances,
       ];
 
       // Protect against API returning empty data when we have valid cached data
