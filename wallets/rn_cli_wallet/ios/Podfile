@@ -10,6 +10,8 @@ end
 # Use it to require both react-native's and this package's scripts:
 node_require('react-native/scripts/react_native_pods.rb')
 
+source 'https://github.com/CocoaPods/Specs.git'
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 

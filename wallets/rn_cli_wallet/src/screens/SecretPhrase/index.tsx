@@ -143,7 +143,8 @@ export default function SecretPhrase() {
         ]}
       >
         <Text variant="sm-500" color="text-primary">
-          Mnemonics and secret keys are provided for development purposes only and should not be used elsewhere
+          Mnemonics and secret keys are provided for development purposes only
+          and should not be used elsewhere
         </Text>
       </View>
       <SecretSection

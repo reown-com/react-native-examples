@@ -202,36 +202,40 @@ const WalletStore = {
       // Fetch all balances in parallel for better performance and resilience
       const eip155ChainIds = Object.keys(EIP155_CHAINS);
 
-      const [eip155Result, tonResult, tronResult, suiResult] = await Promise.all([
-        // EIP155 balances (or empty result if no address)
-        addresses.eip155Address
-          ? fetchBalancesForChains(addresses.eip155Address, eip155ChainIds)
-          : Promise.resolve({
-              balances: [] as TokenBalance[],
-              anySuccess: false,
-            }),
-        // TON balances (or empty result if no address)
-        addresses.tonAddress
-          ? fetchBalancesForChains(addresses.tonAddress, TON_SUPPORTED_CHAINS)
-          : Promise.resolve({
-              balances: [] as TokenBalance[],
-              anySuccess: false,
-            }),
-        // TRON balances (or empty result if no address)
-        addresses.tronAddress
-          ? fetchBalancesForChains(addresses.tronAddress, TRON_SUPPORTED_CHAINS)
-          : Promise.resolve({
-              balances: [] as TokenBalance[],
-              anySuccess: false,
-            }),
-        // SUI balances (or empty result if no address)
-        addresses.suiAddress
-          ? fetchBalancesForChains(addresses.suiAddress, SUI_SUPPORTED_CHAINS)
-          : Promise.resolve({
-              balances: [] as TokenBalance[],
-              anySuccess: false,
-            }),
-      ]);
+      const [eip155Result, tonResult, tronResult, suiResult] =
+        await Promise.all([
+          // EIP155 balances (or empty result if no address)
+          addresses.eip155Address
+            ? fetchBalancesForChains(addresses.eip155Address, eip155ChainIds)
+            : Promise.resolve({
+                balances: [] as TokenBalance[],
+                anySuccess: false,
+              }),
+          // TON balances (or empty result if no address)
+          addresses.tonAddress
+            ? fetchBalancesForChains(addresses.tonAddress, TON_SUPPORTED_CHAINS)
+            : Promise.resolve({
+                balances: [] as TokenBalance[],
+                anySuccess: false,
+              }),
+          // TRON balances (or empty result if no address)
+          addresses.tronAddress
+            ? fetchBalancesForChains(
+                addresses.tronAddress,
+                TRON_SUPPORTED_CHAINS,
+              )
+            : Promise.resolve({
+                balances: [] as TokenBalance[],
+                anySuccess: false,
+              }),
+          // SUI balances (or empty result if no address)
+          addresses.suiAddress
+            ? fetchBalancesForChains(addresses.suiAddress, SUI_SUPPORTED_CHAINS)
+            : Promise.resolve({
+                balances: [] as TokenBalance[],
+                anySuccess: false,
+              }),
+        ]);
 
       // Only update state if at least one API call succeeded
       const anySuccess =
