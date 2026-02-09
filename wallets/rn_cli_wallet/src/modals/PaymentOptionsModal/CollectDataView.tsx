@@ -1,3 +1,11 @@
+/**
+ * CollectDataView - Native form for collecting user data
+ *
+ * NOTE: This component is provided for developers who want to implement a custom UI
+ * for data collection. For most use cases, we recommend using the WebView-based
+ * data collection (CollectDataWebView) which provides a consistent, pre-built
+ * experience hosted by WalletConnect.
+ */
 import { useState, useRef } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';

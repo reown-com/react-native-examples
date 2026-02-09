@@ -73,6 +73,55 @@ export function formatAmount(
   return `${integerPart}.${trimmedFractional}`;
 }
 
+// ----- Currency Helpers -----
+
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  JPY: '¥',
+  CNY: '¥',
+  KRW: '₩',
+  INR: '₹',
+  RUB: '₽',
+  BRL: 'R$',
+  CAD: 'C$',
+  AUD: 'A$',
+  CHF: 'CHF',
+  HKD: 'HK$',
+  SGD: 'S$',
+  SEK: 'kr',
+  NOK: 'kr',
+  DKK: 'kr',
+  PLN: 'zł',
+  THB: '฿',
+  MXN: '$',
+  ZAR: 'R',
+  TRY: '₺',
+  ILS: '₪',
+  PHP: '₱',
+  MYR: 'RM',
+  IDR: 'Rp',
+  VND: '₫',
+  CZK: 'Kč',
+  HUF: 'Ft',
+  AED: 'د.إ',
+  SAR: '﷼',
+  NZD: 'NZ$',
+  TWD: 'NT$',
+  ARS: '$',
+  CLP: '$',
+  COP: '$',
+  PEN: 'S/',
+};
+
+export function getCurrencySymbol(currencyCode?: string): string {
+  if (!currencyCode) {
+    return '$';
+  }
+  return CURRENCY_SYMBOLS[currencyCode.toUpperCase()] || currencyCode;
+}
+
 // ----- Error Type Helpers -----
 
 export type ErrorType =

@@ -4,7 +4,7 @@ import type { PaymentInfo, PaymentOption } from '@walletconnect/pay';
 import { useTheme } from '@/hooks/useTheme';
 import LogStore from '@/store/LogStore';
 import { ActionButton } from '@/components/ActionButton';
-import { formatAmount } from './utils';
+import { formatAmount, getCurrencySymbol } from './utils';
 import { MerchantInfo } from './MerchantInfo';
 import SvgCaretUpDown from '@/assets/CaretUpDown';
 import { PresetsUtil } from '@/utils/PresetsUtil';
@@ -135,6 +135,7 @@ export function ConfirmPaymentView({
     info?.amount?.display?.decimals || 0,
     2,
   );
+  const currencySymbol = getCurrencySymbol(info?.amount?.display?.assetSymbol);
 
   const chainIcon = PresetsUtil.getIconLogoByName(
     selectedOption?.amount?.display?.networkName,
@@ -200,7 +201,8 @@ export function ConfirmPaymentView({
           Amount
         </Text>
         <Text variant="lg-400" color="text-primary">
-          ${amount}
+          {currencySymbol}
+          {amount}
         </Text>
       </View>
 
@@ -285,7 +287,8 @@ export function ConfirmPaymentView({
           disabled={isSigningPayment || isLoadingActions || !selectedOption}
           fullWidth
         >
-          Pay ${amount}
+          Pay {currencySymbol}
+          {amount}
         </ActionButton>
       </View>
     </>

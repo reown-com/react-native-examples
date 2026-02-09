@@ -13,7 +13,10 @@ export function getEnvironment(): Environment {
     if (bundleId.endsWith('.internal')) return 'internal';
     return 'production';
   } catch (error) {
-    console.warn('Failed to detect environment from bundle ID, defaulting to production', error);
+    console.warn(
+      'Failed to detect environment from bundle ID, defaulting to production',
+      error,
+    );
     return 'production';
   }
 }
