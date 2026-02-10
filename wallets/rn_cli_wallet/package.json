@@ -118,7 +118,7 @@
     "bip39@3.1.0": "patch:bip39@npm%3A3.1.0#./.yarn/patches/bip39-npm-3.1.0-03958ed434.patch",
     "glob": "10.5.0",
     "valibot": "1.2.0",
-    "tar": "7.5.2",
+    "tar": "7.5.7",
     "js-yaml": "4.1.1",
     "lodash": "4.17.23"
   },
