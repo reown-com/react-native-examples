@@ -39,7 +39,7 @@
     "@ton/core": "0.62.0",
     "@ton/crypto": "3.3.0",
     "@ton/ton": "15.4.0",
-    "@walletconnect/react-native-compat": "2.23.4-canary.2",
+    "@walletconnect/react-native-compat": "2.23.4-canary.3",
     "@zoontek/react-native-navigation-bar": "^1.0.2",
     "bip39": "3.1.0",
     "crc-32": "^1.2.2",
