@@ -29,3 +29,6 @@ fastlane/report.xml
 .expo
 .vercel
 .env*.local
+
+# Claude
+.claude

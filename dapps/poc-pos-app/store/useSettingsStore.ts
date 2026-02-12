@@ -32,6 +32,9 @@ interface SettingsStore {
   pinLockoutUntil: number | null;
   biometricEnabled: boolean;
 
+  // NFC settings
+  nfcEnabled: boolean;
+
   // Actions
   setThemeMode: (themeMode: "light" | "dark") => void;
   setDeviceId: (deviceId: string) => void;
@@ -49,6 +52,9 @@ interface SettingsStore {
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
 
+  // NFC actions
+  setNfcEnabled: (enabled: boolean) => void;
+
   getVariantPrinterLogo: () => string;
 }
 
@@ -64,6 +70,7 @@ export const useSettingsStore = create<SettingsStore>()(
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
+      nfcEnabled: true,
       setThemeMode: (themeMode: "light" | "dark") => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
@@ -138,6 +145,7 @@ export const useSettingsStore = create<SettingsStore>()(
         set({ pinFailedAttempts: 0, pinLockoutUntil: null }),
       setBiometricEnabled: (enabled: boolean) =>
         set({ biometricEnabled: enabled }),
+      setNfcEnabled: (enabled: boolean) => set({ nfcEnabled: enabled }),
 
       getVariantPrinterLogo: () => {
         return Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64;
@@ -145,7 +153,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 6,
+      version: 7,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -167,6 +175,10 @@ export const useSettingsStore = create<SettingsStore>()(
             persistedState.pinLockoutUntil ?? null;
           persistedState.biometricEnabled =
             persistedState.biometricEnabled ?? false;
+        }
+        if (version < 7) {
+          // Initialize NFC settings - defaults to true (enabled)
+          persistedState.nfcEnabled = persistedState.nfcEnabled ?? true;
         }
         return persistedState;
       },
