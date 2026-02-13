@@ -88,3 +88,12 @@ export type Chain = {
   namespace: string;
   rpcUrl: string;
 };
+
+
+// Payment Modal Flow
+export type Step =
+  | 'loading'
+  | 'collectData'
+  | 'confirm'
+  | 'confirming'
+  | 'result';
