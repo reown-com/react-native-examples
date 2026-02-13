@@ -213,6 +213,11 @@ const PaymentStore = {
   },
 
   async approvePayment() {
+    if (state.step === 'confirming') {
+      LogStore.warn('Payment already in progress', 'PaymentStore', 'approvePayment');
+      return;
+    }
+
     const { paymentActions, selectedOption, paymentOptions } = state;
 
     if (
