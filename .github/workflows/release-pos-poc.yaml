@@ -1,5 +1,5 @@
 name: Release Mobile POS (PoC)
-run-name: "Mobile POS (PoC) - ${{ inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }}"
+run-name: "Mobile POS (PoC) - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 Android' || inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }}"
 
 permissions:
   id-token: write
@@ -13,12 +13,13 @@ on:
         required: true
         type: choice
         options:
+          - both
           - android
           - ios
 
 jobs:
   release-android:
-    if: ${{ inputs.platform == 'android' }}
+    if: ${{ inputs.platform == 'android' || inputs.platform == 'both' }}
     uses: ./.github/workflows/release-android-base.yaml
     with:
       name: '(PoC) Mobile POS React Native'
@@ -41,7 +42,7 @@ jobs:
       firebase-url: ${{ vars.FIREBASE_POC_POS_URL }}
 
   release-ios:
-    if: ${{ inputs.platform == 'ios' }}
+    if: ${{ inputs.platform == 'ios' || inputs.platform == 'both' }}
     uses: ./.github/workflows/release-ios-base.yaml
     with:
       name: '(PoC) Mobile POS React Native'
