@@ -62,7 +62,6 @@ export default function PaymentOptionsModal() {
   }, [snap.step, snap.paymentOptions, snap.errorMessage, collectDataUrl]);
 
   const handleWebViewComplete = useCallback(() => {
-    PaymentStore.setDataCollectionSuccess(true);
     PaymentStore.setStep('confirm');
   }, []);
 
@@ -85,7 +84,7 @@ export default function PaymentOptionsModal() {
     switch (step) {
       case 'confirm':
         PaymentStore.clearSelectedOption();
-        if ((PaymentStore.state.paymentOptions?.collectData as { url?: string } | undefined)?.url) {
+        if (collectDataUrl) {
           PaymentStore.setStep('collectData');
         } else {
           onClose();
@@ -94,7 +93,7 @@ export default function PaymentOptionsModal() {
       default:
         onClose();
     }
-  }, [onClose]);
+  }, [onClose, collectDataUrl]);
 
   const onSelectOption = useCallback((option: PaymentOption) => {
     PaymentStore.selectOption(option);

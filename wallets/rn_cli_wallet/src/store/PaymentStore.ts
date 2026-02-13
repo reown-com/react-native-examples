@@ -24,8 +24,6 @@ interface PaymentState {
   paymentOptions: PaymentOptionsResponse | null;
   loadingMessage: string | null;
   errorMessage: string | null;
-  dataCollectionSuccess: boolean;
-
   // Step navigation
   step: Step;
 
@@ -48,8 +46,6 @@ const initialState: PaymentState = {
   paymentOptions: null,
   loadingMessage: null,
   errorMessage: null,
-  dataCollectionSuccess: false,
-
   step: 'loading',
   resultStatus: 'success',
   resultMessage: '',
@@ -103,11 +99,6 @@ const PaymentStore = {
     state.resultMessage = getErrorMessage(errorType, errorMessage);
     state.resultErrorType = errorType;
     state.step = 'result';
-  },
-
-  setDataCollectionSuccess(success: boolean) {
-    state.dataCollectionSuccess = success;
-    state.errorMessage = null;
   },
 
   reset() {
