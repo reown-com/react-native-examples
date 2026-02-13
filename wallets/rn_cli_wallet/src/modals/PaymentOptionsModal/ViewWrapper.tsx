@@ -10,9 +10,7 @@ import { Button } from '@/components/Button';
 
 type Step =
   | 'loading'
-  | 'intro'
   | 'collectData'
-  | 'collectDataWebView'
   | 'confirm'
   | 'confirming'
   | 'result';
@@ -20,6 +18,7 @@ type Step =
 interface ViewWrapperProps {
   children: React.ReactNode;
   step: Step;
+  isWebView: boolean;
   showBackButton: boolean;
   onBack: () => void;
   onClose: () => void;
@@ -30,6 +29,7 @@ const ANIMATION_DURATION = 250;
 export function ViewWrapper({
   children,
   step,
+  isWebView,
   showBackButton,
   onBack,
   onClose,
@@ -37,15 +37,12 @@ export function ViewWrapper({
   const Theme = useTheme();
   const insets = useSafeAreaInsets();
 
-  const isWebViewStep = step === 'collectDataWebView';
-
   const content = (
     <>
       {/* Header */}
-      <View style={[styles.header, isWebViewStep && styles.webViewHeader]}>
-        {/* Back Button - hidden in WebView step since X handles back */}
+      <View style={[styles.header, isWebView && styles.webViewHeader]}>
         <View style={styles.headerLeft}>
-          {showBackButton && !isWebViewStep && (
+          {showBackButton && !isWebView && (
             <Button
               onPress={onBack}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -62,18 +59,16 @@ export function ViewWrapper({
         {/* Spacer */}
         <View style={styles.headerCenter} />
 
-        {/* Close Button - in WebView step, X goes back instead of closing */}
+        {/* Close Button */}
         <View style={styles.headerRight}>
-          <ModalCloseButton onPress={isWebViewStep ? onBack : onClose} />
+          <ModalCloseButton onPress={onClose} />
         </View>
       </View>
 
       {/* Animated Content */}
       <Animated.View
         key={step}
-        style={
-          step === 'collectDataWebView' ? styles.webViewContent : undefined
-        }
+        style={isWebView ? styles.webViewContent : undefined}
         entering={FadeIn.duration(ANIMATION_DURATION)}
         exiting={FadeOut.duration(ANIMATION_DURATION)}
       >
@@ -82,7 +77,7 @@ export function ViewWrapper({
     </>
   );
 
-  if (isWebViewStep) {
+  if (isWebView) {
     return (
       <View
         style={[

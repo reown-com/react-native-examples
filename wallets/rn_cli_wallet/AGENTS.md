@@ -81,7 +81,7 @@ rn_cli_wallet/
 │   ├── store/
 │   │   ├── SettingsStore.ts     # App state (addresses, sessions)
 │   │   ├── ModalStore.ts        # Modal state
-│   │   └── PayStore.ts          # Payment state
+│   │   └── PaymentStore.ts      # Payment state
 │   ├── lib/                     # Chain-specific wallet implementations
 │   │   ├── EIP155Lib.ts         # Ethereum wallet (ethers.js)
 │   │   ├── SuiLib.ts            # Sui wallet
@@ -117,7 +117,7 @@ Uses **Valtio** (proxy-based reactive state):
 
 - **SettingsStore**: Wallet addresses, sessions, chain settings, device ID
 - **ModalStore**: Modal visibility and request data
-- **PayStore**: WalletConnect Pay state
+- **PaymentStore**: WalletConnect Pay state
 
 ### Navigation
 
@@ -345,5 +345,5 @@ npx tsc --noEmit      # Check for TypeScript errors
 - Use path aliases (`@/`) for imports
 - Handle all blockchain errors gracefully
 - Show toast notifications for user feedback
-- Log important events via `useLogs` hook
+- Log important events via `LogStore` (e.g., `LogStore.log()`, `LogStore.warn()`, `LogStore.error()`)
 - Test signing flows on testnets before mainnet
