@@ -16,14 +16,14 @@ async function getMerchantCredentials(): Promise<{
   apiKey: string;
 }> {
   const merchantId = useSettingsStore.getState().merchantId;
-  const apiKey = await useSettingsStore.getState().getMerchantApiKey();
+  const apiKey = await useSettingsStore.getState().getPartnerApiKey();
 
   if (!merchantId || merchantId.trim().length === 0) {
     throw new Error("Merchant ID is not configured");
   }
 
   if (!apiKey || apiKey.trim().length === 0) {
-    throw new Error("Merchant API key is not configured");
+    throw new Error("Partner API key is not configured");
   }
 
   return { merchantId, apiKey };

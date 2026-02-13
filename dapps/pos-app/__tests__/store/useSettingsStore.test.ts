@@ -34,9 +34,9 @@ describe("useSettingsStore", () => {
       expect(merchantId).toBeNull();
     });
 
-    it("should have isMerchantApiKeySet as false", () => {
-      const { isMerchantApiKeySet } = useSettingsStore.getState();
-      expect(isMerchantApiKeySet).toBe(false);
+    it("should have isPartnerApiKeySet as false", () => {
+      const { isPartnerApiKeySet } = useSettingsStore.getState();
+      expect(isPartnerApiKeySet).toBe(false);
     });
 
     it("should have zero failed PIN attempts", () => {
@@ -155,57 +155,57 @@ describe("useSettingsStore", () => {
     });
   });
 
-  describe("setMerchantApiKey / clearMerchantApiKey / getMerchantApiKey", () => {
+  describe("setPartnerApiKey / clearPartnerApiKey / getPartnerApiKey", () => {
     it("should store API key in secure storage", async () => {
-      const { setMerchantApiKey } = useSettingsStore.getState();
+      const { setPartnerApiKey } = useSettingsStore.getState();
 
-      await setMerchantApiKey("api-key-123");
+      await setPartnerApiKey("api-key-123");
 
-      expect(useSettingsStore.getState().isMerchantApiKeySet).toBe(true);
+      expect(useSettingsStore.getState().isPartnerApiKeySet).toBe(true);
       expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
-        "merchant_api_key",
+        "partner_api_key",
         "api-key-123",
       );
     });
 
     it("should retrieve API key from secure storage", async () => {
       // First store the key
-      await useSettingsStore.getState().setMerchantApiKey("api-key-456");
+      await useSettingsStore.getState().setPartnerApiKey("api-key-456");
 
       // Then retrieve it
-      const apiKey = await useSettingsStore.getState().getMerchantApiKey();
+      const apiKey = await useSettingsStore.getState().getPartnerApiKey();
 
       expect(apiKey).toBe("api-key-456");
     });
 
     it("should clear API key from secure storage", async () => {
       // First store a key
-      await useSettingsStore.getState().setMerchantApiKey("api-key-789");
-      expect(useSettingsStore.getState().isMerchantApiKeySet).toBe(true);
+      await useSettingsStore.getState().setPartnerApiKey("api-key-789");
+      expect(useSettingsStore.getState().isPartnerApiKeySet).toBe(true);
 
       // Clear it
-      await useSettingsStore.getState().clearMerchantApiKey();
+      await useSettingsStore.getState().clearPartnerApiKey();
 
-      expect(useSettingsStore.getState().isMerchantApiKeySet).toBe(false);
+      expect(useSettingsStore.getState().isPartnerApiKeySet).toBe(false);
       expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
-        "merchant_api_key",
+        "partner_api_key",
       );
     });
 
     it("should remove API key when setting null", async () => {
       // First store a key
-      await useSettingsStore.getState().setMerchantApiKey("api-key-to-remove");
+      await useSettingsStore.getState().setPartnerApiKey("api-key-to-remove");
 
       // Set to null
-      await useSettingsStore.getState().setMerchantApiKey(null);
+      await useSettingsStore.getState().setPartnerApiKey(null);
 
       expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
-        "merchant_api_key",
+        "partner_api_key",
       );
     });
 
     it("should return null when no API key is stored", async () => {
-      const apiKey = await useSettingsStore.getState().getMerchantApiKey();
+      const apiKey = await useSettingsStore.getState().getPartnerApiKey();
       expect(apiKey).toBeNull();
     });
   });
