@@ -86,7 +86,7 @@ export function ViewWrapper({
       <View
         style={[
           styles.fullscreenContainer,
-          { backgroundColor: Theme['bg-primary'], paddingTop: insets.top },
+          { backgroundColor: Theme['bg-primary'], paddingTop: insets.top, paddingBottom: insets.bottom },
         ]}
       >
         {content}
