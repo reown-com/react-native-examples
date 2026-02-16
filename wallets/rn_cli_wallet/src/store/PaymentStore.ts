@@ -37,6 +37,9 @@ interface PaymentState {
   paymentActions: any[] | null;
   isLoadingActions: boolean;
   actionsError: string | null;
+
+  // Tracks option IDs that have completed collectData
+  collectDataCompletedIds: string[];
 }
 
 /**
@@ -55,6 +58,7 @@ const initialState: PaymentState = {
   paymentActions: null,
   isLoadingActions: false,
   actionsError: null,
+  collectDataCompletedIds: [],
 };
 
 /**
@@ -136,6 +140,16 @@ const PaymentStore = {
     state.selectedOption = null;
     state.paymentActions = null;
     state.actionsError = null;
+  },
+
+  markCollectDataCompleted(optionId: string) {
+    if (!state.collectDataCompletedIds.includes(optionId)) {
+      state.collectDataCompletedIds.push(optionId);
+    }
+  },
+
+  isCollectDataCompleted(optionId: string): boolean {
+    return state.collectDataCompletedIds.includes(optionId);
   },
 
   setPaymentActions(actions: any[]) {
