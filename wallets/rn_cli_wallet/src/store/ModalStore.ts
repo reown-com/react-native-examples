@@ -1,6 +1,5 @@
 import { SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { proxy, ref } from 'valtio';
-import type { PaymentOptionsResponse } from '@walletconnect/pay';
 import { haptics } from '@/utils/haptics';
 
 /**
@@ -13,7 +12,6 @@ interface ModalData {
   authRequest?: SignClientTypes.EventArguments['session_authenticate'];
   loadingMessage?: string;
   errorMessage?: string;
-  paymentOptions?: PaymentOptionsResponse;
   session?: SessionTypes.Struct;
 }
 
@@ -60,7 +58,7 @@ const state = proxy<State>({
 const ModalStore = {
   state,
 
-  open(view: State['view'], data: State['data']) {
+  open(view: State['view'], data?: State['data']) {
     if (!disableHapticViews.includes(view)) {
       haptics.modalOpen();
     }

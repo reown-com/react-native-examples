@@ -19,6 +19,7 @@ import { usePairing } from '@/hooks/usePairing';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
+import LogStore from '@/store/LogStore';
 import { getEnvironment } from '@/utils/misc';
 import { toastConfig } from '@/components/ToastConfig';
 
@@ -86,6 +87,10 @@ const App = () => {
 
   const deeplinkHandler = useCallback(
     ({ url }: { url: string }) => {
+      LogStore.log('Deep link received', 'App', 'deeplinkHandler', {
+        url
+      });
+
       // 1. Link mode (wc_ev) - SDK handles it, just set the flag
       const isLinkMode = url.includes('wc_ev');
       SettingsStore.setIsLinkModeRequest(isLinkMode);
@@ -125,7 +130,9 @@ const App = () => {
         ModalStore.open('LoadingModal', {
           loadingMessage: 'Loading request...',
         });
+        return;
       }
+
     },
     [handleUriOrPaymentLink],
   );
@@ -151,10 +158,14 @@ const App = () => {
       deeplinkHandler({ url: initialUrl });
     }
 
+    LogStore.log('Setting up Linking listener', 'App', 'useEffect');
     const sub = Linking.addEventListener('url', deeplinkHandler);
 
     checkInitialUrl();
-    return () => sub.remove();
+    return () => {
+      LogStore.log('Removing Linking listener', 'App', 'useEffect');
+      sub.remove();
+    };
   }, [deeplinkHandler]);
 
   return (
