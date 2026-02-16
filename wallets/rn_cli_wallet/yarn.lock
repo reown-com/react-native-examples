@@ -4260,9 +4260,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/pay@npm:1.0.4":
-  version: 1.0.4
-  resolution: "@walletconnect/pay@npm:1.0.4"
+"@walletconnect/pay@npm:1.0.4-canary.0":
+  version: 1.0.4-canary.0
+  resolution: "@walletconnect/pay@npm:1.0.4-canary.0"
   dependencies:
     "@walletconnect/logger": 3.0.2
     "@walletconnect/types": 2.23.5
@@ -4273,13 +4273,13 @@ __metadata:
   peerDependenciesMeta:
     react-native:
       optional: true
-  checksum: 6ac56d803536bcc8afd3b6ae6c623101214ec8d67e1037f7126d1885c52b35d31424e4b8d3c99b4841fca966e6c827ef10351d0ddd5bf1f215793c44bd140ff8
+  checksum: 99c3943fece7e04dabb5cbf5147ef5d7c8a599c1ef42a4f0c3833706025a21dac3c9e4c1a39f7f2db2132e579ff52c5c8870dc74dc4dc7af6acaad647ef88e14
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.23.5":
-  version: 2.23.5
-  resolution: "@walletconnect/react-native-compat@npm:2.23.5"
+"@walletconnect/react-native-compat@npm:2.23.5-canary.0":
+  version: 2.23.5-canary.0
+  resolution: "@walletconnect/react-native-compat@npm:2.23.5-canary.0"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -4293,7 +4293,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: 09d07be80517bf1d4678a1f9974276b636ce285a09e69d8a628af6681e04b66101c1217082bb8a209a9a9ed2862e8697af75fc8c51d24f55c768d0ba962d7226
+  checksum: e741b7ee67d6a5cd7a91dc957c7c8c54e7644a3657744486bce56db03add12420f5c2b1e8682721a95265f7fa3603ba731178ba5249c8945d911c76202fed2fb
   languageName: node
   linkType: hard
 
@@ -4467,7 +4467,7 @@ __metadata:
     "@types/lodash.clonedeep": ^4.5.9
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
-    "@walletconnect/react-native-compat": 2.23.5
+    "@walletconnect/react-native-compat": 2.23.5-canary.0
     "@zoontek/react-native-navigation-bar": ^1.0.2
     babel-plugin-module-resolver: ^5.0.0
     bip39: 3.1.0

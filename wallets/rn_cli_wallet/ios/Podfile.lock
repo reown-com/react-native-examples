@@ -1811,7 +1811,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-compat (2.23.5):
+  - react-native-compat (2.23.5-canary.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -1839,7 +1839,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-    - YttriumWrapper (= 0.10.37)
+    - YttriumWrapper (= 0.10.40)
   - react-native-config (1.5.5):
     - react-native-config/App (= 1.5.5)
   - react-native-config/App (1.5.5):
@@ -3069,7 +3069,7 @@ PODS:
   - VisionCamera/React (4.7.2):
     - React-Core
   - Yoga (0.0.0)
-  - YttriumWrapper (0.10.37)
+  - YttriumWrapper (0.10.40)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -3413,7 +3413,7 @@ SPEC CHECKSUMS:
   React-logger: 30adf849117e87cf86e88dca1824bb0f18f87e10
   React-Mapbuffer: 499069c3dcd4b438a70fcc2a65e8a4185ea9170b
   React-microtasksnativemodule: f0238469cb9894fd18c419137d312665b8fc05b3
-  react-native-compat: 33720a178be8c565138dfdaa5d9d931f59786d2f
+  react-native-compat: 15386cd0e3059d55d58985cff53e3edaab14e4b0
   react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-keyboard-controller: f2ed31d12d9d8cb8ad2f9110c18fa5df499b66a3
@@ -3469,8 +3469,8 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   VisionCamera: 30b358b807324c692064f78385e9a732ce1bebfe
   Yoga: edeb9900b9e5bb5b27b9a6a2d5914e4fe4033c1b
-  YttriumWrapper: 2ae3722e8f07fde214725edd499679d03e7e86c9
+  YttriumWrapper: e99db26ea3ca6b4580933320e11e046f9607525a
 
 PODFILE CHECKSUM: c628b2429557a37c740a92f2f7ffe4c0bbb44669
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.16.2
