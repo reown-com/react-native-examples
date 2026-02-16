@@ -40,7 +40,7 @@
     "@ton/core": "0.62.0",
     "@ton/crypto": "3.3.0",
     "@ton/ton": "15.4.0",
-    "@walletconnect/react-native-compat": "2.23.5",
+    "@walletconnect/react-native-compat": "2.23.5-canary.0",
     "@zoontek/react-native-navigation-bar": "^1.0.2",
     "bip39": "3.1.0",
     "crc-32": "^1.2.2",
@@ -121,7 +121,8 @@
     "valibot": "1.2.0",
     "tar": "7.5.7",
     "js-yaml": "4.1.1",
-    "lodash": "4.17.23"
+    "lodash": "4.17.23",
+    "@walletconnect/pay": "1.0.4-canary.0"
   },
   "packageManager": "yarn@3.8.7"
 }

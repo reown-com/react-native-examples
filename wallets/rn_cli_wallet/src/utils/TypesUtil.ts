@@ -97,3 +97,9 @@ export type Step =
   | 'confirm'
   | 'confirming'
   | 'result';
+
+// Extended PaymentOption with per-option collectData (SDK types not yet updated)
+import type { PaymentOption, CollectDataAction } from '@walletconnect/pay';
+export interface PaymentOptionWithCollectData extends PaymentOption {
+  collectData?: CollectDataAction;
+}

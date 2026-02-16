@@ -2,41 +2,30 @@ import { View, Image, StyleSheet, ScrollView } from 'react-native';
 import type { PaymentInfo, PaymentOption } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
-import LogStore from '@/store/LogStore';
 import { ActionButton } from '@/components/ActionButton';
 import { formatAmount, getCurrencySymbol } from './utils';
 import { MerchantInfo } from './MerchantInfo';
-import SvgCaretUpDown from '@/assets/CaretUpDown';
 import { PresetsUtil } from '@/utils/PresetsUtil';
-import { useCallback, useEffect, useState } from 'react';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import { useCallback } from 'react';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { Button } from '@/components/Button';
+import type { PaymentOptionWithCollectData } from '@/utils/TypesUtil';
 
-const OPTION_HEIGHT = 64;
 const OPTION_GAP = 8;
-const COLLAPSED_HEIGHT = 0;
-const ANIMATION_DURATION = 250;
+const MAX_VISIBLE_OPTIONS = 4;
+const OPTION_HEIGHT = 64;
 
 // ----- Option Item Component -----
 
 interface OptionItemProps {
   option: PaymentOption;
   isSelected: boolean;
+  hasCollectData: boolean;
   onSelect: (option: PaymentOption) => void;
 }
 
-/**
- * Individual payment option item component.
- * Displays the amount, asset symbol, network name, and selection state.
- */
-function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
+function OptionItem({ option, isSelected, hasCollectData, onSelect }: OptionItemProps) {
   const Theme = useTheme();
 
   const amount = formatAmount(
@@ -85,22 +74,19 @@ function OptionItem({ option, isSelected, onSelect }: OptionItemProps) {
         <Text variant="lg-400" color="text-primary">
           {amount} {option.amount.display.assetSymbol}
         </Text>
-      </View>
-      {isSelected && (
-        <View
-          style={[
-            styles.radioOuter,
-            { borderColor: Theme['bg-accent-primary'] },
-          ]}
-        >
+        {hasCollectData && (
           <View
             style={[
-              styles.radioInner,
-              { backgroundColor: Theme['bg-accent-primary'] },
+              styles.collectDataPill,
+              { backgroundColor: Theme['foreground-accent-secondary-10'] },
             ]}
-          />
-        </View>
-      )}
+          >
+            <Text variant="sm-500" color="text-accent-secondary">
+              Info required
+            </Text>
+          </View>
+        )}
+      </View>
     </Button>
   );
 }
@@ -116,6 +102,8 @@ interface ConfirmPaymentViewProps {
   onSelectOption: (option: PaymentOption) => void;
   onApprove: () => void;
   info?: PaymentInfo;
+  showNextButton: boolean;
+  collectDataCompletedIds: string[];
 }
 
 export function ConfirmPaymentView({
@@ -126,63 +114,32 @@ export function ConfirmPaymentView({
   onApprove,
   info,
   isLoadingActions,
+  showNextButton,
+  collectDataCompletedIds,
 }: ConfirmPaymentViewProps) {
   const Theme = useTheme();
-  const [isExpanded, setIsExpanded] = useState(false);
 
-  const amount = formatAmount(
+  const payAmount = formatAmount(
     info?.amount?.value || '0',
     info?.amount?.display?.decimals || 0,
     2,
   );
   const currencySymbol = getCurrencySymbol(info?.amount?.display?.assetSymbol);
 
-  const chainIcon = PresetsUtil.getIconLogoByName(
-    selectedOption?.amount?.display?.networkName,
-  );
+  const selectedCompleted =
+    selectedOption && collectDataCompletedIds.includes(selectedOption.id);
+  const visibleOptions = selectedCompleted
+    ? options.filter(o => o.id === selectedOption.id)
+    : options;
 
-  // Calculate max height based on number of options (max 4 visible, then scroll)
-  const maxVisibleOptions = 4;
-  const optionsCount = options.length;
-  const visibleCount = Math.min(optionsCount, maxVisibleOptions);
-  const calculatedHeight =
-    visibleCount * OPTION_HEIGHT + (visibleCount - 1) * OPTION_GAP;
-
-  const expandedHeight = useSharedValue(COLLAPSED_HEIGHT);
-
-  useEffect(() => {
-    expandedHeight.value = withTiming(
-      isExpanded ? calculatedHeight : COLLAPSED_HEIGHT,
-      {
-        duration: ANIMATION_DURATION,
-        easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-      },
-    );
-  }, [isExpanded, calculatedHeight, expandedHeight]);
-
-  const animatedContainerStyle = useAnimatedStyle(() => ({
-    height: expandedHeight.value,
-    opacity: expandedHeight.value > 0 ? 1 : 0,
-  }));
-
-  const toggleExpanded = useCallback(() => {
-    LogStore.log(
-      'Toggle payment options',
-      'ConfirmPaymentView',
-      'toggleExpanded',
-      {
-        optionsLength: options.length,
-      },
-    );
-    if (options.length > 1) {
-      setIsExpanded(prev => !prev);
-    }
-  }, [options.length]);
+  const visibleCount = visibleOptions.length;
+  const scrollable = visibleCount > MAX_VISIBLE_OPTIONS;
+  const listMaxHeight =
+    MAX_VISIBLE_OPTIONS * OPTION_HEIGHT + (MAX_VISIBLE_OPTIONS - 1) * OPTION_GAP;
 
   const handleSelectOption = useCallback(
     (option: PaymentOption) => {
       onSelectOption(option);
-      setIsExpanded(false);
     },
     [onSelectOption],
   );
@@ -191,94 +148,25 @@ export function ConfirmPaymentView({
     <>
       <MerchantInfo info={info} />
 
-      <View
-        style={[
-          styles.amountRow,
-          { backgroundColor: Theme['foreground-primary'] },
-        ]}
+      <ScrollView
+        style={[styles.optionsList, scrollable && { maxHeight: listMaxHeight }]}
+        contentContainerStyle={styles.optionsListContent}
+        showsVerticalScrollIndicator={scrollable}
+        nestedScrollEnabled
       >
-        <Text variant="lg-400" color="text-tertiary">
-          Amount
-        </Text>
-        <Text variant="lg-400" color="text-primary">
-          {currencySymbol}
-          {amount}
-        </Text>
-      </View>
-
-      <View
-        style={[
-          styles.payWithContainer,
-          isExpanded && styles.payWithContainerExpanded,
-          { backgroundColor: Theme['foreground-primary'] },
-        ]}
-      >
-        <Button
-          style={styles.payWithRow}
-          onPress={toggleExpanded}
-          disabled={options.length <= 1}
-        >
-          <Text variant="lg-400" color="text-tertiary">
-            Pay with
-          </Text>
-          <View style={styles.optionCard}>
-            <Text variant="lg-400" color="text-primary">
-              {formatAmount(
-                selectedOption?.amount?.value || '0',
-                selectedOption?.amount?.display?.decimals || 0,
-                2,
-              )}{' '}
-              {selectedOption?.amount?.display?.assetSymbol}
-            </Text>
-            {selectedOption?.amount?.display?.iconUrl && (
-              <View>
-                <Image
-                  source={{
-                    uri: selectedOption?.amount?.display?.iconUrl,
-                    cache: 'force-cache',
-                  }}
-                  style={styles.selectedOptionIcon}
-                />
-                <Image
-                  source={chainIcon}
-                  style={[
-                    styles.selectedOptionChainIcon,
-                    { borderColor: Theme['foreground-primary'] },
-                  ]}
-                />
-              </View>
-            )}
-            {options.length > 1 && (
-              <SvgCaretUpDown
-                width={20}
-                height={20}
-                fill={Theme['text-primary']}
-              />
-            )}
-          </View>
-        </Button>
-
-        {/* Expandable Options List */}
-        <Animated.View
-          style={[styles.optionsContainer, animatedContainerStyle]}
-        >
-          <ScrollView
-            style={styles.optionsScrollView}
-            contentContainerStyle={styles.optionsScrollContent}
-            showsVerticalScrollIndicator={optionsCount > maxVisibleOptions}
-            nestedScrollEnabled
-          >
-            {options.map(option => (
-              <OptionItem
-                key={option.id}
-                option={option}
-                isSelected={option.id === selectedOption?.id}
-                onSelect={handleSelectOption}
-              />
-            ))}
-          </ScrollView>
-        </Animated.View>
-      </View>
+        {visibleOptions.map(option => (
+          <OptionItem
+            key={option.id}
+            option={option}
+            isSelected={option.id === selectedOption?.id}
+            hasCollectData={
+              !!(option as PaymentOptionWithCollectData).collectData?.url &&
+              !collectDataCompletedIds.includes(option.id)
+            }
+            onSelect={handleSelectOption}
+          />
+        ))}
+      </ScrollView>
 
       {/* Action Buttons */}
       <View style={styles.buttonContainer}>
@@ -287,8 +175,7 @@ export function ConfirmPaymentView({
           disabled={isSigningPayment || isLoadingActions || !selectedOption}
           fullWidth
         >
-          Pay {currencySymbol}
-          {amount}
+          {showNextButton ? 'Next' : `Pay ${currencySymbol}${payAmount}`}
         </ActionButton>
       </View>
     </>
@@ -296,36 +183,12 @@ export function ConfirmPaymentView({
 }
 
 const styles = StyleSheet.create({
-  amountRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing[5],
-    height: Spacing[13],
-    borderRadius: BorderRadius[5],
-    marginBottom: Spacing[2],
-    marginTop: Spacing[5],
+  optionsList: {
+    marginTop: Spacing[4],
+    flexGrow: 0,
   },
-  payWithContainer: {
-    borderRadius: BorderRadius[5],
-  },
-  payWithContainerExpanded: {
-    paddingBottom: Spacing[3],
-  },
-  payWithRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: Spacing[13],
-    paddingHorizontal: Spacing[5],
-  },
-  optionsContainer: {
-    maxHeight: 300,
-  },
-  optionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing[2],
+  optionsListContent: {
+    gap: OPTION_GAP,
   },
   optionItem: {
     flexDirection: 'row',
@@ -338,24 +201,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing[2],
+    flex: 1,
+  },
+  collectDataPill: {
+    paddingHorizontal: Spacing[2],
+    paddingVertical: 2,
+    borderRadius: BorderRadius.full,
+    marginLeft: 'auto',
   },
   optionIconContainer: {
     width: Spacing[8],
     height: Spacing[8],
-  },
-  selectedOptionIcon: {
-    width: Spacing[6],
-    height: Spacing[6],
-    borderRadius: BorderRadius.full,
-  },
-  selectedOptionChainIcon: {
-    height: 14,
-    width: 14,
-    position: 'absolute',
-    borderRadius: BorderRadius.full,
-    borderWidth: 2,
-    right: -1,
-    bottom: -2,
   },
   optionIcon: {
     width: Spacing[8],
@@ -371,28 +227,9 @@ const styles = StyleSheet.create({
     right: -2,
     bottom: -2,
   },
-  radioOuter: {
-    height: 22,
-    width: 22,
-    borderWidth: 1,
-    borderRadius: BorderRadius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioInner: {
-    height: Spacing[3],
-    width: Spacing[3],
-    borderRadius: BorderRadius.full,
-  },
-  optionsScrollView: {
-    flex: 1,
-  },
-  optionsScrollContent: {
-    gap: OPTION_GAP,
-    paddingHorizontal: Spacing[5],
-  },
   buttonContainer: {
     marginTop: Spacing[5],
+    marginBottom: Spacing[2],
     gap: Spacing[2],
   },
 });

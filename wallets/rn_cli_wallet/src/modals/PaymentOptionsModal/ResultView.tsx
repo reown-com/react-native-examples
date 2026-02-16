@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
   },
   footerContainer: {
     paddingTop: Spacing[11],
+    marginBottom: Spacing[2],
     alignItems: 'center',
   },
 });

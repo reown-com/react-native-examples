@@ -22,6 +22,7 @@ interface ViewWrapperProps {
   showBackButton: boolean;
   onBack: () => void;
   onClose: () => void;
+  headerLeftContent?: React.ReactNode;
 }
 
 const ANIMATION_DURATION = 250;
@@ -33,6 +34,7 @@ export function ViewWrapper({
   showBackButton,
   onBack,
   onClose,
+  headerLeftContent,
 }: ViewWrapperProps) {
   const Theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -41,8 +43,8 @@ export function ViewWrapper({
     <>
       {/* Header */}
       <View style={[styles.header, isWebView && styles.webViewHeader]}>
-        <View style={styles.headerLeft}>
-          {showBackButton && !isWebView && (
+        <View style={headerLeftContent ? styles.headerLeftFlex : styles.headerLeft}>
+          {showBackButton ? (
             <Button
               onPress={onBack}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -53,7 +55,9 @@ export function ViewWrapper({
                 fill={Theme['text-primary']}
               />
             </Button>
-          )}
+          ) : headerLeftContent ? (
+            headerLeftContent
+          ) : null}
         </View>
 
         {/* Spacer */}
@@ -82,7 +86,7 @@ export function ViewWrapper({
       <View
         style={[
           styles.fullscreenContainer,
-          { backgroundColor: Theme['bg-primary'], paddingTop: insets.top },
+          { backgroundColor: Theme['bg-primary'], paddingTop: insets.top, paddingBottom: insets.bottom },
         ]}
       >
         {content}
@@ -123,6 +127,11 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     width: 38,
+    height: 38,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  headerLeftFlex: {
     height: 38,
     alignItems: 'flex-start',
     justifyContent: 'center',

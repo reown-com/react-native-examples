@@ -1,24 +1,34 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { useSnapshot } from 'valtio';
 
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import PaymentStore from '@/store/PaymentStore';
 import type { PaymentOption } from '@walletconnect/pay';
+import type { PaymentOptionWithCollectData } from '@/utils/TypesUtil';
+import { useTheme } from '@/hooks/useTheme';
+import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
+import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
 
 import { LoadingView } from './LoadingView';
 import { CollectDataWebView } from './CollectDataWebView';
 import { ConfirmPaymentView } from './ConfirmPaymentView';
+import { InfoExplainerView } from './InfoExplainerView';
 import { ResultView } from './ResultView';
 import { ViewWrapper } from './ViewWrapper';
 import { detectErrorType, getErrorMessage } from './utils';
 
 export default function PaymentOptionsModal() {
   const snap = useSnapshot(PaymentStore.state);
+  const Theme = useTheme();
+  const [showInfoExplainer, setShowInfoExplainer] = useState(false);
 
-  const collectDataUrl = snap.paymentOptions?.collectData?.url;
+  const selectedOptionCollectDataUrl = (
+    snap.selectedOption as PaymentOptionWithCollectData | null
+  )?.collectData?.url;
 
-  // Transition from loading to the next step when data is available
   useEffect(() => {
     if (snap.step === 'loading') {
       if (snap.errorMessage) {
@@ -35,7 +45,6 @@ export default function PaymentOptionsModal() {
           errorType,
         });
       } else if (snap.paymentOptions) {
-        // Check for empty options
         if (!snap.paymentOptions.options || snap.paymentOptions.options.length === 0) {
           LogStore.warn(
             'No payment options available',
@@ -49,19 +58,17 @@ export default function PaymentOptionsModal() {
             message: getErrorMessage('insufficient_funds'),
           });
         } else {
-          if (collectDataUrl) {
-            // Collect data via WebView (intro is handled inside the WebView)
-            PaymentStore.setStep('collectData');
-          } else {
-            // No collect data needed, go directly to confirm
-            PaymentStore.setStep('confirm');
-          }
+          PaymentStore.setStep('confirm');
         }
       }
     }
-  }, [snap.step, snap.paymentOptions, snap.errorMessage, collectDataUrl]);
+  }, [snap.step, snap.paymentOptions, snap.errorMessage]);
 
   const handleWebViewComplete = useCallback(() => {
+    const { selectedOption } = PaymentStore.state;
+    if (selectedOption) {
+      PaymentStore.markCollectDataCompleted(selectedOption.id);
+    }
     PaymentStore.setStep('confirm');
   }, []);
 
@@ -82,30 +89,41 @@ export default function PaymentOptionsModal() {
   const goBack = useCallback(() => {
     const { step } = PaymentStore.state;
     switch (step) {
+      case 'collectData':
+        PaymentStore.setStep('confirm');
+        break;
       case 'confirm':
-        PaymentStore.clearSelectedOption();
-        if (collectDataUrl) {
-          PaymentStore.setStep('collectData');
-        } else {
-          onClose();
-        }
+        onClose();
         break;
       default:
         onClose();
     }
-  }, [onClose, collectDataUrl]);
+  }, [onClose]);
 
   const onSelectOption = useCallback((option: PaymentOption) => {
     PaymentStore.selectOption(option);
     PaymentStore.fetchPaymentActions(option);
   }, []);
 
-  // Auto-select first payment option when entering confirm step
+  const handleConfirmOrNext = useCallback(() => {
+    const { selectedOption, collectDataCompletedIds } = PaymentStore.state;
+    if (!selectedOption) return;
+
+    const option = selectedOption as PaymentOptionWithCollectData;
+    const needsCollectData = !!option.collectData?.url;
+    const alreadyCompleted = collectDataCompletedIds.includes(option.id);
+
+    if (needsCollectData && !alreadyCompleted) {
+      PaymentStore.setStep('collectData');
+    } else {
+      PaymentStore.approvePayment();
+    }
+  }, []);
+
   useEffect(() => {
     if (snap.step === 'confirm') {
       const options = snap.paymentOptions?.options || [];
 
-      // Fallback check (main check is in useEffect)
       if (options.length === 0) {
         PaymentStore.setResult({
           status: 'error',
@@ -121,7 +139,17 @@ export default function PaymentOptionsModal() {
     }
   }, [snap.step, snap.paymentOptions?.options, snap.selectedOption, onSelectOption]);
 
+  const selectedNeedsCollectData = !!(
+    snap.selectedOption &&
+    (snap.selectedOption as PaymentOptionWithCollectData).collectData?.url &&
+    !snap.collectDataCompletedIds.includes(snap.selectedOption.id)
+  );
+
   const renderContent = useCallback(() => {
+    if (showInfoExplainer) {
+      return <InfoExplainerView onDismiss={() => setShowInfoExplainer(false)} />;
+    }
+
     switch (snap.step) {
       case 'loading':
         return (
@@ -133,7 +161,7 @@ export default function PaymentOptionsModal() {
       case 'collectData':
         return (
           <CollectDataWebView
-            url={collectDataUrl!}
+            url={selectedOptionCollectDataUrl!}
             onComplete={handleWebViewComplete}
             onError={handleWebViewError}
           />
@@ -149,7 +177,9 @@ export default function PaymentOptionsModal() {
             isSigningPayment={false}
             error={snap.actionsError}
             onSelectOption={onSelectOption}
-            onApprove={PaymentStore.approvePayment}
+            onApprove={handleConfirmOrNext}
+            showNextButton={selectedNeedsCollectData}
+            collectDataCompletedIds={snap.collectDataCompletedIds as string[]}
           />
         );
 
@@ -179,26 +209,56 @@ export default function PaymentOptionsModal() {
     snap.resultMessage,
     snap.loadingMessage,
     snap.paymentOptions,
-    collectDataUrl,
+    snap.collectDataCompletedIds,
+    selectedOptionCollectDataUrl,
+    selectedNeedsCollectData,
+    showInfoExplainer,
     handleWebViewComplete,
     handleWebViewError,
+    handleConfirmOrNext,
     onSelectOption,
     onClose,
   ]);
 
-  // Show back button when there's a previous step to go back to
-  const showBackButton = snap.step === 'confirm' && !!collectDataUrl;
-  const isWebView = snap.step === 'collectData' && !!collectDataUrl;
+  const showBackButton = snap.step === 'collectData';
+  const isWebView = snap.step === 'collectData' && !!selectedOptionCollectDataUrl;
+
+  const headerLeftContent =
+    snap.step === 'confirm' && selectedNeedsCollectData && !showInfoExplainer ? (
+      <Button
+        onPress={() => setShowInfoExplainer(true)}
+        style={[
+          styles.infoButton,
+          { borderColor: Theme['border-secondary'] },
+        ]}
+      >
+        <Text variant="sm-500" color="text-primary">
+          Why info required?
+        </Text>
+      </Button>
+    ) : undefined;
 
   return (
     <ViewWrapper
-      step={snap.step}
+      step={showInfoExplainer ? 'confirm' : snap.step}
       isWebView={isWebView}
       showBackButton={showBackButton}
       onBack={goBack}
-      onClose={onClose}
+      onClose={showInfoExplainer ? () => setShowInfoExplainer(false) : onClose}
+      headerLeftContent={headerLeftContent}
     >
       {renderContent()}
     </ViewWrapper>
   );
 }
+
+const styles = StyleSheet.create({
+  infoButton: {
+    borderRadius: BorderRadius[3],
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing[3],
+    paddingVertical: Spacing[2] + 2,
+  },
+});
