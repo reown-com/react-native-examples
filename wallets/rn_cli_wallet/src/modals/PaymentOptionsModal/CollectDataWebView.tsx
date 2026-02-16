@@ -12,6 +12,21 @@ import { Spacing } from '@/utils/ThemeUtil';
 import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 
+// Forces the page to fit within the WebView viewport without scrolling
+const FIT_CONTENT_JS = `
+  (function() {
+    var meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'viewport';
+      document.head.appendChild(meta);
+    }
+    meta.content = 'width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=yes';
+    document.body.style.overflow = 'hidden';
+  })();
+  true;
+`;
+
 function getBaseUrl(urlString: string): string {
   try {
     const urlObj = new URL(urlString);
@@ -209,8 +224,9 @@ export function CollectDataWebView({
         javaScriptEnabled
         domStorageEnabled
         startInLoadingState
-        scalesPageToFit
+        scalesPageToFit={true}
         showsVerticalScrollIndicator={false}
+        injectedJavaScript={FIT_CONTENT_JS}
       />
     </View>
   );
