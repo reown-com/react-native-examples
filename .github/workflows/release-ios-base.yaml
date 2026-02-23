@@ -94,6 +94,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Select Xcode 26 (iOS 26 SDK)
+        run: sudo xcode-select -s /Applications/Xcode_26.2.app/Contents/Developer
+
       - name: webfactory/ssh-agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
