@@ -4,10 +4,13 @@ import { WebView, WebViewNavigation } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { btoa } from 'react-native-quick-base64';
 
+import { useSnapshot } from 'valtio';
+
 import { useTheme } from '@/hooks/useTheme';
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
 import LogStore from '@/store/LogStore';
+import SettingsStore from '@/store/SettingsStore';
 
 function getBaseUrl(urlString: string): string {
   try {
@@ -24,16 +27,27 @@ const PREFILL_DATA = {
   dob: '1990-06-15',
 };
 
-function buildUrlWithPrefill(baseUrl: string): string {
+function buildUrlWithPrefill(
+  baseUrl: string,
+  themeMode: 'light' | 'dark',
+): string {
   const prefillJson = JSON.stringify(PREFILL_DATA);
   const prefillBase64 = btoa(prefillJson);
 
-  if (baseUrl.includes('prefill=')) {
-    return baseUrl.replace(/prefill=([^&]*)/, `prefill=${prefillBase64}`);
+  let result = baseUrl;
+
+  if (result.includes('prefill=')) {
+    result = result.replace(/prefill=([^&]*)/, `prefill=${prefillBase64}`);
+  } else {
+    const separator = result.includes('?') ? '&' : '?';
+    result = `${result}${separator}prefill=${prefillBase64}`;
   }
 
-  const separator = baseUrl.includes('?') ? '&' : '?';
-  return `${baseUrl}${separator}prefill=${prefillBase64}`;
+  // Append theme param based on wallet config
+  const theme = themeMode === 'dark' ? 'dark' : 'light';
+  result += `&theme=${theme}`;
+
+  return result;
 }
 
 interface CollectDataWebViewProps {
@@ -48,18 +62,19 @@ export function CollectDataWebView({
   onError,
 }: CollectDataWebViewProps) {
   const Theme = useTheme();
+  const { themeMode } = useSnapshot(SettingsStore.state);
   const webViewRef = useRef<WebView>(null);
   const [isLoading, setIsLoading] = useState(true);
   const isMountedRef = useRef(true);
 
   const finalUrl = useMemo(() => {
-    const urlWithPrefill = buildUrlWithPrefill(url);
+    const urlWithPrefill = buildUrlWithPrefill(url, themeMode);
     LogStore.log('WebView URL with prefill', 'CollectDataWebView', 'finalUrl', {
       originalUrl: url,
       finalUrl: urlWithPrefill,
     });
     return urlWithPrefill;
-  }, [url]);
+  }, [url, themeMode]);
 
   useEffect(() => {
     isMountedRef.current = true;
