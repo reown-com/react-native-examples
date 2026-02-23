@@ -158,13 +158,13 @@ export default function SettingsScreen() {
     closeSheet();
   };
 
-  const handleMerchantIdSave = () => {
-    handleMerchantIdConfirm();
+  const handleMerchantIdSave = async () => {
+    await handleMerchantIdConfirm();
     closeSheet();
   };
 
-  const handlePartnerApiKeySave = () => {
-    handlePartnerApiKeyConfirm();
+  const handlePartnerApiKeySave = async () => {
+    await handlePartnerApiKeyConfirm();
     closeSheet();
   };
 
