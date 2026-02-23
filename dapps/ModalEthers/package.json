@@ -69,7 +69,7 @@
     "elliptic": "^6.6.1",
     "braces": "^3.0.3",
     "semver": "^7.5.2",
-    "tar": "^6.2.1",
+    "tar": "7.5.7",
     "send": "^0.19.0",
     "serve-static": "^1.16.0",
     "react-devtools-core": "^4.28.4",
