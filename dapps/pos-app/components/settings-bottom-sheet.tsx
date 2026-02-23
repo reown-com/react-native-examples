@@ -2,7 +2,7 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -10,9 +10,18 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { Button } from "./button";
 import { FramedModal } from "./framed-modal";
 import { ThemedText } from "./themed-text";
+
+const ANIMATION_DURATION = 200;
+const EASING = Easing.inOut(Easing.ease);
 
 interface SettingsBottomSheetProps {
   visible: boolean;
@@ -30,6 +39,27 @@ export function SettingsBottomSheet({
   const Theme = useTheme();
   const [assets] = useAssets([require("@/assets/images/close.png")]);
 
+  const translateY = useSharedValue(300);
+
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    if (visible) {
+      translateY.value = withTiming(0, {
+        duration: ANIMATION_DURATION,
+        easing: EASING,
+      });
+    } else {
+      translateY.value = withTiming(300, {
+        duration: ANIMATION_DURATION,
+        easing: EASING,
+      });
+    }
+  }, [visible]);
+
+  const sheetAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
   return (
     <FramedModal visible={visible} onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
@@ -37,15 +67,17 @@ export function SettingsBottomSheet({
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.keyboardAvoid}
         >
-          <Pressable
-            onPress={(e) => e.stopPropagation()}
+          <Animated.View
             style={[
               styles.sheet,
-              {
-                backgroundColor: Theme["bg-primary"],
-              },
+              { backgroundColor: Theme["bg-primary"] },
+              sheetAnimatedStyle,
             ]}
           >
+            <Pressable
+              onPress={(e) => e.stopPropagation()}
+              style={styles.sheetContent}
+            >
             <View style={styles.header}>
               <View style={styles.headerSpacer} />
               <ThemedText
@@ -75,7 +107,8 @@ export function SettingsBottomSheet({
               </Button>
             </View>
             {children}
-          </Pressable>
+            </Pressable>
+          </Animated.View>
         </KeyboardAvoidingView>
       </Pressable>
     </FramedModal>
@@ -94,13 +127,15 @@ const styles = StyleSheet.create({
   sheet: {
     borderTopLeftRadius: BorderRadius["8"],
     borderTopRightRadius: BorderRadius["8"],
-    padding: Spacing["spacing-5"],
-    gap: Spacing["spacing-7"],
     shadowColor: "#000",
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.04,
     shadowRadius: 20,
     elevation: 4,
+  },
+  sheetContent: {
+    padding: Spacing["spacing-5"],
+    gap: Spacing["spacing-7"],
   },
   header: {
     flexDirection: "row",
@@ -125,7 +160,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeIcon: {
-    width: 14,
-    height: 14,
+    width: 20,
+    height: 20,
   },
 });

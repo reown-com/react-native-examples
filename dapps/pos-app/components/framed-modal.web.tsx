@@ -1,8 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
+import Animated, {
+  Easing,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 import { useModalPortal } from "./modal-portal-context";
+
+const ANIMATION_DURATION = 200;
+const EASING = Easing.inOut(Easing.ease);
 
 interface FramedModalProps {
   visible: boolean;
@@ -21,6 +31,39 @@ export function FramedModal({
   children,
 }: FramedModalProps) {
   const { containerRef } = useModalPortal();
+  const [isRendered, setIsRendered] = useState(false);
+  const progress = useSharedValue(0);
+  const visibleRef = useRef(visible);
+
+  visibleRef.current = visible;
+
+  const handleCloseComplete = useCallback(() => {
+    if (!visibleRef.current) {
+      setIsRendered(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (visible) {
+      setIsRendered(true);
+      requestAnimationFrame(() => {
+        progress.value = withTiming(1, {
+          duration: ANIMATION_DURATION,
+          easing: EASING,
+        });
+      });
+    } else if (isRendered) {
+      progress.value = withTiming(
+        0,
+        { duration: ANIMATION_DURATION, easing: EASING },
+        (finished) => {
+          if (finished) {
+            runOnJS(handleCloseComplete)();
+          }
+        },
+      );
+    }
+  }, [visible]);
 
   // Handle escape key
   useEffect(() => {
@@ -36,9 +79,17 @@ export function FramedModal({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [visible, onRequestClose]);
 
-  if (!visible) return null;
+  const containerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+  }));
 
-  const modalContent = <View style={styles.container}>{children}</View>;
+  if (!isRendered) return null;
+
+  const modalContent = (
+    <Animated.View style={[styles.container, containerAnimatedStyle]}>
+      {children}
+    </Animated.View>
+  );
 
   // If we have a container ref (desktop web), use portal
   if (containerRef?.current) {

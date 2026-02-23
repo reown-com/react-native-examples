@@ -4,8 +4,14 @@ import { formatFiatAmount } from "@/utils/currency";
 import { formatDateTime } from "@/utils/misc";
 import { formatCryptoReceived, getTokenSymbol } from "@/utils/tokens";
 import { PaymentRecord } from "@/utils/types";
-import { memo } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { memo, useEffect } from "react";
+import { Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { Button } from "./button";
 import { FramedModal } from "./framed-modal";
 import { StatusBadge } from "./status-badge";
@@ -15,6 +21,9 @@ import * as Clipboard from "expo-clipboard";
 import { showSuccessToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import Toast from "react-native-toast-message";
+
+const ANIMATION_DURATION = 200;
+const EASING = Easing.inOut(Easing.ease);
 
 interface TransactionDetailModalProps {
   visible: boolean;
@@ -103,6 +112,27 @@ function TransactionDetailModalBase({
 }: TransactionDetailModalProps) {
   const theme = useTheme();
 
+  const translateY = useSharedValue(300);
+
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    if (visible) {
+      translateY.value = withTiming(0, {
+        duration: ANIMATION_DURATION,
+        easing: EASING,
+      });
+    } else {
+      translateY.value = withTiming(300, {
+        duration: ANIMATION_DURATION,
+        easing: EASING,
+      });
+    }
+  }, [visible]);
+
+  const sheetAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
   if (!payment) return null;
 
   const handleCopyPaymentId = async () => {
@@ -120,10 +150,17 @@ function TransactionDetailModalBase({
   return (
     <FramedModal visible={visible} onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable
-          style={[styles.container, { backgroundColor: theme["bg-primary"] }]}
-          onPress={(e) => e.stopPropagation()}
+        <Animated.View
+          style={[
+            styles.container,
+            { backgroundColor: theme["bg-primary"] },
+            sheetAnimatedStyle,
+          ]}
         >
+          <Pressable
+            style={styles.containerInner}
+            onPress={(e) => e.stopPropagation()}
+          >
           <View style={styles.header}>
             <Button
               onPress={onClose}
@@ -202,7 +239,8 @@ function TransactionDetailModalBase({
               )}
             </View>
           </ScrollView>
-        </Pressable>
+          </Pressable>
+        </Animated.View>
       </Pressable>
       <Toast config={toastConfig} position="bottom" visibilityTime={6000} />
     </FramedModal>
@@ -220,10 +258,12 @@ const styles = StyleSheet.create({
   container: {
     borderTopLeftRadius: BorderRadius["5"],
     borderTopRightRadius: BorderRadius["5"],
+    maxHeight: "80%",
+  },
+  containerInner: {
     paddingTop: Spacing["spacing-4"],
     paddingBottom: Spacing["spacing-6"],
     paddingHorizontal: Spacing["spacing-5"],
-    maxHeight: "80%",
   },
   header: {
     flexDirection: "row",

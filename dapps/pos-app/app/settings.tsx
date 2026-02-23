@@ -237,15 +237,6 @@ export default function SettingsScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <ThemedText
-          fontSize={12}
-          lineHeight={14}
-          color="text-tertiary"
-          style={styles.versionText}
-        >
-          Version {appVersion} ({buildVersion})
-        </ThemedText>
-
         <SettingsItem
           title="Theme"
           value={THEME_LABELS[themeMode]}
@@ -254,7 +245,7 @@ export default function SettingsScreen() {
 
         <SettingsItem
           title="Wallet theme"
-          value={currentVariant?.name ?? "Default"}
+          value={currentVariant?.name ?? "None"}
           onPress={() => setActiveSheet("walletTheme")}
         />
 
@@ -300,6 +291,15 @@ export default function SettingsScreen() {
         <SettingsItem title="Test printer" onPress={handleTestPrinterPress} />
 
         <SettingsItem title="View Logs" onPress={() => router.push("/logs")} />
+
+        <ThemedText
+          fontSize={12}
+          lineHeight={14}
+          color="text-tertiary"
+          style={styles.versionText}
+        >
+          Version {appVersion} ({buildVersion})
+        </ThemedText>
       </ScrollView>
 
       <LinearGradient
@@ -384,7 +384,7 @@ export default function SettingsScreen() {
               styles.saveButton,
               {
                 backgroundColor: isMerchantIdConfirmDisabled
-                  ? theme["foreground-tertiary"]
+                  ? theme["foreground-accent-primary-60"]
                   : theme["bg-accent-primary"],
               },
             ]}
@@ -436,7 +436,7 @@ export default function SettingsScreen() {
               styles.saveButton,
               {
                 backgroundColor: isPartnerApiKeyConfirmDisabled
-                  ? theme["foreground-tertiary"]
+                  ? theme["foreground-accent-primary-60"]
                   : theme["bg-accent-primary"],
               },
             ]}
@@ -485,7 +485,7 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: Spacing["spacing-5"],
     paddingBottom: Spacing["extra-spacing-2"],
-    gap: Spacing["spacing-3"],
+    gap: Spacing["spacing-2"],
   },
   closeButton: {
     position: "absolute",
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
   },
   versionText: {
     alignSelf: "flex-end",
-    marginBottom: Spacing["spacing-2"],
+    marginVertical: Spacing["spacing-2"],
   },
   switch: {
     alignSelf: "center",

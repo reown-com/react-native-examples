@@ -16,7 +16,7 @@ describe("useSettingsStore", () => {
   describe("initial state", () => {
     it("should have default theme mode", () => {
       const { themeMode } = useSettingsStore.getState();
-      expect(themeMode).toBe("light");
+      expect(themeMode).toBe("system");
     });
 
     it("should have empty device ID", () => {
@@ -579,7 +579,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(11);
+      expect(persistOptions?.version).toBe(12);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();

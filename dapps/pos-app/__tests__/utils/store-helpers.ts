@@ -11,7 +11,7 @@ import { useLogsStore } from "@/store/useLogsStore";
  */
 export function resetSettingsStore() {
   useSettingsStore.setState({
-    themeMode: "light",
+    themeMode: "system",
     deviceId: "",
     variant: "default",
     _hasHydrated: false,
