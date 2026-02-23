@@ -293,6 +293,7 @@ export function useMerchantFlow() {
     isMerchantIdConfirmDisabled,
     isPartnerApiKeyConfirmDisabled,
     hasStoredPartnerApiKey,
+    storedPartnerApiKey: state.storedPartnerApiKey,
 
     // Handlers
     handleMerchantIdInputChange,

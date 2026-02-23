@@ -50,8 +50,10 @@ function timingSafeEqual(a: string, b: string): boolean {
 const MAX_PIN_ATTEMPTS = 3;
 const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
+export type ThemeMode = "light" | "dark" | "system";
+
 interface SettingsStore {
-  themeMode: "light" | "dark";
+  themeMode: ThemeMode;
   deviceId: string;
   variant: VariantName;
   currency: CurrencyCode;
@@ -68,7 +70,7 @@ interface SettingsStore {
   biometricEnabled: boolean;
 
   // Actions
-  setThemeMode: (themeMode: "light" | "dark") => void;
+  setThemeMode: (themeMode: ThemeMode) => void;
   setDeviceId: (deviceId: string) => void;
   setHasHydrated: (state: boolean) => void;
   setVariant: (variant: VariantName) => void;
@@ -98,7 +100,7 @@ interface SettingsStore {
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set, get) => ({
-      themeMode: Appearance.getColorScheme() || "light",
+      themeMode: "system" as ThemeMode,
       deviceId: "",
       variant: "default",
       currency: "USD",
@@ -109,7 +111,7 @@ export const useSettingsStore = create<SettingsStore>()(
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
-      setThemeMode: (themeMode: "light" | "dark") => set({ themeMode }),
+      setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
       setVariant: (variant: VariantName) => {
@@ -252,7 +254,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 11,
+      version: 12,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {

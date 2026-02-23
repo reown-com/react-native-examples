@@ -1,0 +1,131 @@
+import { BorderRadius, Spacing } from "@/constants/spacing";
+import { useTheme } from "@/hooks/use-theme-color";
+import { useAssets } from "expo-asset";
+import { Image } from "expo-image";
+import React from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Button } from "./button";
+import { FramedModal } from "./framed-modal";
+import { ThemedText } from "./themed-text";
+
+interface SettingsBottomSheetProps {
+  visible: boolean;
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}
+
+export function SettingsBottomSheet({
+  visible,
+  title,
+  onClose,
+  children,
+}: SettingsBottomSheetProps) {
+  const Theme = useTheme();
+  const [assets] = useAssets([require("@/assets/images/close.png")]);
+
+  return (
+    <FramedModal visible={visible} onRequestClose={onClose}>
+      <Pressable style={styles.overlay} onPress={onClose}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.keyboardAvoid}
+        >
+          <Pressable
+            onPress={(e) => e.stopPropagation()}
+            style={[
+              styles.sheet,
+              {
+                backgroundColor: Theme["bg-primary"],
+              },
+            ]}
+          >
+            <View style={styles.header}>
+              <View style={styles.headerSpacer} />
+              <ThemedText
+                fontSize={20}
+                lineHeight={20}
+                color="text-primary"
+                style={styles.title}
+              >
+                {title}
+              </ThemedText>
+              <Button
+                onPress={onClose}
+                style={[
+                  styles.closeButton,
+                  { borderColor: Theme["border-secondary"] },
+                ]}
+              >
+                <Image
+                  source={assets?.[0]}
+                  style={[
+                    styles.closeIcon,
+                    { tintColor: Theme["text-primary"] },
+                  ]}
+                  tintColor={Theme["text-primary"]}
+                  cachePolicy="memory-disk"
+                />
+              </Button>
+            </View>
+            {children}
+          </Pressable>
+        </KeyboardAvoidingView>
+      </Pressable>
+    </FramedModal>
+  );
+}
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  keyboardAvoid: {
+    justifyContent: "flex-end",
+  },
+  sheet: {
+    borderTopLeftRadius: BorderRadius["8"],
+    borderTopRightRadius: BorderRadius["8"],
+    padding: Spacing["spacing-5"],
+    gap: Spacing["spacing-7"],
+    shadowColor: "#000",
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 20,
+    elevation: 4,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  headerSpacer: {
+    width: 38,
+    height: 38,
+  },
+  title: {
+    flex: 1,
+    textAlign: "center",
+    letterSpacing: -0.6,
+  },
+  closeButton: {
+    width: 38,
+    height: 38,
+    borderRadius: BorderRadius["3"],
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  closeIcon: {
+    width: 14,
+    height: 14,
+  },
+});
