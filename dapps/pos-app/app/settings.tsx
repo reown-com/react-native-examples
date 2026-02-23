@@ -169,7 +169,6 @@ export default function SettingsScreen() {
   };
 
   const handlePartnerKeyChange = (value: string) => {
-    console.log("handlePartnerKeyChange", value);
     if (!isEditingPartnerKey) {
       setIsEditingPartnerKey(true);
     }
