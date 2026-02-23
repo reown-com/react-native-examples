@@ -55,16 +55,16 @@ export default function SettingsScreen() {
 
   const {
     merchantIdInput,
-    merchantApiKeyInput,
+    partnerApiKeyInput,
     activeModal,
     pinError,
     isMerchantIdConfirmDisabled,
-    isMerchantApiKeyConfirmDisabled,
-    hasStoredMerchantApiKey,
+    isPartnerApiKeyConfirmDisabled,
+    hasStoredPartnerApiKey,
     handleMerchantIdInputChange,
-    handleMerchantApiKeyInputChange,
+    handlePartnerApiKeyInputChange,
     handleMerchantIdConfirm,
-    handleMerchantApiKeyConfirm,
+    handlePartnerApiKeyConfirm,
     handlePinVerifyComplete,
     handleBiometricAuthSuccess,
     handleBiometricAuthFailure,
@@ -260,12 +260,12 @@ export default function SettingsScreen() {
           </ThemedText>
           <View style={styles.merchantInputRow}>
             <TextInput
-              value={merchantApiKeyInput}
-              onChangeText={handleMerchantApiKeyInputChange}
+              value={partnerApiKeyInput}
+              onChangeText={handlePartnerApiKeyInputChange}
               placeholder={
-                hasStoredMerchantApiKey
+                hasStoredPartnerApiKey
                   ? "****************"
-                  : "Enter merchant API key"
+                  : "Enter partner API key"
               }
               placeholderTextColor={theme["text-tertiary"]}
               autoCapitalize="none"
@@ -281,12 +281,12 @@ export default function SettingsScreen() {
               ]}
             />
             <Button
-              onPress={handleMerchantApiKeyConfirm}
-              disabled={isMerchantApiKeyConfirmDisabled}
+              onPress={handlePartnerApiKeyConfirm}
+              disabled={isPartnerApiKeyConfirmDisabled}
               style={[
                 styles.confirmButton,
                 {
-                  backgroundColor: isMerchantApiKeyConfirmDisabled
+                  backgroundColor: isPartnerApiKeyConfirmDisabled
                     ? theme["foreground-tertiary"]
                     : theme["bg-accent-primary"],
                 },
