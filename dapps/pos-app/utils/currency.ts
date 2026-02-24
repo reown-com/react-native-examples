@@ -14,8 +14,20 @@ export interface Currency {
 export type CurrencyCode = "USD" | "EUR";
 
 export const CURRENCIES: Currency[] = [
-  { code: "USD", name: "US Dollar", symbol: "$", unit: "iso4217/USD", symbolPosition: "left" },
-  { code: "EUR", name: "Euro", symbol: "€", unit: "iso4217/EUR", symbolPosition: "right" },
+  {
+    code: "USD",
+    name: "US Dollar",
+    symbol: "$",
+    unit: "iso4217/USD",
+    symbolPosition: "left",
+  },
+  {
+    code: "EUR",
+    name: "Euro",
+    symbol: "€",
+    unit: "iso4217/EUR",
+    symbolPosition: "right",
+  },
 ];
 
 export function getCurrency(code: string): Currency {
@@ -28,7 +40,10 @@ export function getCurrency(code: string): Currency {
  * @param currency - Currency object with symbol and position info
  * @returns Formatted string (e.g., "$10.00" for USD, "10.00€" for EUR)
  */
-export function formatAmountWithSymbol(amount: string, currency: Currency): string {
+export function formatAmountWithSymbol(
+  amount: string,
+  currency: Currency,
+): string {
   return currency.symbolPosition === "left"
     ? `${currency.symbol}${amount}`
     : `${amount}${currency.symbol}`;

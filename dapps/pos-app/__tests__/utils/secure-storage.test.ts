@@ -31,7 +31,9 @@ describe("migratePartnerApiKey", () => {
       "partner_api_key",
       "test-api-key-123",
     );
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("merchant_api_key");
+    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
+      "merchant_api_key",
+    );
   });
 
   it("should not overwrite existing new key", async () => {
@@ -50,7 +52,9 @@ describe("migratePartnerApiKey", () => {
       "partner_api_key",
       expect.anything(),
     );
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("merchant_api_key");
+    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
+      "merchant_api_key",
+    );
   });
 
   it("should do nothing when old key does not exist", async () => {
@@ -86,7 +90,9 @@ describe("migratePartnerApiKey", () => {
 
     // Should not have attempted to read/write secure storage for migration
     // (only the setup call above)
-    expect(SecureStore.getItemAsync).not.toHaveBeenCalledWith("merchant_api_key");
+    expect(SecureStore.getItemAsync).not.toHaveBeenCalledWith(
+      "merchant_api_key",
+    );
   });
 
   it("should properly clean up old key after migration", async () => {

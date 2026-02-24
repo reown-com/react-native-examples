@@ -9,7 +9,7 @@ import {
   secureStorage,
 } from "@/utils/secure-storage";
 import { storage } from "@/utils/storage";
-import { TransactionFilterType } from "@/utils/types";
+import { ThemeMode, TransactionFilterType } from "@/utils/types";
 import * as Crypto from "expo-crypto";
 import { Appearance } from "react-native";
 import { create } from "zustand";
@@ -51,7 +51,7 @@ const MAX_PIN_ATTEMPTS = 3;
 const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
 interface SettingsStore {
-  themeMode: "light" | "dark";
+  themeMode: ThemeMode;
   deviceId: string;
   variant: VariantName;
   currency: CurrencyCode;
@@ -68,7 +68,7 @@ interface SettingsStore {
   biometricEnabled: boolean;
 
   // Actions
-  setThemeMode: (themeMode: "light" | "dark") => void;
+  setThemeMode: (themeMode: ThemeMode) => void;
   setDeviceId: (deviceId: string) => void;
   setHasHydrated: (state: boolean) => void;
   setVariant: (variant: VariantName) => void;
@@ -98,7 +98,7 @@ interface SettingsStore {
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set, get) => ({
-      themeMode: Appearance.getColorScheme() || "light",
+      themeMode: "system" as ThemeMode,
       deviceId: "",
       variant: "default",
       currency: "USD",
@@ -109,7 +109,7 @@ export const useSettingsStore = create<SettingsStore>()(
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
-      setThemeMode: (themeMode: "light" | "dark") => set({ themeMode }),
+      setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
       setVariant: (variant: VariantName) => {
@@ -252,7 +252,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 11,
+      version: 12,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -326,12 +326,14 @@ export const useSettingsStore = create<SettingsStore>()(
           if (migrated) {
             // Migration was performed, sync the flag
             state.isPartnerApiKeySet = true;
-            useLogsStore.getState().addLog(
-              "info",
-              "Partner API key migrated from merchant_api_key",
-              "Settings",
-              "onRehydrateStorage",
-            );
+            useLogsStore
+              .getState()
+              .addLog(
+                "info",
+                "Partner API key migrated from merchant_api_key",
+                "Settings",
+                "onRehydrateStorage",
+              );
           }
 
           // Initialize merchant defaults from env if not set

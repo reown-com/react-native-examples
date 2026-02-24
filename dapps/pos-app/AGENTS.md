@@ -681,9 +681,7 @@ import { secureStorage, SECURE_STORAGE_KEYS } from "@/utils/secure-storage";
 await secureStorage.setItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY, apiKey);
 
 // Retrieve
-const apiKey = await secureStorage.getItem(
-  SECURE_STORAGE_KEYS.PARTNER_API_KEY,
-);
+const apiKey = await secureStorage.getItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
 ```
 
 ## Code Quality Guidelines
