@@ -13,7 +13,8 @@ import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
-import { ThemeMode, useSettingsStore } from "@/store/useSettingsStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { ThemeMode } from "@/utils/types";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
@@ -97,7 +98,7 @@ export default function SettingsScreen() {
     pinError,
     isMerchantIdConfirmDisabled,
     isPartnerApiKeyConfirmDisabled,
-    storedPartnerApiKey,
+    hasStoredPartnerApiKey,
     handleMerchantIdInputChange,
     handlePartnerApiKeyInputChange,
     handleMerchantIdConfirm,
@@ -412,7 +413,9 @@ export default function SettingsScreen() {
             value={
               isEditingPartnerKey
                 ? partnerApiKeyInput
-                : storedPartnerApiKey || ""
+                : hasStoredPartnerApiKey
+                  ? "••••••••"
+                  : ""
             }
             onChangeText={handlePartnerKeyChange}
             placeholder="Enter partner API key"

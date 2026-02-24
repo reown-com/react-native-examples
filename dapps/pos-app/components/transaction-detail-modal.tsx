@@ -5,7 +5,13 @@ import { formatDateTime } from "@/utils/misc";
 import { formatCryptoReceived, getTokenSymbol } from "@/utils/tokens";
 import { PaymentRecord } from "@/utils/types";
 import { memo, useEffect } from "react";
-import { Platform, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -127,7 +133,7 @@ function TransactionDetailModalBase({
         easing: EASING,
       });
     }
-  }, [visible]);
+  }, [visible, translateY]);
 
   const sheetAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -161,84 +167,84 @@ function TransactionDetailModalBase({
             style={styles.containerInner}
             onPress={(e) => e.stopPropagation()}
           >
-          <View style={styles.header}>
-            <Button
-              onPress={onClose}
-              style={[
-                styles.closeButton,
-                { borderColor: theme["border-secondary"] },
-              ]}
+            <View style={styles.header}>
+              <Button
+                onPress={onClose}
+                style={[
+                  styles.closeButton,
+                  { borderColor: theme["border-secondary"] },
+                ]}
+              >
+                <Image
+                  style={styles.closeIcon}
+                  tintColor={theme["icon-invert"]}
+                  source={require("@/assets/images/close.png")}
+                />
+              </Button>
+            </View>
+
+            <ScrollView
+              style={styles.content}
+              showsVerticalScrollIndicator={false}
             >
-              <Image
-                style={styles.closeIcon}
-                tintColor={theme["icon-invert"]}
-                source={require("@/assets/images/close.png")}
-              />
-            </Button>
-          </View>
-
-          <ScrollView
-            style={styles.content}
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.details}>
-              <DetailRow
-                label="Date"
-                value={formatDateTime(payment.created_at)}
-              />
-
-              <DetailRow label="Status">
-                <StatusBadge status={payment.status} />
-              </DetailRow>
-
-              <DetailRow
-                label="Amount"
-                value={formatFiatAmount(
-                  payment.fiat_amount,
-                  payment.fiat_currency,
-                )}
-              />
-
-              {payment.token_amount && payment.token_caip19 && (
-                <DetailRow label="Crypto received">
-                  <View style={styles.cryptoValue}>
-                    <ThemedText
-                      fontSize={16}
-                      lineHeight={18}
-                      color="text-primary"
-                    >
-                      {formatCryptoReceived(
-                        payment.token_caip19,
-                        payment.token_amount,
-                      ) ?? payment.token_amount}
-                    </ThemedText>
-                    {(() => {
-                      const icon = getTokenIcon(payment.token_caip19);
-                      return icon ? (
-                        <Image style={styles.tokenIcon} source={icon} />
-                      ) : null;
-                    })()}
-                  </View>
-                </DetailRow>
-              )}
-
-              <DetailRow
-                label="Payment ID"
-                value={payment.payment_id}
-                onPress={handleCopyPaymentId}
-                underline
-              />
-
-              {payment.tx_hash && (
+              <View style={styles.details}>
                 <DetailRow
-                  label="Hash ID"
-                  value={truncateHash(payment.tx_hash)}
-                  onPress={handleCopyHash}
+                  label="Date"
+                  value={formatDateTime(payment.created_at)}
+                />
+
+                <DetailRow label="Status">
+                  <StatusBadge status={payment.status} />
+                </DetailRow>
+
+                <DetailRow
+                  label="Amount"
+                  value={formatFiatAmount(
+                    payment.fiat_amount,
+                    payment.fiat_currency,
+                  )}
+                />
+
+                {payment.token_amount && payment.token_caip19 && (
+                  <DetailRow label="Crypto received">
+                    <View style={styles.cryptoValue}>
+                      <ThemedText
+                        fontSize={16}
+                        lineHeight={18}
+                        color="text-primary"
+                      >
+                        {formatCryptoReceived(
+                          payment.token_caip19,
+                          payment.token_amount,
+                        ) ?? payment.token_amount}
+                      </ThemedText>
+                      {(() => {
+                        const icon = getTokenIcon(payment.token_caip19);
+                        return icon ? (
+                          <Image style={styles.tokenIcon} source={icon} />
+                        ) : null;
+                      })()}
+                    </View>
+                  </DetailRow>
+                )}
+
+                <DetailRow
+                  label="Payment ID"
+                  value={payment.payment_id}
+                  onPress={handleCopyPaymentId}
                   underline
                 />
-              )}
-            </View>
-          </ScrollView>
+
+                {payment.tx_hash && (
+                  <DetailRow
+                    label="Hash ID"
+                    value={truncateHash(payment.tx_hash)}
+                    onPress={handleCopyHash}
+                    underline
+                  />
+                )}
+              </View>
+            </ScrollView>
           </Pressable>
         </Animated.View>
       </Pressable>

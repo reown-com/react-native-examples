@@ -9,7 +9,7 @@ import {
   secureStorage,
 } from "@/utils/secure-storage";
 import { storage } from "@/utils/storage";
-import { TransactionFilterType } from "@/utils/types";
+import { ThemeMode, TransactionFilterType } from "@/utils/types";
 import * as Crypto from "expo-crypto";
 import { Appearance } from "react-native";
 import { create } from "zustand";
@@ -49,8 +49,6 @@ function timingSafeEqual(a: string, b: string): boolean {
 
 const MAX_PIN_ATTEMPTS = 3;
 const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes
-
-export type ThemeMode = "light" | "dark" | "system";
 
 interface SettingsStore {
   themeMode: ThemeMode;
@@ -328,12 +326,14 @@ export const useSettingsStore = create<SettingsStore>()(
           if (migrated) {
             // Migration was performed, sync the flag
             state.isPartnerApiKeySet = true;
-            useLogsStore.getState().addLog(
-              "info",
-              "Partner API key migrated from merchant_api_key",
-              "Settings",
-              "onRehydrateStorage",
-            );
+            useLogsStore
+              .getState()
+              .addLog(
+                "info",
+                "Partner API key migrated from merchant_api_key",
+                "Settings",
+                "onRehydrateStorage",
+              );
           }
 
           // Initialize merchant defaults from env if not set
