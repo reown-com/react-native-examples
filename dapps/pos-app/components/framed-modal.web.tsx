@@ -63,7 +63,7 @@ export function FramedModal({
         },
       );
     }
-  }, [visible]);
+  }, [visible, isRendered, progress, handleCloseComplete]);
 
   // Handle escape key
   useEffect(() => {
@@ -96,8 +96,8 @@ export function FramedModal({
     return createPortal(modalContent, containerRef.current);
   }
 
-  // Fallback: render in place (mobile web)
-  return modalContent;
+  // Fallback: render at viewport level (mobile web)
+  return createPortal(modalContent, document.body);
 }
 
 const styles = StyleSheet.create({

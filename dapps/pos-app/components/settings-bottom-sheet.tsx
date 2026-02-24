@@ -23,6 +23,24 @@ import { ThemedText } from "./themed-text";
 const ANIMATION_DURATION = 200;
 const EASING = Easing.inOut(Easing.ease);
 
+function MaybeKeyboardAvoidingView({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  if (Platform.OS === "web") {
+    return <View style={styles.keyboardAvoid}>{children}</View>;
+  }
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.keyboardAvoid}
+    >
+      {children}
+    </KeyboardAvoidingView>
+  );
+}
+
 interface SettingsBottomSheetProps {
   visible: boolean;
   title: string;
@@ -54,7 +72,7 @@ export function SettingsBottomSheet({
         easing: EASING,
       });
     }
-  }, [visible]);
+  }, [visible, translateY]);
 
   const sheetAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -63,10 +81,7 @@ export function SettingsBottomSheet({
   return (
     <FramedModal visible={visible} onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.keyboardAvoid}
-        >
+        <MaybeKeyboardAvoidingView>
           <Animated.View
             style={[
               styles.sheet,
@@ -78,38 +93,38 @@ export function SettingsBottomSheet({
               onPress={(e) => e.stopPropagation()}
               style={styles.sheetContent}
             >
-            <View style={styles.header}>
-              <View style={styles.headerSpacer} />
-              <ThemedText
-                fontSize={20}
-                lineHeight={20}
-                color="text-primary"
-                style={styles.title}
-              >
-                {title}
-              </ThemedText>
-              <Button
-                onPress={onClose}
-                style={[
-                  styles.closeButton,
-                  { borderColor: Theme["border-secondary"] },
-                ]}
-              >
-                <Image
-                  source={assets?.[0]}
+              <View style={styles.header}>
+                <View style={styles.headerSpacer} />
+                <ThemedText
+                  fontSize={20}
+                  lineHeight={20}
+                  color="text-primary"
+                  style={styles.title}
+                >
+                  {title}
+                </ThemedText>
+                <Button
+                  onPress={onClose}
                   style={[
-                    styles.closeIcon,
-                    { tintColor: Theme["text-primary"] },
+                    styles.closeButton,
+                    { borderColor: Theme["border-secondary"] },
                   ]}
-                  tintColor={Theme["text-primary"]}
-                  cachePolicy="memory-disk"
-                />
-              </Button>
-            </View>
-            {children}
+                >
+                  <Image
+                    source={assets?.[0]}
+                    style={[
+                      styles.closeIcon,
+                      { tintColor: Theme["text-primary"] },
+                    ]}
+                    tintColor={Theme["text-primary"]}
+                    cachePolicy="memory-disk"
+                  />
+                </Button>
+              </View>
+              {children}
             </Pressable>
           </Animated.View>
-        </KeyboardAvoidingView>
+        </MaybeKeyboardAvoidingView>
       </Pressable>
     </FramedModal>
   );
