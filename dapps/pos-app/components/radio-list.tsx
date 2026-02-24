@@ -36,7 +36,7 @@ export function RadioList<T extends string = string>({
               styles.item,
               {
                 backgroundColor: isSelected
-                  ? Theme["bg-accent-primary"] + "1A"
+                  ? Theme["foreground-accent-primary-10"]
                   : Theme["foreground-primary"],
                 borderColor: isSelected
                   ? Theme["bg-accent-primary"]
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   radioOuter: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: BorderRadius["full"],
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
@@ -123,6 +123,6 @@ const styles = StyleSheet.create({
   radioInner: {
     width: 12,
     height: 12,
-    borderRadius: 6,
+    borderRadius: BorderRadius["full"],
   },
 });

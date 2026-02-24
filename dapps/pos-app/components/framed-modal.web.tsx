@@ -34,7 +34,6 @@ export function FramedModal({
   const [isRendered, setIsRendered] = useState(false);
   const progress = useSharedValue(0);
   const visibleRef = useRef(visible);
-  const [viewportHeight, setViewportHeight] = useState<number | undefined>();
 
   visibleRef.current = visible;
 
@@ -42,16 +41,6 @@ export function FramedModal({
     if (!visibleRef.current) {
       setIsRendered(false);
     }
-  }, []);
-
-  // Track visual viewport height for mobile web keyboard handling
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-
-    const update = () => setViewportHeight(vv.height);
-    vv.addEventListener("resize", update);
-    return () => vv.removeEventListener("resize", update);
   }, []);
 
   useEffect(() => {
@@ -106,16 +95,8 @@ export function FramedModal({
     return createPortal(modalContent, containerRef.current);
   }
 
-  // Mobile web: use fixed positioning so the overlay doesn't scroll with the
-  // page when the keyboard opens, and constrain height to the visual viewport
-  // so the sheet appears above the keyboard instead of behind it.
-  const mobileStyle = {
-    ...mobileWebContainer,
-    ...(viewportHeight != null ? { height: viewportHeight } : undefined),
-  };
-
   const modalContent = (
-    <Animated.View style={[mobileStyle, containerAnimatedStyle]}>
+    <Animated.View style={[mobileWebContainer, containerAnimatedStyle]}>
       {children}
     </Animated.View>
   );
