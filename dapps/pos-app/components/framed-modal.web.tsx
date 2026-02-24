@@ -34,6 +34,7 @@ export function FramedModal({
   const [isRendered, setIsRendered] = useState(false);
   const progress = useSharedValue(0);
   const visibleRef = useRef(visible);
+  const [viewportHeight, setViewportHeight] = useState<number | undefined>();
 
   visibleRef.current = visible;
 
@@ -41,6 +42,16 @@ export function FramedModal({
     if (!visibleRef.current) {
       setIsRendered(false);
     }
+  }, []);
+
+  // Track visual viewport height for mobile web keyboard handling
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const update = () => setViewportHeight(vv.height);
+    vv.addEventListener("resize", update);
+    return () => vv.removeEventListener("resize", update);
   }, []);
 
   useEffect(() => {
@@ -85,20 +96,42 @@ export function FramedModal({
 
   if (!isRendered) return null;
 
+  // If we have a container ref (desktop web), use portal into the frame
+  if (containerRef?.current) {
+    const modalContent = (
+      <Animated.View style={[styles.container, containerAnimatedStyle]}>
+        {children}
+      </Animated.View>
+    );
+    return createPortal(modalContent, containerRef.current);
+  }
+
+  // Mobile web: use fixed positioning so the overlay doesn't scroll with the
+  // page when the keyboard opens, and constrain height to the visual viewport
+  // so the sheet appears above the keyboard instead of behind it.
+  const mobileStyle = {
+    ...mobileWebContainer,
+    ...(viewportHeight != null ? { height: viewportHeight } : undefined),
+  };
+
   const modalContent = (
-    <Animated.View style={[styles.container, containerAnimatedStyle]}>
+    <Animated.View style={[mobileStyle, containerAnimatedStyle]}>
       {children}
     </Animated.View>
   );
 
-  // If we have a container ref (desktop web), use portal
-  if (containerRef?.current) {
-    return createPortal(modalContent, containerRef.current);
-  }
-
-  // Fallback: render at viewport level (mobile web)
   return createPortal(modalContent, document.body);
 }
+
+// Plain object to use 'fixed' positioning (supported by RN Web but not in RN types)
+const mobileWebContainer: Record<string, unknown> = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  zIndex: 1000,
+};
 
 const styles = StyleSheet.create({
   container: {
