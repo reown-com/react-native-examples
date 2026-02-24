@@ -101,6 +101,7 @@ export default function SettingsScreen() {
     hasStoredPartnerApiKey,
     handleMerchantIdInputChange,
     handlePartnerApiKeyInputChange,
+    resetPartnerApiKeyInput,
     handleMerchantIdConfirm,
     handlePartnerApiKeyConfirm,
     handlePinVerifyComplete,
@@ -140,6 +141,9 @@ export default function SettingsScreen() {
   const currentCurrency = getCurrency(currency);
 
   const closeSheet = () => {
+    if (activeSheet === "partnerApiKey") {
+      resetPartnerApiKeyInput();
+    }
     setActiveSheet(null);
     setIsEditingPartnerKey(false);
   };

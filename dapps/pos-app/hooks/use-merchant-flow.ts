@@ -78,6 +78,13 @@ export function useMerchantFlow() {
     }));
   }, []);
 
+  const resetPartnerApiKeyInput = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      partnerApiKeyInput: "",
+    }));
+  }, []);
+
   const initiateSave = useCallback(
     async (value: string, action: PendingAction) => {
       // Check if locked out
@@ -280,6 +287,7 @@ export function useMerchantFlow() {
     // Handlers
     handleMerchantIdInputChange,
     handlePartnerApiKeyInputChange,
+    resetPartnerApiKeyInput,
     handleMerchantIdConfirm,
     handlePartnerApiKeyConfirm,
     handlePinVerifyComplete,

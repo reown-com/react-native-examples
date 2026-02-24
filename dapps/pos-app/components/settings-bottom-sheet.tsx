@@ -39,7 +39,7 @@ export function SettingsBottomSheet({
   const Theme = useTheme();
   const [assets] = useAssets([require("@/assets/images/close.png")]);
 
-  const translateY = useSharedValue(300);
+  const translateY = useSharedValue(Platform.OS === "web" ? 300 : 0);
 
   useEffect(() => {
     if (Platform.OS !== "web") return;
