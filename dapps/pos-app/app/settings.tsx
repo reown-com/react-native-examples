@@ -414,7 +414,7 @@ export default function SettingsScreen() {
               isEditingPartnerKey
                 ? partnerApiKeyInput
                 : hasStoredPartnerApiKey
-                  ? "••••••••"
+                  ? "********"
                   : ""
             }
             onChangeText={handlePartnerKeyChange}
