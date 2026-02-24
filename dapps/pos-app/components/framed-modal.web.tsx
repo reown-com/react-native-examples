@@ -14,6 +14,77 @@ import { useModalPortal } from "./modal-portal-context";
 const ANIMATION_DURATION = 200;
 const EASING = Easing.inOut(Easing.ease);
 
+interface BodyLockSnapshot {
+  scrollY: number;
+  bodyPosition: string;
+  bodyTop: string;
+  bodyLeft: string;
+  bodyRight: string;
+  bodyWidth: string;
+  bodyOverflow: string;
+  htmlOverflow: string;
+}
+
+let activeBodyLocks = 0;
+let bodyLockSnapshot: BodyLockSnapshot | null = null;
+
+function lockBodyScroll() {
+  if (activeBodyLocks === 0) {
+    const { body, documentElement } = document;
+    const scrollY = window.scrollY;
+
+    bodyLockSnapshot = {
+      scrollY,
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyLeft: body.style.left,
+      bodyRight: body.style.right,
+      bodyWidth: body.style.width,
+      bodyOverflow: body.style.overflow,
+      htmlOverflow: documentElement.style.overflow,
+    };
+
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.width = "100%";
+    body.style.overflow = "hidden";
+    documentElement.style.overflow = "hidden";
+  }
+
+  activeBodyLocks += 1;
+}
+
+function unlockBodyScroll() {
+  if (activeBodyLocks === 0) return;
+
+  activeBodyLocks -= 1;
+  if (activeBodyLocks !== 0 || !bodyLockSnapshot) return;
+
+  const { body, documentElement } = document;
+  const {
+    scrollY,
+    bodyPosition,
+    bodyTop,
+    bodyLeft,
+    bodyRight,
+    bodyWidth,
+    bodyOverflow,
+    htmlOverflow,
+  } = bodyLockSnapshot;
+
+  body.style.position = bodyPosition;
+  body.style.top = bodyTop;
+  body.style.left = bodyLeft;
+  body.style.right = bodyRight;
+  body.style.width = bodyWidth;
+  body.style.overflow = bodyOverflow;
+  documentElement.style.overflow = htmlOverflow;
+  window.scrollTo(0, scrollY);
+  bodyLockSnapshot = null;
+}
+
 interface FramedModalProps {
   visible: boolean;
   onRequestClose?: () => void;
@@ -31,6 +102,7 @@ export function FramedModal({
   children,
 }: FramedModalProps) {
   const { containerRef } = useModalPortal();
+  const frameContainer = containerRef?.current ?? null;
   const [isRendered, setIsRendered] = useState(false);
   const progress = useSharedValue(0);
   const visibleRef = useRef(visible);
@@ -65,6 +137,18 @@ export function FramedModal({
     }
   }, [visible, isRendered, progress, handleCloseComplete]);
 
+  // Mobile web fallback renders into document.body. Lock page scroll while the
+  // modal is open so iOS Safari keyboard focus doesn't permanently shift
+  // underlying screen content.
+  useEffect(() => {
+    if (!visible || frameContainer) return;
+
+    lockBodyScroll();
+    return () => {
+      unlockBodyScroll();
+    };
+  }, [visible, frameContainer]);
+
   // Handle escape key
   useEffect(() => {
     if (!visible || !onRequestClose) return;
@@ -86,13 +170,13 @@ export function FramedModal({
   if (!isRendered) return null;
 
   // If we have a container ref (desktop web), use portal into the frame
-  if (containerRef?.current) {
+  if (frameContainer) {
     const modalContent = (
       <Animated.View style={[styles.container, containerAnimatedStyle]}>
         {children}
       </Animated.View>
     );
-    return createPortal(modalContent, containerRef.current);
+    return createPortal(modalContent, frameContainer);
   }
 
   const modalContent = (
