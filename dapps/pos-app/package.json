@@ -89,7 +89,9 @@
     "glob": "10.5.0",
     "js-yaml": "4.1.1",
     "esbuild": "0.25.0",
-    "undici": "5.29.0",
+    "@vercel/node": {
+      "undici": "5.29.0"
+    },
     "minimatch": "9.0.6"
   },
   "private": true
