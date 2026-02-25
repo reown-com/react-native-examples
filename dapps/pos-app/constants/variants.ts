@@ -30,7 +30,7 @@ interface Variant {
 
 export const Variants: Record<VariantName, Variant> = {
   default: {
-    name: "Default",
+    name: "None",
     brandLogo: require("@/assets/images/brand.png"),
     brandLogoWidth: 60,
     printerLogo: DEFAULT_LOGO_BASE64,

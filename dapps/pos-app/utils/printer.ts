@@ -134,7 +134,10 @@ export const printReceipt = async ({
 
     if (amountFiat) {
       await ReactNativePosPrinter.printText("AMOUNT    ", normal);
-      const formattedAmount = formatAmountWithSymbol(amountFiat.toFixed(2), currency);
+      const formattedAmount = formatAmountWithSymbol(
+        amountFiat.toFixed(2),
+        currency,
+      );
       await ReactNativePosPrinter.printText(`${formattedAmount}\n`, bold);
     }
 
