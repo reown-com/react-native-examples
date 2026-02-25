@@ -122,7 +122,6 @@ export function ResultView({
 const styles = StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
-    marginHorizontal: Spacing[5],
   },
   title: {
     marginTop: Spacing[4],

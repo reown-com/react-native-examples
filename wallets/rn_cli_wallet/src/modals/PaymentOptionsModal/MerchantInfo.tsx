@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing[4],
-    paddingHorizontal: 60,
   },
   merchantIcon: {
     width: Spacing[13],

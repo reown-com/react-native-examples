@@ -118,7 +118,7 @@ function OptionItem({
               styles.optionChainIcon,
               {
                 borderColor: isSelected
-                  ? Theme['foreground-accent-primary-10']
+                  ? Theme['foreground-accent-primary-10-solid']
                   : Theme['foreground-secondary'],
               },
             ]}
