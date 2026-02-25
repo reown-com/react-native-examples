@@ -12,17 +12,43 @@ import { Spacing } from '@/utils/ThemeUtil';
 import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 
-// Forces the page to fit within the WebView viewport without scrolling
-const FIT_CONTENT_JS = `
+// Sets viewport/content CSS early so web pages render to device width.
+const PRELOAD_VIEWPORT_JS = `
   (function() {
-    var meta = document.querySelector('meta[name="viewport"]');
-    if (!meta) {
-      meta = document.createElement('meta');
-      meta.name = 'viewport';
-      document.head.appendChild(meta);
+    function applyViewportStyles() {
+      var head = document.head || document.getElementsByTagName('head')[0];
+      if (!head) {
+        return;
+      }
+
+      var meta = document.querySelector('meta[name="viewport"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = 'viewport';
+        head.appendChild(meta);
+      }
+
+      meta.content =
+        'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+
+      var style = document.getElementById('rn-webview-fit-style');
+      if (!style) {
+        style = document.createElement('style');
+        style.id = 'rn-webview-fit-style';
+        style.textContent =
+          'html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow: hidden !important; overscroll-behavior: none !important; }';
+        head.appendChild(style);
+      }
     }
-    meta.content = 'width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=yes';
-    document.body.style.overflow = 'hidden';
+
+    if (document.head) {
+      applyViewportStyles();
+      return;
+    }
+
+    document.addEventListener('DOMContentLoaded', applyViewportStyles, {
+      once: true,
+    });
   })();
   true;
 `;
@@ -224,9 +250,15 @@ export function CollectDataWebView({
         javaScriptEnabled
         domStorageEnabled
         startInLoadingState
-        scalesPageToFit={true}
+        scrollEnabled={false}
+        nestedScrollEnabled={false}
+        bounces={false}
+        overScrollMode="never"
+        setBuiltInZoomControls={false}
+        setDisplayZoomControls={false}
         showsVerticalScrollIndicator={false}
-        injectedJavaScript={FIT_CONTENT_JS}
+        showsHorizontalScrollIndicator={false}
+        injectedJavaScriptBeforeContentLoaded={PRELOAD_VIEWPORT_JS}
       />
     </View>
   );

@@ -1,8 +1,5 @@
 import { proxy, ref } from 'valtio';
-import type {
-  PaymentOptionsResponse,
-  PaymentOption,
-} from '@walletconnect/pay';
+import type { PaymentOptionsResponse, PaymentOption } from '@walletconnect/pay';
 
 import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
@@ -219,7 +216,11 @@ const PaymentStore = {
 
   async approvePayment() {
     if (state.step === 'confirming') {
-      LogStore.warn('Payment already in progress', 'PaymentStore', 'approvePayment');
+      LogStore.warn(
+        'Payment already in progress',
+        'PaymentStore',
+        'approvePayment',
+      );
       return;
     }
 
@@ -306,7 +307,9 @@ const PaymentStore = {
               { error: error?.message },
             );
             throw new Error(
-              `Failed to sign action ${index + 1}: ${error?.message || 'Unknown error'}`,
+              `Failed to sign action ${index + 1}: ${
+                error?.message || 'Unknown error'
+              }`,
             );
           }
         }

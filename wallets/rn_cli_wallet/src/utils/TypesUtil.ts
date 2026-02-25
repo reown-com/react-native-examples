@@ -35,8 +35,10 @@ export type ThemeKeys =
   | 'foreground-secondary'
   | 'foreground-tertiary'
   | 'foreground-accent-primary-10'
+  | 'foreground-accent-primary-10-solid'
   | 'foreground-accent-primary-40'
   | 'foreground-accent-primary-60'
+  | 'foreground-accent-primary-90-solid'
   | 'foreground-accent-secondary-10'
   | 'foreground-accent-secondary-40'
   | 'foreground-accent-secondary-60'
@@ -89,12 +91,13 @@ export type Chain = {
   rpcUrl: string;
 };
 
-
 // Payment Modal Flow
 export type Step =
   | 'loading'
+  | 'selectOption'
+  | 'infoExplainer'
   | 'collectData'
-  | 'confirm'
+  | 'review'
   | 'confirming'
   | 'result';
 

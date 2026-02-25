@@ -7,13 +7,7 @@ import SvgArrowLeft from '@/assets/ArrowLeft';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Button } from '@/components/Button';
-
-type Step =
-  | 'loading'
-  | 'collectData'
-  | 'confirm'
-  | 'confirming'
-  | 'result';
+import type { Step } from '@/utils/TypesUtil';
 
 interface ViewWrapperProps {
   children: React.ReactNode;
@@ -43,7 +37,9 @@ export function ViewWrapper({
     <>
       {/* Header */}
       <View style={[styles.header, isWebView && styles.webViewHeader]}>
-        <View style={headerLeftContent ? styles.headerLeftFlex : styles.headerLeft}>
+        <View
+          style={headerLeftContent ? styles.headerLeftFlex : styles.headerLeft}
+        >
           {showBackButton ? (
             <Button
               onPress={onBack}
@@ -86,7 +82,11 @@ export function ViewWrapper({
       <View
         style={[
           styles.fullscreenContainer,
-          { backgroundColor: Theme['bg-primary'], paddingTop: insets.top, paddingBottom: insets.bottom },
+          {
+            backgroundColor: Theme['bg-primary'],
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+          },
         ]}
       >
         {content}

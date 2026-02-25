@@ -125,13 +125,13 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing[5],
   },
   title: {
-    marginTop: Spacing[3],
+    marginTop: Spacing[4],
   },
   message: {
     marginTop: Spacing[1],
   },
   footerContainer: {
-    paddingTop: Spacing[11],
+    paddingTop: Spacing[7],
     marginBottom: Spacing[2],
     alignItems: 'center',
   },

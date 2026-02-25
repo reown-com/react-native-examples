@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/hooks/useTheme';
-import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Spacing, BorderRadius, FontFamily } from '@/utils/ThemeUtil';
 import { Button } from '@/components/Button';
 
 interface SegmentedControlProps<T extends string> {
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 13,
+    fontFamily: FontFamily.medium,
     fontWeight: '500',
   },
 });
