@@ -1,29 +1,15 @@
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { showInfoToast } from "@/utils/toast";
 import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
-
-/**
- * Decodes a value that may be base64 encoded.
- * Tries base64 decoding first; if it fails, returns the raw value.
- */
-export function tryBase64Decode(value: string): string {
-  try {
-    const decoded = atob(value);
-    // Sanity check: if decoding produces control characters, the input was likely not base64
-    if (/[\x00-\x08\x0E-\x1F]/.test(decoded)) {
-      return value;
-    }
-    return decoded;
-  } catch {
-    return value;
-  }
-}
 
 /**
  * On web, reads merchantId and partnerApiKey from URL query parameters,
  * base64-decodes them, saves to the settings store,
  * and cleans the URL. Runs once after store hydration.
+ *
+ * Values must be base64-encoded.
  */
 export function useUrlCredentials() {
   const hasProcessed = useRef(false);
@@ -47,7 +33,7 @@ export function useUrlCredentials() {
     async function applyCredentials() {
       try {
         if (rawMerchantId) {
-          const merchantId = tryBase64Decode(rawMerchantId);
+          const merchantId = atob(rawMerchantId);
           setMerchantId(merchantId);
           addLog(
             "info",
@@ -58,7 +44,7 @@ export function useUrlCredentials() {
         }
 
         if (rawPartnerApiKey) {
-          const partnerApiKey = tryBase64Decode(rawPartnerApiKey);
+          const partnerApiKey = atob(rawPartnerApiKey);
           await setPartnerApiKey(partnerApiKey);
           addLog(
             "info",
@@ -67,6 +53,8 @@ export function useUrlCredentials() {
             "useUrlCredentials",
           );
         }
+
+        showInfoToast("Credentials updated from URL");
 
         // Clean URL by removing the credential query parameters
         const url = new URL(window.location.href);

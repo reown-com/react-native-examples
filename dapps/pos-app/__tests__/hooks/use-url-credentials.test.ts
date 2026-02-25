@@ -2,10 +2,7 @@ import { renderHook, act } from "@testing-library/react-native";
 import { Platform } from "react-native";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useLogsStore } from "@/store/useLogsStore";
-import {
-  tryBase64Decode,
-  useUrlCredentials,
-} from "@/hooks/use-url-credentials";
+import { useUrlCredentials } from "@/hooks/use-url-credentials";
 import { resetSettingsStore, resetLogsStore } from "../utils/store-helpers";
 import { waitForAsync } from "../utils/test-helpers";
 
@@ -24,6 +21,10 @@ function clearWindow() {
   delete (global as any).window;
 }
 
+function toBase64(value: string) {
+  return Buffer.from(value).toString("base64");
+}
+
 beforeEach(() => {
   resetSettingsStore();
   resetLogsStore();
@@ -37,43 +38,12 @@ afterEach(() => {
   clearWindow();
 });
 
-describe("tryBase64Decode", () => {
-  it("decodes a valid base64 string", () => {
-    // btoa is available in Node 16+
-    const encoded = Buffer.from("my-merchant-id").toString("base64");
-    expect(tryBase64Decode(encoded)).toBe("my-merchant-id");
-  });
-
-  it("returns raw value when input is not valid base64", () => {
-    expect(tryBase64Decode("!!!not-base64!!!")).toBe("!!!not-base64!!!");
-  });
-
-  it("returns raw value when decoded result has control characters", () => {
-    const binaryWithControlChars = String.fromCharCode(0x01, 0x02, 0x03);
-    const encoded = Buffer.from(binaryWithControlChars).toString("base64");
-    expect(tryBase64Decode(encoded)).toBe(encoded);
-  });
-
-  it("decodes UUID-like merchant IDs correctly", () => {
-    const merchantId = "550e8400-e29b-41d4-a716-446655440000";
-    const encoded = Buffer.from(merchantId).toString("base64");
-    expect(tryBase64Decode(encoded)).toBe(merchantId);
-  });
-
-  it("handles plain text that is not valid base64", () => {
-    const raw = "550e8400-e29b-41d4-a716-446655440000";
-    expect(tryBase64Decode(raw)).toBe(raw);
-  });
-});
-
 describe("useUrlCredentials", () => {
   it("applies both merchantId and partnerApiKey from base64-encoded URL params", async () => {
     const merchantId = "test-merchant-123";
     const apiKey = "test-api-key-456";
-    const encodedMerchant = Buffer.from(merchantId).toString("base64");
-    const encodedKey = Buffer.from(apiKey).toString("base64");
     setWindowLocation(
-      `?merchantId=${encodedMerchant}&partnerApiKey=${encodedKey}`,
+      `?merchantId=${toBase64(merchantId)}&partnerApiKey=${toBase64(apiKey)}`,
     );
 
     useSettingsStore.setState({ _hasHydrated: true });
@@ -87,25 +57,9 @@ describe("useUrlCredentials", () => {
     expect(mockReplaceState).toHaveBeenCalled();
   });
 
-  it("applies raw (non-encoded) URL params", async () => {
-    const merchantId = "raw-merchant-id";
-    const apiKey = "raw-api-key";
-    setWindowLocation(`?merchantId=${merchantId}&partnerApiKey=${apiKey}`);
-
-    useSettingsStore.setState({ _hasHydrated: true });
-
-    renderHook(() => useUrlCredentials());
-    await act(() => waitForAsync());
-
-    const state = useSettingsStore.getState();
-    expect(state.merchantId).toBe(merchantId);
-    expect(state.isPartnerApiKeySet).toBe(true);
-  });
-
   it("applies only merchantId when partnerApiKey is absent", async () => {
     const merchantId = "only-merchant";
-    const encoded = Buffer.from(merchantId).toString("base64");
-    setWindowLocation(`?merchantId=${encoded}`);
+    setWindowLocation(`?merchantId=${toBase64(merchantId)}`);
 
     useSettingsStore.setState({ _hasHydrated: true });
 
@@ -119,8 +73,7 @@ describe("useUrlCredentials", () => {
 
   it("applies only partnerApiKey when merchantId is absent", async () => {
     const apiKey = "only-api-key";
-    const encoded = Buffer.from(apiKey).toString("base64");
-    setWindowLocation(`?partnerApiKey=${encoded}`);
+    setWindowLocation(`?partnerApiKey=${toBase64(apiKey)}`);
 
     useSettingsStore.setState({ _hasHydrated: true, merchantId: null });
 
@@ -151,9 +104,7 @@ describe("useUrlCredentials", () => {
   it("does nothing on native platforms", async () => {
     (Platform as any).OS = "ios";
 
-    const merchantId = "should-not-apply";
-    const encoded = Buffer.from(merchantId).toString("base64");
-    setWindowLocation(`?merchantId=${encoded}`);
+    setWindowLocation(`?merchantId=${toBase64("should-not-apply")}`);
 
     useSettingsStore.setState({ _hasHydrated: true });
 
@@ -166,19 +117,15 @@ describe("useUrlCredentials", () => {
 
   it("waits for store hydration before processing", async () => {
     const merchantId = "hydration-test";
-    const encoded = Buffer.from(merchantId).toString("base64");
-    setWindowLocation(`?merchantId=${encoded}`);
+    setWindowLocation(`?merchantId=${toBase64(merchantId)}`);
 
-    // Start with _hasHydrated false
     useSettingsStore.setState({ _hasHydrated: false });
 
     const { rerender } = renderHook(() => useUrlCredentials());
     await act(() => waitForAsync());
 
-    // Should not have applied yet
     expect(useSettingsStore.getState().merchantId).toBeNull();
 
-    // Now hydrate
     useSettingsStore.setState({ _hasHydrated: true });
     rerender({});
     await act(() => waitForAsync());
@@ -187,10 +134,8 @@ describe("useUrlCredentials", () => {
   });
 
   it("logs actions when credentials are applied", async () => {
-    const encoded = Buffer.from("log-test").toString("base64");
-    const encodedKey = Buffer.from("log-key").toString("base64");
     setWindowLocation(
-      `?merchantId=${encoded}&partnerApiKey=${encodedKey}`,
+      `?merchantId=${toBase64("log-test")}&partnerApiKey=${toBase64("log-key")}`,
     );
 
     useSettingsStore.setState({ _hasHydrated: true });
@@ -206,8 +151,7 @@ describe("useUrlCredentials", () => {
   });
 
   it("cleans only credential params from URL, preserving others", async () => {
-    const encoded = Buffer.from("clean-test").toString("base64");
-    setWindowLocation(`?merchantId=${encoded}&other=keep`);
+    setWindowLocation(`?merchantId=${toBase64("clean-test")}&other=keep`);
 
     useSettingsStore.setState({ _hasHydrated: true });
 
