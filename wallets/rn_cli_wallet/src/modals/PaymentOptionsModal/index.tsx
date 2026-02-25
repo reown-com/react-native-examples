@@ -237,10 +237,11 @@ export default function PaymentOptionsModal() {
     onClose,
   ]);
 
+  const paymentOptionsCount = snap.paymentOptions?.options?.length ?? 0;
   const showBackButton =
     snap.step === 'collectData' ||
     snap.step === 'infoExplainer' ||
-    snap.step === 'review';
+    (snap.step === 'review' && paymentOptionsCount > 1);
   const isWebView =
     snap.step === 'collectData' && !!selectedOptionCollectDataUrl;
 
