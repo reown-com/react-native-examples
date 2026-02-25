@@ -108,7 +108,7 @@
     "@babel/runtime": "7.28.4",
     "cross-spawn": "7.0.6",
     "nanoid": "3.3.8",
-    "fast-xml-parser": "5.3.4",
+    "fast-xml-parser": "5.3.6",
     "sha.js": "2.4.12",
     "tmp": "0.2.4",
     "on-headers": "1.1.0",
@@ -119,9 +119,13 @@
     "bip39@3.1.0": "patch:bip39@npm%3A3.1.0#./.yarn/patches/bip39-npm-3.1.0-03958ed434.patch",
     "glob": "10.5.0",
     "valibot": "1.2.0",
-    "tar": "7.5.7",
+    "tar": "7.5.8",
     "js-yaml": "4.1.1",
-    "lodash": "4.17.23"
+    "lodash": "4.17.23",
+    "qs": "6.14.2",
+    "axios": "1.13.5",
+    "bn.js": "5.2.3",
+    "minimatch": "9.0.6"
   },
   "packageManager": "yarn@3.8.7"
 }
