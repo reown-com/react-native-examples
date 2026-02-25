@@ -1,6 +1,7 @@
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { showInfoToast } from "@/utils/toast";
+import { router } from "expo-router";
 import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 
@@ -56,11 +57,9 @@ export function useUrlCredentials() {
 
         showInfoToast("Credentials updated from URL");
 
-        // Clean URL by removing the credential query parameters
-        const url = new URL(window.location.href);
-        url.searchParams.delete("merchantId");
-        url.searchParams.delete("partnerApiKey");
-        window.history.replaceState({}, "", url.toString());
+        // Clean URL by navigating through Expo Router (replaceState alone
+        // doesn't update Expo Router's internal state, so params reappear)
+        router.replace("/");
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);

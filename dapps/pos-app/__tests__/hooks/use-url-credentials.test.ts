@@ -1,19 +1,17 @@
 import { renderHook, act } from "@testing-library/react-native";
 import { Platform } from "react-native";
+import { router } from "expo-router";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useUrlCredentials } from "@/hooks/use-url-credentials";
 import { resetSettingsStore, resetLogsStore } from "../utils/store-helpers";
 import { waitForAsync } from "../utils/test-helpers";
 
-// Mock window for node test environment
-const mockReplaceState = jest.fn();
-
 function setWindowLocation(search: string) {
   const href = `http://localhost${search}`;
   (global as any).window = {
+    ...((global as any).window || {}),
     location: { search, href },
-    history: { replaceState: mockReplaceState },
   };
 }
 
@@ -28,7 +26,6 @@ function toBase64(value: string) {
 beforeEach(() => {
   resetSettingsStore();
   resetLogsStore();
-  mockReplaceState.mockClear();
   (Platform as any).OS = "web";
   clearWindow();
 });
@@ -54,7 +51,7 @@ describe("useUrlCredentials", () => {
     const state = useSettingsStore.getState();
     expect(state.merchantId).toBe(merchantId);
     expect(state.isPartnerApiKeySet).toBe(true);
-    expect(mockReplaceState).toHaveBeenCalled();
+    expect(router.replace).toHaveBeenCalledWith("/");
   });
 
   it("applies only merchantId when partnerApiKey is absent", async () => {
@@ -98,7 +95,7 @@ describe("useUrlCredentials", () => {
 
     const state = useSettingsStore.getState();
     expect(state.merchantId).toBe("existing-merchant");
-    expect(mockReplaceState).not.toHaveBeenCalled();
+    expect(router.replace).not.toHaveBeenCalled();
   });
 
   it("does nothing on native platforms", async () => {
@@ -148,25 +145,5 @@ describe("useUrlCredentials", () => {
     expect(infoLogs).toHaveLength(2);
     expect(infoLogs[0].message).toContain("Merchant ID set from URL");
     expect(infoLogs[1].message).toContain("Partner API key set from URL");
-  });
-
-  it("cleans only credential params from URL, preserving others", async () => {
-    setWindowLocation(`?merchantId=${toBase64("clean-test")}&other=keep`);
-
-    useSettingsStore.setState({ _hasHydrated: true });
-
-    renderHook(() => useUrlCredentials());
-    await act(() => waitForAsync());
-
-    expect(mockReplaceState).toHaveBeenCalledWith(
-      {},
-      "",
-      expect.stringContaining("other=keep"),
-    );
-    expect(mockReplaceState).toHaveBeenCalledWith(
-      {},
-      "",
-      expect.not.stringContaining("merchantId"),
-    );
   });
 });
