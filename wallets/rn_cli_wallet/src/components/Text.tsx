@@ -51,11 +51,13 @@ const variantStyles: Record<TextVariant, VariantStyle> = {
   'h1-400': {
     fontSize: 50,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -1, // -2% of 50px
   },
   'h1-500': {
     fontSize: 50,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -1,
   },
 
@@ -63,11 +65,13 @@ const variantStyles: Record<TextVariant, VariantStyle> = {
   'h2-400': {
     fontSize: 44,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.88, // -2% of 44px
   },
   'h2-500': {
     fontSize: 44,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.88,
   },
 
@@ -75,11 +79,13 @@ const variantStyles: Record<TextVariant, VariantStyle> = {
   'h3-400': {
     fontSize: 38,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.76, // -2% of 38px
   },
   'h3-500': {
     fontSize: 38,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.76,
   },
 
@@ -87,35 +93,41 @@ const variantStyles: Record<TextVariant, VariantStyle> = {
   'h4-400': {
     fontSize: 32,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.32, // -1% of 32px
   },
   'h4-500': {
     fontSize: 32,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.32,
   },
 
-  // Heading 5: 28px, -1% letter spacing, line height 26
+  // Heading 5: 26px, -1% letter spacing, line height 26
   'h5-400': {
-    fontSize: 28,
+    fontSize: 26,
     fontFamily: FontFamily.regular,
-    letterSpacing: -0.28, // -1% of 28px
+    fontWeight: '400',
+    letterSpacing: -0.26, // -1% of 26px
   },
   'h5-500': {
-    fontSize: 28,
+    fontSize: 26,
     fontFamily: FontFamily.medium,
-    letterSpacing: -0.28,
+    fontWeight: '500',
+    letterSpacing: -0.26,
   },
 
   // Heading 6: 20px, -3% letter spacing, line height 20
   'h6-400': {
     fontSize: 20,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.6, // -3% of 20px
   },
   'h6-500': {
     fontSize: 20,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.6,
   },
 
@@ -123,11 +135,13 @@ const variantStyles: Record<TextVariant, VariantStyle> = {
   'xl-400': {
     fontSize: 18,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.18, // -1% of 18px
   },
   'xl-500': {
     fontSize: 18,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.18,
   },
 
@@ -135,11 +149,13 @@ const variantStyles: Record<TextVariant, VariantStyle> = {
   'lg-400': {
     fontSize: 16,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.16, // -1% of 16px
   },
   'lg-500': {
     fontSize: 16,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.16,
   },
 
@@ -147,11 +163,13 @@ const variantStyles: Record<TextVariant, VariantStyle> = {
   'md-400': {
     fontSize: 14,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.14, // -1% of 14px
   },
   'md-500': {
     fontSize: 14,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.14,
   },
 
@@ -159,11 +177,13 @@ const variantStyles: Record<TextVariant, VariantStyle> = {
   'sm-400': {
     fontSize: 12,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.12, // -1% of 12px
   },
   'sm-500': {
     fontSize: 12,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.12,
   },
 
@@ -171,36 +191,43 @@ const variantStyles: Record<TextVariant, VariantStyle> = {
   'large-600': {
     fontSize: 20,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.6,
   },
   'paragraph-400': {
     fontSize: 16,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.16,
   },
   'paragraph-600': {
     fontSize: 16,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.16,
   },
   'small-400': {
     fontSize: 14,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.14,
   },
   'small-600': {
     fontSize: 14,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.14,
   },
   'tiny-400': {
     fontSize: 12,
     fontFamily: FontFamily.regular,
+    fontWeight: '400',
     letterSpacing: -0.12,
   },
   'tiny-600': {
     fontSize: 12,
     fontFamily: FontFamily.medium,
+    fontWeight: '500',
     letterSpacing: -0.12,
   },
 };
@@ -236,6 +263,7 @@ export function Text({
         {
           fontSize: variantStyle.fontSize,
           fontFamily: variantStyle.fontFamily,
+          fontWeight: variantStyle.fontWeight,
           letterSpacing: variantStyle.letterSpacing,
           color: textColor,
         },

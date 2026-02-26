@@ -4,10 +4,54 @@ import { WebView, WebViewNavigation } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { btoa } from 'react-native-quick-base64';
 
+import { useSnapshot } from 'valtio';
+
 import { useTheme } from '@/hooks/useTheme';
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
 import LogStore from '@/store/LogStore';
+import SettingsStore from '@/store/SettingsStore';
+
+// Sets viewport/content CSS early so web pages render to device width.
+const PRELOAD_VIEWPORT_JS = `
+  (function() {
+    function applyViewportStyles() {
+      var head = document.head || document.getElementsByTagName('head')[0];
+      if (!head) {
+        return;
+      }
+
+      var meta = document.querySelector('meta[name="viewport"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = 'viewport';
+        head.appendChild(meta);
+      }
+
+      meta.content =
+        'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+
+      var style = document.getElementById('rn-webview-fit-style');
+      if (!style) {
+        style = document.createElement('style');
+        style.id = 'rn-webview-fit-style';
+        style.textContent =
+          'html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow: hidden !important; overscroll-behavior: none !important; }';
+        head.appendChild(style);
+      }
+    }
+
+    if (document.head) {
+      applyViewportStyles();
+      return;
+    }
+
+    document.addEventListener('DOMContentLoaded', applyViewportStyles, {
+      once: true,
+    });
+  })();
+  true;
+`;
 
 function getBaseUrl(urlString: string): string {
   try {
@@ -24,16 +68,27 @@ const PREFILL_DATA = {
   dob: '1990-06-15',
 };
 
-function buildUrlWithPrefill(baseUrl: string): string {
+function buildUrlWithPrefill(
+  baseUrl: string,
+  themeMode: 'light' | 'dark',
+): string {
   const prefillJson = JSON.stringify(PREFILL_DATA);
   const prefillBase64 = btoa(prefillJson);
 
-  if (baseUrl.includes('prefill=')) {
-    return baseUrl.replace(/prefill=([^&]*)/, `prefill=${prefillBase64}`);
+  let result = baseUrl;
+
+  if (result.includes('prefill=')) {
+    result = result.replace(/prefill=([^&]*)/, `prefill=${prefillBase64}`);
+  } else {
+    const separator = result.includes('?') ? '&' : '?';
+    result = `${result}${separator}prefill=${prefillBase64}`;
   }
 
-  const separator = baseUrl.includes('?') ? '&' : '?';
-  return `${baseUrl}${separator}prefill=${prefillBase64}`;
+  // Append theme param based on wallet config
+  const theme = themeMode === 'dark' ? 'dark' : 'light';
+  result += `&theme=${theme}`;
+
+  return result;
 }
 
 interface CollectDataWebViewProps {
@@ -48,18 +103,19 @@ export function CollectDataWebView({
   onError,
 }: CollectDataWebViewProps) {
   const Theme = useTheme();
+  const { themeMode } = useSnapshot(SettingsStore.state);
   const webViewRef = useRef<WebView>(null);
   const [isLoading, setIsLoading] = useState(true);
   const isMountedRef = useRef(true);
 
   const finalUrl = useMemo(() => {
-    const urlWithPrefill = buildUrlWithPrefill(url);
+    const urlWithPrefill = buildUrlWithPrefill(url, themeMode);
     LogStore.log('WebView URL with prefill', 'CollectDataWebView', 'finalUrl', {
       originalUrl: url,
       finalUrl: urlWithPrefill,
     });
     return urlWithPrefill;
-  }, [url]);
+  }, [url, themeMode]);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -194,8 +250,15 @@ export function CollectDataWebView({
         javaScriptEnabled
         domStorageEnabled
         startInLoadingState
-        scalesPageToFit
+        scrollEnabled={false}
+        nestedScrollEnabled={false}
+        bounces={false}
+        overScrollMode="never"
+        setBuiltInZoomControls={false}
+        setDisplayZoomControls={false}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+        injectedJavaScriptBeforeContentLoaded={PRELOAD_VIEWPORT_JS}
       />
     </View>
   );

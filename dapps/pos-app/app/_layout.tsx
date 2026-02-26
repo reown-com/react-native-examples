@@ -15,6 +15,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useFonts } from "expo-font";
 
 import { useTheme } from "@/hooks/use-theme-color";
+import { useUrlCredentials } from "@/hooks/use-url-credentials";
 import {
   getHeaderBackgroundColor,
   getHeaderTintColor,
@@ -81,6 +82,9 @@ export default Sentry.wrap(function RootLayout() {
   }, [deviceId]);
 
   // Request Bluetooth permission on first app load (Android only)
+  // Apply credentials from URL query params (web only)
+  useUrlCredentials();
+
   useEffect(() => {
     async function checkBluetoothPermission() {
       if (Platform.OS !== "android") return;

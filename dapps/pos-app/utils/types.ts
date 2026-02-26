@@ -1,3 +1,5 @@
+export type ThemeMode = "light" | "dark" | "system";
+
 export type Namespace = "eip155" | "solana";
 
 // Payment API Types

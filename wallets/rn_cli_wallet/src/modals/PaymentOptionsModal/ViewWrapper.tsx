@@ -7,22 +7,16 @@ import SvgArrowLeft from '@/assets/ArrowLeft';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Button } from '@/components/Button';
-
-type Step =
-  | 'loading'
-  | 'intro'
-  | 'collectData'
-  | 'collectDataWebView'
-  | 'confirm'
-  | 'confirming'
-  | 'result';
+import type { Step } from '@/utils/TypesUtil';
 
 interface ViewWrapperProps {
   children: React.ReactNode;
   step: Step;
+  isWebView: boolean;
   showBackButton: boolean;
   onBack: () => void;
   onClose: () => void;
+  headerLeftContent?: React.ReactNode;
 }
 
 const ANIMATION_DURATION = 250;
@@ -30,22 +24,23 @@ const ANIMATION_DURATION = 250;
 export function ViewWrapper({
   children,
   step,
+  isWebView,
   showBackButton,
   onBack,
   onClose,
+  headerLeftContent,
 }: ViewWrapperProps) {
   const Theme = useTheme();
   const insets = useSafeAreaInsets();
 
-  const isWebViewStep = step === 'collectDataWebView';
-
   const content = (
     <>
       {/* Header */}
-      <View style={[styles.header, isWebViewStep && styles.webViewHeader]}>
-        {/* Back Button - hidden in WebView step since X handles back */}
-        <View style={styles.headerLeft}>
-          {showBackButton && !isWebViewStep && (
+      <View style={[styles.header, isWebView && styles.webViewHeader]}>
+        <View
+          style={headerLeftContent ? styles.headerLeftFlex : styles.headerLeft}
+        >
+          {showBackButton ? (
             <Button
               onPress={onBack}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -56,24 +51,24 @@ export function ViewWrapper({
                 fill={Theme['text-primary']}
               />
             </Button>
-          )}
+          ) : headerLeftContent ? (
+            headerLeftContent
+          ) : null}
         </View>
 
         {/* Spacer */}
         <View style={styles.headerCenter} />
 
-        {/* Close Button - in WebView step, X goes back instead of closing */}
+        {/* Close Button */}
         <View style={styles.headerRight}>
-          <ModalCloseButton onPress={isWebViewStep ? onBack : onClose} />
+          <ModalCloseButton onPress={onClose} />
         </View>
       </View>
 
       {/* Animated Content */}
       <Animated.View
         key={step}
-        style={
-          step === 'collectDataWebView' ? styles.webViewContent : undefined
-        }
+        style={isWebView ? styles.webViewContent : undefined}
         entering={FadeIn.duration(ANIMATION_DURATION)}
         exiting={FadeOut.duration(ANIMATION_DURATION)}
       >
@@ -82,12 +77,16 @@ export function ViewWrapper({
     </>
   );
 
-  if (isWebViewStep) {
+  if (isWebView) {
     return (
       <View
         style={[
           styles.fullscreenContainer,
-          { backgroundColor: Theme['bg-primary'], paddingTop: insets.top },
+          {
+            backgroundColor: Theme['bg-primary'],
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+          },
         ]}
       >
         {content}
@@ -128,6 +127,11 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     width: 38,
+    height: 38,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  headerLeftFlex: {
     height: 38,
     alignItems: 'flex-start',
     justifyContent: 'center',

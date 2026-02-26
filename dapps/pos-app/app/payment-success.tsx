@@ -204,7 +204,7 @@ export default function PaymentSuccessScreen() {
           </Button>
         </View>
       </Animated.View>
-      <StatusBar style={themeMode} />
+      <StatusBar style={themeMode === "system" ? "auto" : themeMode} />
     </View>
   );
 }
