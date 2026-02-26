@@ -103,18 +103,18 @@ const variantStyles: Record<TextVariant, VariantStyle> = {
     letterSpacing: -0.32,
   },
 
-  // Heading 5: 28px, -1% letter spacing, line height 26
+  // Heading 5: 26px, -1% letter spacing, line height 26
   'h5-400': {
-    fontSize: 28,
+    fontSize: 26,
     fontFamily: FontFamily.regular,
     fontWeight: '400',
-    letterSpacing: -0.28, // -1% of 28px
+    letterSpacing: -0.26, // -1% of 26px
   },
   'h5-500': {
-    fontSize: 28,
+    fontSize: 26,
     fontFamily: FontFamily.medium,
     fontWeight: '500',
-    letterSpacing: -0.28,
+    letterSpacing: -0.26,
   },
 
   // Heading 6: 20px, -3% letter spacing, line height 20
