@@ -19,6 +19,7 @@ export interface ActionButtonProps {
   variant?: ButtonVariant;
   loading?: boolean;
   disabled?: boolean;
+  silentDisabled?: boolean;
   /** When true, button expands to fill container width */
   fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -31,6 +32,7 @@ export function ActionButton({
   variant = 'primary',
   loading,
   disabled,
+  silentDisabled = false,
   fullWidth = false,
   style,
   textStyle,
@@ -65,7 +67,7 @@ export function ActionButton({
   return (
     <Button
       onPress={onPress}
-      disabled={disabled || loading}
+      disabled={disabled || loading || silentDisabled}
       style={[
         styles.container,
         { backgroundColor, borderColor },
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius[4],
     paddingHorizontal: Spacing[4],
     height: Spacing[11],
-    width: 100, //Todo: check if this is needed
+    width: 100,
     borderWidth: 1,
   },
   fullWidth: {

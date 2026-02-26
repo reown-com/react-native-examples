@@ -3,7 +3,6 @@ import type { PaymentInfo } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
 import { formatAmount, getCurrencySymbol } from './utils';
-import SealCheck from '@/assets/SealCheck';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 
@@ -40,23 +39,16 @@ export function MerchantInfo({ info }: MerchantInfoProps) {
               ]}
             />
           )}
-          <View style={styles.paymentInfoContainer}>
-            <Text
-              variant="h6-400"
-              color="text-primary"
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              center
-            >
-              Pay {currencySymbol}
-              {amount} to {info.merchant.name}
-            </Text>
-            <SealCheck
-              width={22}
-              height={22}
-              fill={Theme['bg-accent-primary']}
-            />
-          </View>
+          <Text
+            variant="h6-400"
+            color="text-primary"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            center
+          >
+            Pay {currencySymbol}
+            {amount} to {info.merchant.name}
+          </Text>
         </View>
       )}
     </>
@@ -68,15 +60,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing[4],
-    paddingHorizontal: 60,
   },
   merchantIcon: {
     width: Spacing[13],
     height: Spacing[13],
     borderRadius: BorderRadius[4],
-  },
-  paymentInfoContainer: {
-    flexDirection: 'row',
-    gap: Spacing[1],
   },
 });
