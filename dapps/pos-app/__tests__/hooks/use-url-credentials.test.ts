@@ -36,11 +36,11 @@ afterEach(() => {
 });
 
 describe("useUrlCredentials", () => {
-  it("applies both merchantId and partnerApiKey from base64-encoded URL params", async () => {
+  it("applies both merchantId and customerApiKey from base64-encoded URL params", async () => {
     const merchantId = "test-merchant-123";
     const apiKey = "test-api-key-456";
     setWindowLocation(
-      `?merchantId=${toBase64(merchantId)}&partnerApiKey=${toBase64(apiKey)}`,
+      `?merchantId=${toBase64(merchantId)}&customerApiKey=${toBase64(apiKey)}`,
     );
 
     useSettingsStore.setState({ _hasHydrated: true });
@@ -50,11 +50,11 @@ describe("useUrlCredentials", () => {
 
     const state = useSettingsStore.getState();
     expect(state.merchantId).toBe(merchantId);
-    expect(state.isPartnerApiKeySet).toBe(true);
+    expect(state.isCustomerApiKeySet).toBe(true);
     expect(router.replace).toHaveBeenCalledWith("/");
   });
 
-  it("applies only merchantId when partnerApiKey is absent", async () => {
+  it("applies only merchantId when customerApiKey is absent", async () => {
     const merchantId = "only-merchant";
     setWindowLocation(`?merchantId=${toBase64(merchantId)}`);
 
@@ -65,12 +65,12 @@ describe("useUrlCredentials", () => {
 
     const state = useSettingsStore.getState();
     expect(state.merchantId).toBe(merchantId);
-    expect(state.isPartnerApiKeySet).toBe(false);
+    expect(state.isCustomerApiKeySet).toBe(false);
   });
 
-  it("applies only partnerApiKey when merchantId is absent", async () => {
+  it("applies only customerApiKey when merchantId is absent", async () => {
     const apiKey = "only-api-key";
-    setWindowLocation(`?partnerApiKey=${toBase64(apiKey)}`);
+    setWindowLocation(`?customerApiKey=${toBase64(apiKey)}`);
 
     useSettingsStore.setState({ _hasHydrated: true, merchantId: null });
 
@@ -79,7 +79,7 @@ describe("useUrlCredentials", () => {
 
     const state = useSettingsStore.getState();
     expect(state.merchantId).toBeNull();
-    expect(state.isPartnerApiKeySet).toBe(true);
+    expect(state.isCustomerApiKeySet).toBe(true);
   });
 
   it("does nothing when no URL params are present", async () => {
@@ -132,7 +132,7 @@ describe("useUrlCredentials", () => {
 
   it("logs actions when credentials are applied", async () => {
     setWindowLocation(
-      `?merchantId=${toBase64("log-test")}&partnerApiKey=${toBase64("log-key")}`,
+      `?merchantId=${toBase64("log-test")}&customerApiKey=${toBase64("log-key")}`,
     );
 
     useSettingsStore.setState({ _hasHydrated: true });
@@ -144,6 +144,6 @@ describe("useUrlCredentials", () => {
     const infoLogs = logs.filter((l) => l.level === "info");
     expect(infoLogs).toHaveLength(2);
     expect(infoLogs[0].message).toContain("Merchant ID set from URL");
-    expect(infoLogs[1].message).toContain("Partner API key set from URL");
+    expect(infoLogs[1].message).toContain("Customer API key set from URL");
   });
 });

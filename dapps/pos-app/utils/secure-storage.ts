@@ -2,18 +2,23 @@ import * as SecureStore from "expo-secure-store";
 import { storage } from "./storage";
 
 const KEYS = {
-  PARTNER_API_KEY: "partner_api_key",
+  CUSTOMER_API_KEY: "customer_api_key",
   PIN_HASH: "pin_hash",
 } as const;
+const LEGACY_CUSTOMER_API_KEYS = ["merchant_api_key", "partner_api_key"] as const;
 
 const FRESH_INSTALL_KEY = "app_has_launched";
-const PARTNER_API_KEY_MIGRATION_KEY = "migration_partner_api_key_completed";
+const CUSTOMER_API_KEY_MIGRATION_KEY =
+  "migration_customer_api_key_completed";
 
 export async function clearStaleSecureStorage(): Promise<void> {
   const hasLaunchedBefore = storage.getItem<boolean>(FRESH_INSTALL_KEY);
 
   if (!hasLaunchedBefore) {
-    await SecureStore.deleteItemAsync(KEYS.PARTNER_API_KEY);
+    await SecureStore.deleteItemAsync(KEYS.CUSTOMER_API_KEY);
+    for (const legacyKey of LEGACY_CUSTOMER_API_KEYS) {
+      await SecureStore.deleteItemAsync(legacyKey);
+    }
     await SecureStore.deleteItemAsync(KEYS.PIN_HASH);
 
     storage.setItem(FRESH_INSTALL_KEY, true);
@@ -21,31 +26,35 @@ export async function clearStaleSecureStorage(): Promise<void> {
 }
 
 /**
- * Migrates partner API key from old storage key to new one.
+ * Migrates customer API key from old storage keys to new one.
+ * Handles both legacy key names: "merchant_api_key" and "partner_api_key".
  * Tracks completion to avoid running on every app start.
  * @returns true if migration was performed, false if skipped
  */
-export async function migratePartnerApiKey(): Promise<boolean> {
+export async function migrateCustomerApiKey(): Promise<boolean> {
   const migrationCompleted = storage.getItem<boolean>(
-    PARTNER_API_KEY_MIGRATION_KEY,
+    CUSTOMER_API_KEY_MIGRATION_KEY,
   );
   if (migrationCompleted) return false;
 
-  const OLD_KEY = "merchant_api_key";
-  const NEW_KEY = "partner_api_key";
+  const OLD_KEYS = LEGACY_CUSTOMER_API_KEYS;
+  const NEW_KEY = "customer_api_key";
 
   let migrated = false;
-  const oldValue = await SecureStore.getItemAsync(OLD_KEY);
-  if (oldValue) {
-    const newValue = await SecureStore.getItemAsync(NEW_KEY);
-    if (!newValue) {
-      await SecureStore.setItemAsync(NEW_KEY, oldValue);
-      migrated = true;
+  const existingNewValue = await SecureStore.getItemAsync(NEW_KEY);
+
+  for (const oldKey of OLD_KEYS) {
+    const oldValue = await SecureStore.getItemAsync(oldKey);
+    if (oldValue) {
+      if (!existingNewValue && !migrated) {
+        await SecureStore.setItemAsync(NEW_KEY, oldValue);
+        migrated = true;
+      }
+      await SecureStore.deleteItemAsync(oldKey);
     }
-    await SecureStore.deleteItemAsync(OLD_KEY);
   }
 
-  storage.setItem(PARTNER_API_KEY_MIGRATION_KEY, true);
+  storage.setItem(CUSTOMER_API_KEY_MIGRATION_KEY, true);
   return migrated;
 }
 

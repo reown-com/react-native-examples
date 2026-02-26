@@ -37,7 +37,7 @@ type ActiveSheet =
   | "walletTheme"
   | "currency"
   | "merchantId"
-  | "partnerApiKey"
+  | "customerApiKey"
   | null;
 
 const THEME_OPTIONS: RadioOption<ThemeMode>[] = [
@@ -78,7 +78,7 @@ export default function SettingsScreen() {
   const theme = useTheme();
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
-  const [isEditingPartnerKey, setIsEditingPartnerKey] = useState(false);
+  const [isEditingCustomerKey, setIsEditingCustomerKey] = useState(false);
 
   // Custom hooks for biometrics and merchant flow
   const {
@@ -93,17 +93,17 @@ export default function SettingsScreen() {
 
   const {
     merchantIdInput,
-    partnerApiKeyInput,
+    customerApiKeyInput,
     activeModal,
     pinError,
     isMerchantIdConfirmDisabled,
-    isPartnerApiKeyConfirmDisabled,
-    hasStoredPartnerApiKey,
+    isCustomerApiKeyConfirmDisabled,
+    hasStoredCustomerApiKey,
     handleMerchantIdInputChange,
-    handlePartnerApiKeyInputChange,
-    resetPartnerApiKeyInput,
+    handleCustomerApiKeyInputChange,
+    resetCustomerApiKeyInput,
     handleMerchantIdConfirm,
-    handlePartnerApiKeyConfirm,
+    handleCustomerApiKeyConfirm,
     handlePinVerifyComplete,
     handleBiometricAuthSuccess,
     handleBiometricAuthFailure,
@@ -141,11 +141,11 @@ export default function SettingsScreen() {
   const currentCurrency = getCurrency(currency);
 
   const closeSheet = () => {
-    if (activeSheet === "partnerApiKey") {
-      resetPartnerApiKeyInput();
+    if (activeSheet === "customerApiKey") {
+      resetCustomerApiKeyInput();
     }
     setActiveSheet(null);
-    setIsEditingPartnerKey(false);
+    setIsEditingCustomerKey(false);
   };
 
   const handleThemeModeChange = (value: ThemeMode) => {
@@ -168,16 +168,16 @@ export default function SettingsScreen() {
     closeSheet();
   };
 
-  const handlePartnerApiKeySave = async () => {
-    await handlePartnerApiKeyConfirm();
+  const handleCustomerApiKeySave = async () => {
+    await handleCustomerApiKeyConfirm();
     closeSheet();
   };
 
-  const handlePartnerKeyChange = (value: string) => {
-    if (!isEditingPartnerKey) {
-      setIsEditingPartnerKey(true);
+  const handleCustomerKeyChange = (value: string) => {
+    if (!isEditingCustomerKey) {
+      setIsEditingCustomerKey(true);
     }
-    handlePartnerApiKeyInputChange(value);
+    handleCustomerApiKeyInputChange(value);
   };
 
   const handleTestPrinterPress = async () => {
@@ -267,9 +267,9 @@ export default function SettingsScreen() {
         />
 
         <SettingsItem
-          title="Partner API KEY"
+          title="Customer API KEY"
           value="**********"
-          onPress={() => setActiveSheet("partnerApiKey")}
+          onPress={() => setActiveSheet("customerApiKey")}
         />
 
         {/* Biometric toggle - only show if PIN is set and biometrics available */}
@@ -406,23 +406,23 @@ export default function SettingsScreen() {
         </View>
       </SettingsBottomSheet>
 
-      {/* Partner API Key Bottom Sheet */}
+      {/* Customer API Key Bottom Sheet */}
       <SettingsBottomSheet
-        visible={activeSheet === "partnerApiKey"}
-        title="Partner API KEY"
+        visible={activeSheet === "customerApiKey"}
+        title="Customer API KEY"
         onClose={closeSheet}
       >
         <View style={styles.inputContent}>
           <TextInput
             value={
-              isEditingPartnerKey
-                ? partnerApiKeyInput
-                : hasStoredPartnerApiKey
+              isEditingCustomerKey
+                ? customerApiKeyInput
+                : hasStoredCustomerApiKey
                   ? "********"
                   : ""
             }
-            onChangeText={handlePartnerKeyChange}
-            placeholder="Enter partner API key"
+            onChangeText={handleCustomerKeyChange}
+            placeholder="Enter customer API key"
             placeholderTextColor={theme["text-tertiary"]}
             autoCapitalize="none"
             autoCorrect={false}
@@ -437,12 +437,12 @@ export default function SettingsScreen() {
             ]}
           />
           <Button
-            onPress={handlePartnerApiKeySave}
-            disabled={isPartnerApiKeyConfirmDisabled}
+            onPress={handleCustomerApiKeySave}
+            disabled={isCustomerApiKeyConfirmDisabled}
             style={[
               styles.saveButton,
               {
-                backgroundColor: isPartnerApiKeyConfirmDisabled
+                backgroundColor: isCustomerApiKeyConfirmDisabled
                   ? theme["foreground-accent-primary-60"]
                   : theme["bg-accent-primary"],
               },

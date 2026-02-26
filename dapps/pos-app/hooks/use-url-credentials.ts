@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 
 /**
- * On web, reads merchantId and partnerApiKey from URL query parameters,
+ * On web, reads merchantId and customerApiKey from URL query parameters,
  * base64-decodes them, saves to the settings store,
  * and cleans the URL. Runs once after store hydration.
  *
@@ -16,7 +16,9 @@ export function useUrlCredentials() {
   const hasProcessed = useRef(false);
   const _hasHydrated = useSettingsStore((state) => state._hasHydrated);
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);
-  const setPartnerApiKey = useSettingsStore((state) => state.setPartnerApiKey);
+  const setCustomerApiKey = useSettingsStore(
+    (state) => state.setCustomerApiKey,
+  );
   const addLog = useLogsStore((state) => state.addLog);
 
   useEffect(() => {
@@ -27,9 +29,9 @@ export function useUrlCredentials() {
 
     const params = new URLSearchParams(window.location.search);
     const rawMerchantId = params.get("merchantId");
-    const rawPartnerApiKey = params.get("partnerApiKey");
+    const rawCustomerApiKey = params.get("customerApiKey");
 
-    if (!rawMerchantId && !rawPartnerApiKey) return;
+    if (!rawMerchantId && !rawCustomerApiKey) return;
 
     async function applyCredentials() {
       try {
@@ -44,12 +46,12 @@ export function useUrlCredentials() {
           );
         }
 
-        if (rawPartnerApiKey) {
-          const partnerApiKey = atob(rawPartnerApiKey);
-          await setPartnerApiKey(partnerApiKey);
+        if (rawCustomerApiKey) {
+          const customerApiKey = atob(rawCustomerApiKey);
+          await setCustomerApiKey(customerApiKey);
           addLog(
             "info",
-            "Partner API key set from URL parameter",
+            "Customer API key set from URL parameter",
             "layout",
             "useUrlCredentials",
           );
@@ -74,5 +76,5 @@ export function useUrlCredentials() {
     }
 
     applyCredentials();
-  }, [_hasHydrated, setMerchantId, setPartnerApiKey, addLog]);
+  }, [_hasHydrated, setMerchantId, setCustomerApiKey, addLog]);
 }
