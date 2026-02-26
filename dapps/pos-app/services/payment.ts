@@ -1,36 +1,9 @@
-import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   PaymentStatusResponse,
   StartPaymentRequest,
   StartPaymentResponse,
 } from "@/utils/types";
-import { apiClient } from "./client";
-
-/**
- * Get API headers for authenticated requests
- * @returns Headers object with Api-Key, Merchant-Id, and SDK headers
- * @throws Error if partner API key or merchant ID is missing
- */
-async function getApiHeaders(): Promise<Record<string, string>> {
-  const merchantId = useSettingsStore.getState().merchantId;
-  const partnerApiKey = await useSettingsStore.getState().getPartnerApiKey();
-
-  if (!merchantId || merchantId.trim().length === 0) {
-    throw new Error("Merchant ID is not configured");
-  }
-
-  if (!partnerApiKey || partnerApiKey.trim().length === 0) {
-    throw new Error("Partner API key is not configured");
-  }
-
-  return {
-    "Api-Key": partnerApiKey,
-    "Merchant-Id": merchantId,
-    "Sdk-Name": "pos-device",
-    "Sdk-Version": "1.0.0",
-    "Sdk-Platform": "react-native",
-  };
-}
+import { apiClient, getApiHeaders } from "./client";
 
 /**
  * Start a new payment
