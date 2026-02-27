@@ -7,15 +7,34 @@ import { useUrlCredentials } from "@/hooks/use-url-credentials";
 import { resetSettingsStore, resetLogsStore } from "../utils/store-helpers";
 import { waitForAsync } from "../utils/test-helpers";
 
+type MessageHandler = (event: { data: unknown }) => void;
+const messageListeners: MessageHandler[] = [];
+
 function setWindowLocation(search: string) {
   const href = `http://localhost${search}`;
   (global as any).window = {
     ...((global as any).window || {}),
     location: { search, href },
+    addEventListener: (type: string, handler: MessageHandler) => {
+      if (type === "message") messageListeners.push(handler);
+    },
+    removeEventListener: (type: string, handler: MessageHandler) => {
+      if (type === "message") {
+        const idx = messageListeners.indexOf(handler);
+        if (idx !== -1) messageListeners.splice(idx, 1);
+      }
+    },
   };
 }
 
+function dispatchPostMessage(data: unknown) {
+  for (const handler of [...messageListeners]) {
+    handler({ data });
+  }
+}
+
 function clearWindow() {
+  messageListeners.length = 0;
   delete (global as any).window;
 }
 
@@ -145,5 +164,168 @@ describe("useUrlCredentials", () => {
     expect(infoLogs).toHaveLength(2);
     expect(infoLogs[0].message).toContain("Merchant ID set from URL");
     expect(infoLogs[1].message).toContain("Customer API key set from URL");
+  });
+});
+
+describe("useUrlCredentials — postMessage", () => {
+  it("applies both merchantId and customerApiKey from postMessage", async () => {
+    setWindowLocation("");
+    useSettingsStore.setState({ _hasHydrated: true });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    await act(async () => {
+      dispatchPostMessage({
+        type: "pos-credentials",
+        merchantId: "pm-merchant-123",
+        customerApiKey: "pm-key-456",
+      });
+      await waitForAsync();
+    });
+
+    const state = useSettingsStore.getState();
+    expect(state.merchantId).toBe("pm-merchant-123");
+    expect(state.isCustomerApiKeySet).toBe(true);
+  });
+
+  it("applies only merchantId from postMessage", async () => {
+    setWindowLocation("");
+    useSettingsStore.setState({ _hasHydrated: true });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    await act(async () => {
+      dispatchPostMessage({
+        type: "pos-credentials",
+        merchantId: "pm-only-merchant",
+      });
+      await waitForAsync();
+    });
+
+    expect(useSettingsStore.getState().merchantId).toBe("pm-only-merchant");
+    expect(useSettingsStore.getState().isCustomerApiKeySet).toBe(false);
+  });
+
+  it("applies only customerApiKey from postMessage", async () => {
+    setWindowLocation("");
+    useSettingsStore.setState({ _hasHydrated: true, merchantId: null });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    await act(async () => {
+      dispatchPostMessage({
+        type: "pos-credentials",
+        customerApiKey: "pm-only-key",
+      });
+      await waitForAsync();
+    });
+
+    expect(useSettingsStore.getState().merchantId).toBeNull();
+    expect(useSettingsStore.getState().isCustomerApiKeySet).toBe(true);
+  });
+
+  it("ignores messages with wrong type", async () => {
+    setWindowLocation("");
+    useSettingsStore.setState({
+      _hasHydrated: true,
+      merchantId: "existing",
+    });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    await act(async () => {
+      dispatchPostMessage({
+        type: "some-other-message",
+        merchantId: "should-not-apply",
+      });
+      await waitForAsync();
+    });
+
+    expect(useSettingsStore.getState().merchantId).toBe("existing");
+  });
+
+  it("ignores non-object messages", async () => {
+    setWindowLocation("");
+    useSettingsStore.setState({ _hasHydrated: true });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    await act(async () => {
+      dispatchPostMessage("just a string");
+      dispatchPostMessage(null);
+      dispatchPostMessage(42);
+      await waitForAsync();
+    });
+
+    expect(useSettingsStore.getState().merchantId).toBeNull();
+  });
+
+  it("does nothing on native platforms", async () => {
+    (Platform as any).OS = "ios";
+    setWindowLocation("");
+    useSettingsStore.setState({ _hasHydrated: true });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    await act(async () => {
+      dispatchPostMessage({
+        type: "pos-credentials",
+        merchantId: "should-not-apply",
+      });
+      await waitForAsync();
+    });
+
+    expect(useSettingsStore.getState().merchantId).toBeNull();
+  });
+
+  it("logs source as postMessage", async () => {
+    setWindowLocation("");
+    useSettingsStore.setState({ _hasHydrated: true });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    await act(async () => {
+      dispatchPostMessage({
+        type: "pos-credentials",
+        merchantId: "log-pm-test",
+        customerApiKey: "log-pm-key",
+      });
+      await waitForAsync();
+    });
+
+    const logs = useLogsStore.getState().logs;
+    const infoLogs = logs.filter((l) => l.level === "info");
+    expect(infoLogs).toHaveLength(2);
+    expect(infoLogs[0].message).toContain("Merchant ID set from postMessage");
+    expect(infoLogs[1].message).toContain(
+      "Customer API key set from postMessage",
+    );
+  });
+
+  it("cleans up listener on unmount", async () => {
+    setWindowLocation("");
+    useSettingsStore.setState({ _hasHydrated: true });
+
+    const { unmount } = renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    unmount();
+
+    await act(async () => {
+      dispatchPostMessage({
+        type: "pos-credentials",
+        merchantId: "after-unmount",
+      });
+      await waitForAsync();
+    });
+
+    expect(useSettingsStore.getState().merchantId).toBeNull();
   });
 });
