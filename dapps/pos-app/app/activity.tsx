@@ -137,7 +137,7 @@ export default function ActivityScreen() {
         ListFooterComponent={renderFooter}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
-        removeClippedSubviews={true}
+        removeClippedSubviews={false}
         maxToRenderPerBatch={10}
         initialNumToRender={10}
         windowSize={10}
