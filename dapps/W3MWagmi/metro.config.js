@@ -1,6 +1,7 @@
-const {getSentryExpoConfig} = require('@sentry/react-native/metro');
+const {withSentryConfig} = require('@sentry/react-native/metro');
+const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
 
-const config = getSentryExpoConfig(__dirname);
+const config = getDefaultConfig(__dirname);
 
 // Prevent ws (Node.js websocket) from being bundled - React Native has native WebSocket
 config.resolver = {
@@ -17,4 +18,4 @@ config.resolver = {
   },
 };
 
-module.exports = config;
+module.exports = withSentryConfig(config);

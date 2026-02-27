@@ -7,7 +7,6 @@
     "icon": "./assets/app_icons/icon.png",
     "scheme": "WPay",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.walletconnect.mobilepos.poc",
@@ -27,8 +26,6 @@
         "backgroundImage": "./assets/app_icons/android_icon_background.png",
         "monochromeImage": "./assets/app_icons/android_icon_monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
       "package": "com.walletconnect.mobilepos.poc",
       "permissions": [
         "android.permission.BLUETOOTH",
@@ -118,7 +115,9 @@
             "Bluetooth"
           ]
         }
-      ]
+      ],
+      "@sentry/react-native",
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,
