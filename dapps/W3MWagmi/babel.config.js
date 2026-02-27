@@ -1,5 +1,5 @@
 module.exports = {
-  presets: [["babel-preset-expo", { unstable_transformImportMeta: true }]],
+  presets: ['module:@react-native/babel-preset'],
   plugins: [
     [
       'module-resolver',
