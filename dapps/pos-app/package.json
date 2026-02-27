@@ -16,7 +16,7 @@
     "web:build": "npm run web:setup && expo export -p web",
     "web:setup": "npx setup-skia-web && mkdir -p public && cp web/static/js/canvaskit.wasm public/",
     "prettier:fix": "prettier --write .",
-    "prettier": "prettier --check .",
+    "prettier:check": "prettier --check .",
     "lint": "expo lint",
     "test": "jest"
   },
@@ -93,6 +93,11 @@
       "undici": "5.29.0"
     },
     "minimatch": "9.0.6"
+  },
+  "expo": {
+    "install": {
+      "exclude": ["react", "react-dom", "react-native"]
+    }
   },
   "private": true
 }

@@ -10,7 +10,7 @@
     "android:build": "cd android && ./gradlew assembleRelease",
     "prebuild": "expo prebuild",
     "lint": "expo lint",
-    "prettier": "prettier --write .",
+    "format": "prettier --write .",
     "postinstall": "patch-package"
   },
   "dependencies": {
@@ -18,6 +18,8 @@
     "@craftzdog/react-native-buffer": "^6.1.1",
     "@gorhom/bottom-sheet": "^5",
     "@json-rpc-tools/utils": "^1.7.6",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/netinfo": "11.5.2",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
@@ -79,6 +81,15 @@
     "undici": "6.23.0",
     "tar": "7.5.8",
     "minimatch": "9.0.6"
+  },
+  "expo": {
+    "install": {
+      "exclude": [
+        "react",
+        "react-dom",
+        "react-native"
+      ]
+    }
   },
   "private": true
 }

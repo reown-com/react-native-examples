@@ -85,5 +85,10 @@
     "h3": "1.15.5",
     "minimatch": "9.0.6"
   },
+  "expo": {
+    "install": {
+      "exclude": ["react", "react-dom", "react-native"]
+    }
+  },
   "private": true
 }

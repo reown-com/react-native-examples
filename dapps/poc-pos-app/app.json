@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/app_icons/icon.png",
-    "scheme": "WPay",
+    "scheme": "wpay",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
