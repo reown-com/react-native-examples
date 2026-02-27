@@ -12109,7 +12109,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-is-edge-to-edge@npm:^1.2.1":
+"react-native-is-edge-to-edge@npm:1.2.1":
   version: 1.2.1
   resolution: "react-native-is-edge-to-edge@npm:1.2.1"
   peerDependencies:
@@ -12129,18 +12129,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:4.1.3":
-  version: 4.1.3
-  resolution: "react-native-reanimated@npm:4.1.3"
+"react-native-reanimated@npm:4.2.2":
+  version: 4.2.2
+  resolution: "react-native-reanimated@npm:4.2.2"
   dependencies:
-    react-native-is-edge-to-edge: ^1.2.1
-    semver: 7.7.2
+    react-native-is-edge-to-edge: 1.2.1
+    semver: 7.7.3
   peerDependencies:
-    "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-    react-native-worklets: ">=0.5.0"
-  checksum: 5f3b7298dd721b5da7f8bab64c557624d08b8715502f4ba2ff9118f31d852e3d9734ffbfaacd1302468ba68d4790689eead39605645a80f737802c8de0008064
+    react-native-worklets: ">=0.7.0"
+  checksum: 2497901472996aece1e350ffa02233ad0f9f7a16e389a201246474fae872f3ec9834a0b7c3801241d5844b9f7dbf0309d868728b3b35555de5d1836b3f527644
   languageName: node
   linkType: hard
 
@@ -12689,7 +12688,7 @@ __metadata:
     react-native-gesture-handler: 2.29.0
     react-native-get-random-values: 1.11.0
     react-native-mmkv: 3.3.3
-    react-native-reanimated: 4.1.3
+    react-native-reanimated: 4.2.2
     react-native-safe-area-context: 5.6.1
     react-native-screens: 4.18.0
     react-native-svg: 15.14.0
@@ -12807,6 +12806,15 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: dd94ba8f1cbc903d8eeb4dd8bf19f46b3deb14262b6717d0de3c804b594058ae785ef2e4b46c5c3b58733c99c83339068203002f9e37cfe44f7e2cc5e3d2f621
+  languageName: node
+  linkType: hard
+
+"semver@npm:7.7.3":
+  version: 7.7.3
+  resolution: "semver@npm:7.7.3"
+  bin:
+    semver: bin/semver.js
+  checksum: f013a3ee4607857bcd3503b6ac1d80165f7f8ea94f5d55e2d3e33df82fce487aa3313b987abf9b39e0793c83c9fc67b76c36c067625141a9f6f704ae0ea18db2
   languageName: node
   linkType: hard
 
