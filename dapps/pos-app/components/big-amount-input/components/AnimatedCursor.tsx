@@ -2,6 +2,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import Animated, {
+  cancelAnimation,
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -49,6 +50,10 @@ export const AnimatedCursor = ({
     } else {
       opacity.value = withTiming(0, { duration: 100 });
     }
+
+    return () => {
+      cancelAnimation(opacity);
+    };
   }, [isFocused, opacity, blinkEnabled]);
 
   // Scale height directly instead of transform to avoid position shift

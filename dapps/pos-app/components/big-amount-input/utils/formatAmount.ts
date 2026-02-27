@@ -1,6 +1,8 @@
+import type { SymbolPosition } from "@/utils/currency";
+
 export type SupportedLocale = "en-US" | "fr-FR" | "de-DE" | "nl-NL";
 
-export type SymbolPosition = "left" | "right";
+export type { SymbolPosition };
 
 export type FormatAmountOptions = {
   currency?: string;
@@ -18,7 +20,7 @@ export function getDecimalSeparator(
   return formatted.charAt(1);
 }
 
-export function getDeviceLocale(): SupportedLocale {
+export function getDefaultLocale(): SupportedLocale {
   return DEFAULT_LOCALE;
 }
 
@@ -85,8 +87,4 @@ export function formatAmountInput(
     .slice(0, 2);
 
   return `${integerPart}${decimalSeparator}${decimalPart}`;
-}
-
-export function normalizeRawValue(value: string): string {
-  return value.replace(",", ".");
 }

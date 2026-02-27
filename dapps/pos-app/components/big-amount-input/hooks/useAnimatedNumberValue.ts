@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import {
   formatRawValueToDisplay,
   getDecimalSeparator,
-  getDeviceLocale,
+  getDefaultLocale,
   type SupportedLocale,
   type SymbolPosition,
 } from "../utils/formatAmount";
@@ -23,7 +23,7 @@ export const useAnimatedNumberValue = ({
   locale,
   placeholder,
 }: UseAnimatedNumberValueParams) => {
-  const effectiveLocale = locale ?? getDeviceLocale();
+  const effectiveLocale = locale ?? getDefaultLocale();
   const decimalSeparator = getDecimalSeparator(effectiveLocale);
   const isEmpty = !value;
 

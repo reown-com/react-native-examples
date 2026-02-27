@@ -54,17 +54,22 @@ function AnimatedCharacterComponent({
     opacity.value = withTiming(1, TIMING_CONFIG);
   }, [translateY, opacity]);
 
+  // Compensate for scale origin: RN scales from center, so we offset
+  // by half the width * (1 - scale) to simulate left-origin scaling
+  const scaleOffsetX = (characterWidth * (1 - scale)) / 2;
+
   const animatedStyle = useAnimatedStyle(
     () => ({
       opacity: opacity.value,
-      transformOrigin: "left center",
       transform: [
-        { translateX: withTiming(positionX, TIMING_CONFIG) },
+        {
+          translateX: withTiming(positionX - scaleOffsetX, TIMING_CONFIG),
+        },
         { translateY: translateY.value },
         { scale: withTiming(scale, TIMING_CONFIG) },
       ],
     }),
-    [positionX, scale],
+    [positionX, scale, scaleOffsetX],
   );
 
   const isPlaceholderChar = isPlaceholder || item.isPlaceholderDecimal;
