@@ -1,8 +1,11 @@
 export type SupportedLocale = "en-US" | "fr-FR" | "de-DE" | "nl-NL";
 
+export type SymbolPosition = "left" | "right";
+
 export type FormatAmountOptions = {
   currency?: string;
   locale?: SupportedLocale;
+  symbolPosition?: SymbolPosition;
 };
 
 const DEFAULT_LOCALE: SupportedLocale = "en-US";
@@ -35,7 +38,11 @@ export function formatRawValueToDisplay(
   rawValue: string,
   options: FormatAmountOptions = {},
 ): string {
-  const { currency = "$", locale = DEFAULT_LOCALE } = options;
+  const {
+    currency = "$",
+    locale = DEFAULT_LOCALE,
+    symbolPosition = "left",
+  } = options;
 
   if (!rawValue || rawValue === "") return "";
 
@@ -47,7 +54,10 @@ export function formatRawValueToDisplay(
     maximumFractionDigits: 2,
   });
 
-  return `${currency}${formatter.format(numericValue)}`;
+  const formatted = formatter.format(numericValue);
+  return symbolPosition === "right"
+    ? `${formatted}${currency}`
+    : `${currency}${formatted}`;
 }
 
 /**

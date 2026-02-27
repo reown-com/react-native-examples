@@ -1,4 +1,4 @@
-import type { SupportedLocale } from "../utils/formatAmount";
+import type { SupportedLocale, SymbolPosition } from "../utils/formatAmount";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -15,6 +15,7 @@ const TIMING_CONFIG = { duration: 200, easing: easeOutExpo };
 type AnimatedNumberProps = {
   value: string;
   currency?: string;
+  symbolPosition?: SymbolPosition;
   locale?: SupportedLocale;
   placeholder?: string;
   isFocused?: boolean;
@@ -24,6 +25,7 @@ type AnimatedNumberProps = {
 export const AnimatedNumber = ({
   value,
   currency = "$",
+  symbolPosition = "left",
   locale,
   placeholder = "0.00",
   isFocused = false,
@@ -33,6 +35,7 @@ export const AnimatedNumber = ({
     useAnimatedNumberValue({
       value,
       currency,
+      symbolPosition,
       locale,
       placeholder,
     });

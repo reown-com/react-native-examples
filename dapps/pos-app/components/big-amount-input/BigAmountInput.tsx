@@ -9,6 +9,7 @@ import { AnimatedNumber } from "./components/AnimatedNumber";
 export const BigAmountInput = ({
   value = "",
   currency = "$",
+  symbolPosition = "left",
   locale,
   placeholder = "0.00",
   isFocused = true,
@@ -21,6 +22,7 @@ export const BigAmountInput = ({
       <AnimatedNumber
         value={value}
         currency={currency}
+        symbolPosition={symbolPosition}
         locale={locale}
         placeholder={placeholder}
         isFocused={isFocused}

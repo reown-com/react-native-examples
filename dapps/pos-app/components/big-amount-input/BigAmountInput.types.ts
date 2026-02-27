@@ -1,5 +1,5 @@
 import type { StyleProp, ViewStyle } from "react-native";
-import type { SupportedLocale } from "./utils/formatAmount";
+import type { SupportedLocale, SymbolPosition } from "./utils/formatAmount";
 
 export type BigAmountInputProps = {
   /**
@@ -10,6 +10,11 @@ export type BigAmountInputProps = {
    * Currency symbol to display (default: $)
    */
   currency?: string;
+  /**
+   * Position of the currency symbol (default: left)
+   * "left" for "$10.00", "right" for "10.00€"
+   */
+  symbolPosition?: SymbolPosition;
   /**
    * Locale for number formatting (en-US, fr-FR, de-DE, nl-NL)
    */

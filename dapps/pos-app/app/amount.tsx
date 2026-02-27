@@ -69,6 +69,7 @@ export default function AmountScreen() {
         <BigAmountInput
           value={watchAmount}
           currency={currency.symbol}
+          symbolPosition={currency.symbolPosition}
           isFocused={false}
         />
       </View>

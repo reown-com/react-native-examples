@@ -4,12 +4,14 @@ import {
   getDecimalSeparator,
   getDeviceLocale,
   type SupportedLocale,
+  type SymbolPosition,
 } from "../utils/formatAmount";
 import { getCharactersArray } from "../utils/getCharactersArray";
 
 type UseAnimatedNumberValueParams = {
   value: string;
   currency: string;
+  symbolPosition?: SymbolPosition;
   locale?: SupportedLocale;
   placeholder: string;
 };
@@ -17,6 +19,7 @@ type UseAnimatedNumberValueParams = {
 export const useAnimatedNumberValue = ({
   value,
   currency,
+  symbolPosition = "left",
   locale,
   placeholder,
 }: UseAnimatedNumberValueParams) => {
@@ -33,12 +36,17 @@ export const useAnimatedNumberValue = ({
   }, [value]);
 
   const formattedValue = useMemo(() => {
-    if (isEmpty) return `${currency}${placeholder}`;
+    if (isEmpty) {
+      return symbolPosition === "right"
+        ? `${placeholder}${currency}`
+        : `${currency}${placeholder}`;
+    }
     return formatRawValueToDisplay(value, {
       currency,
       locale: effectiveLocale,
+      symbolPosition,
     });
-  }, [value, currency, effectiveLocale, isEmpty, placeholder]);
+  }, [value, currency, symbolPosition, effectiveLocale, isEmpty, placeholder]);
 
   const { characters, separators } = useMemo(
     () =>
