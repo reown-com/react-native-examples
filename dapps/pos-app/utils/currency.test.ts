@@ -1,4 +1,10 @@
-import { amountToCents, CURRENCIES, getCurrency } from "./currency";
+import {
+  amountToCents,
+  CURRENCIES,
+  formatAmountWithSymbol,
+  formatFiatAmount,
+  getCurrency,
+} from "./currency";
 
 describe("amountToCents", () => {
   it("converts whole amounts", () => {
@@ -54,6 +60,7 @@ describe("CURRENCIES", () => {
       name: "US Dollar",
       symbol: "$",
       unit: "iso4217/USD",
+      symbolPosition: "left",
     });
   });
 
@@ -64,6 +71,7 @@ describe("CURRENCIES", () => {
       name: "Euro",
       symbol: "€",
       unit: "iso4217/EUR",
+      symbolPosition: "right",
     });
   });
 });
@@ -84,8 +92,46 @@ describe("getCurrency", () => {
   });
 
   it("returns USD as fallback for unknown code", () => {
-    // @ts-expect-error - testing invalid code
     const currency = getCurrency("GBP");
     expect(currency.code).toBe("USD");
+  });
+});
+
+describe("formatAmountWithSymbol", () => {
+  it("formats USD with symbol on the left", () => {
+    const usd = getCurrency("USD");
+    expect(formatAmountWithSymbol("10.00", usd)).toBe("$10.00");
+    expect(formatAmountWithSymbol("0.00", usd)).toBe("$0.00");
+    expect(formatAmountWithSymbol("1234.56", usd)).toBe("$1234.56");
+  });
+
+  it("formats EUR with symbol on the right", () => {
+    const eur = getCurrency("EUR");
+    expect(formatAmountWithSymbol("10.00", eur)).toBe("10.00€");
+    expect(formatAmountWithSymbol("0.00", eur)).toBe("0.00€");
+    expect(formatAmountWithSymbol("1234.56", eur)).toBe("1234.56€");
+  });
+});
+
+describe("formatFiatAmount", () => {
+  it("returns dash for undefined amount", () => {
+    expect(formatFiatAmount(undefined)).toBe("-");
+  });
+
+  it("formats USD amounts with symbol on the left", () => {
+    expect(formatFiatAmount(1000, "iso4217/USD")).toBe("$10.00");
+    expect(formatFiatAmount(99, "iso4217/USD")).toBe("$0.99");
+    expect(formatFiatAmount(123456, "iso4217/USD")).toBe("$1,234.56");
+  });
+
+  it("formats EUR amounts with symbol on the right", () => {
+    expect(formatFiatAmount(1000, "iso4217/EUR")).toBe("10.00€");
+    expect(formatFiatAmount(99, "iso4217/EUR")).toBe("0.99€");
+    expect(formatFiatAmount(123456, "iso4217/EUR")).toBe("1,234.56€");
+  });
+
+  it("defaults to USD for missing currency", () => {
+    expect(formatFiatAmount(1000)).toBe("$10.00");
+    expect(formatFiatAmount(1000, undefined)).toBe("$10.00");
   });
 });

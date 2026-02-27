@@ -2,13 +2,19 @@ import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { VariantName, Variants } from "@/constants/variants";
 import { CurrencyCode } from "@/utils/currency";
 import { MerchantConfig } from "@/utils/merchant-config";
-import { SECURE_STORAGE_KEYS, secureStorage } from "@/utils/secure-storage";
+import {
+  clearStaleSecureStorage,
+  migratePartnerApiKey,
+  SECURE_STORAGE_KEYS,
+  secureStorage,
+} from "@/utils/secure-storage";
 import { storage } from "@/utils/storage";
-import { TransactionFilterType } from "@/utils/types";
+import { ThemeMode, TransactionFilterType } from "@/utils/types";
 import * as Crypto from "expo-crypto";
 import { Appearance } from "react-native";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useLogsStore } from "./useLogsStore";
 
 async function hashPin(pin: string): Promise<string> {
   return await Crypto.digestStringAsync(
@@ -45,13 +51,13 @@ const MAX_PIN_ATTEMPTS = 3;
 const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
 interface SettingsStore {
-  themeMode: "light" | "dark";
+  themeMode: ThemeMode;
   deviceId: string;
   variant: VariantName;
   currency: CurrencyCode;
   _hasHydrated: boolean;
   merchantId: string | null;
-  isMerchantApiKeySet: boolean;
+  isPartnerApiKeySet: boolean;
 
   // Transaction filter
   transactionFilter: TransactionFilterType;
@@ -62,16 +68,16 @@ interface SettingsStore {
   biometricEnabled: boolean;
 
   // Actions
-  setThemeMode: (themeMode: "light" | "dark") => void;
+  setThemeMode: (themeMode: ThemeMode) => void;
   setDeviceId: (deviceId: string) => void;
   setHasHydrated: (state: boolean) => void;
   setVariant: (variant: VariantName) => void;
   setCurrency: (currency: CurrencyCode) => void;
   setMerchantId: (merchantId: string | null) => void;
   clearMerchantId: () => Promise<string | null>;
-  setMerchantApiKey: (apiKey: string | null) => Promise<void>;
-  clearMerchantApiKey: () => Promise<void>;
-  getMerchantApiKey: () => Promise<string | null>;
+  setPartnerApiKey: (apiKey: string | null) => Promise<void>;
+  clearPartnerApiKey: () => Promise<void>;
+  getPartnerApiKey: () => Promise<string | null>;
 
   // PIN actions
   setPin: (pin: string) => Promise<void>;
@@ -92,18 +98,18 @@ interface SettingsStore {
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set, get) => ({
-      themeMode: Appearance.getColorScheme() || "light",
+      themeMode: "system" as ThemeMode,
       deviceId: "",
       variant: "default",
       currency: "USD",
       _hasHydrated: false,
       merchantId: null,
-      isMerchantApiKeySet: false,
+      isPartnerApiKeySet: false,
       transactionFilter: "all",
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
-      setThemeMode: (themeMode: "light" | "dark") => set({ themeMode }),
+      setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
       setVariant: (variant: VariantName) => {
@@ -126,44 +132,41 @@ export const useSettingsStore = create<SettingsStore>()(
         // Reset both merchant ID and API key to env defaults
         const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
         set({ merchantId: defaultMerchantId });
-        const defaultApiKey = MerchantConfig.getDefaultMerchantApiKey();
+        const defaultApiKey = MerchantConfig.getDefaultPartnerApiKey();
         if (defaultApiKey) {
           await secureStorage.setItem(
-            SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+            SECURE_STORAGE_KEYS.PARTNER_API_KEY,
             defaultApiKey,
           );
-          set({ isMerchantApiKeySet: true });
+          set({ isPartnerApiKeySet: true });
         } else {
-          await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
-          set({ isMerchantApiKeySet: false });
+          await secureStorage.removeItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
+          set({ isPartnerApiKeySet: false });
         }
         return defaultMerchantId;
       },
-      setMerchantApiKey: async (apiKey: string | null) => {
+      setPartnerApiKey: async (apiKey: string | null) => {
         try {
           if (apiKey) {
             await secureStorage.setItem(
-              SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
+              SECURE_STORAGE_KEYS.PARTNER_API_KEY,
               apiKey,
             );
-            set({ isMerchantApiKeySet: true });
+            set({ isPartnerApiKeySet: true });
           } else {
-            await secureStorage.removeItem(
-              SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
-            );
+            await secureStorage.removeItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
+            set({ isPartnerApiKeySet: false });
           }
         } catch {
           throw new Error("Failed to save credentials securely");
         }
       },
-      clearMerchantApiKey: async () => {
-        await secureStorage.removeItem(SECURE_STORAGE_KEYS.MERCHANT_API_KEY);
-        set({ isMerchantApiKeySet: false });
+      clearPartnerApiKey: async () => {
+        await secureStorage.removeItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
+        set({ isPartnerApiKeySet: false });
       },
-      getMerchantApiKey: async () => {
-        return await secureStorage.getItem(
-          SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
-        );
+      getPartnerApiKey: async () => {
+        return await secureStorage.getItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
       },
 
       // PIN methods
@@ -249,7 +252,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 11,
+      version: 12,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -268,8 +271,6 @@ export const useSettingsStore = create<SettingsStore>()(
           persistedState.biometricEnabled = false;
         }
         if (version < 8) {
-          persistedState.isMerchantApiKeySet = false;
-
           // Store pinHash temporarily for migration in onRehydrateStorage
           const pinHash = persistedState.pinHash;
           delete persistedState.pinHash;
@@ -296,6 +297,10 @@ export const useSettingsStore = create<SettingsStore>()(
         return persistedState;
       },
       onRehydrateStorage: () => async (state, error) => {
+        // Clear stale secure storage on fresh install BEFORE setting defaults
+        // This must happen before any defaults are written to secure storage
+        await clearStaleSecureStorage();
+
         if (error) {
           console.error("Settings hydration failed:", error);
         }
@@ -315,16 +320,32 @@ export const useSettingsStore = create<SettingsStore>()(
             delete (state as any).__migrationData;
           }
 
+          // Run partner API key migration before applying defaults
+          // This ensures existing users keep their API key during the rename
+          const migrated = await migratePartnerApiKey();
+          if (migrated) {
+            // Migration was performed, sync the flag
+            state.isPartnerApiKeySet = true;
+            useLogsStore
+              .getState()
+              .addLog(
+                "info",
+                "Partner API key migrated from merchant_api_key",
+                "Settings",
+                "onRehydrateStorage",
+              );
+          }
+
           // Initialize merchant defaults from env if not set
           const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
-          const defaultApiKey = MerchantConfig.getDefaultMerchantApiKey();
+          const defaultApiKey = MerchantConfig.getDefaultPartnerApiKey();
 
           if (!state.merchantId && defaultMerchantId) {
             state.setMerchantId(defaultMerchantId);
           }
 
-          if (!state.isMerchantApiKeySet && defaultApiKey) {
-            await state.setMerchantApiKey(defaultApiKey);
+          if (!state.isPartnerApiKeySet && defaultApiKey) {
+            await state.setPartnerApiKey(defaultApiKey);
           }
         }
 

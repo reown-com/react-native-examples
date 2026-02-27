@@ -1,6 +1,9 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { TransactionsResponse } from "@/utils/types";
-import { merchantApiClient } from "./merchant-client";
+// TODO: Once Merchants API unifies auth with Payment API, switch to getApiHeaders()
+import { apiClient } from "./client";
+
+const MERCHANT_PORTAL_API_KEY = process.env.EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY;
 
 export interface GetTransactionsOptions {
   status?: string | string[];
@@ -10,10 +13,8 @@ export interface GetTransactionsOptions {
   cursor?: string;
 }
 
-const MERCHANT_PORTAL_API_KEY = process.env.EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY;
-
 /**
- * Fetch merchant transactions from the Merchant Portal API (native version)
+ * Fetch merchant transactions from the API (native version)
  * @param options - Optional query parameters for filtering and pagination
  * @returns TransactionsResponse with list of payments and stats
  */
@@ -60,7 +61,7 @@ export async function getTransactions(
   const queryString = params.toString();
   const endpoint = `/merchants/${merchantId}/payments${queryString ? `?${queryString}` : ""}`;
 
-  return merchantApiClient.get<TransactionsResponse>(endpoint, {
+  return apiClient.get<TransactionsResponse>(endpoint, {
     headers: {
       "x-api-key": MERCHANT_PORTAL_API_KEY,
     },

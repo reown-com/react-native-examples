@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, StatusBar } from 'react-native';
+import { View, StyleSheet, Image, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -21,7 +21,7 @@ export function Header() {
       style={[
         styles.container,
         {
-          paddingTop: top + (StatusBar.currentHeight ?? Spacing[2]),
+          paddingTop: Platform.OS === 'ios' ? top : top + Spacing[2],
           backgroundColor: Theme['bg-primary'],
         },
       ]}

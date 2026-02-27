@@ -12,6 +12,7 @@ export interface GetTransactionsOptions {
 /**
  * Fetch merchant transactions via server-side proxy (web version)
  * API key is handled server-side, only merchantId is sent from client
+ * TODO: Once Merchants API unifies auth with Payment API, pass credentials from client
  * @param options - Optional query parameters for filtering and pagination
  * @returns TransactionsResponse with list of payments and stats
  */

@@ -57,10 +57,10 @@ platform :ios do
       profile_name: "match AppStore #{ENV['BUNDLE_ID']}"
     )
 
-    # Install pods
+    # Install pods (skip repo_update if cache hit)
     cocoapods(
       clean_install: false,
-      repo_update: true,
+      repo_update: ENV['PODS_CACHE_HIT'] != 'true',
       podfile: ENV['PODFILE_PATH']
     )
 
@@ -110,10 +110,10 @@ platform :ios do
    
     project_type = ENV['PROJECT_TYPE'] || ENV['SCHEME']
     
-    # Install pods
+    # Install pods (skip repo_update if cache hit)
     cocoapods(
       clean_install: false,
-      repo_update: true,
+      repo_update: ENV['PODS_CACHE_HIT'] != 'true',
       podfile: ENV['PODFILE_PATH']
     )
 

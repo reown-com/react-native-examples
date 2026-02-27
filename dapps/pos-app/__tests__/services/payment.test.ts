@@ -17,8 +17,9 @@ import { apiClient } from "@/services/client";
 // Get the mocked secure store
 const SecureStore = require("expo-secure-store");
 
-// Mock the API client
+// Mock only apiClient, keep real getApiHeaders so header logic is tested
 jest.mock("@/services/client", () => ({
+  ...jest.requireActual("@/services/client"),
   apiClient: {
     get: jest.fn(),
     post: jest.fn(),
@@ -42,10 +43,10 @@ describe("Payment Service", () => {
   describe("getApiHeaders (via startPayment/getPaymentStatus)", () => {
     it("should throw error when merchant ID is not configured", async () => {
       // Set API key but not merchant ID
-      await SecureStore.setItemAsync("merchant_api_key", "test-api-key");
+      await SecureStore.setItemAsync("partner_api_key", "test-api-key");
       useSettingsStore.setState({
         merchantId: null,
-        isMerchantApiKeySet: true,
+        isPartnerApiKeySet: true,
       });
 
       await expect(
@@ -57,10 +58,10 @@ describe("Payment Service", () => {
     });
 
     it("should throw error when merchant ID is empty string", async () => {
-      await SecureStore.setItemAsync("merchant_api_key", "test-api-key");
+      await SecureStore.setItemAsync("partner_api_key", "test-api-key");
       useSettingsStore.setState({
         merchantId: "   ", // whitespace only
-        isMerchantApiKeySet: true,
+        isPartnerApiKeySet: true,
       });
 
       await expect(
@@ -74,7 +75,7 @@ describe("Payment Service", () => {
     it("should throw error when API key is not configured", async () => {
       useSettingsStore.setState({
         merchantId: "merchant-123",
-        isMerchantApiKeySet: false,
+        isPartnerApiKeySet: false,
       });
       // Don't set the API key in secure storage
 
@@ -83,7 +84,7 @@ describe("Payment Service", () => {
           referenceId: "ref-123",
           amount: { value: "1000", unit: "cents" },
         }),
-      ).rejects.toThrow("Merchant API key is not configured");
+      ).rejects.toThrow("Partner API key is not configured");
     });
 
     it("should include correct headers when merchant is configured", async () => {

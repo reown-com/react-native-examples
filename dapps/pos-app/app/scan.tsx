@@ -8,7 +8,11 @@ import { usePaymentStatus } from "@/services/hooks";
 import { startPayment } from "@/services/payment";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { amountToCents, getCurrency } from "@/utils/currency";
+import {
+  amountToCents,
+  formatAmountWithSymbol,
+  getCurrency,
+} from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
@@ -183,8 +187,7 @@ export default function ScanScreen() {
                 { color: Theme["text-primary"], textTransform: "uppercase" },
               ]}
             >
-              {currency.symbol}
-              {amount}
+              {formatAmountWithSymbol(amount, currency)}
             </ThemedText>
           </View>
           <QRCode

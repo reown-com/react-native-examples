@@ -15,6 +15,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useFonts } from "expo-font";
 
 import { useTheme } from "@/hooks/use-theme-color";
+import { useUrlCredentials } from "@/hooks/use-url-credentials";
 import {
   getHeaderBackgroundColor,
   getHeaderTintColor,
@@ -28,7 +29,6 @@ import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
 import { requestBluetoothPermission } from "@/utils/printer";
-import { clearStaleSecureStorage } from "@/utils/secure-storage";
 import { showInfoToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -71,10 +71,6 @@ export default Sentry.wrap(function RootLayout() {
   });
 
   useEffect(() => {
-    clearStaleSecureStorage();
-  }, []);
-
-  useEffect(() => {
     async function getDeviceId() {
       const deviceId = await getDeviceIdentifier();
       setDeviceId(deviceId);
@@ -86,6 +82,9 @@ export default Sentry.wrap(function RootLayout() {
   }, [deviceId]);
 
   // Request Bluetooth permission on first app load (Android only)
+  // Apply credentials from URL query params (web only)
+  useUrlCredentials();
+
   useEffect(() => {
     async function checkBluetoothPermission() {
       if (Platform.OS !== "android") return;

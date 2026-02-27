@@ -1,4 +1,5 @@
 import { View, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -6,22 +7,16 @@ import SvgArrowLeft from '@/assets/ArrowLeft';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Button } from '@/components/Button';
-
-type Step =
-  | 'loading'
-  | 'intro'
-  | 'collectData'
-  | 'confirm'
-  | 'confirming'
-  | 'result';
+import type { Step } from '@/utils/TypesUtil';
 
 interface ViewWrapperProps {
   children: React.ReactNode;
   step: Step;
-  hasCollectData?: boolean;
+  isWebView: boolean;
   showBackButton: boolean;
   onBack: () => void;
   onClose: () => void;
+  headerLeftContent?: React.ReactNode;
 }
 
 const ANIMATION_DURATION = 250;
@@ -29,26 +24,23 @@ const ANIMATION_DURATION = 250;
 export function ViewWrapper({
   children,
   step,
-  hasCollectData = false,
+  isWebView,
   showBackButton,
   onBack,
   onClose,
+  headerLeftContent,
 }: ViewWrapperProps) {
   const Theme = useTheme();
+  const insets = useSafeAreaInsets();
 
-  // Determine if we should show step pills
-  const showStepPills =
-    hasCollectData && (step === 'collectData' || step === 'confirm');
-  const currentPillIndex =
-    step === 'collectData' ? 0 : step === 'confirm' ? 1 : -1;
-
-  return (
-    <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
+  const content = (
+    <>
       {/* Header */}
-      <View style={styles.header}>
-        {/* Back Button */}
-        <View style={styles.headerLeft}>
-          {showBackButton && (
+      <View style={[styles.header, isWebView && styles.webViewHeader]}>
+        <View
+          style={headerLeftContent ? styles.headerLeftFlex : styles.headerLeft}
+        >
+          {showBackButton ? (
             <Button
               onPress={onBack}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -59,38 +51,13 @@ export function ViewWrapper({
                 fill={Theme['text-primary']}
               />
             </Button>
-          )}
+          ) : headerLeftContent ? (
+            headerLeftContent
+          ) : null}
         </View>
 
-        {/* Step Pills */}
-        <View style={styles.headerCenter}>
-          {showStepPills && (
-            <View style={styles.stepsContainer}>
-              <View
-                style={[
-                  styles.stepPill,
-                  {
-                    backgroundColor:
-                      currentPillIndex >= 0
-                        ? Theme['bg-accent-primary']
-                        : Theme['foreground-tertiary'],
-                  },
-                ]}
-              />
-              <View
-                style={[
-                  styles.stepPill,
-                  {
-                    backgroundColor:
-                      currentPillIndex >= 1
-                        ? Theme['bg-accent-primary']
-                        : Theme['foreground-tertiary'],
-                  },
-                ]}
-              />
-            </View>
-          )}
-        </View>
+        {/* Spacer */}
+        <View style={styles.headerCenter} />
 
         {/* Close Button */}
         <View style={styles.headerRight}>
@@ -101,11 +68,35 @@ export function ViewWrapper({
       {/* Animated Content */}
       <Animated.View
         key={step}
+        style={isWebView ? styles.webViewContent : undefined}
         entering={FadeIn.duration(ANIMATION_DURATION)}
         exiting={FadeOut.duration(ANIMATION_DURATION)}
       >
         {children}
       </Animated.View>
+    </>
+  );
+
+  if (isWebView) {
+    return (
+      <View
+        style={[
+          styles.fullscreenContainer,
+          {
+            backgroundColor: Theme['bg-primary'],
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+          },
+        ]}
+      >
+        {content}
+      </View>
+    );
+  }
+
+  return (
+    <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
+      {content}
     </View>
   );
 }
@@ -118,11 +109,21 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing[8],
     maxHeight: '90%',
   },
+  fullscreenContainer: {
+    flex: 1,
+  },
+  webViewContent: {
+    flex: 1,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing[5],
+  },
+  webViewHeader: {
+    marginBottom: Spacing[2],
+    paddingHorizontal: Spacing[3],
   },
   headerLeft: {
     width: 38,
@@ -130,24 +131,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
+  headerLeftFlex: {
+    height: 38,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
   headerCenter: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   headerRight: {
     width: 38,
     height: 38,
     alignItems: 'flex-end',
     justifyContent: 'center',
-  },
-  stepsContainer: {
-    flexDirection: 'row',
-    gap: Spacing[2],
-  },
-  stepPill: {
-    width: Spacing[9],
-    height: 6,
-    borderRadius: BorderRadius.full,
   },
 });

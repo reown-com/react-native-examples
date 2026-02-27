@@ -4,8 +4,20 @@ import { formatFiatAmount } from "@/utils/currency";
 import { formatDateTime } from "@/utils/misc";
 import { formatCryptoReceived, getTokenSymbol } from "@/utils/tokens";
 import { PaymentRecord } from "@/utils/types";
-import { memo } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { memo, useEffect } from "react";
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { Button } from "./button";
 import { FramedModal } from "./framed-modal";
 import { StatusBadge } from "./status-badge";
@@ -15,6 +27,9 @@ import * as Clipboard from "expo-clipboard";
 import { showSuccessToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import Toast from "react-native-toast-message";
+
+const ANIMATION_DURATION = 200;
+const EASING = Easing.inOut(Easing.ease);
 
 interface TransactionDetailModalProps {
   visible: boolean;
@@ -103,6 +118,27 @@ function TransactionDetailModalBase({
 }: TransactionDetailModalProps) {
   const theme = useTheme();
 
+  const translateY = useSharedValue(300);
+
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    if (visible) {
+      translateY.value = withTiming(0, {
+        duration: ANIMATION_DURATION,
+        easing: EASING,
+      });
+    } else {
+      translateY.value = withTiming(300, {
+        duration: ANIMATION_DURATION,
+        easing: EASING,
+      });
+    }
+  }, [visible, translateY]);
+
+  const sheetAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
   if (!payment) return null;
 
   const handleCopyPaymentId = async () => {
@@ -120,89 +156,97 @@ function TransactionDetailModalBase({
   return (
     <FramedModal visible={visible} onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable
-          style={[styles.container, { backgroundColor: theme["bg-primary"] }]}
-          onPress={(e) => e.stopPropagation()}
+        <Animated.View
+          style={[
+            styles.container,
+            { backgroundColor: theme["bg-primary"] },
+            sheetAnimatedStyle,
+          ]}
         >
-          <View style={styles.header}>
-            <Button
-              onPress={onClose}
-              style={[
-                styles.closeButton,
-                { borderColor: theme["border-secondary"] },
-              ]}
-            >
-              <Image
-                style={styles.closeIcon}
-                tintColor={theme["icon-invert"]}
-                source={require("@/assets/images/close.png")}
-              />
-            </Button>
-          </View>
-
-          <ScrollView
-            style={styles.content}
-            showsVerticalScrollIndicator={false}
+          <Pressable
+            style={styles.containerInner}
+            onPress={(e) => e.stopPropagation()}
           >
-            <View style={styles.details}>
-              <DetailRow
-                label="Date"
-                value={formatDateTime(payment.created_at)}
-              />
+            <View style={styles.header}>
+              <Button
+                onPress={onClose}
+                style={[
+                  styles.closeButton,
+                  { borderColor: theme["border-secondary"] },
+                ]}
+              >
+                <Image
+                  style={styles.closeIcon}
+                  tintColor={theme["icon-invert"]}
+                  source={require("@/assets/images/close.png")}
+                />
+              </Button>
+            </View>
 
-              <DetailRow label="Status">
-                <StatusBadge status={payment.status} />
-              </DetailRow>
-
-              <DetailRow
-                label="Amount"
-                value={formatFiatAmount(
-                  payment.fiat_amount,
-                  payment.fiat_currency,
-                )}
-              />
-
-              {payment.token_amount && payment.token_caip19 && (
-                <DetailRow label="Crypto received">
-                  <View style={styles.cryptoValue}>
-                    <ThemedText
-                      fontSize={16}
-                      lineHeight={18}
-                      color="text-primary"
-                    >
-                      {formatCryptoReceived(
-                        payment.token_caip19,
-                        payment.token_amount,
-                      ) ?? payment.token_amount}
-                    </ThemedText>
-                    {(() => {
-                      const icon = getTokenIcon(payment.token_caip19);
-                      return icon ? (
-                        <Image style={styles.tokenIcon} source={icon} />
-                      ) : null;
-                    })()}
-                  </View>
-                </DetailRow>
-              )}
-
-              <DetailRow
-                label="Payment ID"
-                value={payment.payment_id}
-                onPress={handleCopyPaymentId}
-                underline
-              />
-
-              {payment.tx_hash && (
+            <ScrollView
+              style={styles.content}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.details}>
                 <DetailRow
-                  label="Hash ID"
-                  value={truncateHash(payment.tx_hash)}
-                  onPress={handleCopyHash}
+                  label="Date"
+                  value={formatDateTime(payment.created_at)}
+                />
+
+                <DetailRow label="Status">
+                  <StatusBadge status={payment.status} />
+                </DetailRow>
+
+                <DetailRow
+                  label="Amount"
+                  value={formatFiatAmount(
+                    payment.fiat_amount,
+                    payment.fiat_currency,
+                  )}
+                />
+
+                {payment.token_amount && payment.token_caip19 && (
+                  <DetailRow label="Crypto received">
+                    <View style={styles.cryptoValue}>
+                      <ThemedText
+                        fontSize={16}
+                        lineHeight={18}
+                        color="text-primary"
+                      >
+                        {formatCryptoReceived(
+                          payment.token_caip19,
+                          payment.token_amount,
+                        ) ?? payment.token_amount}
+                      </ThemedText>
+                      {(() => {
+                        const icon = getTokenIcon(payment.token_caip19);
+                        return icon ? (
+                          <Image style={styles.tokenIcon} source={icon} />
+                        ) : null;
+                      })()}
+                    </View>
+                  </DetailRow>
+                )}
+
+                <DetailRow
+                  label="Payment ID"
+                  value={payment.payment_id}
+                  onPress={handleCopyPaymentId}
                   underline
                 />
-              )}
-            </View>
-          </ScrollView>
-        </Pressable>
+
+                {payment.tx_hash && (
+                  <DetailRow
+                    label="Hash ID"
+                    value={truncateHash(payment.tx_hash)}
+                    onPress={handleCopyHash}
+                    underline
+                  />
+                )}
+              </View>
+            </ScrollView>
+          </Pressable>
+        </Animated.View>
       </Pressable>
       <Toast config={toastConfig} position="bottom" visibilityTime={6000} />
     </FramedModal>
@@ -220,10 +264,12 @@ const styles = StyleSheet.create({
   container: {
     borderTopLeftRadius: BorderRadius["5"],
     borderTopRightRadius: BorderRadius["5"],
+    maxHeight: "80%",
+  },
+  containerInner: {
     paddingTop: Spacing["spacing-4"],
     paddingBottom: Spacing["spacing-6"],
     paddingHorizontal: Spacing["spacing-5"],
-    maxHeight: "80%",
   },
   header: {
     flexDirection: "row",

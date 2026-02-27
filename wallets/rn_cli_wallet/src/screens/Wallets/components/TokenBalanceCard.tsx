@@ -21,7 +21,7 @@ interface TokenBalanceCardProps {
 
 function truncateAddress(address: string): string {
   if (!address || address.length < 10) return address;
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  return `${address.slice(0, 6)}...${address.slice(-6)}`;
 }
 
 function formatBalance(numeric: string, symbol: string): string {

@@ -22,12 +22,15 @@ function getAddressForChain(
   if (chainId.startsWith('tron:')) {
     return addresses.tronAddress || '';
   }
+  if (chainId.startsWith('sui:')) {
+    return addresses.suiAddress || '';
+  }
   // Default to EIP155 address for all EVM chains
-  return addresses.eip155Address;
+  return addresses.eip155Address || '';
 }
 
 export default function Wallets() {
-  const { eip155Address, tonAddress, tronAddress } = useSnapshot(
+  const { eip155Address, tonAddress, tronAddress, suiAddress } = useSnapshot(
     SettingsStore.state,
   );
   const { balances, isLoading } = useSnapshot(WalletStore.state);
@@ -38,12 +41,18 @@ export default function Wallets() {
       eip155Address,
       tonAddress,
       tronAddress,
+      suiAddress,
     }),
-    [eip155Address, tonAddress, tronAddress],
+    [eip155Address, tonAddress, tronAddress, suiAddress],
   );
 
   const fetchBalances = useCallback(() => {
-    if (addresses.eip155Address) {
+    if (
+      addresses.eip155Address ||
+      addresses.tonAddress ||
+      addresses.tronAddress ||
+      addresses.suiAddress
+    ) {
       WalletStore.fetchBalances(addresses);
     }
   }, [addresses]);

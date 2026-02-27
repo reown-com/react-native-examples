@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
-const MERCHANT_API_BASE_URL = process.env.EXPO_PUBLIC_MERCHANT_API_URL;
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+// TODO: Once Merchants API unifies auth with Payment API, forward client credentials instead
 const MERCHANT_PORTAL_API_KEY = process.env.EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY;
 
 /**
@@ -25,9 +26,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    if (!MERCHANT_API_BASE_URL) {
+    if (!API_BASE_URL) {
       return res.status(500).json({
-        message: "MERCHANT_API_BASE_URL is not configured",
+        message: "API_BASE_URL is not configured",
       });
     }
 
@@ -63,7 +64,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const queryString = params.toString();
-    const normalizedBaseUrl = MERCHANT_API_BASE_URL.replace(/\/+$/, "");
+    const normalizedBaseUrl = API_BASE_URL.replace(/\/+$/, "");
     const endpoint = `/merchants/${encodeURIComponent(merchantId)}/payments${queryString ? `?${queryString}` : ""}`;
 
     const response = await fetch(`${normalizedBaseUrl}${endpoint}`, {

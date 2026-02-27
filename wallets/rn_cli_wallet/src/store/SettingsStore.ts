@@ -5,6 +5,8 @@ import { Verify, SessionTypes } from '@walletconnect/types';
 import { storage } from '@/utils/storage';
 import EIP155Lib from '../lib/EIP155Lib';
 import SuiLib from '../lib/SuiLib';
+import TonLib from '../lib/TonLib';
+import TronLib from '../lib/TronLib';
 import { MMKV } from 'react-native-mmkv';
 
 function getInitialThemeMode(): 'light' | 'dark' {
@@ -27,7 +29,9 @@ interface State {
   suiAddress: string;
   suiWallet: SuiLib | null;
   tonAddress: string;
+  tonWallet: TonLib | null;
   tronAddress: string;
+  tronWallet: TronLib | null;
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -55,7 +59,9 @@ const state = proxy<State>({
   suiAddress: '',
   suiWallet: null,
   tonAddress: '',
+  tonWallet: null,
   tronAddress: '',
+  tronWallet: null,
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
@@ -134,8 +140,16 @@ const SettingsStore = {
     state.tonAddress = tonAddress;
   },
 
+  setTonWallet(tonWallet: TonLib) {
+    state.tonWallet = tonWallet;
+  },
+
   setTronAddress(tronAddress: string) {
     state.tronAddress = tronAddress;
+  },
+
+  setTronWallet(tronWallet: TronLib) {
+    state.tronWallet = tronWallet;
   },
 
   setThemeMode(value: 'light' | 'dark') {

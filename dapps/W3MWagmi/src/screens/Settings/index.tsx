@@ -3,6 +3,7 @@ import {Text, View, Alert, ScrollView} from 'react-native';
 import {useAccount} from 'wagmi';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {getVersion, getBuildNumber} from 'react-native-device-info';
+import {getEnvironmentLabel} from '@/utils/misc';
 import {useSnapshot} from 'valtio';
 import { storage } from '@/utils/StorageUtil';
 
@@ -60,9 +61,9 @@ function SettingsScreen({navigation}: Props) {
         />
         <Card
           title="App version"
-          value={`${getVersion()} (${getBuildNumber()})`}
+          value={`${getVersion()} (${getBuildNumber()}) - ${getEnvironmentLabel()}`}
           onPress={() =>
-            copyToClipboard(`${getVersion()} (${getBuildNumber()})`)
+            copyToClipboard(`${getVersion()} (${getBuildNumber()}) - ${getEnvironmentLabel()}`)
           }
         />
         <Card title="Socket status" value={socketStatus} />
