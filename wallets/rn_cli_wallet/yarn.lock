@@ -4548,7 +4548,7 @@ __metadata:
     react-native-toast-message: 2.3.3
     react-native-vision-camera: 4.7.2
     react-native-webview: 13.16.0
-    react-native-worklets: ^0.7.1
+    react-native-worklets: 0.7.4
     react-test-renderer: 19.2.4
     stream-browserify: 3.0.0
     tronweb: ^6.1.1
@@ -10785,9 +10785,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@npm:^0.7.1":
-  version: 0.7.2
-  resolution: "react-native-worklets@npm:0.7.2"
+"react-native-worklets@npm:0.7.4":
+  version: 0.7.4
+  resolution: "react-native-worklets@npm:0.7.4"
   dependencies:
     "@babel/plugin-transform-arrow-functions": 7.27.1
     "@babel/plugin-transform-class-properties": 7.27.1
@@ -10804,7 +10804,7 @@ __metadata:
     "@babel/core": "*"
     react: "*"
     react-native: "*"
-  checksum: a1d220499c40e44286b4b5f97e6e0483ec6f84cda7f87db56e4c5c49b0991d749b9087d03915a7dfb8d5aa892308d9ba8661403e48a5fad8396e91b7b35228a2
+  checksum: eb92247e208c6ee641dd639319628213aa2f22249b2fb09d5b9b0ea8a13e7bbb906eabc9dfebfe00404eec5d3e233378cc4991b9a43565338a4f083a68b7bd5f
   languageName: node
   linkType: hard
 
