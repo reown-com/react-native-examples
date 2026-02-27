@@ -61,7 +61,18 @@ export default function PaymentOptionsModal() {
             message: getErrorMessage('insufficient_funds'),
           });
         } else {
-          PaymentStore.setStep('selectOption');
+          const options = snap.paymentOptions.options;
+          const firstOption = options[0] as PaymentOptionWithCollectData;
+          const singleOptionWithoutCollectData =
+            options.length === 1 && !firstOption.collectData?.url;
+
+          if (singleOptionWithoutCollectData) {
+            PaymentStore.selectOption(firstOption as PaymentOption);
+            PaymentStore.fetchPaymentActions(firstOption as PaymentOption);
+            PaymentStore.setStep('review');
+          } else {
+            PaymentStore.setStep('selectOption');
+          }
         }
       }
     }
