@@ -1,3 +1,4 @@
+import { BigAmountInput } from "@/components/big-amount-input";
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
@@ -65,20 +66,12 @@ export default function AmountScreen() {
           { borderColor: Theme["border-primary"] },
         ]}
       >
-        <ThemedText
-          numberOfLines={1}
-          style={[
-            styles.amountText,
-            {
-              color:
-                watchAmount === ""
-                  ? Theme["text-secondary"]
-                  : Theme["text-primary"],
-            },
-          ]}
-        >
-          {formatAmountWithSymbol(watchAmount || "0.00", currency)}
-        </ThemedText>
+        <BigAmountInput
+          value={watchAmount}
+          currency={currency.symbol}
+          symbolPosition={currency.symbolPosition}
+          isFocused={false}
+        />
       </View>
       <Controller
         control={control}
@@ -112,10 +105,10 @@ export default function AmountScreen() {
                 }
                 onChange?.(newDisplay);
               } else {
-                // Limit to 2 decimal digits
+                // Limit to 2 decimal places
                 if (prev.includes(".")) {
-                  const [, decimal] = prev.split(".");
-                  if (decimal.length >= 2) return;
+                  const decimalPart = prev.split(".")[1] || "";
+                  if (decimalPart.length >= 2) return;
                 }
                 const newDisplay = prev === "0" ? key : prev + key;
                 onChange?.(newDisplay);
@@ -165,11 +158,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingTop: Spacing["spacing-4"],
     paddingHorizontal: Spacing["spacing-5"],
-  },
-  amountText: {
-    fontSize: 50,
-    textAlign: "center",
-    lineHeight: 50,
   },
   button: {
     width: "100%",
