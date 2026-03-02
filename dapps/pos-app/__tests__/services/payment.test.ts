@@ -17,8 +17,9 @@ import { apiClient } from "@/services/client";
 // Get the mocked secure store
 const SecureStore = require("expo-secure-store");
 
-// Mock the API client
+// Mock only apiClient, keep real getApiHeaders so header logic is tested
 jest.mock("@/services/client", () => ({
+  ...jest.requireActual("@/services/client"),
   apiClient: {
     get: jest.fn(),
     post: jest.fn(),

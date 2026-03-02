@@ -129,7 +129,7 @@ Uses **Expo Router** with file-based routing:
    - Filter tabs: All, Failed, Pending, Completed
    - Transaction detail modal on tap
    - Empty state when no transactions
-   - Uses Merchant Portal API for data fetching
+   - Uses unified API for data fetching
 
 ### 2. Receipt Printing
 
@@ -174,9 +174,10 @@ Uses **Expo Router** with file-based routing:
 
 ## Payment API Integration
 
-### Payment API Client (`services/client.ts`)
+### API Client (`services/client.ts`)
 
 - Base URL from `EXPO_PUBLIC_API_URL` environment variable
+- Shared `getApiHeaders()` helper for authenticated requests
 - Request/response interceptors
 - Error handling
 
@@ -204,32 +205,23 @@ All Payment API requests include:
 - `Sdk-Version`: "1.0.0"
 - `Sdk-Platform`: "react-native"
 
-## Merchant Portal API Integration
-
-The Merchant Portal API is a separate backend used for fetching transaction history (Activity screen).
-
-### Merchant API Client (`services/merchant-client.ts`)
-
-- Base URL from `EXPO_PUBLIC_MERCHANT_API_URL` environment variable
-- Generic HTTP client (no credentials baked in)
-- API key passed per-request via headers
-- Used by native apps (iOS/Android) for direct API calls
-
-### Server-Side Proxy (`api/transactions.ts`)
-
-- Vercel serverless function that proxies requests to the Merchant Portal API (web only)
-- API key read from server-side env (`EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY`)
-- Client only sends `x-merchant-id` header
-- Avoids CORS issues by making requests server-side
-
 ### Transactions Service (`services/transactions.ts`)
+
+> **Note:** The Merchants API currently has its own auth layer separate from the Payment API. Both share the same base URL (`EXPO_PUBLIC_API_URL`), but merchant endpoints authenticate via `EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY` (sent as `x-api-key` header) rather than the partner API key used by payment endpoints. This will be unified in the future.
 
 **`getTransactions(options)`**
 
 - Fetches merchant transaction history
 - Endpoint: `GET /merchants/{merchant_id}/payments`
+- Uses the shared base URL (`EXPO_PUBLIC_API_URL`) but authenticates with `EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY`
 - Supports filtering by status, date range, pagination
 - Returns array of `PaymentRecord` objects
+
+### Server-Side Proxy (`api/transactions.ts`)
+
+- Vercel serverless function that proxies transaction requests (web only)
+- Client only sends `x-merchant-id` header; API key is handled server-side via `EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY`
+- Avoids CORS issues by making requests server-side
 
 ### useTransactions Hook (`services/hooks.ts`)
 
@@ -330,8 +322,7 @@ This project uses **npm** (not pnpm or yarn). Always use `npm` commands for inst
 
 ### Services & API
 
-- **`services/client.ts`**: Payment API client configuration
-- **`services/merchant-client.ts`**: Merchant Portal API client (native)
+- **`services/client.ts`**: API client and shared auth headers (`getApiHeaders`)
 - **`services/payment.ts`**: Payment API functions
 - **`services/transactions.ts`**: Transaction fetching (native: direct API)
 - **`services/transactions.web.ts`**: Transaction fetching (web: server-side proxy)
@@ -713,9 +704,12 @@ const apiKey = await secureStorage.getItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY)
 npm run lint          # Check and fix ESLint errors
 npx prettier --write . # Format code with Prettier
 npx tsc --noEmit      # Check for TypeScript errors
+npm test              # Run Jest tests
 ```
 
 Fix any errors found. Pre-existing TypeScript errors in unrelated files can be ignored.
+
+**When moving exports between modules**, update any `jest.mock()` calls in tests that mock the source or destination module. Mocks that use a manual factory (e.g., `jest.mock("@/services/client", () => ({ ... }))`) replace the entire module — any export not included in the factory becomes `undefined` at runtime, which silently breaks tests.
 
 ### Code Style
 

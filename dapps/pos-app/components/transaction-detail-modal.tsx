@@ -118,7 +118,7 @@ function TransactionDetailModalBase({
 }: TransactionDetailModalProps) {
   const theme = useTheme();
 
-  const translateY = useSharedValue(300);
+  const translateY = useSharedValue(Platform.OS === "web" ? 300 : 0);
 
   useEffect(() => {
     if (Platform.OS !== "web") return;
