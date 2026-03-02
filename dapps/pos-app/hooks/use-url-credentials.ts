@@ -17,6 +17,10 @@ import { Platform } from "react-native";
  * Both methods overwrite any previously stored credentials.
  * Runs after store hydration; URL params are processed once, postMessage listener
  * stays active until unmount.
+ *
+ * Posts two events to the parent window:
+ * - `{ type: "pos-ready" }` — when the listener is set up and ready to receive credentials.
+ * - `{ type: "pos-credentials-updated" }` — after credentials are successfully applied.
  */
 export function useUrlCredentials() {
   const hasProcessedParams = useRef(false);
@@ -55,6 +59,7 @@ export function useUrlCredentials() {
         }
 
         showInfoToast("Credentials updated");
+        window.parent.postMessage({ type: "pos-credentials-updated" }, "*");
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
@@ -116,6 +121,7 @@ export function useUrlCredentials() {
     }
 
     window.addEventListener("message", handleMessage);
+    window.parent.postMessage({ type: "pos-ready" }, "*");
     return () => window.removeEventListener("message", handleMessage);
   }, [_hasHydrated, applyCredentials]);
 }

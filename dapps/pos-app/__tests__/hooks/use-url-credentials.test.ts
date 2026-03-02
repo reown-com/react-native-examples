@@ -9,6 +9,7 @@ import { waitForAsync } from "../utils/test-helpers";
 
 type MessageHandler = (event: { data: unknown }) => void;
 const messageListeners: MessageHandler[] = [];
+const parentPostMessage = jest.fn();
 
 function setWindowLocation(search: string) {
   const href = `http://localhost${search}`;
@@ -24,6 +25,7 @@ function setWindowLocation(search: string) {
         if (idx !== -1) messageListeners.splice(idx, 1);
       }
     },
+    parent: { postMessage: parentPostMessage },
   };
 }
 
@@ -35,6 +37,7 @@ function dispatchPostMessage(data: unknown) {
 
 function clearWindow() {
   messageListeners.length = 0;
+  parentPostMessage.mockClear();
   delete (global as any).window;
 }
 
@@ -327,5 +330,69 @@ describe("useUrlCredentials — postMessage", () => {
     });
 
     expect(useSettingsStore.getState().merchantId).toBeNull();
+  });
+});
+
+describe("useUrlCredentials — outbound events", () => {
+  it("posts pos-ready to parent after listener is set up", async () => {
+    setWindowLocation("");
+    useSettingsStore.setState({ _hasHydrated: true });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    expect(parentPostMessage).toHaveBeenCalledWith(
+      { type: "pos-ready" },
+      "*",
+    );
+  });
+
+  it("posts pos-credentials-updated after successful postMessage credentials", async () => {
+    setWindowLocation("");
+    useSettingsStore.setState({ _hasHydrated: true });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    parentPostMessage.mockClear();
+
+    await act(async () => {
+      dispatchPostMessage({
+        type: "pos-credentials",
+        merchantId: "outbound-test",
+      });
+      await waitForAsync();
+    });
+
+    expect(parentPostMessage).toHaveBeenCalledWith(
+      { type: "pos-credentials-updated" },
+      "*",
+    );
+  });
+
+  it("posts pos-credentials-updated after successful URL param credentials", async () => {
+    setWindowLocation(
+      `?merchantId=${toBase64("url-outbound-test")}&customerApiKey=${toBase64("url-key")}`,
+    );
+    useSettingsStore.setState({ _hasHydrated: true });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    expect(parentPostMessage).toHaveBeenCalledWith(
+      { type: "pos-credentials-updated" },
+      "*",
+    );
+  });
+
+  it("does not post events on native platforms", async () => {
+    (Platform as any).OS = "ios";
+    setWindowLocation("");
+    useSettingsStore.setState({ _hasHydrated: true });
+
+    renderHook(() => useUrlCredentials());
+    await act(() => waitForAsync());
+
+    expect(parentPostMessage).not.toHaveBeenCalled();
   });
 });
