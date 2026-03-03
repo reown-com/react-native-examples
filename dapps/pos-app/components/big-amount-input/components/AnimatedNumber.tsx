@@ -1,7 +1,10 @@
 import type { SupportedLocale, SymbolPosition } from "../utils/formatAmount";
+import { useTheme } from "@/hooks/use-theme-color";
+import { useEffect } from "react";
 import Animated, {
   Easing,
   useAnimatedStyle,
+  useSharedValue,
   withTiming,
 } from "react-native-reanimated";
 import { AnimatedCursor } from "./AnimatedCursor";
@@ -31,6 +34,7 @@ export const AnimatedNumber = ({
   isFocused = false,
   cursorBlinkEnabled = true,
 }: AnimatedNumberProps) => {
+  const Theme = useTheme();
   const { characters, separators, isEmpty, decimalSeparator } =
     useAnimatedNumberValue({
       value,
@@ -41,13 +45,16 @@ export const AnimatedNumber = ({
     });
   const layout = useAnimatedNumberLayout({ characters, separators, isEmpty });
 
-  const containerStyle = useAnimatedStyle(
-    () => ({
-      width: withTiming(layout.totalContentWidth, TIMING_CONFIG),
-      height: layout.itemHeight,
-    }),
-    [layout.totalContentWidth, layout.itemHeight],
-  );
+  const animatedWidth = useSharedValue(layout.totalContentWidth);
+
+  useEffect(() => {
+    animatedWidth.value = withTiming(layout.totalContentWidth, TIMING_CONFIG);
+  }, [layout.totalContentWidth, animatedWidth]);
+
+  const containerStyle = useAnimatedStyle(() => ({
+    width: animatedWidth.value,
+    height: layout.itemHeight,
+  }));
 
   return (
     <Animated.View style={containerStyle}>
@@ -57,6 +64,8 @@ export const AnimatedNumber = ({
         isEmpty={isEmpty}
         decimalSeparator={decimalSeparator}
         layout={layout}
+        textPrimaryColor={Theme["text-primary"]}
+        textSecondaryColor={Theme["text-secondary"]}
       />
       <AnimatedCursor
         isFocused={isFocused}
@@ -64,6 +73,7 @@ export const AnimatedNumber = ({
         scale={layout.scale}
         blinkEnabled={cursorBlinkEnabled}
         containerHeight={layout.itemHeight}
+        cursorColor={Theme["bg-accent-primary"]}
       />
     </Animated.View>
   );

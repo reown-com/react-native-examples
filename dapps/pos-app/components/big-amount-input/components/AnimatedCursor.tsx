@@ -1,4 +1,3 @@
-import { useTheme } from "@/hooks/use-theme-color";
 import { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import Animated, {
@@ -12,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 const CURSOR_HEIGHT = 56;
+const CURSOR_TIMING = { duration: 200, easing: Easing.out(Easing.ease) };
 
 type AnimatedCursorProps = {
   isFocused: boolean;
@@ -19,6 +19,7 @@ type AnimatedCursorProps = {
   scale: number;
   blinkEnabled?: boolean;
   containerHeight: number;
+  cursorColor: string;
 };
 
 export const AnimatedCursor = ({
@@ -27,9 +28,17 @@ export const AnimatedCursor = ({
   scale,
   blinkEnabled = true,
   containerHeight,
+  cursorColor,
 }: AnimatedCursorProps) => {
-  const Theme = useTheme();
   const opacity = useSharedValue(1);
+
+  // Scale height directly instead of transform to avoid position shift
+  const scaledHeight = CURSOR_HEIGHT * scale;
+  const topPosition = (containerHeight - scaledHeight) / 2;
+
+  const animatedHeight = useSharedValue(scaledHeight);
+  const animatedTranslateX = useSharedValue(cursorPosition);
+  const animatedTranslateY = useSharedValue(topPosition);
 
   useEffect(() => {
     if (isFocused) {
@@ -56,44 +65,32 @@ export const AnimatedCursor = ({
     };
   }, [isFocused, opacity, blinkEnabled]);
 
-  // Scale height directly instead of transform to avoid position shift
-  const scaledHeight = CURSOR_HEIGHT * scale;
-  const topPosition = (containerHeight - scaledHeight) / 2;
+  useEffect(() => {
+    animatedHeight.value = withTiming(scaledHeight, CURSOR_TIMING);
+  }, [scaledHeight, animatedHeight]);
 
-  const animatedStyle = useAnimatedStyle(
-    () => ({
-      opacity: opacity.value,
-      height: withTiming(scaledHeight, {
-        duration: 200,
-        easing: Easing.out(Easing.ease),
-      }),
-      transform: [
-        {
-          translateX: withTiming(cursorPosition, {
-            duration: 200,
-            easing: Easing.out(Easing.ease),
-          }),
-        },
-        {
-          translateY: withTiming(topPosition, {
-            duration: 200,
-            easing: Easing.out(Easing.ease),
-          }),
-        },
-      ],
-    }),
-    [cursorPosition, scaledHeight, topPosition],
-  );
+  useEffect(() => {
+    animatedTranslateX.value = withTiming(cursorPosition, CURSOR_TIMING);
+  }, [cursorPosition, animatedTranslateX]);
+
+  useEffect(() => {
+    animatedTranslateY.value = withTiming(topPosition, CURSOR_TIMING);
+  }, [topPosition, animatedTranslateY]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    height: animatedHeight.value,
+    transform: [
+      { translateX: animatedTranslateX.value },
+      { translateY: animatedTranslateY.value },
+    ],
+  }));
 
   if (!isFocused) return null;
 
   return (
     <Animated.View
-      style={[
-        styles.cursor,
-        animatedStyle,
-        { backgroundColor: Theme["bg-accent-primary"] },
-      ]}
+      style={[styles.cursor, animatedStyle, { backgroundColor: cursorColor }]}
     />
   );
 };
