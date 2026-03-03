@@ -34,11 +34,10 @@ export function useOTAUpdates() {
       if (fetchResult.isNew) {
         addLog(
           "info",
-          "OTA update downloaded, reloading app",
+          "OTA update downloaded, will apply on next app launch",
           "OTAUpdates",
           "checkForUpdate",
         );
-        await Updates.reloadAsync();
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
