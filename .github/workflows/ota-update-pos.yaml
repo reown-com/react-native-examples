@@ -1,5 +1,7 @@
 name: OTA Update Mobile POS
 
+permissions: {}
+
 on:
   workflow_dispatch:
 
