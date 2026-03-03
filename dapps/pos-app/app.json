@@ -8,6 +8,15 @@
     "scheme": "WPay",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/caf3a0d7-e413-45c2-b3b9-879cd30b3501",
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "checkAutomatically": "ON_ERROR_RECOVERY"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.reown.mobilepos",
@@ -21,7 +30,9 @@
         "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts"
       },
       "entitlements": {
-        "com.apple.developer.nfc.readersession.formats": ["TAG"]
+        "com.apple.developer.nfc.readersession.formats": [
+          "TAG"
+        ]
       }
     },
     "android": {
@@ -51,6 +62,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-updates",
       [
         "expo-splash-screen",
         {
@@ -119,7 +131,9 @@
       [
         "react-native-permissions",
         {
-          "iosPermissions": ["Bluetooth"]
+          "iosPermissions": [
+            "Bluetooth"
+          ]
         }
       ],
       [
@@ -133,6 +147,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "caf3a0d7-e413-45c2-b3b9-879cd30b3501"
+      }
+    },
+    "owner": "reown-mobile"
   }
 }

@@ -25,6 +25,7 @@ import * as Sentry from "@sentry/react-native";
 
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
+import { useOTAUpdates } from "@/hooks/use-ota-updates";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
@@ -80,6 +81,9 @@ export default Sentry.wrap(function RootLayout() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deviceId]);
+
+  // OTA Updates - check on foreground
+  useOTAUpdates();
 
   // Request Bluetooth permission on first app load (Android only)
   // Apply credentials from URL query params (web only)
