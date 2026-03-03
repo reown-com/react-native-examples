@@ -14,6 +14,8 @@ type CharacterGroupProps = {
   layout: AnimatedNumberLayout;
   charLayout: CharacterLayoutInfo;
   isEmpty: boolean;
+  textPrimaryColor: string;
+  textSecondaryColor: string;
 };
 
 function CharacterGroupComponent({
@@ -24,6 +26,8 @@ function CharacterGroupComponent({
   layout,
   charLayout,
   isEmpty,
+  textPrimaryColor,
+  textSecondaryColor,
 }: CharacterGroupProps) {
   const separatorItem = useMemo<CharacterItem | null>(() => {
     if (!separator) return null;
@@ -41,6 +45,8 @@ function CharacterGroupComponent({
         itemHeight={layout.itemHeight}
         positionX={charLayout.position}
         isPlaceholder={isEmpty}
+        textPrimaryColor={textPrimaryColor}
+        textSecondaryColor={textSecondaryColor}
       />
       {separatorItem && separator ? (
         <AnimatedCharacter
@@ -50,6 +56,8 @@ function CharacterGroupComponent({
           itemHeight={layout.itemHeight}
           positionX={charLayout.position + charLayout.spacingWidth}
           isPlaceholder={isEmpty}
+          textPrimaryColor={textPrimaryColor}
+          textSecondaryColor={textSecondaryColor}
         />
       ) : null}
     </>
@@ -64,6 +72,8 @@ type AnimatedNumberCharactersProps = {
   isEmpty: boolean;
   decimalSeparator: string;
   layout: AnimatedNumberLayout;
+  textPrimaryColor: string;
+  textSecondaryColor: string;
 };
 
 function AnimatedNumberCharactersComponent({
@@ -72,6 +82,8 @@ function AnimatedNumberCharactersComponent({
   isEmpty,
   decimalSeparator,
   layout,
+  textPrimaryColor,
+  textSecondaryColor,
 }: AnimatedNumberCharactersProps) {
   return (
     <>
@@ -85,6 +97,8 @@ function AnimatedNumberCharactersComponent({
           layout={layout}
           charLayout={layout.characterLayouts[index]}
           isEmpty={isEmpty}
+          textPrimaryColor={textPrimaryColor}
+          textSecondaryColor={textSecondaryColor}
         />
       ))}
     </>
