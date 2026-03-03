@@ -47,6 +47,7 @@ export default function PaymentSuccessScreen() {
   const { top } = useSafeAreaInsets();
   const { amount } = params;
   const [isPrinterConnected, setIsPrinterConnected] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
 
   const circleScale = useSharedValue(1);
   const contentOpacity = useSharedValue(0);
@@ -56,6 +57,8 @@ export default function PaymentSuccessScreen() {
   };
 
   const handlePrintReceipt = async () => {
+    if (isPrinting) return;
+    setIsPrinting(true);
     try {
       await printReceipt(
         params.paymentId,
@@ -71,6 +74,8 @@ export default function PaymentSuccessScreen() {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       addLog("error", errorMessage, "payment-success", "handlePrintReceipt");
+    } finally {
+      setIsPrinting(false);
     }
   };
 
@@ -161,11 +166,13 @@ export default function PaymentSuccessScreen() {
           {isPrinterConnected && (
             <Button
               onPress={handlePrintReceipt}
+              disabled={isPrinting}
               style={[
                 styles.button,
                 {
                   backgroundColor: Theme["bg-payment-success"],
                   borderColor: Theme["border-payment-success"],
+                  opacity: isPrinting ? 0.6 : 1,
                 },
               ]}
             >
@@ -175,7 +182,7 @@ export default function PaymentSuccessScreen() {
                   { color: Theme["text-payment-success"] },
                 ]}
               >
-                Print receipt
+                {isPrinting ? "Printing..." : "Print receipt"}
               </ThemedText>
             </Button>
           )}
