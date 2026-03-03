@@ -1,6 +1,5 @@
 import type { CharacterItem } from "../utils/getCharactersArray";
-import { useTheme } from "@/hooks/use-theme-color";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useRef } from "react";
 import { StyleSheet } from "react-native";
 import Animated, {
   Easing,
@@ -34,6 +33,8 @@ type AnimatedCharacterProps = {
   itemHeight: number;
   positionX: number;
   isPlaceholder?: boolean;
+  textPrimaryColor: string;
+  textSecondaryColor: string;
 };
 
 function AnimatedCharacterComponent({
@@ -43,39 +44,54 @@ function AnimatedCharacterComponent({
   itemHeight,
   positionX,
   isPlaceholder = false,
+  textPrimaryColor,
+  textSecondaryColor,
 }: AnimatedCharacterProps) {
-  const Theme = useTheme();
+  // Compensate for scale origin: RN scales from center, so we offset
+  // by half the width * (1 - scale) to simulate left-origin scaling
+  const scaleOffsetX = (characterWidth * (1 - scale)) / 2;
 
   const translateY = useSharedValue(10);
   const opacity = useSharedValue(0);
+  const animatedTranslateX = useSharedValue(positionX - scaleOffsetX);
+  const animatedScale = useSharedValue(scale);
+  const isMounted = useRef(false);
 
   useEffect(() => {
     translateY.value = withTiming(0, TIMING_CONFIG);
     opacity.value = withTiming(1, TIMING_CONFIG);
   }, [translateY, opacity]);
 
-  // Compensate for scale origin: RN scales from center, so we offset
-  // by half the width * (1 - scale) to simulate left-origin scaling
-  const scaleOffsetX = (characterWidth * (1 - scale)) / 2;
+  useEffect(() => {
+    if (!isMounted.current) return;
+    animatedTranslateX.value = withTiming(
+      positionX - scaleOffsetX,
+      TIMING_CONFIG,
+    );
+  }, [positionX, scaleOffsetX, animatedTranslateX]);
 
-  const animatedStyle = useAnimatedStyle(
-    () => ({
-      opacity: opacity.value,
-      transform: [
-        {
-          translateX: withTiming(positionX - scaleOffsetX, TIMING_CONFIG),
-        },
-        { translateY: translateY.value },
-        { scale: withTiming(scale, TIMING_CONFIG) },
-      ],
-    }),
-    [positionX, scale, scaleOffsetX],
-  );
+  useEffect(() => {
+    if (!isMounted.current) return;
+    animatedScale.value = withTiming(scale, TIMING_CONFIG);
+  }, [scale, animatedScale]);
+
+  useEffect(() => {
+    isMounted.current = true;
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [
+      { translateX: animatedTranslateX.value },
+      { translateY: translateY.value },
+      { scale: animatedScale.value },
+    ],
+  }));
 
   const isPlaceholderChar = isPlaceholder || item.isPlaceholderDecimal;
   const textColor = isPlaceholderChar
-    ? Theme["text-secondary"]
-    : Theme["text-primary"];
+    ? textSecondaryColor
+    : textPrimaryColor;
 
   return (
     <Animated.View exiting={exitAnimation}>
