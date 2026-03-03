@@ -123,12 +123,15 @@ export const useAnimatedNumberLayout = ({
     return charRight + CURSOR_OFFSET;
   }, [characters, characterLayouts, separators, scale]);
 
-  return {
-    itemHeight: ITEM_HEIGHT,
-    scale,
-    totalContentWidth,
-    cursorPosition,
-    characterLayouts,
-    getCharWidth,
-  };
+  return useMemo(
+    () => ({
+      itemHeight: ITEM_HEIGHT,
+      scale,
+      totalContentWidth,
+      cursorPosition,
+      characterLayouts,
+      getCharWidth,
+    }),
+    [scale, totalContentWidth, cursorPosition, characterLayouts],
+  );
 };

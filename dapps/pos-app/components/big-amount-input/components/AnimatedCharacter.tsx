@@ -1,5 +1,5 @@
 import type { CharacterItem } from "../utils/getCharactersArray";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useRef } from "react";
 import { StyleSheet } from "react-native";
 import Animated, {
   Easing,
@@ -55,6 +55,7 @@ function AnimatedCharacterComponent({
   const opacity = useSharedValue(0);
   const animatedTranslateX = useSharedValue(positionX - scaleOffsetX);
   const animatedScale = useSharedValue(scale);
+  const isMounted = useRef(false);
 
   useEffect(() => {
     translateY.value = withTiming(0, TIMING_CONFIG);
@@ -62,6 +63,7 @@ function AnimatedCharacterComponent({
   }, [translateY, opacity]);
 
   useEffect(() => {
+    if (!isMounted.current) return;
     animatedTranslateX.value = withTiming(
       positionX - scaleOffsetX,
       TIMING_CONFIG,
@@ -69,8 +71,13 @@ function AnimatedCharacterComponent({
   }, [positionX, scaleOffsetX, animatedTranslateX]);
 
   useEffect(() => {
+    if (!isMounted.current) return;
     animatedScale.value = withTiming(scale, TIMING_CONFIG);
   }, [scale, animatedScale]);
+
+  useEffect(() => {
+    isMounted.current = true;
+  }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
