@@ -4,18 +4,11 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { showErrorToast } from "@/utils/toast";
-import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { Platform, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
-  const [assets] = useAssets([
-    require("@/assets/images/plus.png"),
-    require("@/assets/images/clock.png"),
-    require("@/assets/images/gear.png"),
-  ]);
-
   const Theme = useTheme();
   const { merchantId, isPartnerApiKeySet } = useSettingsStore();
 
@@ -47,7 +40,7 @@ export default function HomeScreen() {
         ]}
       >
         <Image
-          source={assets?.[0]}
+          source={require("@/assets/images/plus.png")}
           style={styles.actionButtonImage}
           cachePolicy="memory-disk"
           priority="high"
@@ -62,7 +55,7 @@ export default function HomeScreen() {
         ]}
       >
         <Image
-          source={assets?.[1]}
+          source={require("@/assets/images/clock.png")}
           style={styles.actionButtonImage}
           cachePolicy="memory-disk"
           priority="high"
@@ -77,7 +70,7 @@ export default function HomeScreen() {
         ]}
       >
         <Image
-          source={assets?.[2]}
+          source={require("@/assets/images/gear.png")}
           style={styles.actionButtonImage}
           cachePolicy="memory-disk"
           priority="high"

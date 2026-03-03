@@ -116,19 +116,6 @@
         }
       ],
       [
-        "expo-asset",
-        {
-          "assets": [
-            "./assets/images",
-            "./assets/images/tokens",
-            "./assets/images/chains",
-            "./assets/images/payment_methods",
-            "./assets/images/variants",
-            "./assets/app_icons"
-          ]
-        }
-      ],
-      [
         "react-native-permissions",
         {
           "iosPermissions": [

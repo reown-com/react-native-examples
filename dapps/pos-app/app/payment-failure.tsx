@@ -9,7 +9,6 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { getPaymentErrorMessage } from "@/utils/payment-errors";
-import { useAssets } from "expo-asset";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
@@ -20,7 +19,6 @@ export default function PaymentFailureScreen() {
   const Theme = useTheme();
   const { top } = useSafeAreaInsets();
   const params = useLocalSearchParams<ScreenParams>();
-  const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
 
   const handleRetry = () => {
     router.dismissTo("/amount");
@@ -30,7 +28,7 @@ export default function PaymentFailureScreen() {
     <View style={[styles.container, { paddingTop: top }]}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Image
-          source={assets?.[0]}
+          source={require("@/assets/images/warning_circle.png")}
           style={[styles.warningCircle, { tintColor: Theme["icon-error"] }]}
           cachePolicy="memory-disk"
           tintColor={Theme["icon-error"]}

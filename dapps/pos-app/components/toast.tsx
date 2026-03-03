@@ -1,6 +1,5 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { StyleSheet, View } from "react-native";
 import { ThemedText } from "./themed-text";
@@ -12,12 +11,11 @@ interface ToastProps {
 
 export function Toast({ message = "", type }: ToastProps) {
   const Theme = useTheme();
-  const [assets] = useAssets([
-    require("@/assets/images/error.png"),
-    require("@/assets/images/check_circle.png"),
-  ]);
 
-  const image = type === "error" ? assets?.[0] : assets?.[1];
+  const image =
+    type === "error"
+      ? require("@/assets/images/error.png")
+      : require("@/assets/images/check_circle.png");
   const iconColor =
     type === "error" ? Theme["icon-error"] : Theme["icon-success"];
 
