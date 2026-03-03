@@ -1,0 +1,11 @@
+name: OTA Update Mobile POS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo placeholder
+        run: echo "OTA Update Mobile POS placeholder workflow"
