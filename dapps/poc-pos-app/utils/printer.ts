@@ -153,5 +153,6 @@ export const printReceipt = async (
     useLogsStore
       .getState()
       .addLog("error", errorMessage, "printer", "printReceipt");
+    throw error;
   }
 };
