@@ -28,12 +28,12 @@ export const connectPrinter = async (): Promise<{
     }
 
     // Connect to first device
-    const printer = devices[0].getDevice(); // { name, address, vendorId, productId, ... }
-    await ReactNativePosPrinter.connectPrinter(printer.address); // e.g., 'USB' or mac address
+    const device = devices[0].getDevice(); // { name, address, vendorId, productId, ... }
+    await ReactNativePosPrinter.connectPrinter(device.address); // e.g., 'USB' or mac address
     useLogsStore
       .getState()
       .addLog("info", "Printer connected", "printer", "connectPrinter", {
-        printer,
+        printer: device,
       });
     return { connected: true };
   } catch (error) {

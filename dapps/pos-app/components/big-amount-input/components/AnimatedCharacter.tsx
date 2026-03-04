@@ -89,9 +89,7 @@ function AnimatedCharacterComponent({
   }));
 
   const isPlaceholderChar = isPlaceholder || item.isPlaceholderDecimal;
-  const textColor = isPlaceholderChar
-    ? textSecondaryColor
-    : textPrimaryColor;
+  const textColor = isPlaceholderChar ? textSecondaryColor : textPrimaryColor;
 
   return (
     <Animated.View exiting={exitAnimation}>
