@@ -18,7 +18,7 @@ export const Colors = {
     "icon-error": "#DF4A34",
 
     // Background colors
-    "bg-primary": "#FFFFFF",
+    "bg-primary": "#30A46B",
     "bg-invert": "#202020",
     "bg-accent-primary": "#30A46B",
     "bg-payment-success": "#30A46B",
@@ -54,7 +54,7 @@ export const Colors = {
     "icon-error": "#DF4A34",
 
     // Background colors
-    "bg-primary": "#202020",
+    "bg-primary": "#30A46B",
     "bg-invert": "#FFFFFF",
     "bg-accent-primary": "#30A46B",
     "bg-payment-success": "#30A46B",
