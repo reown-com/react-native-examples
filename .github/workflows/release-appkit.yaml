@@ -3,7 +3,7 @@ run-name: "AppKit - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 Android' |
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 on:
   workflow_dispatch:

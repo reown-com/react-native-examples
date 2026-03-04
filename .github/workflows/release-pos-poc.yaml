@@ -3,7 +3,7 @@ run-name: "Mobile POS (PoC) - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 on:
   workflow_dispatch:
