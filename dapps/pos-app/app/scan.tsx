@@ -71,7 +71,7 @@ export default function ScanScreen() {
   );
 
   const handleOnClosePress = () => {
-    if (paymentId) {
+    if (paymentId && paymentStatusData?.status === "requires_action") {
       cancelPayment(paymentId).catch((error) => {
         addLog("error", "Failed to cancel payment", "scan", "cancelPayment", {
           paymentId,
@@ -157,28 +157,12 @@ export default function ScanScreen() {
           data,
         });
         onSuccess();
-      } else if (
-        data.status === "failed" ||
-        data.status === "expired" ||
-        data.status === "cancelled"
-      ) {
+      } else {
         addLog("error", data.status, "scan", "usePaymentStatus", {
           paymentId,
           data,
         });
         onFailure(data.status);
-      } else if (data.isFinal) {
-        addLog("error", `Unknown terminal status: ${data.status}`, "scan", "usePaymentStatus", {
-          paymentId,
-          data,
-        });
-        onFailure(data.status);
-      } else {
-        addLog("error", `Unknown payment status: ${data.status}`, "scan", "usePaymentStatus", {
-          paymentId,
-          data,
-        });
-        onFailure();
       }
     },
   });

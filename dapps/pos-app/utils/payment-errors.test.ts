@@ -21,7 +21,7 @@ describe("getPaymentErrorMessage", () => {
   });
 
   describe("unknown error statuses", () => {
-    it("returns default message for unknown error status", () => {
+    it("returns default message for unknown error status (covers normalized unknown statuses)", () => {
       const result = getPaymentErrorMessage("some_unknown_error");
       expect(result).toBe(
         "The payment couldn't be completed due to an error. Please try again or use a different payment method.",

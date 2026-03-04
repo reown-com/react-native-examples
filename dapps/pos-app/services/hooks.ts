@@ -13,10 +13,7 @@ import { useEffect, useRef } from "react";
 import { cancelPayment, getPaymentStatus, startPayment } from "./payment";
 import { getTransactions, GetTransactionsOptions } from "./transactions";
 
-/**
- * All known payment statuses — used to detect unknown statuses from the API
- */
-const KNOWN_STATUSES: PaymentStatus[] = [
+const KNOWN_STATUSES: string[] = [
   "requires_action",
   "processing",
   "succeeded",
@@ -26,11 +23,25 @@ const KNOWN_STATUSES: PaymentStatus[] = [
 ];
 
 /**
- * Checks whether polling should stop for a given status response.
- * Stops when the API signals finality (isFinal) or when the status is unknown.
+ * Normalizes a payment status response from the API.
+ * Unknown statuses are mapped to "failed" with isFinal: true so the app
+ * stops polling and routes through the existing failure path.
  */
-function shouldStopPolling(data: PaymentStatusResponse): boolean {
-  return data.isFinal || !KNOWN_STATUSES.includes(data.status);
+export function normalizePaymentStatus(
+  data: PaymentStatusResponse,
+): PaymentStatusResponse {
+  if (!KNOWN_STATUSES.includes(data.status as string)) {
+    const addLog = useLogsStore.getState().addLog;
+    addLog(
+      "error",
+      `Unknown payment status "${data.status}" — treating as failed`,
+      "payment",
+      "normalizePaymentStatus",
+      { originalStatus: data.status, isFinal: data.isFinal },
+    );
+    return { ...data, status: "failed", isFinal: true };
+  }
+  return data;
 }
 
 /**
@@ -65,14 +76,16 @@ interface UsePaymentStatusOptions {
    */
   enabled?: boolean;
   /**
-   * Callback when payment reaches a terminal state
+   * Callback when payment reaches a final state (succeeded, failed, expired,
+   * cancelled, or unknown status normalized to failed)
    */
   onTerminalState?: (data: PaymentStatusResponse) => void;
 }
 
 /**
- * Hook to get payment status with automatic polling
- * Polls until payment reaches a terminal state (completed or failed)
+ * Hook to get payment status with automatic polling.
+ * Polls until payment reaches a final state (isFinal === true).
+ * Unknown statuses from the API are normalized to "failed".
  * @param paymentId - The payment ID to check status for
  * @param options - Query options including polling interval
  * @returns Query result with payment status data
@@ -107,9 +120,10 @@ export function usePaymentStatus(
 
   const query = useQuery<PaymentStatusResponse, Error>({
     queryKey: ["paymentStatus", paymentId],
-    queryFn: () => {
+    queryFn: async () => {
       if (!paymentId) throw new Error("Payment ID required");
-      return getPaymentStatus(paymentId);
+      const data = await getPaymentStatus(paymentId);
+      return normalizePaymentStatus(data);
     },
     enabled: enabled && !!paymentId,
     refetchOnWindowFocus: false,
@@ -117,7 +131,7 @@ export function usePaymentStatus(
     refetchOnReconnect: false,
     refetchInterval: (query) => {
       const data = query.state.data;
-      if (data && shouldStopPolling(data)) {
+      if (data?.isFinal) {
         return false;
       }
       return pollingInterval;
@@ -131,12 +145,7 @@ export function usePaymentStatus(
   // Handle terminal state callback
   useEffect(() => {
     const data = query.data;
-    if (
-      data &&
-      shouldStopPolling(data) &&
-      !hasCalledCallback.current &&
-      callbackRef.current
-    ) {
+    if (data?.isFinal && !hasCalledCallback.current && callbackRef.current) {
       hasCalledCallback.current = true;
       callbackRef.current(data);
     }

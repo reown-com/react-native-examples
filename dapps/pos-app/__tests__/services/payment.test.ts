@@ -5,6 +5,7 @@
  */
 
 import { cancelPayment, getPaymentStatus, startPayment } from "@/services/payment";
+import { normalizePaymentStatus } from "@/services/hooks";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   resetSettingsStore,
@@ -255,6 +256,45 @@ describe("Payment Service", () => {
       await expect(getPaymentStatus("pay_invalid")).rejects.toThrow(
         "Payment not found",
       );
+    });
+  });
+
+  describe("normalizePaymentStatus", () => {
+    it("should pass through known statuses unchanged", () => {
+      const knownStatuses = [
+        "requires_action",
+        "processing",
+        "succeeded",
+        "failed",
+        "expired",
+        "cancelled",
+      ] as const;
+
+      for (const status of knownStatuses) {
+        const input = { status, isFinal: status !== "requires_action" && status !== "processing", pollInMs: 0 };
+        const result = normalizePaymentStatus(input);
+        expect(result.status).toBe(status);
+      }
+    });
+
+    it("should normalize unknown statuses to 'failed' with isFinal: true", () => {
+      const result = normalizePaymentStatus({
+        status: "some_new_status" as any,
+        isFinal: false,
+        pollInMs: 2000,
+      });
+      expect(result.status).toBe("failed");
+      expect(result.isFinal).toBe(true);
+    });
+
+    it("should normalize unknown final statuses to 'failed'", () => {
+      const result = normalizePaymentStatus({
+        status: "refunded" as any,
+        isFinal: true,
+        pollInMs: 0,
+      });
+      expect(result.status).toBe("failed");
+      expect(result.isFinal).toBe(true);
     });
   });
 
