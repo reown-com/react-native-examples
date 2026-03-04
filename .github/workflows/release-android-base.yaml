@@ -97,7 +97,7 @@ jobs:
         if: ${{ inputs.eas-update-channel != '' }}
         run: |
           cd ${{ inputs.root-path }}
-          FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | tail -1)
+          FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | tail -1 | jq -r '.hash')
           echo "$FINGERPRINT" > native-fingerprint.txt
           echo "Native fingerprint: $FINGERPRINT"
 

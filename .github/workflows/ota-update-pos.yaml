@@ -40,8 +40,8 @@ jobs:
         id: fingerprints
         run: |
           cd dapps/pos-app
-          ANDROID_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | tail -1)
-          IOS_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform ios 2>/dev/null | tail -1)
+          ANDROID_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | tail -1 | jq -r '.hash')
+          IOS_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform ios 2>/dev/null | tail -1 | jq -r '.hash')
           echo "android=$ANDROID_FINGERPRINT" >> "$GITHUB_OUTPUT"
           echo "ios=$IOS_FINGERPRINT" >> "$GITHUB_OUTPUT"
           echo "Current Android fingerprint: $ANDROID_FINGERPRINT"
@@ -67,6 +67,9 @@ jobs:
 
       - name: Check for native changes
         id: native-check
+        env:
+          CURRENT_ANDROID_FINGERPRINT: ${{ steps.fingerprints.outputs.android }}
+          CURRENT_IOS_FINGERPRINT: ${{ steps.fingerprints.outputs.ios }}
         run: |
           HAS_NATIVE_CHANGES=false
 
@@ -75,7 +78,6 @@ jobs:
 
           if [ -f "$ANDROID_FINGERPRINT_PATH" ]; then
             LAST_ANDROID_FINGERPRINT=$(cat "$ANDROID_FINGERPRINT_PATH")
-            CURRENT_ANDROID_FINGERPRINT="${{ steps.fingerprints.outputs.android }}"
             echo "Last native Android fingerprint: $LAST_ANDROID_FINGERPRINT"
             echo "Current Android fingerprint: $CURRENT_ANDROID_FINGERPRINT"
 
@@ -89,7 +91,6 @@ jobs:
 
           if [ -f "$IOS_FINGERPRINT_PATH" ]; then
             LAST_IOS_FINGERPRINT=$(cat "$IOS_FINGERPRINT_PATH")
-            CURRENT_IOS_FINGERPRINT="${{ steps.fingerprints.outputs.ios }}"
             echo "Last native iOS fingerprint: $LAST_IOS_FINGERPRINT"
             echo "Current iOS fingerprint: $CURRENT_IOS_FINGERPRINT"
 
