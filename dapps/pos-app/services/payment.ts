@@ -36,3 +36,16 @@ export async function getPaymentStatus(
     { headers },
   );
 }
+
+/**
+ * Cancel a payment by payment ID
+ * Only works for payments in requires_action state; returns 400 otherwise.
+ * @param paymentId - The payment ID to cancel
+ */
+export async function cancelPayment(paymentId: string): Promise<void> {
+  if (!paymentId?.trim()) {
+    throw new Error("paymentId is required");
+  }
+  const headers = await getApiHeaders();
+  await apiClient.post(`/merchant/payment/${paymentId}/cancel`, {}, { headers });
+}

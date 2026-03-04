@@ -4,7 +4,7 @@
  * Tests for the payment service functions including API headers, startPayment, and getPaymentStatus.
  */
 
-import { getPaymentStatus, startPayment } from "@/services/payment";
+import { cancelPayment, getPaymentStatus, startPayment } from "@/services/payment";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   resetSettingsStore,
@@ -106,6 +106,7 @@ describe("Payment Service", () => {
           headers: expect.objectContaining({
             "Api-Key": "api-key-456",
             "Merchant-Id": "merchant-123",
+            "WCP-Version": "2026-02-19.preview",
             "Sdk-Name": "pos-device",
             "Sdk-Version": "1.0.0",
             "Sdk-Platform": "react-native",
@@ -231,13 +232,14 @@ describe("Payment Service", () => {
         "succeeded",
         "failed",
         "expired",
+        "cancelled",
       ] as const;
 
       for (const status of statuses) {
         (apiClient.get as jest.Mock).mockResolvedValueOnce({
           status,
-          isFinal: ["succeeded", "failed", "expired"].includes(status),
-          pollInMs: status === "succeeded" ? 0 : 2000,
+          isFinal: ["succeeded", "failed", "expired", "cancelled"].includes(status),
+          pollInMs: ["succeeded", "failed", "expired", "cancelled"].includes(status) ? 0 : 2000,
         });
 
         const result = await getPaymentStatus(`pay_${status}`);
@@ -252,6 +254,53 @@ describe("Payment Service", () => {
 
       await expect(getPaymentStatus("pay_invalid")).rejects.toThrow(
         "Payment not found",
+      );
+    });
+  });
+
+  describe("cancelPayment", () => {
+    beforeEach(async () => {
+      await setupTestMerchant("merchant-123", "api-key-456");
+    });
+
+    it("should call API with correct endpoint", async () => {
+      (apiClient.post as jest.Mock).mockResolvedValueOnce(undefined);
+
+      await cancelPayment("pay_123");
+
+      expect(apiClient.post).toHaveBeenCalledWith(
+        "/merchant/payment/pay_123/cancel",
+        {},
+        expect.objectContaining({ headers: expect.any(Object) }),
+      );
+    });
+
+    it("should throw error when paymentId is empty", async () => {
+      await expect(cancelPayment("")).rejects.toThrow("paymentId is required");
+    });
+
+    it("should throw error when paymentId is whitespace only", async () => {
+      await expect(cancelPayment("   ")).rejects.toThrow(
+        "paymentId is required",
+      );
+    });
+
+    it("should throw error when paymentId is null/undefined", async () => {
+      await expect(
+        cancelPayment(null as unknown as string),
+      ).rejects.toThrow("paymentId is required");
+      await expect(
+        cancelPayment(undefined as unknown as string),
+      ).rejects.toThrow("paymentId is required");
+    });
+
+    it("should handle API errors", async () => {
+      (apiClient.post as jest.Mock).mockRejectedValueOnce(
+        new Error("Payment cannot be cancelled"),
+      );
+
+      await expect(cancelPayment("pay_processing")).rejects.toThrow(
+        "Payment cannot be cancelled",
       );
     });
   });

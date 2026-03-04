@@ -13,6 +13,11 @@ describe("getPaymentErrorMessage", () => {
         "The API key is invalid. Please check your credentials and try again.",
       );
     });
+
+    it('returns cancelled message for "cancelled" status', () => {
+      const result = getPaymentErrorMessage("cancelled");
+      expect(result).toBe("The payment was cancelled.");
+    });
   });
 
   describe("unknown error statuses", () => {

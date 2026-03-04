@@ -10,13 +10,28 @@ import {
 } from "@/utils/types";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
-import { getPaymentStatus, startPayment } from "./payment";
+import { cancelPayment, getPaymentStatus, startPayment } from "./payment";
 import { getTransactions, GetTransactionsOptions } from "./transactions";
 
 /**
- * Terminal payment statuses that indicate polling should stop
+ * All known payment statuses — used to detect unknown statuses from the API
  */
-const TERMINAL_STATUSES: PaymentStatus[] = ["succeeded", "failed", "expired"];
+const KNOWN_STATUSES: PaymentStatus[] = [
+  "requires_action",
+  "processing",
+  "succeeded",
+  "failed",
+  "expired",
+  "cancelled",
+];
+
+/**
+ * Checks whether polling should stop for a given status response.
+ * Stops when the API signals finality (isFinal) or when the status is unknown.
+ */
+function shouldStopPolling(data: PaymentStatusResponse): boolean {
+  return data.isFinal || !KNOWN_STATUSES.includes(data.status);
+}
 
 /**
  * Hook to start a payment
@@ -25,6 +40,16 @@ const TERMINAL_STATUSES: PaymentStatus[] = ["succeeded", "failed", "expired"];
 export function useStartPayment() {
   return useMutation<StartPaymentResponse, Error, StartPaymentRequest>({
     mutationFn: startPayment,
+  });
+}
+
+/**
+ * Hook to cancel a payment
+ * @returns Mutation hook for cancelling payments
+ */
+export function useCancelPayment() {
+  return useMutation<void, Error, string>({
+    mutationFn: cancelPayment,
   });
 }
 
@@ -92,8 +117,7 @@ export function usePaymentStatus(
     refetchOnReconnect: false,
     refetchInterval: (query) => {
       const data = query.state.data;
-      // Stop polling if payment has reached a terminal state
-      if (data && TERMINAL_STATUSES.includes(data.status)) {
+      if (data && shouldStopPolling(data)) {
         return false;
       }
       return pollingInterval;
@@ -109,7 +133,7 @@ export function usePaymentStatus(
     const data = query.data;
     if (
       data &&
-      TERMINAL_STATUSES.includes(data.status) &&
+      shouldStopPolling(data) &&
       !hasCalledCallback.current &&
       callbackRef.current
     ) {
@@ -148,7 +172,7 @@ function filterToStatusArray(
     case "completed":
       return ["succeeded"];
     case "failed":
-      return ["failed", "expired"];
+      return ["failed", "expired", "cancelled"];
     case "pending":
       return ["requires_action", "processing"];
     case "all":
