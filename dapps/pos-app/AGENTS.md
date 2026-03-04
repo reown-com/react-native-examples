@@ -35,7 +35,6 @@ The app is built with **Expo** and **React Native**, supporting Android, iOS, an
 - **expo-secure-store**: Secure credential storage
 - **react-native-mmkv**: Fast key-value storage
 - **@sentry/react-native**: Error tracking and monitoring
-- **expo-updates**: OTA (Over-The-Air) updates via EAS Update
 
 ### Development Tools
 
@@ -601,8 +600,10 @@ export const Variants: Record<VariantName, Variant> = {
 **⚠️ Important: For every new feature or change, you MUST update the Android version code in `app.json`.**
 
 - **Increment version code**: Update `expo.android.versionCode` in `app.json` for each change
-- **Current version code**: Check the current value of `expo.android.versionCode` in `app.json` and increment by 1
+- **Current version code**: Check the current value in `app.json` and increment by 1
 - **Why**: Android requires a unique version code for each release. Without incrementing, new builds cannot be installed over previous versions
+- **Example**: If current version code is `15`, change it to `16` for your changes
+- Current version code: 16
 
 ## Key Dependencies & Their Purposes
 
@@ -859,73 +860,6 @@ The frame adapts to light/dark mode:
 2. **Modal children**: `FramedModal` only provides the container; children must include their own overlay and content styling
 3. **Escape key**: `FramedModal.web` handles Escape key to close modals
 4. **Mobile web fallback**: If no portal container exists (mobile web), the modal renders in place with absolute positioning
-
-## OTA Updates
-
-The app uses **EAS Update** (Expo's hosted service) for Over-The-Air JavaScript bundle updates. This allows pushing JS-only changes to devices without going through full native builds.
-
-### How It Works
-
-- **expo-updates** package is installed and configured in `app.json`
-- Runtime version uses **fingerprint policy** — automatically computed from native dependencies
-- Updates are checked on app mount and when returning to foreground (via `useOTAUpdates` hook)
-- When an update is found, it's downloaded and applied immediately via `Updates.reloadAsync()`
-
-### Key Files
-
-- **`hooks/use-ota-updates.ts`**: Hook that checks for and applies OTA updates
-- **`eas.json`**: Channel configuration (`production`)
-- **`app.json`**: `updates`, `runtimeVersion`, and `extra.eas` configuration
-- **`.github/workflows/ota-update-pos.yaml`**: GitHub Actions workflow for publishing updates
-
-### Channels
-
-| Channel | Purpose | Receives updates from |
-|---------|---------|----------------------|
-| `production` | Firebase/TestFlight release builds | `eas update --channel production` |
-
-Each native build embeds its channel during `expo prebuild`. Builds only receive updates published to their channel.
-
-### Publishing an OTA Update
-
-**Via GitHub Actions** (recommended):
-1. Go to Actions → "OTA Update Mobile POS"
-2. Add an optional message
-3. The workflow will:
-   - Check for native changes (fails if fingerprint doesn't match last native build)
-   - Publish the update via `eas update`
-   - Send a Slack notification
-
-**Via CLI**:
-```bash
-cd dapps/pos-app
-eas update --channel production --message "description of changes"
-```
-
-### When OTA Won't Work
-
-OTA updates only work for JS-only changes. If native code changed (new permissions, native modules, SDK upgrade), the fingerprint changes and:
-- The OTA workflow will **fail** with a clear error
-- A new native build must be distributed first
-- After that, future OTA updates will target the new fingerprint
-
-### Rollback
-
-```bash
-eas update:rollback --channel production
-```
-
-Or checkout a known-good commit and re-publish:
-```bash
-git checkout <good-commit>
-eas update --channel production --message "Rollback to <commit>"
-```
-
-Built-in crash recovery: if the app crashes after an OTA update, `expo-updates` automatically falls back to the previous working bundle.
-
-### Settings Screen
-
-The Settings screen displays the current OTA update ID and channel alongside the app version, helping testers verify which update is running.
 
 ## Additional Resources
 
