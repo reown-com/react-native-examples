@@ -20,8 +20,8 @@ export const Colors = {
     // Background colors
     "bg-primary": "#FFFFFF",
     "bg-invert": "#202020",
-    "bg-accent-primary": "#0988F0",
-    "bg-payment-success": "#0988F0",
+    "bg-accent-primary": "#30A46B",
+    "bg-payment-success": "#30A46B",
 
     // Text colors
     "text-primary": "#202020",
@@ -56,8 +56,8 @@ export const Colors = {
     // Background colors
     "bg-primary": "#202020",
     "bg-invert": "#FFFFFF",
-    "bg-accent-primary": "#0988F0",
-    "bg-payment-success": "#0988F0",
+    "bg-accent-primary": "#30A46B",
+    "bg-payment-success": "#30A46B",
 
     // Text colors
     "text-primary": "#FFFFFF",

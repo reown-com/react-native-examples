@@ -45,7 +45,7 @@ export default function HomeScreen() {
           cachePolicy="memory-disk"
           priority="high"
         />
-        <ThemedText fontSize={18}>New sale</ThemedText>
+        <ThemedText fontSize={18}>Start payment</ThemedText>
       </Button>
       <Button
         onPress={handleActivityPress}
