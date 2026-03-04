@@ -1,6 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+import {
+  extractCredentials,
+  getApiBaseUrl,
+  getApiHeaders,
+} from "./_utils";
 
 /**
  * Vercel Serverless Function to proxy payment status requests
@@ -24,35 +27,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // Extract merchant credentials from request headers
-    const apiKey = req.headers["x-api-key"] as string;
-    const merchantId = req.headers["x-merchant-id"] as string;
+    const credentials = extractCredentials(req, res);
+    if (!credentials) return;
 
-    if (!apiKey || !merchantId) {
-      return res.status(400).json({
-        message: "Missing required headers: x-api-key and x-merchant-id",
-      });
-    }
-
-    if (!API_BASE_URL) {
-      return res.status(500).json({
-        message: "API_BASE_URL is not configured",
-      });
-    }
+    const apiBaseUrl = getApiBaseUrl(res);
+    if (!apiBaseUrl) return;
 
     // Forward the request to the merchant API
     const response = await fetch(
-      `${API_BASE_URL}/merchant/payment/${encodeURIComponent(paymentId)}/status`,
+      `${apiBaseUrl}/merchant/payment/${encodeURIComponent(paymentId)}/status`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Api-Key": apiKey,
-          "Merchant-Id": merchantId,
-          "Sdk-Name": "pos-device",
-          "Sdk-Version": "1.0.0",
-          "Sdk-Platform": "web",
-        },
+        headers: getApiHeaders(
+          credentials.apiKey,
+          credentials.merchantId,
+        ),
       },
     );
 
