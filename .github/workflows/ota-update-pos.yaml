@@ -4,7 +4,6 @@ run-name: "Mobile POS OTA - production"
 permissions:
   id-token: write
   contents: read
-  actions: read
 
 on:
   workflow_dispatch:
@@ -36,71 +35,38 @@ jobs:
           fi
           echo "${{ secrets.POS_ENV_FILE }}" > dapps/pos-app/.env
 
-      - name: Compute current fingerprints
-        id: fingerprints
-        run: |
-          cd dapps/pos-app
-          ANDROID_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | tail -1 | jq -r '.hash')
-          IOS_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform ios 2>/dev/null | tail -1 | jq -r '.hash')
-          echo "android=$ANDROID_FINGERPRINT" >> "$GITHUB_OUTPUT"
-          echo "ios=$IOS_FINGERPRINT" >> "$GITHUB_OUTPUT"
-          echo "Current Android fingerprint: $ANDROID_FINGERPRINT"
-          echo "Current iOS fingerprint: $IOS_FINGERPRINT"
-
-      - name: Download last native build fingerprint (Android)
-        id: download-fingerprint-android
-        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
-        with:
-          name: native-fingerprint-android-production
-          workflow: release-pos.yaml
-          if_no_artifact_found: warn
-          path: /tmp/native-fingerprint/android
-
-      - name: Download last native build fingerprint (iOS)
-        id: download-fingerprint-ios
-        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
-        with:
-          name: native-fingerprint-ios-production
-          workflow: release-pos.yaml
-          if_no_artifact_found: warn
-          path: /tmp/native-fingerprint/ios
+      - name: Setup EAS CLI
+        run: npm install -g eas-cli
 
       - name: Check for native changes
         id: native-check
+        working-directory: dapps/pos-app
         env:
-          CURRENT_ANDROID_FINGERPRINT: ${{ steps.fingerprints.outputs.android }}
-          CURRENT_IOS_FINGERPRINT: ${{ steps.fingerprints.outputs.ios }}
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           HAS_NATIVE_CHANGES=false
 
-          ANDROID_FINGERPRINT_PATH=/tmp/native-fingerprint/android/native-fingerprint.txt
-          IOS_FINGERPRINT_PATH=/tmp/native-fingerprint/ios/native-fingerprint.txt
+          for PLATFORM in android ios; do
+            echo "--- Checking $PLATFORM ---"
+            BUILD_ID=$(eas build:list --platform "$PLATFORM" --channel production --limit 1 --json --non-interactive 2>/dev/null | jq -r '.[0].id')
 
-          if [ -f "$ANDROID_FINGERPRINT_PATH" ]; then
-            LAST_ANDROID_FINGERPRINT=$(cat "$ANDROID_FINGERPRINT_PATH")
-            echo "Last native Android fingerprint: $LAST_ANDROID_FINGERPRINT"
-            echo "Current Android fingerprint: $CURRENT_ANDROID_FINGERPRINT"
-
-            if [ "$LAST_ANDROID_FINGERPRINT" != "$CURRENT_ANDROID_FINGERPRINT" ]; then
-              HAS_NATIVE_CHANGES=true
-              echo "::error::Android native changes detected. Current fingerprint does not match the last native Android build."
+            if [ -z "$BUILD_ID" ] || [ "$BUILD_ID" = "null" ]; then
+              echo "No previous $PLATFORM build found for channel 'production'. Skipping check."
+              continue
             fi
-          else
-            echo "⚠️ No previous native Android fingerprint found for channel 'production'."
-          fi
 
-          if [ -f "$IOS_FINGERPRINT_PATH" ]; then
-            LAST_IOS_FINGERPRINT=$(cat "$IOS_FINGERPRINT_PATH")
-            echo "Last native iOS fingerprint: $LAST_IOS_FINGERPRINT"
-            echo "Current iOS fingerprint: $CURRENT_IOS_FINGERPRINT"
+            echo "Latest $PLATFORM build: $BUILD_ID"
+            DIFF=$(eas fingerprint:compare --build-id "$BUILD_ID" --platform "$PLATFORM" --json --non-interactive 2>/dev/null)
+            IS_MATCH=$(echo "$DIFF" | jq -r '.isCompatible // .isMatch // empty')
 
-            if [ "$LAST_IOS_FINGERPRINT" != "$CURRENT_IOS_FINGERPRINT" ]; then
+            if [ "$IS_MATCH" = "true" ]; then
+              echo "$PLATFORM fingerprint matches the latest native build."
+            else
               HAS_NATIVE_CHANGES=true
-              echo "::error::iOS native changes detected. Current fingerprint does not match the last native iOS build."
+              echo "::error::$PLATFORM native changes detected. Current fingerprint does not match build $BUILD_ID."
+              echo "$DIFF" | jq . 2>/dev/null || echo "$DIFF"
             fi
-          else
-            echo "⚠️ No previous native iOS fingerprint found for channel 'production'."
-          fi
+          done
 
           if [ "$HAS_NATIVE_CHANGES" = "true" ]; then
             echo "has_native_changes=true" >> "$GITHUB_OUTPUT"
@@ -108,16 +74,8 @@ jobs:
             exit 1
           fi
 
-          if [ ! -f "$ANDROID_FINGERPRINT_PATH" ] || [ ! -f "$IOS_FINGERPRINT_PATH" ]; then
-            echo "⚠️ At least one platform fingerprint is missing. This can happen after initial OTA setup."
-            echo "Proceeding with OTA publish."
-          fi
-
           echo "has_native_changes=false" >> "$GITHUB_OUTPUT"
-          echo "✅ Fingerprints match for all available platform artifacts — safe to publish OTA update."
-
-      - name: Setup EAS CLI
-        run: npm install -g eas-cli
+          echo "Fingerprints match — safe to publish OTA update."
 
       - name: Publish OTA update
         id: eas-update
