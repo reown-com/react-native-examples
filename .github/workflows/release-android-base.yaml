@@ -93,6 +93,23 @@ jobs:
         env:
           EAS_UPDATE_CHANNEL: ${{ inputs.eas-update-channel }}
 
+      - name: Compute and upload native fingerprint
+        if: ${{ inputs.eas-update-channel != '' }}
+        run: |
+          cd ${{ inputs.root-path }}
+          FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | tail -1 | jq -r '.hash')
+          echo "$FINGERPRINT" > native-fingerprint.txt
+          echo "Native fingerprint: $FINGERPRINT"
+
+      - name: Upload native fingerprint artifact
+        if: ${{ inputs.eas-update-channel != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-fingerprint-android-${{ inputs.eas-update-channel }}
+          path: ${{ inputs.root-path }}/native-fingerprint.txt
+          retention-days: 90
+          overwrite: true
+
       - name: Install Java 17
         uses: actions/setup-java@v3
         with:
