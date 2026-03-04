@@ -4,7 +4,6 @@ run-name: "Mobile POS OTA - production"
 permissions:
   id-token: write
   contents: read
-  actions: read
 
 on:
   workflow_dispatch:
@@ -47,23 +46,11 @@ jobs:
           echo "Current Android fingerprint: $ANDROID_FINGERPRINT"
           echo "Current iOS fingerprint: $IOS_FINGERPRINT"
 
-      - name: Download last native build fingerprint (Android)
-        id: download-fingerprint-android
-        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
-        with:
-          name: native-fingerprint-android-production
-          workflow: release-pos.yaml
-          if_no_artifact_found: warn
-          path: /tmp/native-fingerprint/android
-
-      - name: Download last native build fingerprint (iOS)
-        id: download-fingerprint-ios
-        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
-        with:
-          name: native-fingerprint-ios-production
-          workflow: release-pos.yaml
-          if_no_artifact_found: warn
-          path: /tmp/native-fingerprint/ios
+      - name: Fetch last native build fingerprints
+        run: |
+          git fetch origin fingerprints-dont-remove --depth=1 2>/dev/null || true
+          git show origin/fingerprints-dont-remove:native-fingerprints/production/android.txt > /tmp/native-fingerprint-android.txt 2>/dev/null || true
+          git show origin/fingerprints-dont-remove:native-fingerprints/production/ios.txt > /tmp/native-fingerprint-ios.txt 2>/dev/null || true
 
       - name: Check for native changes
         id: native-check
@@ -73,10 +60,10 @@ jobs:
         run: |
           HAS_NATIVE_CHANGES=false
 
-          ANDROID_FINGERPRINT_PATH=/tmp/native-fingerprint/android/native-fingerprint.txt
-          IOS_FINGERPRINT_PATH=/tmp/native-fingerprint/ios/native-fingerprint.txt
+          ANDROID_FINGERPRINT_PATH=/tmp/native-fingerprint-android.txt
+          IOS_FINGERPRINT_PATH=/tmp/native-fingerprint-ios.txt
 
-          if [ -f "$ANDROID_FINGERPRINT_PATH" ]; then
+          if [ -s "$ANDROID_FINGERPRINT_PATH" ]; then
             LAST_ANDROID_FINGERPRINT=$(cat "$ANDROID_FINGERPRINT_PATH")
             echo "Last native Android fingerprint: $LAST_ANDROID_FINGERPRINT"
             echo "Current Android fingerprint: $CURRENT_ANDROID_FINGERPRINT"
@@ -89,7 +76,7 @@ jobs:
             echo "No previous native Android fingerprint found for channel 'production'."
           fi
 
-          if [ -f "$IOS_FINGERPRINT_PATH" ]; then
+          if [ -s "$IOS_FINGERPRINT_PATH" ]; then
             LAST_IOS_FINGERPRINT=$(cat "$IOS_FINGERPRINT_PATH")
             echo "Last native iOS fingerprint: $LAST_IOS_FINGERPRINT"
             echo "Current iOS fingerprint: $CURRENT_IOS_FINGERPRINT"
@@ -108,13 +95,13 @@ jobs:
             exit 1
           fi
 
-          if [ ! -f "$ANDROID_FINGERPRINT_PATH" ] || [ ! -f "$IOS_FINGERPRINT_PATH" ]; then
+          if [ ! -s "$ANDROID_FINGERPRINT_PATH" ] || [ ! -s "$IOS_FINGERPRINT_PATH" ]; then
             echo "At least one platform fingerprint is missing. This can happen after initial OTA setup."
             echo "Proceeding with OTA publish."
           fi
 
           echo "has_native_changes=false" >> "$GITHUB_OUTPUT"
-          echo "Fingerprints match for all available platform artifacts — safe to publish OTA update."
+          echo "Fingerprints match — safe to publish OTA update."
 
       - name: Setup EAS CLI
         run: npm install -g eas-cli

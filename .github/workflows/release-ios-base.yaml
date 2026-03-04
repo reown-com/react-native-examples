@@ -2,7 +2,7 @@ name: release-ios-base
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 on:
   workflow_call:
@@ -129,22 +129,23 @@ jobs:
         env:
           EAS_UPDATE_CHANNEL: ${{ inputs.eas-update-channel }}
 
-      - name: Compute and upload native fingerprint
+      - name: Save native fingerprint
         if: ${{ inputs.eas-update-channel != '' }}
         run: |
           cd ${{ inputs.root-path }}
           FINGERPRINT=$(npx expo-updates fingerprint:generate --platform ios 2>/dev/null | tail -1 | jq -r '.hash')
-          echo "$FINGERPRINT" > native-fingerprint.txt
-          echo "Native fingerprint: $FINGERPRINT"
+          echo "Native fingerprint (iOS): $FINGERPRINT"
 
-      - name: Upload native fingerprint artifact
-        if: ${{ inputs.eas-update-channel != '' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-fingerprint-ios-${{ inputs.eas-update-channel }}
-          path: ${{ inputs.root-path }}/native-fingerprint.txt
-          retention-days: 90
-          overwrite: true
+          cd "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin fingerprints-dont-remove:fingerprints-dont-remove 2>/dev/null || git checkout --orphan fingerprints-dont-remove
+          git checkout fingerprints-dont-remove
+          mkdir -p native-fingerprints/${{ inputs.eas-update-channel }}
+          echo "$FINGERPRINT" > native-fingerprints/${{ inputs.eas-update-channel }}/ios.txt
+          git add native-fingerprints/
+          git diff --cached --quiet || git commit -m "Update iOS native fingerprint (${{ inputs.eas-update-channel }})"
+          git push origin fingerprints-dont-remove
 
       - name: Set Xcode paths
         run: |
