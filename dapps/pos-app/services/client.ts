@@ -2,10 +2,7 @@ import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { ApiError } from "@/utils/types";
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
-if (!API_BASE_URL) {
-  throw new Error("EXPO_PUBLIC_API_URL environment variable is not configured");
-}
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "";
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
@@ -26,6 +23,12 @@ class ApiClient {
     options: RequestOptions = {},
   ): Promise<T> {
     const { body, headers, timeout, ...fetchOptions } = options;
+
+    if (!this.baseUrl || this.baseUrl.trim().length === 0) {
+      throw new Error(
+        "EXPO_PUBLIC_API_URL environment variable is not configured",
+      );
+    }
 
     // Normalize URL construction: remove trailing slash from baseUrl and ensure endpoint starts with /
     const normalizedBaseUrl = this.baseUrl.replace(/\/+$/, "");
