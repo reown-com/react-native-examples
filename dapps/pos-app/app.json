@@ -5,9 +5,8 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/app_icons/icon.png",
-    "scheme": "WPay",
+    "scheme": "wpay",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "runtimeVersion": {
       "policy": "fingerprint"
     },
@@ -45,7 +44,6 @@
         "backgroundImage": "./assets/app_icons/android_icon_background.png",
         "monochromeImage": "./assets/app_icons/android_icon_monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.reown.mobilepos",
       "permissions": [
@@ -119,6 +117,19 @@
         }
       ],
       [
+        "expo-asset",
+        {
+          "assets": [
+            "./assets/images",
+            "./assets/images/tokens",
+            "./assets/images/chains",
+            "./assets/images/payment_methods",
+            "./assets/images/variants",
+            "./assets/app_icons"
+          ]
+        }
+      ],
+      [
         "react-native-permissions",
         {
           "iosPermissions": [
@@ -133,19 +144,8 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
       ],
-      [
-        "expo-asset",
-        {
-          "assets": [
-            "./assets/images",
-            "./assets/images/tokens",
-            "./assets/images/chains",
-            "./assets/images/payment_methods",
-            "./assets/images/variants",
-            "./assets/app_icons"
-          ]
-        }
-      ]
+      "@sentry/react-native",
+      "expo-image"
     ],
     "experiments": {
       "typedRoutes": true,
