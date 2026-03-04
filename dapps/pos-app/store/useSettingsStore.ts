@@ -8,6 +8,7 @@ import {
   SECURE_STORAGE_KEYS,
   secureStorage,
 } from "@/utils/secure-storage";
+import { isEmbedded } from "@/utils/is-embedded";
 import { storage } from "@/utils/storage";
 import { ThemeMode, TransactionFilterType } from "@/utils/types";
 import * as Crypto from "expo-crypto";
@@ -121,15 +122,27 @@ export const useSettingsStore = create<SettingsStore>()(
       },
       setCurrency: (currency: CurrencyCode) => set({ currency }),
       setMerchantId: (merchantId: string | null) => {
-        // If clearing, reset to env default
+        // If clearing, reset to env default (unless embedded — parent provides credentials)
         if (!merchantId || merchantId.trim() === "") {
-          set({ merchantId: MerchantConfig.getDefaultMerchantId() });
+          set({
+            merchantId: isEmbedded()
+              ? null
+              : MerchantConfig.getDefaultMerchantId(),
+          });
         } else {
           set({ merchantId });
         }
       },
       clearMerchantId: async () => {
-        // Reset both merchant ID and API key to env defaults
+        // When embedded, clear to null — parent provides credentials via postMessage.
+        // Otherwise, reset both merchant ID and API key to env defaults.
+        if (isEmbedded()) {
+          set({ merchantId: null });
+          await secureStorage.removeItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
+          set({ isCustomerApiKeySet: false });
+          return null;
+        }
+
         const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
         set({ merchantId: defaultMerchantId });
         const defaultApiKey = MerchantConfig.getDefaultCustomerApiKey();
@@ -343,16 +356,19 @@ export const useSettingsStore = create<SettingsStore>()(
               );
           }
 
-          // Initialize merchant defaults from env if not set
-          const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
-          const defaultApiKey = MerchantConfig.getDefaultCustomerApiKey();
+          // Initialize merchant defaults from env if not set.
+          // Skip when embedded in an iframe — parent provides credentials via postMessage.
+          if (!isEmbedded()) {
+            const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
+            const defaultApiKey = MerchantConfig.getDefaultCustomerApiKey();
 
-          if (!state.merchantId && defaultMerchantId) {
-            state.setMerchantId(defaultMerchantId);
-          }
+            if (!state.merchantId && defaultMerchantId) {
+              state.setMerchantId(defaultMerchantId);
+            }
 
-          if (!state.isCustomerApiKeySet && defaultApiKey) {
-            await state.setCustomerApiKey(defaultApiKey);
+            if (!state.isCustomerApiKeySet && defaultApiKey) {
+              await state.setCustomerApiKey(defaultApiKey);
+            }
           }
         }
 
