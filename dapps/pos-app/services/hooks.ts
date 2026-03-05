@@ -66,11 +66,6 @@ export function useCancelPayment() {
 
 interface UsePaymentStatusOptions {
   /**
-   * Polling interval in milliseconds
-   * @default 2000 (2 seconds)
-   */
-  pollingInterval?: number;
-  /**
    * Whether to enable the query
    * @default true
    */
@@ -87,19 +82,14 @@ interface UsePaymentStatusOptions {
  * Polls until payment reaches a final state (isFinal === true).
  * Unknown statuses from the API are normalized to "failed".
  * @param paymentId - The payment ID to check status for
- * @param options - Query options including polling interval
+ * @param options - Query options
  * @returns Query result with payment status data
  */
 export function usePaymentStatus(
   paymentId: string | null | undefined,
   options: UsePaymentStatusOptions = {},
 ) {
-  const {
-    pollingInterval = 2000,
-    enabled = true,
-    onTerminalState,
-    ...queryOptions
-  } = options;
+  const { enabled = true, onTerminalState } = options;
 
   const hasCalledCallback = useRef(false);
   const callbackRef = useRef(onTerminalState);
@@ -134,12 +124,15 @@ export function usePaymentStatus(
       if (data?.isFinal) {
         return false;
       }
-      return pollingInterval;
+      const pollInMs = data?.pollInMs;
+      if (typeof pollInMs !== "number" || !Number.isFinite(pollInMs) || pollInMs <= 0) {
+        return 2000;
+      }
+      return pollInMs;
     },
 
     // Let failed requests retry naturally
     retry: 3,
-    ...queryOptions,
   });
 
   // Handle terminal state callback
