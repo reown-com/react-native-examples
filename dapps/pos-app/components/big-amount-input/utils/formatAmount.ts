@@ -31,10 +31,31 @@ export function parseRawValue(rawValue: string): number {
   return isNaN(parsed) ? 0 : parsed;
 }
 
+function getGroupSeparator(locale: SupportedLocale): string {
+  const parts = new Intl.NumberFormat(locale).formatToParts(10000);
+  return parts.find((p) => p.type === "group")?.value ?? ",";
+}
+
+function addThousandsSeparators(
+  integerStr: string,
+  separator: string,
+): string {
+  let result = "";
+  for (let i = integerStr.length - 1, count = 0; i >= 0; i--, count++) {
+    if (count > 0 && count % 3 === 0) {
+      result = separator + result;
+    }
+    result = integerStr[i] + result;
+  }
+  return result;
+}
+
 /**
  * Formats raw value (e.g., "123.45") to display string with currency.
  * When decimal separator is entered, always shows 2 decimal places
  * so placeholder zeros can be styled differently.
+ * Uses string manipulation instead of parseFloat to avoid precision loss
+ * with large numbers (> Number.MAX_SAFE_INTEGER).
  */
 export function formatRawValueToDisplay(
   rawValue: string,
@@ -49,14 +70,22 @@ export function formatRawValueToDisplay(
   if (!rawValue || rawValue === "") return "";
 
   const hasDecimalSeparator = rawValue.includes(".") || rawValue.includes(",");
-  const numericValue = parseRawValue(rawValue);
+  const normalized = rawValue.replace(",", ".");
+  const [intPart, decPart] = normalized.split(".");
+  const cleanInteger = (intPart || "0").replace(/^0+/, "") || "0";
 
-  const formatter = new Intl.NumberFormat(locale, {
-    minimumFractionDigits: hasDecimalSeparator ? 2 : 0,
-    maximumFractionDigits: 2,
-  });
+  const groupSep = getGroupSeparator(locale);
+  const decSep = getDecimalSeparator(locale);
+  const formattedInteger = addThousandsSeparators(cleanInteger, groupSep);
 
-  const formatted = formatter.format(numericValue);
+  let formatted: string;
+  if (hasDecimalSeparator) {
+    const paddedDecimal = (decPart || "").padEnd(2, "0").slice(0, 2);
+    formatted = `${formattedInteger}${decSep}${paddedDecimal}`;
+  } else {
+    formatted = formattedInteger;
+  }
+
   return symbolPosition === "right"
     ? `${formatted}${currency}`
     : `${currency}${formatted}`;

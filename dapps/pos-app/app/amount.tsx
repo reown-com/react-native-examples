@@ -5,7 +5,11 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { formatAmountWithSymbol, getCurrency } from "@/utils/currency";
+import {
+  exceedsU64Max,
+  formatAmountWithSymbol,
+  getCurrency,
+} from "@/utils/currency";
 import { router } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { Platform, StyleSheet, View } from "react-native";
@@ -111,6 +115,7 @@ export default function AmountScreen() {
                   if (decimalPart.length >= 2) return;
                 }
                 const newDisplay = prev === "0" ? key : prev + key;
+                if (exceedsU64Max(newDisplay)) return;
                 onChange?.(newDisplay);
               }
             }}

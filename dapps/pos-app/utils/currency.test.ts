@@ -1,6 +1,7 @@
 import {
   amountToCents,
   CURRENCIES,
+  exceedsU64Max,
   formatAmountWithSymbol,
   formatFiatAmount,
   getCurrency,
@@ -44,6 +45,52 @@ describe("amountToCents", () => {
     expect(amountToCents("1299.00")).toBe(129900);
     expect(amountToCents("15500")).toBe(1550000);
     expect(amountToCents("49999.99")).toBe(4999999);
+  });
+});
+
+describe("exceedsU64Max", () => {
+  it("returns false for typical amounts", () => {
+    expect(exceedsU64Max("0")).toBe(false);
+    expect(exceedsU64Max("10.50")).toBe(false);
+    expect(exceedsU64Max("1299.00")).toBe(false);
+    expect(exceedsU64Max("49999.99")).toBe(false);
+  });
+
+  it("returns false for empty and intermediate input states", () => {
+    expect(exceedsU64Max("")).toBe(false);
+    expect(exceedsU64Max(".")).toBe(false);
+    expect(exceedsU64Max("0.")).toBe(false);
+  });
+
+  it("returns false for the exact u64 max in cents", () => {
+    expect(exceedsU64Max("184467440737095516.15")).toBe(false);
+  });
+
+  it("returns true when cents value exceeds u64 max", () => {
+    expect(exceedsU64Max("184467440737095516.16")).toBe(true);
+  });
+
+  it("returns true for clearly excessive amounts", () => {
+    expect(exceedsU64Max("999999999999999999.99")).toBe(true);
+  });
+
+  it("returns false for large amounts still within u64 range", () => {
+    expect(exceedsU64Max("184467440737095516.00")).toBe(false);
+    expect(exceedsU64Max("184467440737095516")).toBe(false);
+  });
+
+  it("handles whole numbers without decimal point", () => {
+    expect(exceedsU64Max("184467440737095517")).toBe(true);
+    expect(exceedsU64Max("184467440737095516")).toBe(false);
+  });
+
+  it("handles single decimal digit input", () => {
+    expect(exceedsU64Max("184467440737095516.1")).toBe(false);
+    expect(exceedsU64Max("184467440737095516.2")).toBe(true);
+  });
+
+  it("handles trailing decimal", () => {
+    expect(exceedsU64Max("184467440737095516.")).toBe(false);
   });
 });
 
