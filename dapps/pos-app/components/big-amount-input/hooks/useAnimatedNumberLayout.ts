@@ -43,7 +43,9 @@ function getScaleForLength(length: number): number {
   if (length <= 6) return 1;
   if (length <= 9) return 0.85;
   if (length <= 12) return 0.7;
-  return 0.6;
+  if (length <= 15) return 0.55;
+  if (length <= 18) return 0.45;
+  return 0.38;
 }
 
 export type CharacterLayoutInfo = {
