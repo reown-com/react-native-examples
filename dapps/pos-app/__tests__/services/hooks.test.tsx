@@ -311,7 +311,7 @@ describe("Payment Hooks", () => {
         });
 
         const { result } = renderHook(
-          () => usePaymentStatus("pay_polling", { pollingInterval: 100 }),
+          () => usePaymentStatus("pay_polling"),
           { wrapper: createWrapper() },
         );
 
@@ -392,7 +392,7 @@ describe("Payment Hooks", () => {
         });
 
         const { result } = renderHook(
-          () => usePaymentStatus("pay_fail_poll", { pollingInterval: 100 }),
+          () => usePaymentStatus("pay_fail_poll"),
           { wrapper: createWrapper() },
         );
 
@@ -461,7 +461,6 @@ describe("Payment Hooks", () => {
         renderHook(
           () =>
             usePaymentStatus("pay_callback", {
-              pollingInterval: 100,
               onTerminalState,
             }),
           { wrapper: createWrapper() },

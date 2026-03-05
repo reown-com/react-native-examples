@@ -30,11 +30,6 @@ export function useStartPayment() {
 
 interface UsePaymentStatusOptions {
   /**
-   * Polling interval in milliseconds
-   * @default 2000 (2 seconds)
-   */
-  pollingInterval?: number;
-  /**
    * Whether to enable the query
    * @default true
    */
@@ -56,12 +51,7 @@ export function usePaymentStatus(
   paymentId: string | null | undefined,
   options: UsePaymentStatusOptions = {},
 ) {
-  const {
-    pollingInterval = 2000,
-    enabled = true,
-    onTerminalState,
-    ...queryOptions
-  } = options;
+  const { enabled = true, onTerminalState, ...queryOptions } = options;
 
   const hasCalledCallback = useRef(false);
   const callbackRef = useRef(onTerminalState);
@@ -96,7 +86,7 @@ export function usePaymentStatus(
       if (data && TERMINAL_STATUSES.includes(data.status)) {
         return false;
       }
-      return pollingInterval;
+      return data?.pollInMs ?? 2000;
     },
 
     // Let failed requests retry naturally
