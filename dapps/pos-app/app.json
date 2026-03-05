@@ -43,7 +43,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 17
+      "versionCode": 18
     },
     "web": {
       "output": "static",

@@ -32,6 +32,7 @@ function mapToDisplayStatus(status: TransactionStatus): DisplayStatus {
       return "completed";
     case "failed":
     case "expired":
+    case "cancelled":
       return "failed";
     case "requires_action":
     case "processing":

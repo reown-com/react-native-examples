@@ -2,77 +2,126 @@ import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { showInfoToast } from "@/utils/toast";
 import { router } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Platform } from "react-native";
 
 /**
- * On web, reads merchantId and partnerApiKey from URL query parameters,
- * base64-decodes them, saves to the settings store,
- * and cleans the URL. Runs once after store hydration.
+ * On web, accepts credentials via two methods (in priority order):
  *
- * Values must be base64-encoded.
+ * 1. **postMessage** — parent/opener sends `{ type: "pos-credentials", merchantId?, customerApiKey? }`
+ *    Values are plain text (no encoding needed).
+ *
+ * 2. **URL query parameters** — `?merchantId=<base64>&customerApiKey=<base64>`
+ *    Values must be base64-encoded. Acts as fallback when postMessage is not used.
+ *
+ * Both methods overwrite any previously stored credentials.
+ * Runs after store hydration; URL params are processed once, postMessage listener
+ * stays active until unmount.
+ *
+ * Posts two events to the parent window:
+ * - `{ type: "pos-ready" }` — when the listener is set up and ready to receive credentials.
+ * - `{ type: "pos-credentials-updated" }` — after credentials are successfully applied.
  */
 export function useUrlCredentials() {
-  const hasProcessed = useRef(false);
+  const hasProcessedParams = useRef(false);
   const _hasHydrated = useSettingsStore((state) => state._hasHydrated);
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);
-  const setPartnerApiKey = useSettingsStore((state) => state.setPartnerApiKey);
+  const setCustomerApiKey = useSettingsStore(
+    (state) => state.setCustomerApiKey,
+  );
   const addLog = useLogsStore((state) => state.addLog);
 
-  useEffect(() => {
-    if (Platform.OS !== "web") return;
-    if (!_hasHydrated) return;
-    if (hasProcessed.current) return;
-    hasProcessed.current = true;
-
-    const params = new URLSearchParams(window.location.search);
-    const rawMerchantId = params.get("merchantId");
-    const rawPartnerApiKey = params.get("partnerApiKey");
-
-    if (!rawMerchantId && !rawPartnerApiKey) return;
-
-    async function applyCredentials() {
+  const applyCredentials = useCallback(
+    async (
+      merchantId: string | null,
+      customerApiKey: string | null,
+      source: string,
+    ) => {
       try {
-        if (rawMerchantId) {
-          const merchantId = atob(rawMerchantId);
+        if (merchantId) {
           setMerchantId(merchantId);
           addLog(
             "info",
-            "Merchant ID set from URL parameter",
+            `Merchant ID set from ${source}`,
             "layout",
             "useUrlCredentials",
           );
         }
 
-        if (rawPartnerApiKey) {
-          const partnerApiKey = atob(rawPartnerApiKey);
-          await setPartnerApiKey(partnerApiKey);
+        if (customerApiKey) {
+          await setCustomerApiKey(customerApiKey);
           addLog(
             "info",
-            "Partner API key set from URL parameter",
+            `Customer API key set from ${source}`,
             "layout",
             "useUrlCredentials",
           );
         }
 
-        showInfoToast("Credentials updated from URL");
-
-        // Clean URL by navigating through Expo Router (replaceState alone
-        // doesn't update Expo Router's internal state, so params reappear)
-        router.replace("/");
+        showInfoToast("Credentials updated");
+        window.parent.postMessage({ type: "pos-credentials-updated" }, "*");
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : String(error);
         addLog(
           "error",
-          `Failed to apply URL credentials: ${errorMessage}`,
+          `Failed to apply credentials from ${source}: ${errorMessage}`,
           "layout",
           "useUrlCredentials",
           { error },
         );
       }
+    },
+    [setMerchantId, setCustomerApiKey, addLog],
+  );
+
+  // URL query parameters (fallback, processed once)
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    if (!_hasHydrated) return;
+    if (hasProcessedParams.current) return;
+    hasProcessedParams.current = true;
+
+    const params = new URLSearchParams(window.location.search);
+    const rawMerchantId = params.get("merchantId");
+    const rawCustomerApiKey = params.get("customerApiKey");
+
+    if (!rawMerchantId && !rawCustomerApiKey) return;
+
+    const merchantId = rawMerchantId ? atob(rawMerchantId) : null;
+    const customerApiKey = rawCustomerApiKey ? atob(rawCustomerApiKey) : null;
+
+    applyCredentials(merchantId, customerApiKey, "URL parameter").then(() => {
+      router.replace("/");
+    });
+  }, [_hasHydrated, applyCredentials]);
+
+  // postMessage listener (stays active until unmount)
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    if (!_hasHydrated) return;
+
+    function handleMessage(event: MessageEvent) {
+      if (
+        !event.data ||
+        typeof event.data !== "object" ||
+        event.data.type !== "pos-credentials"
+      ) {
+        return;
+      }
+
+      const { merchantId, customerApiKey } = event.data;
+      if (!merchantId && !customerApiKey) return;
+
+      applyCredentials(
+        merchantId ?? null,
+        customerApiKey ?? null,
+        "postMessage",
+      );
     }
 
-    applyCredentials();
-  }, [_hasHydrated, setMerchantId, setPartnerApiKey, addLog]);
+    window.addEventListener("message", handleMessage);
+    window.parent.postMessage({ type: "pos-ready" }, "*");
+    return () => window.removeEventListener("message", handleMessage);
+  }, [_hasHydrated, applyCredentials]);
 }

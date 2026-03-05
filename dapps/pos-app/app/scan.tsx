@@ -5,7 +5,7 @@ import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
-import { startPayment } from "@/services/payment";
+import { cancelPayment, startPayment } from "@/services/payment";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
@@ -71,6 +71,15 @@ export default function ScanScreen() {
   );
 
   const handleOnClosePress = () => {
+    if (paymentId && paymentStatusData?.status === "requires_action") {
+      cancelPayment(paymentId).catch((error) => {
+        addLog("error", "Failed to cancel payment", "scan", "cancelPayment", {
+          paymentId,
+          error,
+        });
+        showErrorToast("Failed to cancel payment");
+      });
+    }
     resetNavigation("/amount");
   };
 
@@ -148,7 +157,7 @@ export default function ScanScreen() {
           data,
         });
         onSuccess();
-      } else if (data.status === "failed" || data.status === "expired") {
+      } else {
         addLog("error", data.status, "scan", "usePaymentStatus", {
           paymentId,
           data,

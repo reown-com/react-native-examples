@@ -16,14 +16,14 @@ async function getMerchantCredentials(): Promise<{
   apiKey: string;
 }> {
   const merchantId = useSettingsStore.getState().merchantId;
-  const apiKey = await useSettingsStore.getState().getPartnerApiKey();
+  const apiKey = await useSettingsStore.getState().getCustomerApiKey();
 
   if (!merchantId || merchantId.trim().length === 0) {
     throw new Error("Merchant ID is not configured");
   }
 
   if (!apiKey || apiKey.trim().length === 0) {
-    throw new Error("Partner API key is not configured");
+    throw new Error("Customer API key is not configured");
   }
 
   return { merchantId, apiKey };
@@ -100,4 +100,39 @@ export async function getPaymentStatus(
   }
 
   return data as PaymentStatusResponse;
+}
+
+/**
+ * Cancel a payment by payment ID (Web version - uses Vercel serverless proxy)
+ * Only works for payments in requires_action state; returns 400 otherwise.
+ * @param paymentId - The payment ID to cancel
+ */
+export async function cancelPayment(paymentId: string): Promise<void> {
+  if (!paymentId?.trim()) {
+    throw new Error("paymentId is required");
+  }
+
+  const { merchantId, apiKey } = await getMerchantCredentials();
+
+  const response = await fetch(
+    `/api/cancel-payment?paymentId=${encodeURIComponent(paymentId)}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "x-merchant-id": merchantId,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    const data = await response.json();
+    const error: ApiError = {
+      message: data.message || `HTTP error! status: ${response.status}`,
+      code: data.code,
+      status: response.status,
+    };
+    throw error;
+  }
 }
