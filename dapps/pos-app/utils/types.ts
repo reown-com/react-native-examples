@@ -8,7 +8,8 @@ export type PaymentStatus =
   | "processing"
   | "succeeded"
   | "failed"
-  | "expired";
+  | "expired"
+  | "cancelled";
 
 export interface StartPaymentRequest {
   referenceId: string;

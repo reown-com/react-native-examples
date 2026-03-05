@@ -181,7 +181,13 @@ Uses **Expo Router** with file-based routing:
 - Request/response interceptors
 - Error handling
 
-### Payment Service (`services/payment.ts`)
+### Payment Service (`services/payment.ts` / `services/payment.web.ts`)
+
+> **Important: Platform-specific service files.** The payment service has two implementations:
+> - **`services/payment.ts`** — Native (iOS/Android): uses `apiClient` from `services/client.ts` to call the merchant API directly.
+> - **`services/payment.web.ts`** — Web: uses Vercel serverless proxies (`/api/*`) to avoid CORS issues. Each API function calls a corresponding proxy in the `api/` directory.
+>
+> **When adding new API functions, you must add them to BOTH files** and create a corresponding Vercel serverless proxy in `api/`. The same pattern applies to `services/transactions.ts` / `services/transactions.web.ts`.
 
 **`startPayment(request)`**
 
@@ -195,15 +201,21 @@ Uses **Expo Router** with file-based routing:
 - Returns payment state (pending, completed, failed)
 - Includes transaction details when completed
 
+**`cancelPayment(paymentId)`**
+
+- Cancels a payment (only works from `requires_action` state)
+- Returns 400 if payment is already in a terminal or processing state
+
 ### Authentication Headers
 
 All Payment API requests include:
 
 - `Api-Key`: Merchant API key
 - `Merchant-Id`: Merchant identifier
+- `WCP-Version`: API version for backward compatibility (e.g., `"2026-02-19.preview"`)
 - `Sdk-Name`: "pos-device"
 - `Sdk-Version`: "1.0.0"
-- `Sdk-Platform`: "react-native"
+- `Sdk-Platform`: "react-native" (native) or "web" (Vercel proxies)
 
 ### Transactions Service (`services/transactions.ts`)
 
@@ -321,14 +333,16 @@ This project uses **npm** (not pnpm or yarn). Always use `npm` commands for inst
 
 ### Services & API
 
-- **`services/client.ts`**: API client and shared auth headers (`getApiHeaders`)
-- **`services/payment.ts`**: Payment API functions
+- **`services/client.ts`**: API client and shared auth headers (`getApiHeaders`) — native only
+- **`services/payment.ts`**: Payment API functions (native: direct API)
+- **`services/payment.web.ts`**: Payment API functions (web: uses Vercel serverless proxies)
 - **`services/transactions.ts`**: Transaction fetching (native: direct API)
 - **`services/transactions.web.ts`**: Transaction fetching (web: server-side proxy)
 - **`services/hooks.ts`**: React Query hooks for API calls (including `useTransactions`)
-- **`api/payment.ts`**: Vercel serverless function for payment creation (web)
-- **`api/payment-status.ts`**: Vercel serverless function for payment status (web)
-- **`api/transactions.ts`**: Vercel serverless function for transaction list (web)
+- **`api/payment.ts`**: Vercel serverless proxy for payment creation (web)
+- **`api/payment-status.ts`**: Vercel serverless proxy for payment status (web)
+- **`api/cancel-payment.ts`**: Vercel serverless proxy for payment cancellation (web)
+- **`api/transactions.ts`**: Vercel serverless proxy for transaction list (web)
 
 ### Utilities
 

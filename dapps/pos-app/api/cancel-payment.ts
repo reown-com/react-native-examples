@@ -6,10 +6,10 @@ import {
 } from "./_utils";
 
 /**
- * Vercel Serverless Function to proxy payment creation requests
+ * Vercel Serverless Function to proxy payment cancellation requests
  * This avoids CORS issues by making the request server-side
  *
- * POST /api/payment
+ * POST /api/cancel-payment?paymentId=xxx
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Only allow POST requests
@@ -18,6 +18,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // Extract payment ID from query params
+    const { paymentId } = req.query;
+
+    if (!paymentId || typeof paymentId !== "string") {
+      return res.status(400).json({
+        message: "Missing required query parameter: paymentId",
+      });
+    }
+
     const credentials = extractCredentials(req, res);
     if (!credentials) return;
 
@@ -25,16 +34,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!apiBaseUrl) return;
 
     // Forward the request to the merchant API
-    const response = await fetch(`${apiBaseUrl}/merchant/payment`, {
-      method: "POST",
-      headers: getApiHeaders(
-        credentials.apiKey,
-        credentials.merchantId,
-      ),
-      body: JSON.stringify(req.body),
-    });
+    const response = await fetch(
+      `${apiBaseUrl}/payments/${encodeURIComponent(paymentId)}/cancel`,
+      {
+        method: "POST",
+        headers: getApiHeaders(
+          credentials.apiKey,
+          credentials.merchantId,
+        ),
+        body: JSON.stringify({}),
+      },
+    );
 
-    const data = await response.json();
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
 
     if (!response.ok) {
       return res.status(response.status).json(data);
@@ -42,7 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(200).json(data);
   } catch (error) {
-    console.error("Payment proxy error:", error);
+    console.error("Cancel payment proxy error:", error);
     return res.status(500).json({
       message: error instanceof Error ? error.message : "Internal server error",
     });

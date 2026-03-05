@@ -178,6 +178,7 @@ export async function getApiHeaders(): Promise<Record<string, string>> {
   return {
     "Api-Key": partnerApiKey,
     "Merchant-Id": merchantId,
+    "WCP-Version": "2026-02-19.preview",
     "Sdk-Name": "pos-device",
     "Sdk-Version": "1.0.0",
     "Sdk-Platform": "react-native",
