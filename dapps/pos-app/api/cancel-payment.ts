@@ -35,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Forward the request to the merchant API
     const response = await fetch(
-      `${apiBaseUrl}/merchant/payment/${encodeURIComponent(paymentId)}/cancel`,
+      `${apiBaseUrl}/payments/${encodeURIComponent(paymentId)}/cancel`,
       {
         method: "POST",
         headers: getApiHeaders(

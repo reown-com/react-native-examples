@@ -309,7 +309,7 @@ describe("Payment Service", () => {
       await cancelPayment("pay_123");
 
       expect(apiClient.post).toHaveBeenCalledWith(
-        "/merchant/payment/pay_123/cancel",
+        "/payments/pay_123/cancel",
         {},
         expect.objectContaining({ headers: expect.any(Object) }),
       );

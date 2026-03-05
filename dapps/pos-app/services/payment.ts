@@ -47,5 +47,5 @@ export async function cancelPayment(paymentId: string): Promise<void> {
     throw new Error("paymentId is required");
   }
   const headers = await getApiHeaders();
-  await apiClient.post(`/merchant/payment/${paymentId}/cancel`, {}, { headers });
+  await apiClient.post(`/payments/${paymentId}/cancel`, {}, { headers });
 }
