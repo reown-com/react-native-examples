@@ -44,10 +44,10 @@ describe("Payment Service", () => {
   describe("getApiHeaders (via startPayment/getPaymentStatus)", () => {
     it("should throw error when merchant ID is not configured", async () => {
       // Set API key but not merchant ID
-      await SecureStore.setItemAsync("partner_api_key", "test-api-key");
+      await SecureStore.setItemAsync("customer_api_key", "test-api-key");
       useSettingsStore.setState({
         merchantId: null,
-        isPartnerApiKeySet: true,
+        isCustomerApiKeySet: true,
       });
 
       await expect(
@@ -59,10 +59,10 @@ describe("Payment Service", () => {
     });
 
     it("should throw error when merchant ID is empty string", async () => {
-      await SecureStore.setItemAsync("partner_api_key", "test-api-key");
+      await SecureStore.setItemAsync("customer_api_key", "test-api-key");
       useSettingsStore.setState({
         merchantId: "   ", // whitespace only
-        isPartnerApiKeySet: true,
+        isCustomerApiKeySet: true,
       });
 
       await expect(
@@ -76,7 +76,7 @@ describe("Payment Service", () => {
     it("should throw error when API key is not configured", async () => {
       useSettingsStore.setState({
         merchantId: "merchant-123",
-        isPartnerApiKeySet: false,
+        isCustomerApiKeySet: false,
       });
       // Don't set the API key in secure storage
 
@@ -85,7 +85,7 @@ describe("Payment Service", () => {
           referenceId: "ref-123",
           amount: { value: "1000", unit: "cents" },
         }),
-      ).rejects.toThrow("Partner API key is not configured");
+      ).rejects.toThrow("Customer API key is not configured");
     });
 
     it("should include correct headers when merchant is configured", async () => {

@@ -16,7 +16,7 @@ export function resetSettingsStore() {
     variant: "default",
     _hasHydrated: false,
     merchantId: null,
-    isPartnerApiKeySet: false,
+    isCustomerApiKeySet: false,
     pinFailedAttempts: 0,
     pinLockoutUntil: null,
     biometricEnabled: false,
@@ -51,11 +51,11 @@ export async function setupTestMerchant(
 ): Promise<() => Promise<void>> {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const SecureStore = require("expo-secure-store");
-  await SecureStore.setItemAsync("partner_api_key", apiKey);
+  await SecureStore.setItemAsync("customer_api_key", apiKey);
 
   useSettingsStore.setState({
     merchantId,
-    isPartnerApiKeySet: true,
+    isCustomerApiKeySet: true,
   });
 
   // Return cleanup function for use in afterEach or manual cleanup
@@ -68,10 +68,10 @@ export async function setupTestMerchant(
 export async function clearTestMerchant() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const SecureStore = require("expo-secure-store");
-  await SecureStore.deleteItemAsync("partner_api_key");
+  await SecureStore.deleteItemAsync("customer_api_key");
 
   useSettingsStore.setState({
     merchantId: null,
-    isPartnerApiKeySet: false,
+    isCustomerApiKeySet: false,
   });
 }
