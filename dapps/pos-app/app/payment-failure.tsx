@@ -22,6 +22,8 @@ export default function PaymentFailureScreen() {
   const params = useLocalSearchParams<ScreenParams>();
   const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
 
+  const { title, subtitle } = getPaymentErrorMessage(params.errorCode);
+
   const handleRetry = () => {
     router.dismissTo("/amount");
   };
@@ -31,20 +33,20 @@ export default function PaymentFailureScreen() {
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Image
           source={assets?.[0]}
-          style={[styles.warningCircle, { tintColor: Theme["icon-error"] }]}
+          style={[styles.warningCircle, { tintColor: Theme["bg-accent-primary"] }]}
           cachePolicy="memory-disk"
-          tintColor={Theme["icon-error"]}
+          tintColor={Theme["bg-accent-primary"]}
           priority="high"
         />
         <ThemedText
           style={[styles.failedText, { color: Theme["text-primary"] }]}
         >
-          Payment failed
+          {title}
         </ThemedText>
         <ThemedText
-          style={[styles.failedDescription, { color: Theme["text-secondary"] }]}
+          style={[styles.failedDescription, { color: Theme["text-tertiary"] }]}
         >
-          {getPaymentErrorMessage(params.errorCode)}
+          {subtitle}
         </ThemedText>
       </View>
       <View style={styles.buttonContainer}>
@@ -60,8 +62,13 @@ export default function PaymentFailureScreen() {
           <ThemedText
             style={[styles.buttonText, { color: Theme["text-invert"] }]}
           >
-            Try again
+            New payment{" "}
           </ThemedText>
+          <Image
+            source={require("@/assets/images/plus.png")}
+            style={styles.plusIcon}
+            tintColor={Theme["text-invert"]}
+          />
         </Button>
       </View>
     </View>
@@ -75,8 +82,8 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
   failedText: {
-    fontSize: 26,
-    lineHeight: 28,
+    fontSize: 20,
+    lineHeight: 20,
     textAlign: "center",
     marginBottom: Spacing["spacing-3"],
   },
@@ -106,5 +113,9 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     lineHeight: 20,
+  },
+  plusIcon: {
+    width: 12.5,
+    height: 12.5,
   },
 });

@@ -19,6 +19,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { formatAmountWithSymbol, getCurrency } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
+import { Image } from "expo-image";
 import { StatusBar } from "expo-status-bar";
 
 interface SuccessParams extends UnknownOutputParams {
@@ -179,8 +180,7 @@ export default function PaymentSuccessScreen() {
               style={[
                 styles.button,
                 {
-                  backgroundColor: Theme["bg-payment-success"],
-                  borderColor: Theme["border-payment-success"],
+                  backgroundColor: Theme["foreground-primary"],
                   opacity: isPrinting ? 0.6 : 1,
                 },
               ]}
@@ -188,11 +188,16 @@ export default function PaymentSuccessScreen() {
               <ThemedText
                 style={[
                   styles.buttonText,
-                  { color: Theme["text-payment-success"] },
+                  { color: Theme["text-primary"] },
                 ]}
               >
                 {isPrinting ? "Printing..." : "Print receipt"}
               </ThemedText>
+              <Image
+                source={require("@/assets/images/receipt.svg")}
+                style={styles.buttonIcon}
+                tintColor={Theme["icon-default"]}
+              />
             </Button>
           )}
 
@@ -200,8 +205,7 @@ export default function PaymentSuccessScreen() {
             style={[
               styles.button,
               {
-                backgroundColor: Theme["bg-primary"],
-                borderColor: Theme["bg-primary"],
+                backgroundColor: Theme["foreground-primary"],
               },
             ]}
             onPress={handleNewPayment}
@@ -209,8 +213,13 @@ export default function PaymentSuccessScreen() {
             <ThemedText
               style={[styles.buttonText, { color: Theme["text-primary"] }]}
             >
-              New Sale
+              New payment
             </ThemedText>
+            <Image
+              source={require("@/assets/images/plus.png")}
+              style={styles.buttonIcon}
+              tintColor={Theme["icon-default"]}
+            />
           </Button>
         </View>
       </Animated.View>
@@ -258,10 +267,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
     borderRadius: BorderRadius["5"],
-    borderWidth: 1,
+    gap: Spacing["spacing-2"],
   },
   buttonText: {
     fontSize: 18,
     lineHeight: 20,
+  },
+  buttonIcon: {
+    width: 16,
+    height: 16,
   },
 });

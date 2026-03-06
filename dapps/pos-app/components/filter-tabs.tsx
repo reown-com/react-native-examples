@@ -1,8 +1,8 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { TransactionFilterType } from "@/utils/types";
-import { memo } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { memo, useCallback, useRef } from "react";
+import { LayoutChangeEvent, ScrollView, StyleSheet, View } from "react-native";
 import { Button } from "./button";
 import { ThemedText } from "./themed-text";
 
@@ -26,9 +26,35 @@ const FILTER_OPTIONS: FilterOption[] = [
 
 function FilterTabsBase({ selectedFilter, onFilterChange }: FilterTabsProps) {
   const theme = useTheme();
+  const scrollRef = useRef<ScrollView>(null);
+  const tabLayouts = useRef<Record<string, { x: number; width: number }>>({});
+
+  const handleTabLayout = useCallback(
+    (key: string, event: LayoutChangeEvent) => {
+      const { x, width } = event.nativeEvent.layout;
+      tabLayouts.current[key] = { x, width };
+    },
+    [],
+  );
+
+  const handleTabPress = useCallback(
+    (key: TransactionFilterType) => {
+      const layout = tabLayouts.current[key];
+      if (layout && scrollRef.current) {
+        const padding = Spacing["spacing-5"];
+        scrollRef.current.scrollTo({
+          x: layout.x - padding,
+          animated: true,
+        });
+      }
+      onFilterChange(key);
+    },
+    [onFilterChange],
+  );
 
   return (
     <ScrollView
+      ref={scrollRef}
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.scrollContent}
@@ -39,7 +65,8 @@ function FilterTabsBase({ selectedFilter, onFilterChange }: FilterTabsProps) {
         return (
           <Button
             key={option.key}
-            onPress={() => onFilterChange(option.key)}
+            onPress={() => handleTabPress(option.key)}
+            onLayout={(e) => handleTabLayout(option.key, e)}
             style={[
               styles.tab,
               {
@@ -79,6 +106,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     gap: Spacing["spacing-2"],
     paddingVertical: Spacing["spacing-1"],
+    paddingHorizontal: Spacing["spacing-5"],
   },
   tab: {
     borderWidth: 1,

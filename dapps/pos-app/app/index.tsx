@@ -49,6 +49,7 @@ export default function HomeScreen() {
         <Image
           source={assets?.[0]}
           style={styles.actionButtonImage}
+          tintColor={Theme["icon-default"]}
           cachePolicy="memory-disk"
           priority="high"
         />
@@ -64,6 +65,7 @@ export default function HomeScreen() {
         <Image
           source={assets?.[1]}
           style={styles.actionButtonImage}
+          tintColor={Theme["icon-default"]}
           cachePolicy="memory-disk"
           priority="high"
         />
@@ -79,6 +81,7 @@ export default function HomeScreen() {
         <Image
           source={assets?.[2]}
           style={styles.actionButtonImage}
+          tintColor={Theme["icon-default"]}
           cachePolicy="memory-disk"
           priority="high"
         />
