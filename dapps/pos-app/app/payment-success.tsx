@@ -194,7 +194,7 @@ export default function PaymentSuccessScreen() {
                 {isPrinting ? "Printing..." : "Print receipt"}
               </ThemedText>
               <Image
-                source={require("@/assets/images/receipt.svg")}
+                source={require("@/assets/images/receipt.png")}
                 style={styles.buttonIcon}
                 tintColor={Theme["icon-default"]}
               />
