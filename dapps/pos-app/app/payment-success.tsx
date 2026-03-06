@@ -40,6 +40,7 @@ const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
   const Theme = useTheme("light");
+  const DarkTheme = useTheme("dark");
   const params = useLocalSearchParams<SuccessParams>();
   const themeMode = useSettingsStore((state) => state.themeMode);
   const currencyCode = useSettingsStore((state) => state.currency);
@@ -180,20 +181,23 @@ export default function PaymentSuccessScreen() {
               style={[
                 styles.button,
                 {
-                  backgroundColor: Theme["foreground-primary"],
+                  backgroundColor: DarkTheme["foreground-primary"],
                   opacity: isPrinting ? 0.6 : 1,
                 },
               ]}
             >
               <ThemedText
-                style={[styles.buttonText, { color: Theme["text-primary"] }]}
+                style={[
+                  styles.buttonText,
+                  { color: DarkTheme["text-primary"] },
+                ]}
               >
                 {isPrinting ? "Printing..." : "Print receipt"}
               </ThemedText>
               <Image
                 source={require("@/assets/images/receipt.png")}
                 style={styles.buttonIcon}
-                tintColor={Theme["icon-default"]}
+                tintColor={DarkTheme["icon-default"]}
               />
             </Button>
           )}
@@ -202,20 +206,23 @@ export default function PaymentSuccessScreen() {
             style={[
               styles.button,
               {
-                backgroundColor: Theme["foreground-primary"],
+                backgroundColor: DarkTheme["foreground-primary"],
               },
             ]}
             onPress={handleNewPayment}
           >
             <ThemedText
-              style={[styles.buttonText, { color: Theme["text-primary"] }]}
+              style={[
+                styles.buttonText,
+                { color: DarkTheme["text-primary"] },
+              ]}
             >
               New payment
             </ThemedText>
             <Image
               source={require("@/assets/images/plus.png")}
               style={styles.buttonIcon}
-              tintColor={Theme["icon-default"]}
+              tintColor={DarkTheme["icon-default"]}
             />
           </Button>
         </View>
