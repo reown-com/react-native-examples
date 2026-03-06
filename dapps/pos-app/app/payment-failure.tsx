@@ -62,7 +62,7 @@ export default function PaymentFailureScreen() {
           <ThemedText
             style={[styles.buttonText, { color: Theme["text-invert"] }]}
           >
-            New payment{" "}
+            New payment
           </ThemedText>
           <Image
             source={require("@/assets/images/plus.png")}
@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
     borderRadius: BorderRadius["5"],
+    gap: Spacing["spacing-2"],
   },
   buttonText: {
     fontSize: 18,
