@@ -98,6 +98,51 @@ The release APK will be generated at `android/app/build/outputs/apk/release/app-
 
 > **⚠️ Security Note**: Never commit `secrets.properties` or keystore files to version control.
 
+## OTA Updates
+
+The app supports Over-The-Air (OTA) updates via [EAS Update](https://docs.expo.dev/eas-update/introduction/). This lets you push JavaScript-only changes to devices without rebuilding and redistributing the native app.
+
+### Channels
+
+- **`production`** — updates for production builds (Firebase/TestFlight releases)
+
+### Publishing an Update
+
+**Via GitHub Actions** (recommended):
+
+1. Go to GitHub Actions → "OTA Update Mobile POS"
+2. Optionally add a message describing the changes
+3. Run the workflow
+
+The workflow will automatically verify that no native changes are included. If native changes are detected, the workflow fails with a clear error — you must create a new native release first.
+
+**Via CLI:**
+
+```bash
+cd dapps/pos-app
+eas update --channel production --message "fix: description of changes"
+```
+
+### Verifying an Update
+
+Open Settings in the app — the version text shows the current OTA update ID and channel.
+
+### Limitations
+
+OTA updates only deliver JavaScript bundle changes. The following require a full native release:
+
+- Adding/removing native modules or permissions
+- Changing `app.json` native configuration (iOS entitlements, Android permissions, etc.)
+- Upgrading the Expo SDK or React Native version
+
+### Rollback
+
+```bash
+eas update:rollback --channel production
+```
+
+If the app crashes after an OTA update, `expo-updates` automatically falls back to the previous working bundle.
+
 ## Creating Custom Variants
 
 To create a branded variant for a specific client:

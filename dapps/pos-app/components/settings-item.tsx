@@ -1,6 +1,5 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { StyleSheet, View } from "react-native";
 import { Button } from "./button";
@@ -20,7 +19,6 @@ export function SettingsItem({
   showCaret,
 }: SettingsItemProps) {
   const Theme = useTheme();
-  const [assets] = useAssets([require("@/assets/images/caret-up-down.png")]);
   const shouldShowCaret = showCaret ?? !!value;
 
   return (
@@ -47,9 +45,9 @@ export function SettingsItem({
           </ThemedText>
         )}
       </View>
-      {shouldShowCaret && assets?.[0] && (
+      {shouldShowCaret && (
         <Image
-          source={assets[0]}
+          source={require("@/assets/images/caret-up-down.png")}
           style={[styles.caretIcon, { tintColor: Theme["text-primary"] }]}
           tintColor={Theme["text-primary"]}
           cachePolicy="memory-disk"

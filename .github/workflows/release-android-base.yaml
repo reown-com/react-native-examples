@@ -2,7 +2,7 @@ name: release-android-base
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 on:
   workflow_call:
@@ -46,6 +46,11 @@ on:
         description: "Firebase App ID for distribution"
         required: true
         type: string
+      eas-update-channel:
+        description: "EAS Update channel to embed in the native build (leave empty for non-OTA apps)"
+        required: false
+        default: ''
+        type: string
     secrets:
       gsa-key:
         required: true
@@ -85,6 +90,26 @@ jobs:
         run: |
           cd ${{ inputs.root-path }}
           npx expo prebuild --platform android
+        env:
+          EAS_UPDATE_CHANNEL: ${{ inputs.eas-update-channel }}
+
+      - name: Save native fingerprint
+        if: ${{ inputs.eas-update-channel != '' }}
+        run: |
+          cd ${{ inputs.root-path }}
+          FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | tail -1 | jq -r '.hash')
+          echo "Native fingerprint (Android): $FINGERPRINT"
+
+          cd "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin fingerprints-dont-remove:fingerprints-dont-remove 2>/dev/null || git checkout --orphan fingerprints-dont-remove
+          git checkout fingerprints-dont-remove
+          mkdir -p native-fingerprints/${{ inputs.eas-update-channel }}
+          echo "$FINGERPRINT" > native-fingerprints/${{ inputs.eas-update-channel }}/android.txt
+          git add native-fingerprints/
+          git diff --cached --quiet || git commit -m "Update Android native fingerprint (${{ inputs.eas-update-channel }})"
+          git push origin fingerprints-dont-remove
 
       - name: Install Java 17
         uses: actions/setup-java@v3

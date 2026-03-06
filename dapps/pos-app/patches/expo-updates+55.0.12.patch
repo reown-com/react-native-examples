@@ -1,0 +1,12 @@
+diff --git a/node_modules/expo-updates/utils/build/createUpdatesResources.js b/node_modules/expo-updates/utils/build/createUpdatesResources.js
+index 8e8ae20..72cc628 100644
+--- a/node_modules/expo-updates/utils/build/createUpdatesResources.js
++++ b/node_modules/expo-updates/utils/build/createUpdatesResources.js
+@@ -16,6 +16,7 @@ const findUpProjectRoot_1 = require("./findUpProjectRoot");
+     (0, assert_1.default)(projectRootArg, 'Must provide a valid project root');
+     const possibleProjectRoot = (0, findUpProjectRoot_1.findUpProjectRoot)(projectRootArg);
+     (0, assert_1.default)(possibleProjectRoot, 'Must provide a valid project root');
++    require('@expo/env').load(possibleProjectRoot);
+     const destinationDir = process.argv[4];
+     (0, assert_1.default)(destinationDir, 'Must provide a valid destination directory');
+     const createUpdatesResourcesMode = process.argv[5];

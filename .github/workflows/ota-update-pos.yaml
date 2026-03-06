@@ -1,13 +1,154 @@
 name: OTA Update Mobile POS
+run-name: "Mobile POS OTA - production"
 
-permissions: {}
+permissions:
+  id-token: write
+  contents: read
 
 on:
   workflow_dispatch:
+    inputs:
+      message:
+        description: 'Update message (shown in EAS dashboard)'
+        required: false
+        type: string
+        default: ''
 
 jobs:
-  placeholder:
+  publish-update:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo placeholder
-        run: echo "OTA Update Mobile POS placeholder workflow"
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/ci-setup
+        with:
+          root-path: dapps/pos-app
+          package-manager: npm
+
+      - name: Create env file
+        run: |
+          if [ -z "${{ secrets.POS_ENV_FILE }}" ]; then
+            echo "Error: POS_ENV_FILE secret is empty or not set"
+            exit 1
+          fi
+          echo "${{ secrets.POS_ENV_FILE }}" > dapps/pos-app/.env
+
+      - name: Compute current fingerprints
+        id: fingerprints
+        run: |
+          cd dapps/pos-app
+          ANDROID_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | tail -1 | jq -r '.hash')
+          IOS_FINGERPRINT=$(npx expo-updates fingerprint:generate --platform ios 2>/dev/null | tail -1 | jq -r '.hash')
+          echo "android=$ANDROID_FINGERPRINT" >> "$GITHUB_OUTPUT"
+          echo "ios=$IOS_FINGERPRINT" >> "$GITHUB_OUTPUT"
+          echo "Current Android fingerprint: $ANDROID_FINGERPRINT"
+          echo "Current iOS fingerprint: $IOS_FINGERPRINT"
+
+      - name: Fetch last native build fingerprints
+        run: |
+          git fetch origin fingerprints-dont-remove --depth=1 2>/dev/null || true
+          git show origin/fingerprints-dont-remove:native-fingerprints/production/android.txt > /tmp/native-fingerprint-android.txt 2>/dev/null || true
+          git show origin/fingerprints-dont-remove:native-fingerprints/production/ios.txt > /tmp/native-fingerprint-ios.txt 2>/dev/null || true
+
+      - name: Check for native changes
+        id: native-check
+        env:
+          CURRENT_ANDROID_FINGERPRINT: ${{ steps.fingerprints.outputs.android }}
+          CURRENT_IOS_FINGERPRINT: ${{ steps.fingerprints.outputs.ios }}
+        run: |
+          HAS_NATIVE_CHANGES=false
+
+          ANDROID_FINGERPRINT_PATH=/tmp/native-fingerprint-android.txt
+          IOS_FINGERPRINT_PATH=/tmp/native-fingerprint-ios.txt
+
+          if [ -s "$ANDROID_FINGERPRINT_PATH" ]; then
+            LAST_ANDROID_FINGERPRINT=$(cat "$ANDROID_FINGERPRINT_PATH")
+            echo "Last native Android fingerprint: $LAST_ANDROID_FINGERPRINT"
+            echo "Current Android fingerprint: $CURRENT_ANDROID_FINGERPRINT"
+
+            if [ "$LAST_ANDROID_FINGERPRINT" != "$CURRENT_ANDROID_FINGERPRINT" ]; then
+              HAS_NATIVE_CHANGES=true
+              echo "::error::Android native changes detected. Current fingerprint does not match the last native Android build."
+            fi
+          else
+            echo "No previous native Android fingerprint found for channel 'production'."
+          fi
+
+          if [ -s "$IOS_FINGERPRINT_PATH" ]; then
+            LAST_IOS_FINGERPRINT=$(cat "$IOS_FINGERPRINT_PATH")
+            echo "Last native iOS fingerprint: $LAST_IOS_FINGERPRINT"
+            echo "Current iOS fingerprint: $CURRENT_IOS_FINGERPRINT"
+
+            if [ "$LAST_IOS_FINGERPRINT" != "$CURRENT_IOS_FINGERPRINT" ]; then
+              HAS_NATIVE_CHANGES=true
+              echo "::error::iOS native changes detected. Current fingerprint does not match the last native iOS build."
+            fi
+          else
+            echo "No previous native iOS fingerprint found for channel 'production'."
+          fi
+
+          if [ "$HAS_NATIVE_CHANGES" = "true" ]; then
+            echo "has_native_changes=true" >> "$GITHUB_OUTPUT"
+            echo "::error::Native changes detected. You must create a new native release before publishing an OTA update."
+            exit 1
+          fi
+
+          if [ ! -s "$ANDROID_FINGERPRINT_PATH" ] || [ ! -s "$IOS_FINGERPRINT_PATH" ]; then
+            echo "At least one platform fingerprint is missing. This can happen after initial OTA setup."
+            echo "Proceeding with OTA publish."
+          fi
+
+          echo "has_native_changes=false" >> "$GITHUB_OUTPUT"
+          echo "Fingerprints match — safe to publish OTA update."
+
+      - name: Setup EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Publish OTA update
+        id: eas-update
+        working-directory: dapps/pos-app
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas update \
+            --channel production \
+            --message "${{ inputs.message || format('OTA update from {0}', github.ref_name) }}" \
+            --non-interactive
+
+      - name: Send Slack notification
+        if: always() && !cancelled()
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "OTA Update Report - Mobile POS",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "📦 OTA Update Report - Mobile POS" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Channel:*\n`production`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Status:*\n`${{ steps.native-check.outputs.has_native_changes == 'true' && '❌ Blocked — native changes require full release' || (steps.eas-update.outcome == 'success' && '✅ Published' || '❌ Failed') }}`" },
+                    { "type": "mrkdwn", "text": "*Message:*\n`${{ inputs.message || 'No message' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }

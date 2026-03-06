@@ -137,6 +137,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "caf3a0d7-e413-45c2-b3b9-879cd30b3501"
+      }
+    },
+    "owner": "reown-mobile"
   }
 }

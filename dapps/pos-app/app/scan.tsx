@@ -15,7 +15,6 @@ import {
 } from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
-import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
@@ -29,7 +28,6 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
-  const [assets] = useAssets([require("@/assets/images/wc_logo_blue.png")]);
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
@@ -205,7 +203,10 @@ export default function ScanScreen() {
             logoBorderRadius={100}
             onPress={handleCopyPaymentUrl}
           >
-            <Image source={assets?.[0]} style={styles.logo} />
+            <Image
+              source={require("@/assets/images/wc_logo_blue.png")}
+              style={styles.logo}
+            />
           </QRCode>
           <View style={{ flex: 1 }} />
         </View>
