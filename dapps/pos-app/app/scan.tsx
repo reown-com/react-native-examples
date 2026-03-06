@@ -201,16 +201,16 @@ export default function ScanScreen() {
               {formatAmountWithSymbol(amount, currency)}
             </ThemedText>
           </View>
-          <QRCode
-            size={300}
-            uri={qrUri}
-            logoBorderRadius={100}
-            onPress={handleCopyPaymentUrl}
-          >
-            <Image source={assets?.[0]} style={styles.logo} />
-          </QRCode>
-          {isCountdownActive ? (
-            <View style={styles.timerContainer}>
+          <View style={styles.qrSection}>
+            <QRCode
+              size={300}
+              uri={qrUri}
+              logoBorderRadius={100}
+              onPress={handleCopyPaymentUrl}
+            >
+              <Image source={assets?.[0]} style={styles.logo} />
+            </QRCode>
+            {isCountdownActive && (
               <ThemedText
                 style={[styles.timerText, { color: Theme["text-secondary"] }]}
               >
@@ -219,10 +219,9 @@ export default function ScanScreen() {
                   {formatCountdown(remainingSeconds)}
                 </ThemedText>
               </ThemedText>
-            </View>
-          ) : (
-            <View style={{ flex: 1 }} />
-          )}
+            )}
+          </View>
+          <View style={{ flex: 1 }} />
         </View>
       )}
       <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
@@ -248,14 +247,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  qrCodeContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "white",
-    borderRadius: 6,
-    width: 280,
-    height: 280,
-  },
+
   amountContainer: {
     width: "100%",
     flex: 1,
@@ -276,11 +268,9 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
   },
-  timerContainer: {
-    flexDirection: "row",
+  qrSection: {
     alignItems: "center",
-    justifyContent: "center",
-    paddingTop: Spacing["spacing-4"],
+    gap: Spacing["spacing-4"],
   },
   timerText: {
     textAlign: "center",
