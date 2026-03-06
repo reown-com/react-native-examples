@@ -1,9 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import {
-  extractCredentials,
-  getApiBaseUrl,
-  getApiHeaders,
-} from "./_utils";
+import { extractCredentials, getApiBaseUrl, getApiHeaders } from "./_utils";
 
 /**
  * Vercel Serverless Function to proxy payment creation requests
@@ -27,10 +23,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Forward the request to the merchant API
     const response = await fetch(`${apiBaseUrl}/merchant/payment`, {
       method: "POST",
-      headers: getApiHeaders(
-        credentials.apiKey,
-        credentials.merchantId,
-      ),
+      headers: getApiHeaders(credentials.apiKey, credentials.merchantId),
       body: JSON.stringify(req.body),
     });
 

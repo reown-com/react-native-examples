@@ -11,9 +11,7 @@ describe("useCountdown", () => {
   });
 
   it("returns inactive state when expiresAt is null", () => {
-    const { result } = renderHook(() =>
-      useCountdown({ expiresAt: null }),
-    );
+    const { result } = renderHook(() => useCountdown({ expiresAt: null }));
 
     expect(result.current.remainingSeconds).toBe(0);
     expect(result.current.isExpired).toBe(false);
@@ -24,9 +22,7 @@ describe("useCountdown", () => {
     const now = Date.now() / 1000;
     const expiresAt = now + 120; // 2 minutes from now
 
-    const { result } = renderHook(() =>
-      useCountdown({ expiresAt }),
-    );
+    const { result } = renderHook(() => useCountdown({ expiresAt }));
 
     expect(result.current.remainingSeconds).toBe(120);
     expect(result.current.isActive).toBe(true);
@@ -37,9 +33,7 @@ describe("useCountdown", () => {
     const now = Date.now() / 1000;
     const expiresAt = now + 10;
 
-    const { result } = renderHook(() =>
-      useCountdown({ expiresAt }),
-    );
+    const { result } = renderHook(() => useCountdown({ expiresAt }));
 
     expect(result.current.remainingSeconds).toBe(10);
 
@@ -91,9 +85,7 @@ describe("useCountdown", () => {
     const now = Date.now() / 1000;
     const expiresAt = now - 10; // 10 seconds ago
 
-    const { result } = renderHook(() =>
-      useCountdown({ expiresAt }),
-    );
+    const { result } = renderHook(() => useCountdown({ expiresAt }));
 
     expect(result.current.remainingSeconds).toBe(0);
     expect(result.current.isExpired).toBe(true);
@@ -118,9 +110,7 @@ describe("useCountdown", () => {
     const now = Date.now() / 1000;
     let expiresAt: number | null = now + 10;
 
-    const { result, rerender } = renderHook(() =>
-      useCountdown({ expiresAt }),
-    );
+    const { result, rerender } = renderHook(() => useCountdown({ expiresAt }));
 
     expect(result.current.remainingSeconds).toBe(10);
 

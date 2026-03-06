@@ -82,8 +82,7 @@ export const SECURE_STORAGE_KEYS = {
   PIN_HASH: "pin_hash",
 } as const;
 
-const CUSTOMER_API_KEY_MIGRATION_KEY =
-  "migration_customer_api_key_completed";
+const CUSTOMER_API_KEY_MIGRATION_KEY = "migration_customer_api_key_completed";
 
 /**
  * Migrates customer API key from old storage keys to new one.

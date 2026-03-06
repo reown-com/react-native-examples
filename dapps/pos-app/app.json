@@ -20,9 +20,7 @@
         "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts"
       },
       "entitlements": {
-        "com.apple.developer.nfc.readersession.formats": [
-          "TAG"
-        ]
+        "com.apple.developer.nfc.readersession.formats": ["TAG"]
       }
     },
     "android": {
@@ -119,9 +117,7 @@
       [
         "react-native-permissions",
         {
-          "iosPermissions": [
-            "Bluetooth"
-          ]
+          "iosPermissions": ["Bluetooth"]
         }
       ],
       [

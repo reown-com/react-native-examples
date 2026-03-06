@@ -36,10 +36,7 @@ function getGroupSeparator(locale: SupportedLocale): string {
   return parts.find((p) => p.type === "group")?.value ?? ",";
 }
 
-function addThousandsSeparators(
-  integerStr: string,
-  separator: string,
-): string {
+function addThousandsSeparators(integerStr: string, separator: string): string {
   let result = "";
   for (let i = integerStr.length - 1, count = 0; i >= 0; i--, count++) {
     if (count > 0 && count % 3 === 0) {

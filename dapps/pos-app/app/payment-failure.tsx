@@ -33,7 +33,10 @@ export default function PaymentFailureScreen() {
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Image
           source={assets?.[0]}
-          style={[styles.warningCircle, { tintColor: Theme["bg-accent-primary"] }]}
+          style={[
+            styles.warningCircle,
+            { tintColor: Theme["bg-accent-primary"] },
+          ]}
           cachePolicy="memory-disk"
           tintColor={Theme["bg-accent-primary"]}
           priority="high"
@@ -60,7 +63,9 @@ export default function PaymentFailureScreen() {
           ]}
         >
           <ThemedText
-            style={[styles.buttonText, { color: Theme["text-invert"] }]}
+            fontSize={16}
+            lineHeight={18}
+            style={{ color: Theme["text-invert"] }}
           >
             New payment
           </ThemedText>
@@ -110,10 +115,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing["spacing-5"],
     borderRadius: BorderRadius["5"],
     gap: Spacing["spacing-2"],
-  },
-  buttonText: {
-    fontSize: 18,
-    lineHeight: 20,
   },
   plusIcon: {
     width: 12.5,

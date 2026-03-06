@@ -186,10 +186,7 @@ export default function PaymentSuccessScreen() {
               ]}
             >
               <ThemedText
-                style={[
-                  styles.buttonText,
-                  { color: Theme["text-primary"] },
-                ]}
+                style={[styles.buttonText, { color: Theme["text-primary"] }]}
               >
                 {isPrinting ? "Printing..." : "Print receipt"}
               </ThemedText>
@@ -270,8 +267,8 @@ const styles = StyleSheet.create({
     gap: Spacing["spacing-2"],
   },
   buttonText: {
-    fontSize: 18,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 18,
   },
   buttonIcon: {
     width: 16,

@@ -15,7 +15,11 @@ interface TransactionCardProps {
   style?: StyleProp<ViewStyle>;
 }
 
-function TransactionCardBase({ payment, onPress, style }: TransactionCardProps) {
+function TransactionCardBase({
+  payment,
+  onPress,
+  style,
+}: TransactionCardProps) {
   const theme = useTheme();
 
   return (
