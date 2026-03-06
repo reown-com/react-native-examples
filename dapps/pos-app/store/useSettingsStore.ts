@@ -167,7 +167,9 @@ export const useSettingsStore = create<SettingsStore>()(
             );
             set({ isCustomerApiKeySet: true });
           } else {
-            await secureStorage.removeItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
+            await secureStorage.removeItem(
+              SECURE_STORAGE_KEYS.CUSTOMER_API_KEY,
+            );
             set({ isCustomerApiKeySet: false });
           }
         } catch {
@@ -179,7 +181,9 @@ export const useSettingsStore = create<SettingsStore>()(
         set({ isCustomerApiKeySet: false });
       },
       getCustomerApiKey: async () => {
-        return await secureStorage.getItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
+        return await secureStorage.getItem(
+          SECURE_STORAGE_KEYS.CUSTOMER_API_KEY,
+        );
       },
 
       // PIN methods

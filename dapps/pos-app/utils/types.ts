@@ -21,6 +21,8 @@ export interface StartPaymentRequest {
 
 export interface StartPaymentResponse {
   paymentId: string;
+  expiresAt: number | null;
+  gatewayUrl: string;
 }
 
 export interface PaymentStatusResponse {

@@ -69,6 +69,7 @@ export default function ActivityScreen() {
       <TransactionCard
         payment={item}
         onPress={() => handleTransactionPress(item)}
+        style={styles.cardPadding}
       />
     ),
     [handleTransactionPress],
@@ -161,7 +162,6 @@ export default function ActivityScreen() {
 
 const styles = StyleSheet.create({
   listContent: {
-    paddingHorizontal: Spacing["spacing-5"],
     paddingTop: Spacing["spacing-4"],
     paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-6"],
     gap: Spacing["spacing-2"],
@@ -173,6 +173,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  cardPadding: {
+    marginHorizontal: Spacing["spacing-5"],
   },
   footerLoader: {
     paddingVertical: Spacing["spacing-4"],

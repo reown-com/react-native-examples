@@ -1,12 +1,13 @@
 import { PressableScale } from "pressto";
 import React from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { LayoutChangeEvent, StyleProp, ViewStyle } from "react-native";
 
 interface Props {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
   disabled?: boolean;
+  onLayout?: (event: LayoutChangeEvent) => void;
 }
 
 export const Button: React.FC<Props> = ({
@@ -14,9 +15,15 @@ export const Button: React.FC<Props> = ({
   style,
   onPress,
   disabled,
+  onLayout,
 }) => {
   return (
-    <PressableScale style={style} onPress={onPress} enabled={!disabled}>
+    <PressableScale
+      style={style}
+      onPress={onPress}
+      enabled={!disabled}
+      onLayout={onLayout}
+    >
       {children}
     </PressableScale>
   );
