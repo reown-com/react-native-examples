@@ -134,8 +134,8 @@ export default function AmountScreen() {
         ]}
       >
         <ThemedText
-          fontSize={18}
-          lineHeight={20}
+          fontSize={16}
+          lineHeight={18}
           style={{ color: Theme["text-invert"] }}
         >
           {isValid

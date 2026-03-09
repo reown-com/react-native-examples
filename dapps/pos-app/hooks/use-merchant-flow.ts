@@ -175,12 +175,7 @@ export function useMerchantFlow() {
           customerApiKeyInput: "", // Clear input after saving
         }));
         showSuccessToast("Customer API key saved successfully");
-        addLog(
-          "info",
-          "Customer API key updated",
-          "settings",
-          "completeSave",
-        );
+        addLog("info", "Customer API key updated", "settings", "completeSave");
       }
 
       setState((prev) => ({

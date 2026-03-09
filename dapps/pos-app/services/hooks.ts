@@ -125,7 +125,11 @@ export function usePaymentStatus(
         return false;
       }
       const pollInMs = data?.pollInMs;
-      if (typeof pollInMs !== "number" || !Number.isFinite(pollInMs) || pollInMs <= 0) {
+      if (
+        typeof pollInMs !== "number" ||
+        !Number.isFinite(pollInMs) ||
+        pollInMs <= 0
+      ) {
         return 2000;
       }
       return pollInMs;

@@ -1,4 +1,4 @@
-import { getDate, getDeviceIdentifier } from "./misc";
+import { formatCountdown, getDate, getDeviceIdentifier } from "./misc";
 
 // Mock react-native-device-info
 const mockGetUniqueId = jest.fn();
@@ -74,5 +74,24 @@ describe("getDeviceIdentifier", () => {
     mockGetUniqueId.mockRejectedValue("Some string error");
     const result = await getDeviceIdentifier();
     expect(result).toBe("unknown");
+  });
+});
+
+describe("formatCountdown", () => {
+  it("formats minutes and seconds with M:SSs format", () => {
+    expect(formatCountdown(312)).toBe("5:12s");
+    expect(formatCountdown(65)).toBe("1:05s");
+    expect(formatCountdown(0)).toBe("0:00s");
+    expect(formatCountdown(9)).toBe("0:09s");
+    expect(formatCountdown(60)).toBe("1:00s");
+    expect(formatCountdown(599)).toBe("9:59s");
+  });
+
+  it("clamps negative values to 0:00s", () => {
+    expect(formatCountdown(-5)).toBe("0:00s");
+  });
+
+  it("floors fractional seconds", () => {
+    expect(formatCountdown(65.8)).toBe("1:05s");
   });
 });
