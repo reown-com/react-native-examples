@@ -211,6 +211,7 @@ export default function ScanScreen() {
               <Image source={assets?.[0]} style={styles.logo} />
             </QRCode>
             <ThemedText
+              aria-hidden={!isCountdownActive}
               style={[
                 styles.timerText,
                 {
