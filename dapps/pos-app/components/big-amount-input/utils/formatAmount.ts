@@ -34,7 +34,7 @@ export function parseRawValue(rawValue: string): number {
 function getGroupSeparator(locale: SupportedLocale): string {
   // Avoid formatToParts — not supported in Hermes
   const formatted = new Intl.NumberFormat(locale).format(10000);
-  // formatted is e.g. "10,000" or "10.000" — separator is at index 2
+  // Strip all digits — what remains is the group separator (e.g. "," or ".")
   const sep = formatted.replace(/\d/g, "");
   return sep.charAt(0) || ",";
 }
