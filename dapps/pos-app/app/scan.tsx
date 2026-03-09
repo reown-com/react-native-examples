@@ -210,16 +210,20 @@ export default function ScanScreen() {
             >
               <Image source={assets?.[0]} style={styles.logo} />
             </QRCode>
-            {isCountdownActive && (
-              <ThemedText
-                style={[styles.timerText, { color: Theme["text-secondary"] }]}
-              >
-                Payment expires in{" "}
-                <ThemedText style={{ color: Theme["bg-accent-primary"] }}>
-                  {formatCountdown(remainingSeconds)}
-                </ThemedText>
+            <ThemedText
+              style={[
+                styles.timerText,
+                {
+                  color: Theme["text-secondary"],
+                  opacity: isCountdownActive ? 1 : 0,
+                },
+              ]}
+            >
+              Payment expires in{" "}
+              <ThemedText style={{ color: Theme["bg-accent-primary"] }}>
+                {formatCountdown(remainingSeconds)}
               </ThemedText>
-            )}
+            </ThemedText>
           </View>
           <View style={{ flex: 1 }} />
         </View>
