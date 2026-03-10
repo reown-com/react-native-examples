@@ -11,7 +11,7 @@ import {
   TransactionsResponse,
 } from "@/utils/types";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { cancelPayment, getPaymentStatus, startPayment } from "./payment";
 import { getTransactions, GetTransactionsOptions } from "./transactions";
 
@@ -212,11 +212,16 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
   // Extract relevant fields for query key to avoid cache misses from object reference changes
   const { sortBy, sortDir, limit } = queryOptions;
 
+  // Compute date range once per filter change so toDate stays stable across paginated fetches
+  const { fromDate, toDate } = useMemo(
+    () => getDateRange(dateRangeFilter),
+    [dateRangeFilter],
+  );
+
   const query = useInfiniteQuery<TransactionsResponse, Error>({
     queryKey: ["transactions", filter, dateRangeFilter, sortBy, sortDir, limit],
     queryFn: ({ pageParam }) => {
       const statusFilter = filterToStatusArray(filter);
-      const { fromDate, toDate } = getDateRange(dateRangeFilter);
       return getTransactions({
         ...queryOptions,
         status: statusFilter,
