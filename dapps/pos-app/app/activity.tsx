@@ -1,14 +1,20 @@
 import { EmptyState } from "@/components/empty-state";
-import { FilterTabs } from "@/components/filter-tabs";
+import { FilterButtons } from "@/components/filter-buttons";
+import { RadioList, RadioOption } from "@/components/radio-list";
+import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { TransactionCard } from "@/components/transaction-card";
 import { TransactionDetailModal } from "@/components/transaction-detail-modal";
 import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useTransactions } from "@/services/hooks";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { PaymentRecord, TransactionFilterType } from "@/utils/types";
+import {
+  DateRangeFilterType,
+  PaymentRecord,
+  TransactionFilterType,
+} from "@/utils/types";
 import { showErrorToast } from "@/utils/toast";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -18,13 +24,66 @@ import {
   View,
 } from "react-native";
 
+type ActiveSheet = "status" | "dateRange" | null;
+
+const DATE_RANGE_OPTIONS: { value: DateRangeFilterType; label: string }[] = [
+  { value: "all_time", label: "All Time" },
+  { value: "today", label: "Today" },
+  { value: "7_days", label: "7 Days" },
+  { value: "this_week", label: "This Week" },
+  { value: "this_month", label: "This Month" },
+];
+
+const STATUS_LABELS: Record<TransactionFilterType, string> = {
+  all: "Status",
+  failed: "Failed",
+  pending: "Pending",
+  completed: "Completed",
+};
+
+const DATE_RANGE_LABELS: Record<DateRangeFilterType, string> = {
+  all_time: "Date range",
+  today: "Today",
+  "7_days": "7 Days",
+  this_week: "This Week",
+  this_month: "This Month",
+};
+
 export default function ActivityScreen() {
   const theme = useTheme();
-  const { transactionFilter, setTransactionFilter } = useSettingsStore();
+  const {
+    transactionFilter,
+    setTransactionFilter,
+    dateRangeFilter,
+    setDateRangeFilter,
+  } = useSettingsStore();
   const [selectedPayment, setSelectedPayment] = useState<PaymentRecord | null>(
     null,
   );
   const [modalVisible, setModalVisible] = useState(false);
+  const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
+
+  const statusOptions: RadioOption<TransactionFilterType>[] = useMemo(
+    () => [
+      {
+        value: "all",
+        label: "All",
+        dotColor: theme["icon-accent-primary"],
+      },
+      { value: "failed", label: "Failed", dotColor: theme["icon-error"] },
+      {
+        value: "pending",
+        label: "Pending",
+        dotColor: theme["icon-default"],
+      },
+      {
+        value: "completed",
+        label: "Completed",
+        dotColor: theme["icon-success"],
+      },
+    ],
+    [theme],
+  );
 
   const {
     transactions,
@@ -38,6 +97,7 @@ export default function ActivityScreen() {
     isFetchingNextPage,
   } = useTransactions({
     filter: transactionFilter,
+    dateRangeFilter,
   });
 
   // Show error toast when fetch fails
@@ -47,11 +107,24 @@ export default function ActivityScreen() {
     }
   }, [isError, error]);
 
-  const handleFilterChange = useCallback(
+  const closeSheet = useCallback(() => {
+    setActiveSheet(null);
+  }, []);
+
+  const handleStatusChange = useCallback(
     (filter: TransactionFilterType) => {
       setTransactionFilter(filter);
+      setActiveSheet(null);
     },
     [setTransactionFilter],
+  );
+
+  const handleDateRangeChange = useCallback(
+    (filter: DateRangeFilterType) => {
+      setDateRangeFilter(filter);
+      setActiveSheet(null);
+    },
+    [setDateRangeFilter],
   );
 
   const handleTransactionPress = useCallback((payment: PaymentRecord) => {
@@ -116,18 +189,25 @@ export default function ActivityScreen() {
     );
   }, [isFetchingNextPage, theme]);
 
+  const listHeader = useMemo(
+    () => (
+      <FilterButtons
+        statusLabel={STATUS_LABELS[transactionFilter]}
+        dateRangeLabel={DATE_RANGE_LABELS[dateRangeFilter]}
+        onStatusPress={() => setActiveSheet("status")}
+        onDateRangePress={() => setActiveSheet("dateRange")}
+      />
+    ),
+    [transactionFilter, dateRangeFilter],
+  );
+
   return (
     <>
       <FlatList
         data={transactions}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        ListHeaderComponent={
-          <FilterTabs
-            selectedFilter={transactionFilter}
-            onFilterChange={handleFilterChange}
-          />
-        }
+        ListHeaderComponent={listHeader}
         contentContainerStyle={[
           styles.listContent,
           (!transactions || transactions?.length === 0) &&
@@ -150,6 +230,30 @@ export default function ActivityScreen() {
           />
         }
       />
+
+      <SettingsBottomSheet
+        visible={activeSheet === "status"}
+        title="Status"
+        onClose={closeSheet}
+      >
+        <RadioList
+          options={statusOptions}
+          value={transactionFilter}
+          onChange={handleStatusChange}
+        />
+      </SettingsBottomSheet>
+
+      <SettingsBottomSheet
+        visible={activeSheet === "dateRange"}
+        title="Date Range"
+        onClose={closeSheet}
+      >
+        <RadioList
+          options={DATE_RANGE_OPTIONS}
+          value={dateRangeFilter}
+          onChange={handleDateRangeChange}
+        />
+      </SettingsBottomSheet>
 
       <TransactionDetailModal
         visible={modalVisible}

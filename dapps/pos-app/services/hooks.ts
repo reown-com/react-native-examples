@@ -1,5 +1,7 @@
 import { useLogsStore } from "@/store/useLogsStore";
+import { getDateRange } from "@/utils/date-range";
 import {
+  DateRangeFilterType,
   PaymentRecord,
   PaymentStatus,
   PaymentStatusResponse,
@@ -163,6 +165,11 @@ interface UseTransactionsOptions {
    */
   filter?: TransactionFilterType;
   /**
+   * Filter transactions by date range
+   * @default "today"
+   */
+  dateRangeFilter?: DateRangeFilterType;
+  /**
    * Additional query options for the API
    */
   queryOptions?: GetTransactionsOptions;
@@ -193,7 +200,12 @@ function filterToStatusArray(
  * @returns Infinite query result with paginated transactions
  */
 export function useTransactions(options: UseTransactionsOptions = {}) {
-  const { enabled = true, filter = "all", queryOptions = {} } = options;
+  const {
+    enabled = true,
+    filter = "all",
+    dateRangeFilter = "today",
+    queryOptions = {},
+  } = options;
 
   const addLog = useLogsStore.getState().addLog;
 
@@ -201,12 +213,15 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
   const { sortBy, sortDir, limit } = queryOptions;
 
   const query = useInfiniteQuery<TransactionsResponse, Error>({
-    queryKey: ["transactions", filter, sortBy, sortDir, limit],
+    queryKey: ["transactions", filter, dateRangeFilter, sortBy, sortDir, limit],
     queryFn: ({ pageParam }) => {
       const statusFilter = filterToStatusArray(filter);
+      const { fromDate, toDate } = getDateRange(dateRangeFilter);
       return getTransactions({
         ...queryOptions,
         status: statusFilter,
+        fromDate,
+        toDate,
         sortBy: "date",
         sortDir: "desc",
         limit: 20,
