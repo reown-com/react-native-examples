@@ -213,7 +213,7 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
   const { sortBy, sortDir, limit } = queryOptions;
 
   // Compute date range once per filter change so toDate stays stable across paginated fetches
-  const { fromDate, toDate } = useMemo(
+  const { startTs, endTs } = useMemo(
     () => getDateRange(dateRangeFilter),
     [dateRangeFilter],
   );
@@ -225,8 +225,8 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
       return getTransactions({
         ...queryOptions,
         status: statusFilter,
-        fromDate,
-        toDate,
+        startTs,
+        endTs,
         sortBy: "date",
         sortDir: "desc",
         limit: 20,

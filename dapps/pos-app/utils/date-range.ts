@@ -1,8 +1,8 @@
 import { DateRangeFilterType } from "./types";
 
 interface DateRange {
-  fromDate?: string;
-  toDate?: string;
+  startTs?: string;
+  endTs?: string;
 }
 
 /**
@@ -14,7 +14,7 @@ export function getDateRange(filter: DateRangeFilterType): DateRange {
   }
 
   const now = new Date();
-  const toDate = now.toISOString();
+  const endTs = now.toISOString();
   let from: Date;
 
   switch (filter) {
@@ -47,5 +47,5 @@ export function getDateRange(filter: DateRangeFilterType): DateRange {
     }
   }
 
-  return { fromDate: from.toISOString(), toDate };
+  return { startTs: from.toISOString(), endTs };
 }
