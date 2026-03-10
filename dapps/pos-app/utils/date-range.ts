@@ -41,6 +41,10 @@ export function getDateRange(filter: DateRangeFilterType): DateRange {
       from = new Date(now.getFullYear(), now.getMonth(), 1);
       break;
     }
+    default: {
+      const _exhaustive: never = filter;
+      return {};
+    }
   }
 
   return { fromDate: from.toISOString(), toDate };
