@@ -11,8 +11,8 @@ export interface GetTransactionsOptions {
   sortDir?: "asc" | "desc";
   limit?: number;
   cursor?: string;
-  fromDate?: string;
-  toDate?: string;
+  startTs?: string;
+  endTs?: string;
 }
 
 /**
@@ -60,12 +60,12 @@ export async function getTransactions(
     params.append("cursor", options.cursor);
   }
 
-  if (options.fromDate) {
-    params.append("from_date", options.fromDate);
+  if (options.startTs) {
+    params.append("startTs", options.startTs);
   }
 
-  if (options.toDate) {
-    params.append("to_date", options.toDate);
+  if (options.endTs) {
+    params.append("endTs", options.endTs);
   }
 
   const queryString = params.toString();
