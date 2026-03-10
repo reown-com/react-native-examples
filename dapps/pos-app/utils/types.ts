@@ -40,7 +40,13 @@ export interface ApiError {
 // Transaction/Activity Types
 export type TransactionStatus = PaymentStatus;
 
-export type TransactionFilterType = "all" | "failed" | "pending" | "completed";
+export type TransactionFilterType =
+  | "all"
+  | "pending"
+  | "completed"
+  | "failed"
+  | "expired"
+  | "cancelled";
 
 export type DateRangeFilterType =
   | "all_time"

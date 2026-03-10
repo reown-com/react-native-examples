@@ -182,12 +182,16 @@ function filterToStatusArray(
   filter: TransactionFilterType,
 ): string[] | undefined {
   switch (filter) {
+    case "pending":
+      return ["requires_action", "processing"];
     case "completed":
       return ["succeeded"];
     case "failed":
-      return ["failed", "expired", "cancelled"];
-    case "pending":
-      return ["requires_action", "processing"];
+      return ["failed"];
+    case "expired":
+      return ["expired"];
+    case "cancelled":
+      return ["cancelled"];
     case "all":
     default:
       return undefined;

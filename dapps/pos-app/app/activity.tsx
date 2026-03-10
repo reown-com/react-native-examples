@@ -36,9 +36,11 @@ const DATE_RANGE_OPTIONS: { value: DateRangeFilterType; label: string }[] = [
 
 const STATUS_LABELS: Record<TransactionFilterType, string> = {
   all: "Status",
-  failed: "Failed",
   pending: "Pending",
   completed: "Completed",
+  failed: "Failed",
+  expired: "Expired",
+  cancelled: "Cancelled",
 };
 
 const DATE_RANGE_LABELS: Record<DateRangeFilterType, string> = {
@@ -70,7 +72,6 @@ export default function ActivityScreen() {
         label: "All",
         dotColor: theme["icon-accent-primary"],
       },
-      { value: "failed", label: "Failed", dotColor: theme["icon-error"] },
       {
         value: "pending",
         label: "Pending",
@@ -80,6 +81,13 @@ export default function ActivityScreen() {
         value: "completed",
         label: "Completed",
         dotColor: theme["icon-success"],
+      },
+      { value: "failed", label: "Failed", dotColor: theme["icon-error"] },
+      { value: "expired", label: "Expired", dotColor: theme["icon-error"] },
+      {
+        value: "cancelled",
+        label: "Cancelled",
+        dotColor: theme["icon-default"],
       },
     ],
     [theme],
