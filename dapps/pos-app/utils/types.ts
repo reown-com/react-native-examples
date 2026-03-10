@@ -42,6 +42,13 @@ export type TransactionStatus = PaymentStatus;
 
 export type TransactionFilterType = "all" | "failed" | "pending" | "completed";
 
+export type DateRangeFilterType =
+  | "all_time"
+  | "today"
+  | "7_days"
+  | "this_week"
+  | "this_month";
+
 export interface PaymentRecord {
   payment_id: string;
   reference_id: string;
