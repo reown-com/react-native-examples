@@ -238,7 +238,7 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
       });
     },
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes (formerly cacheTime)
