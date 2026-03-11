@@ -54,7 +54,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const queryString = params.toString();
     const normalizedBaseUrl = apiBaseUrl.replace(/\/+$/, "");
-    const endpoint = `/v1/merchants/payments${queryString ? `?${queryString}` : ""}`;
+    const endpoint = `/merchants/payments${queryString ? `?${queryString}` : ""}`;
 
     const response = await fetch(`${normalizedBaseUrl}${endpoint}`, {
       method: "GET",

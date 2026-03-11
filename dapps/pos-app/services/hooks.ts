@@ -13,7 +13,7 @@ import {
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
 import { cancelPayment, getPaymentStatus, startPayment } from "./payment";
-import { getTransactions, GetTransactionsOptions } from "./transactions";
+import { getTransactions } from "./transactions";
 
 const KNOWN_STATUSES: string[] = [
   "requires_action",
@@ -172,7 +172,6 @@ interface UseTransactionsOptions {
   /**
    * Additional query options for the API
    */
-  queryOptions?: GetTransactionsOptions;
 }
 
 /**
@@ -208,13 +207,9 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
     enabled = true,
     filter = "all",
     dateRangeFilter = "today",
-    queryOptions = {},
   } = options;
 
   const addLog = useLogsStore.getState().addLog;
-
-  // Extract relevant fields for query key to avoid cache misses from object reference changes
-  const { sortBy, sortDir, limit } = queryOptions;
 
   // Compute date range once per filter change so toDate stays stable across paginated fetches
   const { startTs, endTs } = useMemo(
@@ -223,11 +218,10 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
   );
 
   const query = useInfiniteQuery<TransactionsResponse, Error>({
-    queryKey: ["transactions", filter, dateRangeFilter, sortBy, sortDir, limit],
+    queryKey: ["transactions", filter, dateRangeFilter],
     queryFn: ({ pageParam }) => {
       const statusFilter = filterToStatusArray(filter);
       return getTransactions({
-        ...queryOptions,
         status: statusFilter,
         startTs,
         endTs,
