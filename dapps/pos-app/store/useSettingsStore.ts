@@ -10,9 +10,12 @@ import {
 } from "@/utils/secure-storage";
 import { isEmbedded } from "@/utils/is-embedded";
 import { storage } from "@/utils/storage";
-import { ThemeMode, TransactionFilterType } from "@/utils/types";
+import {
+  DateRangeFilterType,
+  ThemeMode,
+  TransactionFilterType,
+} from "@/utils/types";
 import * as Crypto from "expo-crypto";
-import { Appearance } from "react-native";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useLogsStore } from "./useLogsStore";
@@ -60,8 +63,9 @@ interface SettingsStore {
   merchantId: string | null;
   isCustomerApiKeySet: boolean;
 
-  // Transaction filter
+  // Transaction filters
   transactionFilter: TransactionFilterType;
+  dateRangeFilter: DateRangeFilterType;
 
   // PIN protection
   pinFailedAttempts: number;
@@ -89,8 +93,9 @@ interface SettingsStore {
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
 
-  // Transaction filter
+  // Transaction filters
   setTransactionFilter: (filter: TransactionFilterType) => void;
+  setDateRangeFilter: (filter: DateRangeFilterType) => void;
 
   // Others
   getVariantPrinterLogo: () => string;
@@ -107,6 +112,7 @@ export const useSettingsStore = create<SettingsStore>()(
       merchantId: null,
       isCustomerApiKeySet: false,
       transactionFilter: "all",
+      dateRangeFilter: "today",
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
@@ -262,6 +268,8 @@ export const useSettingsStore = create<SettingsStore>()(
 
       setTransactionFilter: (filter: TransactionFilterType) =>
         set({ transactionFilter: filter }),
+      setDateRangeFilter: (filter: DateRangeFilterType) =>
+        set({ dateRangeFilter: filter }),
 
       getVariantPrinterLogo: () => {
         return Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64;
@@ -269,7 +277,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 13,
+      version: 14,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -316,6 +324,10 @@ export const useSettingsStore = create<SettingsStore>()(
               persistedState.isPartnerApiKeySet;
             delete persistedState.isPartnerApiKeySet;
           }
+        }
+
+        if (version < 14) {
+          persistedState.dateRangeFilter = "today";
         }
 
         return persistedState;

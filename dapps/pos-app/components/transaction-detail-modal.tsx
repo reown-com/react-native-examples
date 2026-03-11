@@ -2,7 +2,6 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { formatFiatAmount } from "@/utils/currency";
 import { formatDateTime } from "@/utils/misc";
-import { formatCryptoReceived, getTokenSymbol } from "@/utils/tokens";
 import { PaymentRecord } from "@/utils/types";
 import { memo, useEffect } from "react";
 import {
@@ -44,23 +43,6 @@ function truncateHash(hash?: string): string {
   if (!hash) return "-";
   if (hash.length <= 12) return hash;
   return `${hash.slice(0, 4)}...${hash.slice(-4)}`;
-}
-
-/**
- * Get the token icon based on CAIP-19 identifier
- * Returns the icon source or null if not USDC/USDT
- */
-function getTokenIcon(tokenCaip19?: string): number | null {
-  const symbol = getTokenSymbol(tokenCaip19);
-  if (!symbol) return null;
-
-  if (symbol === "USDC") {
-    return require("@/assets/images/tokens/usdc.png");
-  }
-  if (symbol === "USDT") {
-    return require("@/assets/images/tokens/usdt.png");
-  }
-  return null;
 }
 
 interface DetailRowProps {
@@ -142,14 +124,15 @@ function TransactionDetailModalBase({
   if (!payment) return null;
 
   const handleCopyPaymentId = async () => {
-    if (!payment?.payment_id) return;
-    await Clipboard.setStringAsync(payment.payment_id);
+    if (!payment?.paymentId) return;
+    await Clipboard.setStringAsync(payment.paymentId);
     showSuccessToast("Payment ID copied to clipboard");
   };
 
+  const txHash = payment.transaction?.hash;
   const handleCopyHash = async () => {
-    if (!payment?.tx_hash) return;
-    await Clipboard.setStringAsync(payment.tx_hash);
+    if (!txHash) return;
+    await Clipboard.setStringAsync(txHash);
     showSuccessToast("Transaction hash copied to clipboard");
   };
 
@@ -190,7 +173,7 @@ function TransactionDetailModalBase({
               <View style={styles.details}>
                 <DetailRow
                   label="Date"
-                  value={formatDateTime(payment.created_at)}
+                  value={formatDateTime(payment.createdAt)}
                 />
 
                 <DetailRow label="Status">
@@ -200,12 +183,12 @@ function TransactionDetailModalBase({
                 <DetailRow
                   label="Amount"
                   value={formatFiatAmount(
-                    payment.fiat_amount,
-                    payment.fiat_currency,
+                    payment.fiatAmount?.value,
+                    payment.fiatAmount?.unit,
                   )}
                 />
 
-                {payment.token_amount && payment.token_caip19 && (
+                {payment.tokenAmount?.value && (
                   <DetailRow label="Crypto received">
                     <View style={styles.cryptoValue}>
                       <ThemedText
@@ -213,32 +196,30 @@ function TransactionDetailModalBase({
                         lineHeight={18}
                         color="text-primary"
                       >
-                        {formatCryptoReceived(
-                          payment.token_caip19,
-                          payment.token_amount,
-                        ) ?? payment.token_amount}
+                        {payment.tokenAmount.display?.formatted ??
+                          payment.tokenAmount.value}
                       </ThemedText>
-                      {(() => {
-                        const icon = getTokenIcon(payment.token_caip19);
-                        return icon ? (
-                          <Image style={styles.tokenIcon} source={icon} />
-                        ) : null;
-                      })()}
+                      {payment.tokenAmount.display?.iconUrl && (
+                        <Image
+                          style={styles.tokenIcon}
+                          source={{ uri: payment.tokenAmount.display.iconUrl }}
+                        />
+                      )}
                     </View>
                   </DetailRow>
                 )}
 
                 <DetailRow
                   label="Payment ID"
-                  value={payment.payment_id}
+                  value={payment.paymentId}
                   onPress={handleCopyPaymentId}
                   underline
                 />
 
-                {payment.tx_hash && (
+                {txHash && (
                   <DetailRow
                     label="Hash ID"
-                    value={truncateHash(payment.tx_hash)}
+                    value={truncateHash(txHash)}
                     onPress={handleCopyHash}
                     underline
                   />
