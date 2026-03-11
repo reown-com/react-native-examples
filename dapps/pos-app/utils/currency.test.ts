@@ -165,20 +165,24 @@ describe("formatFiatAmount", () => {
     expect(formatFiatAmount(undefined)).toBe("-");
   });
 
+  it("returns dash for non-numeric string", () => {
+    expect(formatFiatAmount("abc")).toBe("-");
+  });
+
   it("formats USD amounts with symbol on the left", () => {
-    expect(formatFiatAmount(1000, "iso4217/USD")).toBe("$10.00");
-    expect(formatFiatAmount(99, "iso4217/USD")).toBe("$0.99");
-    expect(formatFiatAmount(123456, "iso4217/USD")).toBe("$1,234.56");
+    expect(formatFiatAmount("1000", "iso4217/USD")).toBe("$10.00");
+    expect(formatFiatAmount("99", "iso4217/USD")).toBe("$0.99");
+    expect(formatFiatAmount("123456", "iso4217/USD")).toBe("$1,234.56");
   });
 
   it("formats EUR amounts with symbol on the right", () => {
-    expect(formatFiatAmount(1000, "iso4217/EUR")).toBe("10.00€");
-    expect(formatFiatAmount(99, "iso4217/EUR")).toBe("0.99€");
-    expect(formatFiatAmount(123456, "iso4217/EUR")).toBe("1,234.56€");
+    expect(formatFiatAmount("1000", "iso4217/EUR")).toBe("10.00€");
+    expect(formatFiatAmount("99", "iso4217/EUR")).toBe("0.99€");
+    expect(formatFiatAmount("123456", "iso4217/EUR")).toBe("1,234.56€");
   });
 
   it("defaults to USD for missing currency", () => {
-    expect(formatFiatAmount(1000)).toBe("$10.00");
-    expect(formatFiatAmount(1000, undefined)).toBe("$10.00");
+    expect(formatFiatAmount("1000")).toBe("$10.00");
+    expect(formatFiatAmount("1000", undefined)).toBe("$10.00");
   });
 });

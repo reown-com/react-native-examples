@@ -156,10 +156,7 @@ export default function ActivityScreen() {
     [handleTransactionPress],
   );
 
-  const keyExtractor = useCallback(
-    (item: PaymentRecord) => item.payment_id,
-    [],
-  );
+  const keyExtractor = useCallback((item: PaymentRecord) => item.paymentId, []);
 
   const renderEmptyComponent = useCallback(() => {
     if (isLoading) {
