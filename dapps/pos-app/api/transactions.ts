@@ -61,7 +61,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: getApiHeaders(credentials.apiKey, credentials.merchantId),
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
 
     if (!response.ok) {
       return res.status(response.status).json(data);
