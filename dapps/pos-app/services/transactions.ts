@@ -57,7 +57,7 @@ export async function getTransactions(
   }
 
   const queryString = params.toString();
-  const endpoint = `/v1/merchants/payments${queryString ? `?${queryString}` : ""}`;
+  const endpoint = `/merchants/payments${queryString ? `?${queryString}` : ""}`;
 
   return apiClient.get<TransactionsResponse>(endpoint, {
     headers,
