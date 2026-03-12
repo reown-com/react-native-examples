@@ -40,6 +40,7 @@ export function HomeTabNavigator() {
     <TabNav.Navigator
       hapticFeedbackEnabled
       translucent
+      scrollEdgeAppearance="opaque"
       tabBarStyle={Platform.select({
         android: { backgroundColor: Theme['bg-primary'] },
       })}
