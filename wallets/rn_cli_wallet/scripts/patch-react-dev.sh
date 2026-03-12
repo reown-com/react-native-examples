@@ -17,11 +17,17 @@ if grep -q "PATCHED_addObjectDiff" "$DEV_FILE"; then
   exit 0
 fi
 
-# Replace the function with a try/catch wrapper
-sed -i '' 's/function addObjectDiffToProperties(prev, next, properties, indent) {/function addObjectDiffToProperties(prev, next, properties, indent) { \/* PATCHED_addObjectDiff *\/ try { return _addObjectDiffToProperties(prev, next, properties, indent); } catch (e) { return true; } } function _addObjectDiffToProperties(prev, next, properties, indent) {/' "$DEV_FILE"
+# Replace the function with a try/catch wrapper (supports both BSD and GNU sed)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' 's/function addObjectDiffToProperties(prev, next, properties, indent) {/function addObjectDiffToProperties(prev, next, properties, indent) { \/* PATCHED_addObjectDiff *\/ try { return _addObjectDiffToProperties(prev, next, properties, indent); } catch (e) { return true; } } function _addObjectDiffToProperties(prev, next, properties, indent) {/' "$DEV_FILE"
+else
+  sed -i 's/function addObjectDiffToProperties(prev, next, properties, indent) {/function addObjectDiffToProperties(prev, next, properties, indent) { \/* PATCHED_addObjectDiff *\/ try { return _addObjectDiffToProperties(prev, next, properties, indent); } catch (e) { return true; } } function _addObjectDiffToProperties(prev, next, properties, indent) {/' "$DEV_FILE"
+fi
 
-if [ $? -eq 0 ]; then
+# Validate the patch was actually applied
+if grep -q "PATCHED_addObjectDiff" "$DEV_FILE"; then
   echo "Patched ReactFabric-dev.js (addObjectDiffToProperties try/catch)"
 else
-  echo "Failed to patch ReactFabric-dev.js"
+  echo "Failed to patch ReactFabric-dev.js (pattern not found)"
+  exit 1
 fi
