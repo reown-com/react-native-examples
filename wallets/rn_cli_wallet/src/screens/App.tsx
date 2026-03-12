@@ -13,6 +13,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { RELAYER_EVENTS } from '@walletconnect/core';
 
 import { RootStackNavigator } from '@/navigators/RootStackNavigator';
+import Modal from '@/components/Modal';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
 import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
 import { usePairing } from '@/hooks/usePairing';
@@ -209,8 +210,9 @@ const App = () => {
               barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
             />
             <RootStackNavigator />
-            <Toast config={toastConfig} position="top" topOffset={0} />
+            <Modal />
           </NavigationContainer>
+          <Toast config={toastConfig} position="top" topOffset={0} />
         </KeyboardProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

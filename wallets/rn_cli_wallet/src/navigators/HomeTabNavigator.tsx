@@ -1,76 +1,56 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeBottomTabNavigator } from '@bottom-tabs/react-navigation';
+import { Platform } from 'react-native';
 
-import { useTheme } from '@/hooks/useTheme';
-import SvgConnectionsTab from '@/assets/ConnectionsTab';
-import SvgSettingsTab from '@/assets/SettingsTab';
-import SvgWalletTab from '@/assets/WalletTab';
 import { HomeTabParamList } from '@/utils/TypesUtil';
 import Wallets from '@/screens/Wallets';
 import Connections from '@/screens/Connections';
 import Settings from '@/screens/Settings';
-import { Header } from '@/components/Header';
-import { FontFamily, Spacing } from '@/utils/ThemeUtil';
-import { Platform } from 'react-native';
-import { haptics } from '@/utils/haptics';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '@/hooks/useTheme';
 
-const TabNav = createBottomTabNavigator<HomeTabParamList>();
+const TabNav = createNativeBottomTabNavigator<HomeTabParamList>();
 
-const WalletsIcon = ({ color }: { color: string }) => (
-  <SvgWalletTab height={24} width={24} fill={color} />
-);
+const tabWalletIcon = Platform.select({
+  ios: { sfSymbol: 'wallet.bifold.fill' },
+  default: require('@/assets/icons/tab-wallet.svg'),
+});
 
-const ConnectionsIcon = ({ color }: { color: string }) => (
-  <SvgConnectionsTab height={24} width={24} fill={color} />
-);
+const tabConnectionsIcon = Platform.select({
+  ios: { sfSymbol: 'square.stack.3d.up.fill' },
+  default: require('@/assets/icons/tab-connections.svg'),
+});
 
-const SettingsIcon = ({ color }: { color: string }) => (
-  <SvgSettingsTab height={24} width={24} fill={color} />
-);
-
-const NavHeader = () => <Header />;
+const tabSettingsIcon = Platform.select({
+  ios: { sfSymbol: 'gearshape.fill' },
+  default: require('@/assets/icons/tab-settings.svg'),
+});
 
 export function HomeTabNavigator() {
   const Theme = useTheme();
-  const insets = useSafeAreaInsets();
+
+  const sceneStyle = Platform.select({
+    android: {
+      backgroundColor: Theme['bg-primary'],
+      borderBottomWidth: 1,
+      borderBottomColor: Theme['border-primary'],
+    },
+    default: { backgroundColor: Theme['bg-primary'] },
+  });
 
   return (
     <TabNav.Navigator
-      screenListeners={{
-        state: haptics.tabChange,
-      }}
-      screenOptions={{
-        header: NavHeader,
-        tabBarStyle: {
-          backgroundColor: Theme['bg-primary'],
-          borderColor: Theme['foreground-tertiary'],
-          ...Platform.select({
-            android: {
-              height: 56 + insets.bottom,
-            },
-            default: {},
-          }),
-        },
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontFamily: FontFamily.regular,
-        },
-        tabBarItemStyle: {
-          paddingTop: Spacing[2],
-        },
-        tabBarActiveTintColor: Theme['text-primary'],
-        tabBarInactiveTintColor: Theme['text-secondary'],
-        sceneStyle: {
-          backgroundColor: Theme['bg-primary'],
-        },
-      }}
+      hapticFeedbackEnabled
+      translucent
+      tabBarStyle={Platform.select({
+        android: { backgroundColor: Theme['bg-primary'] },
+      })}
     >
       <TabNav.Screen
         name="Wallets"
         component={Wallets}
         options={{
           tabBarLabel: 'Wallets',
-          tabBarIcon: WalletsIcon,
+          tabBarIcon: () => tabWalletIcon,
+          sceneStyle,
         }}
       />
       <TabNav.Screen
@@ -78,7 +58,9 @@ export function HomeTabNavigator() {
         component={Connections}
         options={{
           tabBarLabel: 'Connected Apps',
-          tabBarIcon: ConnectionsIcon,
+          tabBarIcon: () => tabConnectionsIcon,
+          lazy: false,
+          sceneStyle,
         }}
       />
       <TabNav.Screen
@@ -86,7 +68,9 @@ export function HomeTabNavigator() {
         component={Settings}
         options={{
           tabBarLabel: 'Settings',
-          tabBarIcon: SettingsIcon,
+          tabBarIcon: () => tabSettingsIcon,
+          lazy: false,
+          sceneStyle,
         }}
       />
     </TabNav.Navigator>
