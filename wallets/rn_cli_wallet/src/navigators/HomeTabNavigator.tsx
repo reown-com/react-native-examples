@@ -39,11 +39,8 @@ export function HomeTabNavigator() {
   return (
     <TabNav.Navigator
       hapticFeedbackEnabled
-      translucent
-      scrollEdgeAppearance="opaque"
-      tabBarStyle={Platform.select({
-        android: { backgroundColor: Theme['bg-primary'] },
-      })}
+      translucent={false}
+      tabBarStyle={{ backgroundColor: Theme['bg-primary'] }}
     >
       <TabNav.Screen
         name="Wallets"
