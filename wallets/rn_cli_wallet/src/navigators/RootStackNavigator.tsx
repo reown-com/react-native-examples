@@ -3,12 +3,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList } from '@/utils/TypesUtil';
 import { HomeTabNavigator } from './HomeTabNavigator';
 import Scan from '@/screens/Scan';
-import Modal from '@/components/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { LogList } from '@/screens/LogList';
 import SecretPhrase from '@/screens/SecretPhrase';
 import { useLogs } from '@/hooks/useLogs';
 import { FontFamily } from '@/utils/ThemeUtil';
+import { Header } from '@/components/Header';
 
 const StackNavigator = createStackNavigator<RootStackParamList>();
 
@@ -22,9 +22,7 @@ export function RootStackNavigator() {
   useLogs();
 
   return (
-    <>
-      <Modal />
-      <StackNavigator.Navigator
+    <StackNavigator.Navigator
         screenOptions={{
           headerShown: false,
           headerStyle: {
@@ -38,9 +36,8 @@ export function RootStackNavigator() {
       >
         <StackNavigator.Screen
           options={{
-            headerStyle: {
-              backgroundColor: Theme['bg-primary'],
-            },
+            headerShown: true,
+            header: () => <Header />,
           }}
           name="Home"
           component={HomeTabNavigator}
@@ -76,7 +73,6 @@ export function RootStackNavigator() {
             },
           }}
         />
-      </StackNavigator.Navigator>
-    </>
+    </StackNavigator.Navigator>
   );
 }
