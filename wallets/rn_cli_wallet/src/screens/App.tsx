@@ -29,7 +29,7 @@ Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
   dsn: Config.ENV_SENTRY_DSN,
   environment: getEnvironment(),
-  sendDefaultPii: true,
+  sendDefaultPii: false,
   // Enable Logs
   enableLogs: true,
 
@@ -102,8 +102,9 @@ const App = () => {
 
   const deeplinkHandler = useCallback(
     ({ url }: { url: string }) => {
+      const sanitizedUrl = url.replace(/symKey=[^&]*/g, 'symKey=[REDACTED]');
       LogStore.log('Deep link received', 'App', 'deeplinkHandler', {
-        url,
+        url: sanitizedUrl
       });
 
       // 1. Link mode (wc_ev) - SDK handles it, just set the flag
