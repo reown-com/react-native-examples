@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "./scripts/copy-sample-files.sh && ./scripts/patch-react-dev.sh",
+    "postinstall": "./scripts/copy-sample-files.sh",
     "android": "react-native run-android --mode=debug --appId com.walletconnect.web3wallet.rnsample.debug",
     "android:internal": "react-native run-android --mode=debug --appId com.walletconnect.web3wallet.rnsample.internal",
     "android:build": "cd android && ./gradlew clean && ./gradlew assembleRelease",
@@ -127,7 +127,9 @@
     "qs": "6.14.2",
     "axios": "1.13.5",
     "bn.js": "5.2.3",
-    "minimatch": "9.0.6"
+    "minimatch": "9.0.6",
+    "@walletconnect/pay": "1.0.4-canary.0",
+    "react-native@0.84.1": "patch:react-native@npm%3A0.84.1#./.yarn/patches/react-native-npm-0.84.1-dev-proxy-fix.patch"
   },
   "packageManager": "yarn@3.8.7"
 }
