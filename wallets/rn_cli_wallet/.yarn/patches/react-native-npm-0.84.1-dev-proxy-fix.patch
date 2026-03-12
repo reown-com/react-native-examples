@@ -1,0 +1,12 @@
+diff --git a/Libraries/Renderer/implementations/ReactFabric-dev.js b/Libraries/Renderer/implementations/ReactFabric-dev.js
+--- a/Libraries/Renderer/implementations/ReactFabric-dev.js
++++ b/Libraries/Renderer/implementations/ReactFabric-dev.js
+@@ -2006,7 +2006,7 @@
+         value
+       ]);
+     }
+-    function addObjectDiffToProperties(prev, next, properties, indent) {
++    function addObjectDiffToProperties(prev, next, properties, indent) { try { return _addObjectDiffToProperties(prev, next, properties, indent); } catch (e) { return true; } } function _addObjectDiffToProperties(prev, next, properties, indent) {
+       var isDeeplyEqual = !0;
+       for (key in prev)
+         key in next ||
