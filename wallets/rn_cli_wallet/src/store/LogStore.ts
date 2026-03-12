@@ -125,19 +125,19 @@ const LogStore = {
     data?: Record<string, unknown>,
   ) {
     // Console in dev mode
-    if (__DEV__) {
-      const devLog = { level, message, view, functionName, data };
-      switch (level) {
-        case 'error':
-          console.error('[LogStore]', devLog);
-          break;
-        case 'warn':
-          console.warn('[LogStore]', devLog);
-          break;
-        default:
-          console.log('[LogStore]', devLog);
-      }
-    }
+    // if (__DEV__) {
+    //   const devLog = { level, message, view, functionName, data };
+    //   switch (level) {
+    //     case 'error':
+    //       console.error('[LogStore]', devLog);
+    //       break;
+    //     case 'warn':
+    //       console.warn('[LogStore]', devLog);
+    //       break;
+    //     default:
+    //       console.log('[LogStore]', devLog);
+    //   }
+    // }
 
     const entry: LogEntry = {
       id: nanoid(),
