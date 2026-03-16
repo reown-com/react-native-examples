@@ -109,6 +109,18 @@ export default function PaymentOptionsModal() {
     navigation.navigate('Scan');
   }, [navigation]);
 
+  const handleExpiryComplete = useCallback(() => {
+    PaymentStore.setStep('review');
+  }, []);
+
+  const handleExpired = useCallback(() => {
+    PaymentStore.setResult({
+      status: 'error',
+      errorType: 'expired',
+      message: getErrorMessage('expired'),
+    });
+  }, []);
+
   const goBack = useCallback(() => {
     const { step } = PaymentStore.state;
     switch (step) {
@@ -227,17 +239,12 @@ export default function PaymentOptionsModal() {
         return <LoadingView message="Processing your payment..." />;
 
       case 'expiryWarning':
+        if (!snap.expiresAt) return null;
         return (
           <ExpiryWarningView
-            expiresAt={snap.expiresAt!}
-            onComplete={() => PaymentStore.setStep('review')}
-            onExpired={() => {
-              PaymentStore.setResult({
-                status: 'error',
-                errorType: 'expired',
-                message: getErrorMessage('expired'),
-              });
-            }}
+            expiresAt={snap.expiresAt}
+            onComplete={handleExpiryComplete}
+            onExpired={handleExpired}
           />
         );
 
@@ -273,6 +280,8 @@ export default function PaymentOptionsModal() {
     onSelectOption,
     onClose,
     onScanQR,
+    handleExpiryComplete,
+    handleExpired,
   ]);
 
   const paymentOptionsCount = snap.paymentOptions?.options?.length ?? 0;

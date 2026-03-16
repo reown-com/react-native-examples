@@ -6,7 +6,6 @@ import { ActionButton } from '@/components/ActionButton';
 import { Text } from '@/components/Text';
 import CheckCircle from '@/assets/CheckCircle';
 import CoinStack from '@/assets/CoinStack';
-import ClockCircle from '@/assets/ClockCircle';
 import WarningCircle from '@/assets/WarningCircle';
 import { haptics } from '@/utils/haptics';
 import { Spacing } from '@/utils/ThemeUtil';

@@ -53,7 +53,7 @@ export function formatAmount(
   minDecimals: number = 0,
 ): string {
   const num = BigInt(value);
-  const divisor = BigInt(10 ** decimals);
+  const divisor = 10n ** BigInt(decimals);
   const integerPart = num / divisor;
   const fractionalPart = num % divisor;
 

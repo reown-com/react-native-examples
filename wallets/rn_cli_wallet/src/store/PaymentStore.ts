@@ -82,6 +82,7 @@ const PaymentStore = {
     loadingMessage?: string;
     errorMessage?: string;
   }) {
+    PaymentStore.clearExpiryTimer();
     Object.assign(state, { ...initialState });
 
     if (params.paymentOptions) {
@@ -101,6 +102,9 @@ const PaymentStore = {
     if (typeof expiresAt === 'number' && expiresAt > 0) {
       state.expiresAt = expiresAt;
       PaymentStore.startExpiryTimer(expiresAt);
+    } else {
+      PaymentStore.clearExpiryTimer();
+      state.expiresAt = null;
     }
   },
 
@@ -186,9 +190,17 @@ const PaymentStore = {
 
     if (delay <= 0) {
       // Already within 2 minutes of expiry — show warning immediately
-      // (unless already past expiry)
+      // (unless already past expiry or in a non-interruptible step)
       if (expiresAtMs > now) {
-        state.step = 'expiryWarning';
+        const currentStep = state.step;
+        if (
+          currentStep === 'selectOption' ||
+          currentStep === 'review' ||
+          currentStep === 'collectData' ||
+          currentStep === 'infoExplainer'
+        ) {
+          state.step = 'expiryWarning';
+        }
       }
       return;
     }
