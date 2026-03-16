@@ -1,59 +1,33 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useSnapshot } from 'valtio';
+import Toast from 'react-native-toast-message';
 
 import { WalletKitLog } from './components/WalletKitLog';
 import { AppLog } from './components/AppLog';
+import {
+  LogFilterSheet,
+  getFilterLabel,
+  type LogSource,
+} from './components/LogFilterSheet';
 import { useTheme } from '@/hooks/useTheme';
 import SettingsStore from '@/store/SettingsStore';
 import LogStore, { LogEntry } from '@/store/LogStore';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { Button } from '@/components/Button';
-
-type LogSource = 'all' | 'app' | 'walletkit';
+import SvgCaretUpDown from '@/assets/CaretUpDown';
 
 type CombinedLog =
   | { type: 'walletkit'; data: string; timestamp: number; id: string }
   | { type: 'app'; data: LogEntry; timestamp: number; id: string };
 
-function FilterButton({
-  label,
-  value,
-  selected,
-  onPress,
-}: {
-  label: string;
-  value: LogSource;
-  selected: boolean;
-  onPress: (value: LogSource) => void;
-}) {
-  const Theme = useTheme();
-
-  return (
-    <Button
-      onPress={() => onPress(value)}
-      style={[
-        styles.filterButton,
-        {
-          backgroundColor: selected
-            ? Theme['bg-accent-primary']
-            : Theme['foreground-primary'],
-        },
-      ]}
-    >
-      <Text variant="sm-500" color={selected ? 'text-invert' : 'text-primary'}>
-        {label}
-      </Text>
-    </Button>
-  );
-}
-
 export function LogList() {
   const Theme = useTheme();
   const { logs: walletKitLogs } = useSnapshot(SettingsStore.state);
   const { logs: appLogs } = useSnapshot(LogStore.state);
-  const [source, setSource] = useState<LogSource>('all');
+  const [source, setSource] = useState<LogSource>('app');
+  const [filterSheetVisible, setFilterSheetVisible] = useState(false);
 
   const combinedLogs = useMemo(() => {
     const wkLogs: CombinedLog[] = walletKitLogs.map((log, index) => {
@@ -68,7 +42,6 @@ export function LogList() {
         }
         timestamp = parsedTime;
       } catch {
-        // Use index-based timestamp to preserve relative order
         timestamp = Date.now() - (walletKitLogs.length - index);
       }
       return {
@@ -113,34 +86,69 @@ export function LogList() {
 
   const keyExtractor = useCallback((item: CombinedLog) => item.id, []);
 
+  const handleSelectFilter = useCallback((value: LogSource) => {
+    setSource(value);
+    setFilterSheetVisible(false);
+  }, []);
+
+  const handleClearLogs = useCallback(() => {
+    LogStore.clearLogs();
+    Toast.show({
+      type: 'info',
+      text1: 'App logs cleared',
+    });
+  }, []);
+
   return (
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
-      <View style={styles.filterContainer}>
-        <FilterButton
-          label="All"
-          value="all"
-          selected={source === 'all'}
-          onPress={setSource}
-        />
-        <FilterButton
-          label="App"
-          value="app"
-          selected={source === 'app'}
-          onPress={setSource}
-        />
-        <FilterButton
-          label="WalletKit"
-          value="walletkit"
-          selected={source === 'walletkit'}
-          onPress={setSource}
-        />
+      <View style={styles.toolbar}>
+        <Button
+          onPress={() => setFilterSheetVisible(true)}
+          style={[
+            styles.filterDropdown,
+            { backgroundColor: Theme['foreground-primary'] },
+          ]}
+        >
+          <Text variant="md-400" color="text-primary">
+            {getFilterLabel(source)}
+          </Text>
+          <SvgCaretUpDown
+            width={14}
+            height={14}
+            fill={Theme['text-secondary']}
+          />
+        </Button>
+        <Button onPress={handleClearLogs} style={styles.clearButton}>
+          <Text variant="md-400" color="text-secondary">
+            Clear App logs
+          </Text>
+        </Button>
       </View>
       <FlatList
         data={combinedLogs}
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={[
+          styles.contentContainer,
+          combinedLogs.length === 0 && styles.emptyContentContainer,
+        ]}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text variant="h6-400" color="text-primary">
+              No logs yet
+            </Text>
+            <Text variant="lg-400" color="text-secondary" center>
+              Logs will appear here as you use the app.
+            </Text>
+          </View>
+        }
+      />
+      <LogFilterSheet
+        visible={filterSheetVisible}
+        selected={source}
+        onSelect={handleSelectFilter}
+        onClose={() => setFilterSheetVisible(false)}
       />
     </View>
   );
@@ -150,18 +158,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  filterContainer: {
+  toolbar: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing[4],
     paddingVertical: Spacing[3],
-    gap: Spacing[2],
   },
-  filterButton: {
+  filterDropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing[2],
     paddingHorizontal: Spacing[4],
+    paddingVertical: Spacing[3],
+    borderRadius: BorderRadius[3],
+  },
+  clearButton: {
+    paddingHorizontal: Spacing[3],
     paddingVertical: Spacing[2],
-    borderRadius: BorderRadius.full,
   },
   contentContainer: {
     paddingBottom: Spacing[8],
+  },
+  emptyContentContainer: {
+    flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    gap: Spacing[2],
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

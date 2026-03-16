@@ -127,6 +127,7 @@ export function getCurrencySymbol(currencyCode?: string): string {
 export type ErrorType =
   | 'insufficient_funds'
   | 'expired'
+  | 'cancelled'
   | 'not_found'
   | 'generic';
 
@@ -142,6 +143,9 @@ export function detectErrorType(message: string): ErrorType {
   if (lowerMsg.includes('expired') || lowerMsg.includes('timeout')) {
     return 'expired';
   }
+  if (lowerMsg.includes('cancelled') || lowerMsg.includes('canceled')) {
+    return 'cancelled';
+  }
   if (lowerMsg.includes('not found') || lowerMsg.includes('404')) {
     return 'not_found';
   }
@@ -153,7 +157,9 @@ export function getErrorTitle(errorType: ErrorType): string {
     case 'insufficient_funds':
       return 'Not enough funds';
     case 'expired':
-      return 'Payment expired';
+      return 'Your payment has expired';
+    case 'cancelled':
+      return 'This payment was cancelled';
     case 'not_found':
       return 'Payment not found';
     case 'generic':
@@ -167,9 +173,11 @@ export function getErrorMessage(
 ): string {
   switch (errorType) {
     case 'insufficient_funds':
-      return "You don't have enough crypto to complete this payment.";
+      return "This wallet doesn't have enough funds on the supported networks to complete the payment.";
     case 'expired':
-      return 'This payment took too long to approve and has expired.';
+      return 'Please ask the merchant to generate a new payment and try again.';
+    case 'cancelled':
+      return 'Please ask the merchant to generate a new payment and try again.';
     case 'not_found':
       return 'This payment link is not valid or has already been completed.';
     case 'generic':

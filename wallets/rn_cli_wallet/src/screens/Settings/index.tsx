@@ -8,7 +8,6 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
-import LogStore from '@/store/LogStore';
 import { Card } from '@/components/Card';
 import { storage } from '@/utils/storage';
 import { Text } from '@/components/Text';
@@ -65,30 +64,31 @@ export default function Settings() {
             { backgroundColor: Theme['foreground-primary'] },
           ]}
         >
-          <Text variant="md-500" color="text-primary">
-            Dark mode
-          </Text>
-          <Switch
-            value={themeMode === 'dark'}
-            onValueChange={toggleDarkMode}
-            trackColor={Platform.select({
-              android: {
-                false: Theme['foreground-tertiary'],
-                true: Theme['bg-accent-primary'],
-              },
-            })}
-            thumbColor={Platform.select({ android: Theme.white })}
-          />
+          <View style={styles.switchCardContent}>
+            <Text variant="md-500" color="text-primary">
+              Dark mode
+            </Text>
+            <Switch
+              value={themeMode === 'dark'}
+              style={styles.switch}
+              onValueChange={toggleDarkMode}
+              trackColor={Platform.select({
+                android: {
+                  false: Theme['foreground-tertiary'],
+                  true: Theme['bg-accent-primary'],
+                },
+              })}
+              thumbColor={Platform.select({ android: Theme.white })}
+            />
+          </View>
         </Button>
         <Card
           title="Secret Keys & Phrases"
           onPress={() => navigation.navigate('SecretPhrase')}
-          icon="chevronRight"
         />
         <Card
           title="Import Wallet"
           onPress={() => ModalStore.open('ImportWalletModal', {})}
-          icon="chevronRight"
         />
       </View>
       <Text variant="lg-500" color="text-primary" style={styles.subtitle}>
@@ -97,7 +97,7 @@ export default function Settings() {
       <View style={styles.sectionContainer}>
         <Card
           title="Client ID"
-          value={clientId}
+          value={clientId ? `${clientId.slice(0, 8)}..${clientId.slice(-8)}` : ''}
           onPress={() => copyToClipboard(clientId)}
         />
         <Card
@@ -106,19 +106,8 @@ export default function Settings() {
         />
         <Card title="Socket status" value={socketStatus} />
         <Card
-          title="Read full logs"
+          title="Read logs"
           onPress={() => navigation.navigate('Logs')}
-          icon="chevronRight"
-        />
-        <Card
-          title="Clear app logs"
-          onPress={() => {
-            LogStore.clearLogs();
-            Toast.show({
-              type: 'info',
-              text1: 'App logs cleared',
-            });
-          }}
         />
       </View>
     </ScrollView>
@@ -137,15 +126,21 @@ const styles = StyleSheet.create({
     marginTop: Spacing[2],
   },
   sectionContainer: {
-    gap: Spacing[3],
+    gap: Spacing[2],
     marginBottom: Spacing[4],
   },
   switchCard: {
     borderRadius: BorderRadius[4],
-    paddingVertical: Spacing[4],
-    paddingHorizontal: Spacing[4],
+    height: 76,
+  },
+  switchCardContent: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: Spacing[6],
+  },
+  switch: {
+    alignSelf: 'center',
   },
 });
