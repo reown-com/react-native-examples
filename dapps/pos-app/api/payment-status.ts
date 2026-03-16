@@ -1,9 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import {
-  extractCredentials,
-  getApiBaseUrl,
-  getApiHeaders,
-} from "./_utils";
+import { extractCredentials, getApiBaseUrl, getApiHeaders } from "./_utils";
 
 /**
  * Vercel Serverless Function to proxy payment status requests
@@ -38,10 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       `${apiBaseUrl}/merchant/payment/${encodeURIComponent(paymentId)}/status`,
       {
         method: "GET",
-        headers: getApiHeaders(
-          credentials.apiKey,
-          credentials.merchantId,
-        ),
+        headers: getApiHeaders(credentials.apiKey, credentials.merchantId),
       },
     );
 

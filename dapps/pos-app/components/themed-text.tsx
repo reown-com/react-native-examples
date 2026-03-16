@@ -37,5 +37,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 18,
     fontFamily: "KH Teka",
+    fontWeight: "400",
   },
 });

@@ -4,7 +4,11 @@
  * Tests for the payment service functions including API headers, startPayment, and getPaymentStatus.
  */
 
-import { cancelPayment, getPaymentStatus, startPayment } from "@/services/payment";
+import {
+  cancelPayment,
+  getPaymentStatus,
+  startPayment,
+} from "@/services/payment";
 import { normalizePaymentStatus } from "@/services/hooks";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
@@ -239,8 +243,14 @@ describe("Payment Service", () => {
       for (const status of statuses) {
         (apiClient.get as jest.Mock).mockResolvedValueOnce({
           status,
-          isFinal: ["succeeded", "failed", "expired", "cancelled"].includes(status),
-          pollInMs: ["succeeded", "failed", "expired", "cancelled"].includes(status) ? 0 : 2000,
+          isFinal: ["succeeded", "failed", "expired", "cancelled"].includes(
+            status,
+          ),
+          pollInMs: ["succeeded", "failed", "expired", "cancelled"].includes(
+            status,
+          )
+            ? 0
+            : 2000,
         });
 
         const result = await getPaymentStatus(`pay_${status}`);
@@ -271,7 +281,11 @@ describe("Payment Service", () => {
       ] as const;
 
       for (const status of knownStatuses) {
-        const input = { status, isFinal: status !== "requires_action" && status !== "processing", pollInMs: 0 };
+        const input = {
+          status,
+          isFinal: status !== "requires_action" && status !== "processing",
+          pollInMs: 0,
+        };
         const result = normalizePaymentStatus(input);
         expect(result.status).toBe(status);
       }
@@ -326,9 +340,9 @@ describe("Payment Service", () => {
     });
 
     it("should throw error when paymentId is null/undefined", async () => {
-      await expect(
-        cancelPayment(null as unknown as string),
-      ).rejects.toThrow("paymentId is required");
+      await expect(cancelPayment(null as unknown as string)).rejects.toThrow(
+        "paymentId is required",
+      );
       await expect(
         cancelPayment(undefined as unknown as string),
       ).rejects.toThrow("paymentId is required");

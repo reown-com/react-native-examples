@@ -184,6 +184,7 @@ Uses **Expo Router** with file-based routing:
 ### Payment Service (`services/payment.ts` / `services/payment.web.ts`)
 
 > **Important: Platform-specific service files.** The payment service has two implementations:
+>
 > - **`services/payment.ts`** — Native (iOS/Android): uses `apiClient` from `services/client.ts` to call the merchant API directly.
 > - **`services/payment.web.ts`** — Web: uses Vercel serverless proxies (`/api/*`) to avoid CORS issues. Each API function calls a corresponding proxy in the `api/` directory.
 >
@@ -686,7 +687,9 @@ import { secureStorage, SECURE_STORAGE_KEYS } from "@/utils/secure-storage";
 await secureStorage.setItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY, apiKey);
 
 // Retrieve
-const apiKey = await secureStorage.getItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
+const apiKey = await secureStorage.getItem(
+  SECURE_STORAGE_KEYS.CUSTOMER_API_KEY,
+);
 ```
 
 ## Code Quality Guidelines
@@ -722,6 +725,17 @@ npm test              # Run Jest tests
 ```
 
 Fix any errors found. Pre-existing TypeScript errors in unrelated files can be ignored.
+
+### Before Creating a PR
+
+**Always run lint and prettier before creating a PR to ensure code is clean:**
+
+```bash
+npm run lint --fix     # Fix all auto-fixable lint issues
+npx prettier --write . # Format all files with Prettier
+```
+
+These must pass without errors before pushing or creating a PR.
 
 **When moving exports between modules**, update any `jest.mock()` calls in tests that mock the source or destination module. Mocks that use a manual factory (e.g., `jest.mock("@/services/client", () => ({ ... }))`) replace the entire module — any export not included in the factory becomes `undefined` at runtime, which silently breaks tests.
 

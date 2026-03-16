@@ -49,9 +49,7 @@ describe("migrateCustomerApiKey", () => {
       "customer_api_key",
       "partner-key-456",
     );
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
-      "partner_api_key",
-    );
+    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("partner_api_key");
   });
 
   it("should migrate from merchant key when both old keys exist", async () => {
@@ -70,9 +68,7 @@ describe("migrateCustomerApiKey", () => {
     expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
       "merchant_api_key",
     );
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
-      "partner_api_key",
-    );
+    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("partner_api_key");
   });
 
   it("should not overwrite existing customer key", async () => {
@@ -88,9 +84,7 @@ describe("migrateCustomerApiKey", () => {
       "customer_api_key",
       expect.anything(),
     );
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
-      "partner_api_key",
-    );
+    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("partner_api_key");
   });
 
   it("should do nothing when no old keys exist", async () => {
@@ -153,8 +147,12 @@ describe("clearStaleSecureStorage", () => {
 
     await clearStaleSecureStorage();
 
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("customer_api_key");
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("merchant_api_key");
+    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
+      "customer_api_key",
+    );
+    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
+      "merchant_api_key",
+    );
     expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("partner_api_key");
     expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("pin_hash");
     expect(await SecureStore.getItemAsync("customer_api_key")).toBeNull();
@@ -173,6 +171,8 @@ describe("clearStaleSecureStorage", () => {
     await clearStaleSecureStorage();
 
     expect(SecureStore.deleteItemAsync).not.toHaveBeenCalled();
-    expect(await SecureStore.getItemAsync("partner_api_key")).toBe("partner-key");
+    expect(await SecureStore.getItemAsync("partner_api_key")).toBe(
+      "partner-key",
+    );
   });
 });

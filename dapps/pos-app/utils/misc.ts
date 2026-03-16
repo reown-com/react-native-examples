@@ -50,3 +50,14 @@ export function formatDateTime(dateString?: string): string {
 
   return `${datePart} - ${timePart}`;
 }
+
+/**
+ * Formats a number of seconds into "M:SSs" display format.
+ * Examples: 312 -> "5:12s", 65 -> "1:05s", 9 -> "0:09s"
+ */
+export function formatCountdown(totalSeconds: number): string {
+  const clamped = Math.max(0, Math.floor(totalSeconds));
+  const minutes = Math.floor(clamped / 60);
+  const seconds = clamped % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}s`;
+}

@@ -5,11 +5,13 @@ const KEYS = {
   CUSTOMER_API_KEY: "customer_api_key",
   PIN_HASH: "pin_hash",
 } as const;
-const LEGACY_CUSTOMER_API_KEYS = ["merchant_api_key", "partner_api_key"] as const;
+const LEGACY_CUSTOMER_API_KEYS = [
+  "merchant_api_key",
+  "partner_api_key",
+] as const;
 
 const FRESH_INSTALL_KEY = "app_has_launched";
-const CUSTOMER_API_KEY_MIGRATION_KEY =
-  "migration_customer_api_key_completed";
+const CUSTOMER_API_KEY_MIGRATION_KEY = "migration_customer_api_key_completed";
 
 export async function clearStaleSecureStorage(): Promise<void> {
   const hasLaunchedBefore = storage.getItem<boolean>(FRESH_INSTALL_KEY);

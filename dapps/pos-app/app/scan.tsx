@@ -3,6 +3,7 @@ import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
+import { useCountdown } from "@/hooks/use-countdown";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
@@ -13,13 +14,14 @@ import {
   formatAmountWithSymbol,
   getCurrency,
 } from "@/utils/currency";
+import { formatCountdown } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 
@@ -33,6 +35,8 @@ export default function ScanScreen() {
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<number | null>(null);
+  const hasNavigatedRef = useRef(false);
 
   const {
     deviceId,
@@ -46,6 +50,8 @@ export default function ScanScreen() {
   const { amount } = params;
 
   const onSuccess = useCallback(() => {
+    if (hasNavigatedRef.current) return;
+    hasNavigatedRef.current = true;
     router.dismiss();
     router.replace({
       pathname: "/payment-success",
@@ -58,6 +64,8 @@ export default function ScanScreen() {
 
   const onFailure = useCallback(
     (errorCode?: string) => {
+      if (hasNavigatedRef.current) return;
+      hasNavigatedRef.current = true;
       router.dismiss();
       router.replace({
         pathname: "/payment-failure",
@@ -114,24 +122,13 @@ export default function ScanScreen() {
 
         const data = await startPayment(paymentRequest);
 
-        if (process.env.EXPO_PUBLIC_GATEWAY_URL) {
-          const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/?pid=${data.paymentId}`;
-
-          addLog("info", "Payment started", "scan", "initiatePayment", {
-            paymentId: data.paymentId,
-            gatewayUrl: url,
-          });
-          setQrUri(url);
-          setPaymentId(data.paymentId);
-        } else {
-          addLog(
-            "error",
-            "Gateway URL is not configured",
-            "scan",
-            "initiatePayment",
-          );
-          showErrorToast("Gateway URL is not configured");
-        }
+        addLog("info", "Payment started", "scan", "initiatePayment", {
+          paymentId: data.paymentId,
+          gatewayUrl: data.gatewayUrl,
+        });
+        setQrUri(data.gatewayUrl);
+        setPaymentId(data.paymentId);
+        setExpiresAt(data.expiresAt);
       } catch (error: any) {
         addLog(
           "error",
@@ -167,6 +164,11 @@ export default function ScanScreen() {
     },
   });
 
+  const { remainingSeconds, isActive: isCountdownActive } = useCountdown({
+    expiresAt,
+    onExpired: () => onFailure("expired"),
+  });
+
   const isProcessing = paymentStatusData?.status === "processing";
 
   return (
@@ -199,14 +201,31 @@ export default function ScanScreen() {
               {formatAmountWithSymbol(amount, currency)}
             </ThemedText>
           </View>
-          <QRCode
-            size={300}
-            uri={qrUri}
-            logoBorderRadius={100}
-            onPress={handleCopyPaymentUrl}
-          >
-            <Image source={assets?.[0]} style={styles.logo} />
-          </QRCode>
+          <View style={styles.qrSection}>
+            <QRCode
+              size={300}
+              uri={qrUri}
+              logoBorderRadius={100}
+              onPress={handleCopyPaymentUrl}
+            >
+              <Image source={assets?.[0]} style={styles.logo} />
+            </QRCode>
+            <ThemedText
+              aria-hidden={!isCountdownActive}
+              style={[
+                styles.timerText,
+                {
+                  color: Theme["text-secondary"],
+                  opacity: isCountdownActive ? 1 : 0,
+                },
+              ]}
+            >
+              Payment expires in{" "}
+              <ThemedText style={{ color: Theme["bg-accent-primary"] }}>
+                {formatCountdown(remainingSeconds)}
+              </ThemedText>
+            </ThemedText>
+          </View>
           <View style={{ flex: 1 }} />
         </View>
       )}
@@ -233,14 +252,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  qrCodeContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "white",
-    borderRadius: 6,
-    width: 280,
-    height: 280,
-  },
+
   amountContainer: {
     width: "100%",
     flex: 1,
@@ -250,7 +262,6 @@ const styles = StyleSheet.create({
   },
   amountText: {
     fontSize: 16,
-    fontWeight: "400",
     textAlign: "center",
   },
   amountValue: {
@@ -261,6 +272,13 @@ const styles = StyleSheet.create({
   logo: {
     width: 80,
     height: 80,
+  },
+  qrSection: {
+    alignItems: "center",
+    gap: Spacing["spacing-4"],
+  },
+  timerText: {
+    textAlign: "center",
   },
   closeButton: {
     position: "absolute",

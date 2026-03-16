@@ -1,9 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import {
-  extractCredentials,
-  getApiBaseUrl,
-  getApiHeaders,
-} from "./_utils";
+import { extractCredentials, getApiBaseUrl, getApiHeaders } from "./_utils";
 
 /**
  * Vercel Serverless Function to proxy payment cancellation requests
@@ -38,10 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       `${apiBaseUrl}/payments/${encodeURIComponent(paymentId)}/cancel`,
       {
         method: "POST",
-        headers: getApiHeaders(
-          credentials.apiKey,
-          credentials.merchantId,
-        ),
+        headers: getApiHeaders(credentials.apiKey, credentials.merchantId),
         body: JSON.stringify({}),
       },
     );

@@ -341,10 +341,7 @@ describe("useUrlCredentials — outbound events", () => {
     renderHook(() => useUrlCredentials());
     await act(() => waitForAsync());
 
-    expect(parentPostMessage).toHaveBeenCalledWith(
-      { type: "pos-ready" },
-      "*",
-    );
+    expect(parentPostMessage).toHaveBeenCalledWith({ type: "pos-ready" }, "*");
   });
 
   it("posts pos-credentials-updated after successful postMessage credentials", async () => {
