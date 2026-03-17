@@ -13,15 +13,20 @@ interface ERC20TokenConfig {
   chainIds: string[];
 }
 
-const EURC_ADDRESS = '0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c';
-
 const ERC20_TOKENS: ERC20TokenConfig[] = [
   {
     name: 'EURC',
     symbol: 'EURC',
-    address: EURC_ADDRESS,
+    address: '0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c',
     decimals: 6,
     chainIds: ['eip155:1'],
+  },
+  {
+    name: 'EURC',
+    symbol: 'EURC',
+    address: '0x60a3E35Cc302bFA44Cb288Bc5a4F316Fdb1adb42',
+    decimals: 6,
+    chainIds: ['eip155:8453'],
   },
 ];
 
