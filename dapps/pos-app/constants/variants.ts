@@ -1,9 +1,11 @@
 import {
   BINANCE_LOGO_BASE64,
   DEFAULT_LOGO_BASE64,
+  LEDGER_LOGO_BASE64,
   PHANTOM_LOGO_BASE64,
   SOLANA_LOGO_BASE64,
   SOLFLARE_LOGO_BASE64,
+  TREZOR_LOGO_BASE64,
 } from "./printer-logos";
 import { Colors } from "./theme";
 
@@ -12,7 +14,9 @@ export type VariantName =
   | "solflare"
   | "binance"
   | "phantom"
-  | "solana";
+  | "solana"
+  | "trezor"
+  | "ledger";
 
 type VariantColorOverrides = Partial<typeof Colors.light>;
 
@@ -127,6 +131,51 @@ export const Variants: Record<VariantName, Variant> = {
         "text-payment-success": "#FFFFFF",
         "border-payment-success": "#FFFFFF",
         "text-invert": "#FFFFFF", // Used in button text. Default one doesnt work with purple
+      },
+    },
+  },
+  trezor: {
+    name: "Trezor",
+    brandLogo: require("@/assets/images/variants/trezor_brand.png"),
+    printerLogo: TREZOR_LOGO_BASE64,
+    defaultTheme: "light",
+    colors: {
+      light: {
+        "icon-accent-primary": "#60E198",
+        "bg-accent-primary": "#60E198",
+        "bg-payment-success": "#60E198",
+        "text-payment-success": "#1F1F1F",
+        "border-payment-success": "#363636",
+        "text-invert": "#1F1F1F",
+      },
+      dark: {
+        "icon-accent-primary": "#60E198",
+        "bg-accent-primary": "#60E198",
+        "bg-payment-success": "#60E198",
+        "text-payment-success": "#1F1F1F",
+        "border-payment-success": "#363636",
+      },
+    },
+  },
+  ledger: {
+    name: "Ledger",
+    brandLogo: require("@/assets/images/variants/ledger_brand.png"),
+    printerLogo: LEDGER_LOGO_BASE64,
+    defaultTheme: "light",
+    colors: {
+      light: {
+        "icon-accent-primary": "#000000",
+        "bg-accent-primary": "#000000",
+        "bg-payment-success": "#000000",
+        "text-payment-success": "#FFFFFF",
+        "border-payment-success": "#E9E9E9",
+      },
+      dark: {
+        "icon-accent-primary": "#000000",
+        "bg-accent-primary": "#000000",
+        "bg-payment-success": "#000000",
+        "text-payment-success": "#FFFFFF",
+        "border-payment-success": "#E9E9E9",
       },
     },
   },
