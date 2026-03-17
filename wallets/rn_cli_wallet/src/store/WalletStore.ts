@@ -86,10 +86,11 @@ function processBalances(
 ): TokenBalance[] {
   const mainnetChainIds = Object.keys(MAINNET_NATIVE_TOKENS);
 
-  // Filter: keep tokens with value > 0, OR mainnet native tokens (even if 0)
+  // Filter: keep tokens with value > 0, mainnet native tokens, or tokens with a non-zero quantity (on-chain ERC-20s without USD price)
   const filtered = apiBalances.filter(b => {
     if (b.value > 0) return true;
     if (mainnetChainIds.includes(b.chainId) && !b.address) return true;
+    if (parseFloat(b.quantity.numeric) > 0) return true;
     return false;
   });
 
