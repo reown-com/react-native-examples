@@ -11,6 +11,7 @@ interface SettingsItemProps {
   value?: string;
   onPress: () => void;
   showCaret?: boolean;
+  disabled?: boolean;
 }
 
 export function SettingsItem({
@@ -18,6 +19,7 @@ export function SettingsItem({
   value,
   onPress,
   showCaret,
+  disabled,
 }: SettingsItemProps) {
   const Theme = useTheme();
   const [assets] = useAssets([require("@/assets/images/caret-up-down.png")]);
@@ -26,9 +28,11 @@ export function SettingsItem({
   return (
     <Button
       onPress={onPress}
+      disabled={disabled}
       style={[
         styles.container,
         { backgroundColor: Theme["foreground-primary"] },
+        disabled && { opacity: 0.4 },
       ]}
     >
       <View style={styles.labelRow}>
