@@ -2,6 +2,7 @@ import { proxy } from 'valtio';
 import { MMKV } from 'react-native-mmkv';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { fetchBalancesForChains } from '@/services/BalanceService';
+import { fetchERC20Balances } from '@/services/ERC20BalanceService';
 import { EIP155_CHAINS } from '@/constants/Eip155';
 import LogStore, { serializeError } from '@/store/LogStore';
 
@@ -74,6 +75,17 @@ const MAINNET_NATIVE_TOKENS = {
   'sui:mainnet': { name: 'Sui', symbol: 'SUI', decimals: '9' },
 };
 
+// ERC-20 tokens on Ethereum mainnet that should always be shown
+const ALWAYS_SHOWN_ERC20_TOKENS = [
+  {
+    name: 'EURC',
+    symbol: 'EURC',
+    chainId: 'eip155:1',
+    address: '0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c',
+    decimals: '6',
+  },
+];
+
 /**
  * Processes API balances:
  * 1. Filters out tokens with 0 value (except mainnet native tokens)
@@ -85,12 +97,16 @@ function processBalances(
 ): TokenBalance[] {
   const mainnetChainIds = Object.keys(MAINNET_NATIVE_TOKENS);
 
-  // Filter: keep tokens with value > 0, OR mainnet native tokens (even if 0)
+  const alwaysShownAddresses = new Set(
+    ALWAYS_SHOWN_ERC20_TOKENS.map(t => t.address.toLowerCase()),
+  );
+
+  // Filter: keep tokens with value > 0, mainnet native tokens, or always-shown ERC-20s
   const filtered = apiBalances.filter(b => {
-    // Always keep tokens with value
     if (b.value > 0) return true;
-    // Keep mainnet native tokens (no address = native token)
     if (mainnetChainIds.includes(b.chainId) && !b.address) return true;
+    if (b.address && alwaysShownAddresses.has(b.address.toLowerCase()))
+      return true;
     return false;
   });
 
@@ -169,6 +185,27 @@ function processBalances(
     }
   }
 
+  // Always-shown ERC-20 tokens on Ethereum mainnet
+  if (addresses.eip155Address) {
+    for (const token of ALWAYS_SHOWN_ERC20_TOKENS) {
+      const hasToken = result.some(
+        b => b.chainId === token.chainId && b.address === token.address,
+      );
+      if (!hasToken) {
+        result.push({
+          name: token.name,
+          symbol: token.symbol,
+          chainId: token.chainId,
+          address: token.address,
+          value: 0,
+          price: 0,
+          quantity: { decimals: token.decimals, numeric: '0' },
+          iconUrl: undefined,
+        });
+      }
+    }
+  }
+
   return result;
 }
 
@@ -202,7 +239,7 @@ const WalletStore = {
       // Fetch all balances in parallel for better performance and resilience
       const eip155ChainIds = Object.keys(EIP155_CHAINS);
 
-      const [eip155Result, tonResult, tronResult, suiResult] =
+      const [eip155Result, tonResult, tronResult, suiResult, erc20Balances] =
         await Promise.all([
           // EIP155 balances (or empty result if no address)
           addresses.eip155Address
@@ -235,6 +272,10 @@ const WalletStore = {
                 balances: [] as TokenBalance[],
                 anySuccess: false,
               }),
+          // On-chain ERC-20 balances (EURC etc.)
+          addresses.eip155Address
+            ? fetchERC20Balances(addresses.eip155Address)
+            : Promise.resolve([] as TokenBalance[]),
         ]);
 
       // Only update state if at least one API call succeeded
@@ -244,17 +285,29 @@ const WalletStore = {
         tronResult.anySuccess ||
         suiResult.anySuccess;
 
-      if (!anySuccess) {
+      if (!anySuccess && erc20Balances.length === 0) {
         return;
       }
 
-      // Combine all balances
+      // Combine all balances from the blockchain API
       const apiBalances = [
         ...eip155Result.balances,
         ...tonResult.balances,
         ...tronResult.balances,
         ...suiResult.balances,
       ];
+
+      // Merge on-chain ERC-20 balances: use on-chain data unless the API already returned it
+      for (const erc20 of erc20Balances) {
+        const existingIdx = apiBalances.findIndex(
+          b =>
+            b.chainId === erc20.chainId &&
+            b.address?.toLowerCase() === erc20.address?.toLowerCase(),
+        );
+        if (existingIdx === -1) {
+          apiBalances.push(erc20);
+        }
+      }
 
       // Protect against API returning empty data when we have valid cached data
       const totalValue = apiBalances.reduce((s, b) => s + b.value, 0);
