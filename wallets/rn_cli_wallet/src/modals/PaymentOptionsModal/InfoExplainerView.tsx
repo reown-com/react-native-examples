@@ -12,18 +12,18 @@ export function InfoExplainerView({ onDismiss }: InfoExplainerViewProps) {
   return (
     <View style={styles.container}>
       <Text variant="h6-400" color="text-primary" style={styles.title}>
-        Why we need your information?
+        Why do we collect personal details?
       </Text>
 
-      <Text variant="lg-400" color="text-tertiary" style={styles.body}>
-        For regulatory compliance, we collect basic information on your first
-        payment: full name, date of birth, and place of birth.
+      <Text variant="lg-400" color="text-secondary" style={styles.body}>
+        To meet compliance requirements, some basic information is collected
+        from WalletConnect Pay users.
       </Text>
 
-      <Text variant="lg-400" color="text-tertiary" style={styles.lastBody}>
-        This information is tied to your wallet address and this specific
-        network. If you use the same wallet on this network again, you won't
-        need to provide it again.
+      <Text variant="lg-400" color="text-secondary" style={styles.lastBody}>
+        This is typically a one-time step—if you use the same wallet on this
+        network again, you won't need to provide the info again, unless your
+        information changes.
       </Text>
 
       <View style={styles.buttonContainer}>
@@ -41,15 +41,11 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: Spacing[2],
-    textAlign: 'center',
   },
   body: {
     marginBottom: Spacing[2],
-    textAlign: 'center',
   },
-  lastBody: {
-    textAlign: 'center',
-  },
+  lastBody: {},
   buttonContainer: {
     marginTop: Spacing[7],
     marginBottom: Spacing[2],

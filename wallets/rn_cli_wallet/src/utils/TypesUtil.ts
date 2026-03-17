@@ -99,6 +99,7 @@ export type Step =
   | 'collectData'
   | 'review'
   | 'confirming'
+  | 'expiryWarning'
   | 'result';
 
 // Extended PaymentOption with per-option collectData (SDK types not yet updated)

@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { useSnapshot } from 'valtio';
+import { useNavigation } from '@react-navigation/native';
 
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
@@ -17,6 +18,7 @@ import { CollectDataWebView } from './CollectDataWebView';
 import { SelectOptionView } from './SelectOptionView';
 import { ReviewPaymentView } from './ReviewPaymentView';
 import { InfoExplainerView } from './InfoExplainerView';
+import { ExpiryWarningView } from './ExpiryWarningView';
 import { ResultView } from './ResultView';
 import { ViewWrapper } from './ViewWrapper';
 import { detectErrorType, getErrorMessage } from './utils';
@@ -24,6 +26,7 @@ import { detectErrorType, getErrorMessage } from './utils';
 export default function PaymentOptionsModal() {
   const snap = useSnapshot(PaymentStore.state);
   const Theme = useTheme();
+  const navigation = useNavigation();
 
   const selectedOptionCollectDataUrl = (
     snap.selectedOption as PaymentOptionWithCollectData | null
@@ -98,6 +101,24 @@ export default function PaymentOptionsModal() {
   const onClose = useCallback(() => {
     PaymentStore.reset();
     ModalStore.close();
+  }, []);
+
+  const onScanQR = useCallback(() => {
+    PaymentStore.reset();
+    ModalStore.close();
+    navigation.navigate('Scan');
+  }, [navigation]);
+
+  const handleExpiryComplete = useCallback(() => {
+    PaymentStore.setStep('review');
+  }, []);
+
+  const handleExpired = useCallback(() => {
+    PaymentStore.setResult({
+      status: 'error',
+      errorType: 'expired',
+      message: getErrorMessage('expired'),
+    });
   }, []);
 
   const goBack = useCallback(() => {
@@ -215,7 +236,17 @@ export default function PaymentOptionsModal() {
         ) : null;
 
       case 'confirming':
-        return <LoadingView message="Confirming your payment..." />;
+        return <LoadingView message="Processing your payment..." />;
+
+      case 'expiryWarning':
+        if (!snap.expiresAt) return null;
+        return (
+          <ExpiryWarningView
+            expiresAt={snap.expiresAt}
+            onComplete={handleExpiryComplete}
+            onExpired={handleExpired}
+          />
+        );
 
       case 'result':
         return (
@@ -224,6 +255,7 @@ export default function PaymentOptionsModal() {
             errorType={snap.resultErrorType}
             message={snap.resultMessage}
             onClose={onClose}
+            onScanQR={onScanQR}
           />
         );
 
@@ -240,12 +272,16 @@ export default function PaymentOptionsModal() {
     snap.loadingMessage,
     snap.paymentOptions,
     snap.collectDataCompletedIds,
+    snap.expiresAt,
     selectedOptionCollectDataUrl,
     handleWebViewComplete,
     handleWebViewError,
     handleContinue,
     onSelectOption,
     onClose,
+    onScanQR,
+    handleExpiryComplete,
+    handleExpired,
   ]);
 
   const paymentOptionsCount = snap.paymentOptions?.options?.length ?? 0;

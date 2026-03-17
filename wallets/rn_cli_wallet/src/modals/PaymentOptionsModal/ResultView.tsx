@@ -6,7 +6,6 @@ import { ActionButton } from '@/components/ActionButton';
 import { Text } from '@/components/Text';
 import CheckCircle from '@/assets/CheckCircle';
 import CoinStack from '@/assets/CoinStack';
-import ClockCircle from '@/assets/ClockCircle';
 import WarningCircle from '@/assets/WarningCircle';
 import { haptics } from '@/utils/haptics';
 import { Spacing } from '@/utils/ThemeUtil';
@@ -19,6 +18,7 @@ interface ResultViewProps {
   errorType?: ErrorType | null;
   message?: string;
   onClose: () => void;
+  onScanQR?: () => void;
 }
 
 export function ResultView({
@@ -26,6 +26,7 @@ export function ResultView({
   errorType,
   message,
   onClose,
+  onScanQR,
 }: ResultViewProps) {
   const Theme = useTheme();
 
@@ -55,7 +56,8 @@ export function ResultView({
       case 'insufficient_funds':
         return <CoinStack width={40} height={40} fill={iconColor} />;
       case 'expired':
-        return <ClockCircle width={40} height={40} fill={iconColor} />;
+      case 'cancelled':
+        return <WarningCircle width={40} height={40} fill={iconColor} />;
       case 'not_found':
       case 'generic':
       default:
@@ -111,8 +113,19 @@ export function ResultView({
         )}
       </View>
       <View style={styles.footerContainer}>
-        <ActionButton onPress={onClose} fullWidth>
-          {isSuccess ? 'Got it!' : 'Close'}
+        <ActionButton
+          onPress={
+            (errorType === 'expired' || errorType === 'cancelled') && onScanQR
+              ? onScanQR
+              : onClose
+          }
+          fullWidth
+        >
+          {isSuccess || errorType === 'insufficient_funds'
+            ? 'Got it!'
+            : errorType === 'expired' || errorType === 'cancelled'
+              ? 'Scan new QR code'
+              : 'Close'}
         </ActionButton>
       </View>
     </>

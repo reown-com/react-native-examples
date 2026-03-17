@@ -37,6 +37,9 @@ interface PaymentState {
 
   // Tracks option IDs that have completed collectData
   collectDataCompletedIds: string[];
+
+  // Expiry
+  expiresAt: number | null;
 }
 
 /**
@@ -56,12 +59,15 @@ const initialState: PaymentState = {
   isLoadingActions: false,
   actionsError: null,
   collectDataCompletedIds: [],
+  expiresAt: null,
 };
 
 /**
  * State
  */
 const state = proxy<PaymentState>({ ...initialState });
+
+let expiryTimerId: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * Store / Actions
@@ -76,6 +82,7 @@ const PaymentStore = {
     loadingMessage?: string;
     errorMessage?: string;
   }) {
+    PaymentStore.clearExpiryTimer();
     Object.assign(state, { ...initialState });
 
     if (params.paymentOptions) {
@@ -90,6 +97,15 @@ const PaymentStore = {
     state.loadingMessage = null;
     state.errorMessage = null;
     state.resultErrorType = null;
+
+    const expiresAt = options.info?.expiresAt;
+    if (typeof expiresAt === 'number' && expiresAt > 0) {
+      state.expiresAt = expiresAt;
+      PaymentStore.startExpiryTimer(expiresAt);
+    } else {
+      PaymentStore.clearExpiryTimer();
+      state.expiresAt = null;
+    }
   },
 
   setError(errorMessage: string) {
@@ -103,6 +119,7 @@ const PaymentStore = {
   },
 
   reset() {
+    PaymentStore.clearExpiryTimer();
     Object.assign(state, { ...initialState });
   },
 
@@ -159,6 +176,53 @@ const PaymentStore = {
 
   setActionsError(error: string | null) {
     state.actionsError = error;
+  },
+
+  // --- Expiry timer ---
+
+  startExpiryTimer(expiresAt: number) {
+    PaymentStore.clearExpiryTimer();
+    const TWO_MINUTES_MS = 2 * 60 * 1000;
+    const now = Date.now();
+    const expiresAtMs = expiresAt * 1000;
+    const warningTime = expiresAtMs - TWO_MINUTES_MS;
+    const delay = warningTime - now;
+
+    if (delay <= 0) {
+      // Already within 2 minutes of expiry — show warning immediately
+      // (unless already past expiry or in a non-interruptible step)
+      if (expiresAtMs > now) {
+        const currentStep = state.step;
+        if (
+          currentStep === 'selectOption' ||
+          currentStep === 'review' ||
+          currentStep === 'collectData' ||
+          currentStep === 'infoExplainer'
+        ) {
+          state.step = 'expiryWarning';
+        }
+      }
+      return;
+    }
+
+    expiryTimerId = setTimeout(() => {
+      const currentStep = state.step;
+      if (
+        currentStep === 'selectOption' ||
+        currentStep === 'review' ||
+        currentStep === 'collectData' ||
+        currentStep === 'infoExplainer'
+      ) {
+        state.step = 'expiryWarning';
+      }
+    }, delay);
+  },
+
+  clearExpiryTimer() {
+    if (expiryTimerId !== null) {
+      clearTimeout(expiryTimerId);
+      expiryTimerId = null;
+    }
   },
 
   // --- Business logic ---
@@ -343,6 +407,20 @@ const PaymentStore = {
         state.resultStatus = 'error';
         state.resultErrorType = 'expired';
         state.resultMessage = getErrorMessage('expired');
+        state.step = 'result';
+        return;
+      }
+
+      if (confirmResult.status === 'cancelled') {
+        LogStore.warn(
+          'Payment cancelled',
+          'PaymentStore',
+          'approvePayment',
+          { paymentId: paymentOptions.paymentId },
+        );
+        state.resultStatus = 'error';
+        state.resultErrorType = 'cancelled';
+        state.resultMessage = getErrorMessage('cancelled');
         state.step = 'result';
         return;
       }
