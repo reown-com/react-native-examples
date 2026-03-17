@@ -1,5 +1,5 @@
 import { Contract, providers, utils } from 'ethers';
-import { EIP155_CHAINS } from '@/constants/Eip155';
+import Config from 'react-native-config';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import LogStore, { serializeError } from '@/store/LogStore';
 
@@ -25,18 +25,32 @@ const ERC20_TOKENS: ERC20TokenConfig[] = [
   },
 ];
 
+function getRpcUrl(chainId: string): string | null {
+  const baseUrl = Config.ENV_BLOCKCHAIN_API_URL;
+  const projectId = Config.ENV_PROJECT_ID;
+  if (!baseUrl || !projectId) {
+    return null;
+  }
+  return `${baseUrl}/v1/?chainId=${chainId}&projectId=${projectId}`;
+}
+
 async function fetchSingleERC20Balance(
   walletAddress: string,
   token: ERC20TokenConfig,
   chainId: string,
 ): Promise<TokenBalance | null> {
-  const chain = EIP155_CHAINS[chainId];
-  if (!chain) {
+  const rpcUrl = getRpcUrl(chainId);
+  if (!rpcUrl) {
+    LogStore.warn(
+      'Missing blockchain API URL or project ID',
+      'ERC20BalanceService',
+      'fetchSingleERC20Balance',
+    );
     return null;
   }
 
   try {
-    const provider = new providers.JsonRpcProvider(chain.rpcUrl);
+    const provider = new providers.JsonRpcProvider(rpcUrl);
     const contract = new Contract(token.address, ERC20_BALANCE_OF_ABI, provider);
     const rawBalance = await contract.balanceOf(walletAddress);
     const numeric = utils.formatUnits(rawBalance, token.decimals);

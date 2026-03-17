@@ -75,17 +75,6 @@ const MAINNET_NATIVE_TOKENS = {
   'sui:mainnet': { name: 'Sui', symbol: 'SUI', decimals: '9' },
 };
 
-// ERC-20 tokens on Ethereum mainnet that should always be shown
-const ALWAYS_SHOWN_ERC20_TOKENS = [
-  {
-    name: 'EURC',
-    symbol: 'EURC',
-    chainId: 'eip155:1',
-    address: '0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c',
-    decimals: '6',
-  },
-];
-
 /**
  * Processes API balances:
  * 1. Filters out tokens with 0 value (except mainnet native tokens)
@@ -97,16 +86,10 @@ function processBalances(
 ): TokenBalance[] {
   const mainnetChainIds = Object.keys(MAINNET_NATIVE_TOKENS);
 
-  const alwaysShownAddresses = new Set(
-    ALWAYS_SHOWN_ERC20_TOKENS.map(t => t.address.toLowerCase()),
-  );
-
-  // Filter: keep tokens with value > 0, mainnet native tokens, or always-shown ERC-20s
+  // Filter: keep tokens with value > 0, OR mainnet native tokens (even if 0)
   const filtered = apiBalances.filter(b => {
     if (b.value > 0) return true;
     if (mainnetChainIds.includes(b.chainId) && !b.address) return true;
-    if (b.address && alwaysShownAddresses.has(b.address.toLowerCase()))
-      return true;
     return false;
   });
 
@@ -182,27 +165,6 @@ function processBalances(
         quantity: { decimals: '9', numeric: '0' },
         iconUrl: undefined,
       });
-    }
-  }
-
-  // Always-shown ERC-20 tokens on Ethereum mainnet
-  if (addresses.eip155Address) {
-    for (const token of ALWAYS_SHOWN_ERC20_TOKENS) {
-      const hasToken = result.some(
-        b => b.chainId === token.chainId && b.address === token.address,
-      );
-      if (!hasToken) {
-        result.push({
-          name: token.name,
-          symbol: token.symbol,
-          chainId: token.chainId,
-          address: token.address,
-          value: 0,
-          price: 0,
-          quantity: { decimals: token.decimals, numeric: '0' },
-          iconUrl: undefined,
-        });
-      }
     }
   }
 
@@ -285,7 +247,7 @@ const WalletStore = {
         tronResult.anySuccess ||
         suiResult.anySuccess;
 
-      if (!anySuccess && erc20Balances.length === 0) {
+      if (!anySuccess) {
         return;
       }
 
@@ -297,14 +259,18 @@ const WalletStore = {
         ...suiResult.balances,
       ];
 
-      // Merge on-chain ERC-20 balances: use on-chain data unless the API already returned it
+      // Merge on-chain ERC-20 balances (only non-zero) unless the API already returned them
       for (const erc20 of erc20Balances) {
-        const existingIdx = apiBalances.findIndex(
+        const hasBalance = parseFloat(erc20.quantity.numeric) > 0;
+        if (!hasBalance) {
+          continue;
+        }
+        const alreadyFromApi = apiBalances.some(
           b =>
             b.chainId === erc20.chainId &&
             b.address?.toLowerCase() === erc20.address?.toLowerCase(),
         );
-        if (existingIdx === -1) {
+        if (!alreadyFromApi) {
           apiBalances.push(erc20);
         }
       }
