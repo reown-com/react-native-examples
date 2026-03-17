@@ -25,13 +25,14 @@ const ERC20_TOKENS: ERC20TokenConfig[] = [
   },
 ];
 
+const RPC_BASE_URL = 'https://rpc.walletconnect.org/v1/';
+
 function getRpcUrl(chainId: string): string | null {
-  const baseUrl = Config.ENV_BLOCKCHAIN_API_URL;
   const projectId = Config.ENV_PROJECT_ID;
-  if (!baseUrl || !projectId) {
+  if (!projectId) {
     return null;
   }
-  return `${baseUrl}/v1/?chainId=${chainId}&projectId=${projectId}`;
+  return `${RPC_BASE_URL}?chainId=${chainId}&projectId=${projectId}`;
 }
 
 async function fetchSingleERC20Balance(
