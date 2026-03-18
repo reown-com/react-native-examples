@@ -88,34 +88,26 @@ export function useMerchantFlow() {
   }, []);
 
   const initiateSave = useCallback(
-    async (value: string, action: PendingAction) => {
+    (value: string, action: PendingAction) => {
       // Check if locked out
       if (isLockedOut()) {
         showErrorToast(formatLockoutMessage());
         return;
       }
 
+      const pinExists = isPinSet();
+
       setState((prev) => ({
         ...prev,
         pendingValue: value,
         pendingAction: action,
+        activeModal: pinExists ? "pin-verify" : "pin-setup",
       }));
-
-      // Check if PIN is set
-      const pinExists = await isPinSet();
-
-      if (pinExists) {
-        // PIN exists, show verification modal
-        setState((prev) => ({ ...prev, activeModal: "pin-verify" }));
-      } else {
-        // No PIN, show setup modal
-        setState((prev) => ({ ...prev, activeModal: "pin-setup" }));
-      }
     },
     [isLockedOut, formatLockoutMessage, isPinSet],
   );
 
-  const handleMerchantIdConfirm = useCallback(async () => {
+  const handleMerchantIdConfirm = useCallback(() => {
     const trimmedMerchantId = state.merchantIdInput.trim();
 
     // Check if value changed
@@ -124,16 +116,16 @@ export function useMerchantFlow() {
     }
 
     // Pass empty string to indicate clearing (will reset to default)
-    await initiateSave(trimmedMerchantId || "", "merchant-id");
+    initiateSave(trimmedMerchantId || "", "merchant-id");
   }, [state.merchantIdInput, storedMerchantId, initiateSave]);
 
-  const handleCustomerApiKeyConfirm = useCallback(async () => {
+  const handleCustomerApiKeyConfirm = useCallback(() => {
     const trimmedApiKey = state.customerApiKeyInput.trim();
     if (!trimmedApiKey) {
       return;
     }
 
-    await initiateSave(trimmedApiKey, "customer-api-key");
+    initiateSave(trimmedApiKey, "customer-api-key");
   }, [state.customerApiKeyInput, initiateSave]);
 
   const completeSave = useCallback(async () => {

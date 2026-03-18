@@ -17,6 +17,7 @@ export function resetSettingsStore() {
     _hasHydrated: false,
     merchantId: null,
     isCustomerApiKeySet: false,
+    isPinHashSet: false,
     pinFailedAttempts: 0,
     pinLockoutUntil: null,
     biometricEnabled: false,

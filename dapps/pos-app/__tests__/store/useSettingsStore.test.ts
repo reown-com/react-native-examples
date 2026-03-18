@@ -362,15 +362,15 @@ describe("useSettingsStore", () => {
     });
 
     describe("isPinSet", () => {
-      it("should return false when no PIN is set", async () => {
-        const result = await useSettingsStore.getState().isPinSet();
+      it("should return false when no PIN is set", () => {
+        const result = useSettingsStore.getState().isPinSet();
         expect(result).toBe(false);
       });
 
       it("should return true when PIN is set", async () => {
         await useSettingsStore.getState().setPin("1234");
 
-        const result = await useSettingsStore.getState().isPinSet();
+        const result = useSettingsStore.getState().isPinSet();
         expect(result).toBe(true);
       });
     });
@@ -558,7 +558,7 @@ describe("useSettingsStore", () => {
 
       // PIN state should be preserved
       expect(useSettingsStore.getState().pinFailedAttempts).toBe(2);
-      const isPinSet = await useSettingsStore.getState().isPinSet();
+      const isPinSet = useSettingsStore.getState().isPinSet();
       expect(isPinSet).toBe(true);
     });
 
@@ -579,7 +579,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(13);
+      expect(persistOptions?.version).toBe(14);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();

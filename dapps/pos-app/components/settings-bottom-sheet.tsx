@@ -10,12 +10,14 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+
 import { Button } from "./button";
 import { FramedModal } from "./framed-modal";
 import { ThemedText } from "./themed-text";
@@ -37,6 +39,7 @@ export function SettingsBottomSheet({
   children,
 }: SettingsBottomSheetProps) {
   const Theme = useTheme();
+  const insets = useSafeAreaInsets();
   const [assets] = useAssets([require("@/assets/images/close.png")]);
 
   const translateY = useSharedValue(Platform.OS === "web" ? 300 : 0);
@@ -68,9 +71,13 @@ export function SettingsBottomSheet({
         sheetAnimatedStyle,
       ]}
     >
-      <Pressable
-        onPress={(e) => e.stopPropagation()}
-        style={styles.sheetContent}
+      <View
+        style={[
+          styles.sheetContent,
+          {
+            paddingBottom: Math.max(insets.bottom, Spacing["spacing-5"]),
+          },
+        ]}
       >
         <View style={styles.header}>
           <View style={styles.headerSpacer} />
@@ -98,24 +105,25 @@ export function SettingsBottomSheet({
           </Button>
         </View>
         {children}
-      </Pressable>
+      </View>
     </Animated.View>
   );
 
   return (
     <FramedModal visible={visible} onRequestClose={onClose}>
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <View style={styles.overlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         {Platform.OS === "web" ? (
           sheetContent
         ) : (
           <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior="padding"
             style={styles.keyboardAvoid}
           >
             {sheetContent}
           </KeyboardAvoidingView>
         )}
-      </Pressable>
+      </View>
     </FramedModal>
   );
 }

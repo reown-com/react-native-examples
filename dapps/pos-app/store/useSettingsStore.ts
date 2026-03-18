@@ -64,6 +64,7 @@ interface SettingsStore {
   transactionFilter: TransactionFilterType;
 
   // PIN protection
+  isPinHashSet: boolean;
   pinFailedAttempts: number;
   pinLockoutUntil: number | null;
   biometricEnabled: boolean;
@@ -83,7 +84,7 @@ interface SettingsStore {
   // PIN actions
   setPin: (pin: string) => Promise<void>;
   verifyPin: (pin: string) => Promise<boolean>;
-  isPinSet: () => Promise<boolean>;
+  isPinSet: () => boolean;
   isLockedOut: () => boolean;
   getLockoutRemainingSeconds: () => number;
   resetPinAttempts: () => void;
@@ -107,6 +108,7 @@ export const useSettingsStore = create<SettingsStore>()(
       merchantId: null,
       isCustomerApiKeySet: false,
       transactionFilter: "all",
+      isPinHashSet: false,
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
@@ -191,6 +193,7 @@ export const useSettingsStore = create<SettingsStore>()(
         const hashedPin = await hashPin(pin);
         await secureStorage.setItem(SECURE_STORAGE_KEYS.PIN_HASH, hashedPin);
         set({
+          isPinHashSet: true,
           pinFailedAttempts: 0,
           pinLockoutUntil: null,
         });
@@ -234,11 +237,8 @@ export const useSettingsStore = create<SettingsStore>()(
 
         return false;
       },
-      isPinSet: async () => {
-        const pinHash = await secureStorage.getItem(
-          SECURE_STORAGE_KEYS.PIN_HASH,
-        );
-        return pinHash !== null;
+      isPinSet: () => {
+        return get().isPinHashSet;
       },
       isLockedOut: () => {
         const state = get();
@@ -269,7 +269,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 13,
+      version: 14,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -317,6 +317,9 @@ export const useSettingsStore = create<SettingsStore>()(
             delete persistedState.isPartnerApiKeySet;
           }
         }
+        if (version < 14) {
+          persistedState.isPinHashSet = false;
+        }
 
         return persistedState;
       },
@@ -359,6 +362,12 @@ export const useSettingsStore = create<SettingsStore>()(
                 "onRehydrateStorage",
               );
           }
+
+          // Sync isPinHashSet from secure storage
+          const pinHash = await secureStorage.getItem(
+            SECURE_STORAGE_KEYS.PIN_HASH,
+          );
+          state.isPinHashSet = pinHash !== null;
 
           // Initialize merchant defaults from env if not set.
           // Skip when embedded in an iframe — parent provides credentials via postMessage.
