@@ -31,7 +31,7 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
-  const [assets] = useAssets([require("@/assets/images/wc_logo_blue.png")]);
+  const [assets] = useAssets([require("@/assets/images/wc_logo_dark.png")]);
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
