@@ -1470,7 +1470,7 @@ PODS:
     - ReactNativeDependencies
     - SwiftUIIntrospect (~> 1.0)
     - Yoga
-  - react-native-compat (2.23.5-canary.0):
+  - react-native-compat (2.23.8):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1492,7 +1492,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-    - YttriumWrapper (= 0.10.40)
+    - YttriumWrapper (= 0.10.50)
   - react-native-config (1.5.5):
     - react-native-config/App (= 1.5.5)
   - react-native-config/App (1.5.5):
@@ -2430,7 +2430,7 @@ PODS:
   - VisionCamera/React (4.7.2):
     - React-Core
   - Yoga (0.0.0)
-  - YttriumWrapper (0.10.40)
+  - YttriumWrapper (0.10.50)
 
 DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -2775,7 +2775,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: f4ee8c62e0ef8359d139124f35a471518a172cd3
   React-microtasksnativemodule: d1956f0eec54c619b63a379520fb4c618a55ccb9
   react-native-bottom-tabs: bcb70e4fae95fc9da0da875f7414acda26dfc551
-  react-native-compat: 6a7434f5ed45dd311c23e81960920a477f35866e
+  react-native-compat: c48a523b95878dc4732b6c34591f38d49c580864
   react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-keyboard-controller: 17c32d5bb43cce4c57c348d1cbea7377557c2f8e
@@ -2833,7 +2833,7 @@ SPEC CHECKSUMS:
   SwiftUIIntrospect: fee9aa07293ee280373a591e1824e8ddc869ba5d
   VisionCamera: 30b358b807324c692064f78385e9a732ce1bebfe
   Yoga: c0b3f2c7e8d3e327e450223a2414ca3fa296b9a2
-  YttriumWrapper: e99db26ea3ca6b4580933320e11e046f9607525a
+  YttriumWrapper: d7f63336830536f1da41b745ed8bacedb04228c4
 
 PODFILE CHECKSUM: c628b2429557a37c740a92f2f7ffe4c0bbb44669
 

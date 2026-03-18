@@ -1,4 +1,4 @@
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from '@/utils/TypesUtil';
 import { HomeTabNavigator } from './HomeTabNavigator';
@@ -10,7 +10,7 @@ import { useLogs } from '@/hooks/useLogs';
 import { FontFamily } from '@/utils/ThemeUtil';
 import { Header } from '@/components/Header';
 
-const StackNavigator = createStackNavigator<RootStackParamList>();
+const StackNavigator = createNativeStackNavigator<RootStackParamList>();
 
 const headerTitleStyle = {
   fontFamily: FontFamily.medium,
@@ -29,7 +29,7 @@ export function RootStackNavigator() {
             backgroundColor: Theme['bg-primary'],
           },
           headerTitleStyle,
-          cardStyle: {
+          contentStyle: {
             backgroundColor: Theme['bg-primary'],
           },
         }}
@@ -53,7 +53,7 @@ export function RootStackNavigator() {
           options={{
             headerShown: true,
             title: 'Logs',
-            headerBackTitle: '',
+            headerBackButtonDisplayMode: 'minimal',
             headerTintColor: Theme['text-primary'],
             headerTitleStyle: {
               fontWeight: '400',
@@ -66,7 +66,7 @@ export function RootStackNavigator() {
           options={{
             headerShown: true,
             title: 'Secret Phrase',
-            headerBackTitle: '',
+            headerBackButtonDisplayMode: 'minimal',
             headerTintColor: Theme['text-primary'],
             headerTitleStyle: {
               fontWeight: '400',
