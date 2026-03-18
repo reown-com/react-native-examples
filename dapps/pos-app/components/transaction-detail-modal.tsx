@@ -255,7 +255,12 @@ function TransactionDetailModalBase({
           </View>
         </Animated.View>
       </View>
-      <Toast config={toastConfig} position="bottom" visibilityTime={2000} />
+      <Toast
+        config={toastConfig}
+        position="bottom"
+        bottomOffset={insets.bottom}
+        visibilityTime={2000}
+      />
     </FramedModal>
   );
 }
