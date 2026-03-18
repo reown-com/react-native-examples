@@ -139,6 +139,7 @@ export default function SettingsScreen() {
 
   const currentVariant = VariantList.find((v) => v.id === variant);
   const currentCurrency = getCurrency(currency);
+  const isCustomVariant = variant !== "default";
 
   const closeSheet = () => {
     if (activeSheet === "customerApiKey") {
@@ -246,6 +247,7 @@ export default function SettingsScreen() {
           title="Theme"
           value={THEME_LABELS[themeMode]}
           onPress={() => setActiveSheet("theme")}
+          disabled={isCustomVariant}
         />
 
         <SettingsItem

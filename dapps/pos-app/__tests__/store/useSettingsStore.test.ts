@@ -116,6 +116,8 @@ describe("useSettingsStore", () => {
         "binance",
         "phantom",
         "solana",
+        "trezor",
+        "ledger",
       ] as const;
 
       variants.forEach((variantName) => {
