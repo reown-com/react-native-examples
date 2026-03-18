@@ -2,6 +2,7 @@ import { proxy } from 'valtio';
 import { MMKV } from 'react-native-mmkv';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { fetchBalancesForChains } from '@/services/BalanceService';
+import { fetchERC20Balances } from '@/services/ERC20BalanceService';
 import { EIP155_CHAINS } from '@/constants/Eip155';
 import LogStore, { serializeError } from '@/store/LogStore';
 
@@ -85,12 +86,11 @@ function processBalances(
 ): TokenBalance[] {
   const mainnetChainIds = Object.keys(MAINNET_NATIVE_TOKENS);
 
-  // Filter: keep tokens with value > 0, OR mainnet native tokens (even if 0)
+  // Filter: keep tokens with value > 0, mainnet native tokens, or tokens with a non-zero quantity (on-chain ERC-20s without USD price)
   const filtered = apiBalances.filter(b => {
-    // Always keep tokens with value
     if (b.value > 0) return true;
-    // Keep mainnet native tokens (no address = native token)
     if (mainnetChainIds.includes(b.chainId) && !b.address) return true;
+    if (parseFloat(b.quantity.numeric) > 0) return true;
     return false;
   });
 
@@ -202,7 +202,7 @@ const WalletStore = {
       // Fetch all balances in parallel for better performance and resilience
       const eip155ChainIds = Object.keys(EIP155_CHAINS);
 
-      const [eip155Result, tonResult, tronResult, suiResult] =
+      const [eip155Result, tonResult, tronResult, suiResult, erc20Balances] =
         await Promise.all([
           // EIP155 balances (or empty result if no address)
           addresses.eip155Address
@@ -235,6 +235,10 @@ const WalletStore = {
                 balances: [] as TokenBalance[],
                 anySuccess: false,
               }),
+          // On-chain ERC-20 balances (EURC etc.)
+          addresses.eip155Address
+            ? fetchERC20Balances(addresses.eip155Address)
+            : Promise.resolve([] as TokenBalance[]),
         ]);
 
       // Only update state if at least one API call succeeded
@@ -248,13 +252,29 @@ const WalletStore = {
         return;
       }
 
-      // Combine all balances
+      // Combine all balances from the blockchain API
       const apiBalances = [
         ...eip155Result.balances,
         ...tonResult.balances,
         ...tronResult.balances,
         ...suiResult.balances,
       ];
+
+      // Merge on-chain ERC-20 balances (only non-zero) unless the API already returned them
+      for (const erc20 of erc20Balances) {
+        const hasBalance = parseFloat(erc20.quantity.numeric) > 0;
+        if (!hasBalance) {
+          continue;
+        }
+        const alreadyFromApi = apiBalances.some(
+          b =>
+            b.chainId === erc20.chainId &&
+            b.address?.toLowerCase() === erc20.address?.toLowerCase(),
+        );
+        if (!alreadyFromApi) {
+          apiBalances.push(erc20);
+        }
+      }
 
       // Protect against API returning empty data when we have valid cached data
       const totalValue = apiBalances.reduce((s, b) => s + b.value, 0);
