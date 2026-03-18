@@ -12,6 +12,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -117,6 +118,7 @@ function TransactionDetailModalBase({
   onClose,
 }: TransactionDetailModalProps) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   const translateY = useSharedValue(Platform.OS === "web" ? 300 : 0);
 
@@ -155,7 +157,8 @@ function TransactionDetailModalBase({
 
   return (
     <FramedModal visible={visible} onRequestClose={onClose}>
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <View style={styles.overlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <Animated.View
           style={[
             styles.container,
@@ -163,9 +166,13 @@ function TransactionDetailModalBase({
             sheetAnimatedStyle,
           ]}
         >
-          <Pressable
-            style={styles.containerInner}
-            onPress={(e) => e.stopPropagation()}
+          <View
+            style={[
+              styles.containerInner,
+              {
+                paddingBottom: Math.max(insets.bottom, Spacing["spacing-6"]),
+              },
+            ]}
           >
             <View style={styles.header}>
               <Button
@@ -245,10 +252,15 @@ function TransactionDetailModalBase({
                 )}
               </View>
             </ScrollView>
-          </Pressable>
+          </View>
         </Animated.View>
-      </Pressable>
-      <Toast config={toastConfig} position="bottom" visibilityTime={6000} />
+      </View>
+      <Toast
+        config={toastConfig}
+        position="bottom"
+        bottomOffset={insets.bottom}
+        visibilityTime={2000}
+      />
     </FramedModal>
   );
 }

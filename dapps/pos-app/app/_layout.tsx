@@ -192,7 +192,8 @@ export default Sentry.wrap(function RootLayout() {
             <Toast
               config={toastConfig}
               position="bottom"
-              visibilityTime={6000}
+              bottomOffset={initialWindowMetrics?.insets.bottom ?? 0}
+              visibilityTime={2000}
             />
           </ThemeProvider>
         </QueryClientProvider>

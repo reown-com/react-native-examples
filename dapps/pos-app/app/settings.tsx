@@ -28,7 +28,7 @@ import * as Application from "expo-application";
 import Constants from "expo-constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -164,14 +164,14 @@ export default function SettingsScreen() {
     closeSheet();
   };
 
-  const handleMerchantIdSave = async () => {
-    await handleMerchantIdConfirm();
+  const handleMerchantIdSave = () => {
     closeSheet();
+    handleMerchantIdConfirm();
   };
 
-  const handleCustomerApiKeySave = async () => {
-    await handleCustomerApiKeyConfirm();
+  const handleCustomerApiKeySave = () => {
     closeSheet();
+    handleCustomerApiKeyConfirm();
   };
 
   const handleCustomerKeyChange = (value: string) => {
@@ -225,7 +225,7 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleBiometricAuth = async () => {
+  const handleBiometricAuth = useCallback(async () => {
     const success = await authenticate(
       `Use ${biometricLabel} to change merchant settings`,
     );
@@ -235,7 +235,7 @@ export default function SettingsScreen() {
     } else {
       handleBiometricAuthFailure();
     }
-  };
+  }, [authenticate, biometricLabel, handleBiometricAuthSuccess, handleBiometricAuthFailure]);
 
   return (
     <View style={styles.container}>
@@ -462,25 +462,24 @@ export default function SettingsScreen() {
         </View>
       </SettingsBottomSheet>
 
-      {/* PIN Verification Modal */}
+      {/* PIN Modal */}
       <PinModal
-        visible={activeModal === "pin-verify"}
-        title="Enter PIN"
-        subtitle="Enter your PIN to save merchant settings"
-        onComplete={handlePinVerifyComplete}
+        visible={activeModal !== "none"}
+        title={activeModal === "pin-verify" ? "Enter PIN" : "Create PIN"}
+        subtitle={
+          activeModal === "pin-verify"
+            ? "Enter your PIN to save merchant settings"
+            : "Set a 4-digit PIN to protect merchant settings"
+        }
+        onComplete={
+          activeModal === "pin-verify"
+            ? handlePinVerifyComplete
+            : handlePinSetupComplete
+        }
         onCancel={handleCancelSecurityFlow}
         error={pinError}
-        showBiometric={canUseBiometric}
+        showBiometric={activeModal === "pin-verify" && !!canUseBiometric}
         onBiometricPress={handleBiometricAuth}
-      />
-
-      {/* PIN Setup Modal */}
-      <PinModal
-        visible={activeModal === "pin-setup"}
-        title="Create PIN"
-        subtitle="Set a 4-digit PIN to protect merchant settings"
-        onComplete={handlePinSetupComplete}
-        onCancel={handleCancelSecurityFlow}
       />
     </View>
   );
