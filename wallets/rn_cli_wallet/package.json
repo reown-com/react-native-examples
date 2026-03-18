@@ -35,8 +35,7 @@
     "@react-navigation/elements": "^2.9.10",
     "@react-navigation/native": "^7.1.33",
     "@react-navigation/native-stack": "^7.14.5",
-    "@react-navigation/stack": "^7.8.5",
-    "@reown/walletkit": "1.5.2",
+    "@reown/walletkit": "1.5.4",
     "@sentry/react-native": "7.3.0",
     "@ton/core": "0.62.0",
     "@ton/crypto": "3.3.0",
@@ -55,7 +54,6 @@
     "react-native-bottom-tabs": "1.1.0",
     "react-native-config": "1.5.5",
     "react-native-device-info": "14.1.1",
-    "react-native-dialog": "9.3.0",
     "react-native-gesture-handler": "2.30.0",
     "react-native-get-random-values": "1.11.0",
     "react-native-keyboard-controller": "^1.20.6",
@@ -128,9 +126,8 @@
     "qs": "6.14.2",
     "axios": "1.13.5",
     "bn.js": "5.2.3",
-    "minimatch": "9.0.6",
-    "@walletconnect/pay": "1.0.4-canary.0",
-    "react-native@0.84.1": "patch:react-native@npm%3A0.84.1#./.yarn/patches/react-native-npm-0.84.1-dev-proxy-fix.patch"
+    "react-native@0.84.1": "patch:react-native@npm%3A0.84.1#./.yarn/patches/react-native-npm-0.84.1-dev-proxy-fix.patch",
+    "minimatch": "9.0.6"
   },
   "packageManager": "yarn@3.8.7"
 }
