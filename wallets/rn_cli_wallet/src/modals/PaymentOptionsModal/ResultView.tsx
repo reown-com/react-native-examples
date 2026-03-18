@@ -124,8 +124,8 @@ export function ResultView({
           {isSuccess || errorType === 'insufficient_funds'
             ? 'Got it!'
             : errorType === 'expired' || errorType === 'cancelled'
-              ? 'Scan new QR code'
-              : 'Close'}
+            ? 'Scan new QR code'
+            : 'Close'}
         </ActionButton>
       </View>
     </>

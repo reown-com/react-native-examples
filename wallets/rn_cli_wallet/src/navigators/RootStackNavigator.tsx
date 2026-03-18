@@ -23,56 +23,56 @@ export function RootStackNavigator() {
 
   return (
     <StackNavigator.Navigator
-        screenOptions={{
-          headerShown: false,
-          headerStyle: {
-            backgroundColor: Theme['bg-primary'],
-          },
-          headerTitleStyle,
-          contentStyle: {
-            backgroundColor: Theme['bg-primary'],
+      screenOptions={{
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: Theme['bg-primary'],
+        },
+        headerTitleStyle,
+        contentStyle: {
+          backgroundColor: Theme['bg-primary'],
+        },
+      }}
+    >
+      <StackNavigator.Screen
+        options={{
+          headerShown: true,
+          header: () => <Header />,
+        }}
+        name="Home"
+        component={HomeTabNavigator}
+      />
+      <StackNavigator.Screen
+        name="Scan"
+        component={Scan}
+        options={{ headerShown: false }}
+      />
+      <StackNavigator.Screen
+        name="Logs"
+        component={LogList}
+        options={{
+          headerShown: true,
+          title: 'Logs',
+          headerBackButtonDisplayMode: 'minimal',
+          headerTintColor: Theme['text-primary'],
+          headerTitleStyle: {
+            fontWeight: '400',
           },
         }}
-      >
-        <StackNavigator.Screen
-          options={{
-            headerShown: true,
-            header: () => <Header />,
-          }}
-          name="Home"
-          component={HomeTabNavigator}
-        />
-        <StackNavigator.Screen
-          name="Scan"
-          component={Scan}
-          options={{ headerShown: false }}
-        />
-        <StackNavigator.Screen
-          name="Logs"
-          component={LogList}
-          options={{
-            headerShown: true,
-            title: 'Logs',
-            headerBackButtonDisplayMode: 'minimal',
-            headerTintColor: Theme['text-primary'],
-            headerTitleStyle: {
-              fontWeight: '400',
-            },
-          }}
-        />
-        <StackNavigator.Screen
-          name="SecretPhrase"
-          component={SecretPhrase}
-          options={{
-            headerShown: true,
-            title: 'Secret Phrase',
-            headerBackButtonDisplayMode: 'minimal',
-            headerTintColor: Theme['text-primary'],
-            headerTitleStyle: {
-              fontWeight: '400',
-            },
-          }}
-        />
+      />
+      <StackNavigator.Screen
+        name="SecretPhrase"
+        component={SecretPhrase}
+        options={{
+          headerShown: true,
+          title: 'Secret Phrase',
+          headerBackButtonDisplayMode: 'minimal',
+          headerTintColor: Theme['text-primary'],
+          headerTitleStyle: {
+            fontWeight: '400',
+          },
+        }}
+      />
     </StackNavigator.Navigator>
   );
 }

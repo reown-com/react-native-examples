@@ -104,7 +104,7 @@ const App = () => {
     ({ url }: { url: string }) => {
       const sanitizedUrl = url.replace(/symKey=[^&]*/g, 'symKey=[REDACTED]');
       LogStore.log('Deep link received', 'App', 'deeplinkHandler', {
-        url: sanitizedUrl
+        url: sanitizedUrl,
       });
 
       // 1. Link mode (wc_ev) - SDK handles it, just set the flag
