@@ -412,12 +412,9 @@ const PaymentStore = {
       }
 
       if (confirmResult.status === 'cancelled') {
-        LogStore.warn(
-          'Payment cancelled',
-          'PaymentStore',
-          'approvePayment',
-          { paymentId: paymentOptions.paymentId },
-        );
+        LogStore.warn('Payment cancelled', 'PaymentStore', 'approvePayment', {
+          paymentId: paymentOptions.paymentId,
+        });
         state.resultStatus = 'error';
         state.resultErrorType = 'cancelled';
         state.resultMessage = getErrorMessage('cancelled');

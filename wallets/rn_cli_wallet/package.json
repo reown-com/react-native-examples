@@ -112,7 +112,7 @@
     "sha.js": "2.4.12",
     "tmp": "0.2.4",
     "on-headers": "1.1.0",
-    "brace-expansion": "5.0.3",
+    "brace-expansion@^2": "5.0.3",
     "@ton/crypto-primitives@2.1.0": "patch:@ton/crypto-primitives@npm%3A2.1.0#./.yarn/patches/@ton-crypto-primitives-npm-2.1.0-3d1ea62176.patch",
     "@ethersproject/pbkdf2@5.8.0": "patch:@ethersproject/pbkdf2@npm%3A5.8.0#./.yarn/patches/@ethersproject-pbkdf2-npm-5.8.0-b720e81bcc.patch",
     "@ethersproject/pbkdf2@^5.8.0": "patch:@ethersproject/pbkdf2@npm%3A5.8.0#./.yarn/patches/@ethersproject-pbkdf2-npm-5.8.0-b720e81bcc.patch",
@@ -126,7 +126,7 @@
     "axios": "1.13.5",
     "bn.js": "5.2.3",
     "react-native@0.84.1": "patch:react-native@npm%3A0.84.1#./.yarn/patches/react-native-npm-0.84.1-dev-proxy-fix.patch",
-    "minimatch": "9.0.6"
+    "minimatch@^9": "9.0.6"
   },
   "packageManager": "yarn@3.8.7"
 }

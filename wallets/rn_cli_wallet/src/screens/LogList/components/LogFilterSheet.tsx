@@ -39,9 +39,7 @@ export function LogFilterSheet({
       statusBarTranslucent
       style={styles.modal}
     >
-      <View
-        style={[styles.sheet, { backgroundColor: Theme['bg-primary'] }]}
-      >
+      <View style={[styles.sheet, { backgroundColor: Theme['bg-primary'] }]}>
         <View style={styles.header}>
           <View style={styles.headerSpacer} />
           <Text variant="h6-400" color="text-primary" style={styles.title}>
@@ -54,11 +52,7 @@ export function LogFilterSheet({
               { borderColor: Theme['border-secondary'] },
             ]}
           >
-            <SvgClose
-              width={14}
-              height={14}
-              fill={Theme['text-primary']}
-            />
+            <SvgClose width={14} height={14} fill={Theme['text-primary']} />
           </Button>
         </View>
         <View style={styles.list}>
@@ -70,6 +64,7 @@ export function LogFilterSheet({
                 onPress={() => onSelect(option.value)}
                 style={[
                   styles.item,
+                  // eslint-disable-next-line react-native/no-inline-styles
                   {
                     backgroundColor: isSelected
                       ? Theme['foreground-accent-primary-10']
@@ -173,5 +168,5 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: BorderRadius.full,
-  },
+  }
 });
