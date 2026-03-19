@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, Platform, StyleSheet, View } from 'react-native';
 
 import {
   Camera,
@@ -21,7 +21,13 @@ import { haptics } from '@/utils/haptics';
 import { Button } from '@/components/Button';
 import { ScannerFrame } from '@/components/ScannerFrame';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+// Use 'screen' on Android to include the navigation bar area in edge-to-edge mode
+// Add a small buffer to avoid sub-pixel gaps on devices with non-integer pixel ratios
+const { width: rawWidth, height: rawHeight } = Dimensions.get(
+  Platform.OS === 'android' ? 'screen' : 'window',
+);
+const screenWidth = rawWidth + 2;
+const screenHeight = rawHeight + 2;
 const CUTOUT_RADIUS = 16;
 
 type Props = RootStackScreenProps<'Scan'>;
@@ -79,7 +85,7 @@ export default function Scan({ navigation }: Props) {
 
       {/* Dark overlay with rounded cutout */}
       <Svg
-        style={StyleSheet.absoluteFill}
+        style={[StyleSheet.absoluteFill, { left: -1, top: -1 }]}
         width={screenWidth}
         height={screenHeight}
       >

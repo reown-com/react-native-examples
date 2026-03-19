@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import Config from 'react-native-config';
 import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
 import { NavigationBar } from '@zoontek/react-native-navigation-bar';
@@ -24,6 +24,7 @@ import ModalStore from '@/store/ModalStore';
 import LogStore from '@/store/LogStore';
 import { getEnvironment } from '@/utils/misc';
 import { toastConfig } from '@/components/ToastConfig';
+import { DarkTheme, LightTheme } from '@/utils/ThemeUtil';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
@@ -197,8 +198,14 @@ const App = () => {
     };
   }, [deeplinkHandler]);
 
+  const Theme = themeMode === 'dark' ? DarkTheme : LightTheme;
+  const rootStyle = useMemo(
+    () => [styles.root, { backgroundColor: Theme['bg-primary'] }],
+    [Theme],
+  );
+
   return (
-    <GestureHandlerRootView style={styles.root}>
+    <GestureHandlerRootView style={rootStyle}>
       <SafeAreaProvider>
         <KeyboardProvider>
           <NavigationContainer>

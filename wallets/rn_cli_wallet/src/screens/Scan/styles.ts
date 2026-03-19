@@ -1,7 +1,9 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get(
+  Platform.OS === 'android' ? 'screen' : 'window',
+);
 
 export const SCAN_AREA_SIZE = 280;
 export const scanAreaLeft = (width - SCAN_AREA_SIZE) / 2;
