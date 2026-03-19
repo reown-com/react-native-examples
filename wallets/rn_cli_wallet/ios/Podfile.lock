@@ -1933,6 +1933,8 @@ PODS:
     - Yoga
   - react-native-netinfo (11.4.1):
     - React-Core
+  - react-native-nfc-manager (3.17.2):
+    - React-Core
   - react-native-quick-base64 (2.2.2):
     - React-Core
   - react-native-quick-crypto (0.7.17):
@@ -3120,6 +3122,7 @@ DEPENDENCIES:
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
+  - react-native-nfc-manager (from `../node_modules/react-native-nfc-manager`)
   - react-native-quick-base64 (from `../node_modules/react-native-quick-base64`)
   - react-native-quick-crypto (from `../node_modules/react-native-quick-crypto`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -3273,6 +3276,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-mmkv"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
+  react-native-nfc-manager:
+    :path: "../node_modules/react-native-nfc-manager"
   react-native-quick-base64:
     :path: "../node_modules/react-native-quick-base64"
   react-native-quick-crypto:
@@ -3419,6 +3424,7 @@ SPEC CHECKSUMS:
   react-native-keyboard-controller: f2ed31d12d9d8cb8ad2f9110c18fa5df499b66a3
   react-native-mmkv: ac7507625cd74bac0eb5333604a7cd7b08fe9e3e
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
+  react-native-nfc-manager: c8891e460b4943b695d63f7f4effc6345bbefc83
   react-native-quick-base64: 6568199bb2ac8e72ecdfdc73a230fbc5c1d3aac4
   react-native-quick-crypto: dac9db2adb0a61b4881909b6db7c51eaaada66a8
   react-native-safe-area-context: c6e2edd1c1da07bdce287fa9d9e60c5f7b514616
