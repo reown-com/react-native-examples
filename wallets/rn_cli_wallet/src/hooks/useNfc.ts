@@ -67,33 +67,76 @@ export function useNfc() {
   const scanNfcTag = useCallback(async (): Promise<string | null> => {
     pauseForegroundDispatch();
     try {
-      await NfcManager.cancelTechnologyRequest().catch(() => {});
-      await NfcManager.requestTechnology(NfcTech.Ndef);
-      const tag = await NfcManager.getTag();
+      await NfcManager.unregisterTagEvent().catch(() => {});
 
-      if (!tag?.ndefMessage?.length) {
-        LogStore.log('No NDEF message on tag', 'useNfc', 'scanNfcTag');
-        return null;
-      }
+      return await new Promise<string | null>((resolve, reject) => {
+        let resolved = false;
 
-      for (const record of tag.ndefMessage) {
-        const uri = extractUri(record);
-        if (uri) {
-          LogStore.log(`NFC URI found: ${uri}`, 'useNfc', 'scanNfcTag');
-          return uri;
-        }
-      }
+        const cleanup = () => {
+          NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
+          NfcManager.setEventListener(NfcEvents.SessionClosed, null);
+          NfcManager.unregisterTagEvent().catch(() => {});
+        };
 
-      LogStore.log('No URI found in NDEF records', 'useNfc', 'scanNfcTag');
-      return null;
-    } catch (error: any) {
-      if (error?.message?.includes('cancelled')) {
-        return null;
-      }
-      LogStore.log(`NFC scan error: ${error?.message}`, 'useNfc', 'scanNfcTag');
-      throw error;
+        NfcManager.setEventListener(NfcEvents.SessionClosed, () => {
+          if (resolved) {
+            return;
+          }
+          resolved = true;
+          cleanup();
+          resolve(null);
+        });
+
+        NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag: any) => {
+          if (resolved) {
+            return;
+          }
+          resolved = true;
+
+          if (!tag?.ndefMessage?.length) {
+            LogStore.log('No NDEF message on tag', 'useNfc', 'scanNfcTag');
+            cleanup();
+            resolve(null);
+            return;
+          }
+
+          for (const record of tag.ndefMessage) {
+            const uri = extractUri(record);
+            if (uri) {
+              LogStore.log(`NFC URI found: ${uri}`, 'useNfc', 'scanNfcTag');
+              cleanup();
+              resolve(uri);
+              return;
+            }
+          }
+
+          LogStore.log('No URI found in NDEF records', 'useNfc', 'scanNfcTag');
+          cleanup();
+          resolve(null);
+        });
+
+        NfcManager.registerTagEvent({
+          alertMessage: 'Ready to Pay',
+          invalidateAfterFirstRead: true,
+        }).catch((error: any) => {
+          if (resolved) {
+            return;
+          }
+          resolved = true;
+          cleanup();
+          if (error?.message?.includes('cancelled')) {
+            resolve(null);
+          } else {
+            LogStore.log(
+              `NFC scan error: ${error?.message}`,
+              'useNfc',
+              'scanNfcTag',
+            );
+            reject(error);
+          }
+        });
+      });
     } finally {
-      NfcManager.cancelTechnologyRequest().catch(() => {});
       unpauseForegroundDispatch();
     }
   }, []);
