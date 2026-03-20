@@ -16,6 +16,7 @@ import { RootStackNavigator } from '@/navigators/RootStackNavigator';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
 import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
 import { usePairing } from '@/hooks/usePairing';
+import { useNfcForegroundDispatch, isAllowedNfcUri } from '@/hooks/useNfc';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
@@ -63,6 +64,19 @@ const App = () => {
   // Get centralized URI/payment link handler
   const { handleUriOrPaymentLink } = usePairing();
 
+  // Android: automatically intercept NFC tags while app is in foreground
+  const handleNfcUri = useCallback(
+    (uri: string) => {
+      if (isAllowedNfcUri(uri)) {
+        handleUriOrPaymentLink(uri);
+      } else {
+        LogStore.log(`NFC URI rejected: ${uri}`, 'App', 'handleNfcUri');
+      }
+    },
+    [handleUriOrPaymentLink],
+  );
+  useNfcForegroundDispatch(handleNfcUri);
+
   // Hide splash screen once wallets are initialized, addresses are loaded and theme mode is set
   useEffect(() => {
     if (initialized && eip155Address && themeMode) {
@@ -88,7 +102,7 @@ const App = () => {
   const deeplinkHandler = useCallback(
     ({ url }: { url: string }) => {
       LogStore.log('Deep link received', 'App', 'deeplinkHandler', {
-        url
+        url,
       });
 
       // 1. Link mode (wc_ev) - SDK handles it, just set the flag
@@ -98,7 +112,21 @@ const App = () => {
         return;
       }
 
-      // 2. Redirection from app with encoded URI (wc?uri=)
+      // 2. Payment link from NFC tag or App Link (pay.walletconnect.com)
+      try {
+        const { hostname } = new URL(url);
+        if (
+          hostname.endsWith('.pay.walletconnect.com') ||
+          hostname === 'pay.walletconnect.com'
+        ) {
+          handleUriOrPaymentLink(url);
+          return;
+        }
+      } catch {
+        // Not a valid URL, continue to other handlers
+      }
+
+      // 3. Redirection from app with encoded URI (wc?uri=)
       if (url.includes('wc?uri=')) {
         const encodedUri = url.split('wc?uri=')[1];
         if (!encodedUri) {
@@ -116,7 +144,7 @@ const App = () => {
         return;
       }
 
-      // 3. Direct WC protocol URI (wc:)
+      // 4. Direct WC protocol URI (wc:)
       // Extract from wc: onwards to remove app scheme prefix
       if (url.includes('wc:')) {
         const wcIndex = url.indexOf('wc:');
@@ -125,14 +153,13 @@ const App = () => {
         return;
       }
 
-      // 4. Request for already paired session (wc?)
+      // 5. Request for already paired session (wc?)
       if (url.includes('wc?')) {
         ModalStore.open('LoadingModal', {
           loadingMessage: 'Loading request...',
         });
         return;
       }
-
     },
     [handleUriOrPaymentLink],
   );
