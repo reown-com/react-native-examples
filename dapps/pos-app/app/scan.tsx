@@ -252,22 +252,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-
   amountContainer: {
     width: "100%",
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: Spacing["spacing-2"],
+    gap: Spacing["spacing-4"],
   },
   amountText: {
     fontSize: 16,
     textAlign: "center",
   },
   amountValue: {
-    fontSize: 38,
+    fontFamily: "KH Teka Medium",
+    fontSize: 50,
     textAlign: "center",
-    lineHeight: 36,
+    letterSpacing: -1,
+    lineHeight: 50,
   },
   logo: {
     width: 80,

@@ -66,6 +66,7 @@ export const AnimatedNumber = ({
         layout={layout}
         textPrimaryColor={Theme["text-primary"]}
         textSecondaryColor={Theme["text-secondary"]}
+        textTertiaryColor={Theme["text-tertiary"]}
       />
       <AnimatedCursor
         isFocused={isFocused}

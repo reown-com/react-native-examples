@@ -5,6 +5,7 @@ export type CharacterItem = {
   key: string;
   type: CharacterType;
   isPlaceholderDecimal?: boolean;
+  isTertiaryCurrency?: boolean;
 };
 
 export type ParsedAmount = {
@@ -96,11 +97,23 @@ export function getCharactersArray(
         integerDigitIndex++;
       }
 
-      characters.push({ char, key, type, isPlaceholderDecimal });
+      characters.push({
+        char,
+        key,
+        type,
+        isPlaceholderDecimal,
+      });
       charIndex++;
     } else if (charIndex > 0) {
       separatorMap.set(charIndex - 1, char);
     }
+  }
+
+  // Right-positioned currency symbol should be tertiary when there are placeholder decimals
+  const hasPlaceholderDecimals = characters.some((c) => c.isPlaceholderDecimal);
+  const lastChar = characters[characters.length - 1];
+  if (lastChar?.type === "currency" && hasPlaceholderDecimals) {
+    lastChar.isTertiaryCurrency = true;
   }
 
   const separators: (string | null)[] = characters.map(

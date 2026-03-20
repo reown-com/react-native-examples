@@ -35,6 +35,7 @@ type AnimatedCharacterProps = {
   isPlaceholder?: boolean;
   textPrimaryColor: string;
   textSecondaryColor: string;
+  textTertiaryColor: string;
 };
 
 function AnimatedCharacterComponent({
@@ -46,6 +47,7 @@ function AnimatedCharacterComponent({
   isPlaceholder = false,
   textPrimaryColor,
   textSecondaryColor,
+  textTertiaryColor,
 }: AnimatedCharacterProps) {
   // Compensate for scale origin: RN scales from center, so we offset
   // by half the width * (1 - scale) to simulate left-origin scaling
@@ -88,8 +90,11 @@ function AnimatedCharacterComponent({
     ],
   }));
 
-  const isPlaceholderChar = isPlaceholder || item.isPlaceholderDecimal;
-  const textColor = isPlaceholderChar ? textSecondaryColor : textPrimaryColor;
+  const textColor = isPlaceholder
+    ? textSecondaryColor
+    : item.isPlaceholderDecimal || item.isTertiaryCurrency
+      ? textTertiaryColor
+      : textPrimaryColor;
 
   return (
     <Animated.View exiting={exitAnimation}>
@@ -116,8 +121,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
-    fontFamily: "KH Teka",
+    fontFamily: "KH Teka Medium",
     fontSize: 64,
+    letterSpacing: -1,
     position: "absolute",
     textAlign: "center",
   },
