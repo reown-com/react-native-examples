@@ -11,5 +11,8 @@
         <item name="bootSplashBackground">@color/bootsplash_background</item>
         <item name="bootSplashLogo">@drawable/bootsplash_logo</item>
         <item name="postBootSplashTheme">@style/AppTheme</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 </resources>
