@@ -6,8 +6,7 @@ const CURSOR_OFFSET = 0;
 const CURRENCY_SPACE = 6;
 const SPACING_FACTOR = 0.9;
 
-// Widths calibrated for KH Teka font at 64px (scale 1.0)
-// May need adjustment based on actual font metrics
+// Widths calibrated for KH Teka Medium font at 64px (scale 1.0)
 const CHARACTER_WIDTHS: Record<string, number> = {
   0: 42,
   1: 28,
