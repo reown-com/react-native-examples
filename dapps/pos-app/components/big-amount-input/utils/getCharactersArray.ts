@@ -5,7 +5,6 @@ export type CharacterItem = {
   key: string;
   type: CharacterType;
   isPlaceholderDecimal?: boolean;
-  isDecimalDigit?: boolean;
   isTertiaryCurrency?: boolean;
 };
 
@@ -98,14 +97,11 @@ export function getCharactersArray(
         integerDigitIndex++;
       }
 
-      const isDecimalDigit =
-        type === "digit" && hasDecimal && i > decimalIndex;
       characters.push({
         char,
         key,
         type,
         isPlaceholderDecimal,
-        isDecimalDigit,
       });
       charIndex++;
     } else if (charIndex > 0) {
