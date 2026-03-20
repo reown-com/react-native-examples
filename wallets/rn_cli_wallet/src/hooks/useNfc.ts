@@ -9,15 +9,43 @@ import NfcManager, {
 
 import LogStore from '@/store/LogStore';
 
+const ALLOWED_NFC_HOSTS = [
+  'pay.walletconnect.com',
+  'staging.pay.walletconnect.com',
+  'dev.pay.walletconnect.com',
+];
+
+export function isAllowedNfcUri(uri: string): boolean {
+  try {
+    const { protocol, hostname } = new URL(uri);
+    return (
+      protocol === 'wc:' ||
+      (protocol === 'https:' && ALLOWED_NFC_HOSTS.includes(hostname))
+    );
+  } catch {
+    return false;
+  }
+}
+
+let nfcStarted = false;
 let foregroundDispatchPaused = false;
+let foregroundRegistered = false;
 let resumeForegroundDispatch: (() => void) | null = null;
 
-export function pauseForegroundDispatch() {
+async function ensureNfcStarted() {
+  if (!nfcStarted) {
+    await NfcManager.start();
+    nfcStarted = true;
+  }
+}
+
+function pauseForegroundDispatch() {
   foregroundDispatchPaused = true;
 }
 
-export function unpauseForegroundDispatch() {
+function unpauseForegroundDispatch() {
   foregroundDispatchPaused = false;
+  foregroundRegistered = false;
   resumeForegroundDispatch?.();
 }
 
@@ -25,7 +53,7 @@ export function useNfc() {
   const [isNfcSupported, setIsNfcSupported] = useState(false);
 
   useEffect(() => {
-    NfcManager.start()
+    ensureNfcStarted()
       .then(() => NfcManager.isSupported())
       .then(supported => {
         setIsNfcSupported(supported);
@@ -37,13 +65,9 @@ export function useNfc() {
   }, []);
 
   const scanNfcTag = useCallback(async (): Promise<string | null> => {
-    // Pause foreground dispatch on Android so requestTechnology doesn't conflict
     pauseForegroundDispatch();
     try {
-      // Cancel any stale session from a previous scan attempt (e.g. user
-      // tapped the button twice on Android where there's no native dialog).
       await NfcManager.cancelTechnologyRequest().catch(() => {});
-      await NfcManager.unregisterTagEvent().catch(() => {});
       await NfcManager.requestTechnology(NfcTech.Ndef);
       const tag = await NfcManager.getTag();
 
@@ -63,7 +87,6 @@ export function useNfc() {
       LogStore.log('No URI found in NDEF records', 'useNfc', 'scanNfcTag');
       return null;
     } catch (error: any) {
-      // User cancelled — not an error
       if (error?.message?.includes('cancelled')) {
         return null;
       }
@@ -94,17 +117,18 @@ export function useNfcForegroundDispatch(onUri: (uri: string) => void) {
       return;
     }
 
-    let registered = false;
+    let lastHandledUri = '';
+    let lastHandledTime = 0;
 
     const register = async () => {
-      if (registered || foregroundDispatchPaused) {
+      if (foregroundRegistered || foregroundDispatchPaused) {
         return;
       }
       try {
-        await NfcManager.start();
+        await ensureNfcStarted();
         NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag: any) => {
           LogStore.log(
-            `Foreground dispatch: tag discovered`,
+            'Foreground dispatch: tag discovered',
             'useNfc',
             'foregroundDispatch',
           );
@@ -121,6 +145,19 @@ export function useNfcForegroundDispatch(onUri: (uri: string) => void) {
           for (const record of tag.ndefMessage) {
             const uri = extractUri(record);
             if (uri) {
+              // Debounce: skip duplicate tag reads within 3 seconds
+              const now = Date.now();
+              if (uri === lastHandledUri && now - lastHandledTime < 3000) {
+                LogStore.log(
+                  'Foreground dispatch: duplicate tag ignored',
+                  'useNfc',
+                  'foregroundDispatch',
+                );
+                return;
+              }
+              lastHandledUri = uri;
+              lastHandledTime = now;
+
               LogStore.log(
                 `Foreground dispatch URI: ${uri}`,
                 'useNfc',
@@ -148,7 +185,7 @@ export function useNfcForegroundDispatch(onUri: (uri: string) => void) {
           isReaderModeEnabled: true,
           readerModeFlags,
         });
-        registered = true;
+        foregroundRegistered = true;
         LogStore.log(
           'NFC reader mode registered',
           'useNfc',
@@ -164,25 +201,22 @@ export function useNfcForegroundDispatch(onUri: (uri: string) => void) {
     };
 
     const unregister = async () => {
-      if (!registered) {
+      if (!foregroundRegistered) {
         return;
       }
       try {
         await NfcManager.unregisterTagEvent();
         NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
-        registered = false;
+        foregroundRegistered = false;
       } catch {
         // ignore
       }
     };
 
-    // Register immediately
     register();
 
-    // Allow manual scan to re-register foreground dispatch after it finishes
     resumeForegroundDispatch = () => register();
 
-    // Re-register when app comes back to foreground
     const subscription = AppState.addEventListener('change', state => {
       if (state === 'active') {
         register();
@@ -241,5 +275,9 @@ function extractUri(record: {
 }
 
 function bytesToString(bytes: number[]): string {
-  return String.fromCharCode(...bytes);
+  let result = '';
+  for (const byte of bytes) {
+    result += String.fromCharCode(byte);
+  }
+  return result;
 }

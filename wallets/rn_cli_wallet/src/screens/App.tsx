@@ -16,7 +16,7 @@ import { RootStackNavigator } from '@/navigators/RootStackNavigator';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
 import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
 import { usePairing } from '@/hooks/usePairing';
-import { useNfcForegroundDispatch } from '@/hooks/useNfc';
+import { useNfcForegroundDispatch, isAllowedNfcUri } from '@/hooks/useNfc';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
@@ -65,7 +65,17 @@ const App = () => {
   const { handleUriOrPaymentLink } = usePairing();
 
   // Android: automatically intercept NFC tags while app is in foreground
-  useNfcForegroundDispatch(handleUriOrPaymentLink);
+  const handleNfcUri = useCallback(
+    (uri: string) => {
+      if (isAllowedNfcUri(uri)) {
+        handleUriOrPaymentLink(uri);
+      } else {
+        LogStore.log(`NFC URI rejected: ${uri}`, 'App', 'handleNfcUri');
+      }
+    },
+    [handleUriOrPaymentLink],
+  );
+  useNfcForegroundDispatch(handleNfcUri);
 
   // Hide splash screen once wallets are initialized, addresses are loaded and theme mode is set
   useEffect(() => {
@@ -103,9 +113,17 @@ const App = () => {
       }
 
       // 2. Payment link from NFC tag or App Link (pay.walletconnect.com)
-      if (url.includes('pay.walletconnect.com')) {
-        handleUriOrPaymentLink(url);
-        return;
+      try {
+        const { hostname } = new URL(url);
+        if (
+          hostname.endsWith('.pay.walletconnect.com') ||
+          hostname === 'pay.walletconnect.com'
+        ) {
+          handleUriOrPaymentLink(url);
+          return;
+        }
+      } catch {
+        // Not a valid URL, continue to other handlers
       }
 
       // 3. Redirection from app with encoded URI (wc?uri=)

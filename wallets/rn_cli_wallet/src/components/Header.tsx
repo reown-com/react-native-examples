@@ -4,7 +4,7 @@ import Toast from 'react-native-toast-message';
 
 import { useTheme } from '@/hooks/useTheme';
 import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
-import { useNfc } from '@/hooks/useNfc';
+import { useNfc, isAllowedNfcUri } from '@/hooks/useNfc';
 import { usePairing } from '@/hooks/usePairing';
 
 import ModalStore from '@/store/ModalStore';
@@ -26,6 +26,13 @@ export function Header() {
     try {
       const uri = await scanNfcTag();
       if (uri) {
+        if (!isAllowedNfcUri(uri)) {
+          Toast.show({
+            type: 'error',
+            text1: 'Unrecognized NFC tag',
+          });
+          return;
+        }
         handleUriOrPaymentLink(uri);
       } else {
         Toast.show({

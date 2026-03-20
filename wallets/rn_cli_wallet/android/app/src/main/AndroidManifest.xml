@@ -47,9 +47,17 @@
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
       </intent-filter>
-      <intent-filter android:autoVerify="true">
+      <intent-filter>
         <action android:name="android.nfc.action.NDEF_DISCOVERED" />
         <category android:name="android.intent.category.DEFAULT" />
+        <data android:scheme="https" android:host="pay.walletconnect.com" />
+        <data android:scheme="https" android:host="staging.pay.walletconnect.com" />
+        <data android:scheme="https" android:host="dev.pay.walletconnect.com" />
+      </intent-filter>
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="https" android:host="pay.walletconnect.com" />
         <data android:scheme="https" android:host="staging.pay.walletconnect.com" />
         <data android:scheme="https" android:host="dev.pay.walletconnect.com" />
