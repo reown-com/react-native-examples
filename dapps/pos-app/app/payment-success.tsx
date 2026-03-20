@@ -162,7 +162,7 @@ export default function PaymentSuccessScreen() {
               { color: Theme["text-payment-success"] },
             ]}
           >
-            Payment Successful
+            Payment successful
           </ThemedText>
           <ThemedText
             style={[
