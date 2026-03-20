@@ -265,9 +265,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   amountValue: {
-    fontSize: 38,
+    fontSize: 50,
+    fontWeight: "500",
     textAlign: "center",
-    lineHeight: 36,
+    letterSpacing: -1,
   },
   logo: {
     width: 80,
