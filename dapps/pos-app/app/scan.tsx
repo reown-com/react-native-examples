@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 4,
+    gap: Spacing["spacing-1"],
   },
   closeButton: {
     position: "absolute",
