@@ -212,10 +212,7 @@ export default function PaymentSuccessScreen() {
             onPress={handleNewPayment}
           >
             <ThemedText
-              style={[
-                styles.buttonText,
-                { color: DarkTheme["text-primary"] },
-              ]}
+              style={[styles.buttonText, { color: DarkTheme["text-primary"] }]}
             >
               New payment
             </ThemedText>

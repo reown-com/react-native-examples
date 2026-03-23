@@ -235,7 +235,12 @@ export default function SettingsScreen() {
     } else {
       handleBiometricAuthFailure();
     }
-  }, [authenticate, biometricLabel, handleBiometricAuthSuccess, handleBiometricAuthFailure]);
+  }, [
+    authenticate,
+    biometricLabel,
+    handleBiometricAuthSuccess,
+    handleBiometricAuthFailure,
+  ]);
 
   return (
     <View style={styles.container}>
