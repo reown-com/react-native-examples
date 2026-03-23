@@ -212,15 +212,17 @@ export default function ScanScreen() {
             </QRCode>
             <View
               aria-hidden={!isCountdownActive}
-              style={[
-                styles.timerRow,
-                { opacity: isCountdownActive ? 1 : 0 },
-              ]}
+              style={[styles.timerRow, { opacity: isCountdownActive ? 1 : 0 }]}
             >
               <ThemedText style={{ color: Theme["text-secondary"] }}>
                 Payment expires in
               </ThemedText>
-              <ThemedText style={{ color: Theme["bg-accent-primary"], fontVariant: ['tabular-nums'] }}>
+              <ThemedText
+                style={{
+                  color: Theme["bg-accent-primary"],
+                  fontVariant: ["tabular-nums"],
+                }}
+              >
                 {formatCountdown(remainingSeconds)}
               </ThemedText>
             </View>
