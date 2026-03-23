@@ -210,21 +210,20 @@ export default function ScanScreen() {
             >
               <Image source={assets?.[0]} style={styles.logo} />
             </QRCode>
-            <ThemedText
+            <View
               aria-hidden={!isCountdownActive}
               style={[
-                styles.timerText,
-                {
-                  color: Theme["text-secondary"],
-                  opacity: isCountdownActive ? 1 : 0,
-                },
+                styles.timerRow,
+                { opacity: isCountdownActive ? 1 : 0 },
               ]}
             >
-              Payment expires in{" "}
-              <ThemedText style={{ color: Theme["bg-accent-primary"] }}>
+              <ThemedText style={{ color: Theme["text-secondary"] }}>
+                Payment expires in
+              </ThemedText>
+              <ThemedText style={{ color: Theme["bg-accent-primary"], fontVariant: ['tabular-nums'] }}>
                 {formatCountdown(remainingSeconds)}
               </ThemedText>
-            </ThemedText>
+            </View>
           </View>
           <View style={{ flex: 1 }} />
         </View>
@@ -278,8 +277,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing["spacing-4"],
   },
-  timerText: {
-    textAlign: "center",
+  timerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
   },
   closeButton: {
     position: "absolute",
