@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { NetworkInfoCard } from '@/components/NetworkInfoCard';
 import { getSignParamsMessage } from '@/utils/HelperUtil';
 import {
   approveEIP155Request,
@@ -130,6 +131,7 @@ export default function SessionSignTypedDataModal() {
           validation={validation}
           isScam={isScam}
         />
+        <NetworkInfoCard chainId={params.chainId} />
         <Message message={JSON.stringify(message, null, 2)} />
       </View>
     </RequestModal>
