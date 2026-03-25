@@ -1,5 +1,5 @@
 import { TransactionsResponse } from "@/utils/types";
-import { apiClient, getApiHeaders } from "./client";
+import { merchantApiClient, getApiHeaders } from "./client";
 
 export interface GetTransactionsOptions {
   status?: string | string[];
@@ -59,7 +59,7 @@ export async function getTransactions(
   const queryString = params.toString();
   const endpoint = `/merchants/payments${queryString ? `?${queryString}` : ""}`;
 
-  return apiClient.get<TransactionsResponse>(endpoint, {
+  return merchantApiClient.get<TransactionsResponse>(endpoint, {
     headers,
   });
 }
