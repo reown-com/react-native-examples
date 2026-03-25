@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { NetworkInfoCard } from '@/components/NetworkInfoCard';
 import {
   approveTonRequest,
   rejectTonRequest,
@@ -186,6 +187,7 @@ export default function SessionTonSignDataModal() {
           validation={validation}
           isScam={isScam}
         />
+        <NetworkInfoCard chainId={params.chainId} />
 
         {/* Sign with Address */}
         <View

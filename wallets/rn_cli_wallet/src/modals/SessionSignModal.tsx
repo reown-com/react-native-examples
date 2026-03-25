@@ -17,6 +17,7 @@ import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { RequestModal } from './RequestModal';
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { NetworkInfoCard } from '@/components/NetworkInfoCard';
 import { Text } from '@/components/Text';
 import { Spacing } from '@/utils/ThemeUtil';
 import { haptics } from '@/utils/haptics';
@@ -130,6 +131,7 @@ export default function SessionSignModal() {
           validation={validation}
           isScam={isScam}
         />
+        <NetworkInfoCard chainId={params.chainId} />
         <Message message={message} />
       </View>
     </RequestModal>
