@@ -17,6 +17,7 @@ import Zora from '@/assets/chains/zora.webp';
 import Celo from '@/assets/chains/celo.webp';
 import Base from '@/assets/chains/base.png';
 import Aurora from '@/assets/chains/aurora.webp';
+import Monad from '@/assets/chains/monad.png';
 import { Chain } from '@/utils/TypesUtil';
 import { ImageSourcePropType } from 'react-native';
 
@@ -160,6 +161,12 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     name: 'Aurora',
     rpcUrl: 'https://mainnet.aurora.dev',
   },
+  'eip155:143': {
+    chainId: '143',
+    namespace: 'eip155',
+    name: 'Monad',
+    rpcUrl: 'https://rpc.monad.xyz',
+  },
 };
 
 export const EIP155_NETWORK_IMAGES: Record<string, ImageSourcePropType> = {
@@ -186,6 +193,7 @@ export const EIP155_NETWORK_IMAGES: Record<string, ImageSourcePropType> = {
   'eip155:42220': Celo,
   'eip155:8453': Base,
   'eip155:1313161554': Aurora,
+  'eip155:143': Monad,
 };
 
 export const EIP155_SIGNING_METHODS = {

@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { NetworkInfoCard } from '@/components/NetworkInfoCard';
 
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
@@ -135,6 +136,7 @@ export default function SessionSignSuiPersonalMessageModal() {
           validation={validation}
           isScam={isScam}
         />
+        <NetworkInfoCard chainId={params.chainId} />
         <Message message={message} />
       </View>
     </RequestModal>
