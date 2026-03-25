@@ -30,6 +30,7 @@ let nfcStarted = false;
 let foregroundDispatchPaused = false;
 let foregroundRegistered = false;
 let resumeForegroundDispatch: (() => void) | null = null;
+let scanSessionId = 0;
 
 async function ensureNfcStarted() {
   if (!nfcStarted) {
@@ -63,13 +64,14 @@ export function useNfc() {
       });
   }, []);
 
-  const scanNfcTag = useCallback(async (): Promise<string | null> => {
+  const scanNfcTag = useCallback(async (): Promise<string | null | undefined> => {
     pauseForegroundDispatch();
     try {
       await NfcManager.unregisterTagEvent().catch(() => {});
 
-      return await new Promise<string | null>((resolve, reject) => {
+      return await new Promise<string | null | undefined>((resolve, reject) => {
         let resolved = false;
+        const thisSession = ++scanSessionId;
 
         const cleanup = () => {
           NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
@@ -78,15 +80,17 @@ export function useNfc() {
         };
 
         NfcManager.setEventListener(NfcEvents.SessionClosed, () => {
+          if (thisSession !== scanSessionId) return;
           if (resolved) {
             return;
           }
           resolved = true;
           cleanup();
-          resolve(null);
+          resolve(undefined);
         });
 
         NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag: any) => {
+          if (thisSession !== scanSessionId) return;
           if (resolved) {
             return;
           }
@@ -118,13 +122,14 @@ export function useNfc() {
           alertMessage: 'Ready to Pay',
           invalidateAfterFirstRead: true,
         }).catch((error: any) => {
+          if (thisSession !== scanSessionId) return;
           if (resolved) {
             return;
           }
           resolved = true;
           cleanup();
           if (error?.message?.includes('cancelled')) {
-            resolve(null);
+            resolve(undefined);
           } else {
             LogStore.log(
               `NFC scan error: ${error?.message}`,
