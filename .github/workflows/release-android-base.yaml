@@ -150,6 +150,17 @@ jobs:
             cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} run android:build
           fi
   
+      - name: Debug - Dump APK theme resources
+        if: ${{ inputs.release-type == 'internal' }}
+        run: |
+          APK_PATH="${{ inputs.output-path }}"
+          echo "=== APK theme resources ==="
+          $ANDROID_HOME/build-tools/36.0.0/aapt2 dump resources "$APK_PATH" 2>&1 | grep -A15 "style/AppTheme\|style/BootTheme" || true
+          echo "=== AndroidManifest theme ==="
+          $ANDROID_HOME/build-tools/36.0.0/aapt2 dump xmltree "$APK_PATH" --file AndroidManifest.xml 2>&1 | grep -i "theme" || true
+          echo "=== Effective gradle.properties ==="
+          cat ${{ inputs.root-path }}/android/gradle.properties
+
       - name: Setup Firebase
         uses: w9jds/setup-firebase@main
         with:

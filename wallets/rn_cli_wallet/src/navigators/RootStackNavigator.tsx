@@ -1,16 +1,16 @@
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from '@/utils/TypesUtil';
 import { HomeTabNavigator } from './HomeTabNavigator';
 import Scan from '@/screens/Scan';
-import Modal from '@/components/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { LogList } from '@/screens/LogList';
 import SecretPhrase from '@/screens/SecretPhrase';
 import { useLogs } from '@/hooks/useLogs';
 import { FontFamily } from '@/utils/ThemeUtil';
+import { Header } from '@/components/Header';
 
-const StackNavigator = createStackNavigator<RootStackParamList>();
+const StackNavigator = createNativeStackNavigator<RootStackParamList>();
 
 const headerTitleStyle = {
   fontFamily: FontFamily.medium,
@@ -22,61 +22,57 @@ export function RootStackNavigator() {
   useLogs();
 
   return (
-    <>
-      <Modal />
-      <StackNavigator.Navigator
-        screenOptions={{
-          headerShown: false,
-          headerStyle: {
-            backgroundColor: Theme['bg-primary'],
-          },
-          headerTitleStyle,
-          cardStyle: {
-            backgroundColor: Theme['bg-primary'],
+    <StackNavigator.Navigator
+      screenOptions={{
+        headerShown: false,
+        headerStyle: {
+          backgroundColor: Theme['bg-primary'],
+        },
+        headerTitleStyle,
+        contentStyle: {
+          backgroundColor: Theme['bg-primary'],
+        },
+      }}
+    >
+      <StackNavigator.Screen
+        options={{
+          headerShown: true,
+          header: () => <Header />,
+        }}
+        name="Home"
+        component={HomeTabNavigator}
+      />
+      <StackNavigator.Screen
+        name="Scan"
+        component={Scan}
+        options={{ headerShown: false }}
+      />
+      <StackNavigator.Screen
+        name="Logs"
+        component={LogList}
+        options={{
+          headerShown: true,
+          title: 'Logs',
+          headerBackButtonDisplayMode: 'minimal',
+          headerTintColor: Theme['text-primary'],
+          headerTitleStyle: {
+            fontWeight: '400',
           },
         }}
-      >
-        <StackNavigator.Screen
-          options={{
-            headerStyle: {
-              backgroundColor: Theme['bg-primary'],
-            },
-          }}
-          name="Home"
-          component={HomeTabNavigator}
-        />
-        <StackNavigator.Screen
-          name="Scan"
-          component={Scan}
-          options={{ headerShown: false }}
-        />
-        <StackNavigator.Screen
-          name="Logs"
-          component={LogList}
-          options={{
-            headerShown: true,
-            title: 'Logs',
-            headerBackTitle: '',
-            headerTintColor: Theme['text-primary'],
-            headerTitleStyle: {
-              fontWeight: '400',
-            },
-          }}
-        />
-        <StackNavigator.Screen
-          name="SecretPhrase"
-          component={SecretPhrase}
-          options={{
-            headerShown: true,
-            title: 'Secret Phrase',
-            headerBackTitle: '',
-            headerTintColor: Theme['text-primary'],
-            headerTitleStyle: {
-              fontWeight: '400',
-            },
-          }}
-        />
-      </StackNavigator.Navigator>
-    </>
+      />
+      <StackNavigator.Screen
+        name="SecretPhrase"
+        component={SecretPhrase}
+        options={{
+          headerShown: true,
+          title: 'Secret Phrase',
+          headerBackButtonDisplayMode: 'minimal',
+          headerTintColor: Theme['text-primary'],
+          headerTitleStyle: {
+            fontWeight: '400',
+          },
+        }}
+      />
+    </StackNavigator.Navigator>
   );
 }

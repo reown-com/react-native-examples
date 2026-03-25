@@ -50,12 +50,7 @@ export function ExpiryWarningView({
     <>
       <View style={styles.contentContainer}>
         <WarningCircle width={40} height={40} fill={iconColor} />
-        <Text
-          variant="h6-400"
-          color="text-primary"
-          center
-          style={styles.title}
-        >
+        <Text variant="h6-400" color="text-primary" center style={styles.title}>
           Your payment expires in{' '}
           <Text variant="h6-400" color="text-accent-primary">
             {formatCountdown(remaining)}
