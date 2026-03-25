@@ -109,10 +109,11 @@
     "valibot": "1.2.0",
     "tar": "7.5.8",
     "js-yaml": "4.1.1",
-    "h3": "1.15.5",
+    "h3": "1.15.9",
     "lodash": "4.17.23",
-    "fast-xml-parser": "5.3.6",
+    "fast-xml-parser": "5.5.7",
     "bn.js": "5.2.3",
-    "minimatch": "9.0.6"
+    "minimatch": "9.0.6",
+    "flatted": "3.4.2"
   }
 }
