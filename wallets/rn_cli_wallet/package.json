@@ -128,7 +128,9 @@
     "bn.js": "5.2.3",
     "minimatch": "9.0.6",
     "h3": "1.15.9",
-    "flatted": "3.4.2"
+    "flatted": "3.4.2",
+    "yaml": "2.8.3",
+    "picomatch": "2.3.2"
   },
   "packageManager": "yarn@3.8.7"
 }
