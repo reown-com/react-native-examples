@@ -34,7 +34,7 @@ export function Header() {
           return;
         }
         handleUriOrPaymentLink(uri);
-      } else {
+      } else if (uri === null) {
         Toast.show({
           type: 'info',
           text1: 'No data found on NFC tag',
