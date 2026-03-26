@@ -5,7 +5,7 @@ PODS:
   - FBLazyVector (0.82.0)
   - fmt (11.0.2)
   - glog (0.3.5)
-  - Haptics (1.0.1):
+  - Haptics (1.1.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -1846,7 +1846,7 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.11.0):
     - React-Core
-  - react-native-keyboard-controller (1.20.6):
+  - react-native-keyboard-controller (1.21.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -1864,7 +1864,7 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-keyboard-controller/common (= 1.20.6)
+    - react-native-keyboard-controller/common (= 1.21.2)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1875,7 +1875,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-keyboard-controller/common (1.20.6):
+  - react-native-keyboard-controller/common (1.21.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2735,7 +2735,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated (4.2.1):
+  - RNReanimated (4.3.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2762,11 +2762,12 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 4.2.1)
+    - RNReanimated/apple (= 4.3.0)
+    - RNReanimated/common (= 4.3.0)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated (4.2.1):
+  - RNReanimated/apple (4.3.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2793,11 +2794,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 4.2.1)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated/apple (4.2.1):
+  - RNReanimated/common (4.3.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2973,7 +2973,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets (0.7.2):
+  - RNWorklets (0.8.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3000,10 +3000,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/worklets (= 0.7.2)
+    - RNWorklets/apple (= 0.8.1)
+    - RNWorklets/common (= 0.8.1)
     - SocketRocket
     - Yoga
-  - RNWorklets/worklets (0.7.2):
+  - RNWorklets/apple (0.8.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3030,10 +3031,9 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/worklets/apple (= 0.7.2)
     - SocketRocket
     - Yoga
-  - RNWorklets/worklets/apple (0.7.2):
+  - RNWorklets/common (0.8.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3382,7 +3382,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 41b4dd99afd0aad861444ee141abdedaa6c3d238
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
-  Haptics: 1e5756859a4cb871448fc4b120614d84bdccb584
+  Haptics: caa98be61cf6b0ccfdc461321b0c1dd2a9d49b8e
   hermes-engine: 8642d8f14a548ab718ec112e9bebdfdd154138b5
   OpenSSL-Universal: 6082b0bf950e5636fe0d78def171184e2b3899c2
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
@@ -3421,7 +3421,7 @@ SPEC CHECKSUMS:
   react-native-compat: bdfea8c94465a2d23fcda5d2dd0d7d6379a8fa6c
   react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
-  react-native-keyboard-controller: f2ed31d12d9d8cb8ad2f9110c18fa5df499b66a3
+  react-native-keyboard-controller: c95cddf0041af48e87ca9e53b87a4fbd7cfc619f
   react-native-mmkv: ac7507625cd74bac0eb5333604a7cd7b08fe9e3e
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-nfc-manager: c8891e460b4943b695d63f7f4effc6345bbefc83
@@ -3466,11 +3466,11 @@ SPEC CHECKSUMS:
   RNCClipboard: 4b58c780f63676367640f23c8e114e9bd0cf86ac
   RNDeviceInfo: bcce8752b5043a623fe3c26789679b473f705d3c
   RNGestureHandler: f97d19585553412302394c42495cdaf499589d34
-  RNReanimated: 7d59df16c018cf3ed5d5b45964cedea4fc5c26ef
+  RNReanimated: 38dc89a8583592729855bf28e0d5686dc1245887
   RNScreens: ffbb0296608eb3560de641a711bbdb663ed1f6b4
   RNSentry: bbaa7ef3a4b131bc947de327ed9e47a054ce0978
   RNSVG: 8c0bbfa480a24b24468f1c76bd852a4aac3178e6
-  RNWorklets: cb0d3cc3c613ac60a3b7620f394980d997a86d8d
+  RNWorklets: 9fe22307fb611f506096f854caace756c20aecb4
   Sentry: b53951377b78e21a734f5dc8318e333dbfc682d7
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   VisionCamera: 30b358b807324c692064f78385e9a732ce1bebfe
