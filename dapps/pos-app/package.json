@@ -92,7 +92,10 @@
     "@vercel/node": {
       "undici": "5.29.0"
     },
-    "minimatch": "9.0.6"
+    "minimatch": "9.0.6",
+    "h3": "1.15.9",
+    "fast-xml-parser": "5.5.7",
+    "flatted": "3.4.2"
   },
   "private": true
 }

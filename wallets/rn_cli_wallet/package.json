@@ -109,7 +109,7 @@
     "@babel/runtime": "7.28.4",
     "cross-spawn": "7.0.6",
     "nanoid": "3.3.8",
-    "fast-xml-parser": "5.3.6",
+    "fast-xml-parser": "5.5.7",
     "sha.js": "2.4.12",
     "tmp": "0.2.4",
     "on-headers": "1.1.0",
@@ -126,7 +126,11 @@
     "qs": "6.14.2",
     "axios": "1.13.5",
     "bn.js": "5.2.3",
-    "minimatch": "9.0.6"
+    "minimatch": "9.0.6",
+    "h3": "1.15.9",
+    "flatted": "3.4.2",
+    "yaml": "2.8.3",
+    "picomatch": "2.3.2"
   },
   "packageManager": "yarn@3.8.7"
 }
