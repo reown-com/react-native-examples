@@ -92,7 +92,7 @@ jobs:
     runs-on: macos-latest-xlarge
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Select Xcode 26 (iOS 26 SDK)
         run: |
@@ -146,7 +146,7 @@ jobs:
       - name: Cache pods
         id: pods-cache
         if: ${{ inputs.is-expo-project == false }}
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ inputs.root-path }}/ios/Pods
           key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(env.podfile_path) }}
@@ -232,7 +232,7 @@ jobs:
 
       - name: Send Slack notification
         if: always() && !cancelled()
-        uses: slackapi/slack-github-action@v2.1.0
+        uses: slackapi/slack-github-action@v3.0.1
         with:
           webhook: ${{ secrets.slack-webhook-url }}
           webhook-type: incoming-webhook
