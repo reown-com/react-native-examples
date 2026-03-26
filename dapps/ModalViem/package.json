@@ -65,7 +65,7 @@
     "@babel/traverse": "7.26.10",
     "braces": "3.0.3",
     "semver": "7.5.4",
-    "tar": "7.5.8",
+    "tar": "7.5.11",
     "send": "0.19.1",
     "serve-static": "1.16.2",
     "react-devtools-core": "4.28.5",
@@ -78,7 +78,7 @@
     "h3": "1.15.9",
     "lodash": "4.17.23",
     "fast-xml-parser": "5.5.7",
-    "minimatch": "9.0.6",
+    "minimatch": "9.0.7",
     "flatted": "3.4.2",
     "yaml": "2.8.3",
     "picomatch": "2.3.2"
