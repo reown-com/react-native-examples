@@ -132,9 +132,10 @@ jobs:
           set -o pipefail
           maestro test \
             --env APP_ID="${{ env.MAESTRO_APP_ID }}" \
-            --tags "${{ env.MAESTRO_TAGS }}" \
+            --include-tags "${{ env.MAESTRO_TAGS }}" \
             --format junit \
             --output maestro-report.xml \
+            --debug-output maestro-debug \
             .maestro/ 2>&1 | tee maestro-output.log
 
       - name: Capture failure text
@@ -152,7 +153,7 @@ jobs:
         with:
           name: maestro-ios-artifacts
           path: |
-            ~/.maestro/tests/
+            maestro-debug/
             maestro-report.xml
             maestro-output.log
           if-no-files-found: warn
@@ -285,14 +286,16 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
           disable-animations: true
           script: |
-            set -o pipefail
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
             $HOME/.maestro/bin/maestro test \
               --env APP_ID="${{ env.MAESTRO_APP_ID }}" \
-              --tags "${{ env.MAESTRO_TAGS }}" \
+              --include-tags "${{ env.MAESTRO_TAGS }}" \
               --format junit \
               --output maestro-report.xml \
-              .maestro/ 2>&1 | tee maestro-output.log
+              --debug-output maestro-debug \
+              .maestro/ >maestro-output.log 2>&1; MAESTRO_EXIT=$?
+            cat maestro-output.log
+            exit $MAESTRO_EXIT
 
       - name: Capture failure text
         if: failure() && steps.maestro.outcome == 'failure'
@@ -309,7 +312,7 @@ jobs:
         with:
           name: maestro-android-artifacts
           path: |
-            ~/.maestro/tests/
+            maestro-debug/
             maestro-report.xml
             maestro-output.log
           if-no-files-found: warn
