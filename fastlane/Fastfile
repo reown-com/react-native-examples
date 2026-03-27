@@ -107,9 +107,7 @@ platform :ios do
   end
 
   lane :build_for_simulator do |options|
-   
-    project_type = ENV['PROJECT_TYPE'] || ENV['SCHEME']
-    
+
     # Install pods (skip repo_update if cache hit)
     cocoapods(
       clean_install: false,
@@ -117,52 +115,25 @@ platform :ios do
       podfile: ENV['PODFILE_PATH']
     )
 
-    # Build for simulator without code signing
-    archive_path = "./build/#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.xcarchive"
-
+    # Build .app directly for simulator — no archive, no IPA, no signing
     gym(
       workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
       configuration: "Release",
       destination: "generic/platform=iOS Simulator",
-      archive_path: archive_path,
+      derived_data_path: "./build/derived_data",
       skip_codesigning: true,
       skip_package_ipa: true,
+      skip_archive: true,
     )
 
-    # Find the .app in the archive
-    products_path = ".#{archive_path}/Products/Applications"
-    app_paths = Dir.glob("#{products_path}/*.app")  
-    app_path = app_paths.first
-    
-    if app_path     
-      output_name = "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
-      build_dir = File.expand_path('../build')
-      
-      # Ensure build directory exists
-      sh("mkdir -p #{build_dir}")
-      
-      # Create Payload directory structure
-      payload_dir = "#{build_dir}/Payload"
-      sh("rm -rf '#{payload_dir}'")  # Clean any existing Payload
-      sh("mkdir -p '#{payload_dir}'")
-      
-      # Copy .app into Payload
-      sh("cp -r '#{app_path}' '#{payload_dir}/'")
-      
-      # Create IPA by zipping Payload directory
-      sh("cd '#{build_dir}' && zip -r '#{output_name}' Payload")
-      
-      # Clean up Payload directory
-      sh("rm -rf '#{payload_dir}'")
-      
-      UI.success("✅ Created simulator build: #{build_dir}/#{output_name}")
-    else
-      UI.user_error!("Could not find .app bundle in #{products_path}")
-    end
-    
-    # Only clean artifacts when running locally (not in CI)
-    clean_build_artifacts() unless ENV['CI']
+    # Find the .app in derived data and record its path
+    app_path = Dir.glob("./build/derived_data/Build/Products/Release-iphonesimulator/*.app").first
+    UI.user_error!("Could not find .app in derived data") unless app_path
+
+    sh("mkdir -p ./build")
+    File.write("./build/app_path.txt", File.expand_path(app_path))
+    UI.success("✅ Simulator .app: #{File.expand_path(app_path)}")
   end
 
   lane :test_code_signing do
