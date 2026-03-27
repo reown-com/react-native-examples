@@ -103,12 +103,10 @@ jobs:
           BUILD_FOR_SIMULATOR: true
           PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
 
-      - name: Extract .app from IPA
+      - name: Find .app path
         run: |
-          cd build
-          unzip -o wallet-internal.ipa -d extracted
-          APP_PATH=$(find extracted/Payload -name "*.app" -maxdepth 1 | head -1)
-          echo "APP_PATH=$(pwd)/$APP_PATH" >> "$GITHUB_ENV"
+          APP_PATH=$(cat ./build/app_path.txt)
+          echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
 
       - name: Boot iOS Simulator
         run: |
@@ -133,9 +131,6 @@ jobs:
           maestro test \
             --env APP_ID="${{ env.MAESTRO_APP_ID }}" \
             --include-tags "${{ env.MAESTRO_TAGS }}" \
-            --format junit \
-            --output maestro-report.xml \
-            --debug-output maestro-debug \
             .maestro/ 2>&1 | tee maestro-output.log
 
       - name: Capture failure text
@@ -152,10 +147,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: maestro-ios-artifacts
-          path: |
-            maestro-debug/
-            maestro-report.xml
-            maestro-output.log
+          path: maestro-output.log
           if-no-files-found: warn
           retention-days: 14
 
@@ -290,9 +282,6 @@ jobs:
             $HOME/.maestro/bin/maestro test \
               --env APP_ID="${{ env.MAESTRO_APP_ID }}" \
               --include-tags "${{ env.MAESTRO_TAGS }}" \
-              --format junit \
-              --output maestro-report.xml \
-              --debug-output maestro-debug \
               .maestro/ >maestro-output.log 2>&1; MAESTRO_EXIT=$?
             cat maestro-output.log
             exit $MAESTRO_EXIT
@@ -311,10 +300,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: maestro-android-artifacts
-          path: |
-            maestro-debug/
-            maestro-report.xml
-            maestro-output.log
+          path: maestro-output.log
           if-no-files-found: warn
           retention-days: 14
 
