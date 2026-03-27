@@ -1,0 +1,77 @@
+name: E2E Wallet Balance Check
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Every hour
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+env:
+  BASE_USDC: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
+  BASE_RPC: 'https://mainnet.base.org'
+
+jobs:
+  check-balance:
+    name: Check E2E Wallet USDC Balance
+    runs-on: ubuntu-latest
+    env:
+      SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
+    steps:
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Derive wallet address
+        id: addrs
+        env:
+          TEST_WALLET_PRIVATE_KEY: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+        run: |
+          WALLET_ADDR=$(cast wallet address --private-key "$TEST_WALLET_PRIVATE_KEY")
+          echo "wallet=$WALLET_ADDR" >> $GITHUB_OUTPUT
+          echo "Wallet address: $WALLET_ADDR"
+
+      - name: Check USDC balance on Base
+        id: usdc_balance
+        run: |
+          BALANCE=$(cast call --rpc-url "$BASE_RPC" "$BASE_USDC" \
+            "balanceOf(address)(uint256)" \
+            "${{ steps.addrs.outputs.wallet }}" | awk '{print $1}')
+          echo "balance=$BALANCE" >> $GITHUB_OUTPUT
+          BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
+          echo "USDC on Base: $BALANCE_HUMAN ($BALANCE raw)"
+
+      - name: Prepare alert
+        id: alert
+        run: |
+          BALANCE="${{ steps.usdc_balance.outputs.balance }}"
+          THRESHOLD="${{ vars.USDC_THRESHOLD_UNITS || '500000' }}"
+          if [ "$BALANCE" -lt "$THRESHOLD" ]; then
+            BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
+            THRESHOLD_HUMAN=$(echo "scale=2; $THRESHOLD / 1000000" | bc)
+            ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} USDC on Base in wallet: \
+              ${{ steps.addrs.outputs.wallet }}"
+            echo "should_alert=true" >> "$GITHUB_OUTPUT"
+            echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
+            echo "::warning::$ALERT_TEXT"
+          fi
+
+      - name: Send Slack alert
+        if: |
+          steps.alert.outputs.should_alert == 'true' &&
+          env.SLACK_FAUCETBOT_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ env.SLACK_FAUCETBOT_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "${{ steps.alert.outputs.text }}"
+            }
+
+      - name: Skip Slack alert (no webhook)
+        if: |
+          steps.alert.outputs.should_alert == 'true' &&
+          env.SLACK_FAUCETBOT_WEBHOOK_URL == ''
+        run: |
+          echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping alert"

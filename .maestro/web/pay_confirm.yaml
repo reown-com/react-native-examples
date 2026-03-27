@@ -1,0 +1,111 @@
+appId: ${APP_ID}
+name: WalletConnect Pay - Wallet Payment Confirmed
+tags:
+  - pay
+---
+# Clear wallet state so ENV_TEST_PRIVATE_KEY is used
+- clearState
+
+# Open POS web app (opens directly to QR code screen)
+- openLink:
+    link: https://pos-demo.walletconnect.com/scan?amount=0.01
+    browser: true
+- startRecording: "WalletConnect Pay Confirmed"
+
+# Wait for QR code to appear
+- extendedWaitUntil:
+    visible: "Scan to pay"
+    timeout: 15000
+
+# Tap WC logo in center of QR to copy payment URL to clipboard
+- tapOn:
+    point: "50%,50%"
+
+# Switch to wallet app
+- launchApp:
+    permissions:
+      all: allow
+
+# Tap scan button then paste URL
+- tapOn:
+    id: "button-scan"
+- tapOn:
+    id: "button-paste-url"
+
+# iOS: Allow paste from clipboard
+- runFlow:
+    when:
+      platform: iOS
+      visible: "Allow Paste"
+    commands:
+      - tapOn: "Allow Paste"
+
+# Wait for payment options to load with merchant info
+- extendedWaitUntil:
+    visible:
+      id: "pay-merchant-info"
+    timeout: 15000
+
+# Handle single vs. multi option: if Continue button visible, tap it
+- runFlow:
+    when:
+      visible:
+        id: "pay-button-continue"
+    commands:
+      - tapOn:
+          id: "pay-button-continue"
+
+# Handle personal details webview (if user needs KYC)
+- runFlow:
+    when:
+      visible: "Add your personal details"
+    commands:
+      # Data is autocompleted, just tap Add
+      - tapOn: "Add"
+      # Confirm your details popup: tap the Terms checkbox then Confirm
+      - extendedWaitUntil:
+          visible: "Confirm your details"
+          timeout: 10000
+      - tapOn: "I agree to the"
+      - tapOn: "Confirm"
+
+# On review screen, tap Pay button
+- extendedWaitUntil:
+    visible:
+      id: "pay-button-pay"
+    timeout: 10000
+- tapOn:
+    id: "pay-button-pay"
+
+# Verify confirming screen
+- assertVisible:
+    id: "pay-loading-message"
+
+# Wait for success screen (generous timeout for on-chain confirmation)
+- extendedWaitUntil:
+    visible:
+      id: "pay-result-success-icon"
+    timeout: 30000
+
+# Tap "Got it!" button
+- tapOn:
+    id: "pay-button-result-action"
+
+# Switch back to browser (resume POS session without reloading)
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - launchApp:
+          appId: com.apple.mobilesafari
+          stopApp: false
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - launchApp:
+          appId: com.android.chrome
+          stopApp: false
+- extendedWaitUntil:
+    visible: "Payment successful"
+    timeout: 15000

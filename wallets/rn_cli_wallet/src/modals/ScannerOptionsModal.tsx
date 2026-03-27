@@ -59,6 +59,7 @@ export default function ScannerOptionsModal() {
       <View style={styles.optionsContainer}>
         <Button
           onPress={onScanPress}
+          testID="button-scan-qr"
           style={[
             styles.optionButton,
             { backgroundColor: Theme['foreground-primary'] },
@@ -72,6 +73,7 @@ export default function ScannerOptionsModal() {
 
         <Button
           onPress={onPastePress}
+          testID="button-paste-url"
           style={[
             styles.optionButton,
             { backgroundColor: Theme['foreground-primary'] },

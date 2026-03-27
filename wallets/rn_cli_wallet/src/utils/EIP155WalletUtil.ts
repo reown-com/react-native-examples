@@ -1,5 +1,7 @@
 import { utils } from 'ethers';
 
+import Config from 'react-native-config';
+
 import EIP155Lib from '../lib/EIP155Lib';
 import { storage } from './storage';
 import SettingsStore from '@/store/SettingsStore';
@@ -18,6 +20,8 @@ export async function createOrRestoreEIP155Wallet() {
     wallet1 = EIP155Lib.init({ mnemonic: mnemonic1 });
   } else if (privateKey1) {
     wallet1 = EIP155Lib.init({ privateKey: privateKey1 });
+  } else if (Config.ENV_TEST_PRIVATE_KEY) {
+    wallet1 = EIP155Lib.init({ privateKey: Config.ENV_TEST_PRIVATE_KEY });
   } else {
     wallet1 = EIP155Lib.init({});
     storage.setItem('EIP155_MNEMONIC_1', wallet1.getMnemonic());
