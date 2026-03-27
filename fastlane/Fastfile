@@ -115,21 +115,22 @@ platform :ios do
       podfile: ENV['PODFILE_PATH']
     )
 
-    # Build .app directly for simulator — no archive, no IPA, no signing
+    archive_path = "./build/wallet-simulator.xcarchive"
+
+    # Archive for simulator without code signing
     gym(
       workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
       configuration: "Release",
       destination: "generic/platform=iOS Simulator",
-      derived_data_path: "./build/derived_data",
+      archive_path: archive_path,
       skip_codesigning: true,
       skip_package_ipa: true,
-      skip_archive: true,
     )
 
-    # Find the .app in derived data and record its path
-    app_path = Dir.glob("./build/derived_data/Build/Products/Release-iphonesimulator/*.app").first
-    UI.user_error!("Could not find .app in derived data") unless app_path
+    # Find the .app directly inside the xcarchive — no IPA needed for simulator install
+    app_path = Dir.glob("#{archive_path}/Products/Applications/*.app").first
+    UI.user_error!("Could not find .app in archive at #{archive_path}") unless app_path
 
     sh("mkdir -p ./build")
     File.write("./build/app_path.txt", File.expand_path(app_path))
