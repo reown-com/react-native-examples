@@ -2,6 +2,14 @@ name: CI E2E Tests iOS
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'wallets/rn_cli_wallet/**'
+      - 'dapps/W3MWagmi/**'
+      - '.maestro/**'
+      - '.github/workflows/ci_e2e_tests_ios.yaml'
+      - '.github/actions/ci-setup/**'
+      - '.github/actions/ci-setup-ios-files/**'
 
 permissions:
   contents: read
@@ -62,8 +70,20 @@ jobs:
 
       - name: Build Wallet App for Simulator
         working-directory: ./wallets/rn_cli_wallet/ios
+        env:
+          SENTRY_DISABLE_AUTO_UPLOAD: 'true'
         run: |
-          set -o pipefail && xcodebuild -workspace RNWeb3Wallet.xcworkspace -scheme "RNWallet-Internal" -config Release -sdk iphonesimulator -derivedDataPath ./build
+          set -o pipefail && xcodebuild \
+            -workspace RNWeb3Wallet.xcworkspace \
+            -scheme "RNWallet-Internal" \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath ./build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO
       
       - name: Create app package
         working-directory: ./wallets/rn_cli_wallet/ios
@@ -131,8 +151,20 @@ jobs:
 
       - name: Build dApp App for Simulator
         working-directory: ./dapps/W3MWagmi/ios
+        env:
+          SENTRY_DISABLE_AUTO_UPLOAD: 'true'
         run: |
-          set -o pipefail && xcodebuild -workspace W3MWagmi.xcworkspace -scheme "W3MWagmi Internal" -config Release -sdk iphonesimulator -derivedDataPath ./build
+          set -o pipefail && xcodebuild \
+            -workspace W3MWagmi.xcworkspace \
+            -scheme "W3MWagmi Internal" \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath ./build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO
 
       - name: Create app package
         working-directory: ./dapps/W3MWagmi/ios
@@ -227,12 +259,6 @@ jobs:
           maestro test .maestro/native/personal_sign_confirm.yaml
           maestro test .maestro/native/personal_sign_reject.yaml
 
-          # echo "Running Maestro native to web tests:"
-          # maestro test .maestro/web/connect_reject.yaml
-          # maestro test .maestro/web/connect_confirm.yaml
-          # maestro test .maestro/web/personal_sign_confirm.yaml
-          # maestro test .maestro/web/personal_sign_reject.yaml
-
       - name: Upload debug artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -242,7 +268,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload Maestro artifacts
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: maestro-artifacts
