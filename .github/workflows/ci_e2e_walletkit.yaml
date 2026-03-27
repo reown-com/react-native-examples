@@ -1,0 +1,15 @@
+name: CI E2E Tests iOS
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    name: Placeholder Job
+    runs-on: macos-latest
+    steps:
+      - name: Do nothing
+        run: echo "This is a placeholder workflow to enable manual triggers from feature branches."
