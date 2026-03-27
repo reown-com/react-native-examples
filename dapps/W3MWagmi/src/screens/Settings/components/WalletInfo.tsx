@@ -1,5 +1,5 @@
 import React from 'react';
-import {useWalletInfo} from '@reown/appkit-wagmi-react-native';
+import {useWalletInfo} from '@reown/appkit-react-native';
 import {
   BorderRadius,
   FlexView,

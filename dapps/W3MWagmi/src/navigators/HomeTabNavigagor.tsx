@@ -23,8 +23,8 @@ export function HomeTabNavigator() {
 
   return (
     <TabNav.Navigator
-      sceneContainerStyle={{backgroundColor: Theme['bg-100']}}
       screenOptions={{
+        sceneStyle: { backgroundColor: Theme['bg-100'] },
         headerShown: false,
         headerStyle: {
           backgroundColor: Theme['bg-100'],

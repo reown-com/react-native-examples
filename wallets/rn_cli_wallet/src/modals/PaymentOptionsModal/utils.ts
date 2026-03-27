@@ -1,0 +1,188 @@
+// Format date input as user types (YYYY-MM-DD)
+export function formatDateInput(value: string): string {
+  // Remove any non-numeric characters except dashes
+  const cleaned = value.replace(/[^0-9]/g, '');
+
+  // Format as YYYY-MM-DD
+  if (cleaned.length <= 4) {
+    return cleaned;
+  } else if (cleaned.length <= 6) {
+    return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
+  } else {
+    return `${cleaned.slice(0, 4)}-${cleaned.slice(4, 6)}-${cleaned.slice(
+      6,
+      8,
+    )}`;
+  }
+}
+
+// Validate date format (YYYY-MM-DD) and check if it's a valid past date
+export function isValidDateOfBirth(dateStr: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    return false;
+  }
+
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  const now = new Date();
+
+  // Check if date is valid and in the past (and reasonable - not before 1900)
+  return (
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day &&
+    date < now &&
+    year >= 1900
+  );
+}
+
+// Validate required fields and return missing field names
+export function validateRequiredFields(
+  fields: { id: string; name: string; required?: boolean }[],
+  data: Record<string, string>,
+): string[] {
+  return fields
+    .filter(field => field.required && !data[field.id]?.trim())
+    .map(field => field.name);
+}
+
+// Format amount with decimals
+export function formatAmount(
+  value: string,
+  decimals: number,
+  minDecimals: number = 0,
+): string {
+  const num = BigInt(value);
+  const divisor = 10n ** BigInt(decimals);
+  const integerPart = num / divisor;
+  const fractionalPart = num % divisor;
+
+  if (fractionalPart === BigInt(0)) {
+    if (minDecimals > 0) {
+      return `${integerPart}.${'0'.repeat(minDecimals)}`;
+    }
+    return integerPart.toString();
+  }
+
+  const fractionalStr = fractionalPart.toString().padStart(decimals, '0');
+  // Remove trailing zeros, but keep at least minDecimals
+  let trimmedFractional = fractionalStr.replace(/0+$/, '');
+  if (trimmedFractional.length < minDecimals) {
+    trimmedFractional = trimmedFractional.padEnd(minDecimals, '0');
+  }
+  return `${integerPart}.${trimmedFractional}`;
+}
+
+// ----- Currency Helpers -----
+
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+  JPY: '¥',
+  CNY: '¥',
+  KRW: '₩',
+  INR: '₹',
+  RUB: '₽',
+  BRL: 'R$',
+  CAD: 'C$',
+  AUD: 'A$',
+  CHF: 'CHF',
+  HKD: 'HK$',
+  SGD: 'S$',
+  SEK: 'kr',
+  NOK: 'kr',
+  DKK: 'kr',
+  PLN: 'zł',
+  THB: '฿',
+  MXN: '$',
+  ZAR: 'R',
+  TRY: '₺',
+  ILS: '₪',
+  PHP: '₱',
+  MYR: 'RM',
+  IDR: 'Rp',
+  VND: '₫',
+  CZK: 'Kč',
+  HUF: 'Ft',
+  AED: 'د.إ',
+  SAR: '﷼',
+  NZD: 'NZ$',
+  TWD: 'NT$',
+  ARS: '$',
+  CLP: '$',
+  COP: '$',
+  PEN: 'S/',
+};
+
+export function getCurrencySymbol(currencyCode?: string): string {
+  if (!currencyCode) {
+    return '$';
+  }
+  return CURRENCY_SYMBOLS[currencyCode.toUpperCase()] || currencyCode;
+}
+
+// ----- Error Type Helpers -----
+
+export type ErrorType =
+  | 'insufficient_funds'
+  | 'expired'
+  | 'cancelled'
+  | 'not_found'
+  | 'generic';
+
+export function detectErrorType(message: string): ErrorType {
+  const lowerMsg = message.toLowerCase();
+  if (
+    lowerMsg.includes('insufficient') ||
+    lowerMsg.includes('balance') ||
+    lowerMsg.includes('funds')
+  ) {
+    return 'insufficient_funds';
+  }
+  if (lowerMsg.includes('expired') || lowerMsg.includes('timeout')) {
+    return 'expired';
+  }
+  if (lowerMsg.includes('cancelled') || lowerMsg.includes('canceled')) {
+    return 'cancelled';
+  }
+  if (lowerMsg.includes('not found') || lowerMsg.includes('404')) {
+    return 'not_found';
+  }
+  return 'generic';
+}
+
+export function getErrorTitle(errorType: ErrorType): string {
+  switch (errorType) {
+    case 'insufficient_funds':
+      return 'Not enough funds';
+    case 'expired':
+      return 'Your payment has expired';
+    case 'cancelled':
+      return 'This payment was cancelled';
+    case 'not_found':
+      return 'Payment not found';
+    case 'generic':
+      return 'Transaction failed';
+  }
+}
+
+export function getErrorMessage(
+  errorType: ErrorType,
+  originalMessage?: string,
+): string {
+  switch (errorType) {
+    case 'insufficient_funds':
+      return "This wallet doesn't have enough funds on the supported networks to complete the payment.";
+    case 'expired':
+      return 'Please ask the merchant to generate a new payment and try again.';
+    case 'cancelled':
+      return 'Please ask the merchant to generate a new payment and try again.';
+    case 'not_found':
+      return 'This payment link is not valid or has already been completed.';
+    case 'generic':
+      return (
+        originalMessage || "The network couldn't complete this transaction."
+      );
+  }
+}

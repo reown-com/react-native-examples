@@ -1,4 +1,5 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 
 export default StyleSheet.create({
   backButton: {
@@ -7,14 +8,14 @@ export default StyleSheet.create({
     opacity: 0.7,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 24,
-    height: 36,
-    width: 36,
-    marginTop: 16,
-    marginLeft: 16,
+    borderRadius: BorderRadius[6],
+    height: Spacing[9],
+    width: Spacing[9],
+    marginTop: Spacing[4],
+    marginLeft: Spacing[4],
   },
   backIcon: {
-    transform: [{rotate: '180deg'}],
+    transform: [{ rotate: '180deg' }],
   },
   errorContainer: {
     flex: 1,

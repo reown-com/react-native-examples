@@ -1,5 +1,7 @@
 {
-  "extends": "@react-native/typescript-config/tsconfig.json",
+  "extends": "@react-native/typescript-config",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["**/node_modules", "**/Pods"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
@@ -15,7 +17,9 @@
       "@/modals/*": ["./src/modals/*"],
       "@/utils/*": ["./src/utils/*"],
       "@/provider/*": ["./src/provider/*"],
-      "@/store/*": ["./src/store/*"]
+      "@/store/*": ["./src/store/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/services/*": ["./src/services/*"]
     }
   }
 }

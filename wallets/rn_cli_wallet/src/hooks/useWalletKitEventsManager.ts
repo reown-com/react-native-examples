@@ -1,12 +1,16 @@
-import {useCallback, useEffect} from 'react';
-import {SignClientTypes} from '@walletconnect/types';
+import { useCallback, useEffect } from 'react';
+import { SignClientTypes } from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
-import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
-import {walletKit} from '@/utils/WalletKitUtil';
-import {getSupportedChains} from '@/utils/HelperUtil';
+import { walletKit } from '@/utils/WalletKitUtil';
+import { getSupportedChains } from '@/utils/HelperUtil';
+import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
+import { SUI_SIGNING_METHODS } from '@/constants/Sui';
+import { TON_SIGNING_METHODS } from '@/constants/Ton';
+import { TRON_SIGNING_METHODS } from '@/constants/Tron';
 
 export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -14,7 +18,15 @@ export default function useWalletKitEventsManager(initialized: boolean) {
    *****************************************************************************/
   const onSessionProposal = useCallback(
     (proposal: SignClientTypes.EventArguments['session_proposal']) => {
-      console.log('onSessionProposal', proposal);
+      LogStore.info(
+        'Session proposal received',
+        'WalletKitEvents',
+        'onSessionProposal',
+        {
+          proposalId: proposal.id,
+          proposer: proposal.params.proposer?.metadata?.name,
+        },
+      );
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(proposal.verifyContext);
 
@@ -24,9 +36,9 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       );
 
       if (chains.length === 0) {
-        ModalStore.open('LoadingModal', {errorMessage: 'Unsupported chains'});
+        ModalStore.open('LoadingModal', { errorMessage: 'Unsupported chains' });
       } else {
-        ModalStore.open('SessionProposalModal', {proposal});
+        ModalStore.open('SessionProposalModal', { proposal });
       }
     },
     [],
@@ -38,9 +50,17 @@ export default function useWalletKitEventsManager(initialized: boolean) {
 
   const onSessionRequest = useCallback(
     async (requestEvent: SignClientTypes.EventArguments['session_request']) => {
-      console.log('onSessionRequest', requestEvent);
-      const {topic, params, verifyContext} = requestEvent;
-      const {request} = params;
+      LogStore.info(
+        'Session request received',
+        'WalletKitEvents',
+        'onSessionRequest',
+        {
+          method: requestEvent.params.request.method,
+          topic: requestEvent.topic,
+        },
+      );
+      const { topic, params, verifyContext } = requestEvent;
+      const { request } = params;
       const requestSession = walletKit.engine.signClient.session.get(topic);
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(verifyContext);
@@ -67,6 +87,43 @@ export default function useWalletKitEventsManager(initialized: boolean) {
             requestEvent,
             requestSession,
           });
+        case SUI_SIGNING_METHODS.SUI_SIGN_TRANSACTION:
+          return ModalStore.open('SessionSuiSignTransactionModal', {
+            requestEvent,
+            requestSession,
+          });
+        case SUI_SIGNING_METHODS.SUI_SIGN_PERSONAL_MESSAGE:
+          LogStore.log(
+            'Opening Sui personal message modal',
+            'WalletKitEvents',
+            'onSessionRequest',
+          );
+          return ModalStore.open('SessionSuiSignPersonalMessageModal', {
+            requestEvent,
+            requestSession,
+          });
+        case SUI_SIGNING_METHODS.SUI_SIGN_AND_EXECUTE_TRANSACTION:
+          return ModalStore.open('SessionSuiSignAndExecuteTransactionModal', {
+            requestEvent,
+            requestSession,
+          });
+        case TON_SIGNING_METHODS.SIGN_DATA:
+          return ModalStore.open('SessionTonSignDataModal', {
+            requestEvent,
+            requestSession,
+          });
+        case TON_SIGNING_METHODS.SEND_MESSAGE:
+          return ModalStore.open('SessionTonSendMessageModal', {
+            requestEvent,
+            requestSession,
+          });
+        case TRON_SIGNING_METHODS.TRON_SIGN_MESSAGE:
+        case TRON_SIGNING_METHODS.TRON_SIGN_TRANSACTION:
+        case TRON_SIGNING_METHODS.TRON_SEND_TRANSACTION:
+          return ModalStore.open('SessionSignTronModal', {
+            requestEvent,
+            requestSession,
+          });
         default:
           return ModalStore.open('SessionUnsuportedMethodModal', {
             requestEvent,
@@ -79,15 +136,23 @@ export default function useWalletKitEventsManager(initialized: boolean) {
 
   const onSessionAuthenticate = useCallback(
     (authRequest: SignClientTypes.EventArguments['session_authenticate']) => {
-      console.log('onSessionAuthenticate', authRequest);
+      LogStore.info(
+        'Session authenticate received',
+        'WalletKitEvents',
+        'onSessionAuthenticate',
+        {
+          id: authRequest.id,
+          chains: authRequest.params.authPayload.chains,
+        },
+      );
       const chains = authRequest.params.authPayload.chains.filter(
         chain => !!EIP155_CHAINS[chain.split(':')[1]],
       );
 
       if (chains.length === 0) {
-        ModalStore.open('LoadingModal', {errorMessage: 'Unsupported chains'});
+        ModalStore.open('LoadingModal', { errorMessage: 'Unsupported chains' });
       } else {
-        ModalStore.open('SessionAuthenticateModal', {authRequest});
+        ModalStore.open('SessionAuthenticateModal', { authRequest });
       }
     },
     [],
@@ -105,14 +170,21 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       walletKit.on('session_authenticate', onSessionAuthenticate);
 
       walletKit.engine.signClient.events.on('session_ping', data => {
-        console.log('session_ping received', data);
+        LogStore.log(
+          'Session ping received',
+          'WalletKitEvents',
+          'session_ping',
+          { topic: data.topic },
+        );
         Toast.show({
           type: 'info',
           text1: 'Session ping received',
         });
       });
       walletKit.on('session_delete', data => {
-        console.log('session_delete event received', data);
+        LogStore.info('Session deleted', 'WalletKitEvents', 'session_delete', {
+          topic: data.topic,
+        });
         SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
       });
       // load sessions on init

@@ -18,3 +18,14 @@ sentry.properties
 
 # Fastlane
 fastlane/report.xml
+
+# Cursor
+.cursor
+
+# VSCode
+.vscode
+
+# Expo
+.expo
+.vercel
+.env*.local

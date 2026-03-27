@@ -1,5 +1,9 @@
 name: release-android-base
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   workflow_call:
     inputs:
@@ -15,22 +19,35 @@ on:
         description: 'Release type of the project (debug/internal/production)'
         default: 'internal'
         type: string
+      project-type:
+        description: 'Type of project (wallet/dapp)'
+        required: true
+        type: string
       output-path:
         description: 'Path to get the APK file'
         required: true
         type: string
-    secrets:
-      project-id:
-        description: 'Reown Cloud ID'
-        required: true
-      firebase-app-id:
-        required: true
-      gsa-key:
-        required: true
-      relay-url:
-        description: 'Relay URL'
+      upload-to-bucket:
+        description: "Upload to S3"
         required: false
-      sentry-dsn:
+        default: false
+        type: boolean
+      package-manager:
+        description: "Package manager of the project"
+        required: false
+        default: 'yarn'
+        type: string
+      is-expo-project:
+        description: "Is Expo project"
+        required: false
+        default: false
+        type: boolean
+      firebase-app-id:
+        description: "Firebase App ID for distribution"
+        required: true
+        type: string
+    secrets:
+      gsa-key:
         required: true
       sentry-file:
         required: true
@@ -40,7 +57,14 @@ on:
         required: true
       keystore:
         required: true
-      google-services-file:
+      aws-account-id:
+        required: false
+      slack-webhook-url:
+        required: true
+      firebase-url:
+        description: 'Firebase URL of the project'
+        required: false
+      env-file:
         required: false
 
 jobs:
@@ -50,43 +74,80 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install Dependencies
+      - name: Setup
         uses: ./.github/actions/ci-setup
         with:
           root-path: ${{ inputs.root-path }}
+          package-manager: ${{ inputs.package-manager }}
+
+      - name: Expo Prebuild
+        if: ${{ inputs.is-expo-project == true }}
+        run: |
+          cd ${{ inputs.root-path }}
+          npx expo prebuild --platform android
 
       - name: Install Java 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '17'
           architecture: x86_64
 
-      - name: Setup Android files
-        uses: ./.github/actions/ci-setup-android-files
+      # Create env file
+      - name: Create env file
+        run: |
+          if [ -z "${{ secrets.env-file }}" ]; then
+            echo "Error: env-file secret is empty or not set"
+            exit 1
+          fi
+          echo "${{ secrets.env-file }}" > ${{ inputs.root-path }}/.env
+
+      - name: Copy variant files
+        run: |
+          cd ${{ inputs.root-path }}
+          if [ -f "./scripts/copy-variant-files.sh" ]; then
+            chmod +x ./scripts/copy-variant-files.sh
+            ./scripts/copy-variant-files.sh ${{ inputs.release-type }}
+          fi
+      
+      - name: Add Sentry file
+        run: touch ${{ inputs.root-path }}/android/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/android/sentry.properties
+
+      - name: Add Secrets file
+        run: touch ${{ inputs.root-path }}/android/secrets.properties && echo "${{ secrets.secrets-file }}" > ${{ inputs.root-path }}/android/secrets.properties
+
+      - name: Add Keystore file
+        run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
+
+      - name: Optimize Gradle for CI
+        run: |
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m" >> ${{ inputs.root-path }}/android/gradle.properties
+          echo "org.gradle.parallel=true" >> ${{ inputs.root-path }}/android/gradle.properties
+          echo "org.gradle.caching=true" >> ${{ inputs.root-path }}/android/gradle.properties
+
+      - name: Configure ABI for internal builds
+        if: ${{ inputs.release-type == 'internal' }}
+        run: |
+          echo "reactNativeArchitectures=arm64-v8a,armeabi-v7a" >> ${{ inputs.root-path }}/android/gradle.properties
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
         with:
-          root-path: ${{ inputs.root-path }}
-          google-services-file: ${{ secrets.google-services-file }}
-          secrets-file: ${{ secrets.secrets-file }}
-          keystore: ${{ secrets.keystore }}
-          keystore-name: ${{ secrets.keystore-name }}
-          sentry-file: ${{ secrets.sentry-file }}
-          project-id: ${{ secrets.project-id }}
-          relay-url: ${{ secrets.relay-url }}
-          sentry-dsn: ${{ secrets.sentry-dsn }}
-          release-type: ${{ inputs.release-type }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ${{ inputs.is-expo-project == false && format('{0}/android/.gradle', inputs.root-path) || '' }}
+          key: ${{ runner.os }}-gradle-${{ inputs.name }}-${{ inputs.is-expo-project == true && hashFiles(format('{0}/package.json', inputs.root-path), format('{0}/app.json', inputs.root-path)) || hashFiles(format('{0}/android/**/*.gradle*', inputs.root-path), format('{0}/android/**/gradle-wrapper.properties', inputs.root-path)) }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-${{ inputs.name }}-
 
       - name: Build APK
+        id: build
         run: |
           if [ ${{ inputs.release-type }} = 'internal' ]; then
-            cd ${{ inputs.root-path }} && yarn install && yarn run android:build:internal
+            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} run android:build:internal
           else
-            cd ${{ inputs.root-path }} && yarn install && yarn run android:build
+            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} run android:build
           fi
   
       - name: Setup Firebase
@@ -95,9 +156,82 @@ jobs:
           tools-version: 13.0.1
           gcp_sa_key: ${{ secrets.gsa-key }}
       
-      - name: Upload APK
+      - name: Upload APK to Firebase
+        id: firebase-upload
+        continue-on-error: false
         env:
-          APP_ID: ${{ secrets.firebase-app-id }}
+          APP_ID: ${{ inputs.firebase-app-id }}
         run: |
-          firebase appdistribution:distribute ${{ inputs.output-path }} --app $APP_ID --release-notes "${{ inputs.name }} ${{ inputs.release-type }} release" --groups "flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers"
-        
+          firebase appdistribution:distribute ${{ inputs.output-path }} \
+            --app $APP_ID \
+            --release-notes "${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }} - Branch: ${{ github.ref_name }}" \
+            --groups "flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers"
+    
+      - name: Configure AWS credentials
+        id: aws-creds
+        if: ${{ inputs.upload-to-bucket == true }}
+        continue-on-error: true
+        uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.aws-account-id }}:role/prod-github-actions-react-native-builds
+          aws-region: eu-central-1
+          output-env-credentials: false
+          output-credentials: true
+
+      - name: Upload Android build to S3
+        id: s3-upload
+        if: ${{ inputs.upload-to-bucket == true }}
+        env:
+          AWS_REGION: eu-central-1
+          AWS_ACCESS_KEY_ID: ${{ steps.aws-creds.outputs.aws-access-key-id }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.aws-creds.outputs.aws-secret-access-key }}
+          AWS_SESSION_TOKEN: ${{ steps.aws-creds.outputs.aws-session-token }}
+        continue-on-error: true
+        run: |
+          aws s3 cp \
+            ${{ inputs.output-path }} \
+            s3://walletconnect.react-native-builds.prod/android/${{ inputs.release-type }}/${{ inputs.project-type }}-${{ inputs.release-type }}.apk
+
+      - name: Send Slack notification
+        if: always() && !cancelled()
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.slack-webhook-url }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "Android Build Report - ${{ inputs.name }} - ${{ inputs.release-type }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🤖 Android Build Report" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`${{ inputs.name }}`" },
+                    { "type": "mrkdwn", "text": "*Release Type:*\n`${{ inputs.release-type }}`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Build:*\n`${{ steps.build.outcome == 'success' && '✅ Success' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Firebase Upload:*\n`${{ steps.firebase-upload.outcome == 'success' && '✅ Success' || steps.firebase-upload.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped' }}`" },
+                    { "type": "mrkdwn", "text": "*S3 Upload:*\n`${{ steps.s3-upload.outcome == 'success' && '✅ Success' || steps.s3-upload.outcome == 'failure' && '❌ Failed' || '⏭️ Skipped' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }${{ steps.build.outcome == 'success' && steps.firebase-upload.outcome == 'success' && secrets.firebase-url != '' && format(',{{"type":"button","text":{{"type":"plain_text","text":"View in Firebase"}},"url":"{0}"}}', secrets.firebase-url) || '' }}
+                  ]
+                }
+              ]
+            }

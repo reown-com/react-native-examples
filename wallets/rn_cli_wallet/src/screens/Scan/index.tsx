@@ -1,34 +1,42 @@
-import {useEffect, useState} from 'react';
-import {Platform, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import {
   Camera,
   Code,
   useCameraDevice,
   useCodeScanner,
+  useCameraPermission, // Add this
 } from 'react-native-vision-camera';
-import {request, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import {useIsFocused} from '@react-navigation/native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { useIsFocused } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import SvgChevronRight from '@/assets/ChevronRight';
-import {RootStackScreenProps} from '@/utils/TypesUtil';
+import { RootStackScreenProps } from '@/utils/TypesUtil';
 import styles from './styles';
+import { Text } from '@/components/Text';
+import { useTheme } from '@/hooks/useTheme';
+import { haptics } from '@/utils/haptics';
+import { Button } from '@/components/Button';
 
 type Props = RootStackScreenProps<'Scan'>;
 
-export default function Scan({navigation}: Props) {
-  const device = useCameraDevice('back');
-  const [showCamera, setShowCamera] = useState(false);
+export default function Scan({ navigation }: Props) {
+  const Theme = useTheme();
+  const device = useCameraDevice('back', {
+    physicalDevices: ['wide-angle-camera'],
+  });
+  const { hasPermission, requestPermission } = useCameraPermission(); // Add this
 
   // 2. Only activate Camera when the app is focused and this screen is currently opened
   const isActive = useIsFocused();
 
   const onCodeScanned = (codes: Code[]) => {
+    haptics.scanSuccess();
     const uri = codes[0].value;
     navigation.navigate('Home', {
-      screen: 'ConnectionsStack',
-      params: {screen: 'Connections', params: {uri: uri!}},
+      screen: 'Connections',
+      params: { uri: uri! },
     });
   };
 
@@ -42,29 +50,28 @@ export default function Scan({navigation}: Props) {
   };
 
   useEffect(() => {
-    request(
-      Platform.OS === 'ios'
-        ? PERMISSIONS.IOS.CAMERA
-        : PERMISSIONS.ANDROID.CAMERA,
-    ).then(result => {
-      if (result === RESULTS.GRANTED) {
-        setShowCamera(true);
-      }
-    });
-  }, []);
+    if (!hasPermission) {
+      requestPermission();
+    }
+  }, [hasPermission, requestPermission]);
 
   return (
-    <SafeAreaView style={StyleSheet.absoluteFill}>
-      <TouchableOpacity onPress={goBack} style={styles.backButton} hitSlop={40}>
+    <SafeAreaView
+      style={[
+        StyleSheet.absoluteFill,
+        { backgroundColor: Theme['bg-primary'] },
+      ]}
+    >
+      <Button onPress={goBack} style={styles.backButton} hitSlop={40}>
         <SvgChevronRight
           fill="white"
           height={24}
           width={24}
           style={styles.backIcon}
         />
-      </TouchableOpacity>
+      </Button>
 
-      {showCamera && device != null ? (
+      {hasPermission && device ? (
         <Camera
           style={StyleSheet.absoluteFill}
           device={device}
@@ -73,7 +80,9 @@ export default function Scan({navigation}: Props) {
         />
       ) : (
         <View style={styles.errorContainer}>
-          <Text>Camera not available</Text>
+          <Text variant="lg-400" color="text-primary">
+            Camera not available
+          </Text>
         </View>
       )}
     </SafeAreaView>

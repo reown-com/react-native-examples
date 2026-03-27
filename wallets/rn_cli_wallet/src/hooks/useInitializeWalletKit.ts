@@ -1,28 +1,46 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
-import {useSnapshot} from 'valtio';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSnapshot } from 'valtio';
 
+import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
-import {createOrRestoreEIP155Wallet} from '@/utils/EIP155WalletUtil';
-import {createWalletKit, walletKit} from '@/utils/WalletKitUtil';
+import { createOrRestoreEIP155Wallet } from '@/utils/EIP155WalletUtil';
+import { createOrRestoreSuiWallet } from '@/utils/SuiWalletUtil';
+import { createWalletKit, walletKit } from '@/utils/WalletKitUtil';
+import { createOrRestoreTonWallet } from '@/utils/TonWalletUtil';
+import { createOrRestoreTronWallet } from '@/utils/TronWalletUtil';
 
 export default function useInitializeWalletKit() {
   const [initialized, setInitialized] = useState(false);
   const prevRelayerURLValue = useRef<string>('');
 
-  const {relayerRegionURL} = useSnapshot(SettingsStore.state);
+  const { relayerRegionURL } = useSnapshot(SettingsStore.state);
 
   const onInitialize = useCallback(async () => {
     try {
-      const {eip155Addresses, eip155Wallets} =
+      const { eip155Addresses, eip155Wallets } =
         await createOrRestoreEIP155Wallet();
+      const { suiAddresses, suiWallet } = await createOrRestoreSuiWallet();
+      const { tonAddresses } = await createOrRestoreTonWallet();
+      const { tronAddresses } = await createOrRestoreTronWallet();
 
       SettingsStore.setEIP155Address(eip155Addresses[0]);
       SettingsStore.setWallet(eip155Wallets[eip155Addresses[0]]);
+      SettingsStore.setSuiAddress(suiAddresses[0]);
+      SettingsStore.setSuiWallet(suiWallet);
+      SettingsStore.setTonAddress(tonAddresses[0]);
+      SettingsStore.setTronAddress(tronAddresses[0]);
       await createWalletKit(relayerRegionURL);
       setInitialized(true);
       SettingsStore.state.initPromiseResolver?.resolve(undefined);
     } catch (err: unknown) {
-      console.log(err);
+      LogStore.error(
+        `Failed to initialize WalletKit: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
+        'Initialization',
+        'onInitialize',
+        { error: String(err) },
+      );
     }
   }, [relayerRegionURL]);
 
@@ -32,7 +50,14 @@ export default function useInitializeWalletKit() {
       walletKit.core.relayer.restartTransport(relayerRegionURL);
       prevRelayerURLValue.current = relayerRegionURL;
     } catch (err: unknown) {
-      console.log(err);
+      LogStore.error(
+        `Failed to restart relayer transport: ${
+          err instanceof Error ? err.message : 'Unknown error'
+        }`,
+        'Initialization',
+        'onRelayerRegionChange',
+        { error: String(err) },
+      );
     }
   }, [relayerRegionURL]);
 

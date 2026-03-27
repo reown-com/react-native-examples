@@ -1,35 +1,33 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
 import {Button} from '@reown/appkit-ui-react-native';
 
-import {RequestModal} from '../components/RequestModal';
-import {
-  useAppKitAccount,
-  useAppKitProvider,
-} from '@reown/appkit-ethers5-react-native';
+import {useAccount, useProvider} from '@reown/appkit-react-native';
 import {ethers} from 'ethers';
 import wagmigotchiABI from '../utils/wagmigotchiABI';
+import {ToastUtils} from '../utils/ToastUtils';
 
 export function ReadContract() {
-  const [requestModalVisible, setRequetsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<string | undefined>();
-  const [error, setError] = useState(false);
-  const {walletProvider} = useAppKitProvider();
-  const {isConnected, address} = useAppKitAccount();
+  const {provider} = useProvider();
+  const {isConnected, address} = useAccount();
+
+  const onSuccess = (data: any) => {
+    ToastUtils.showSuccessToast('Read successful', data);
+  };
+
+  const onError = (error: Error) => {
+    ToastUtils.showErrorToast('Read failed', error.message);
+  };
 
   const onPress = async () => {
-    if (!isConnected || !walletProvider) {
+    if (!isConnected || !provider) {
       return;
     }
 
-    setData(undefined);
-    setError(false);
     setIsLoading(true);
-    setRequetsModalVisible(true);
 
     try {
-      const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
+      const ethersProvider = new ethers.providers.Web3Provider(provider);
       const signer = ethersProvider.getSigner(address);
       const contractAddress = '0xecb504d39723b0be0e3a9aa33d646642d1051ee1';
       const contractABI = wagmigotchiABI;
@@ -39,27 +37,17 @@ export function ReadContract() {
         signer,
       );
       const balance = await contract.getHunger();
-      setData(balance.toString());
+      onSuccess(balance.toString());
     } catch {
-      setError(true);
+      onError(new Error('Error reading contract'));
     } finally {
       setIsLoading(false);
     }
   };
 
   return isConnected ? (
-    <View>
-      <Button disabled={isLoading} onPress={onPress}>
-        Read contract
-      </Button>
-
-      <RequestModal
-        isVisible={requestModalVisible}
-        isLoading={isLoading}
-        rpcResponse={data ? data : undefined}
-        rpcError={error ? 'Error reading contract' : undefined}
-        onClose={() => setRequetsModalVisible(false)}
-      />
-    </View>
+    <Button disabled={isLoading} onPress={onPress}>
+      Read contract
+    </Button>
   ) : null;
 }

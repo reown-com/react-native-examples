@@ -1,15 +1,21 @@
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import {RootStackParamList} from '@/utils/TypesUtil';
-import {HomeTabNavigator} from './HomeTabNavigator';
-import SessionDetail from '@/screens/SessionDetail';
+import { RootStackParamList } from '@/utils/TypesUtil';
+import { HomeTabNavigator } from './HomeTabNavigator';
 import Scan from '@/screens/Scan';
 import Modal from '@/components/Modal';
-import {useTheme} from '@/hooks/useTheme';
-import {LogList} from '@/screens/LogList';
-import {useLogs} from '@/hooks/useLogs';
+import { useTheme } from '@/hooks/useTheme';
+import { LogList } from '@/screens/LogList';
+import SecretPhrase from '@/screens/SecretPhrase';
+import { useLogs } from '@/hooks/useLogs';
+import { FontFamily } from '@/utils/ThemeUtil';
 
 const StackNavigator = createStackNavigator<RootStackParamList>();
+
+const headerTitleStyle = {
+  fontFamily: FontFamily.medium,
+  fontSize: 17,
+};
 
 export function RootStackNavigator() {
   const Theme = useTheme();
@@ -22,40 +28,52 @@ export function RootStackNavigator() {
         screenOptions={{
           headerShown: false,
           headerStyle: {
-            backgroundColor: Theme['bg-100'],
+            backgroundColor: Theme['bg-primary'],
           },
-        }}>
+          headerTitleStyle,
+          cardStyle: {
+            backgroundColor: Theme['bg-primary'],
+          },
+        }}
+      >
         <StackNavigator.Screen
           options={{
             headerStyle: {
-              backgroundColor: Theme['bg-100'],
+              backgroundColor: Theme['bg-primary'],
             },
           }}
           name="Home"
           component={HomeTabNavigator}
         />
         <StackNavigator.Screen
-          name="SessionDetail"
-          component={SessionDetail}
-          options={{
-            headerShown: true,
-            headerTitle: 'Session Details',
-            headerBackTitleVisible: false,
-            headerTintColor: Theme['fg-100'],
-          }}
-        />
-        <StackNavigator.Screen
           name="Scan"
           component={Scan}
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
         />
         <StackNavigator.Screen
           name="Logs"
           component={LogList}
           options={{
             headerShown: true,
-            headerBackTitleVisible: false,
             title: 'Logs',
+            headerBackTitle: '',
+            headerTintColor: Theme['text-primary'],
+            headerTitleStyle: {
+              fontWeight: '400',
+            },
+          }}
+        />
+        <StackNavigator.Screen
+          name="SecretPhrase"
+          component={SecretPhrase}
+          options={{
+            headerShown: true,
+            title: 'Secret Phrase',
+            headerBackTitle: '',
+            headerTintColor: Theme['text-primary'],
+            headerTitleStyle: {
+              fontWeight: '400',
+            },
           }}
         />
       </StackNavigator.Navigator>

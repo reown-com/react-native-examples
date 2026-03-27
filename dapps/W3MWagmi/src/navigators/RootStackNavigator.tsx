@@ -6,6 +6,7 @@ import {useTheme} from '@/hooks/useTheme';
 import {useSocketStatus} from '@/hooks/useSocketStatus';
 import {LogList} from '@/screens/LogList';
 import {useLogs} from '@/hooks/useLogs';
+import { AppKitLogList } from '@/screens/AppKitLogList';
 
 const StackNavigator = createNativeStackNavigator<RootStackParamList>();
 
@@ -39,8 +40,18 @@ export function RootStackNavigator() {
         component={LogList}
         options={{
           headerShown: true,
-          headerBackTitleVisible: false,
+          headerBackButtonDisplayMode: 'minimal',
           title: 'Logs',
+          headerTintColor: Theme['fg-100'],
+        }}
+      />
+      <StackNavigator.Screen
+        name="AppKitLogs"
+        component={AppKitLogList}
+        options={{
+          headerShown: true,
+          headerBackButtonDisplayMode: 'minimal',
+          title: 'AppKit Logs',
         }}
       />
     </StackNavigator.Navigator>

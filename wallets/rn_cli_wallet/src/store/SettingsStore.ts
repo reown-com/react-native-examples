@@ -1,8 +1,23 @@
-import {proxy} from 'valtio';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Verify, SessionTypes} from '@walletconnect/types';
+import { proxy } from 'valtio';
+import { Appearance } from 'react-native';
+import { Verify, SessionTypes } from '@walletconnect/types';
 
+import { storage } from '@/utils/storage';
 import EIP155Lib from '../lib/EIP155Lib';
+import SuiLib from '../lib/SuiLib';
+import TonLib from '../lib/TonLib';
+import TronLib from '../lib/TronLib';
+import { MMKV } from 'react-native-mmkv';
+
+function getInitialThemeMode(): 'light' | 'dark' {
+  const mmkv = new MMKV();
+  const saved = mmkv.getString('THEME_MODE');
+  if (saved === 'light' || saved === 'dark') {
+    return saved;
+  }
+
+  return Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+}
 
 /**
  * Types
@@ -11,6 +26,12 @@ interface State {
   testNets: boolean;
   account: number;
   eip155Address: string;
+  suiAddress: string;
+  suiWallet: SuiLib | null;
+  tonAddress: string;
+  tonWallet: TonLib | null;
+  tronAddress: string;
+  tronWallet: TronLib | null;
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -24,6 +45,7 @@ interface State {
   socketStatus: 'connected' | 'disconnected' | 'stalled' | 'unknown';
   logs: string[];
   isLinkModeRequest: boolean;
+  themeMode: 'light' | 'dark';
 }
 
 /**
@@ -34,12 +56,19 @@ const state = proxy<State>({
   account: 0,
   activeChainId: '1',
   eip155Address: '',
+  suiAddress: '',
+  suiWallet: null,
+  tonAddress: '',
+  tonWallet: null,
+  tronAddress: '',
+  tronWallet: null,
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
   socketStatus: 'unknown',
   logs: [],
   isLinkModeRequest: false,
+  themeMode: getInitialThemeMode(),
 });
 
 /**
@@ -74,7 +103,7 @@ const SettingsStore = {
 
   setInitPromise() {
     state.initPromise = new Promise((resolve, reject) => {
-      state.initPromiseResolver = {resolve, reject};
+      state.initPromiseResolver = { resolve, reject };
     });
   },
 
@@ -93,9 +122,45 @@ const SettingsStore = {
   toggleTestNets() {
     state.testNets = !state.testNets;
     if (state.testNets) {
-      AsyncStorage.setItem('TEST_NETS', 'YES');
+      storage.setItem('TEST_NETS', 'YES');
     } else {
-      AsyncStorage.removeItem('TEST_NETS');
+      storage.removeItem('TEST_NETS');
+    }
+  },
+
+  setSuiAddress(suiAddress: string) {
+    state.suiAddress = suiAddress;
+  },
+
+  setSuiWallet(suiWallet: SuiLib) {
+    state.suiWallet = suiWallet;
+  },
+
+  setTonAddress(tonAddress: string) {
+    state.tonAddress = tonAddress;
+  },
+
+  setTonWallet(tonWallet: TonLib) {
+    state.tonWallet = tonWallet;
+  },
+
+  setTronAddress(tronAddress: string) {
+    state.tronAddress = tronAddress;
+  },
+
+  setTronWallet(tronWallet: TronLib) {
+    state.tronWallet = tronWallet;
+  },
+
+  setThemeMode(value: 'light' | 'dark') {
+    state.themeMode = value;
+    storage.setItem('THEME_MODE', value);
+  },
+
+  async loadThemeMode() {
+    const saved = await storage.getItem<string>('THEME_MODE');
+    if (saved === 'light' || saved === 'dark') {
+      state.themeMode = saved;
     }
   },
 };

@@ -1,18 +1,30 @@
-import {useSnapshot} from 'valtio';
-import {useCallback, useMemo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import { useSnapshot } from 'valtio';
+import { useCallback, useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import RNModal from 'react-native-modal';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import ModalStore from '@/store/ModalStore';
+import { Spacing } from '@/utils/ThemeUtil';
 import SessionProposalModal from '@/modals/SessionProposalModal';
 import SessionSignModal from '@/modals/SessionSignModal';
 import SessionSendTransactionModal from '@/modals/SessionSendTransactionModal';
 import SessionSignTypedDataModal from '@/modals/SessionSignTypedDataModal';
-import {LoadingModal} from '@/modals/LoadingModal';
+import { LoadingModal } from '@/modals/LoadingModal';
 import SessionAuthenticateModal from '@/modals/SessionAuthenticateModal';
+import SessionSignSuiPersonalMessageModal from '@/modals/SessionSuiSignPersonalMessageModal';
+import SessionSignSuiTransactionModal from '@/modals/SessionSuiSignTransactionModal';
+import SessionSignAndExecuteSuiTransactionModal from '@/modals/SessionSuiSignAndExecuteTransactionModal';
+import SessionTonSendMessageModal from '@/modals/SessionTonSendMessageModal';
+import SessionTonSignDataModal from '@/modals/SessionTonSignDataModal';
+import SessionSignTronModal from '@/modals/SessionSignTronModal';
+import PaymentOptionsModal from '@/modals/PaymentOptionsModal';
+import ImportWalletModal from '@/modals/ImportWalletModal';
+import SessionDetailModal from '@/modals/SessionDetailModal';
+import ScannerOptionsModal from '@/modals/ScannerOptionsModal';
 
 export default function Modal() {
-  const {open, view} = useSnapshot(ModalStore.state);
+  const { open, view } = useSnapshot(ModalStore.state);
   // handle the modal being closed by click outside
   const onClose = useCallback(() => {
     if (open) {
@@ -34,6 +46,26 @@ export default function Modal() {
         return <SessionAuthenticateModal />;
       case 'LoadingModal':
         return <LoadingModal />;
+      case 'SessionSuiSignTransactionModal':
+        return <SessionSignSuiTransactionModal />;
+      case 'SessionSuiSignPersonalMessageModal':
+        return <SessionSignSuiPersonalMessageModal />;
+      case 'SessionSuiSignAndExecuteTransactionModal':
+        return <SessionSignAndExecuteSuiTransactionModal />;
+      case 'SessionTonSendMessageModal':
+        return <SessionTonSendMessageModal />;
+      case 'SessionTonSignDataModal':
+        return <SessionTonSignDataModal />;
+      case 'SessionSignTronModal':
+        return <SessionSignTronModal />;
+      case 'PaymentOptionsModal':
+        return <PaymentOptionsModal />;
+      case 'ImportWalletModal':
+        return <ImportWalletModal />;
+      case 'SessionDetailModal':
+        return <SessionDetailModal />;
+      case 'ScannerOptionsModal':
+        return <ScannerOptionsModal />;
       default:
         return <View />;
     }
@@ -42,22 +74,29 @@ export default function Modal() {
   return (
     <RNModal
       backdropOpacity={0.6}
+      backdropTransitionOutTiming={1}
       hideModalContentWhileAnimating
       useNativeDriver
       statusBarTranslucent
       propagateSwipe
       onBackdropPress={onClose}
-      onModalHide={onClose}
       style={styles.modal}
-      isVisible={open}>
-      {componentView}
+      isVisible={open}
+    >
+      <GestureHandlerRootView style={styles.gestureRoot}>
+        {componentView}
+      </GestureHandlerRootView>
     </RNModal>
   );
 }
 
 const styles = StyleSheet.create({
   modal: {
-    margin: 0,
+    margin: Spacing[0],
+  },
+  gestureRoot: {
+    flex: 1,
+    margin: Spacing[0],
     justifyContent: 'flex-end',
   },
 });

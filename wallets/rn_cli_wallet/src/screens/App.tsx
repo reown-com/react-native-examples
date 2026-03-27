@@ -1,34 +1,59 @@
-import {useCallback, useEffect} from 'react';
+import { useCallback, useEffect } from 'react';
 import Config from 'react-native-config';
-import {Linking, Platform, StatusBar, useColorScheme} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
+import { NavigationBar } from '@zoontek/react-native-navigation-bar';
+import { useSnapshot } from 'valtio';
+import { NavigationContainer } from '@react-navigation/native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import * as Sentry from '@sentry/react-native';
 import BootSplash from 'react-native-bootsplash';
 import Toast from 'react-native-toast-message';
-import {RELAYER_EVENTS} from '@walletconnect/core';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { RELAYER_EVENTS } from '@walletconnect/core';
 
-import {RootStackNavigator} from '@/navigators/RootStackNavigator';
+import { RootStackNavigator } from '@/navigators/RootStackNavigator';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
 import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
-import {walletKit} from '@/utils/WalletKitUtil';
+import { usePairing } from '@/hooks/usePairing';
+import { useNfcForegroundDispatch, isAllowedNfcUri } from '@/hooks/useNfc';
+import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
+import LogStore from '@/store/LogStore';
+import { getEnvironment } from '@/utils/misc';
+import { toastConfig } from '@/components/ToastConfig';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
   dsn: Config.ENV_SENTRY_DSN,
-  environment: Config.ENV_SENTRY_TAG,
-  _experiments: {
-    replaysSessionSampleRate: 0,
-    replaysOnErrorSampleRate: 1.0,
-  },
+  environment: getEnvironment(),
+  sendDefaultPii: true,
+  // Enable Logs
+  enableLogs: true,
+
+  // Temporarily disable native for Android, not sure why it's not working
+  enableNative: Platform.OS === 'ios',
+
+  // Configure Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+
   tracesSampleRate: 0.5,
   profilesSampleRate: 1.0,
   integrations: [Sentry.mobileReplayIntegration()],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
 });
 
 const App = () => {
-  const scheme = useColorScheme();
+  const { themeMode, eip155Address } = useSnapshot(SettingsStore.state);
+
+  // Load saved theme mode on startup
+  useEffect(() => {
+    SettingsStore.loadThemeMode();
+  }, []);
 
   // Step 1 - Initialize wallets and wallet connect client
   const initialized = useInitializeWalletKit();
@@ -36,64 +61,107 @@ const App = () => {
   // Step 2 - Once initialized, set up wallet connect event manager
   useWalletKitEventsManager(initialized);
 
+  // Get centralized URI/payment link handler
+  const { handleUriOrPaymentLink } = usePairing();
+
+  // Android: automatically intercept NFC tags while app is in foreground
+  const handleNfcUri = useCallback(
+    (uri: string) => {
+      if (isAllowedNfcUri(uri)) {
+        handleUriOrPaymentLink(uri);
+      } else {
+        LogStore.log(`NFC URI rejected: ${uri}`, 'App', 'handleNfcUri');
+      }
+    },
+    [handleUriOrPaymentLink],
+  );
+  useNfcForegroundDispatch(handleNfcUri);
+
+  // Hide splash screen once wallets are initialized, addresses are loaded and theme mode is set
+  useEffect(() => {
+    if (initialized && eip155Address && themeMode) {
+      BootSplash.hide({ fade: true });
+    }
+  }, [initialized, eip155Address, themeMode]);
+
+  // Set up relayer event listeners once initialized
   useEffect(() => {
     if (initialized) {
-      BootSplash.hide({fade: true});
-
       walletKit.core.relayer.on(RELAYER_EVENTS.connect, () => {
-        Toast.show({
-          type: 'success',
-          text1: 'Network connection is restored!',
-        });
         SettingsStore.setSocketStatus('connected');
       });
       walletKit.core.relayer.on(RELAYER_EVENTS.disconnect, () => {
-        Toast.show({
-          type: 'error',
-          text1: 'Network connection lost.',
-        });
         SettingsStore.setSocketStatus('disconnected');
       });
       walletKit.core.relayer.on(RELAYER_EVENTS.connection_stalled, () => {
-        Toast.show({
-          type: 'error',
-          text1: 'Network connection stalled.',
-        });
         SettingsStore.setSocketStatus('stalled');
       });
     }
   }, [initialized]);
 
-  const pair = useCallback(async (uri: string) => {
-    try {
-      ModalStore.open('LoadingModal', {loadingMessage: 'Pairing...'});
-
-      await SettingsStore.state.initPromise;
-      await walletKit.pair({uri});
-    } catch (error: any) {
-      ModalStore.open('LoadingModal', {
-        errorMessage: error?.message || 'There was an error pairing',
-      });
-    }
-  }, []);
-
   const deeplinkHandler = useCallback(
-    ({url}: {url: string}) => {
+    ({ url }: { url: string }) => {
+      LogStore.log('Deep link received', 'App', 'deeplinkHandler', {
+        url,
+      });
+
+      // 1. Link mode (wc_ev) - SDK handles it, just set the flag
       const isLinkMode = url.includes('wc_ev');
       SettingsStore.setIsLinkModeRequest(isLinkMode);
-
       if (isLinkMode) {
         return;
-      } else if (url.includes('wc?uri=')) {
-        const uri = url.split('wc?uri=')[1];
-        pair(decodeURIComponent(uri));
-      } else if (url.includes('wc:')) {
-        pair(url);
-      } else if (url.includes('wc?')) {
-        ModalStore.open('LoadingModal', {loadingMessage: 'Loading request...'});
+      }
+
+      // 2. Payment link from NFC tag or App Link (pay.walletconnect.com)
+      try {
+        const { hostname } = new URL(url);
+        if (
+          hostname.endsWith('.pay.walletconnect.com') ||
+          hostname === 'pay.walletconnect.com'
+        ) {
+          handleUriOrPaymentLink(url);
+          return;
+        }
+      } catch {
+        // Not a valid URL, continue to other handlers
+      }
+
+      // 3. Redirection from app with encoded URI (wc?uri=)
+      if (url.includes('wc?uri=')) {
+        const encodedUri = url.split('wc?uri=')[1];
+        if (!encodedUri) {
+          return;
+        }
+
+        try {
+          const uri = decodeURIComponent(encodedUri);
+          handleUriOrPaymentLink(uri);
+        } catch {
+          ModalStore.open('LoadingModal', {
+            errorMessage: 'Invalid deeplink format',
+          });
+        }
+        return;
+      }
+
+      // 4. Direct WC protocol URI (wc:)
+      // Extract from wc: onwards to remove app scheme prefix
+      if (url.includes('wc:')) {
+        const wcIndex = url.indexOf('wc:');
+        const uri = url.substring(wcIndex);
+        handleUriOrPaymentLink(uri);
+        return;
+      }
+
+      // 5. Request for already paired session (wc?)
+      if (url.includes('wc?')) {
+        ModalStore.open('LoadingModal', {
+          loadingMessage: 'Loading request...',
+        });
+        return;
       }
     },
-    [pair],
+    [handleUriOrPaymentLink],
   );
 
   useEffect(() => {
@@ -114,27 +182,45 @@ const App = () => {
         return;
       }
 
-      deeplinkHandler({url: initialUrl});
+      deeplinkHandler({ url: initialUrl });
     }
 
+    LogStore.log('Setting up Linking listener', 'App', 'useEffect');
     const sub = Linking.addEventListener('url', deeplinkHandler);
 
     checkInitialUrl();
-    return () => sub.remove();
+    return () => {
+      LogStore.log('Removing Linking listener', 'App', 'useEffect');
+      sub.remove();
+    };
   }, [deeplinkHandler]);
 
   return (
-    <NavigationContainer>
-      <StatusBar
-        barStyle={scheme === 'light' ? 'dark-content' : 'light-content'}
-      />
-      <RootStackNavigator />
-      <Toast
-        position="top"
-        topOffset={Platform.select({ios: 80, android: 0})}
-      />
-    </NavigationContainer>
+    <GestureHandlerRootView style={styles.root}>
+      <SafeAreaProvider>
+        <KeyboardProvider>
+          <NavigationContainer>
+            <StatusBar
+              translucent
+              backgroundColor="transparent"
+              barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
+            />
+            <NavigationBar
+              barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
+            />
+            <RootStackNavigator />
+            <Toast config={toastConfig} position="top" topOffset={0} />
+          </NavigationContainer>
+        </KeyboardProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 };
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});
 
 export default Sentry.wrap(App);

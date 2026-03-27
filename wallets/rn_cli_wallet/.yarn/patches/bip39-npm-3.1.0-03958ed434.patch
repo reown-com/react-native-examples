@@ -1,0 +1,82 @@
+diff --git a/src/index.js b/src/index.js
+index b83863f4b3d09df1159eb2c05d43e20a05d55767..926895a1f697905d48bf32f32fc538de3ce1b252 100644
+--- a/src/index.js
++++ b/src/index.js
+@@ -38,20 +38,68 @@ function salt(password) {
+ function mnemonicToSeedSync(mnemonic, password) {
+     const mnemonicBuffer = Uint8Array.from(Buffer.from(normalize(mnemonic), 'utf8'));
+     const saltBuffer = Uint8Array.from(Buffer.from(salt(normalize(password)), 'utf8'));
+-    const res = pbkdf2_1.pbkdf2(sha512_1.sha512, mnemonicBuffer, saltBuffer, {
+-        c: 2048,
+-        dkLen: 64,
+-    });
+-    return Buffer.from(res);
++    
++    // Use react-native-quick-crypto's native PBKDF2
++    try {
++        var crypto = require("crypto");
++        const res = crypto.pbkdf2Sync(
++            mnemonicBuffer,
++            saltBuffer,
++            2048,  // iterations
++            64,    // key length
++            'sha512'
++        );
++        return Buffer.from(res);
++    } catch (e) {
++        console.warn('Native pbkdf2Sync failed, falling back to JS implementation', e);
++        // Fallback to original implementation
++        const res = pbkdf2_1.pbkdf2(sha512_1.sha512, mnemonicBuffer, saltBuffer, {
++            c: 2048,
++            dkLen: 64,
++        });
++        return Buffer.from(res);
++    }
+ }
+ exports.mnemonicToSeedSync = mnemonicToSeedSync;
++
+ function mnemonicToSeed(mnemonic, password) {
+     const mnemonicBuffer = Uint8Array.from(Buffer.from(normalize(mnemonic), 'utf8'));
+     const saltBuffer = Uint8Array.from(Buffer.from(salt(normalize(password)), 'utf8'));
+-    return pbkdf2_1.pbkdf2Async(sha512_1.sha512, mnemonicBuffer, saltBuffer, {
+-        c: 2048,
+-        dkLen: 64,
+-    }).then((res) => Buffer.from(res));
++    
++    // Use react-native-quick-crypto's native PBKDF2
++    try {
++        var crypto = require("crypto");
++        return new Promise((resolve, reject) => {
++            crypto.pbkdf2(
++                mnemonicBuffer,
++                saltBuffer,
++                2048,  // iterations
++                64,    // key length
++                'sha512',
++                (err, res) => {
++                    if (err) {
++                        reject(err);
++                    } else {
++                        resolve(Buffer.from(res));
++                    }
++                }
++            );
++        }).catch((err) => {
++            console.warn('Native pbkdf2 failed, falling back to JS implementation', err);
++            // Fallback to original implementation
++            return pbkdf2_1.pbkdf2Async(sha512_1.sha512, mnemonicBuffer, saltBuffer, {
++                c: 2048,
++                dkLen: 64,
++            }).then((res) => Buffer.from(res));
++        });
++    } catch (e) {
++        console.warn('Native pbkdf2 not available, using JS implementation', e);
++        // Fallback to original implementation
++        return pbkdf2_1.pbkdf2Async(sha512_1.sha512, mnemonicBuffer, saltBuffer, {
++            c: 2048,
++            dkLen: 64,
++        }).then((res) => Buffer.from(res));
++    }
+ }
+ exports.mnemonicToSeed = mnemonicToSeed;
+ function mnemonicToEntropy(mnemonic, wordlist) {

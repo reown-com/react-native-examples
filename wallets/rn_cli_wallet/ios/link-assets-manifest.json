@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/KHTeka-Medium.otf",
+      "sha1": "c3724effced890285439d715d6fa3f4ccd40280f"
+    },
+    {
+      "path": "assets/fonts/KHTeka-Light.otf",
+      "sha1": "6af527204505aa938d3868e4ea6e014017b723b8"
+    },
+    {
+      "path": "assets/fonts/KHTeka-Regular.otf",
+      "sha1": "271b71d36781b1913283b2875b677f58049c9dcb"
+    }
+  ]
+}

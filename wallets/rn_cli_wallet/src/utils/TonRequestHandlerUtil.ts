@@ -1,0 +1,97 @@
+import { getWallet } from '@/utils/TonWalletUtil';
+import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
+import { SessionTypes, SignClientTypes } from '@walletconnect/types';
+import { getSdkError } from '@walletconnect/utils';
+import SettingsStore from '@/store/SettingsStore';
+import LogStore, { serializeError } from '@/store/LogStore';
+import { TON_SIGNING_METHODS } from '@/constants/Ton';
+
+type RequestEventArgs = Omit<
+  SignClientTypes.EventArguments['session_request'],
+  'verifyContext'
+>;
+
+export async function validateTonRequest(requestEvent: RequestEventArgs) {
+  const { params, id } = requestEvent;
+  const { request } = params;
+
+  const payload = Array.isArray(request.params)
+    ? request.params[0]
+    : request.params || {};
+
+  const wallet = await getWallet();
+
+  try {
+    switch (request.method) {
+      case TON_SIGNING_METHODS.SIGN_DATA:
+        wallet.validateSignData(payload);
+        break;
+      case TON_SIGNING_METHODS.SEND_MESSAGE:
+        wallet.validateSendMessage(payload);
+        break;
+      default:
+        throw new Error(getSdkError('INVALID_METHOD').message);
+    }
+  } catch (error: any) {
+    LogStore.error(error.message, 'TonRequestHandler', 'validateTonRequest', {
+      error: serializeError(error),
+      method: request.method,
+    });
+    return formatJsonRpcError(id, error.message);
+  }
+}
+
+export async function approveTonRequest(
+  requestEvent: RequestEventArgs,
+  session: SessionTypes.Struct,
+) {
+  const { params, id } = requestEvent;
+  const { chainId, request } = params;
+
+  SettingsStore.setActiveChainId(chainId);
+
+  const wallet = await getWallet();
+
+  switch (request.method) {
+    case TON_SIGNING_METHODS.SIGN_DATA:
+      try {
+        const payload = Array.isArray(request.params)
+          ? request.params[0]
+          : request.params;
+        let domain: string;
+        try {
+          domain = new URL(session.peer.metadata.url).hostname;
+        } catch {
+          return formatJsonRpcError(id, 'Invalid peer metadata URL');
+        }
+        const result = await wallet.signData(payload, domain, chainId);
+        return formatJsonRpcResult(id, result);
+      } catch (error: any) {
+        LogStore.error(error.message, 'TonRequestHandler', 'signData', {
+          error: serializeError(error),
+        });
+        return formatJsonRpcError(id, error.message);
+      }
+    case TON_SIGNING_METHODS.SEND_MESSAGE:
+      try {
+        const txParams = Array.isArray(request.params)
+          ? request.params[0]
+          : request.params;
+        const result = await wallet.sendMessage(txParams, chainId);
+        return formatJsonRpcResult(id, result);
+      } catch (error: any) {
+        LogStore.error(error.message, 'TonRequestHandler', 'sendMessage', {
+          error: serializeError(error),
+        });
+        return formatJsonRpcError(id, error.message);
+      }
+    default:
+      throw new Error(getSdkError('INVALID_METHOD').message);
+  }
+}
+
+export function rejectTonRequest(request: RequestEventArgs) {
+  const { id } = request;
+
+  return formatJsonRpcError(id, getSdkError('USER_REJECTED').message);
+}

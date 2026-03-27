@@ -1,20 +1,27 @@
 import {
-  Text,
-  TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   StyleProp,
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
+
+type ButtonVariant = 'primary' | 'secondary';
 
 export interface ActionButtonProps {
   onPress: () => void;
   children: React.ReactNode;
-  secondary?: boolean;
+  /** Button variant: 'primary' (accent/blue) or 'secondary' (gray outline) */
+  variant?: ButtonVariant;
   loading?: boolean;
   disabled?: boolean;
+  silentDisabled?: boolean;
+  /** When true, button expands to fill container width */
+  fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   testID?: string;
@@ -23,31 +30,62 @@ export interface ActionButtonProps {
 export function ActionButton({
   onPress,
   children,
-  secondary = false,
+  variant = 'primary',
   loading,
   disabled,
+  silentDisabled = false,
+  fullWidth = false,
   style,
   textStyle,
   testID,
 }: ActionButtonProps) {
   const Theme = useTheme();
-  const backgroundColor = secondary ? Theme['bg-200'] : Theme['accent-100'];
-  const textColor = secondary ? Theme['fg-100'] : Theme['inverse-100'];
-  const loaderColor = secondary ? Theme['fg-100'] : Theme['inverse-100'];
+
+  const getButtonStyles = () => {
+    if (variant === 'primary') {
+      // Primary: Blue filled button (accent color)
+      return {
+        backgroundColor: disabled
+          ? Theme['foreground-accent-primary-60']
+          : Theme['bg-accent-primary'],
+        textColor: Theme['text-invert'],
+        borderColor: disabled ? 'transparent' : Theme['bg-accent-primary'],
+      };
+    }
+
+    // Secondary: Gray outline button
+    return {
+      backgroundColor: Theme['bg-primary'],
+      textColor: disabled ? Theme['text-secondary'] : Theme['text-primary'],
+      borderColor: disabled
+        ? Theme['border-primary']
+        : Theme['border-secondary'],
+    };
+  };
+
+  const { backgroundColor, textColor, borderColor } = getButtonStyles();
+  const loaderColor = textColor;
+
   return (
-    <TouchableOpacity
+    <Button
       onPress={onPress}
       testID={testID}
-      disabled={disabled || loading}
-      style={[styles.container, {backgroundColor}, style]}>
+      disabled={disabled || loading || silentDisabled}
+      style={[
+        styles.container,
+        { backgroundColor, borderColor },
+        fullWidth && styles.fullWidth,
+        style,
+      ]}
+    >
       {loading ? (
         <ActivityIndicator color={loaderColor} />
       ) : (
-        <Text style={[styles.text, {color: textColor}, textStyle]}>
+        <Text variant="lg-400" style={[{ color: textColor }, textStyle]}>
           {children}
         </Text>
       )}
-    </TouchableOpacity>
+    </Button>
   );
 }
 
@@ -55,13 +93,13 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    height: 40,
+    borderRadius: BorderRadius[4],
+    paddingHorizontal: Spacing[4],
+    height: Spacing[11],
     width: 100,
+    borderWidth: 1,
   },
-  text: {
-    fontSize: 13,
-    fontWeight: '600',
+  fullWidth: {
+    width: '100%',
   },
 });

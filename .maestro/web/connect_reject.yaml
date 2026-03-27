@@ -3,7 +3,7 @@ name: AppKit Web to React Native Wallet Connection Rejected
 ---
 - clearState
 - openLink:
-    link: https://appkit-lab.reown.com/library/wagmi/
+    link: https://lab.reown.com/library/wagmi/
     browser: true
 - startRecording: "Web to Native Connection Rejected"
 - extendedWaitUntil:

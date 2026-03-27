@@ -1,0 +1,898 @@
+# Agent Documentation: POS App
+
+This file provides guidance to AI agents when working with code in this repository.
+
+## Project Overview
+
+**WPay Mobile POS** is a React Native point-of-sale application that enables merchants to accept cryptocurrency payments via WalletConnect. The app allows merchants to:
+
+- Generate QR codes for payment requests
+- Accept payments through WalletConnect-compatible wallets
+- Print thermal receipts for completed transactions
+- Manage merchant settings and configurations
+- Support multiple branded variants (white-labeling)
+
+The app is built with **Expo** and **React Native**, supporting Android, iOS, and Web platforms.
+
+## Tech Stack
+
+### Core Technologies
+
+- **React Native**: 0.81.5
+- **Expo**: ^54.0.23 (with Expo Router for navigation)
+- **TypeScript**: ~5.9.2
+- **React**: 19.1.0
+
+### Key Libraries
+
+- **@tanstack/react-query**: Data fetching and caching
+- **zustand**: State management (lightweight alternative to Redux)
+- **react-hook-form**: Form handling
+- **expo-router**: File-based routing
+- **react-native-thermal-pos-printer**: Thermal printer integration
+- **react-native-qrcode-skia**: QR code generation
+- **@shopify/react-native-skia**: Graphics rendering
+- **expo-secure-store**: Secure credential storage
+- **react-native-mmkv**: Fast key-value storage
+- **@sentry/react-native**: Error tracking and monitoring
+
+### Development Tools
+
+- **ESLint**: Code linting
+- **Prettier**: Code formatting
+- **Jest**: Testing framework
+- **patch-package**: Library patching for custom fixes
+
+## Architecture
+
+### Project Structure
+
+```
+pos-app/
+├── app/                    # Expo Router screens (file-based routing)
+│   ├── index.tsx          # Home screen
+│   ├── amount.tsx         # Amount input screen
+│   ├── scan.tsx           # QR code display & payment polling
+│   ├── payment-success.tsx # Success screen with receipt printing
+│   ├── payment-failure.tsx # Failure screen
+│   ├── settings.tsx       # Settings & configuration
+│   ├── activity.tsx       # Transaction history screen
+│   └── logs.tsx           # Debug logs viewer
+├── components/            # Reusable UI components
+├── constants/            # Theme, variants, spacing, etc.
+├── hooks/                # Custom React hooks
+├── services/             # API client and payment services
+├── store/                # Zustand state stores
+├── utils/                # Utility functions
+└── assets/               # Images, fonts, icons
+```
+
+### State Management
+
+The app uses **Zustand** for state management with two main stores:
+
+1. **`useSettingsStore`** (`store/useSettingsStore.ts`)
+   - Merchant ID and API key
+   - Theme mode (light/dark)
+   - Selected variant
+   - Device ID
+   - Biometric authentication settings
+   - Printer connection status
+   - Transaction filter preference (for Activity screen)
+
+2. **`useLogsStore`** (`store/useLogsStore.ts`)
+   - Debug logs for troubleshooting
+   - Log levels: info, warning, error
+
+### Navigation
+
+Uses **Expo Router** with file-based routing:
+
+- Routes are defined by file structure in `app/` directory
+- Navigation via `router.push()`, `router.replace()`, `router.dismiss()`
+- Type-safe routing with TypeScript
+
+## Key Features
+
+### 1. Payment Flow
+
+1. **Home Screen** (`app/index.tsx`)
+   - "New sale" button to start payment
+   - "Activity" button to view transaction history
+   - "Settings" button for configuration
+   - Validates merchant setup before allowing payments
+
+2. **Amount Input** (`app/amount.tsx`)
+   - Custom numeric keyboard component
+   - Amount formatting (always 2 decimal places)
+   - Form validation with react-hook-form
+
+3. **QR Code Display** (`app/scan.tsx`)
+   - Generates payment request via API
+   - Displays QR code for wallet scanning
+   - Polls payment status every 2 seconds
+   - Handles payment success/failure navigation
+   - Shows WalletConnect loading animation
+
+4. **Payment Success** (`app/payment-success.tsx`)
+   - Animated expanding circle background
+   - Displays payment details
+   - Option to print receipt
+   - "New Payment" button to start over
+
+5. **Payment Failure** (`app/payment-failure.tsx`)
+   - Displays error information
+   - Allows retry or return to home
+
+6. **Activity Screen** (`app/activity.tsx`)
+   - Transaction history list with pull-to-refresh
+   - Filter tabs: All, Failed, Pending, Completed
+   - Transaction detail modal on tap
+   - Empty state when no transactions
+   - Uses unified API for data fetching
+
+### 2. Receipt Printing
+
+- **Thermal Printer Support** (`utils/printer.ts`)
+  - Bluetooth/USB printer connection
+  - Receipt generation with:
+    - Variant-specific logo (base64 encoded)
+    - Transaction ID, date, payment method
+    - Amount in USD
+    - Token symbol and amount (if applicable)
+    - Network name
+  - Automatic paper cutting after print
+  - Error handling and logging
+
+### 3. Settings & Configuration
+
+- **Merchant Setup** (`app/settings.tsx`)
+  - Merchant ID input
+  - API key configuration (stored securely)
+  - Device ID generation/management
+  - Variant selection dropdown
+  - Theme mode toggle (light/dark)
+  - Biometric authentication toggle
+  - Printer connection testing
+  - Test receipt printing
+  - App version display
+  - Logs viewer access
+
+### 4. Security Features
+
+- **Secure Storage**: API keys stored in `expo-secure-store`
+- **Biometric Authentication**: Face ID / Touch ID support
+- **PIN Protection**: Optional PIN modal for sensitive actions
+- **Secure Credentials**: Never logged or exposed
+
+### 5. Theme System
+
+- **Light/Dark Mode**: System-aware theme switching
+- **Variant Support**: Multiple branded variants (see Variants System section)
+- **Dynamic Colors**: Theme colors adapt based on variant selection
+- **Accessibility**: Proper contrast ratios maintained
+
+## Payment API Integration
+
+### API Client (`services/client.ts`)
+
+- Base URL from `EXPO_PUBLIC_API_URL` environment variable
+- Shared `getApiHeaders()` helper for authenticated requests
+- Request/response interceptors
+- Error handling
+
+### Payment Service (`services/payment.ts` / `services/payment.web.ts`)
+
+> **Important: Platform-specific service files.** The payment service has two implementations:
+>
+> - **`services/payment.ts`** — Native (iOS/Android): uses `apiClient` from `services/client.ts` to call the merchant API directly.
+> - **`services/payment.web.ts`** — Web: uses Vercel serverless proxies (`/api/*`) to avoid CORS issues. Each API function calls a corresponding proxy in the `api/` directory.
+>
+> **When adding new API functions, you must add them to BOTH files** and create a corresponding Vercel serverless proxy in `api/`. The same pattern applies to `services/transactions.ts` / `services/transactions.web.ts`.
+
+**`startPayment(request)`**
+
+- Creates new payment request
+- Requires merchant ID and API key
+- Returns payment ID and QR code URI
+
+**`getPaymentStatus(paymentId)`**
+
+- Polls payment status
+- Returns payment state (pending, completed, failed)
+- Includes transaction details when completed
+
+**`cancelPayment(paymentId)`**
+
+- Cancels a payment (only works from `requires_action` state)
+- Returns 400 if payment is already in a terminal or processing state
+
+### Authentication Headers
+
+All Payment API requests include:
+
+- `Api-Key`: Merchant API key
+- `Merchant-Id`: Merchant identifier
+- `WCP-Version`: API version for backward compatibility (e.g., `"2026-02-19.preview"`)
+- `Sdk-Name`: "pos-device"
+- `Sdk-Version`: "1.0.0"
+- `Sdk-Platform`: "react-native" (native) or "web" (Vercel proxies)
+
+### Transactions Service (`services/transactions.ts`)
+
+> **Note:** The Merchants API currently has its own auth layer separate from the Payment API. Both share the same base URL (`EXPO_PUBLIC_API_URL`), but merchant endpoints authenticate via `EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY` (sent as `x-api-key` header) rather than the partner API key used by payment endpoints. This will be unified in the future.
+
+**`getTransactions(options)`**
+
+- Fetches merchant transaction history
+- Endpoint: `GET /merchants/{merchant_id}/payments`
+- Uses the shared base URL (`EXPO_PUBLIC_API_URL`) but authenticates with `EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY`
+- Supports filtering by status, date range, pagination
+- Returns array of `PaymentRecord` objects
+
+### Server-Side Proxy (`api/transactions.ts`)
+
+- Vercel serverless function that proxies transaction requests (web only)
+- Client only sends `x-merchant-id` header; API key is handled server-side via `EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY`
+- Avoids CORS issues by making requests server-side
+
+### useTransactions Hook (`services/hooks.ts`)
+
+```typescript
+import { useTransactions } from "@/services/hooks";
+
+const { data, isLoading, isError, refetch } = useTransactions({
+  filter: "all", // "all" | "completed" | "pending" | "failed"
+  enabled: true,
+});
+```
+
+- React Query hook with built-in caching (5 min stale time, 30 min cache)
+- Automatic retry on failure (2 retries)
+- Client-side filtering via `filter` option
+- Logs errors to `useLogsStore` for debugging
+
+## Environment Variables
+
+Required environment variables (`.env`):
+
+```bash
+EXPO_PUBLIC_PROJECT_ID=""              # WalletConnect project ID
+EXPO_PUBLIC_SENTRY_DSN=""              # Sentry error tracking DSN
+SENTRY_AUTH_TOKEN=""                   # Sentry authentication token
+EXPO_PUBLIC_API_URL=""                 # Payment API base URL
+EXPO_PUBLIC_GATEWAY_URL=""             # WalletConnect gateway URL
+EXPO_PUBLIC_DEFAULT_MERCHANT_ID=""     # Default merchant ID (optional)
+EXPO_PUBLIC_DEFAULT_CUSTOMER_API_KEY="" # Default customer API key (optional)
+EXPO_PUBLIC_MERCHANT_API_URL=""        # Merchant Portal API base URL
+EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY="" # Merchant Portal API key (for Activity screen)
+```
+
+Copy `.env.example` to `.env` and fill in values.
+
+## Development Setup
+
+### Prerequisites
+
+- Node.js (LTS version recommended)
+- Android Studio (for Android development)
+- Xcode (for iOS development on macOS)
+- Expo CLI
+
+### Package Manager
+
+This project uses **npm** (not pnpm or yarn). Always use `npm` commands for installing dependencies and running scripts.
+
+### Getting Started
+
+1. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+2. **Set up environment variables**
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your values
+   ```
+
+3. **Create native folders**
+
+   ```bash
+   npm run prebuild
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run android    # Android
+   npm run ios        # iOS
+   npm run web        # Web
+   ```
+
+### Available Scripts
+
+- `npm start`: Start Expo dev server
+- `npm run android`: Run on Android
+- `npm run ios`: Run on iOS
+- `npm run web`: Run on web
+- `npm run android:build`: Build Android release APK
+- `npm run lint`: Run ESLint
+- `npm test`: Run Jest tests
+
+## Important Files & Directories
+
+### Core Application Files
+
+- **`app/_layout.tsx`**: Root layout with navigation setup
+- **`app/index.tsx`**: Home screen entry point
+- **`app/amount.tsx`**: Payment amount input
+- **`app/scan.tsx`**: QR code display and payment polling
+- **`app/payment-success.tsx`**: Success screen with animations
+- **`app/payment-failure.tsx`**: Error handling screen
+- **`app/settings.tsx`**: Settings and configuration
+
+### Services & API
+
+- **`services/client.ts`**: API client and shared auth headers (`getApiHeaders`) — native only
+- **`services/payment.ts`**: Payment API functions (native: direct API)
+- **`services/payment.web.ts`**: Payment API functions (web: uses Vercel serverless proxies)
+- **`services/transactions.ts`**: Transaction fetching (native: direct API)
+- **`services/transactions.web.ts`**: Transaction fetching (web: server-side proxy)
+- **`services/hooks.ts`**: React Query hooks for API calls (including `useTransactions`)
+- **`api/payment.ts`**: Vercel serverless proxy for payment creation (web)
+- **`api/payment-status.ts`**: Vercel serverless proxy for payment status (web)
+- **`api/cancel-payment.ts`**: Vercel serverless proxy for payment cancellation (web)
+- **`api/transactions.ts`**: Vercel serverless proxy for transaction list (web)
+
+### Utilities
+
+- **`utils/printer.ts`**: Thermal printer integration
+- **`utils/currency.ts`**: Currency formatting utilities
+- **`utils/misc.ts`**: Date formatting and helpers
+- **`utils/navigation.ts`**: Navigation helpers
+- **`utils/secure-storage.ts`**: Secure storage wrapper
+- **`utils/biometrics.ts`**: Biometric authentication helpers
+
+### State Management
+
+- **`store/useSettingsStore.ts`**: App settings and configuration
+- **`store/useLogsStore.ts`**: Debug logging store
+
+### Constants
+
+- **`constants/theme.ts`**: Base theme color definitions
+- **`constants/variants.ts`**: Variant configurations
+- **`constants/printer-logos.ts`**: Base64-encoded printer logos
+- **`constants/spacing.ts`**: Spacing scale constants
+
+### Components
+
+- **`components/qr-code.tsx`**: QR code display component
+- **`components/numeric-keyboard.tsx`**: Custom numeric input
+- **`components/pin-modal.tsx`**: PIN entry modal
+- **`components/button.tsx`**: Themed button component
+- **`components/themed-text.tsx`**: Theme-aware text component
+- **`components/status-badge.tsx`**: Transaction status badge (Completed/Pending/Failed)
+- **`components/transaction-card.tsx`**: Transaction list item
+- **`components/filter-tabs.tsx`**: Filter tabs for Activity screen
+- **`components/transaction-detail-modal.tsx`**: Transaction detail bottom sheet
+- **`components/empty-state.tsx`**: Reusable empty state component
+
+## Variants System
+
+This POS app supports a **variants system** that allows for minor UI customizations while maintaining the same core functionality. Variants enable white-labeling and branding customization for different clients or use cases.
+
+### Architecture
+
+#### Core Components
+
+1. **Theme System** (`constants/theme.ts`)
+   - Defines base color palette for light and dark modes
+   - Provides default colors used across the app
+   - Colors can be overridden by variants
+
+2. **Variants Configuration** (`constants/variants.ts`)
+   - Defines available variants and their customizations
+   - Each variant can override theme colors, logos, and default theme mode
+   - Variants are selected via settings and stored in Zustand store
+
+3. **Printer Logos** (`constants/printer-logos.ts`)
+   - Contains base64-encoded logos for thermal printer receipts
+   - Each variant has its own printer logo
+   - Default logo uses `brand.png` converted to base64
+
+### How Variants Work
+
+#### Variant Structure
+
+Each variant is defined with:
+
+- **name**: Display name (e.g., "Solflare", "Binance")
+- **brandLogo**: Image asset for UI branding (loaded via `require()`)
+- **brandLogoWidth**: Optional width override for brand logo
+- **printerLogo**: Base64-encoded string for receipt printing
+- **defaultTheme**: Optional default theme mode ("light" or "dark")
+- **colors**: Color overrides for light and dark themes
+
+#### Color Override System
+
+Variants can override any color from the base theme:
+
+- Colors are merged with base theme colors
+- Only specified colors are overridden; others use defaults
+- Both light and dark theme overrides are supported
+
+#### Example Variant
+
+```typescript
+solflare: {
+  name: "Solflare",
+  brandLogo: require("@/assets/images/variants/solflare_brand.png"),
+  printerLogo: SOLFLARE_LOGO_BASE64,
+  defaultTheme: "dark",
+  colors: {
+    light: {
+      "icon-accent-primary": "#FFEF46",
+      "bg-accent-primary": "#FFEF46",
+      "bg-payment-success": "#FFEF46",
+      "text-payment-success": "#202020",
+      "border-payment-success": "#363636",
+      "text-invert": "#202020",
+    },
+    dark: {
+      // Similar overrides for dark theme
+    },
+  },
+}
+```
+
+### Available Variants
+
+1. **default**: Base variant with blue accent colors (#0988F0)
+2. **solflare**: Yellow/gold branding (#FFEF46)
+3. **binance**: Yellow branding (#FCD533)
+4. **phantom**: Purple branding (#AB9FF2)
+5. **solana**: Purple branding (#9945FF)
+
+### Key Color Tokens
+
+Commonly overridden colors in variants:
+
+- `bg-accent-primary`: Primary accent background
+- `bg-payment-success`: Payment success screen background
+- `icon-accent-primary`: Accent icon color
+- `text-payment-success`: Text color on success screen
+- `border-payment-success`: Border color for success elements
+- `text-invert`: Inverted text (for dark backgrounds)
+
+### Usage in Components
+
+#### Accessing Theme Colors
+
+```typescript
+import { useTheme } from "@/hooks/use-theme-color";
+
+const Theme = useTheme();
+// Theme["bg-payment-success"] will use variant override if set
+```
+
+#### Variant Selection
+
+Variants are stored in Zustand store (`store/useSettingsStore.ts`):
+
+- Selected variant persists across app sessions
+- Can be changed in Settings screen
+- Affects all themed components immediately
+
+### Creating New Variants
+
+#### Steps
+
+1. **Add variant logo image**
+   - Place in `assets/images/variants/<variant-name>_brand.png`
+   - PNG format recommended
+
+2. **Convert logo to base64 for printer**
+   - Use online tool or command: `base64 -i assets/images/variants/<variant-name>_brand.png`
+   - Add to `constants/printer-logos.ts` as `export const <VARIANT>_LOGO_BASE64`
+
+3. **Define variant in `constants/variants.ts`**
+   - Add variant name to `VariantName` type
+   - Import printer logo base64
+   - Add variant configuration to `Variants` object
+   - Specify color overrides for light/dark themes
+
+4. **Update version code** (if needed)
+   - Increment `expo.android.versionCode` in `app.json`
+
+#### Example: Adding a New Variant
+
+```typescript
+// 1. In printer-logos.ts
+export const MYVARIANT_LOGO_BASE64 = "data:image/png;base64,...";
+
+// 2. In variants.ts
+import { MYVARIANT_LOGO_BASE64 } from "./printer-logos";
+
+export type VariantName =
+  | "default"
+  | "solflare"
+  | "binance"
+  | "phantom"
+  | "solana"
+  | "myvariant"; // Add here
+
+export const Variants: Record<VariantName, Variant> = {
+  // ... existing variants
+  myvariant: {
+    name: "My Variant",
+    brandLogo: require("@/assets/images/variants/myvariant_brand.png"),
+    printerLogo: MYVARIANT_LOGO_BASE64,
+    defaultTheme: "light",
+    colors: {
+      light: {
+        "bg-accent-primary": "#CUSTOM_COLOR",
+        "bg-payment-success": "#CUSTOM_COLOR",
+        // ... other overrides
+      },
+      dark: {
+        // ... dark theme overrides
+      },
+    },
+  },
+};
+```
+
+### Important Notes
+
+1. **Color Contrast**: When overriding colors, ensure sufficient contrast for accessibility
+   - Light backgrounds need dark text
+   - Dark backgrounds need light text
+   - Some variants use `text-invert` override for better contrast
+
+2. **Printer Logos**: Must be base64-encoded PNG strings
+   - Format: `"data:image/png;base64,<base64-string>"`
+   - Used in thermal printer receipts
+   - Logo size is automatically handled by printer library
+
+3. **Default Theme**: Variants can specify a default theme mode
+   - Users can still switch themes manually
+   - Default applies on first launch
+
+4. **Payment Success Color**: The `bg-payment-success` color is used for:
+   - Payment success screen background (expanding circle animation)
+   - Success screen buttons
+   - Success screen text (via `text-payment-success`)
+
+5. **Variant Persistence**: Selected variant is stored in Zustand store
+   - Persists across app restarts
+   - Can be changed in Settings screen
+
+### Testing Variants
+
+1. Open Settings screen
+2. Select different variants from dropdown
+3. Verify:
+   - Brand logo changes in header
+   - Accent colors update throughout app
+   - Payment success screen uses variant colors
+   - Receipt printing uses variant logo
+
+### Related Files
+
+- `constants/theme.ts`: Base theme colors
+- `constants/variants.ts`: Variant definitions
+- `constants/printer-logos.ts`: Printer logo base64 strings
+- `store/useSettingsStore.ts`: Variant selection state
+- `app/settings.tsx`: Variant selection UI
+- `hooks/use-theme-color.ts`: Theme color hook with variant support
+
+## Production Builds
+
+### Android Release
+
+1. **Required Files** (get from mobile team or 1Password):
+   - `android/secrets.properties`
+   - `android/app/wc_rn_upload.keystore`
+
+2. **Build Release APK**:
+
+   ```bash
+   npm run android:build
+   ```
+
+   Output: `android/app/build/outputs/apk/release/app-release.apk`
+
+3. **Install via USB**:
+   ```bash
+   adb devices  # Get device ID
+   adb -s <DEVICE_ID> install android/app/build/outputs/apk/release/app-release.apk
+   ```
+
+### Version Management
+
+**⚠️ Important: For every new feature or change, you MUST update the Android version code in `app.json`.**
+
+- **Increment version code**: Update `expo.android.versionCode` in `app.json` for each change
+- **Current version code**: Check the current value in `app.json` and increment by 1
+- **Why**: Android requires a unique version code for each release. Without incrementing, new builds cannot be installed over previous versions
+- **Example**: If current version code is `15`, change it to `16` for your changes
+- Current version code: 16
+
+## Key Dependencies & Their Purposes
+
+- **@tanstack/react-query**: Manages API calls, caching, and polling for payment status
+- **zustand**: Lightweight state management for settings and logs
+- **expo-router**: File-based routing system
+- **react-native-thermal-pos-printer**: Bluetooth/USB thermal printer integration
+- **react-native-qrcode-skia**: QR code generation for payment requests
+- **expo-secure-store**: Secure storage for API keys and sensitive data
+- **react-native-mmkv**: Fast key-value storage for non-sensitive data
+- **expo-local-authentication**: Biometric authentication (Face ID/Touch ID)
+- **@sentry/react-native**: Error tracking and crash reporting
+- **react-hook-form**: Form handling and validation
+- **react-native-reanimated**: Animations (used in payment success screen)
+
+## Common Patterns
+
+### Theme Usage
+
+```typescript
+import { useTheme } from "@/hooks/use-theme-color";
+
+const Theme = useTheme();
+// Access colors: Theme["bg-accent-primary"]
+```
+
+### Navigation
+
+```typescript
+import { router } from "expo-router";
+
+// Navigate to screen
+router.push("/amount");
+
+// Navigate with params
+router.push({
+  pathname: "/scan",
+  params: { amount: "10.00" },
+});
+
+// Replace current screen
+router.replace("/payment-success");
+
+// Dismiss modal
+router.dismiss();
+```
+
+### API Calls
+
+```typescript
+import { usePaymentStatus } from "@/services/hooks";
+
+const { data, isLoading, error } = usePaymentStatus(paymentId, {
+  enabled: !!paymentId,
+  refetchInterval: 2000, // Poll every 2 seconds
+});
+```
+
+### Secure Storage
+
+```typescript
+import { secureStorage, SECURE_STORAGE_KEYS } from "@/utils/secure-storage";
+
+// Store
+await secureStorage.setItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY, apiKey);
+
+// Retrieve
+const apiKey = await secureStorage.getItem(
+  SECURE_STORAGE_KEYS.CUSTOMER_API_KEY,
+);
+```
+
+## Code Quality Guidelines
+
+### Debugging and Logging
+
+**⚠️ Important: Do NOT leave `console.log()` statements in production code.**
+
+- **Use the logging system**: For debugging, use the app's built-in logging system via `useLogsStore`:
+
+  ```typescript
+  import { useLogsStore } from "@/store/useLogsStore";
+
+  const addLog = useLogsStore((state) => state.addLog);
+  addLog("info", "Payment completed", "payment-success", "handlePrintReceipt");
+  ```
+
+- **Remove console.logs before committing**: Always remove any `console.log()`, `console.error()`, or other console statements before committing code.
+
+- **View logs in app**: Users can view logs in the Settings screen → View Logs
+
+- **Production builds**: Console statements can impact performance and expose sensitive information in production builds.
+
+### After Making Changes
+
+**Always run these checks and fix any errors before committing:**
+
+```bash
+npm run lint          # Check and fix ESLint errors
+npx prettier --write . # Format code with Prettier
+npx tsc --noEmit      # Check for TypeScript errors
+npm test              # Run Jest tests
+```
+
+Fix any errors found. Pre-existing TypeScript errors in unrelated files can be ignored.
+
+### Before Creating a PR
+
+**Always run lint and prettier before creating a PR to ensure code is clean:**
+
+```bash
+npm run lint --fix     # Fix all auto-fixable lint issues
+npx prettier --write . # Format all files with Prettier
+```
+
+These must pass without errors before pushing or creating a PR.
+
+**When moving exports between modules**, update any `jest.mock()` calls in tests that mock the source or destination module. Mocks that use a manual factory (e.g., `jest.mock("@/services/client", () => ({ ... }))`) replace the entire module — any export not included in the factory becomes `undefined` at runtime, which silently breaks tests.
+
+### Code Style
+
+- Follow TypeScript best practices
+- Use ESLint and Prettier for consistent formatting
+- Prefer functional components with hooks
+- Use TypeScript types/interfaces for all props and data structures
+- No trailing whitespace
+
+## Troubleshooting
+
+### Printer Issues
+
+- Check Bluetooth permissions in Android settings
+- Verify printer is paired and connected
+- Check logs in Settings → View Logs
+- Test connection via Settings → Test Printer Connection
+
+### Payment Issues
+
+- Verify merchant ID and API key in Settings
+- Check network connectivity
+- Review logs for API errors
+- Ensure `EXPO_PUBLIC_API_URL` is correctly configured
+
+### Build Issues
+
+- Run `npm run prebuild` after dependency changes
+- Clear Metro cache: `npx expo start --clear`
+- Clean Android build: `cd android && ./gradlew clean`
+
+## Desktop Web Frame System
+
+When the app is viewed on desktop web browsers, it renders inside a simulated POS device frame to provide a realistic preview of the mobile experience. This system handles frame rendering, scaling, and modal positioning.
+
+### Architecture
+
+#### Core Components
+
+1. **Desktop Frame Wrapper** (`components/desktop-frame-wrapper.web.tsx`)
+   - Wraps the entire app in a device frame on desktop web
+   - Detects desktop vs mobile web using `useIsDesktopWeb` hook
+   - Auto-scales the frame to fit the browser window
+   - Provides modal portal context for rendering modals inside the frame
+   - On mobile web or native, renders children unchanged (no frame)
+
+2. **Desktop Frame Constants** (`constants/desktop-frame.ts`)
+   - Defines device dimensions (width, height)
+   - Bezel styling (width, color, radius)
+   - Screen radius for rounded corners
+   - Background colors for light/dark themes
+   - Box shadow for depth effect
+
+3. **useIsDesktopWeb Hook** (`hooks/use-is-desktop-web.ts`)
+   - Returns `true` when running on desktop web (window width > 768px)
+   - Returns `false` on mobile web or native platforms
+   - Listens for window resize events to update dynamically
+
+### Web Entry Point
+
+The desktop frame is applied in `index.web.tsx`:
+
+```typescript
+import { DesktopFrameWrapper } from "@/components/desktop-frame-wrapper.web";
+
+function WrappedApp() {
+  return (
+    <DesktopFrameWrapper>
+      <App />
+    </DesktopFrameWrapper>
+  );
+}
+```
+
+### Modal Portal System
+
+React Native's `<Modal>` component renders at the viewport level with fixed positioning, which causes modals to appear outside the device frame on desktop web. To solve this, a portal system renders modals inside the frame.
+
+#### Components
+
+1. **Modal Portal Context** (`components/modal-portal-context.tsx`)
+   - Provides a ref to the modal container element
+   - Used by web modals to render via `createPortal`
+
+2. **FramedModal** (`components/framed-modal.tsx` / `framed-modal.web.tsx`)
+   - Platform-specific modal wrapper
+   - **Native** (`framed-modal.tsx`): Uses React Native's `<Modal>` directly
+   - **Web** (`framed-modal.web.tsx`): Uses `createPortal` to render inside the frame container
+
+#### Usage
+
+Replace `<Modal>` with `<FramedModal>` for modals that should appear inside the device frame:
+
+```typescript
+import { FramedModal } from "./framed-modal";
+
+function MyModal({ visible, onClose, children }) {
+  return (
+    <FramedModal visible={visible} onRequestClose={onClose}>
+      {/* Modal content - include your own overlay and container */}
+      <Pressable style={styles.overlay} onPress={onClose}>
+        <View style={styles.container}>
+          {children}
+        </View>
+      </Pressable>
+    </FramedModal>
+  );
+}
+```
+
+#### How It Works
+
+1. `DesktopFrameWrapper` creates a container div with `ref={modalContainerRef}`
+2. `ModalPortalProvider` makes this ref available via context
+3. `FramedModal.web.tsx` uses `useModalPortal()` to get the container ref
+4. When visible, it renders children via `createPortal(content, containerRef.current)`
+5. This positions the modal inside the frame instead of at viewport level
+
+### Frame Scaling
+
+The frame automatically scales to fit the browser window:
+
+- Calculates available height (window height minus label)
+- Computes scale factor: `Math.min(1, availableHeight / totalFrameHeight)`
+- Applies CSS transform: `transform: scale(${scale})`
+- Maintains aspect ratio and centers the frame
+
+### Theme Support
+
+The frame adapts to light/dark mode:
+
+- Background color changes based on color scheme
+- Screen background matches app theme
+- Bezel color remains constant (device hardware appearance)
+
+### Related Files
+
+- `index.web.tsx`: Web entry point with DesktopFrameWrapper
+- `components/desktop-frame-wrapper.web.tsx`: Frame wrapper component
+- `components/modal-portal-context.tsx`: Modal portal context provider
+- `components/framed-modal.tsx`: Native modal wrapper
+- `components/framed-modal.web.tsx`: Web modal with portal support
+- `constants/desktop-frame.ts`: Frame dimension constants
+- `hooks/use-is-desktop-web.ts`: Desktop detection hook
+
+### Important Notes
+
+1. **Platform-specific files**: The `.web.tsx` suffix ensures the web version is used only on web platform
+2. **Modal children**: `FramedModal` only provides the container; children must include their own overlay and content styling
+3. **Escape key**: `FramedModal.web` handles Escape key to close modals
+4. **Mobile web fallback**: If no portal container exists (mobile web), the modal renders in place with absolute positioning
+
+## Additional Resources
+
+- **README.md**: Setup and development instructions
+- **app.json**: Expo configuration
+- **package.json**: Dependencies and scripts
+- **tsconfig.json**: TypeScript configuration

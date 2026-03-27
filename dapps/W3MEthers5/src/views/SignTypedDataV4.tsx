@@ -1,31 +1,29 @@
 import React, {useState} from 'react';
-import {View} from 'react-native';
 import {Button} from '@reown/appkit-ui-react-native';
 
-import {RequestModal} from '../components/RequestModal';
-
-import {
-  useAppKitAccount,
-  useAppKitProvider,
-} from '@reown/appkit-ethers5-react-native';
+import {useAccount, useProvider} from '@reown/appkit-react-native';
 import {eip712} from '../utils/eip712';
-// import {ethers} from 'ethers';
+import {ToastUtils} from '../utils/ToastUtils';
 
 export function SignTypedDataV4() {
-  const [requestModalVisible, setRequetsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<string | undefined>();
-  const [error, setError] = useState(false);
-  const {walletProvider} = useAppKitProvider();
-  const {isConnected, address} = useAppKitAccount();
+
+  const {provider} = useProvider();
+  const {isConnected, address} = useAccount();
+
+  const onSuccess = (data: any) => {
+    ToastUtils.showSuccessToast('Sign successful', data);
+  };
+
+  const onError = (error: Error) => {
+    ToastUtils.showErrorToast('Sign failed', error.message);
+  };
 
   const onPress = async () => {
-    if (!isConnected || !walletProvider) {
+    if (!isConnected || !provider) {
       return;
     }
 
-    setData(undefined);
-    setError(false);
     setIsLoading(true);
 
     try {
@@ -37,34 +35,22 @@ export function SignTypedDataV4() {
       const params = [address, message];
 
       // send message
-      const signature = await walletProvider.request({
+      const signature = await provider.request({
         method: 'eth_signTypedData_v4',
         params: params,
       });
 
-      setData(signature?.toString());
+      onSuccess(signature?.toString());
     } catch (e) {
-      console.log(e);
-      setError(true);
+      onError(new Error('Error signing typed data'));
     } finally {
       setIsLoading(false);
-      setRequetsModalVisible(true);
     }
   };
 
   return isConnected ? (
-    <View>
-      <Button disabled={requestModalVisible} onPress={onPress}>
-        Sign typed data (v4)
-      </Button>
-
-      <RequestModal
-        isVisible={requestModalVisible}
-        isLoading={isLoading}
-        rpcResponse={data ? data : undefined}
-        rpcError={error ? 'Error signing typed data' : undefined}
-        onClose={() => setRequetsModalVisible(false)}
-      />
-    </View>
+    <Button disabled={isLoading} onPress={onPress}>
+      Sign typed data (v4)
+    </Button>
   ) : null;
 }

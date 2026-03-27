@@ -14,6 +14,7 @@ import {
   celo,
   aurora,
   sepolia,
+  monadTestnet,
 } from '@wagmi/core/chains';
 
 export const chains: CreateConfigParameters['chains'] = [
@@ -30,4 +31,5 @@ export const chains: CreateConfigParameters['chains'] = [
   celo,
   aurora,
   sepolia,
+  monadTestnet,
 ];

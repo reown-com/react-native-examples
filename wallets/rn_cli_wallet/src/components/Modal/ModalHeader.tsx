@@ -1,65 +1,67 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
-import {SignClientTypes, Verify} from '@walletconnect/types';
+import { SignClientTypes } from '@walletconnect/types';
 
-import {useTheme} from '@/hooks/useTheme';
-import VerifiedDomain from '@/assets/VerifiedDomain.png';
-import VerifyTag from '@/components/VerifyTag';
+import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
+import { ModalCloseButton } from '../ModalCloseButton';
 
 interface ModalHeaderProps {
   metadata?: SignClientTypes.Metadata;
   intention?: string;
-  verifyContext?: Verify.Context;
-  showVerifyContext?: boolean;
   isLinkMode?: boolean;
+  onClose?: () => void;
 }
 
 export function ModalHeader({
   metadata,
   intention,
-  verifyContext,
-  showVerifyContext = true,
   isLinkMode,
+  onClose,
 }: ModalHeaderProps) {
   const Theme = useTheme();
-  const color = Theme['fg-100'];
-  const validation = verifyContext?.verified.validation;
-  const isScam = verifyContext?.verified.isScam;
+
+  // Build the title - e.g., "Sign a message for Aave"
+  const title = intention
+    ? `${intention} ${metadata?.name || 'Unknown'}`
+    : metadata?.name || 'Unknown';
 
   return (
     <View style={styles.container}>
+      {/* Close button */}
+      {onClose && (
+        <ModalCloseButton style={styles.closeButton} onPress={onClose} />
+      )}
+
+      {/* Link mode badge */}
       {isLinkMode && (
         <View
           style={[
             styles.linkModeContainer,
             {
-              backgroundColor: Theme['accent-100'],
+              backgroundColor: Theme['bg-accent-primary'],
             },
-          ]}>
-          <Text style={[styles.linkMode, {color: Theme['inverse-100']}]}>
+          ]}
+        >
+          <Text variant="sm-400" color="text-invert">
             LINK MODE
           </Text>
         </View>
       )}
+
+      {/* App icon */}
       {metadata?.icons[0] && (
         <Image
-          source={{uri: metadata?.icons[0] ?? ''}}
-          style={[styles.logo, {borderColor: Theme['gray-glass-010']}]}
+          source={{ uri: metadata?.icons[0] ?? '', cache: 'force-cache' }}
+          style={[styles.logo, { borderColor: Theme['border-primary'] }]}
         />
       )}
-      <Text style={[styles.title, {color}]}>{metadata?.name || 'Unknown'}</Text>
-      {intention && <Text style={[styles.desc, {color}]}>{intention}</Text>}
-      <View style={styles.domainContainer}>
-        {!isScam && validation === 'VALID' && (
-          <Image source={VerifiedDomain} style={styles.icon} />
-        )}
-        <Text style={[styles.domain, {color: Theme['fg-200']}]}>
-          {metadata?.url || 'unknown domain'}
-        </Text>
-      </View>
-      {showVerifyContext && (
-        <VerifyTag validation={validation} isScam={isScam} style={styles.tag} />
-      )}
+
+      {/* Title */}
+      <Text variant="h6-400" color="text-primary" style={styles.title}>
+        {title}
+      </Text>
     </View>
   );
 }
@@ -68,51 +70,36 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: Spacing[4],
+    paddingHorizontal: Spacing[4],
+    width: '100%',
+  },
+  closeButton: {
+    marginRight: Spacing[1],
+    marginTop: Spacing[1],
+    borderWidth: 1,
+    borderRadius: BorderRadius[3],
+    alignSelf: 'flex-end',
   },
   logo: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 64,
+    height: 64,
+    borderRadius: BorderRadius[4],
     borderWidth: 1,
+    marginVertical: Spacing[2],
   },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-  },
-  desc: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  domainContainer: {
-    marginTop: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    columnGap: 4,
-  },
-  domain: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  icon: {
-    height: 16,
-    width: 16,
-  },
-  tag: {
-    marginTop: 4,
+    marginVertical: Spacing[2],
+    textAlign: 'center',
   },
   linkModeContainer: {
-    borderRadius: 20,
+    position: 'absolute',
+    borderRadius: BorderRadius[2],
     height: 25,
     width: 100,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    marginBottom: 12,
-  },
-  linkMode: {
-    fontSize: 12,
-    fontWeight: '500',
+    top: 24,
   },
 });

@@ -1,31 +1,41 @@
-import {useSnapshot} from 'valtio';
-import {useCallback, useEffect, useMemo, useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import {SignClientTypes, AuthTypes} from '@walletconnect/types';
-import {buildAuthObject, populateAuthPayload} from '@walletconnect/utils';
+import { useSnapshot } from 'valtio';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { SignClientTypes, AuthTypes } from '@walletconnect/types';
+import { buildAuthObject, populateAuthPayload } from '@walletconnect/utils';
+import Toast from 'react-native-toast-message';
 
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
-import {eip155Addresses, eip155Wallets} from '@/utils/EIP155WalletUtil';
-import {walletKit} from '@/utils/WalletKitUtil';
+import { eip155Addresses, eip155Wallets } from '@/utils/EIP155WalletUtil';
+import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
-import {handleRedirect} from '@/utils/LinkingUtils';
-import {useTheme} from '@/hooks/useTheme';
+import { handleRedirect } from '@/utils/LinkingUtils';
+import { useTheme } from '@/hooks/useTheme';
 
-import {EIP155_CHAINS, EIP155_SIGNING_METHODS} from '@/utils/PresetsUtil';
-import {RequestModal} from './RequestModal';
-import {Message} from '@/components/Modal/Message';
+import { RequestModal } from './RequestModal';
+import { Message } from '@/components/Modal/Message';
+import { AppInfoCard } from '@/components/AppInfoCard';
+import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
+import { Text } from '@/components/Text';
+import { Spacing } from '@/utils/ThemeUtil';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionAuthenticateModal() {
   const Theme = useTheme();
-  const {data} = useSnapshot(ModalStore.state);
-  const {isLinkModeRequest} = useSnapshot(SettingsStore.state);
+  const { data } = useSnapshot(ModalStore.state);
+  const { isLinkModeRequest, currentRequestVerifyContext } = useSnapshot(
+    SettingsStore.state,
+  );
+
+  const { validation, isScam } = currentRequestVerifyContext?.verified || {};
 
   const authRequest =
     data?.authRequest as SignClientTypes.EventArguments['session_authenticate'];
 
-  const {account} = useSnapshot(SettingsStore.state);
+  const { account } = useSnapshot(SettingsStore.state);
   const [messages, setMessages] = useState<
-    {authPayload: any; message: string; id: number; iss: string}[]
+    { authPayload: any; message: string; id: number; iss: string }[]
   >([]);
 
   // the chains that are supported by the wallet from the proposal
@@ -52,8 +62,8 @@ export default function SessionAuthenticateModal() {
   // Handle approve action, construct session namespace
   const onApprove = useCallback(async () => {
     if (messages.length > 0) {
+      setIsLoadingApprove(true);
       try {
-        setIsLoadingApprove(true);
         const signedAuths: AuthTypes.Cacao[] = [];
 
         messages.forEach(async message => {
@@ -74,6 +84,7 @@ export default function SessionAuthenticateModal() {
           id: messages[0].id,
           auths: signedAuths,
         });
+        haptics.requestResponse();
 
         SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
 
@@ -82,20 +93,29 @@ export default function SessionAuthenticateModal() {
           isLinkMode: isLinkModeRequest,
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
-        return;
+        LogStore.error(
+          (e as Error).message,
+          'SessionAuthenticateModal',
+          'onApprove',
+        );
+        Toast.show({
+          type: 'error',
+          text1: 'Authentication failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        SettingsStore.setIsLinkModeRequest(false);
+        ModalStore.close();
       }
     }
-    setIsLoadingApprove(false);
-    SettingsStore.setIsLinkModeRequest(false);
-    ModalStore.close();
   }, [address, messages, authRequest, isLinkModeRequest]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
     if (authRequest) {
+      setIsLoadingReject(true);
       try {
-        setIsLoadingReject(true);
         await walletKit.rejectSessionAuthenticate({
           id: authRequest.id,
           reason: {
@@ -103,18 +123,29 @@ export default function SessionAuthenticateModal() {
             message: 'User rejected auth request',
           },
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: authRequest.params.requester?.metadata?.redirect,
           isLinkMode: SettingsStore.state.isLinkModeRequest,
+          error: 'User rejected auth request',
         });
       } catch (e) {
-        console.log((e as Error).message, 'error');
-        return;
+        LogStore.error(
+          (e as Error).message,
+          'SessionAuthenticateModal',
+          'onReject',
+        );
+        Toast.show({
+          type: 'error',
+          text1: 'Rejection failed',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingReject(false);
+        SettingsStore.setIsLinkModeRequest(false);
+        ModalStore.close();
       }
     }
-    setIsLoadingReject(false);
-    SettingsStore.setIsLinkModeRequest(false);
-    ModalStore.close();
   }, [authRequest]);
 
   useEffect(() => {
@@ -131,7 +162,7 @@ export default function SessionAuthenticateModal() {
           request: authPayload,
           iss,
         });
-        setMessages([{authPayload, message, id: authRequest.id, iss}]);
+        setMessages([{ authPayload, message, id: authRequest.id, iss }]);
       } else if (signStrategy === 'all') {
         const messagesToSign: any[] = [];
         authPayload.chains.forEach((chain: string) => {
@@ -139,7 +170,12 @@ export default function SessionAuthenticateModal() {
             request: authPayload,
             iss: `${chain}:${address}`,
           });
-          messagesToSign.push({authPayload, message, id: authRequest.id, iss});
+          messagesToSign.push({
+            authPayload,
+            message,
+            id: authRequest.id,
+            iss,
+          });
         });
         setMessages(messagesToSign);
       }
@@ -148,16 +184,31 @@ export default function SessionAuthenticateModal() {
 
   return (
     <RequestModal
-      intention="wants to request a signature"
+      intention="Sign a message for"
       metadata={authRequest.params.requester.metadata}
       onApprove={onApprove}
       onReject={onReject}
       isLinkMode={isLinkModeRequest}
       approveLoader={isLoadingApprove}
-      rejectLoader={isLoadingReject}>
-      <View style={[styles.divider, {backgroundColor: Theme['bg-300']}]} />
+      rejectLoader={isLoadingReject}
+      approveLabel="Connect"
+    >
+      <View
+        style={[
+          styles.divider,
+          { backgroundColor: Theme['foreground-tertiary'] },
+        ]}
+      />
       <View style={styles.container}>
-        <Text>{`Messages to sign (${messages?.length})`}</Text>
+        <AppInfoCard
+          url={authRequest.params.requester.metadata?.url}
+          validation={validation}
+          isScam={isScam}
+        />
+        <Text
+          variant="md-400"
+          color="text-primary"
+        >{`Messages to sign (${messages?.length})`}</Text>
         <Message
           showTitle={false}
           message={messages.map(m => `${m.message}\n\n`).toString()}
@@ -172,12 +223,12 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     width: '100%',
-    marginVertical: 16,
+    marginVertical: Spacing[4],
   },
   container: {
-    paddingHorizontal: 16,
-    marginBottom: 8,
-    rowGap: 8,
+    paddingHorizontal: Spacing[4],
+    marginBottom: Spacing[2],
+    rowGap: Spacing[2],
   },
   messageContainer: {
     maxHeight: 250,

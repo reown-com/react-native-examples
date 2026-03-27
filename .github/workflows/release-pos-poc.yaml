@@ -1,0 +1,69 @@
+name: Release Mobile POS (PoC)
+run-name: "Mobile POS (PoC) - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 Android' || inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }}"
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to build'
+        required: true
+        type: choice
+        options:
+          - both
+          - android
+          - ios
+
+jobs:
+  release-android:
+    if: ${{ inputs.platform == 'android' || inputs.platform == 'both' }}
+    uses: ./.github/workflows/release-android-base.yaml
+    with:
+      name: '(PoC) Mobile POS React Native'
+      root-path: 'dapps/poc-pos-app'
+      release-type: 'production'
+      project-type: 'dapp'
+      output-path: 'dapps/poc-pos-app/android/app/build/outputs/apk/release/app-release.apk'
+      package-manager: 'npm'
+      is-expo-project: true
+      firebase-app-id: ${{ vars.POC_POS_ANDROID_FIREBASE_APP_ID }}
+    secrets:
+      env-file: ${{ secrets.POC_POS_ENV_FILE }}
+      sentry-file: ${{ secrets.POC_POS_SENTRY_FILE }}
+      secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+      gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
+      keystore-name: ${{ vars.WC_PROD_KEYSTORE_NAME }}
+      keystore: ${{ secrets.WC_PROD_KEYSTORE }}
+      aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      firebase-url: ${{ vars.FIREBASE_POC_POS_URL }}
+
+  release-ios:
+    if: ${{ inputs.platform == 'ios' || inputs.platform == 'both' }}
+    uses: ./.github/workflows/release-ios-base.yaml
+    with:
+      name: '(PoC) Mobile POS React Native'
+      root-path: 'dapps/poc-pos-app'
+      release-type: 'production'
+      scheme-name: 'WPay'
+      bundle-id: 'com.walletconnect.mobilepos.poc'
+      apple-id: '6757806391'
+      project-type: 'dapp'
+      package-manager: 'npm'
+      is-expo-project: true
+    secrets:
+      env-file: ${{ secrets.POC_POS_ENV_FILE }}
+      sentry-file: ${{ secrets.POC_POS_SENTRY_FILE }}
+      apple-username: ${{ secrets.APPLE_USERNAME }}
+      apple-key-id: ${{ secrets.APPLE_KEY_ID }}
+      apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
+      apple-issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
+      match-username: ${{ secrets.MATCH_USERNAME }}
+      match-keychain-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+      match-git-url: ${{ secrets.MATCH_GIT_URL }}
+      match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
+      slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      testflight-url: ${{ vars.TESTFLIGHT_POC_POS_URL }}

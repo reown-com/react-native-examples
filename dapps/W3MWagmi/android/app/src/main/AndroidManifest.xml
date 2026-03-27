@@ -46,6 +46,8 @@
       <package android:name="kh.com.sabay.sabaywallet"/>
       <package android:name="com.tokoin.wallet"/>
       <package android:name="org.toshi" />
+      <package android:name="com.solflare.mobile"/>
+      <package android:name="app.phantom"/>
     </queries>
 
     <application
@@ -76,8 +78,7 @@
         </intent-filter>
         <intent-filter android:autoVerify="true">
           <data android:scheme="https"/>
-          <data android:host="appkit-lab.reown.com"/>
-          <data android:host="dev.appkit-lab.reown.com"/>
+          <data android:host="lab.reown.com"/>
           <data android:pathPrefix="/rn_appkit"/>
           <action android:name="android.intent.action.VIEW" />
           <category android:name="android.intent.category.DEFAULT" />
