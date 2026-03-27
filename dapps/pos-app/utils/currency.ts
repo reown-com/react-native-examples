@@ -84,15 +84,17 @@ export function extractCurrencyCode(currency?: string): string {
 
 /**
  * Format fiat amount from cents to display string
- * @param amount - Amount in cents (e.g., 1000 = $10.00)
+ * @param amount - Amount in cents as a string (e.g., "1000" = $10.00)
  * @param currency - Currency in CAIP format (e.g., "iso4217/USD")
  * @returns Formatted string (e.g., "$10.00" for USD, "10.00€" for EUR)
  */
-export function formatFiatAmount(amount?: number, currency?: string): string {
-  if (amount === undefined) return "-";
+export function formatFiatAmount(amount?: string, currency?: string): string {
+  if (!amount) return "-";
+  const parsed = parseInt(amount, 10);
+  if (isNaN(parsed)) return "-";
 
   // Convert cents to dollars
-  const value = amount / 100;
+  const value = parsed / 100;
   const currencyCode = extractCurrencyCode(currency);
   const currencyData = getCurrency(currencyCode);
 

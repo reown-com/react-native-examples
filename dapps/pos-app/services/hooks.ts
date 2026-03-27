@@ -1,5 +1,7 @@
 import { useLogsStore } from "@/store/useLogsStore";
+import { getDateRange } from "@/utils/date-range";
 import {
+  DateRangeFilterType,
   PaymentRecord,
   PaymentStatus,
   PaymentStatusResponse,
@@ -9,9 +11,9 @@ import {
   TransactionsResponse,
 } from "@/utils/types";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { cancelPayment, getPaymentStatus, startPayment } from "./payment";
-import { getTransactions, GetTransactionsOptions } from "./transactions";
+import { getTransactions } from "./transactions";
 
 const KNOWN_STATUSES: string[] = [
   "requires_action",
@@ -163,9 +165,13 @@ interface UseTransactionsOptions {
    */
   filter?: TransactionFilterType;
   /**
+   * Filter transactions by date range
+   * @default "today"
+   */
+  dateRangeFilter?: DateRangeFilterType;
+  /**
    * Additional query options for the API
    */
-  queryOptions?: GetTransactionsOptions;
 }
 
 /**
@@ -175,12 +181,16 @@ function filterToStatusArray(
   filter: TransactionFilterType,
 ): string[] | undefined {
   switch (filter) {
+    case "pending":
+      return ["requires_action", "processing"];
     case "completed":
       return ["succeeded"];
     case "failed":
-      return ["failed", "expired", "cancelled"];
-    case "pending":
-      return ["requires_action", "processing"];
+      return ["failed"];
+    case "expired":
+      return ["expired"];
+    case "cancelled":
+      return ["cancelled"];
     case "all":
     default:
       return undefined;
@@ -193,20 +203,28 @@ function filterToStatusArray(
  * @returns Infinite query result with paginated transactions
  */
 export function useTransactions(options: UseTransactionsOptions = {}) {
-  const { enabled = true, filter = "all", queryOptions = {} } = options;
+  const {
+    enabled = true,
+    filter = "all",
+    dateRangeFilter = "today",
+  } = options;
 
   const addLog = useLogsStore.getState().addLog;
 
-  // Extract relevant fields for query key to avoid cache misses from object reference changes
-  const { sortBy, sortDir, limit } = queryOptions;
+  // Compute date range once per filter change so toDate stays stable across paginated fetches
+  const { startTs, endTs } = useMemo(
+    () => getDateRange(dateRangeFilter),
+    [dateRangeFilter],
+  );
 
   const query = useInfiniteQuery<TransactionsResponse, Error>({
-    queryKey: ["transactions", filter, sortBy, sortDir, limit],
+    queryKey: ["transactions", filter, dateRangeFilter],
     queryFn: ({ pageParam }) => {
       const statusFilter = filterToStatusArray(filter);
       return getTransactions({
-        ...queryOptions,
         status: statusFilter,
+        startTs,
+        endTs,
         sortBy: "date",
         sortDir: "desc",
         limit: 20,
@@ -214,7 +232,7 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
       });
     },
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.next_cursor ?? undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes (formerly cacheTime)

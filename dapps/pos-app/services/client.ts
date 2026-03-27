@@ -158,6 +158,10 @@ class ApiClient {
 
 export const apiClient = new ApiClient(API_BASE_URL);
 
+const MERCHANT_API_BASE_URL =
+  process.env.EXPO_PUBLIC_MERCHANT_DEV_API_URL || API_BASE_URL;
+export const merchantApiClient = new ApiClient(MERCHANT_API_BASE_URL);
+
 /**
  * Get API headers for authenticated requests
  * @returns Headers object with Api-Key, Merchant-Id, and SDK headers
