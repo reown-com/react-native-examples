@@ -6675,7 +6675,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-preset-expo@npm:^55.0.12":
+"babel-preset-expo@npm:55.0.12":
   version: 55.0.12
   resolution: "babel-preset-expo@npm:55.0.12"
   dependencies:
@@ -14395,7 +14395,7 @@ __metadata:
     "@walletconnect/react-native-compat": 2.23.1
     babel-jest: 29.7.0
     babel-plugin-module-resolver: 5.0.0
-    babel-preset-expo: ^55.0.12
+    babel-preset-expo: 55.0.12
     bitcoinjs-lib: 7.0.0
     bs58: 6.0.0
     eslint: 8.51.0
