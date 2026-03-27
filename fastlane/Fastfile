@@ -115,7 +115,10 @@ platform :ios do
       podfile: ENV['PODFILE_PATH']
     )
 
-    archive_path = "./build/wallet-simulator.xcarchive"
+    # Use an absolute path — gym (xcodebuild) runs from repo root while Ruby Dir/File
+    # operations use the fastlane/ directory as CWD, so relative paths diverge.
+    build_dir   = File.expand_path("../build")
+    archive_path = "#{build_dir}/wallet-simulator.xcarchive"
 
     # Archive for simulator without code signing
     gym(
@@ -130,11 +133,11 @@ platform :ios do
 
     # Find the .app directly inside the xcarchive — no IPA needed for simulator install
     app_path = Dir.glob("#{archive_path}/Products/Applications/*.app").first
-    UI.user_error!("Could not find .app in archive at #{archive_path}") unless app_path
+    UI.user_error!("Could not find .app in #{archive_path}/Products/Applications/") unless app_path
 
-    sh("mkdir -p ./build")
-    File.write("./build/app_path.txt", File.expand_path(app_path))
-    UI.success("✅ Simulator .app: #{File.expand_path(app_path)}")
+    FileUtils.mkdir_p(build_dir)
+    File.write("#{build_dir}/app_path.txt", app_path)
+    UI.success("✅ Simulator .app: #{app_path}")
   end
 
   lane :test_code_signing do
