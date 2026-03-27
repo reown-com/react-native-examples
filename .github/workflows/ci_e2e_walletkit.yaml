@@ -279,10 +279,7 @@ jobs:
           disable-animations: true
           script: |
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
-            $HOME/.maestro/bin/maestro test \
-              --env APP_ID="${{ env.MAESTRO_APP_ID }}" \
-              --include-tags "${{ env.MAESTRO_TAGS }}" \
-              .maestro/ >maestro-output.log 2>&1; MAESTRO_EXIT=$?
+            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --include-tags "${{ env.MAESTRO_TAGS }}" .maestro/ >maestro-output.log 2>&1; MAESTRO_EXIT=$?
             cat maestro-output.log
             exit $MAESTRO_EXIT
 
