@@ -86,6 +86,7 @@ export function ReviewPaymentView({
           onPress={onPay}
           disabled={isSigningPayment || isLoadingActions}
           fullWidth
+          testID="pay-button-pay"
         >
           {`Pay ${currencySymbol}${payAmount}`}
         </ActionButton>

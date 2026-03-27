@@ -46,7 +46,7 @@ export function ResultView({
   const renderIcon = () => {
     if (isSuccess) {
       return (
-        <CheckCircle width={40} height={40} fill={Theme['text-success']} />
+        <CheckCircle width={40} height={40} fill={Theme['text-success']} testID="pay-result-success-icon" />
       );
     }
 
@@ -74,6 +74,7 @@ export function ResultView({
           center
           style={styles.title}
           numberOfLines={2}
+          testID="pay-result-title"
         >
           {message || defaultMessage}
         </Text>
@@ -82,14 +83,26 @@ export function ResultView({
 
     if (!errorType) {
       return (
-        <Text variant="h6-400" color="text-primary" center style={styles.title}>
+        <Text
+          variant="h6-400"
+          color="text-primary"
+          center
+          style={styles.title}
+          testID="pay-result-title"
+        >
           {message || defaultMessage}
         </Text>
       );
     }
 
     return (
-      <Text variant="h6-400" color="text-primary" center style={styles.title}>
+      <Text
+        variant="h6-400"
+        color="text-primary"
+        center
+        style={styles.title}
+        testID="pay-result-title"
+      >
         {getErrorTitle(errorType)}
       </Text>
     );
@@ -97,7 +110,7 @@ export function ResultView({
 
   return (
     <>
-      <View style={styles.contentContainer}>
+      <View style={styles.contentContainer} testID="pay-result-container">
         {renderIcon()}
         {renderTitle()}
         {!isSuccess && (
@@ -120,6 +133,7 @@ export function ResultView({
               : onClose
           }
           fullWidth
+          testID="pay-button-result-action"
         >
           {isSuccess || errorType === 'insufficient_funds'
             ? 'Got it!'

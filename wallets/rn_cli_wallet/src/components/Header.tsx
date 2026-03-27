@@ -85,6 +85,7 @@ export function Header() {
         )}
         <Button
           onPress={onScannerPress}
+          testID="button-scan"
           style={[styles.actionButton, { backgroundColor: Theme['bg-invert'] }]}
         >
           <BarcodeSvg width={18} height={18} fill={Theme['text-invert']} />
