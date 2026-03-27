@@ -133,15 +133,6 @@ jobs:
             --include-tags "${{ env.MAESTRO_TAGS }}" \
             .maestro/web/ .maestro/native/ 2>&1 | tee maestro-output.log
 
-      - name: Capture failure text
-        if: failure() && steps.maestro.outcome == 'failure'
-        id: failure-text
-        run: |
-          FAILURE_TEXT=$(tail -30 maestro-output.log | head -c 500)
-          echo "text<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$FAILURE_TEXT" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
-
       - name: Upload Maestro artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -172,10 +163,6 @@ jobs:
                     { "type": "mrkdwn", "text": "*Tags:*\n`${{ env.MAESTRO_TAGS }}`" },
                     { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
                   ]
-                },
-                {
-                  "type": "section",
-                  "text": { "type": "mrkdwn", "text": "*Failure:*\n```${{ steps.failure-text.outputs.text }}```" }
                 },
                 {
                   "type": "actions",
@@ -281,15 +268,6 @@ jobs:
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
             $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --include-tags "${{ env.MAESTRO_TAGS }}" .maestro/web/ .maestro/native/
 
-      - name: Capture failure text
-        if: failure() && steps.maestro.outcome == 'failure'
-        id: failure-text
-        run: |
-          FAILURE_TEXT=$(tail -30 maestro-output.log | head -c 500)
-          echo "text<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$FAILURE_TEXT" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
-
       - name: Upload Maestro artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -320,10 +298,6 @@ jobs:
                     { "type": "mrkdwn", "text": "*Tags:*\n`${{ env.MAESTRO_TAGS }}`" },
                     { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
                   ]
-                },
-                {
-                  "type": "section",
-                  "text": { "type": "mrkdwn", "text": "*Failure:*\n```${{ steps.failure-text.outputs.text }}```" }
                 },
                 {
                   "type": "actions",
