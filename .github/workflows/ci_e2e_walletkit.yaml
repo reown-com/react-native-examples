@@ -119,6 +119,13 @@ jobs:
           APP_PATH=$(cat ./build/app_path.txt)
           echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
 
+      - name: Upload .app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wallet-ios-simulator-app
+          path: ${{ env.APP_PATH }}
+          retention-days: 7
+
       - name: Boot iOS Simulator
         run: |
           DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "iPhone 16" 2>/dev/null || \
