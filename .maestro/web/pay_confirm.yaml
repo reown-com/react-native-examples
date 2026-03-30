@@ -21,6 +21,13 @@ tags:
       - tapOn: "Continue"
 - runFlow:
     when:
+      platform: iOS
+      visible: "View Bookmarks"
+    commands:
+      - tapOn:
+          point: "93%,75%"
+- runFlow:
+    when:
       platform: Android
       visible: "Accept & continue"
     commands:
