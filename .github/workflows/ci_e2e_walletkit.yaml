@@ -270,9 +270,9 @@ jobs:
           disable-animations: true
           script: |
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
-            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/web/pay_confirm.yaml >maestro-output.log 2>&1; MAESTRO_EXIT=$?
+            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/web/pay_confirm.yaml >maestro-output.log 2>&1; echo $? > maestro-exit-code
             cat maestro-output.log
-            exit $MAESTRO_EXIT
+            exit $(cat maestro-exit-code)
 
       - name: Upload Maestro artifacts
         if: always()
