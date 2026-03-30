@@ -154,6 +154,7 @@ export default function PaymentSuccessScreen() {
       {/* Content that fades in after circle expands */}
       <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
         <View
+          testID="pos-payment-success"
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <ThemedText
