@@ -17,7 +17,6 @@ export interface QrCodeProps {
   uri?: string;
   imageSrc?: ImageSourcePropType;
   testID?: string;
-  nativeID?: string;
   arenaClear?: boolean;
   style?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
@@ -30,7 +29,6 @@ function QrCode_({
   size,
   uri,
   testID,
-  nativeID,
   arenaClear,
   style,
   children,
@@ -68,7 +66,7 @@ function QrCode_({
         style,
       ]}
       testID={testID}
-      nativeID={nativeID}
+      nativeID={testID}
     >
       <QRCodeSkia
         value={uri}

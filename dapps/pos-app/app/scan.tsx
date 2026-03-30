@@ -208,7 +208,6 @@ export default function ScanScreen() {
               logoBorderRadius={100}
               onPress={handleCopyPaymentUrl}
               testID="pos-qr-code"
-              nativeID="pos-qr-code"
             >
               <Image source={assets?.[0]} style={styles.logo} />
             </QRCode>
