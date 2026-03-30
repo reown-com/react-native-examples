@@ -12,46 +12,15 @@ tags:
     browser: true
 - startRecording: "WalletConnect Pay Confirmed"
 
-# Dismiss browser first-run dialogs (CI simulators/emulators)
+# Dismiss browser first-run dialogs (Safari iOS 26)
 - runFlow:
     when:
       platform: iOS
-      visible: "Continue"
-    commands:
-      - tapOn: "Continue"
-- runFlow:
-    when:
-      platform: Android
-      visible: "Accept & continue"
-    commands:
-      - tapOn: "Accept & continue"
-- runFlow:
-    when:
-      platform: Android
-      visible: "No thanks"
-    commands:
-      - tapOn: "No thanks"
-- runFlow:
-    when:
-      platform: Android
-      visible: "Got it"
-    commands:
-      - tapOn: "Got it"
-
-# Wait for page to load, then dismiss any Safari tooltip by tapping outside it
-- extendedWaitUntil:
-    visible: "$0.01"
-    timeout: 30000
-- runFlow:
-    when:
-      platform: iOS
-      visible: "View Bookmarks"
+      visible:
+        id: xmark.circle.fill
     commands:
       - tapOn:
-          point: "50%,15%"
-      - extendedWaitUntil:
-          notVisible: "View Bookmarks"
-          timeout: 5000
+          id: xmark.circle.fill
 
 # Tap WC logo in center of QR to copy payment URL to clipboard
 - tapOn:
