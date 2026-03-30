@@ -21,13 +21,6 @@ tags:
       - tapOn: "Continue"
 - runFlow:
     when:
-      platform: iOS
-      visible: "View Bookmarks"
-    commands:
-      - tapOn:
-          point: "50%,20%"
-- runFlow:
-    when:
       platform: Android
       visible: "Accept & continue"
     commands:
@@ -45,10 +38,11 @@ tags:
     commands:
       - tapOn: "Got it"
 
-# Wait for QR code to appear
+# Wait for page to load, then dismiss any Safari tooltip by tapping the page
 - extendedWaitUntil:
-    visible: "Scan to pay"
+    visible: "$0.01"
     timeout: 30000
+- tapOn: "$0.01"
 
 # Tap WC logo in center of QR to copy payment URL to clipboard
 - tapOn:
