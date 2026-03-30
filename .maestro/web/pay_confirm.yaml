@@ -12,10 +12,30 @@ tags:
     browser: true
 - startRecording: "WalletConnect Pay Confirmed"
 
+# Dismiss browser first-run dialogs (CI simulators/emulators)
+- runFlow:
+    when:
+      platform: iOS
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+- runFlow:
+    when:
+      platform: Android
+      visible: "Accept & continue"
+    commands:
+      - tapOn: "Accept & continue"
+- runFlow:
+    when:
+      platform: Android
+      visible: "No thanks"
+    commands:
+      - tapOn: "No thanks"
+
 # Wait for QR code to appear
 - extendedWaitUntil:
     visible: "Scan to pay"
-    timeout: 15000
+    timeout: 30000
 
 # Tap WC logo in center of QR to copy payment URL to clipboard
 - tapOn:
