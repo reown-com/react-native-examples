@@ -4,7 +4,7 @@ tags:
   - pay
 ---
 # Clear wallet state so ENV_TEST_PRIVATE_KEY is used
-- clearState
+# - clearState
 
 # Open POS web app (opens directly to QR code screen)
 - openLink:
@@ -22,12 +22,43 @@ tags:
       - tapOn:
           id: xmark.circle.fill
 
+- runFlow:
+    when:
+      platform: Android
+      visible: "Welcome to Chrome"
+    commands:
+      - tapOn:
+          id: signin_fre_dismiss_button
+
+- runFlow:
+    when:
+      platform: Android
+      visible: "No thanks"
+    commands:
+      - tapOn:
+          id: negative_button
+
 # Tap WC logo in center of QR to copy payment URL to clipboard
-- tapOn:
-    point: "50%,50%"
+- runFlow:
+    when:
+      visible:
+        id: pos-qr-code
+    commands:
+      - tapOn:
+          id: pos-qr-code
+
+- runFlow:
+    when:
+      platform: Android
+      visible:
+        id: clipboard_preview
+    commands:
+      - tapOn:
+          id: dismiss_image
 
 # Switch to wallet app
 - launchApp:
+    appId: ${APP_ID}
     permissions:
       all: allow
 
@@ -73,7 +104,7 @@ tags:
           timeout: 10000
       # Tap the checkbox / label for terms agreement
       - tapOn:
-          text: "I agree to the"
+          text: "I agree to the <termsLink>Terms and Conditions</termsLink> and <privacyLink>Privacy Policy</privacyLink>"
           retryTapIfNoChange: true
       - tapOn: "Confirm"
 
@@ -111,9 +142,8 @@ tags:
     when:
       platform: Android
     commands:
-      - launchApp:
-          appId: com.android.browser
-          stopApp: false
+      - back
 - extendedWaitUntil:
-    visible: "Payment successful"
+    visible:
+      id: pos-payment-success
     timeout: 15000
