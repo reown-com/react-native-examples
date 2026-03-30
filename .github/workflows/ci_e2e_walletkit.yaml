@@ -1,5 +1,5 @@
 name: CI E2E WalletKit
-run-name: "E2E WalletKit - Tags: ${{ inputs.maestro-tags || 'pay' }}"
+run-name: "E2E WalletKit - ${{ inputs.platform || 'both' }} - Tags: ${{ inputs.maestro-tags || 'pay' }}"
 
 permissions:
   contents: read
@@ -27,6 +27,15 @@ on:
         required: false
         default: 'com.walletconnect.web3wallet.rnsample.internal'
         type: string
+      platform:
+        description: 'Platform to run tests on'
+        required: false
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - ios
+          - android
 
 env:
   MAESTRO_TAGS: ${{ inputs.maestro-tags || 'pay' }}
@@ -35,6 +44,7 @@ env:
 
 jobs:
   e2e-ios:
+    if: inputs.platform != 'android'
     name: E2E Tests - iOS
     runs-on: macos-latest-xlarge
     timeout-minutes: 60
@@ -187,6 +197,7 @@ jobs:
             }
 
   e2e-android:
+    if: inputs.platform != 'ios'
     name: E2E Tests - Android
     runs-on: ubuntu-latest
     timeout-minutes: 60
