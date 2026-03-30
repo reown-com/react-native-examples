@@ -155,6 +155,7 @@ export default function PaymentSuccessScreen() {
       <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
         <View
           testID="pos-payment-success"
+          nativeID="pos-payment-success"
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <ThemedText
