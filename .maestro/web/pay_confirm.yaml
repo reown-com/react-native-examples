@@ -38,11 +38,20 @@ tags:
     commands:
       - tapOn: "Got it"
 
-# Wait for page to load, then dismiss any Safari tooltip by tapping the page
+# Wait for page to load, then dismiss any Safari tooltip by tapping outside it
 - extendedWaitUntil:
     visible: "$0.01"
     timeout: 30000
-- tapOn: "$0.01"
+- runFlow:
+    when:
+      platform: iOS
+      visible: "View Bookmarks"
+    commands:
+      - tapOn:
+          point: "50%,15%"
+      - extendedWaitUntil:
+          notVisible: "View Bookmarks"
+          timeout: 5000
 
 # Tap WC logo in center of QR to copy payment URL to clipboard
 - tapOn:
@@ -93,7 +102,10 @@ tags:
       - extendedWaitUntil:
           visible: "Confirm your details"
           timeout: 10000
-      - tapOn: "I agree to the"
+      # Tap the checkbox / label for terms agreement
+      - tapOn:
+          text: "I agree to the"
+          retryTapIfNoChange: true
       - tapOn: "Confirm"
 
 # On review screen, tap Pay button
