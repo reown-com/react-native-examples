@@ -113,6 +113,7 @@ jobs:
           RELEASE_TYPE: internal
           BUILD_FOR_SIMULATOR: true
           PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
+          SENTRY_DISABLE_AUTO_UPLOAD: true
 
       - name: Find .app path
         run: |
