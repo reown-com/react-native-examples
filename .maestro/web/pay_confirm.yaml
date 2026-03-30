@@ -39,6 +39,7 @@ tags:
           id: negative_button
 
 # Tap WC logo in center of QR to copy payment URL to clipboard
+# Try testID first (Android/Chrome), fallback to center tap (iOS/Safari)
 - runFlow:
     when:
       visible:
@@ -46,7 +47,24 @@ tags:
     commands:
       - tapOn:
           id: pos-qr-code
+- runFlow:
+    when:
+      notVisible:
+        id: pos-qr-code
+    commands:
+      - tapOn:
+          point: "50%,50%"
 
+# iOS: Verify URL was copied via toast
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible: "Payment URL copied"
+          timeout: 5000
+
+# Android: Dismiss clipboard preview if shown
 - runFlow:
     when:
       platform: Android
@@ -143,7 +161,19 @@ tags:
       platform: Android
     commands:
       - back
-- extendedWaitUntil:
-    visible:
-      id: pos-payment-success
-    timeout: 15000
+# Verify POS success: try testID first, fallback to text
+- runFlow:
+    when:
+      visible:
+        id: pos-payment-success
+    commands:
+      - assertVisible:
+          id: pos-payment-success
+- runFlow:
+    when:
+      notVisible:
+        id: pos-payment-success
+    commands:
+      - extendedWaitUntil:
+          visible: "Payment successful"
+          timeout: 15000
