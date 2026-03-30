@@ -207,6 +207,7 @@ export default function ScanScreen() {
               uri={qrUri}
               logoBorderRadius={100}
               onPress={handleCopyPaymentUrl}
+              testID="pos-qr-code"
             >
               <Image source={assets?.[0]} style={styles.logo} />
             </QRCode>
