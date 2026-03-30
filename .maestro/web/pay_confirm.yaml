@@ -12,13 +12,15 @@ tags:
     browser: true
 - startRecording: "WalletConnect Pay Confirmed"
 
-# Dismiss browser first-run dialogs (Safari iOS 26)
+# iOS: Wait for and dismiss Safari popup (always appears on fresh CI simulator)
 - runFlow:
     when:
       platform: iOS
-      visible:
-        id: xmark.circle.fill
     commands:
+      - extendedWaitUntil:
+          visible:
+            id: xmark.circle.fill
+          timeout: 10000
       - tapOn:
           id: xmark.circle.fill
 

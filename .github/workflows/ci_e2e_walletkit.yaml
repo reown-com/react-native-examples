@@ -157,25 +157,34 @@ jobs:
           retention-days: 14
 
       - name: Send Slack notification
-        if: failure()
+        if: always() && !cancelled()
         uses: slackapi/slack-github-action@v2.1.0
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "E2E Tests Failed - iOS - WalletKit",
+              "text": "E2E Test Report - iOS - WalletKit",
               "blocks": [
                 {
                   "type": "header",
-                  "text": { "type": "plain_text", "text": "🧪 E2E Test Failure - iOS" }
+                  "text": { "type": "plain_text", "text": "🧪 E2E Test Report - iOS (${{ env.MAESTRO_TAGS }})" }
                 },
                 {
                   "type": "section",
                   "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
+                    { "type": "mrkdwn", "text": "*Platform:*\n`iOS`" },
                     { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
-                    { "type": "mrkdwn", "text": "*Tags:*\n`${{ env.MAESTRO_TAGS }}`" },
                     { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Build:*\n`${{ steps.maestro.outcome != 'skipped' && '✅ Success' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.maestro.outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
                   ]
                 },
                 {
@@ -297,25 +306,34 @@ jobs:
           retention-days: 14
 
       - name: Send Slack notification
-        if: failure()
+        if: always() && !cancelled()
         uses: slackapi/slack-github-action@v2.1.0
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "E2E Tests Failed - Android - WalletKit",
+              "text": "E2E Test Report - Android - WalletKit",
               "blocks": [
                 {
                   "type": "header",
-                  "text": { "type": "plain_text", "text": "🧪 E2E Test Failure - Android" }
+                  "text": { "type": "plain_text", "text": "🧪 E2E Test Report - Android (${{ env.MAESTRO_TAGS }})" }
                 },
                 {
                   "type": "section",
                   "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
+                    { "type": "mrkdwn", "text": "*Platform:*\n`Android`" },
                     { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
-                    { "type": "mrkdwn", "text": "*Tags:*\n`${{ env.MAESTRO_TAGS }}`" },
                     { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Build:*\n`${{ steps.build.outcome == 'success' && '✅ Success' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.maestro.outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
                   ]
                 },
                 {
