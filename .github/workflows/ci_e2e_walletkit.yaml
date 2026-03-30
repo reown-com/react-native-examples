@@ -65,6 +65,7 @@ jobs:
             exit 1
           fi
           echo "${{ secrets.WALLETKIT_ENV_FILE }}" > ${{ env.ROOT_PATH }}/.env
+          echo "ENV_TEST_PRIVATE_KEY=${{ secrets.ENV_TEST_PRIVATE_KEY }}" >> ${{ env.ROOT_PATH }}/.env
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
@@ -205,6 +206,7 @@ jobs:
             exit 1
           fi
           echo "${{ secrets.WALLETKIT_ENV_FILE }}" > ${{ env.ROOT_PATH }}/.env
+          echo "ENV_TEST_PRIVATE_KEY=${{ secrets.ENV_TEST_PRIVATE_KEY }}" >> ${{ env.ROOT_PATH }}/.env
 
       - name: Install Java 17
         uses: actions/setup-java@v4
