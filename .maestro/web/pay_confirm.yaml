@@ -25,7 +25,7 @@ tags:
       visible: "View Bookmarks"
     commands:
       - tapOn:
-          point: "93%,75%"
+          point: "83%,68%"
 - runFlow:
     when:
       platform: Android
