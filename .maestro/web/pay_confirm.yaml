@@ -25,7 +25,7 @@ tags:
       visible: "View Bookmarks"
     commands:
       - tapOn:
-          point: "83%,68%"
+          point: "50%,20%"
 - runFlow:
     when:
       platform: Android
@@ -38,6 +38,12 @@ tags:
       visible: "No thanks"
     commands:
       - tapOn: "No thanks"
+- runFlow:
+    when:
+      platform: Android
+      visible: "Got it"
+    commands:
+      - tapOn: "Got it"
 
 # Wait for QR code to appear
 - extendedWaitUntil:
@@ -131,7 +137,7 @@ tags:
       platform: Android
     commands:
       - launchApp:
-          appId: com.android.chrome
+          appId: com.android.browser
           stopApp: false
 - extendedWaitUntil:
     visible: "Payment successful"

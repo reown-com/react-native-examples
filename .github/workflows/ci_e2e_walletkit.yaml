@@ -258,8 +258,7 @@ jobs:
         with:
           api-level: 34
           arch: x86_64
-          target: google_apis
-          profile: pixel_6
+          target: default
           avd-name: test_device
           ram-size: 4096M
           heap-size: 576M
