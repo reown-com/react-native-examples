@@ -245,6 +245,7 @@ jobs:
           fi
           echo "${{ secrets.WALLETKIT_ENV_FILE }}" > ${{ env.ROOT_PATH }}/.env
           echo "ENV_TEST_PRIVATE_KEY=${{ secrets.TEST_WALLET_PRIVATE_KEY }}" >> ${{ env.ROOT_PATH }}/.env
+          echo "ENV_TEST_MODE=true" >> ${{ env.ROOT_PATH }}/.env
 
       - name: Install Java 17
         uses: actions/setup-java@v4
@@ -315,8 +316,7 @@ jobs:
           disable-animations: true
           script: |
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
-            adb shell service call clipboard 1 s16 "${{ steps.payment.outputs.gateway_url }}"
-            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/web/pay_confirm.yaml >maestro-output.log 2>&1; echo $? > maestro-exit-code
+            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env GATEWAY_URL="${{ steps.payment.outputs.gateway_url }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/web/pay_confirm.yaml >maestro-output.log 2>&1; echo $? > maestro-exit-code
             cat maestro-output.log
             exit $(cat maestro-exit-code)
 

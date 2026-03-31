@@ -11,19 +11,34 @@ tags:
 
 - startRecording: "WalletConnect Pay Confirmed"
 
-# Tap scan button then paste the payment URL from clipboard
+# Tap scan button to open scanner options modal
 - tapOn:
     id: "button-scan"
-- tapOn:
-    id: "button-paste-url"
 
-# iOS: Allow paste from clipboard
+# Android: type the payment URL into the test input field
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: "input-paste-url"
+      - inputText: ${GATEWAY_URL}
+      - pressKey: Enter
+      - tapOn:
+          id: "button-submit-url"
+
+# iOS: paste from clipboard
 - runFlow:
     when:
       platform: iOS
-      visible: "Allow Paste"
     commands:
-      - tapOn: "Allow Paste"
+      - tapOn:
+          id: "button-paste-url"
+      - runFlow:
+          when:
+            visible: "Allow Paste"
+          commands:
+            - tapOn: "Allow Paste"
 
 # Wait for payment options to load with merchant info
 - extendedWaitUntil:
