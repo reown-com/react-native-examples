@@ -93,3 +93,5 @@ tags:
 # Tap "Got it!" button
 - tapOn:
     id: "pay-button-result-action"
+
+- stopRecording

@@ -120,13 +120,6 @@ jobs:
           APP_PATH=$(cat ./build/app_path.txt)
           echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
 
-      - name: Upload .app artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: wallet-ios-simulator-app
-          path: ${{ env.APP_PATH }}
-          retention-days: 7
-
       - name: Boot iOS Simulator
         run: |
           DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "iPhone 16" 2>/dev/null || \
@@ -159,9 +152,10 @@ jobs:
           set -o pipefail
           maestro test \
             --env APP_ID="${{ env.MAESTRO_APP_ID }}" \
+            --tags "${{ env.MAESTRO_TAGS }}" \
             --test-output-dir maestro-artifacts \
             --debug-output maestro-artifacts \
-            .maestro/web/pay_confirm.yaml 2>&1 | tee maestro-output.log
+            .maestro/ 2>&1 | tee maestro-output.log
 
       - name: Upload Maestro artifacts
         if: always()
@@ -175,8 +169,8 @@ jobs:
           retention-days: 14
 
       - name: Send Slack notification
-        if: always() && !cancelled()
-        uses: slackapi/slack-github-action@v2.1.0
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
@@ -255,7 +249,7 @@ jobs:
           architecture: x86_64
 
       - name: Accept Android Licenses
-        uses: SimonMarquis/android-accept-licenses@v1
+        uses: SimonMarquis/android-accept-licenses@8d8deab5b7ab2aaea9ed69f0b802e53173f21fd1 # v1
 
       - name: Optimize Gradle for CI
         run: |
@@ -302,7 +296,7 @@ jobs:
 
       - name: Run E2E tests on Android Emulator
         id: maestro
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@70f4dee990796918b78d040e3278474bdbd348a7 # v2
         with:
           api-level: 34
           arch: x86_64
@@ -316,7 +310,7 @@ jobs:
           disable-animations: true
           script: |
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
-            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env GATEWAY_URL="${{ steps.payment.outputs.gateway_url }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/web/pay_confirm.yaml >maestro-output.log 2>&1; echo $? > maestro-exit-code
+            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env GATEWAY_URL="${{ steps.payment.outputs.gateway_url }}" --tags "${{ env.MAESTRO_TAGS }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/ >maestro-output.log 2>&1; echo $? > maestro-exit-code
             cat maestro-output.log
             exit $(cat maestro-exit-code)
 
@@ -332,8 +326,8 @@ jobs:
           retention-days: 14
 
       - name: Send Slack notification
-        if: always() && !cancelled()
-        uses: slackapi/slack-github-action@v2.1.0
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
