@@ -11,11 +11,19 @@ API_URL="https://api.pay.walletconnect.com/v1/payments"
 
 REFERENCE_ID=$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid)
 
-RESPONSE=$(curl -sf -X POST "$API_URL" \
+HTTP_CODE=$(curl -s -o /tmp/payment_response.json -w "%{http_code}" -X POST "$API_URL" \
   -H "Content-Type: application/json" \
   -H "Api-Key: ${WPAY_CUSTOMER_KEY}" \
   -H "Merchant-Id: ${WPAY_MERCHANT_ID}" \
   -d "{\"referenceId\":\"${REFERENCE_ID}\",\"amount\":{\"value\":\"1\",\"unit\":\"iso4217/USD\"}}")
+
+RESPONSE=$(cat /tmp/payment_response.json)
+
+if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+  echo "Error: API returned HTTP $HTTP_CODE" >&2
+  echo "Response: $RESPONSE" >&2
+  exit 1
+fi
 
 GATEWAY_URL=$(echo "$RESPONSE" | jq -r '.gatewayUrl')
 PAYMENT_ID=$(echo "$RESPONSE" | jq -r '.paymentId')
