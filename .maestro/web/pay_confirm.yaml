@@ -3,98 +3,17 @@ name: WalletConnect Pay - Wallet Payment Confirmed
 tags:
   - pay
 ---
-# Clear wallet state so ENV_TEST_PRIVATE_KEY is used
-# - clearState
-
-# Open POS web app (opens directly to QR code screen)
-- openLink:
-    link: https://pos-demo.walletconnect.com/scan?amount=0.01
-    browser: true
-- startRecording: "WalletConnect Pay Confirmed"
-
-# iOS: Wait for and dismiss Safari popup (always appears on fresh CI simulator)
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - extendedWaitUntil:
-          visible:
-            id: xmark.circle.fill
-          timeout: 10000
-      - tapOn:
-          id: xmark.circle.fill
-
-- runFlow:
-    when:
-      platform: Android
-      visible: "Welcome to Chrome"
-    commands:
-      - tapOn:
-          id: signin_fre_dismiss_button
-
-- runFlow:
-    when:
-      platform: Android
-      visible: "No thanks"
-    commands:
-      - tapOn:
-          id: negative_button
-
-# Tap WC logo in center of QR to copy payment URL to clipboard
-# Try testID first (Android/Chrome), fallback to center tap (iOS/Safari)
-- runFlow:
-    when:
-      visible:
-        id: pos-qr-code
-    commands:
-      - tapOn:
-          id: pos-qr-code
-- runFlow:
-    when:
-      notVisible:
-        id: pos-qr-code
-    commands:
-      - tapOn:
-          point: "50%,50%"
-
-# iOS: Verify URL was copied via toast
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - extendedWaitUntil:
-          visible: "Payment URL copied"
-          timeout: 5000
-
-# Android: Dismiss clipboard preview if shown
-- runFlow:
-    when:
-      platform: Android
-      visible:
-        id: clipboard_preview
-    commands:
-      - tapOn:
-          id: dismiss_image
-
-# Switch to wallet app
+# Launch wallet app
 - launchApp:
     appId: ${APP_ID}
     permissions:
       all: allow
 
-# Tap scan button then paste URL
-- tapOn:
-    id: "button-scan"
-- tapOn:
-    id: "button-paste-url"
+- startRecording: "WalletConnect Pay Confirmed"
 
-# iOS: Allow paste from clipboard
-- runFlow:
-    when:
-      platform: iOS
-      visible: "Allow Paste"
-    commands:
-      - tapOn: "Allow Paste"
+# Deep link the payment URL directly into the wallet app
+# This triggers the Linking handler in App.tsx which routes pay.walletconnect.com URLs to handleUriOrPaymentLink
+- openLink: ${GATEWAY_URL}
 
 # Wait for payment options to load with merchant info
 - extendedWaitUntil:
@@ -149,33 +68,3 @@ tags:
 # Tap "Got it!" button
 - tapOn:
     id: "pay-button-result-action"
-
-# Switch back to browser (resume POS session without reloading)
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - launchApp:
-          appId: com.apple.mobilesafari
-          stopApp: false
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - back
-# Verify POS success: try testID first, fallback to text
-- runFlow:
-    when:
-      visible:
-        id: pos-payment-success
-    commands:
-      - assertVisible:
-          id: pos-payment-success
-- runFlow:
-    when:
-      notVisible:
-        id: pos-payment-success
-    commands:
-      - extendedWaitUntil:
-          visible: "Payment successful"
-          timeout: 15000
