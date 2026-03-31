@@ -10,6 +10,7 @@ API_URL="https://api.pay.walletconnect.com/v1/payments"
 : "${WPAY_MERCHANT_ID:?WPAY_MERCHANT_ID is required}"
 
 REFERENCE_ID=$(uuidgen 2>/dev/null || cat /proc/sys/kernel/random/uuid)
+REFERENCE_ID=${REFERENCE_ID//-/}
 
 HTTP_CODE=$(curl -s -o /tmp/payment_response.json -w "%{http_code}" -X POST "$API_URL" \
   -H "Content-Type: application/json" \
