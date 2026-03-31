@@ -3,7 +3,7 @@ name: WalletConnect Pay - Wallet Payment Confirmed
 tags:
   - pay
 ---
-# Launch wallet app
+# Launch wallet app (GATEWAY_URL is already in the device clipboard, set by CI)
 - launchApp:
     appId: ${APP_ID}
     permissions:
@@ -11,9 +11,19 @@ tags:
 
 - startRecording: "WalletConnect Pay Confirmed"
 
-# Deep link the payment URL directly into the wallet app
-# This triggers the Linking handler in App.tsx which routes pay.walletconnect.com URLs to handleUriOrPaymentLink
-- openLink: ${GATEWAY_URL}
+# Tap scan button then paste the payment URL from clipboard
+- tapOn:
+    id: "button-scan"
+- tapOn:
+    id: "button-paste-url"
+
+# iOS: Allow paste from clipboard
+- runFlow:
+    when:
+      platform: iOS
+      visible: "Allow Paste"
+    commands:
+      - tapOn: "Allow Paste"
 
 # Wait for payment options to load with merchant info
 - extendedWaitUntil:

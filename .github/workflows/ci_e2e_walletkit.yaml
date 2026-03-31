@@ -150,13 +150,15 @@ jobs:
           WPAY_CUSTOMER_KEY: ${{ secrets.WPAY_CUSTOMER_KEY }}
           WPAY_MERCHANT_ID: ${{ secrets.WPAY_MERCHANT_ID }}
 
+      - name: Set payment URL in simulator clipboard
+        run: echo "${{ steps.payment.outputs.gateway_url }}" | xcrun simctl pbcopy "$DEVICE_ID"
+
       - name: Run Maestro tests
         id: maestro
         run: |
           set -o pipefail
           maestro test \
             --env APP_ID="${{ env.MAESTRO_APP_ID }}" \
-            --env GATEWAY_URL="${{ steps.payment.outputs.gateway_url }}" \
             --test-output-dir maestro-artifacts \
             --debug-output maestro-artifacts \
             .maestro/web/pay_confirm.yaml 2>&1 | tee maestro-output.log
@@ -313,7 +315,8 @@ jobs:
           disable-animations: true
           script: |
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
-            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env GATEWAY_URL="${{ steps.payment.outputs.gateway_url }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/web/pay_confirm.yaml >maestro-output.log 2>&1; echo $? > maestro-exit-code
+            adb shell service call clipboard 1 s16 "${{ steps.payment.outputs.gateway_url }}"
+            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/web/pay_confirm.yaml >maestro-output.log 2>&1; echo $? > maestro-exit-code
             cat maestro-output.log
             exit $(cat maestro-exit-code)
 
