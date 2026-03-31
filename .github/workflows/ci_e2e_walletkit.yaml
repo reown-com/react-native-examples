@@ -152,7 +152,7 @@ jobs:
           set -o pipefail
           maestro test \
             --env APP_ID="${{ env.MAESTRO_APP_ID }}" \
-            --tags "${{ env.MAESTRO_TAGS }}" \
+            --include-tags "${{ env.MAESTRO_TAGS }}" \
             --test-output-dir maestro-artifacts \
             --debug-output maestro-artifacts \
             .maestro/ 2>&1 | tee maestro-output.log
@@ -310,7 +310,7 @@ jobs:
           disable-animations: true
           script: |
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
-            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env GATEWAY_URL="${{ steps.payment.outputs.gateway_url }}" --tags "${{ env.MAESTRO_TAGS }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/ >maestro-output.log 2>&1; echo $? > maestro-exit-code
+            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env GATEWAY_URL="${{ steps.payment.outputs.gateway_url }}" --include-tags "${{ env.MAESTRO_TAGS }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/ >maestro-output.log 2>&1; echo $? > maestro-exit-code
             cat maestro-output.log
             exit $(cat maestro-exit-code)
 
