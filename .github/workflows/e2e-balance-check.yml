@@ -11,7 +11,7 @@ permissions:
 env:
   BASE_USDC: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
   BASE_RPC: 'https://mainnet.base.org'
-  OP_TOKEN: '0x4200000000000000000000000000000000000042'
+  OP_USDC: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85'
   OP_RPC: 'https://mainnet.optimism.io'
 
 jobs:
@@ -69,34 +69,34 @@ jobs:
         run: |
           echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping USDC alert"
 
-      - name: Check OP balance on Optimism
-        id: op_balance
+      - name: Check USDC balance on Optimism
+        id: op_usdc_balance
         run: |
-          BALANCE=$(cast call --rpc-url "$OP_RPC" "$OP_TOKEN" \
+          BALANCE=$(cast call --rpc-url "$OP_RPC" "$OP_USDC" \
             "balanceOf(address)(uint256)" \
             "${{ vars.TEST_WALLET_ADDRESS }}" | tr -d '[:space:]')
           echo "balance=$BALANCE" >> $GITHUB_OUTPUT
-          BALANCE_HUMAN=$(echo "scale=6; $BALANCE / 1000000000000000000" | bc)
-          echo "OP on Optimism: $BALANCE_HUMAN ($BALANCE raw)"
+          BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
+          echo "USDC on Optimism: $BALANCE_HUMAN ($BALANCE raw)"
 
-      - name: Prepare OP alert
-        id: op_alert
+      - name: Prepare USDC on Optimism alert
+        id: op_usdc_alert
         run: |
-          BALANCE="${{ steps.op_balance.outputs.balance }}"
-          THRESHOLD="${{ vars.OP_THRESHOLD_UNITS || '500000000000000000' }}"
+          BALANCE="${{ steps.op_usdc_balance.outputs.balance }}"
+          THRESHOLD="${{ vars.USDC_THRESHOLD_UNITS || '500000' }}"
           if [ "$BALANCE" -lt "$THRESHOLD" ]; then
-            BALANCE_HUMAN=$(echo "scale=6; $BALANCE / 1000000000000000000" | bc)
-            THRESHOLD_HUMAN=$(echo "scale=6; $THRESHOLD / 1000000000000000000" | bc)
-            ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} OP on Optimism in wallet: \
+            BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
+            THRESHOLD_HUMAN=$(echo "scale=2; $THRESHOLD / 1000000" | bc)
+            ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} USDC on Optimism in wallet: \
               ${{ vars.TEST_WALLET_ADDRESS }}"
             echo "should_alert=true" >> "$GITHUB_OUTPUT"
             echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
             echo "::warning::$ALERT_TEXT"
           fi
 
-      - name: Send Slack alert (OP)
+      - name: Send Slack alert (USDC on Optimism)
         if: |
-          steps.op_alert.outputs.should_alert == 'true' &&
+          steps.op_usdc_alert.outputs.should_alert == 'true' &&
           env.SLACK_FAUCETBOT_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
         with:
@@ -104,12 +104,12 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "${{ steps.op_alert.outputs.text }}"
+              "text": "${{ steps.op_usdc_alert.outputs.text }}"
             }
 
-      - name: Skip Slack alert (OP - no webhook)
+      - name: Skip Slack alert (USDC on Optimism - no webhook)
         if: |
-          steps.op_alert.outputs.should_alert == 'true' &&
+          steps.op_usdc_alert.outputs.should_alert == 'true' &&
           env.SLACK_FAUCETBOT_WEBHOOK_URL == ''
         run: |
-          echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping OP alert"
+          echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping Optimism USDC alert"
