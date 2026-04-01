@@ -58,6 +58,11 @@ jobs:
           sudo xcode-select -s "$XCODE_PATH"
           xcodebuild -version
 
+      - name: Setup SSH for Match
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_SSH_KEY }}
+
       - name: Setup
         uses: ./.github/actions/ci-setup
         with:
@@ -110,6 +115,11 @@ jobs:
           BUILD_FOR_SIMULATOR: true
           PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
           SENTRY_DISABLE_AUTO_UPLOAD: true
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
 
       - name: Find .app path
         run: |
@@ -242,6 +252,12 @@ jobs:
 
       - name: Accept Android Licenses
         uses: SimonMarquis/android-accept-licenses@8d8deab5b7ab2aaea9ed69f0b802e53173f21fd1 # v1
+
+      - name: Add Secrets file
+        run: echo "${{ secrets.ANDROID_SECRETS_FILE }}" > ${{ env.ROOT_PATH }}/android/secrets.properties
+
+      - name: Add Keystore file
+        run: echo ${{ secrets.WC_INTERNAL_KEYSTORE }} | base64 --decode >> ${{ env.ROOT_PATH }}/android/app/${{ vars.WC_INTERNAL_KEYSTORE_NAME }}.keystore
 
       - name: Optimize Gradle for CI
         run: |
