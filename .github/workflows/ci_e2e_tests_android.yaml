@@ -5,11 +5,251 @@ permissions:
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'wallets/rn_cli_wallet/**'
+      - 'dapps/W3MWagmi/**'
+      - '.maestro/**'
+      - '.github/workflows/ci_e2e_tests_android.yaml'
+      - '.github/actions/ci-setup/**'
+      - '.github/actions/ci-setup-android-files/**'
+
+permissions:
+  contents: read
 
 jobs:
-  placeholder:
-    name: Placeholder Job
+  build_wallet_apk:
+    name: Build Wallet APK
     runs-on: ubuntu-latest
     steps:
-      - name: Do nothing
-        run: echo "This is a placeholder workflow to enable manual triggers from feature branches."
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          architecture: x86_64
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Accept Android Licenses
+        uses: SimonMarquis/android-accept-licenses@v1
+
+      - name: Setup Android files for Wallet
+        uses: ./.github/actions/ci-setup-android-files
+        with:
+          root-path: 'wallets/rn_cli_wallet'
+          google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}
+          secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+          keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
+          keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
+          sentry-file: ${{ secrets.W3W_SENTRY_FILE }}
+          project-id: ${{ secrets.ENV_PROJECT_ID }}
+          relay-url: ${{ secrets.ENV_RELAY_URL }}
+          sentry-dsn: ${{ secrets.W3W_SENTRY_DSN }}
+          release-type: 'internal'
+      
+      - name: Install dependencies
+        working-directory: ./wallets/rn_cli_wallet
+        run: |
+          yarn install --immutable
+
+      - name: Build Wallet APK
+        working-directory: ./wallets/rn_cli_wallet
+        run: |
+          export SENTRY_DISABLE_AUTO_UPLOAD=true && yarn run android:build:internal
+
+      - name: Rename Wallet APK for upload
+        run: mv ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/wallet-internal.apk
+
+      - name: Upload Wallet APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: rn_cli_wallet-internal-apk
+          path: ./wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/wallet-internal.apk
+
+  build_dapp_apk:
+    name: Build dApp APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          architecture: x86_64
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Accept Android Licenses
+        uses: SimonMarquis/android-accept-licenses@v1
+
+      - name: Setup Android files for dApp
+        uses: ./.github/actions/ci-setup-android-files
+        with:
+          root-path: 'dapps/W3MWagmi'
+          google-services-file: ${{ secrets.ANDROID_GOOGLE_SERVICES_BASE64 }}
+          secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+          keystore: ${{ secrets.WC_INTERNAL_KEYSTORE }}
+          keystore-name: ${{ secrets.WC_INTERNAL_KEYSTORE_NAME }}
+          sentry-file: ${{ secrets.W3M_WAGMI_SENTRY_FILE }}
+          project-id: ${{ secrets.ENV_PROJECT_ID }}
+          relay-url: ${{ secrets.ENV_RELAY_URL }}
+          sentry-dsn: ${{ secrets.W3M_WAGMI_SENTRY_DSN }}
+          release-type: 'internal'
+
+      - name: Install dependencies
+        working-directory: ./dapps/W3MWagmi
+        run: |
+          yarn install --immutable
+
+      - name: Build dApp APK
+        working-directory: ./dapps/W3MWagmi
+        run: |
+          export SENTRY_DISABLE_AUTO_UPLOAD=true && yarn run android:build:internal
+
+      - name: Rename dApp APK for upload
+        run: mv ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/dapp-internal.apk
+
+      - name: Upload dApp APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: W3MWagmi-internal-apk
+          path: ./dapps/W3MWagmi/android/app/build/outputs/apk/internal/dapp-internal.apk
+
+  run_e2e_tests:
+    name: Run E2E Tests
+    timeout-minutes: 30
+    runs-on: ubuntu-16core
+    needs: [build_wallet_apk, build_dapp_apk]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Download all APKs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*-apk"
+          path: apks
+          merge-multiple: true
+
+      - name: List APKs
+        run: |
+          echo "Available APKs:"
+          find apks -name "*.apk" | xargs ls -la
+
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          export PATH="$PATH":"$HOME/.maestro/bin"
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+          maestro --version
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Start Android Emulator and Run Tests
+        uses: reactivecircus/android-emulator-runner@v2.34.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          heap-size: 576M
+          emulator-boot-timeout: 900
+          profile: pixel_6
+          avd-name: test_device
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save -no-snapshot-load
+          script: |
+            mkdir -p debug-artifacts
+
+            # Wait for emulator to be fully ready
+            adb wait-for-device
+            adb shell 'while [ "$(getprop sys.boot_completed)" != "1" ]; do sleep 2; done'
+            echo "Emulator booted successfully"
+
+            # Start logcat capture in background
+            adb logcat -c
+            adb logcat > debug-artifacts/full-logcat.txt &
+
+            # Install APKs
+            echo "Installing APKs:"
+            find apks -name "*.apk" -exec echo "Installing: {}" \; -exec adb install -r {} \;
+
+            # Verify installations
+            echo "Verifying installed apps:"
+            adb shell pm list packages | grep -E "com.walletconnect" || (echo "ERROR: Apps not installed correctly" && exit 1)
+
+            # Maestro handles app launching via clearState/launchApp in test files
+            echo "Running Maestro native to native tests:"
+            maestro test .maestro/native/connect_reject.yaml
+            maestro test .maestro/native/connect_confirm.yaml
+            maestro test .maestro/native/personal_sign_confirm.yaml
+            maestro test .maestro/native/personal_sign_reject.yaml
+
+            # Check for crashes
+            echo "Checking for crashes..."
+            adb logcat -d | grep -E "FATAL EXCEPTION|AndroidRuntime|Process:*com.walletconnect" > debug-artifacts/crashes.txt || echo "No crashes found" > debug-artifacts/crashes.txt
+
+      - name: Upload debug artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-artifacts
+          path: debug-artifacts/
+          if-no-files-found: warn
+
+      - name: Upload Maestro artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-artifacts
+          path: |
+            .maestro/
+            videos/
+            *.mp4
+            *.mov
+          if-no-files-found: warn 

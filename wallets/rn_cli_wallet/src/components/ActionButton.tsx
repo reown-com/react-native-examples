@@ -69,6 +69,7 @@ export function ActionButton({
   return (
     <Button
       onPress={onPress}
+      testID={testID}
       disabled={disabled || loading || silentDisabled}
       testID={testID}
       style={[
