@@ -27,9 +27,10 @@ jobs:
       - name: Check USDC balance on Base
         id: usdc_balance
         run: |
-          BALANCE=$(cast call --rpc-url "$BASE_RPC" "$BASE_USDC" \
+          RAW=$(cast call --rpc-url "$BASE_RPC" "$BASE_USDC" \
             "balanceOf(address)(uint256)" \
-            "${{ vars.TEST_WALLET_ADDRESS }}" | awk '{print $1}')
+            "${{ vars.TEST_WALLET_ADDRESS }}")
+          BALANCE=$(cast to-dec "$RAW")
           echo "balance=$BALANCE" >> $GITHUB_OUTPUT
           BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
           echo "USDC on Base: $BALANCE_HUMAN ($BALANCE raw)"
@@ -72,9 +73,10 @@ jobs:
       - name: Check OP balance on Optimism
         id: op_balance
         run: |
-          BALANCE=$(cast call --rpc-url "$OP_RPC" "$OP_TOKEN" \
+          RAW=$(cast call --rpc-url "$OP_RPC" "$OP_TOKEN" \
             "balanceOf(address)(uint256)" \
-            "${{ vars.TEST_WALLET_ADDRESS }}" | awk '{print $1}')
+            "${{ vars.TEST_WALLET_ADDRESS }}")
+          BALANCE=$(cast to-dec "$RAW")
           echo "balance=$BALANCE" >> $GITHUB_OUTPUT
           BALANCE_HUMAN=$(echo "scale=6; $BALANCE / 1000000000000000000" | bc)
           echo "OP on Optimism: $BALANCE_HUMAN ($BALANCE raw)"
