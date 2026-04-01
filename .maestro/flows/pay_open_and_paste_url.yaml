@@ -1,0 +1,36 @@
+appId: ${APP_ID}
+---
+# Shared flow: Launch wallet, open scanner, paste payment URL, wait for merchant info
+# Requires: ${output.gateway_url} to be set by a prior runScript step
+
+# Launch wallet app
+- launchApp:
+    appId: ${APP_ID}
+    permissions:
+      all: allow
+
+# Tap scan button to open scanner options modal
+- tapOn:
+    id: "button-scan"
+
+# Type the payment URL into the test input field
+- tapOn:
+    id: "input-paste-url"
+
+# Dismiss iOS keyboard language prompt if it appears
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+
+- inputText: ${output.gateway_url}
+- pressKey: Enter
+- tapOn:
+    id: "button-submit-url"
+
+# Wait for payment options to load with merchant info
+- extendedWaitUntil:
+    visible:
+      id: "pay-merchant-info"
+    timeout: 15000

@@ -11,10 +11,12 @@ permissions:
 env:
   BASE_USDC: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
   BASE_RPC: 'https://mainnet.base.org'
+  OP_TOKEN: '0x4200000000000000000000000000000000000042'
+  OP_RPC: 'https://mainnet.optimism.io'
 
 jobs:
   check-balance:
-    name: Check E2E Wallet USDC Balance
+    name: Check E2E Wallet Balances
     runs-on: ubuntu-latest
     env:
       SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
@@ -32,8 +34,8 @@ jobs:
           BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
           echo "USDC on Base: $BALANCE_HUMAN ($BALANCE raw)"
 
-      - name: Prepare alert
-        id: alert
+      - name: Prepare USDC alert
+        id: usdc_alert
         run: |
           BALANCE="${{ steps.usdc_balance.outputs.balance }}"
           THRESHOLD="${{ vars.USDC_THRESHOLD_UNITS || '500000' }}"
@@ -47,9 +49,9 @@ jobs:
             echo "::warning::$ALERT_TEXT"
           fi
 
-      - name: Send Slack alert
+      - name: Send Slack alert (USDC)
         if: |
-          steps.alert.outputs.should_alert == 'true' &&
+          steps.usdc_alert.outputs.should_alert == 'true' &&
           env.SLACK_FAUCETBOT_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
         with:
@@ -57,12 +59,57 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "${{ steps.alert.outputs.text }}"
+              "text": "${{ steps.usdc_alert.outputs.text }}"
             }
 
-      - name: Skip Slack alert (no webhook)
+      - name: Skip Slack alert (USDC - no webhook)
         if: |
-          steps.alert.outputs.should_alert == 'true' &&
+          steps.usdc_alert.outputs.should_alert == 'true' &&
           env.SLACK_FAUCETBOT_WEBHOOK_URL == ''
         run: |
-          echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping alert"
+          echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping USDC alert"
+
+      - name: Check OP balance on Optimism
+        id: op_balance
+        run: |
+          BALANCE=$(cast call --rpc-url "$OP_RPC" "$OP_TOKEN" \
+            "balanceOf(address)(uint256)" \
+            "${{ vars.TEST_WALLET_ADDRESS }}" | awk '{print $1}')
+          echo "balance=$BALANCE" >> $GITHUB_OUTPUT
+          BALANCE_HUMAN=$(echo "scale=6; $BALANCE / 1000000000000000000" | bc)
+          echo "OP on Optimism: $BALANCE_HUMAN ($BALANCE raw)"
+
+      - name: Prepare OP alert
+        id: op_alert
+        run: |
+          BALANCE="${{ steps.op_balance.outputs.balance }}"
+          THRESHOLD="${{ vars.OP_THRESHOLD_UNITS || '500000000000000000' }}"
+          if [ "$BALANCE" -lt "$THRESHOLD" ]; then
+            BALANCE_HUMAN=$(echo "scale=6; $BALANCE / 1000000000000000000" | bc)
+            THRESHOLD_HUMAN=$(echo "scale=6; $THRESHOLD / 1000000000000000000" | bc)
+            ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} OP on Optimism in wallet: \
+              ${{ vars.TEST_WALLET_ADDRESS }}"
+            echo "should_alert=true" >> "$GITHUB_OUTPUT"
+            echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
+            echo "::warning::$ALERT_TEXT"
+          fi
+
+      - name: Send Slack alert (OP)
+        if: |
+          steps.op_alert.outputs.should_alert == 'true' &&
+          env.SLACK_FAUCETBOT_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ env.SLACK_FAUCETBOT_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "${{ steps.op_alert.outputs.text }}"
+            }
+
+      - name: Skip Slack alert (OP - no webhook)
+        if: |
+          steps.op_alert.outputs.should_alert == 'true' &&
+          env.SLACK_FAUCETBOT_WEBHOOK_URL == ''
+        run: |
+          echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping OP alert"

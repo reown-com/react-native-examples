@@ -1,0 +1,35 @@
+appId: ${APP_ID}
+name: WalletConnect Pay - Single Option No KYC (Deep Link)
+tags:
+  - pay
+---
+# Create payment via API (single-option, no-KYC merchant)
+- runScript:
+    file: scripts/create-payment.js
+    env:
+      WPAY_CUSTOMER_KEY: ${WPAY_CUSTOMER_KEY_SINGLE_NOKYC}
+      WPAY_MERCHANT_ID: ${WPAY_MERCHANT_ID_SINGLE_NOKYC}
+
+- startRecording: "WalletConnect Pay Single Option No KYC Deep Link"
+
+# Open wallet via deep link with payment URL
+- runFlow:
+    file: flows/pay_open_via_deeplink.yaml
+
+# Single option auto-selects — go straight to review screen
+
+# Verify pay button shows the correct amount
+- extendedWaitUntil:
+    visible:
+      id: "pay-button-pay"
+    timeout: 10000
+- copyTextFrom:
+    id: "pay-button-pay"
+- assertTrue:
+    condition: "${maestro.copiedText == 'Pay $0.01'}"
+
+# Tap Pay, verify success
+- runFlow:
+    file: flows/pay_confirm_and_verify.yaml
+
+- stopRecording

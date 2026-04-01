@@ -285,6 +285,7 @@ export default function PaymentOptionsModal() {
   ]);
 
   const paymentOptionsCount = snap.paymentOptions?.options?.length ?? 0;
+  const isCollectDataNeeded = snap.paymentOptions?.collectData?.url;
   const showBackButton =
     snap.step === 'collectData' ||
     snap.step === 'infoExplainer' ||
@@ -293,10 +294,11 @@ export default function PaymentOptionsModal() {
     snap.step === 'collectData' && !!selectedOptionCollectDataUrl;
 
   const headerLeftContent =
-    snap.step === 'selectOption' ? (
+    snap.step === 'selectOption' && isCollectDataNeeded ? (
       <Button
         onPress={() => PaymentStore.setStep('infoExplainer')}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        testID="pay-button-info"
         style={[
           styles.questionButton,
           { borderColor: Theme['border-secondary'] },

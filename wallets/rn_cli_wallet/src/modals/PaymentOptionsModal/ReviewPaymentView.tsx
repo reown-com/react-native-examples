@@ -53,6 +53,8 @@ export function ReviewPaymentView({
             styles.item,
             { backgroundColor: Theme['foreground-primary'] },
           ]}
+          testID={`pay-review-token-${selectedOption.amount.display?.networkName?.toLowerCase() || ''}`}
+          accessibilityLabel={selectedOption.amount.display?.networkName?.toLowerCase() || ''}
         >
           <Text variant="lg-400" color="text-tertiary">
             Pay with
@@ -87,6 +89,7 @@ export function ReviewPaymentView({
           disabled={isSigningPayment || isLoadingActions}
           fullWidth
           testID="pay-button-pay"
+          accessibilityLabel={`Pay ${currencySymbol}${payAmount}`}
         >
           {`Pay ${currencySymbol}${payAmount}`}
         </ActionButton>
