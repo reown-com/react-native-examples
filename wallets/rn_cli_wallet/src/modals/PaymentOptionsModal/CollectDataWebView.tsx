@@ -66,6 +66,7 @@ function getBaseUrl(urlString: string): string {
 const PREFILL_DATA = {
   fullName: 'John Doe',
   dob: '1990-06-15',
+  pobAddress: 'Buenos Aires'
 };
 
 function buildUrlWithPrefill(

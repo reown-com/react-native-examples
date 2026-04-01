@@ -215,6 +215,7 @@ export function SelectOptionView({
           disabled={isSigningPayment || !selectedOption}
           silentDisabled={isLoadingActions}
           fullWidth
+          testID="pay-button-continue"
         >
           Continue
         </ActionButton>

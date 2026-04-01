@@ -1,0 +1,97 @@
+appId: ${APP_ID}
+name: WalletConnect Pay - Wallet Payment Confirmed
+tags:
+  - pay
+---
+# Launch wallet app (GATEWAY_URL is already in the device clipboard, set by CI)
+- launchApp:
+    appId: ${APP_ID}
+    permissions:
+      all: allow
+
+- startRecording: "WalletConnect Pay Confirmed"
+
+# Tap scan button to open scanner options modal
+- tapOn:
+    id: "button-scan"
+
+# Android: type the payment URL into the test input field
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          id: "input-paste-url"
+      - inputText: ${GATEWAY_URL}
+      - pressKey: Enter
+      - tapOn:
+          id: "button-submit-url"
+
+# iOS: paste from clipboard
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          id: "button-paste-url"
+      - runFlow:
+          when:
+            visible: "Allow Paste"
+          commands:
+            - tapOn: "Allow Paste"
+
+# Wait for payment options to load with merchant info
+- extendedWaitUntil:
+    visible:
+      id: "pay-merchant-info"
+    timeout: 15000
+
+# Handle single vs. multi option: if Continue button visible, tap it
+- runFlow:
+    when:
+      visible:
+        id: "pay-button-continue"
+    commands:
+      - tapOn:
+          id: "pay-button-continue"
+
+# Handle personal details webview (if user needs KYC)
+- runFlow:
+    when:
+      visible: "Add your personal details"
+    commands:
+      # Data is autocompleted, just tap Add
+      - tapOn: "Add"
+      # Confirm your details popup: tap the Terms checkbox then Confirm
+      - extendedWaitUntil:
+          visible: "Confirm your details"
+          timeout: 10000
+      # Tap the checkbox / label for terms agreement
+      - tapOn:
+          text: "I agree to the <termsLink>Terms and Conditions</termsLink> and <privacyLink>Privacy Policy</privacyLink>"
+          retryTapIfNoChange: true
+      - tapOn: "Confirm"
+
+# On review screen, tap Pay button
+- extendedWaitUntil:
+    visible:
+      id: "pay-button-pay"
+    timeout: 10000
+- tapOn:
+    id: "pay-button-pay"
+
+# Verify confirming screen
+- assertVisible:
+    id: "pay-loading-message"
+
+# Wait for success screen (generous timeout for on-chain confirmation)
+- extendedWaitUntil:
+    visible:
+      id: "pay-result-success-icon"
+    timeout: 30000
+
+# Tap "Got it!" button
+- tapOn:
+    id: "pay-button-result-action"
+
+- stopRecording

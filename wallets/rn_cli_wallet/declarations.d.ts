@@ -8,6 +8,8 @@ declare module 'react-native-config' {
     ENV_SENTRY_DSN: string;
     ENV_TON_CENTER_API_KEY: string;
     ENV_BLOCKCHAIN_API_URL: string;
+    ENV_TEST_PRIVATE_KEY: string;
+    ENV_TEST_MODE: string;
   }
 
   export const Config: NativeConfig;

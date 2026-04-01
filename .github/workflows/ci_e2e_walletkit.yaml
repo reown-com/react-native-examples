@@ -1,15 +1,375 @@
-name: CI E2E Tests iOS
+name: CI E2E WalletKit
+run-name: "E2E WalletKit - ${{ inputs.platform || 'both' }} - Tags: ${{ inputs.maestro-tags || 'pay' }}"
 
 permissions:
   contents: read
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'wallets/rn_cli_wallet/**'
+      - '.maestro/**'
+  push:
+    branches: [main]
+    paths:
+      - 'wallets/rn_cli_wallet/**'
+      - '.maestro/**'
   workflow_dispatch:
+    inputs:
+      maestro-tags:
+        description: 'Maestro test tags to run (comma-separated)'
+        required: false
+        default: 'pay'
+        type: string
+      app-id:
+        description: 'App bundle ID / package name for Maestro'
+        required: false
+        default: 'com.walletconnect.web3wallet.rnsample.internal'
+        type: string
+      platform:
+        description: 'Platform to run tests on'
+        required: false
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - ios
+          - android
+
+env:
+  MAESTRO_TAGS: ${{ inputs.maestro-tags || 'pay' }}
+  MAESTRO_APP_ID: ${{ inputs.app-id || 'com.walletconnect.web3wallet.rnsample.internal' }}
+  ROOT_PATH: wallets/rn_cli_wallet
 
 jobs:
-  placeholder:
-    name: Placeholder Job
-    runs-on: macos-latest
+  e2e-ios:
+    if: inputs.platform != 'android'
+    name: E2E Tests - iOS
+    runs-on: macos-latest-xlarge
+    timeout-minutes: 60
     steps:
-      - name: Do nothing
-        run: echo "This is a placeholder workflow to enable manual triggers from feature branches."
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 26.2
+        run: |
+          XCODE_PATH=/Applications/Xcode_26.2.app/Contents/Developer
+          if [ ! -d "$XCODE_PATH" ]; then
+            echo "Available Xcode versions:"
+            ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
+            exit 1
+          fi
+          sudo xcode-select -s "$XCODE_PATH"
+          xcodebuild -version
+
+      - name: Setup
+        uses: ./.github/actions/ci-setup
+        with:
+          root-path: ${{ env.ROOT_PATH }}
+
+      - name: Create env file
+        run: |
+          if [ -z "${{ secrets.WALLETKIT_ENV_FILE }}" ]; then
+            echo "Error: WALLETKIT_ENV_FILE secret is empty or not set"
+            exit 1
+          fi
+          echo "${{ secrets.WALLETKIT_ENV_FILE }}" > ${{ env.ROOT_PATH }}/.env
+          echo "ENV_TEST_PRIVATE_KEY=${{ secrets.TEST_WALLET_PRIVATE_KEY }}" >> ${{ env.ROOT_PATH }}/.env
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.0
+          bundler-cache: true
+
+      - name: Set Xcode paths
+        run: |
+          XCODEPROJ=$(find "${{ env.ROOT_PATH }}/ios" -maxdepth 1 -name "*.xcodeproj" -print -quit)
+          XCWORKSPACE=$(find "${{ env.ROOT_PATH }}/ios" -maxdepth 1 -name "*.xcworkspace" -print -quit)
+          echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
+          echo "XCWORKSPACE_PATH=$XCWORKSPACE" >> "$GITHUB_ENV"
+
+      - name: Cache Pods
+        id: pods-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ROOT_PATH }}/ios/Pods
+          key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles('wallets/rn_cli_wallet/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-${{ github.ref_name }}-
+
+      - name: Build for Simulator
+        uses: maierj/fastlane-action@v3.0.0
+        with:
+          lane: build_for_simulator
+        env:
+          SCHEME: RNWallet-Internal
+          BUNDLE_ID: com.walletconnect.web3wallet.rnsample.internal
+          PODFILE_PATH: ${{ env.ROOT_PATH }}/ios/Podfile
+          XCWORKSPACE_PATH: ${{ env.XCWORKSPACE_PATH }}
+          XCODE_PROJECT_PATH: ${{ env.XCODE_PROJECT_PATH }}
+          PROJECT_TYPE: wallet
+          RELEASE_TYPE: internal
+          BUILD_FOR_SIMULATOR: true
+          PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
+          SENTRY_DISABLE_AUTO_UPLOAD: true
+
+      - name: Find .app path
+        run: |
+          APP_PATH=$(cat ./build/app_path.txt)
+          echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
+
+      - name: Boot iOS Simulator
+        run: |
+          DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "iPhone 16" 2>/dev/null || \
+            xcrun simctl list devices available -j | \
+            jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name == "iPhone 16") | .udid' | head -1)
+          xcrun simctl boot "$DEVICE_ID" || true
+          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+
+      - name: Install app on Simulator
+        run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Create payment via API
+        id: payment
+        run: bash scripts/create-payment.sh
+        env:
+          WPAY_CUSTOMER_KEY: ${{ secrets.WPAY_CUSTOMER_KEY }}
+          WPAY_MERCHANT_ID: ${{ secrets.WPAY_MERCHANT_ID }}
+
+      - name: Set payment URL in simulator clipboard
+        run: echo "${{ steps.payment.outputs.gateway_url }}" | xcrun simctl pbcopy "$DEVICE_ID"
+
+      - name: Run Maestro tests
+        id: maestro
+        run: |
+          set -o pipefail
+          maestro test \
+            --env APP_ID="${{ env.MAESTRO_APP_ID }}" \
+            --include-tags "${{ env.MAESTRO_TAGS }}" \
+            --test-output-dir maestro-artifacts \
+            --debug-output maestro-artifacts \
+            .maestro/ 2>&1 | tee maestro-output.log
+
+      - name: Upload Maestro artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-ios-artifacts
+          path: |
+            maestro-artifacts/
+            maestro-output.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Send Slack notification
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "E2E Test Report - iOS - WalletKit",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🧪 E2E Test Report - iOS (${{ env.MAESTRO_TAGS }})" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
+                    { "type": "mrkdwn", "text": "*Platform:*\n`iOS`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Build:*\n`${{ steps.maestro.outcome != 'skipped' && '✅ Success' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.maestro.outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "Download Artifacts" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts"
+                    }
+                  ]
+                }
+              ]
+            }
+
+  e2e-android:
+    if: inputs.platform != 'ios'
+    name: E2E Tests - Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/ci-setup
+        with:
+          root-path: ${{ env.ROOT_PATH }}
+
+      - name: Create env file
+        run: |
+          if [ -z "${{ secrets.WALLETKIT_ENV_FILE }}" ]; then
+            echo "Error: WALLETKIT_ENV_FILE secret is empty or not set"
+            exit 1
+          fi
+          echo "${{ secrets.WALLETKIT_ENV_FILE }}" > ${{ env.ROOT_PATH }}/.env
+          echo "ENV_TEST_PRIVATE_KEY=${{ secrets.TEST_WALLET_PRIVATE_KEY }}" >> ${{ env.ROOT_PATH }}/.env
+          echo "ENV_TEST_MODE=true" >> ${{ env.ROOT_PATH }}/.env
+
+      - name: Install Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          architecture: x86_64
+
+      - name: Accept Android Licenses
+        uses: SimonMarquis/android-accept-licenses@8d8deab5b7ab2aaea9ed69f0b802e53173f21fd1 # v1
+
+      - name: Optimize Gradle for CI
+        run: |
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m" >> ${{ env.ROOT_PATH }}/android/gradle.properties
+          echo "org.gradle.parallel=true" >> ${{ env.ROOT_PATH }}/android/gradle.properties
+          echo "org.gradle.caching=true" >> ${{ env.ROOT_PATH }}/android/gradle.properties
+
+      - name: Configure ABI for emulator
+        run: |
+          echo "reactNativeArchitectures=x86_64" >> ${{ env.ROOT_PATH }}/android/gradle.properties
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ${{ env.ROOT_PATH }}/android/.gradle
+          key: ${{ runner.os }}-gradle-walletkit-${{ hashFiles('wallets/rn_cli_wallet/android/**/*.gradle*', 'wallets/rn_cli_wallet/android/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-walletkit-
+
+      - name: Build APK
+        id: build
+        run: cd ${{ env.ROOT_PATH }} && export SENTRY_DISABLE_AUTO_UPLOAD=true && yarn run android:build:internal
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Install Maestro
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Create payment via API
+        id: payment
+        run: bash scripts/create-payment.sh
+        env:
+          WPAY_CUSTOMER_KEY: ${{ secrets.WPAY_CUSTOMER_KEY }}
+          WPAY_MERCHANT_ID: ${{ secrets.WPAY_MERCHANT_ID }}
+
+      - name: Run E2E tests on Android Emulator
+        id: maestro
+        uses: reactivecircus/android-emulator-runner@70f4dee990796918b78d040e3278474bdbd348a7 # v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: default
+          avd-name: test_device
+          ram-size: 4096M
+          heap-size: 576M
+          emulator-boot-timeout: 900
+          force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
+          disable-animations: true
+          script: |
+            adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
+            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env GATEWAY_URL="${{ steps.payment.outputs.gateway_url }}" --include-tags "${{ env.MAESTRO_TAGS }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/ >maestro-output.log 2>&1; echo $? > maestro-exit-code
+            cat maestro-output.log
+            exit $(cat maestro-exit-code)
+
+      - name: Upload Maestro artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-android-artifacts
+          path: |
+            maestro-artifacts/
+            maestro-output.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Send Slack notification
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "E2E Test Report - Android - WalletKit",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🧪 E2E Test Report - Android (${{ env.MAESTRO_TAGS }})" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
+                    { "type": "mrkdwn", "text": "*Platform:*\n`Android`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Build:*\n`${{ steps.build.outcome == 'success' && '✅ Success' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.maestro.outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "Download Artifacts" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts"
+                    }
+                  ]
+                }
+              ]
+            }
