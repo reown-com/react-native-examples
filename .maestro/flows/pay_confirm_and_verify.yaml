@@ -10,15 +10,6 @@ appId: ${APP_ID}
 - tapOn:
     id: "pay-button-pay"
 
-# Verify confirming screen (optional — may flash by quickly)
-- runFlow:
-    when:
-      visible:
-        id: "pay-loading-message"
-    commands:
-      - assertVisible:
-          id: "pay-loading-message"
-
 # Wait for success screen (generous timeout for on-chain confirmation)
 - extendedWaitUntil:
     visible:
