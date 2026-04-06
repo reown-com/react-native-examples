@@ -1,0 +1,21 @@
+appId: ${APP_ID}
+---
+# Shared flow: Tap Pay, verify loading, wait for success, tap "Got it!"
+
+# On review screen, tap Pay button
+- extendedWaitUntil:
+    visible:
+      id: "pay-button-pay"
+    timeout: 10000
+- tapOn:
+    id: "pay-button-pay"
+
+# Wait for success screen (generous timeout for on-chain confirmation)
+- extendedWaitUntil:
+    visible:
+      id: "pay-result-success-icon"
+    timeout: 30000
+
+# Tap "Got it!" button
+- tapOn:
+    id: "pay-button-result-action"

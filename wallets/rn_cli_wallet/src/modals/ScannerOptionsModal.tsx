@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Config from 'react-native-config';
 
@@ -15,8 +15,7 @@ import { usePairing } from '@/hooks/usePairing';
 import Toast from 'react-native-toast-message';
 import { Button } from '@/components/Button';
 
-const showTestInput =
-  Config.ENV_TEST_MODE === 'true' && Platform.OS === 'android';
+const showTestInput = Config.ENV_TEST_MODE === 'true';
 
 export default function ScannerOptionsModal() {
   const Theme = useTheme();

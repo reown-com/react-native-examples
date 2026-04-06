@@ -183,9 +183,17 @@ The app uses standardized `testID` props for Maestro E2E testing. These IDs are 
 - `pay-*`: WalletConnect Pay flow elements (e.g., `pay-merchant-info`, `pay-button-pay`, `pay-result-success-icon`)
 
 ### Test Files
-- `.maestro/web/pay_confirm.yaml`: WalletConnect Pay end-to-end flow (POS → Wallet → POS)
-- `.maestro/native/`: Native dapp-to-wallet flows (connect, sign, reject)
-- `.maestro/web/`: Web-to-wallet flows (connect, sign, reject)
+- `.maestro/pay_single_option_nokyc.yaml`: Single payment option, no KYC — goes straight to review screen
+- `.maestro/pay_multiple_options_nokyc.yaml`: Multiple payment options, no KYC — option selection then review
+- `.maestro/pay_multiple_options_kyc.yaml`: Multiple payment options with KYC — option selection, webview KYC flow, then review
+- `.maestro/flows/pay_open_and_paste_url.yaml`: Shared sub-flow — opens wallet, pastes payment URL, waits for merchant info
+- `.maestro/flows/pay_confirm_and_verify.yaml`: Shared sub-flow — taps Pay, verifies success screen
+- `.maestro/scripts/create-payment.js`: Creates a payment via the WalletConnect Pay API (called via `runScript`)
+
+### Running Pay Tests Locally
+```bash
+maestro test --env APP_ID=com.walletconnect.web3wallet.rnsample.internal --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="<key>" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="<id>" --env WPAY_CUSTOMER_KEY_MULTI_KYC="<key>" --env WPAY_MERCHANT_ID_MULTI_KYC="<id>" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="<key>" --env WPAY_MERCHANT_ID_MULTI_NOKYC="<id>" --include-tags pay .maestro/
+```
 
 ### Dynamic App ID
 Maestro tests use `${APP_ID}` env variable instead of hardcoded bundle IDs, enabling reuse across wallet platforms. Pass via `--env APP_ID=<bundle-id>` when running tests.

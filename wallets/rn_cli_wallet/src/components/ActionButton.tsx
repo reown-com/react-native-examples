@@ -25,6 +25,7 @@ export interface ActionButtonProps {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   testID?: string;
+  accessibilityLabel?: string;
 }
 
 export function ActionButton({
@@ -38,6 +39,7 @@ export function ActionButton({
   style,
   textStyle,
   testID,
+  accessibilityLabel,
 }: ActionButtonProps) {
   const Theme = useTheme();
 
@@ -71,6 +73,7 @@ export function ActionButton({
       onPress={onPress}
       disabled={disabled || loading || silentDisabled}
       testID={testID}
+      accessibilityLabel={accessibilityLabel}
       style={[
         styles.container,
         { backgroundColor, borderColor },

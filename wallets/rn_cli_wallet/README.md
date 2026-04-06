@@ -91,14 +91,14 @@ curl -fsSL "https://get.maestro.mobile.dev" | bash
 
 ### Running Tests Locally
 
-Run all tests with the `pay` tag:
+Run all pay tests:
 ```bash
-maestro test --env APP_ID=com.walletconnect.web3wallet.rnsample.internal --tags pay .maestro/
+maestro test --env APP_ID=com.walletconnect.web3wallet.rnsample.internal --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="<key>" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="<id>" --env WPAY_CUSTOMER_KEY_MULTI_KYC="<key>" --env WPAY_MERCHANT_ID_MULTI_KYC="<id>" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="<key>" --env WPAY_MERCHANT_ID_MULTI_NOKYC="<id>" --include-tags pay .maestro/
 ```
 
 Run a specific test:
 ```bash
-maestro test --env APP_ID=com.walletconnect.web3wallet.rnsample.internal .maestro/web/pay_confirm.yaml
+maestro test --env APP_ID=com.walletconnect.web3wallet.rnsample.internal --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="<key>" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="<id>" .maestro/pay_single_option_nokyc.yaml
 ```
 
 Run all tests:
