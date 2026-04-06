@@ -203,11 +203,7 @@ function filterToStatusArray(
  * @returns Infinite query result with paginated transactions
  */
 export function useTransactions(options: UseTransactionsOptions = {}) {
-  const {
-    enabled = true,
-    filter = "all",
-    dateRangeFilter = "today",
-  } = options;
+  const { enabled = true, filter = "all", dateRangeFilter = "today" } = options;
 
   const addLog = useLogsStore.getState().addLog;
 
