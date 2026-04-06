@@ -27,16 +27,12 @@ tags:
 - assertVisible:
     id: "pay-result-insufficient-funds-icon"
 
-# Verify "Got it!" button
+# Verify result action button is visible
 - assertVisible:
-    id: "pay-button-result-action"
-- copyTextFrom:
-    id: "pay-button-result-action"
-- assertTrue:
-    condition: "${maestro.copiedText == 'Got it!'}"
+    id: "pay-button-result-action-insufficient_funds"
 
 # Dismiss the error dialog
 - tapOn:
-    id: "pay-button-result-action"
+    id: "pay-button-result-action-insufficient_funds"
 
 - stopRecording

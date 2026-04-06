@@ -22,16 +22,12 @@ tags:
 - assertVisible:
     id: "pay-result-cancelled-icon"
 
-# Verify "Scan new QR code" button (expired/cancelled share this button text)
+# Verify result action button is visible
 - assertVisible:
-    id: "pay-button-result-action"
-- copyTextFrom:
-    id: "pay-button-result-action"
-- assertTrue:
-    condition: "${maestro.copiedText == 'Scan new QR code'}"
+    id: "pay-button-result-action-cancelled"
 
 # Dismiss the error dialog
 - tapOn:
-    id: "pay-button-result-action"
+    id: "pay-button-result-action-cancelled"
 
 - stopRecording

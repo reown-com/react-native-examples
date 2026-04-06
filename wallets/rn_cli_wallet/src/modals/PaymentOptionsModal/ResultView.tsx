@@ -13,6 +13,15 @@ import { Spacing } from '@/utils/ThemeUtil';
 import type { ErrorType } from './utils';
 import { getErrorTitle } from './utils';
 
+const getResultButtonTestId = (isSuccess: boolean, errorType?: ErrorType | null) =>
+  `pay-button-result-action-${isSuccess ? 'success' : errorType || 'generic'}`;
+
+const getActionButtonText = (isSuccess: boolean, errorType?: ErrorType | null) => {
+  if (isSuccess || errorType === 'insufficient_funds') return 'Got it!';
+  if (errorType === 'expired' || errorType === 'cancelled') return 'Scan new QR code';
+  return 'Close';
+};
+
 interface ResultViewProps {
   status: 'success' | 'error';
   errorType?: ErrorType | null;
@@ -167,13 +176,9 @@ export function ResultView({
               : onClose
           }
           fullWidth
-          testID="pay-button-result-action"
+          testID={getResultButtonTestId(isSuccess, errorType)}
         >
-          {isSuccess || errorType === 'insufficient_funds'
-            ? 'Got it!'
-            : errorType === 'expired' || errorType === 'cancelled'
-            ? 'Scan new QR code'
-            : 'Close'}
+          {getActionButtonText(isSuccess, errorType)}
         </ActionButton>
       </View>
     </>
