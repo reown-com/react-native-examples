@@ -25,7 +25,10 @@ tags:
 # Verify "Scan new QR code" button
 - assertVisible:
     id: "pay-button-result-action"
-    text: "Scan new QR code"
+- copyTextFrom:
+    id: "pay-button-result-action"
+- assertTrue:
+    condition: "${maestro.copiedText == 'Scan new QR code'}"
 
 # Dismiss the error dialog
 - tapOn:
