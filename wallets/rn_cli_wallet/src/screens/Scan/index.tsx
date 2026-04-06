@@ -85,7 +85,7 @@ export default function Scan({ navigation }: Props) {
 
       {/* Dark overlay with rounded cutout */}
       <Svg
-        style={[StyleSheet.absoluteFill, { left: -1, top: -1 }]}
+        style={[StyleSheet.absoluteFill, styles.overlay]}
         width={screenWidth}
         height={screenHeight}
       >

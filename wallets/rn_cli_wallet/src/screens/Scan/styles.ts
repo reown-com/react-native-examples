@@ -10,6 +10,10 @@ export const scanAreaLeft = (width - SCAN_AREA_SIZE) / 2;
 export const scanAreaTop = (height - SCAN_AREA_SIZE) / 3;
 
 export default StyleSheet.create({
+  overlay: {
+    left: -1,
+    top: -1,
+  },
   scanFrame: {
     position: 'absolute',
     top: scanAreaTop - 14,
