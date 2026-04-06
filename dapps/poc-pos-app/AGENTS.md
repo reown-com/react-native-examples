@@ -104,7 +104,6 @@ EXPO_PUBLIC_PROJECT_ID=""      # WalletConnect project ID
 EXPO_PUBLIC_SENTRY_DSN=""      # Sentry error tracking DSN
 SENTRY_AUTH_TOKEN=""           # Sentry authentication token
 EXPO_PUBLIC_API_URL=""         # Payment API base URL
-EXPO_PUBLIC_GATEWAY_URL=""     # WalletConnect gateway URL
 EXPO_PUBLIC_MERCHANTS_URL=""   # Merchants API URL
 ```
 
