@@ -1,0 +1,82 @@
+appId: ${APP_ID}
+name: WalletConnect Pay - Double Scan Same Payment
+tags:
+  - pay
+---
+# Create payment via API (single-option, no-KYC merchant)
+- runScript:
+    file: scripts/create-payment.js
+    env:
+      WPAY_CUSTOMER_KEY: ${WPAY_CUSTOMER_KEY_SINGLE_NOKYC}
+      WPAY_MERCHANT_ID: ${WPAY_MERCHANT_ID_SINGLE_NOKYC}
+
+- startRecording: "WalletConnect Pay Double Scan"
+
+# === First scan: complete the payment normally ===
+
+# Open wallet, paste payment URL
+- runFlow:
+    file: flows/pay_open_and_paste_url.yaml
+
+# Wait for payment options to load
+- extendedWaitUntil:
+    visible:
+      id: "pay-merchant-info"
+    timeout: 15000
+
+# Single option auto-selects — verify pay button
+- extendedWaitUntil:
+    visible:
+      id: "pay-button-pay"
+    timeout: 10000
+- copyTextFrom:
+    id: "pay-button-pay"
+- assertTrue:
+    condition: "${maestro.copiedText == 'Pay $0.01'}"
+
+# Tap Pay, verify success, tap "Got it!"
+- runFlow:
+    file: flows/pay_confirm_and_verify.yaml
+
+# === Second scan: re-open the same gateway URL ===
+
+# Tap scan button to open scanner
+- tapOn:
+    id: "button-scan"
+
+# Type the same payment URL
+- tapOn:
+    id: "input-paste-url"
+
+# Dismiss iOS keyboard language prompt if it appears
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+
+- inputText: ${output.gateway_url}
+- pressKey: Enter
+- tapOn:
+    id: "button-submit-url"
+
+# Wait for error result screen (payment already completed)
+- extendedWaitUntil:
+    visible:
+      id: "pay-result-container"
+    timeout: 20000
+
+# Verify generic error icon is shown (not success)
+- assertVisible:
+    id: "pay-result-error-icon"
+
+# Verify "Close" button
+- assertVisible:
+    id: "pay-button-result-action"
+    text: "Close"
+
+# Dismiss the error dialog
+- tapOn:
+    id: "pay-button-result-action"
+
+- stopRecording

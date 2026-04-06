@@ -46,7 +46,12 @@ export function ResultView({
   const renderIcon = () => {
     if (isSuccess) {
       return (
-        <CheckCircle width={40} height={40} fill={Theme['text-success']} testID="pay-result-success-icon" />
+        <CheckCircle
+          width={40}
+          height={40}
+          fill={Theme['text-success']}
+          testID="pay-result-success-icon"
+        />
       );
     }
 
@@ -54,14 +59,43 @@ export function ResultView({
 
     switch (errorType) {
       case 'insufficient_funds':
-        return <CoinStack width={40} height={40} fill={iconColor} />;
+        return (
+          <CoinStack
+            width={40}
+            height={40}
+            fill={iconColor}
+            testID="pay-result-insufficient-funds-icon"
+          />
+        );
       case 'expired':
+        return (
+          <WarningCircle
+            width={40}
+            height={40}
+            fill={iconColor}
+            testID="pay-result-expired-icon"
+          />
+        );
       case 'cancelled':
-        return <WarningCircle width={40} height={40} fill={iconColor} />;
+        return (
+          <WarningCircle
+            width={40}
+            height={40}
+            fill={iconColor}
+            testID="pay-result-cancelled-icon"
+          />
+        );
       case 'not_found':
       case 'generic':
       default:
-        return <WarningCircle width={40} height={40} fill={iconColor} />;
+        return (
+          <WarningCircle
+            width={40}
+            height={40}
+            fill={iconColor}
+            testID="pay-result-error-icon"
+          />
+        );
     }
   };
 
@@ -138,8 +172,8 @@ export function ResultView({
           {isSuccess || errorType === 'insufficient_funds'
             ? 'Got it!'
             : errorType === 'expired' || errorType === 'cancelled'
-              ? 'Scan new QR code'
-              : 'Close'}
+            ? 'Scan new QR code'
+            : 'Close'}
         </ActionButton>
       </View>
     </>

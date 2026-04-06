@@ -28,9 +28,3 @@ appId: ${APP_ID}
 - pressKey: Enter
 - tapOn:
     id: "button-submit-url"
-
-# Wait for payment options to load with merchant info
-- extendedWaitUntil:
-    visible:
-      id: "pay-merchant-info"
-    timeout: 15000
