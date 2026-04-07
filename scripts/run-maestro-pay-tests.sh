@@ -28,10 +28,10 @@ if [ ! -f "$ENV_FILE" ]; then
   exit 1
 fi
 
-# Source the env file (supports KEY=VALUE format, ignores comments and blank lines)
+# Source the env file (supports KEY=VALUE format with comments)
 set -a
 # shellcheck disable=SC1090
-source <(grep -v '^\s*#' "$ENV_FILE" | grep -v '^\s*$')
+source "$ENV_FILE"
 set +a
 
 # Validate required vars
