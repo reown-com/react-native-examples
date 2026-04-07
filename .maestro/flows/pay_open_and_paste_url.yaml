@@ -3,11 +3,18 @@ appId: ${APP_ID}
 # Shared flow: Launch wallet, open scanner, paste payment URL, wait for merchant info
 # Requires: ${output.gateway_url} to be set by a prior runScript step
 
-# Launch wallet app
+# Launch wallet app with clean state to avoid flakiness from prior test runs
 - launchApp:
     appId: ${APP_ID}
+    clearState: true
     permissions:
       all: allow
+
+# Wait for the app to fully load before interacting
+- extendedWaitUntil:
+    visible:
+      id: "button-scan"
+    timeout: 15000
 
 # Tap scan button to open scanner options modal
 - tapOn:

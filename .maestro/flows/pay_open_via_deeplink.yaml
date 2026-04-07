@@ -3,5 +3,12 @@ appId: ${APP_ID}
 # Shared flow: Open payment URL via deep link
 # Requires: ${output.gateway_url} to be set by a prior runScript step
 
+# Launch wallet app to ensure it's running before opening the deep link
+- launchApp:
+    appId: ${APP_ID}
+    clearState: true
+    permissions:
+      all: allow
+
 # Open the payment URL as a deep link
 - openLink: ${output.gateway_url}
