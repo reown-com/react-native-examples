@@ -317,8 +317,11 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
           disable-animations: true
           script: |
+            adb logcat *:E > emulator-errors.log 2>&1 &
+            LOGCAT_PID=$!
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
             $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env WPAY_CUSTOMER_KEY_MULTI_KYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}" --env WPAY_MERCHANT_ID_MULTI_KYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}" --env WPAY_MERCHANT_ID_MULTI_NOKYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}" --include-tags "${{ env.MAESTRO_TAGS }}" --test-output-dir maestro-artifacts --debug-output maestro-artifacts .maestro/ >maestro-output.log 2>&1; echo $? > maestro-exit-code
+            kill $LOGCAT_PID || true
             cat maestro-output.log
             exit $(cat maestro-exit-code)
 
@@ -330,6 +333,7 @@ jobs:
           path: |
             maestro-artifacts/
             maestro-output.log
+            emulator-errors.log
           if-no-files-found: warn
           retention-days: 14
 
