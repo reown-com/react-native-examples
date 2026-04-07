@@ -29,3 +29,8 @@ fastlane/report.xml
 .expo
 .vercel
 .env*.local
+
+# Maestro Pay test flows (downloaded from WalletConnect/actions via scripts/setup-maestro-pay-tests.sh)
+.maestro/pay_*.yaml
+.maestro/flows/pay_*.yaml
+.maestro/scripts/
