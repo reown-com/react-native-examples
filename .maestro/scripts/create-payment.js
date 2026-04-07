@@ -10,7 +10,7 @@ var response = http.post('https://api.pay.walletconnect.com/v1/payments', {
   },
   body: JSON.stringify({
     referenceId: '' + Date.now() + Math.random().toString(36).substring(2, 10),
-    amount: { value: '1', unit: 'iso4217/USD' },
+    amount: { value: typeof WPAY_AMOUNT !== 'undefined' ? WPAY_AMOUNT : '1', unit: 'iso4217/USD' },
   }),
 });
 

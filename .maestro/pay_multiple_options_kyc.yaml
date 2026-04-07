@@ -12,9 +12,15 @@ tags:
 
 - startRecording: "WalletConnect Pay Multiple Options KYC"
 
-# Open wallet, paste payment URL, wait for merchant info
+# Open wallet, paste payment URL
 - runFlow:
     file: flows/pay_open_and_paste_url.yaml
+
+# Wait for payment options to load
+- extendedWaitUntil:
+    visible:
+      id: "pay-merchant-info"
+    timeout: 15000
 
 # Verify first option is pre-selected (index 0)
 - assertVisible:
@@ -60,7 +66,14 @@ tags:
 # Data is autocompleted, just tap Add
 - tapOn: "Add"
 
-# Confirm your details popup: tap the Terms checkbox then Confirm
+# Retry tap on "Add" if "Confirm your details" doesn't appear (webview can be slow)
+- runFlow:
+    when:
+      notVisible: "Confirm your details"
+    commands:
+      - tapOn: "Add"
+
+# Confirm your details popup
 - extendedWaitUntil:
     visible: "Confirm your details"
     timeout: 10000

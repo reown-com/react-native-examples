@@ -16,6 +16,12 @@ tags:
 - runFlow:
     file: flows/pay_open_via_deeplink.yaml
 
+# Wait for payment options to load
+- extendedWaitUntil:
+    visible:
+      id: "pay-merchant-info"
+    timeout: 15000
+
 # Single option auto-selects — go straight to review screen
 
 # Verify pay button shows the correct amount

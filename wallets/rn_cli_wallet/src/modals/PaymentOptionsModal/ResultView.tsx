@@ -13,6 +13,15 @@ import { Spacing } from '@/utils/ThemeUtil';
 import type { ErrorType } from './utils';
 import { getErrorTitle } from './utils';
 
+const getResultButtonTestId = (isSuccess: boolean, errorType?: ErrorType | null) =>
+  `pay-button-result-action-${isSuccess ? 'success' : errorType || 'generic'}`;
+
+const getActionButtonText = (isSuccess: boolean, errorType?: ErrorType | null) => {
+  if (isSuccess || errorType === 'insufficient_funds') return 'Got it!';
+  if (errorType === 'expired' || errorType === 'cancelled') return 'Scan new QR code';
+  return 'Close';
+};
+
 interface ResultViewProps {
   status: 'success' | 'error';
   errorType?: ErrorType | null;
@@ -46,7 +55,12 @@ export function ResultView({
   const renderIcon = () => {
     if (isSuccess) {
       return (
-        <CheckCircle width={40} height={40} fill={Theme['text-success']} testID="pay-result-success-icon" />
+        <CheckCircle
+          width={40}
+          height={40}
+          fill={Theme['text-success']}
+          testID="pay-result-success-icon"
+        />
       );
     }
 
@@ -54,14 +68,43 @@ export function ResultView({
 
     switch (errorType) {
       case 'insufficient_funds':
-        return <CoinStack width={40} height={40} fill={iconColor} />;
+        return (
+          <CoinStack
+            width={40}
+            height={40}
+            fill={iconColor}
+            testID="pay-result-insufficient-funds-icon"
+          />
+        );
       case 'expired':
+        return (
+          <WarningCircle
+            width={40}
+            height={40}
+            fill={iconColor}
+            testID="pay-result-expired-icon"
+          />
+        );
       case 'cancelled':
-        return <WarningCircle width={40} height={40} fill={iconColor} />;
+        return (
+          <WarningCircle
+            width={40}
+            height={40}
+            fill={iconColor}
+            testID="pay-result-cancelled-icon"
+          />
+        );
       case 'not_found':
       case 'generic':
       default:
-        return <WarningCircle width={40} height={40} fill={iconColor} />;
+        return (
+          <WarningCircle
+            width={40}
+            height={40}
+            fill={iconColor}
+            testID="pay-result-error-icon"
+          />
+        );
     }
   };
 
@@ -133,13 +176,9 @@ export function ResultView({
               : onClose
           }
           fullWidth
-          testID="pay-button-result-action"
+          testID={getResultButtonTestId(isSuccess, errorType)}
         >
-          {isSuccess || errorType === 'insufficient_funds'
-            ? 'Got it!'
-            : errorType === 'expired' || errorType === 'cancelled'
-              ? 'Scan new QR code'
-              : 'Close'}
+          {getActionButtonText(isSuccess, errorType)}
         </ActionButton>
       </View>
     </>

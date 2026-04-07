@@ -1,0 +1,38 @@
+appId: ${APP_ID}
+name: WalletConnect Pay - Insufficient Funds
+tags:
+  - pay
+---
+# Create payment with amount exceeding wallet balance ($9.99)
+- runScript:
+    file: scripts/create-payment.js
+    env:
+      WPAY_CUSTOMER_KEY: ${WPAY_CUSTOMER_KEY_SINGLE_NOKYC}
+      WPAY_MERCHANT_ID: ${WPAY_MERCHANT_ID_SINGLE_NOKYC}
+      WPAY_AMOUNT: "999"
+
+- startRecording: "WalletConnect Pay Insufficient Funds"
+
+# Open wallet, paste payment URL
+- runFlow:
+    file: flows/pay_open_and_paste_url.yaml
+
+# No options available — app jumps directly to error result screen
+- extendedWaitUntil:
+    visible:
+      id: "pay-result-container"
+    timeout: 15000
+
+# Verify insufficient funds icon is shown
+- assertVisible:
+    id: "pay-result-insufficient-funds-icon"
+
+# Verify result action button is visible
+- assertVisible:
+    id: "pay-button-result-action-insufficient_funds"
+
+# Dismiss the error dialog
+- tapOn:
+    id: "pay-button-result-action-insufficient_funds"
+
+- stopRecording

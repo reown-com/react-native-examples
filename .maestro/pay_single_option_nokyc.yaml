@@ -12,9 +12,15 @@ tags:
 
 - startRecording: "WalletConnect Pay Single Option No KYC"
 
-# Open wallet, paste payment URL, wait for merchant info
+# Open wallet, paste payment URL
 - runFlow:
     file: flows/pay_open_and_paste_url.yaml
+
+# Wait for payment options to load
+- extendedWaitUntil:
+    visible:
+      id: "pay-merchant-info"
+    timeout: 15000
 
 # Single option auto-selects — go straight to review screen
 

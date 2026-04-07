@@ -18,4 +18,4 @@ appId: ${APP_ID}
 
 # Tap "Got it!" button
 - tapOn:
-    id: "pay-button-result-action"
+    id: "pay-button-result-action-success"

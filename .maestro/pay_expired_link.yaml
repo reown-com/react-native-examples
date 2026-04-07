@@ -1,0 +1,33 @@
+appId: ${APP_ID}
+name: WalletConnect Pay - Expired Link
+tags:
+  - pay
+---
+# Use a hardcoded expired payment URL (no API call needed)
+- evalScript: ${output.gateway_url = 'https://pay.walletconnect.com/?pid=pay_b8a2ecc101KNHRNWXD2VF8SGZDS7WK19ZA'}
+
+- startRecording: "WalletConnect Pay Expired Link"
+
+# Open wallet, paste payment URL
+- runFlow:
+    file: flows/pay_open_and_paste_url.yaml
+
+# Payment is expired — app shows error result screen directly
+- extendedWaitUntil:
+    visible:
+      id: "pay-result-container"
+    timeout: 15000
+
+# Verify expired icon is shown
+- assertVisible:
+    id: "pay-result-expired-icon"
+
+# Verify result action button is visible
+- assertVisible:
+    id: "pay-button-result-action-expired"
+
+# Dismiss the error dialog
+- tapOn:
+    id: "pay-button-result-action-expired"
+
+- stopRecording
