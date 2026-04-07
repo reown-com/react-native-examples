@@ -26,10 +26,6 @@ tags:
 - assertVisible:
     id: "pay-option-0-selected"
 
-# Copy the network name from the selected option
-- copyTextFrom:
-    id: "pay-option-0-selected"
-
 # Tap Continue to go to collectData webview
 - tapOn:
     id: "pay-button-continue"

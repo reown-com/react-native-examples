@@ -57,4 +57,10 @@ tags:
 - tapOn:
     id: "pay-button-close"
 
+# Verify modal is dismissed and we're back at the main wallet screen
+- extendedWaitUntil:
+    visible:
+      id: "button-scan"
+    timeout: 10000
+
 - stopRecording
