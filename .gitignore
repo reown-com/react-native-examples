@@ -12,6 +12,7 @@ secrets.properties
 .env.*
 *.env
 !.env.example
+!.env.maestro.example
 
 # Sentry
 sentry.properties
