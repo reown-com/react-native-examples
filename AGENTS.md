@@ -17,9 +17,6 @@ This repository contains sample React Native applications demonstrating WalletCo
 | App | Description | AGENTS.md |
 |-----|-------------|-----------|
 | appkit-expo-wagmi | Expo + Wagmi integration | - |
-| ModalEthers | WalletConnect Modal with Ethers.js | - |
-| ModalUProvider | WalletConnect Modal with UProvider | - |
-| ModalViem | WalletConnect Modal with Viem | - |
 | poc-pos-app | Point of Sale proof of concept | [View](dapps/poc-pos-app/AGENTS.md) |
 | pos-app | Point of Sale application | [View](dapps/pos-app/AGENTS.md) |
 | W3MEthers | AppKit with Ethers.js | - |
