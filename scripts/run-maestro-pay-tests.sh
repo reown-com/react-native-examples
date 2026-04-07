@@ -4,20 +4,20 @@
 #
 # Usage: ./scripts/run-maestro-pay-tests.sh [maestro-args...]
 # Examples:
-#   ./scripts/run-maestro-pay-tests.sh                          # Run all pay tests
-#   ./scripts/run-maestro-pay-tests.sh --include-tags pay       # Same, explicit tag
-#   ./scripts/run-maestro-pay-tests.sh .maestro/pay_cancelled.yaml  # Run single test
+#   ./scripts/run-maestro-pay-tests.sh                                    # Run all pay tests
+#   ./scripts/run-maestro-pay-tests.sh .maestro/pay_cancelled.yaml        # Run single test
+#   ACTIONS_BRANCH=feat/my-branch ./scripts/run-maestro-pay-tests.sh      # Use a specific actions branch
 
 set -euo pipefail
 
 MAESTRO_DIR=".maestro"
 ENV_FILE=".env.maestro"
 
-# Check that pay test flows exist
+# Download pay test flows if not present
 if ! ls "$MAESTRO_DIR"/pay_*.yaml &>/dev/null; then
-  echo "No pay test flows found in $MAESTRO_DIR/."
-  echo "Run: ./scripts/setup-maestro-pay-tests.sh"
-  exit 1
+  SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+  echo "Pay test flows not found — downloading..."
+  "$SCRIPT_DIR/setup-maestro-pay-tests.sh" "${ACTIONS_BRANCH:-master}"
 fi
 
 # Load secrets from .env.maestro
