@@ -38,7 +38,7 @@ jobs:
         id: usdc_alert
         run: |
           BALANCE="${{ steps.usdc_balance.outputs.balance }}"
-          THRESHOLD="${{ vars.USDC_THRESHOLD_UNITS || '500000' }}"
+          THRESHOLD="${{ vars.USDC_THRESHOLD_UNITS || '1000000' }}"
           if [ "$BALANCE" -lt "$THRESHOLD" ]; then
             BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
             THRESHOLD_HUMAN=$(echo "scale=2; $THRESHOLD / 1000000" | bc)
@@ -83,7 +83,7 @@ jobs:
         id: op_usdc_alert
         run: |
           BALANCE="${{ steps.op_usdc_balance.outputs.balance }}"
-          THRESHOLD="${{ vars.USDC_THRESHOLD_UNITS || '500000' }}"
+          THRESHOLD="${{ vars.USDC_THRESHOLD_UNITS || '1000000' }}"
           if [ "$BALANCE" -lt "$THRESHOLD" ]; then
             BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
             THRESHOLD_HUMAN=$(echo "scale=2; $THRESHOLD / 1000000" | bc)

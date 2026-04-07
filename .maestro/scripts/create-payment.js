@@ -1,6 +1,6 @@
 // Creates a WalletConnect Pay payment via the API.
 // Expects WPAY_CUSTOMER_KEY and WPAY_MERCHANT_ID env vars from Maestro.
-// Sets output.gateway_url for use in subsequent flow steps.
+// Sets output.gateway_url and output.payment_id for use in subsequent flow steps.
 
 var response = http.post('https://api.pay.walletconnect.com/v1/payments', {
   headers: {
@@ -26,3 +26,4 @@ if (!data.gatewayUrl) {
 
 console.log('Payment created: ' + data.paymentId);
 output.gateway_url = data.gatewayUrl;
+output.payment_id = data.paymentId;

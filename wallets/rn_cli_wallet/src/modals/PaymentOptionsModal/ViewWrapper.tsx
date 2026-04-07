@@ -43,6 +43,7 @@ export function ViewWrapper({
           {showBackButton ? (
             <Button
               onPress={onBack}
+              testID="pay-button-back"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <SvgArrowLeft
@@ -61,7 +62,7 @@ export function ViewWrapper({
 
         {/* Close Button */}
         <View style={styles.headerRight}>
-          <ModalCloseButton onPress={onClose} />
+          <ModalCloseButton onPress={onClose} testID="pay-button-close" />
         </View>
       </View>
 

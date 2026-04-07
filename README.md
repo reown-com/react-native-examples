@@ -21,13 +21,6 @@ A collection of React Native example apps showcasing [Reown](https://reown.com) 
 - Point of Sale App: `dapps/pos-app`
 - PoC Point of Sale App (legacy): `dapps/poc-pos-app`
 
-### Legacy Apps (using @walletconnect/modal - deprecated)
-
-> **Note:** These apps use the legacy `@walletconnect/modal` SDK which is deprecated. Use the AppKit apps above for new projects.
-
-- WalletConnect Modal + Viem: `dapps/ModalViem`
-- WalletConnect Modal + Ethers v5: `dapps/ModalEthers`
-- WalletConnect Modal + Universal Provider: `dapps/ModalUProvider`
 
 ## Getting Started
 
