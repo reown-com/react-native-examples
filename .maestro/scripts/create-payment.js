@@ -26,3 +26,4 @@ if (!data.gatewayUrl) {
 
 console.log('Payment created: ' + data.paymentId);
 output.gateway_url = data.gatewayUrl;
+output.payment_id = data.paymentId;
