@@ -38,4 +38,10 @@ tags:
 - runFlow:
     file: flows/pay_confirm_and_verify.yaml
 
+# Verify payment dialog is dismissed and we're back at the main wallet screen
+- extendedWaitUntil:
+    visible:
+      id: "button-scan"
+    timeout: 10000
+
 - stopRecording
