@@ -29,7 +29,7 @@ jobs:
         run: |
           BALANCE=$(cast call --rpc-url "$BASE_RPC" "$BASE_USDC" \
             "balanceOf(address)(uint256)" \
-            "${{ vars.TEST_WALLET_ADDRESS }}" | tr -d '[:space:]')
+            "${{ vars.TEST_WALLET_ADDRESS }}" | sed 's/\[.*\]//' | tr -d '[:space:]')
           echo "balance=$BALANCE" >> $GITHUB_OUTPUT
           BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
           echo "USDC on Base: $BALANCE_HUMAN ($BALANCE raw)"
@@ -74,7 +74,7 @@ jobs:
         run: |
           BALANCE=$(cast call --rpc-url "$OP_RPC" "$OP_USDC" \
             "balanceOf(address)(uint256)" \
-            "${{ vars.TEST_WALLET_ADDRESS }}" | tr -d '[:space:]')
+            "${{ vars.TEST_WALLET_ADDRESS }}" | sed 's/\[.*\]//' | tr -d '[:space:]')
           echo "balance=$BALANCE" >> $GITHUB_OUTPUT
           BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
           echo "USDC on Optimism: $BALANCE_HUMAN ($BALANCE raw)"
