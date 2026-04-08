@@ -310,9 +310,10 @@ jobs:
         id: maestro
         uses: reactivecircus/android-emulator-runner@70f4dee990796918b78d040e3278474bdbd348a7 # v2
         with:
-          api-level: 35
+          api-level: 30
           arch: x86_64
           target: google_apis
+          profile: pixel_6
           avd-name: test_device
           ram-size: 4096M
           disk-size: 4096M
