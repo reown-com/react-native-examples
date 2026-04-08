@@ -3,11 +3,8 @@ appId: ${APP_ID}
 # Shared flow: Open payment URL via deep link
 # Requires: ${output.gateway_url} to be set by a prior runScript step
 
-# Stop app and clear state to ensure clean start, then open via deeplink.
-# We use stopApp + clearState instead of launchApp so that openLink is the
-# launch intent — avoids Android race where a stale intent is delivered first.
+# Stop app then open via deeplink so openLink is the launch intent.
+# No clearState to avoid heavy cold-start that can trigger Fabric crashes.
 - stopApp:
-    appId: ${APP_ID}
-- clearState:
     appId: ${APP_ID}
 - openLink: ${output.gateway_url}
