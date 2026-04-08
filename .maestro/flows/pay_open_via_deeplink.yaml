@@ -3,12 +3,11 @@ appId: ${APP_ID}
 # Shared flow: Open payment URL via deep link
 # Requires: ${output.gateway_url} to be set by a prior runScript step
 
-# Launch wallet app to ensure it's running before opening the deep link
-- launchApp:
+# Stop app and clear state to ensure clean start, then open via deeplink.
+# We use stopApp + clearState instead of launchApp so that openLink is the
+# launch intent — avoids Android race where a stale intent is delivered first.
+- stopApp:
     appId: ${APP_ID}
-    clearState: true
-    permissions:
-      all: allow
-
-# Open the payment URL as a deep link
+- clearState:
+    appId: ${APP_ID}
 - openLink: ${output.gateway_url}
