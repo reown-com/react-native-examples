@@ -310,7 +310,7 @@ jobs:
         id: maestro
         uses: reactivecircus/android-emulator-runner@70f4dee990796918b78d040e3278474bdbd348a7 # v2
         with:
-          api-level: 34
+          api-level: 35
           arch: x86_64
           target: default
           avd-name: test_device
