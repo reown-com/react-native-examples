@@ -3,7 +3,7 @@ appId: ${APP_ID}
 # Shared flow: Launch wallet, open scanner, paste payment URL, wait for merchant info
 # Requires: ${output.gateway_url} to be set by a prior runScript step
 
-# Launch wallet app (no clearState to avoid heavy cold-start that can trigger Fabric crashes)
+# Launch wallet app
 - launchApp:
     appId: ${APP_ID}
     permissions:

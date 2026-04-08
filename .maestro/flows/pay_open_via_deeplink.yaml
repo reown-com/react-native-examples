@@ -4,7 +4,6 @@ appId: ${APP_ID}
 # Requires: ${output.gateway_url} to be set by a prior runScript step
 
 # Stop app then open via deeplink so openLink is the launch intent.
-# No clearState to avoid heavy cold-start that can trigger Fabric crashes.
 - stopApp:
     appId: ${APP_ID}
 - openLink: ${output.gateway_url}
