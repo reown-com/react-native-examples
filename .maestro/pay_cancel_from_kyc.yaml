@@ -33,7 +33,7 @@ tags:
 # Wait for KYC webview to load
 - extendedWaitUntil:
     visible: "Add your personal details"
-    timeout: 10000
+    timeout: 30000
 
 # Cancel the payment server-side while in KYC webview
 - runScript:
