@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useSnapshot } from 'valtio';
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
@@ -29,29 +28,33 @@ export default function SessionSignCantonModal() {
 
   const { validation, isScam } = currentRequestVerifyContext?.verified || {};
 
-  if (!requestEvent || !requestSession) {
-    return (
-      <Text variant="md-400" color="text-error">
-        Missing request data
-      </Text>
-    );
-  }
-
-  const { topic, params } = requestEvent;
-  const { request } = params;
+  const topic = requestEvent?.topic ?? '';
+  const params = requestEvent?.params;
+  const request = params?.request;
 
   const onApprove = useCallback(async () => {
+    if (!requestEvent) {
+      return;
+    }
+    setIsLoadingApprove(true);
     try {
-      if (requestEvent) {
-        setIsLoadingApprove(true);
-        const response = await approveCantonRequest(requestEvent);
+      const response = await approveCantonRequest(requestEvent);
+      await walletKit.respondSessionRequest({
+        topic,
+        response,
+      });
+      haptics.requestResponse();
+    } catch (e) {
+      // Respond with JSON-RPC error so the dapp doesn't hang
+      try {
+        const errorResponse = rejectCantonRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
-          response,
+          response: errorResponse,
         });
-        haptics.requestResponse();
+      } catch (_) {
+        // best effort
       }
-    } catch (e) {
       LogStore.error(
         (e as Error).message,
         'SessionSignCantonModal',
@@ -68,32 +71,41 @@ export default function SessionSignCantonModal() {
   }, [requestEvent, topic]);
 
   const onReject = useCallback(async () => {
-    if (requestEvent) {
-      setIsLoadingReject(true);
-      try {
-        const response = rejectCantonRequest(requestEvent);
-        await walletKit.respondSessionRequest({
-          topic,
-          response,
-        });
-        haptics.requestResponse();
-      } catch (e) {
-        LogStore.error(
-          (e as Error).message,
-          'SessionSignCantonModal',
-          'onReject',
-        );
-        Toast.show({
-          type: 'error',
-          text1: 'Rejection failed',
-          text2: (e as Error).message,
-        });
-      } finally {
-        setIsLoadingReject(false);
-        ModalStore.close();
-      }
+    if (!requestEvent) {
+      return;
+    }
+    setIsLoadingReject(true);
+    try {
+      const response = rejectCantonRequest(requestEvent);
+      await walletKit.respondSessionRequest({
+        topic,
+        response,
+      });
+      haptics.requestResponse();
+    } catch (e) {
+      LogStore.error(
+        (e as Error).message,
+        'SessionSignCantonModal',
+        'onReject',
+      );
+      Toast.show({
+        type: 'error',
+        text1: 'Rejection failed',
+        text2: (e as Error).message,
+      });
+    } finally {
+      setIsLoadingReject(false);
+      ModalStore.close();
     }
   }, [requestEvent, topic]);
+
+  if (!requestEvent || !requestSession || !params || !request) {
+    return (
+      <Text variant="md-400" color="text-error">
+        Missing request data
+      </Text>
+    );
+  }
 
   return (
     <RequestModal

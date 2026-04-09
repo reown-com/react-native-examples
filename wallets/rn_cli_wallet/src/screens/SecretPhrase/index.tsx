@@ -6,7 +6,6 @@ import Toast from 'react-native-toast-message';
 
 import SettingsStore from '@/store/SettingsStore';
 import { eip155Wallets } from '@/utils/EIP155WalletUtil';
-import { getWallet as getCantonWallet } from '@/utils/CantonWalletUtil';
 import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
@@ -115,7 +114,7 @@ function SecretSection({
 }
 
 export default function SecretPhrase() {
-  const { eip155Address, suiWallet, tonWallet, tronWallet } = useSnapshot(
+  const { eip155Address, suiWallet, tonWallet, tronWallet, cantonWallet } = useSnapshot(
     SettingsStore.state,
   );
   const Theme = useTheme();
@@ -133,7 +132,7 @@ export default function SecretPhrase() {
   const tronPrivateKey = tronWallet?.privateKey ?? null;
 
   // Get Canton secret key
-  const cantonSecretKey = getCantonWallet()?.getSecretKey?.() ?? null;
+  const cantonSecretKey = cantonWallet?.getSecretKey?.() ?? null;
 
   return (
     <ScrollView

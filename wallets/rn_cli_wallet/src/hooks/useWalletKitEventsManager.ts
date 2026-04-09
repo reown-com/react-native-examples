@@ -2,6 +2,8 @@ import { useCallback, useEffect } from 'react';
 import { SignClientTypes } from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
+import { formatJsonRpcError } from '@json-rpc-tools/utils';
+import { getSdkError } from '@walletconnect/utils';
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
@@ -132,10 +134,31 @@ export default function useWalletKitEventsManager(initialized: boolean) {
         case CANTON_SIGNING_METHODS.GET_ACTIVE_NETWORK:
         case CANTON_SIGNING_METHODS.STATUS:
         case CANTON_SIGNING_METHODS.LEDGER_API:
-          return walletKit.respondSessionRequest({
-            topic,
-            response: await approveCantonRequest(requestEvent),
-          });
+          try {
+            const cantonResponse = await approveCantonRequest(requestEvent);
+            return walletKit.respondSessionRequest({
+              topic,
+              response: cantonResponse,
+            });
+          } catch (e) {
+            LogStore.error(
+              (e as Error).message,
+              'WalletKitEvents',
+              'onSessionRequest:cantonAutoApprove',
+            );
+            Toast.show({
+              type: 'error',
+              text1: 'Canton request failed',
+              text2: (e as Error).message,
+            });
+            return walletKit.respondSessionRequest({
+              topic,
+              response: formatJsonRpcError(
+                requestEvent.id,
+                getSdkError('INVALID_METHOD').message,
+              ),
+            });
+          }
         // Canton manual-approve (sensitive methods)
         case CANTON_SIGNING_METHODS.SIGN_MESSAGE:
         case CANTON_SIGNING_METHODS.PREPARE_SIGN_EXECUTE:

@@ -23,7 +23,8 @@ export default function useInitializeWalletKit() {
       const { suiAddresses, suiWallet } = await createOrRestoreSuiWallet();
       const { tonAddresses, tonWallets } = await createOrRestoreTonWallet();
       const { tronAddresses, tronWallets } = await createOrRestoreTronWallet();
-      const { cantonAddresses } = await createOrRestoreCantonWallet();
+      const { cantonAddresses, cantonWallet } =
+        await createOrRestoreCantonWallet();
 
       SettingsStore.setEIP155Address(eip155Addresses[0]);
       SettingsStore.setWallet(eip155Wallets[eip155Addresses[0]]);
@@ -34,6 +35,7 @@ export default function useInitializeWalletKit() {
       SettingsStore.setTronAddress(tronAddresses[0]);
       SettingsStore.setTronWallet(tronWallets[tronAddresses[0]]);
       SettingsStore.setCantonAddress(cantonAddresses[0]);
+      SettingsStore.setCantonWallet(cantonWallet);
       await createWalletKit(relayerRegionURL);
       setInitialized(true);
       SettingsStore.state.initPromiseResolver?.resolve(undefined);

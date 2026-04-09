@@ -2,7 +2,7 @@ import CantonLib from '../lib/CantonLib';
 import { storage } from './storage';
 import SettingsStore from '@/store/SettingsStore';
 
-export let wallet1: CantonLib;
+export let wallet1: CantonLib | undefined;
 export let cantonWallets: Record<string, CantonLib>;
 export let cantonAddresses: string[];
 
@@ -18,6 +18,7 @@ export async function createOrRestoreCantonWallet() {
     wallet1 = CantonLib.init({ secretKey: secretKey1 });
   } else {
     wallet1 = CantonLib.init();
+    // Don't store secretKey in local storage in a production project!
     await storage.setItem('CANTON_SECRET_KEY_1', wallet1.getSecretKey());
   }
 
@@ -29,12 +30,13 @@ export async function createOrRestoreCantonWallet() {
   cantonAddresses = Object.keys(cantonWallets);
 
   return {
+    cantonWallet: wallet1,
     cantonWallets,
     cantonAddresses,
   };
 }
 
-export const getWallet = () => {
+export const getWallet = (): CantonLib | undefined => {
   return wallet1;
 };
 
@@ -68,9 +70,15 @@ export async function loadCantonWallet(input: string): Promise<{
 
   // Persist to storage
   await storage.setItem('CANTON_SECRET_KEY_1', newWallet.getSecretKey());
+  if (__DEV__) {
+    console.warn(
+      '[SECURITY] Canton secret key stored unencrypted. Use secure enclave in production.',
+    );
+  }
 
   // Update store
   SettingsStore.setCantonAddress(newAddress);
+  SettingsStore.setCantonWallet(newWallet);
 
   return { address: newAddress, wallet: newWallet };
 }
