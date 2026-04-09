@@ -3,5 +3,7 @@ appId: ${APP_ID}
 # Shared flow: Open payment URL via deep link
 # Requires: ${output.gateway_url} to be set by a prior runScript step
 
-# Open the payment URL as a deep link
+# Stop app then open via deeplink so openLink is the launch intent.
+- stopApp:
+    appId: ${APP_ID}
 - openLink: ${output.gateway_url}

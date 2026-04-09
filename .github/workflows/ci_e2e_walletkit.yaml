@@ -159,6 +159,10 @@ jobs:
             --debug-output maestro-artifacts \
             .maestro/ 2>&1 | tee maestro-output.log
 
+      - name: Export simulator logs
+        if: always()
+        run: xcrun simctl spawn "$DEVICE_ID" log show --last 5m --level error --predicate 'process == "RNWallet-Internal"' > device-logs.txt 2>&1 || true
+
       - name: Upload Maestro artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -167,6 +171,7 @@ jobs:
           path: |
             maestro-artifacts/
             maestro-output.log
+            device-logs.txt
           if-no-files-found: warn
           retention-days: 14
 

@@ -61,7 +61,7 @@ tags:
 # Handle personal details webview (KYC)
 - extendedWaitUntil:
     visible: "Add your personal details"
-    timeout: 10000
+    timeout: 30000
 
 # Data is autocompleted, just tap Add
 - tapOn: "Add"
