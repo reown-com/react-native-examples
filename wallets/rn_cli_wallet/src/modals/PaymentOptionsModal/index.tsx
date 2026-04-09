@@ -72,6 +72,7 @@ export default function PaymentOptionsModal() {
             options.length === 1 && !firstOption.collectData?.url;
 
           if (singleOptionWithoutCollectData) {
+            // Move to review step after getting the payment actions
             PaymentStore.selectOption(firstOption as PaymentOption);
             const loadSingleOptionActions = async () => {
               await PaymentStore.fetchPaymentActions(firstOption as PaymentOption);
