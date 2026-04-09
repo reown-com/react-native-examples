@@ -32,6 +32,7 @@ interface State {
   tonWallet: TonLib | null;
   tronAddress: string;
   tronWallet: TronLib | null;
+  cantonAddress: string;
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -62,6 +63,7 @@ const state = proxy<State>({
   tonWallet: null,
   tronAddress: '',
   tronWallet: null,
+  cantonAddress: '',
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
@@ -150,6 +152,10 @@ const SettingsStore = {
 
   setTronWallet(tronWallet: TronLib) {
     state.tronWallet = tronWallet;
+  },
+
+  setCantonAddress(cantonAddress: string) {
+    state.cantonAddress = cantonAddress;
   },
 
   setThemeMode(value: 'light' | 'dark') {

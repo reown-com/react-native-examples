@@ -4621,6 +4621,7 @@ __metadata:
     react-test-renderer: 19.1.1
     stream-browserify: 3.0.0
     tronweb: 6.2.2
+    tweetnacl: 1.0.3
     typescript: 5.9.3
     valtio: 2.1.8
   languageName: unknown

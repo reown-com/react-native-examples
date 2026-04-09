@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 
 import SettingsStore from '@/store/SettingsStore';
 import { eip155Wallets } from '@/utils/EIP155WalletUtil';
+import { getWallet as getCantonWallet } from '@/utils/CantonWalletUtil';
 import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
@@ -131,6 +132,9 @@ export default function SecretPhrase() {
   // Get TRON private key
   const tronPrivateKey = tronWallet?.privateKey ?? null;
 
+  // Get Canton secret key
+  const cantonSecretKey = getCantonWallet()?.getSecretKey?.() ?? null;
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
@@ -173,6 +177,13 @@ export default function SecretPhrase() {
         secret={tronPrivateKey}
         type="hex"
         notAvailableMessage="TRON wallet not initialized"
+      />
+
+      <SecretSection
+        title="CANTON"
+        secret={cantonSecretKey}
+        type="hex"
+        notAvailableMessage="Canton wallet not initialized"
       />
     </ScrollView>
   );

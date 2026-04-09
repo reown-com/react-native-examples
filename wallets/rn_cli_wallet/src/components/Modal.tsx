@@ -18,6 +18,7 @@ import SessionSignAndExecuteSuiTransactionModal from '@/modals/SessionSuiSignAnd
 import SessionTonSendMessageModal from '@/modals/SessionTonSendMessageModal';
 import SessionTonSignDataModal from '@/modals/SessionTonSignDataModal';
 import SessionSignTronModal from '@/modals/SessionSignTronModal';
+import SessionSignCantonModal from '@/modals/SessionSignCantonModal';
 import PaymentOptionsModal from '@/modals/PaymentOptionsModal';
 import ImportWalletModal from '@/modals/ImportWalletModal';
 import SessionDetailModal from '@/modals/SessionDetailModal';
@@ -58,6 +59,8 @@ export default function Modal() {
         return <SessionTonSignDataModal />;
       case 'SessionSignTronModal':
         return <SessionSignTronModal />;
+      case 'SessionSignCantonModal':
+        return <SessionSignCantonModal />;
       case 'PaymentOptionsModal':
         return <PaymentOptionsModal />;
       case 'ImportWalletModal':
