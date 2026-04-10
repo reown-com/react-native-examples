@@ -145,7 +145,7 @@ jobs:
 
       - name: Run Maestro tests
         id: maestro
-        uses: WalletConnect/actions/maestro/run@feat/maestro-pay-actions
+        uses: WalletConnect/actions/maestro/run@f9522878950f7bd904a628b2c4d486b93034a4fe
         with:
           app-id: ${{ env.MAESTRO_APP_ID }}
           tags: ${{ env.MAESTRO_TAGS }}
