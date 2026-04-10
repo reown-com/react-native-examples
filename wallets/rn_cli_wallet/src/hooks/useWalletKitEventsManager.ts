@@ -2,6 +2,8 @@ import { useCallback, useEffect } from 'react';
 import { SignClientTypes } from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
+import { formatJsonRpcError } from '@json-rpc-tools/utils';
+import { getSdkError } from '@walletconnect/utils';
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
@@ -11,6 +13,8 @@ import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SUI_SIGNING_METHODS } from '@/constants/Sui';
 import { TON_SIGNING_METHODS } from '@/constants/Ton';
 import { TRON_SIGNING_METHODS } from '@/constants/Tron';
+import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
+import { approveCantonRequest } from '@/utils/CantonRequestHandlerUtil';
 
 export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -121,6 +125,44 @@ export default function useWalletKitEventsManager(initialized: boolean) {
         case TRON_SIGNING_METHODS.TRON_SIGN_TRANSACTION:
         case TRON_SIGNING_METHODS.TRON_SEND_TRANSACTION:
           return ModalStore.open('SessionSignTronModal', {
+            requestEvent,
+            requestSession,
+          });
+        // Canton auto-approve (read-only methods)
+        case CANTON_SIGNING_METHODS.LIST_ACCOUNTS:
+        case CANTON_SIGNING_METHODS.GET_PRIMARY_ACCOUNT:
+        case CANTON_SIGNING_METHODS.GET_ACTIVE_NETWORK:
+        case CANTON_SIGNING_METHODS.STATUS:
+        case CANTON_SIGNING_METHODS.LEDGER_API:
+          try {
+            const cantonResponse = await approveCantonRequest(requestEvent);
+            return walletKit.respondSessionRequest({
+              topic,
+              response: cantonResponse,
+            });
+          } catch (e) {
+            LogStore.error(
+              (e as Error).message,
+              'WalletKitEvents',
+              'onSessionRequest:cantonAutoApprove',
+            );
+            Toast.show({
+              type: 'error',
+              text1: 'Canton request failed',
+              text2: (e as Error).message,
+            });
+            return walletKit.respondSessionRequest({
+              topic,
+              response: formatJsonRpcError(
+                requestEvent.id,
+                getSdkError('INVALID_METHOD').message,
+              ),
+            });
+          }
+        // Canton manual-approve (sensitive methods)
+        case CANTON_SIGNING_METHODS.SIGN_MESSAGE:
+        case CANTON_SIGNING_METHODS.PREPARE_SIGN_EXECUTE:
+          return ModalStore.open('SessionSignCantonModal', {
             requestEvent,
             requestSession,
           });

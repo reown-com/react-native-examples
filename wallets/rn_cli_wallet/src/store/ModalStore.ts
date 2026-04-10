@@ -32,6 +32,7 @@ interface State {
     | 'SessionTonSendMessageModal'
     | 'SessionSignTronModal'
     | 'SessionTonSignDataModal'
+    | 'SessionSignCantonModal'
     | 'PaymentOptionsModal'
     | 'ImportWalletModal'
     | 'SessionDetailModal'
