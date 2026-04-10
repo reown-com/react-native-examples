@@ -125,9 +125,9 @@
     "js-yaml": "4.1.1",
     "lodash": "4.18.1",
     "qs": "6.14.2",
-    "axios": "1.13.5",
+    "axios": "1.15.0",
     "bn.js": "5.2.3",
-    "minimatch": "9.0.7",
+    "minimatch": "9.0.9",
     "h3": "1.15.9",
     "flatted": "3.4.2",
     "yaml": "2.8.3",
@@ -136,7 +136,7 @@
     "ajv": "6.14.0",
     "@xmldom/xmldom": "0.8.12",
     "node-forge": "1.4.0",
-    "undici": "6.24.0"
+    "undici": "6.24.1"
   },
   "packageManager": "yarn@3.8.7"
 }

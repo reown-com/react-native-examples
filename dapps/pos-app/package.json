@@ -83,7 +83,7 @@
     "typescript": "5.9.3"
   },
   "overrides": {
-    "hono": "4.12.7",
+    "hono": "4.12.12",
     "tar": "7.5.11",
     "node-forge": "1.4.0",
     "glob": "10.5.0",
@@ -92,7 +92,7 @@
     "@vercel/node": {
       "undici": "5.29.0"
     },
-    "minimatch": "9.0.7",
+    "minimatch": "9.0.9",
     "h3": "1.15.9",
     "fast-xml-parser": "5.5.7",
     "flatted": "3.4.2",
@@ -105,7 +105,7 @@
     "path-to-regexp": "6.3.0",
     "lodash": "4.18.1",
     "defu": "6.1.5",
-    "undici": "6.24.0"
+    "undici": "6.24.1"
   },
   "private": true
 }
