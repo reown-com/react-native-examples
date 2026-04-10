@@ -33,6 +33,8 @@ export default function PaymentOptionsModal() {
   )?.collectData?.url;
 
   useEffect(() => {
+    let isActive = true;
+
     if (snap.step === 'loading') {
       if (snap.errorMessage) {
         LogStore.error(
@@ -70,15 +72,31 @@ export default function PaymentOptionsModal() {
             options.length === 1 && !firstOption.collectData?.url;
 
           if (singleOptionWithoutCollectData) {
+            // Move to review step after getting the payment actions
             PaymentStore.selectOption(firstOption as PaymentOption);
-            PaymentStore.fetchPaymentActions(firstOption as PaymentOption);
-            PaymentStore.setStep('review');
+            const loadSingleOptionActions = async () => {
+              await PaymentStore.fetchPaymentActions(firstOption as PaymentOption);
+
+              if (
+                isActive &&
+                PaymentStore.state.step === 'loading' &&
+                PaymentStore.state.selectedOption?.id === firstOption.id
+              ) {
+                PaymentStore.setStep('review');
+              }
+            };
+
+            loadSingleOptionActions();
           } else {
             PaymentStore.setStep('selectOption');
           }
         }
       }
     }
+
+    return () => {
+      isActive = false;
+    };
   }, [snap.step, snap.paymentOptions, snap.errorMessage]);
 
   const handleWebViewComplete = useCallback(() => {

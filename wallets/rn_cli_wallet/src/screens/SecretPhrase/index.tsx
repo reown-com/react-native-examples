@@ -114,7 +114,7 @@ function SecretSection({
 }
 
 export default function SecretPhrase() {
-  const { eip155Address, suiWallet, tonWallet, tronWallet } = useSnapshot(
+  const { eip155Address, suiWallet, tonWallet, tronWallet, cantonWallet } = useSnapshot(
     SettingsStore.state,
   );
   const Theme = useTheme();
@@ -130,6 +130,9 @@ export default function SecretPhrase() {
 
   // Get TRON private key
   const tronPrivateKey = tronWallet?.privateKey ?? null;
+
+  // Get Canton secret key
+  const cantonSecretKey = cantonWallet?.getSecretKey?.() ?? null;
 
   return (
     <ScrollView
@@ -173,6 +176,13 @@ export default function SecretPhrase() {
         secret={tronPrivateKey}
         type="hex"
         notAvailableMessage="TRON wallet not initialized"
+      />
+
+      <SecretSection
+        title="CANTON"
+        secret={cantonSecretKey}
+        type="hex"
+        notAvailableMessage="Canton wallet not initialized"
       />
     </ScrollView>
   );

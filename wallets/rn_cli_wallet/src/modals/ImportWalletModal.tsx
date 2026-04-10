@@ -16,13 +16,14 @@ import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { loadTonWallet } from '@/utils/TonWalletUtil';
 import { loadTronWallet } from '@/utils/TronWalletUtil';
 import { loadSuiWallet } from '@/utils/SuiWalletUtil';
+import { loadCantonWallet } from '@/utils/CantonWalletUtil';
 import { Text } from '@/components/Text';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { SegmentedControl } from '@/components/SegmentedControl';
 import { Spacing, BorderRadius, FontFamily } from '@/utils/ThemeUtil';
 import { ActionButton } from '@/components/ActionButton';
 
-const CHAIN_OPTIONS = ['EVM', 'TON', 'TRON', 'SUI'] as const;
+const CHAIN_OPTIONS = ['EVM', 'TON', 'TRON', 'SUI', 'CANTON'] as const;
 type ChainOption = (typeof CHAIN_OPTIONS)[number];
 
 const PLACEHOLDER_TEXT: Record<ChainOption, string> = {
@@ -30,6 +31,7 @@ const PLACEHOLDER_TEXT: Record<ChainOption, string> = {
   TON: 'Enter secret key (128 hex) or seed (64 hex)',
   TRON: 'Enter private key (64 hex)',
   SUI: 'Enter mnemonic phrase (12-24 words)',
+  CANTON: 'Enter secret key (128 hex chars)',
 };
 
 const EMPTY_INPUT_ERROR: Record<ChainOption, string> = {
@@ -37,6 +39,7 @@ const EMPTY_INPUT_ERROR: Record<ChainOption, string> = {
   TON: 'Please enter a secret key or seed',
   TRON: 'Please enter a private key',
   SUI: 'Please enter a mnemonic phrase',
+  CANTON: 'Please enter an Ed25519 secret key',
 };
 
 export default function ImportWalletModal() {
@@ -113,6 +116,11 @@ export default function ImportWalletModal() {
             tronAddress: SettingsStore.state.tronAddress,
             suiAddress: address,
           });
+          break;
+        }
+        case 'CANTON': {
+          const result = await loadCantonWallet(sanitizedInput);
+          address = result.address;
           break;
         }
         default: {
