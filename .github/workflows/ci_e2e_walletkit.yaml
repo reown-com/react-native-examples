@@ -137,43 +137,25 @@ jobs:
       - name: Install app on Simulator
         run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
 
+      - name: Copy shared Pay test flows
+        uses: WalletConnect/actions/maestro/pay-tests@f9522878950f7bd904a628b2c4d486b93034a4fe
+
       - name: Install Maestro
-        run: |
-          curl -fsSL "https://get.maestro.mobile.dev" | bash
-          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+        uses: WalletConnect/actions/maestro/setup@f9522878950f7bd904a628b2c4d486b93034a4fe
 
       - name: Run Maestro tests
         id: maestro
-        run: |
-          set -o pipefail
-          maestro test \
-            --env APP_ID="${{ env.MAESTRO_APP_ID }}" \
-            --env WPAY_CUSTOMER_KEY_MULTI_KYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}" \
-            --env WPAY_MERCHANT_ID_MULTI_KYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}" \
-            --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}" \
-            --env WPAY_MERCHANT_ID_MULTI_NOKYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}" \
-            --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}" \
-            --env WPAY_MERCHANT_ID_SINGLE_NOKYC="${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}" \
-            --include-tags "${{ env.MAESTRO_TAGS }}" \
-            --test-output-dir maestro-artifacts \
-            --debug-output maestro-artifacts \
-            .maestro/ 2>&1 | tee maestro-output.log
-
-      - name: Export simulator logs
-        if: always()
-        run: xcrun simctl spawn "$DEVICE_ID" log show --last 5m --level error --predicate 'process == "RNWallet-Internal"' > device-logs.txt 2>&1 || true
-
-      - name: Upload Maestro artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
+        uses: WalletConnect/actions/maestro/run@f9522878950f7bd904a628b2c4d486b93034a4fe
         with:
-          name: maestro-ios-artifacts
-          path: |
-            maestro-artifacts/
-            maestro-output.log
-            device-logs.txt
-          if-no-files-found: warn
-          retention-days: 14
+          app-id: ${{ env.MAESTRO_APP_ID }}
+          tags: ${{ env.MAESTRO_TAGS }}
+          wpay-customer-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          wpay-merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
+          wpay-customer-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
+          wpay-merchant-id-multi-nokyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
+          wpay-customer-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
+          wpay-merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
+          artifact-name: maestro-ios-artifacts
 
       - name: Send Slack notification
         if: failure()
@@ -301,10 +283,11 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      - name: Copy shared Pay test flows
+        uses: WalletConnect/actions/maestro/pay-tests@f9522878950f7bd904a628b2c4d486b93034a4fe
+
       - name: Install Maestro
-        run: |
-          curl -fsSL "https://get.maestro.mobile.dev" | bash
-          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+        uses: WalletConnect/actions/maestro/setup@f9522878950f7bd904a628b2c4d486b93034a4fe
 
       - name: Run E2E tests on Android Emulator
         id: maestro
