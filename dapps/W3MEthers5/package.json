@@ -66,7 +66,6 @@
     "braces": "3.0.3",
     "valtio": "2.1.8",
     "on-headers": "1.1.0",
-    "brace-expansion": "5.0.5",
     "fast-redact": "3.5.0",
     "node-forge": "1.4.0",
     "js-yaml": "4.1.1",
@@ -75,11 +74,13 @@
     "tar": "7.5.11",
     "fast-xml-parser": "5.5.7",
     "bn.js": "5.2.3",
-    "minimatch": "9.0.7",
+    "minimatch": "9.0.9",
     "flatted": "3.4.2",
     "yaml": "2.8.3",
-    "picomatch": "2.3.2",
+    "picomatch": "4.0.4",
     "defu": "6.1.5",
-    "ajv": "6.14.0"
+    "ajv": "6.14.0",
+    "undici": "6.24.1",
+    "@xmldom/xmldom": "0.8.12"
   }
 }
