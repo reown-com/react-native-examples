@@ -151,7 +151,6 @@ function OptionItem({
 interface SelectOptionViewProps {
   options: PaymentOption[];
   selectedOption: PaymentOption | null;
-  isLoadingActions: boolean;
   isSigningPayment: boolean;
   onSelectOption: (option: PaymentOption) => void;
   onContinue: () => void;
@@ -166,7 +165,6 @@ export function SelectOptionView({
   onSelectOption,
   onContinue,
   info,
-  isLoadingActions,
   collectDataCompletedIds,
 }: SelectOptionViewProps) {
   const visibleCount = options.length;
@@ -221,7 +219,6 @@ export function SelectOptionView({
         <ActionButton
           onPress={onContinue}
           disabled={isSigningPayment || !selectedOption}
-          silentDisabled={isLoadingActions}
           fullWidth
           testID="pay-button-continue"
         >

@@ -1,28 +1,42 @@
 import { View, Image, StyleSheet } from 'react-native';
-import type { PaymentInfo, PaymentOption } from '@walletconnect/pay';
+import type { Action, PaymentInfo, PaymentOption } from '@walletconnect/pay';
+import Config from 'react-native-config';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
 import { Text } from '@/components/Text';
 import { MerchantInfo } from './MerchantInfo';
 import { PresetsUtil } from '@/utils/PresetsUtil';
+import { EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { formatAmount, getCurrencySymbol } from './utils';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+
+const isTestMode = Config.ENV_TEST_MODE === 'true';
 
 interface ReviewPaymentViewProps {
   selectedOption: PaymentOption;
   info?: PaymentInfo;
+  paymentActions?: readonly Action[] | null;
+  approvalGasEstimate?: string | null;
+  isEstimatingApprovalGas?: boolean;
   isLoadingActions: boolean;
   isSigningPayment: boolean;
+  isRevokingPermit?: boolean;
   onPay: () => void;
+  onRevokePermitApproval?: () => void;
 }
 
 export function ReviewPaymentView({
   selectedOption,
   info,
+  paymentActions,
+  approvalGasEstimate,
+  isEstimatingApprovalGas = false,
   isLoadingActions,
   isSigningPayment,
+  isRevokingPermit = false,
   onPay,
+  onRevokePermitApproval,
 }: ReviewPaymentViewProps) {
   const Theme = useTheme();
 
@@ -42,6 +56,15 @@ export function ReviewPaymentView({
   const chainIcon = PresetsUtil.getIconLogoByName(
     selectedOption.amount.display.networkName,
   );
+  const requiresTokenApproval = (paymentActions || []).some(
+    action =>
+      action.walletRpc?.method === EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION,
+  );
+  const networkName =
+    selectedOption.amount.display.networkName || 'selected network';
+  const tokenSymbol = selectedOption.amount.display.assetSymbol || 'token';
+  const gasCostEstimate = approvalGasEstimate || 'Network fee set by wallet';
+  const showRevokePermitButton = isTestMode && !!onRevokePermitApproval && !requiresTokenApproval;
 
   return (
     <>
@@ -83,10 +106,43 @@ export function ReviewPaymentView({
         </View>
       </View>
 
+      {requiresTokenApproval ? (
+        <>
+
+            <Text
+              style={styles.approvalNote}
+              variant="sm-400"
+              color="text-tertiary"
+            >
+              {`* This is your first ${tokenSymbol} Payment on ${networkName}, a one-time approval is required. Estimated cost: `}
+              <Text style={styles.approvalNote} variant="sm-400" color="text-tertiary">
+                {isEstimatingApprovalGas ? 'Loading...' : gasCostEstimate}
+              </Text>
+            </Text>
+
+        </>
+      ) : null}
+
+      {showRevokePermitButton ? (
+        <ActionButton
+          variant="secondary"
+          onPress={onRevokePermitApproval!}
+          loading={isRevokingPermit}
+          disabled={isLoadingActions || isSigningPayment}
+          fullWidth
+          style={styles.revokeButton}
+          testID="pay-button-revoke-permit2"
+          accessibilityLabel="Revoke Permit2 approval"
+        >
+          Revoke Permit2 approval
+        </ActionButton>
+      ) : null}
+
       <View style={styles.buttonContainer}>
         <ActionButton
           onPress={onPay}
-          disabled={isSigningPayment || isLoadingActions}
+          disabled={isSigningPayment}
+          silentDisabled={isLoadingActions}
           fullWidth
           testID="pay-button-pay"
           accessibilityLabel={`Pay ${currencySymbol}${payAmount}`}
@@ -137,5 +193,11 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: Spacing[5],
     marginBottom: Spacing[2],
+  },
+  approvalNote: {
+    marginTop: Spacing[2],
+  },
+  revokeButton: {
+    marginTop: Spacing[3],
   },
 });

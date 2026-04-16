@@ -72,21 +72,11 @@ export default function PaymentOptionsModal() {
             options.length === 1 && !firstOption.collectData?.url;
 
           if (singleOptionWithoutCollectData) {
-            // Move to review step after getting the payment actions
             PaymentStore.selectOption(firstOption as PaymentOption);
-            const loadSingleOptionActions = async () => {
-              await PaymentStore.fetchPaymentActions(firstOption as PaymentOption);
-
-              if (
-                isActive &&
-                PaymentStore.state.step === 'loading' &&
-                PaymentStore.state.selectedOption?.id === firstOption.id
-              ) {
-                PaymentStore.setStep('review');
-              }
-            };
-
-            loadSingleOptionActions();
+            if (isActive) {
+              PaymentStore.setStep('review');
+            }
+            PaymentStore.fetchPaymentActions(firstOption as PaymentOption);
           } else {
             PaymentStore.setStep('selectOption');
           }
@@ -234,7 +224,6 @@ export default function PaymentOptionsModal() {
             info={snap.paymentOptions?.info}
             options={(snap.paymentOptions?.options || []) as PaymentOption[]}
             selectedOption={snap.selectedOption as PaymentOption | null}
-            isLoadingActions={snap.isLoadingActions}
             isSigningPayment={false}
             onSelectOption={onSelectOption}
             onContinue={handleContinue}
@@ -247,9 +236,14 @@ export default function PaymentOptionsModal() {
           <ReviewPaymentView
             info={snap.paymentOptions?.info}
             selectedOption={snap.selectedOption as PaymentOption}
+            paymentActions={snap.paymentActions}
+            approvalGasEstimate={snap.approvalGasEstimate}
+            isEstimatingApprovalGas={snap.isEstimatingApprovalGas}
             isLoadingActions={snap.isLoadingActions}
             isSigningPayment={false}
+            isRevokingPermit={snap.isRevokingPermit}
             onPay={() => PaymentStore.approvePayment()}
+            onRevokePermitApproval={() => PaymentStore.revokePermit2Approval()}
           />
         ) : null;
 
@@ -289,6 +283,10 @@ export default function PaymentOptionsModal() {
     snap.resultMessage,
     snap.loadingMessage,
     snap.paymentOptions,
+    snap.paymentActions,
+    snap.approvalGasEstimate,
+    snap.isEstimatingApprovalGas,
+    snap.isRevokingPermit,
     snap.collectDataCompletedIds,
     snap.expiresAt,
     selectedOptionCollectDataUrl,

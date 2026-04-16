@@ -13,14 +13,18 @@ export function LoadingView({ message, size = 120 }: LoadingViewProps) {
   return (
     <View style={styles.loadingContainer}>
       <WalletConnectLoading size={size} />
-      <Text
-        variant="h6-400"
-        color="text-primary"
-        style={styles.loadingText}
-        testID="pay-loading-message"
-      >
-        {message || 'Loading...'}
-      </Text>
+      <View style={styles.messageContainer}>
+        <Text
+          variant="h6-400"
+          color="text-primary"
+          style={styles.loadingText}
+          testID="pay-loading-message"
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
+          {message || 'Loading...'}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -31,7 +35,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  loadingText: {
+  messageContainer: {
     marginTop: Spacing[4],
+    minHeight: 48,
+    justifyContent: 'center',
+    width: '100%',
+    paddingHorizontal: Spacing[2],
+  },
+  loadingText: {
+    textAlign: 'center',
   },
 });
