@@ -85,6 +85,7 @@ let paymentActionsRequestSeq = 0;
 const POLYGON_MIN_PRIORITY_FEE_WEI = BigNumber.from('30000000000'); // 30 gwei
 const WALLETCONNECT_RPC_BASE_URL = 'https://rpc.walletconnect.org/v1/';
 const PAY_EXPIRY_GUARD_MS = 10_000;
+const TX_CONFIRMATION_TIMEOUT_MS = 120_000;
 const NATIVE_SYMBOL_BY_CHAIN_ID: Record<string, string> = {
   'eip155:1': 'ETH',
   'eip155:5': 'ETH',
@@ -140,7 +141,14 @@ function toBigNumber(value: unknown): BigNumber | null {
   }
 }
 
-function parseWalletRpcParams(params: string): unknown[] | null {
+function parseWalletRpcParams(params: unknown): unknown[] | null {
+  if (Array.isArray(params)) {
+    return params;
+  }
+  if (typeof params !== 'string') {
+    return null;
+  }
+
   try {
     const parsed = JSON.parse(params);
     return Array.isArray(parsed) ? parsed : null;
@@ -385,13 +393,12 @@ async function sendTransaction({
       'Failed to fetch initial fee data',
       'PaymentStore',
       logContext,
-      { chainId, rpcUrl, error: serializeError(error) },
+      { chainId, error: serializeError(error) },
     );
   }
 
   LogStore.log('Submitting transaction', 'PaymentStore', logContext, {
     chainId,
-    rpcUrl,
     tx: serializeTxRequestForLog(txRequest),
   });
 
@@ -400,11 +407,36 @@ async function sendTransaction({
   } catch (error) {
     LogStore.error('Transaction submission failed', 'PaymentStore', logContext, {
       chainId,
-      rpcUrl,
       tx: serializeTxRequestForLog(txRequest),
       error: serializeError(error),
     });
     throw error;
+  }
+}
+
+async function waitForTransactionConfirmation(
+  tx: providers.TransactionResponse,
+  timeoutMs: number = TX_CONFIRMATION_TIMEOUT_MS,
+) {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  try {
+    await Promise.race([
+      tx.wait(),
+      new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(
+            new Error(
+              `Transaction confirmation timed out after ${timeoutMs}ms`,
+            ),
+          );
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
   }
 }
 
@@ -800,7 +832,22 @@ const PaymentStore = {
               logContext: 'approvePayment',
             });
 
-            await tx.wait();
+            try {
+              await waitForTransactionConfirmation(tx);
+            } catch (error) {
+              LogStore.error(
+                'Approval transaction confirmation failed',
+                'PaymentStore',
+                'approvePayment',
+                {
+                  chainId,
+                  step: stepLabel,
+                  txHash: tx.hash,
+                  error: serializeError(error),
+                },
+              );
+              throw new Error('Approval transaction confirmation failed');
+            }
 
             LogStore.log(
               'Token approval transaction confirmed',

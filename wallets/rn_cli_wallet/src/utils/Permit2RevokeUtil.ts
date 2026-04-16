@@ -81,7 +81,18 @@ function getPermit2RevokeTarget(
           tokenAddress: to,
         };
       }
-    } catch {}
+    } catch (error) {
+      LogStore.warn(
+        'Failed to parse approval action params for Permit2 revoke target',
+        'Permit2RevokeUtil',
+        'getPermit2RevokeTarget',
+        {
+          method: approvalAction.walletRpc.method,
+          chainId: approvalAction.walletRpc.chainId,
+          error: serializeError(error),
+        },
+      );
+    }
   }
 
   const selectedOptionAmountUnit = (
@@ -130,7 +141,18 @@ function getPermit2RevokeTarget(
           return { chainId: `eip155:${domainChainId}`, tokenAddress };
         }
       }
-    } catch {}
+    } catch (error) {
+      LogStore.warn(
+        'Failed to parse typed data for Permit2 revoke target',
+        'Permit2RevokeUtil',
+        'getPermit2RevokeTarget',
+        {
+          method: signAction.walletRpc.method,
+          chainId: signAction.walletRpc.chainId,
+          error: serializeError(error),
+        },
+      );
+    }
   }
 
   return null;
