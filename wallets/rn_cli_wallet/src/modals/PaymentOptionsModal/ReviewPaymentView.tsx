@@ -8,6 +8,7 @@ import { Text } from '@/components/Text';
 import { MerchantInfo } from './MerchantInfo';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 import { EIP155_SIGNING_METHODS } from '@/constants/Eip155';
+import { getPermit2Context } from '@/utils/Permit2Util';
 import { formatAmount, getCurrencySymbol } from './utils';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 
@@ -56,15 +57,21 @@ export function ReviewPaymentView({
   const chainIcon = PresetsUtil.getIconLogoByName(
     selectedOption.amount.display.networkName,
   );
-  const requiresTokenApproval = (paymentActions || []).some(
+  const permit2Context = getPermit2Context({
+    paymentActions: paymentActions || null,
+    selectedOption,
+  });
+  const hasSendTransactionAction = (paymentActions || []).some(
     action =>
       action.walletRpc?.method === EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION,
   );
-  const networkName =
-    selectedOption.amount.display.networkName || 'selected network';
-  const tokenSymbol = selectedOption.amount.display.assetSymbol || 'token';
+  const requiresTokenApproval = permit2Context.requiresApproval;
   const gasCostEstimate = approvalGasEstimate || 'Network fee set by wallet';
-  const showRevokePermitButton = isTestMode && !!onRevokePermitApproval && !requiresTokenApproval;
+  const showRevokePermitButton =
+    isTestMode &&
+    !!onRevokePermitApproval &&
+    !!permit2Context.revokeTarget &&
+    !hasSendTransactionAction;
 
   return (
     <>
@@ -104,24 +111,27 @@ export function ReviewPaymentView({
             </View>
           </View>
         </View>
-      </View>
 
-      {requiresTokenApproval ? (
-        <>
-
-            <Text
-              style={styles.approvalNote}
-              variant="sm-400"
-              color="text-tertiary"
-            >
-              {`* This is your first ${tokenSymbol} Payment on ${networkName}, a one-time approval is required. Estimated cost: `}
-              <Text style={styles.approvalNote} variant="sm-400" color="text-tertiary">
+        {requiresTokenApproval ? (
+          <View
+            style={[
+              styles.item,
+              { backgroundColor: Theme['foreground-primary'] },
+            ]}
+            testID="pay-review-one-time-fee"
+            accessibilityLabel="One-time fee"
+          >
+            <Text variant="lg-400" color="text-tertiary">
+              One-time fee
+            </Text>
+            <View style={styles.itemRight}>
+              <Text variant="lg-400" color="text-primary">
                 {isEstimatingApprovalGas ? 'Loading...' : gasCostEstimate}
               </Text>
-            </Text>
-
-        </>
-      ) : null}
+            </View>
+          </View>
+        ) : null}
+      </View>
 
       {showRevokePermitButton ? (
         <ActionButton
@@ -132,9 +142,9 @@ export function ReviewPaymentView({
           fullWidth
           style={styles.revokeButton}
           testID="pay-button-revoke-permit2"
-          accessibilityLabel="Revoke Permit2 approval"
+          accessibilityLabel="Reset Permit2 approval"
         >
-          Revoke Permit2 approval
+          Reset Permit2 approval (test only)
         </ActionButton>
       ) : null}
 
@@ -194,10 +204,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing[5],
     marginBottom: Spacing[2],
   },
-  approvalNote: {
-    marginTop: Spacing[2],
-  },
   revokeButton: {
     marginTop: Spacing[3],
-  },
+  }
 });

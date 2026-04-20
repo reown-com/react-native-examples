@@ -248,7 +248,11 @@ export default function PaymentOptionsModal() {
         ) : null;
 
       case 'confirming':
-        return <LoadingView message="Processing your payment..." />;
+        return (
+          <LoadingView
+            message={snap.loadingMessage || 'Processing your payment...'}
+          />
+        );
 
       case 'expiryWarning':
         if (!snap.expiresAt) return null;

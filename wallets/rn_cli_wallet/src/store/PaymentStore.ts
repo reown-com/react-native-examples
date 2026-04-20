@@ -1,19 +1,17 @@
 import { proxy, ref } from 'valtio';
 import type {
   Action,
+  ConfirmPaymentResponse,
   PaymentOptionsResponse,
   PaymentOption,
 } from '@walletconnect/pay';
-import { BigNumber, providers, utils } from 'ethers';
-import Config from 'react-native-config';
+import { providers } from 'ethers';
 
 import LogStore, { serializeError } from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { eip155Wallets } from '@/utils/EIP155WalletUtil';
-import { revokePermit2ApprovalForTesting } from '@/utils/Permit2RevokeUtil';
 import type { Step } from '@/utils/TypesUtil';
-import { PresetsUtil } from '@/utils/PresetsUtil';
 import {
   detectErrorType,
   getErrorMessage,
@@ -21,22 +19,28 @@ import {
 } from '@/modals/PaymentOptionsModal/utils';
 import type { ErrorType } from '@/modals/PaymentOptionsModal/utils';
 import { EIP155_SIGNING_METHODS } from '@/constants/Eip155';
+import {
+  ConfirmPaymentPollingTimeoutError,
+  confirmPaymentWithPolling,
+} from '@/utils/PaymentConfirmUtil';
+import {
+  estimateTransactionFee,
+  sendTransactionWithFreshFees,
+  waitForTransactionConfirmation,
+} from '@/utils/PaymentTransactionUtil';
+import {
+  getPermit2Context,
+  revokePermit2ApprovalForTesting,
+} from '@/utils/Permit2Util';
 
-/**
- * Types
- */
 interface PaymentState {
   paymentOptions: PaymentOptionsResponse | null;
   loadingMessage: string | null;
   errorMessage: string | null;
   step: Step;
-
-  // Result state
   resultStatus: 'success' | 'error';
   resultMessage: string;
   resultErrorType: ErrorType | null;
-
-  // Payment state
   selectedOption: PaymentOption | null;
   paymentActions: Action[] | null;
   isLoadingActions: boolean;
@@ -45,126 +49,38 @@ interface PaymentState {
   approvalGasEstimate: string | null;
   isRevokingPermit: boolean;
   collectDataCompletedIds: string[];
-
-  // Expiry
   expiresAt: number | null;
 }
 
-/**
- * Initial State
- */
-const initialState: PaymentState = {
-  paymentOptions: null,
-  loadingMessage: null,
-  errorMessage: null,
-  step: 'loading',
-  resultStatus: 'success',
-  resultMessage: '',
-  resultErrorType: null,
-  selectedOption: null,
-  paymentActions: null,
-  isLoadingActions: false,
-  isEstimatingApprovalGas: false,
-  actionsError: null,
-  approvalGasEstimate: null,
-  isRevokingPermit: false,
-  collectDataCompletedIds: [],
-  expiresAt: null,
-};
+const PAY_EXPIRY_GUARD_MS = 10_000;
+const POLL_CONFIRMATION_TIMEOUT_MESSAGE =
+  'Payment confirmation is taking longer than expected. Please check the merchant status and try again.';
+const FAILED_CONFIRMATION_MESSAGE = 'The payment could not be confirmed.';
 
-/**
- * State
- */
-const state = proxy<PaymentState>({ ...initialState });
+function createInitialState(): PaymentState {
+  return {
+    paymentOptions: null,
+    loadingMessage: null,
+    errorMessage: null,
+    step: 'loading',
+    resultStatus: 'success',
+    resultMessage: '',
+    resultErrorType: null,
+    selectedOption: null,
+    paymentActions: null,
+    isLoadingActions: false,
+    isEstimatingApprovalGas: false,
+    actionsError: null,
+    approvalGasEstimate: null,
+    isRevokingPermit: false,
+    collectDataCompletedIds: [],
+    expiresAt: null,
+  };
+}
 
+const state = proxy<PaymentState>(createInitialState());
 let expiryTimerId: ReturnType<typeof setTimeout> | null = null;
 let paymentActionsRequestSeq = 0;
-
-// --- Constants ---
-
-const POLYGON_MIN_PRIORITY_FEE_WEI = BigNumber.from('30000000000'); // 30 gwei
-const WALLETCONNECT_RPC_BASE_URL = 'https://rpc.walletconnect.org/v1/';
-const PAY_EXPIRY_GUARD_MS = 10_000;
-const TX_CONFIRMATION_TIMEOUT_MS = 120_000;
-const NATIVE_SYMBOL_BY_CHAIN_ID: Record<string, string> = {
-  'eip155:1': 'ETH',
-  'eip155:5': 'ETH',
-  'eip155:10': 'ETH',
-  'eip155:11155420': 'ETH',
-  'eip155:42161': 'ETH',
-  'eip155:8453': 'ETH',
-  'eip155:1313161554': 'ETH',
-  'eip155:7777777': 'ETH',
-  'eip155:137': 'MATIC',
-  'eip155:80001': 'MATIC',
-  'eip155:56': 'BNB',
-  'eip155:43114': 'AVAX',
-  'eip155:43113': 'AVAX',
-  'eip155:250': 'FTM',
-  'eip155:100': 'XDAI',
-  'eip155:9001': 'EVMOS',
-  'eip155:324': 'ETH',
-  'eip155:314': 'FIL',
-  'eip155:4689': 'IOTX',
-  'eip155:1088': 'METIS',
-  'eip155:1284': 'GLMR',
-  'eip155:1285': 'MOVR',
-  'eip155:42220': 'CELO',
-  'eip155:143': 'MON',
-};
-
-// --- Fee & RPC helpers ---
-
-function getWalletConnectRpcUrl(chainId: string): string | null {
-  const projectId = Config.ENV_PROJECT_ID?.trim();
-  if (!projectId) {
-    return null;
-  }
-  return `${WALLETCONNECT_RPC_BASE_URL}?chainId=${encodeURIComponent(chainId)}&projectId=${encodeURIComponent(projectId)}`;
-}
-
-function getHighestBigNumber(
-  values: Array<BigNumber | null | undefined>,
-): BigNumber | null {
-  return values.reduce<BigNumber | null>((max, v) => {
-    if (!v) return max;
-    return !max || v.gt(max) ? v : max;
-  }, null);
-}
-
-function toBigNumber(value: unknown): BigNumber | null {
-  if (value == null) return null;
-  try {
-    return BigNumber.from(value as string | number);
-  } catch {
-    return null;
-  }
-}
-
-function parseWalletRpcParams(params: unknown): unknown[] | null {
-  if (Array.isArray(params)) {
-    return params;
-  }
-  if (typeof params !== 'string') {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(params);
-    return Array.isArray(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-function getApprovalAction(actions: Action[] | null): Action | null {
-  return (
-    actions?.find(
-      action =>
-        action.walletRpc?.method === EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION,
-    ) || null
-  );
-}
 
 function isPaymentExpiredLocally(expiresAt: number | null): boolean {
   if (!expiresAt) return false;
@@ -172,281 +88,69 @@ function isPaymentExpiredLocally(expiresAt: number | null): boolean {
   return Date.now() + PAY_EXPIRY_GUARD_MS >= expiresAtMs;
 }
 
-function buildFreshTxRequest({
-  chainId,
-  baseTx,
-  feeData,
-  latestBlock,
+function setPaymentResultFromConfirmStatus({
+  confirmResult,
+  selectedOption,
+  paymentOptions,
 }: {
-  chainId: string;
-  baseTx: providers.TransactionRequest;
-  feeData: providers.FeeData;
-  latestBlock: providers.Block;
-}): providers.TransactionRequest {
-  const chainFloor =
-    chainId === 'eip155:137' ? POLYGON_MIN_PRIORITY_FEE_WEI : null;
-  const priorityFee = getHighestBigNumber([
-    chainFloor,
-    feeData.maxPriorityFeePerGas || null,
-  ]);
-
-  const maxFee = priorityFee
-    ? getHighestBigNumber([
-        latestBlock.baseFeePerGas
-          ? latestBlock.baseFeePerGas.mul(2).add(priorityFee)
-          : null,
-        feeData.maxFeePerGas || null,
-        priorityFee,
-      ])
-    : null;
-
-  const request: providers.TransactionRequest = { ...baseTx };
-
-  if (priorityFee) {
-    request.maxPriorityFeePerGas = priorityFee;
-  } else {
-    delete request.maxPriorityFeePerGas;
-  }
-
-  if (maxFee) {
-    request.maxFeePerGas = maxFee;
-  } else {
-    delete request.maxFeePerGas;
-  }
-
-  if (
-    !request.maxPriorityFeePerGas &&
-    !request.maxFeePerGas &&
-    feeData.gasPrice
-  ) {
-    const gasPrice = getHighestBigNumber([
-      feeData.gasPrice,
-      chainFloor,
-    ]);
-    if (gasPrice) {
-      request.gasPrice = gasPrice;
-    }
-  } else {
-    delete request.gasPrice;
-  }
-
-  return request;
-}
-
-function serializeTxRequestForLog(tx: providers.TransactionRequest) {
-  const asString = (value: unknown): string | number | null => {
-    if (value == null) return null;
-    if (BigNumber.isBigNumber(value)) return value.toString();
-    if (typeof value === 'number' || typeof value === 'string') return value;
-    if (typeof value === 'object' && 'toString' in value) {
-      try {
-        return (value as { toString: () => string }).toString();
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  };
-
-  return {
-    from: tx.from ?? null,
-    to: tx.to ?? null,
-    nonce: tx.nonce ?? null,
-    type: tx.type ?? null,
-    value: asString(tx.value),
-    gasLimit: asString(tx.gasLimit),
-    gasPrice: asString(tx.gasPrice),
-    maxFeePerGas: asString(tx.maxFeePerGas),
-    maxPriorityFeePerGas: asString(tx.maxPriorityFeePerGas),
-    dataLength:
-      typeof tx.data === 'string' ? Math.max(0, (tx.data.length - 2) / 2) : null,
-  };
-}
-
-function formatGasEstimate({
-  totalFeeWei,
-  chainId,
-}: {
-  totalFeeWei: BigNumber;
-  chainId: string;
-}): string {
-  const symbol = NATIVE_SYMBOL_BY_CHAIN_ID[chainId] || 'ETH';
-  const feeValue = Number(utils.formatEther(totalFeeWei));
-  if (!Number.isFinite(feeValue) || feeValue <= 0) {
-    return `~${utils.formatEther(totalFeeWei)} ${symbol}`;
-  }
-
-  if (feeValue >= 0.01) {
-    return `~${feeValue.toFixed(4)} ${symbol}`;
-  }
-  return `~${feeValue.toFixed(6)} ${symbol}`;
-}
-
-async function estimateApprovalGasCost(action: Action): Promise<string | null> {
-  const { walletRpc } = action;
-  if (!walletRpc?.params) {
-    return null;
-  }
-
-  const parsedParams = parseWalletRpcParams(walletRpc.params);
-  if (!parsedParams?.[0] || typeof parsedParams[0] !== 'object') {
-    return null;
-  }
-
-  const chainId = walletRpc.chainId;
-  const chainData = PresetsUtil.getChainDataById(chainId);
-  if (!chainData) {
-    return null;
-  }
-
-  const rpcUrl = getWalletConnectRpcUrl(chainId);
-  if (!rpcUrl) {
-    return null;
-  }
-
-  const parsedChainId = Number(chainData.chainId);
-  const network =
-    Number.isFinite(parsedChainId) && parsedChainId > 0
-      ? { chainId: parsedChainId, name: chainData.name || chainId }
-      : undefined;
-  const provider = network
-    ? new providers.StaticJsonRpcProvider(rpcUrl, network)
-    : new providers.StaticJsonRpcProvider(rpcUrl);
-
-  const baseTx: providers.TransactionRequest = {
-    ...(parsedParams[0] as providers.TransactionRequest),
-  };
-  const [gasLimit, feeData, latestBlock] = await Promise.all([
-    provider.estimateGas(baseTx),
-    provider.getFeeData(),
-    provider.getBlock('latest'),
-  ]);
-  const txWithFreshFees = buildFreshTxRequest({
-    chainId,
-    baseTx,
-    feeData,
-    latestBlock,
-  });
-  const feePerGas = toBigNumber(
-    txWithFreshFees.maxFeePerGas ??
-      txWithFreshFees.gasPrice ??
-      feeData.maxFeePerGas ??
-      feeData.gasPrice,
-  );
-  if (!feePerGas) {
-    return null;
-  }
-
-  const totalFeeWei = gasLimit.mul(feePerGas);
-  return formatGasEstimate({ totalFeeWei, chainId });
-}
-
-// --- Shared transaction sender with fresh fee enrichment ---
-
-async function sendTransaction({
-  chainId,
-  baseTx,
-  wallet,
-  logContext,
-}: {
-  chainId: string;
-  baseTx: providers.TransactionRequest;
-  wallet: { connect: (provider: providers.JsonRpcProvider) => providers.JsonRpcSigner | { sendTransaction: (tx: providers.TransactionRequest) => Promise<providers.TransactionResponse> } };
-  logContext: string;
-}): Promise<providers.TransactionResponse> {
-  const chainData = PresetsUtil.getChainDataById(chainId);
-  if (!chainData) {
-    throw new Error(`Missing chain metadata for ${chainId}`);
-  }
-  const rpcUrl = getWalletConnectRpcUrl(chainId);
-  if (!rpcUrl) {
-    throw new Error(
-      `Missing ENV_PROJECT_ID for WalletConnect RPC on chain ${chainId}`,
+  confirmResult: ConfirmPaymentResponse;
+  selectedOption: PaymentOption;
+  paymentOptions: PaymentOptionsResponse;
+}): void {
+  if (confirmResult.status === 'succeeded') {
+    const amount = formatAmount(
+      selectedOption.amount.value,
+      selectedOption.amount.display.decimals,
+      2,
     );
-  }
-
-  const parsedChainId = Number(chainData.chainId);
-  const network =
-    Number.isFinite(parsedChainId) && parsedChainId > 0
-      ? { chainId: parsedChainId, name: chainData.name || chainId }
-      : undefined;
-  const provider = network
-    ? new providers.StaticJsonRpcProvider(rpcUrl, network)
-    : new providers.StaticJsonRpcProvider(rpcUrl);
-  const connectedWallet = wallet.connect(provider);
-
-  // Fetch fee data before transaction attempt
-  let txRequest: providers.TransactionRequest = { ...baseTx };
-  try {
-    const [feeData, latestBlock] = await Promise.all([
-      provider.getFeeData(),
-      provider.getBlock('latest'),
-    ]);
-    txRequest = buildFreshTxRequest({
-      chainId,
-      baseTx,
-      feeData,
-      latestBlock,
+    PaymentStore.setResult({
+      status: 'success',
+      message: `You've paid ${amount} ${selectedOption.amount.display.assetSymbol} to ${paymentOptions.info?.merchant?.name}`,
     });
-  } catch (error) {
-    LogStore.warn(
-      'Failed to fetch initial fee data',
-      'PaymentStore',
-      logContext,
-      { chainId, error: serializeError(error) },
-    );
+    return;
   }
 
-  LogStore.log('Submitting transaction', 'PaymentStore', logContext, {
-    chainId,
-    tx: serializeTxRequestForLog(txRequest),
+  if (confirmResult.status === 'expired') {
+    PaymentStore.setResult({
+      status: 'error',
+      errorType: 'expired',
+      message: getErrorMessage('expired'),
+    });
+    return;
+  }
+
+  if ((confirmResult.status as string) === 'cancelled') {
+    PaymentStore.setResult({
+      status: 'error',
+      errorType: 'cancelled',
+      message: getErrorMessage('cancelled'),
+    });
+    return;
+  }
+
+  if (confirmResult.status === 'failed') {
+    PaymentStore.setResult({
+      status: 'error',
+      errorType: 'generic',
+      message: FAILED_CONFIRMATION_MESSAGE,
+    });
+    return;
+  }
+
+  LogStore.warn('Unhandled final payment status', 'PaymentStore', 'approvePayment', {
+    status: confirmResult.status,
+    isFinal: confirmResult.isFinal,
   });
 
-  try {
-    return await connectedWallet.sendTransaction(txRequest);
-  } catch (error) {
-    LogStore.error('Transaction submission failed', 'PaymentStore', logContext, {
-      chainId,
-      tx: serializeTxRequestForLog(txRequest),
-      error: serializeError(error),
-    });
-    throw error;
-  }
+  PaymentStore.setResult({
+    status: 'error',
+    errorType: 'generic',
+    message: FAILED_CONFIRMATION_MESSAGE,
+  });
 }
 
-async function waitForTransactionConfirmation(
-  tx: providers.TransactionResponse,
-  timeoutMs: number = TX_CONFIRMATION_TIMEOUT_MS,
-) {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
-  try {
-    await Promise.race([
-      tx.wait(),
-      new Promise<never>((_, reject) => {
-        timeoutId = setTimeout(() => {
-          reject(
-            new Error(
-              `Transaction confirmation timed out after ${timeoutMs}ms`,
-            ),
-          );
-        }, timeoutMs);
-      }),
-    ]);
-  } finally {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-  }
-}
-
-/**
- * Store / Actions
- */
 const PaymentStore = {
   state,
-
-  // --- Flow lifecycle ---
 
   startPayment(params: {
     paymentOptions?: PaymentOptionsResponse;
@@ -454,7 +158,7 @@ const PaymentStore = {
     errorMessage?: string;
   }) {
     PaymentStore.clearExpiryTimer();
-    Object.assign(state, { ...initialState });
+    Object.assign(state, createInitialState());
     if (params.paymentOptions) {
       state.paymentOptions = ref(params.paymentOptions);
     }
@@ -491,7 +195,7 @@ const PaymentStore = {
 
   reset() {
     PaymentStore.clearExpiryTimer();
-    Object.assign(state, { ...initialState });
+    Object.assign(state, createInitialState());
   },
 
   setStep(step: Step) {
@@ -555,7 +259,6 @@ const PaymentStore = {
 
   async revokePermit2Approval() {
     if (state.isRevokingPermit) return;
-
     state.isRevokingPermit = true;
 
     try {
@@ -563,14 +266,12 @@ const PaymentStore = {
         paymentActions: state.paymentActions,
         selectedOption: state.selectedOption,
         wallet: eip155Wallets[SettingsStore.state.eip155Address],
-        sendTransaction,
+        sendTransaction: sendTransactionWithFreshFees,
       });
     } finally {
       state.isRevokingPermit = false;
     }
   },
-
-  // --- Expiry timer ---
 
   startExpiryTimer(expiresAt: number) {
     PaymentStore.clearExpiryTimer();
@@ -579,7 +280,6 @@ const PaymentStore = {
     const expiresAtMs = expiresAt * 1000;
     const warningTime = expiresAtMs - TWO_MINUTES_MS;
     const delay = warningTime - now;
-
     const interruptibleSteps: Step[] = [
       'selectOption',
       'review',
@@ -608,8 +308,6 @@ const PaymentStore = {
     }
   },
 
-  // --- Business logic ---
-
   async fetchPaymentActions(option: PaymentOption) {
     const payClient = walletKit?.pay;
     if (!payClient || !state.paymentOptions) {
@@ -627,6 +325,7 @@ const PaymentStore = {
     state.approvalGasEstimate = null;
     state.isEstimatingApprovalGas = false;
     const requestSeq = ++paymentActionsRequestSeq;
+
     const isStaleRequest = () =>
       requestSeq !== paymentActionsRequestSeq ||
       state.selectedOption?.id !== option.id;
@@ -638,16 +337,19 @@ const PaymentStore = {
         'fetchPaymentActions',
         { optionId: option.id },
       );
+
       const actions = await payClient.getRequiredPaymentActions({
         paymentId: state.paymentOptions.paymentId,
         optionId: option.id,
       });
+
       LogStore.log(
         'Required actions received',
         'PaymentStore',
         'fetchPaymentActions',
         { actionsCount: actions.length },
       );
+
       if (isStaleRequest()) {
         LogStore.warn(
           'Skipping stale payment actions response',
@@ -657,14 +359,24 @@ const PaymentStore = {
         );
         return;
       }
+
+      const permit2Context = getPermit2Context({
+        paymentActions: actions,
+        selectedOption: option,
+      });
       state.paymentActions = ref(actions);
       state.isLoadingActions = false;
 
-      const approvalAction = getApprovalAction(actions);
-      if (approvalAction) {
+      LogStore.log('Resolved Permit2 context', 'PaymentStore', 'fetchPaymentActions', {
+        optionId: option.id,
+        requiresApproval: permit2Context.requiresApproval,
+        hasRevokeTarget: !!permit2Context.revokeTarget,
+      });
+
+      if (permit2Context.approvalAction) {
         state.isEstimatingApprovalGas = true;
         try {
-          const estimate = await estimateApprovalGasCost(approvalAction);
+          const estimate = await estimateTransactionFee(permit2Context.approvalAction);
           if (!isStaleRequest()) {
             state.approvalGasEstimate = estimate;
           }
@@ -674,7 +386,7 @@ const PaymentStore = {
             'fetchPaymentActions',
             {
               optionId: option.id,
-              chainId: approvalAction.walletRpc?.chainId,
+              chainId: permit2Context.approvalAction.walletRpc?.chainId,
               estimate,
             },
           );
@@ -685,7 +397,7 @@ const PaymentStore = {
             'fetchPaymentActions',
             {
               optionId: option.id,
-              chainId: approvalAction.walletRpc?.chainId,
+              chainId: permit2Context.approvalAction.walletRpc?.chainId,
               error: serializeError(error),
             },
           );
@@ -705,6 +417,7 @@ const PaymentStore = {
         );
         return;
       }
+
       LogStore.error(
         'Error getting payment actions',
         'PaymentStore',
@@ -734,7 +447,12 @@ const PaymentStore = {
       return;
     }
 
-    const { paymentActions, selectedOption, paymentOptions, expiresAt } = state;
+    const {
+      paymentActions,
+      selectedOption,
+      paymentOptions,
+      expiresAt,
+    } = state;
     if (!paymentActions?.length || !selectedOption || !paymentOptions) {
       LogStore.warn(
         'Cannot approve payment - missing required state',
@@ -771,6 +489,7 @@ const PaymentStore = {
 
     state.step = 'confirming';
     state.actionsError = null;
+    state.loadingMessage = null;
 
     try {
       const payClient = walletKit?.pay;
@@ -783,8 +502,13 @@ const PaymentStore = {
         throw new Error('Wallet not found for selected EIP155 account');
       }
 
+      const tokenSymbol = selectedOption.amount.display.assetSymbol || 'token';
       const signatures: string[] = [];
       const totalActions = paymentActions.length;
+      const permit2Context = getPermit2Context({
+        paymentActions,
+        selectedOption,
+      });
 
       for (const [index, action] of paymentActions.entries()) {
         const stepLabel = `${index + 1}/${totalActions}`;
@@ -792,6 +516,19 @@ const PaymentStore = {
 
         if (!action.walletRpc) {
           throw new Error(`Payment action ${stepLabel} is missing walletRpc`);
+        }
+
+        if (
+          permit2Context.approvalAction &&
+          action === permit2Context.approvalAction
+        ) {
+          state.loadingMessage = `Setting up ${tokenSymbol} for the first time...`;
+        } else if (
+          method === EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA ||
+          method === EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3 ||
+          method === EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4
+        ) {
+          state.loadingMessage = 'Finalizing your payment...';
         }
 
         LogStore.log('Executing payment action', 'PaymentStore', 'approvePayment', {
@@ -802,8 +539,7 @@ const PaymentStore = {
         const { params, chainId } = action.walletRpc;
         let parsedParams: unknown;
         try {
-          parsedParams =
-            typeof params === 'string' ? JSON.parse(params) : params;
+          parsedParams = typeof params === 'string' ? JSON.parse(params) : params;
         } catch (error) {
           throw new Error(
             `Failed to parse params for ${method} (${stepLabel}): ${error instanceof Error ? error.message : String(error)}`,
@@ -823,11 +559,9 @@ const PaymentStore = {
               throw new Error(`Invalid tx payload for ${method} (${stepLabel})`);
             }
 
-            const baseTx: providers.TransactionRequest = { ...txPayload };
-
-            const tx = await sendTransaction({
+            const tx = await sendTransactionWithFreshFees({
               chainId,
-              baseTx,
+              baseTx: { ...(txPayload as providers.TransactionRequest) },
               wallet,
               logContext: 'approvePayment',
             });
@@ -836,7 +570,7 @@ const PaymentStore = {
               await waitForTransactionConfirmation(tx);
             } catch (error) {
               LogStore.error(
-                'Approval transaction confirmation failed',
+                'Action transaction confirmation failed',
                 'PaymentStore',
                 'approvePayment',
                 {
@@ -846,11 +580,11 @@ const PaymentStore = {
                   error: serializeError(error),
                 },
               );
-              throw new Error('Approval transaction confirmation failed');
+              throw new Error('Action transaction confirmation failed');
             }
 
             LogStore.log(
-              'Token approval transaction confirmed',
+              'Action transaction confirmed',
               'PaymentStore',
               'approvePayment',
               { chainId, step: stepLabel, txHash: tx.hash },
@@ -871,9 +605,7 @@ const PaymentStore = {
             }
 
             if (!typedData || typeof typedData !== 'object') {
-              throw new Error(
-                `Invalid typed-data for ${method} (${stepLabel})`,
-              );
+              throw new Error(`Invalid typed-data for ${method} (${stepLabel})`);
             }
 
             const { domain, types, message: messageData } = typedData as {
@@ -889,7 +621,6 @@ const PaymentStore = {
             }
 
             delete types.EIP712Domain;
-
             const signature = await wallet._signTypedData(
               domain,
               types,
@@ -908,49 +639,44 @@ const PaymentStore = {
         signaturesCount: signatures.length,
       });
 
-      const confirmResult = await payClient.confirmPayment({
-        paymentId: paymentOptions.paymentId,
-        optionId: selectedOption.id,
-        signatures,
+      const confirmResult = await confirmPaymentWithPolling({
+        confirm: params => payClient.confirmPayment(params),
+        params: {
+          paymentId: paymentOptions.paymentId,
+          optionId: selectedOption.id,
+          signatures,
+        },
+        onPending: ({ attempt, response, nextPollMs, elapsedMs }) => {
+          state.loadingMessage = 'Waiting for payment confirmation...';
+          LogStore.log(
+            'Payment confirmation pending',
+            'PaymentStore',
+            'approvePayment',
+            {
+              attempt,
+              status: response.status,
+              isFinal: response.isFinal,
+              nextPollMs,
+              elapsedMs,
+            },
+          );
+        },
       });
 
       LogStore.log(
         'Payment confirmation result',
         'PaymentStore',
         'approvePayment',
-        { status: confirmResult?.status },
+        {
+          status: confirmResult.status,
+          isFinal: confirmResult.isFinal,
+        },
       );
 
-      if (!confirmResult) {
-        throw new Error('Payment confirmation failed - no response received');
-      }
-
-      if (confirmResult.status === 'expired') {
-        PaymentStore.setResult({
-          status: 'error',
-          errorType: 'expired',
-          message: getErrorMessage('expired'),
-        });
-        return;
-      }
-
-      if ((confirmResult.status as string) === 'cancelled') {
-        PaymentStore.setResult({
-          status: 'error',
-          errorType: 'cancelled',
-          message: getErrorMessage('cancelled'),
-        });
-        return;
-      }
-
-      const amount = formatAmount(
-        selectedOption.amount.value,
-        selectedOption.amount.display.decimals,
-        2,
-      );
-      PaymentStore.setResult({
-        status: 'success',
-        message: `You've paid ${amount} ${selectedOption.amount.display.assetSymbol} to ${paymentOptions.info?.merchant?.name}`,
+      setPaymentResultFromConfirmStatus({
+        confirmResult,
+        selectedOption,
+        paymentOptions,
       });
     } catch (error: unknown) {
       LogStore.error(
@@ -959,6 +685,25 @@ const PaymentStore = {
         'approvePayment',
         { error: serializeError(error) },
       );
+
+      if (error instanceof ConfirmPaymentPollingTimeoutError) {
+        LogStore.warn(
+          'Payment confirmation polling timed out',
+          'PaymentStore',
+          'approvePayment',
+          {
+            lastStatus: error.lastStatus,
+            elapsedMs: error.elapsedMs,
+          },
+        );
+        PaymentStore.setResult({
+          status: 'error',
+          errorType: 'generic',
+          message: POLL_CONFIRMATION_TIMEOUT_MESSAGE,
+        });
+        return;
+      }
+
       const errorMessage =
         error instanceof Error
           ? error.message
