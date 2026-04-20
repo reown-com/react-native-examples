@@ -1,18 +1,14 @@
 import { View, Image, StyleSheet } from 'react-native';
 import type { Action, PaymentInfo, PaymentOption } from '@walletconnect/pay';
-import Config from 'react-native-config';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
 import { Text } from '@/components/Text';
 import { MerchantInfo } from './MerchantInfo';
 import { PresetsUtil } from '@/utils/PresetsUtil';
-import { EIP155_SIGNING_METHODS } from '@/constants/Eip155';
-import { getPermit2Context } from '@/utils/Permit2Util';
+import { getPaymentContext } from '@/utils/PaymentUtil';
 import { formatAmount, getCurrencySymbol } from './utils';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
-
-const isTestMode = Config.ENV_TEST_MODE === 'true';
 
 interface ReviewPaymentViewProps {
   selectedOption: PaymentOption;
@@ -22,9 +18,7 @@ interface ReviewPaymentViewProps {
   isEstimatingApprovalGas?: boolean;
   isLoadingActions: boolean;
   isSigningPayment: boolean;
-  isRevokingPermit?: boolean;
   onPay: () => void;
-  onRevokePermitApproval?: () => void;
 }
 
 export function ReviewPaymentView({
@@ -35,9 +29,7 @@ export function ReviewPaymentView({
   isEstimatingApprovalGas = false,
   isLoadingActions,
   isSigningPayment,
-  isRevokingPermit = false,
   onPay,
-  onRevokePermitApproval,
 }: ReviewPaymentViewProps) {
   const Theme = useTheme();
 
@@ -57,21 +49,11 @@ export function ReviewPaymentView({
   const chainIcon = PresetsUtil.getIconLogoByName(
     selectedOption.amount.display.networkName,
   );
-  const permit2Context = getPermit2Context({
+  const paymentContext = getPaymentContext({
     paymentActions: paymentActions || null,
-    selectedOption,
   });
-  const hasSendTransactionAction = (paymentActions || []).some(
-    action =>
-      action.walletRpc?.method === EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION,
-  );
-  const requiresTokenApproval = permit2Context.requiresApproval;
+  const requiresTokenApproval = paymentContext.requiresApproval;
   const gasCostEstimate = approvalGasEstimate || 'Network fee set by wallet';
-  const showRevokePermitButton =
-    isTestMode &&
-    !!onRevokePermitApproval &&
-    !!permit2Context.revokeTarget &&
-    !hasSendTransactionAction;
 
   return (
     <>
@@ -133,21 +115,6 @@ export function ReviewPaymentView({
         ) : null}
       </View>
 
-      {showRevokePermitButton ? (
-        <ActionButton
-          variant="secondary"
-          onPress={onRevokePermitApproval!}
-          loading={isRevokingPermit}
-          disabled={isLoadingActions || isSigningPayment}
-          fullWidth
-          style={styles.revokeButton}
-          testID="pay-button-revoke-permit2"
-          accessibilityLabel="Reset Permit2 approval"
-        >
-          Reset Permit2 approval (test only)
-        </ActionButton>
-      ) : null}
-
       <View style={styles.buttonContainer}>
         <ActionButton
           onPress={onPay}
@@ -204,7 +171,4 @@ const styles = StyleSheet.create({
     marginTop: Spacing[5],
     marginBottom: Spacing[2],
   },
-  revokeButton: {
-    marginTop: Spacing[3],
-  }
 });

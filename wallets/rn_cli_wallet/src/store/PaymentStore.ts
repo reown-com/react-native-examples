@@ -24,10 +24,7 @@ import {
   sendTransactionWithFreshFees,
   waitForTransactionConfirmation,
 } from '@/utils/PaymentTransactionUtil';
-import {
-  getPermit2Context,
-  revokePermit2ApprovalForTesting,
-} from '@/utils/Permit2Util';
+import { getPaymentContext } from '@/utils/PaymentUtil';
 
 interface PaymentState {
   paymentOptions: PaymentOptionsResponse | null;
@@ -43,7 +40,6 @@ interface PaymentState {
   isEstimatingApprovalGas: boolean;
   actionsError: string | null;
   approvalGasEstimate: string | null;
-  isRevokingPermit: boolean;
   collectDataCompletedIds: string[];
   expiresAt: number | null;
 }
@@ -66,7 +62,6 @@ function createInitialState(): PaymentState {
     isEstimatingApprovalGas: false,
     actionsError: null,
     approvalGasEstimate: null,
-    isRevokingPermit: false,
     collectDataCompletedIds: [],
     expiresAt: null,
   };
@@ -180,7 +175,6 @@ const PaymentStore = {
     const errorType = detectErrorType(errorMessage);
     state.errorMessage = errorMessage;
     state.loadingMessage = null;
-    state.isRevokingPermit = false;
     state.resultStatus = 'error';
     state.resultMessage = getErrorMessage(errorType, errorMessage);
     state.resultErrorType = errorType;
@@ -206,7 +200,6 @@ const PaymentStore = {
     state.resultErrorType = payload.errorType ?? null;
     state.errorMessage = null;
     state.loadingMessage = null;
-    state.isRevokingPermit = false;
     state.step = 'result';
   },
 
@@ -224,7 +217,6 @@ const PaymentStore = {
     state.actionsError = null;
     state.approvalGasEstimate = null;
     state.isEstimatingApprovalGas = false;
-    state.isRevokingPermit = false;
   },
 
   markCollectDataCompleted(optionId: string) {
@@ -249,22 +241,6 @@ const PaymentStore = {
 
   setActionsError(error: string | null) {
     state.actionsError = error;
-  },
-
-  async revokePermit2Approval() {
-    if (state.isRevokingPermit) return;
-    state.isRevokingPermit = true;
-
-    try {
-      await revokePermit2ApprovalForTesting({
-        paymentActions: state.paymentActions,
-        selectedOption: state.selectedOption,
-        wallet: eip155Wallets[SettingsStore.state.eip155Address],
-        sendTransaction: sendTransactionWithFreshFees,
-      });
-    } finally {
-      state.isRevokingPermit = false;
-    }
   },
 
   startExpiryTimer(expiresAt: number) {
@@ -354,23 +330,21 @@ const PaymentStore = {
         return;
       }
 
-      const permit2Context = getPermit2Context({
+      const paymentContext = getPaymentContext({
         paymentActions: actions,
-        selectedOption: option,
       });
       state.paymentActions = ref(actions);
       state.isLoadingActions = false;
 
-      LogStore.log('Resolved Permit2 context', 'PaymentStore', 'fetchPaymentActions', {
+      LogStore.log('Resolved payment context', 'PaymentStore', 'fetchPaymentActions', {
         optionId: option.id,
-        requiresApproval: permit2Context.requiresApproval,
-        hasRevokeTarget: !!permit2Context.revokeTarget,
+        requiresApproval: paymentContext.requiresApproval,
       });
 
-      if (permit2Context.approvalAction) {
+      if (paymentContext.approvalAction) {
         state.isEstimatingApprovalGas = true;
         try {
-          const estimate = await estimateTransactionFee(permit2Context.approvalAction);
+          const estimate = await estimateTransactionFee(paymentContext.approvalAction);
           if (!isStaleRequest()) {
             state.approvalGasEstimate = estimate;
           }
@@ -380,7 +354,7 @@ const PaymentStore = {
             'fetchPaymentActions',
             {
               optionId: option.id,
-              chainId: permit2Context.approvalAction.walletRpc?.chainId,
+              chainId: paymentContext.approvalAction.walletRpc?.chainId,
               estimate,
             },
           );
@@ -391,7 +365,7 @@ const PaymentStore = {
             'fetchPaymentActions',
             {
               optionId: option.id,
-              chainId: permit2Context.approvalAction.walletRpc?.chainId,
+              chainId: paymentContext.approvalAction.walletRpc?.chainId,
               error: serializeError(error),
             },
           );
@@ -499,9 +473,8 @@ const PaymentStore = {
       const tokenSymbol = selectedOption.amount.display.assetSymbol || 'token';
       const signatures: string[] = [];
       const totalActions = paymentActions.length;
-      const permit2Context = getPermit2Context({
+      const paymentContext = getPaymentContext({
         paymentActions,
-        selectedOption,
       });
 
       for (const [index, action] of paymentActions.entries()) {
@@ -513,8 +486,8 @@ const PaymentStore = {
         }
 
         if (
-          permit2Context.approvalAction &&
-          action === permit2Context.approvalAction
+          paymentContext.approvalAction &&
+          action === paymentContext.approvalAction
         ) {
           state.loadingMessage = `Setting up ${tokenSymbol} for the first time...`;
         } else if (

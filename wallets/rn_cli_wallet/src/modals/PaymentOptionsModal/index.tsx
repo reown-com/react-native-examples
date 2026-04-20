@@ -241,9 +241,7 @@ export default function PaymentOptionsModal() {
             isEstimatingApprovalGas={snap.isEstimatingApprovalGas}
             isLoadingActions={snap.isLoadingActions}
             isSigningPayment={false}
-            isRevokingPermit={snap.isRevokingPermit}
             onPay={() => PaymentStore.approvePayment()}
-            onRevokePermitApproval={() => PaymentStore.revokePermit2Approval()}
           />
         ) : null;
 
@@ -290,7 +288,6 @@ export default function PaymentOptionsModal() {
     snap.paymentActions,
     snap.approvalGasEstimate,
     snap.isEstimatingApprovalGas,
-    snap.isRevokingPermit,
     snap.collectDataCompletedIds,
     snap.expiresAt,
     selectedOptionCollectDataUrl,

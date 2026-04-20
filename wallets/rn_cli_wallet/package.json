@@ -19,7 +19,8 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "e2e": "maestro test ../../.maestro",
     "e2e:studio": "maestro studio",
-    "e2e:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro"
+    "e2e:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro",
+    "permit2:revoke": "node ./scripts/revoke-permit2-approval.js"
   },
   "dependencies": {
     "@craftzdog/react-native-buffer": "6.1.1",
