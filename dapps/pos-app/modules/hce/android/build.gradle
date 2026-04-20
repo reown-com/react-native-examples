@@ -1,0 +1,23 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'expo-module-gradle-plugin'
+
+group = 'com.reown.mobilepos.hce'
+version = '1.0.0'
+
+expoModule {
+  canBePublished false
+}
+
+android {
+  namespace 'com.reown.mobilepos.hce'
+
+  defaultConfig {
+    versionCode 1
+    versionName '1.0.0'
+  }
+
+  lintOptions {
+    abortOnError false
+  }
+}

@@ -4,6 +4,7 @@ import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
@@ -42,12 +43,31 @@ export default function ScanScreen() {
     deviceId,
     merchantId,
     currency: currencyCode,
+    nfcEnabled,
   } = useSettingsStore((state) => state);
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
   const { amount } = params;
+
+  const { isNfcActive, nfcMode } = useNfcPayment({
+    paymentUrl: qrUri,
+    enabled: nfcEnabled,
+    onNfcReady: () => {
+      addLog("info", "NFC HCE activated", "scan", "useNfcPayment", {
+        paymentUrl: qrUri,
+      });
+    },
+    onNfcError: (error) => {
+      addLog("error", error.message, "scan", "useNfcPayment", { error });
+    },
+    onTap: () => {
+      addLog("info", "NFC tag read by wallet", "scan", "useNfcPayment", {
+        paymentId,
+      });
+    },
+  });
 
   const onSuccess = useCallback(() => {
     if (hasNavigatedRef.current) return;
@@ -170,6 +190,8 @@ export default function ScanScreen() {
   });
 
   const isProcessing = paymentStatusData?.status === "processing";
+  const showNfcIndicator = nfcMode === "hce" && isNfcActive;
+  const instructionText = showNfcIndicator ? "Tap or scan to pay" : "Scan to pay";
 
   return (
     <View style={styles.container}>
@@ -190,8 +212,18 @@ export default function ScanScreen() {
             <ThemedText
               style={[styles.amountText, { color: Theme["text-tertiary"] }]}
             >
-              Scan to pay
+              {instructionText}
             </ThemedText>
+            {showNfcIndicator && (
+              <View style={styles.nfcIndicator}>
+                <View style={[styles.nfcDot, { backgroundColor: "#4CAF50" }]} />
+                <ThemedText
+                  style={[styles.nfcText, { color: Theme["text-tertiary"] }]}
+                >
+                  NFC Ready
+                </ThemedText>
+              </View>
+            )}
             <ThemedText
               style={[
                 styles.amountValue,
@@ -289,5 +321,19 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
+  },
+  nfcIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing["spacing-2"],
+  },
+  nfcDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  nfcText: {
+    fontSize: 12,
+    fontWeight: "500",
   },
 });
