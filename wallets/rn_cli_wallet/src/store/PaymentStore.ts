@@ -20,10 +20,6 @@ import {
 import type { ErrorType } from '@/modals/PaymentOptionsModal/utils';
 import { EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import {
-  ConfirmPaymentPollingTimeoutError,
-  confirmPaymentWithPolling,
-} from '@/utils/PaymentConfirmUtil';
-import {
   estimateTransactionFee,
   sendTransactionWithFreshFees,
   waitForTransactionConfirmation,
@@ -53,8 +49,6 @@ interface PaymentState {
 }
 
 const PAY_EXPIRY_GUARD_MS = 10_000;
-const POLL_CONFIRMATION_TIMEOUT_MESSAGE =
-  'Payment confirmation is taking longer than expected. Please check the merchant status and try again.';
 const FAILED_CONFIRMATION_MESSAGE = 'The payment could not be confirmed.';
 
 function createInitialState(): PaymentState {
@@ -639,28 +633,10 @@ const PaymentStore = {
         signaturesCount: signatures.length,
       });
 
-      const confirmResult = await confirmPaymentWithPolling({
-        confirm: params => payClient.confirmPayment(params),
-        params: {
-          paymentId: paymentOptions.paymentId,
-          optionId: selectedOption.id,
-          signatures,
-        },
-        onPending: ({ attempt, response, nextPollMs, elapsedMs }) => {
-          state.loadingMessage = 'Waiting for payment confirmation...';
-          LogStore.log(
-            'Payment confirmation pending',
-            'PaymentStore',
-            'approvePayment',
-            {
-              attempt,
-              status: response.status,
-              isFinal: response.isFinal,
-              nextPollMs,
-              elapsedMs,
-            },
-          );
-        },
+      const confirmResult = await payClient.confirmPayment({
+        paymentId: paymentOptions.paymentId,
+        optionId: selectedOption.id,
+        signatures,
       });
 
       LogStore.log(
@@ -685,24 +661,6 @@ const PaymentStore = {
         'approvePayment',
         { error: serializeError(error) },
       );
-
-      if (error instanceof ConfirmPaymentPollingTimeoutError) {
-        LogStore.warn(
-          'Payment confirmation polling timed out',
-          'PaymentStore',
-          'approvePayment',
-          {
-            lastStatus: error.lastStatus,
-            elapsedMs: error.elapsedMs,
-          },
-        );
-        PaymentStore.setResult({
-          status: 'error',
-          errorType: 'generic',
-          message: POLL_CONFIRMATION_TIMEOUT_MESSAGE,
-        });
-        return;
-      }
 
       const errorMessage =
         error instanceof Error
