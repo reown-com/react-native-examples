@@ -8,6 +8,7 @@ import { PresetsUtil } from '@/utils/PresetsUtil';
 const POLYGON_MIN_PRIORITY_FEE_WEI = BigNumber.from('30000000000'); // 30 gwei
 const WALLETCONNECT_RPC_BASE_URL = 'https://rpc.walletconnect.org/v1/';
 const TX_CONFIRMATION_TIMEOUT_MS = 120_000;
+const GAS_ESTIMATION_RPC_TIMEOUT_MS = 15_000;
 
 const NATIVE_SYMBOL_BY_CHAIN_ID: Record<string, string> = {
   'eip155:1': 'ETH',
@@ -227,6 +228,26 @@ function formatGasEstimate({
   return `~${feeValue.toFixed(6)} ${symbol}`;
 }
 
+function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  timeoutMessage: string,
+): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(timeoutMessage));
+    }, timeoutMs);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  });
+}
+
 export async function estimateTransactionFee(
   action: Action,
 ): Promise<string | null> {
@@ -252,9 +273,21 @@ export async function estimateTransactionFee(
   };
 
   const [gasLimit, feeData, latestBlock] = await Promise.all([
-    provider.estimateGas(baseTx),
-    provider.getFeeData(),
-    provider.getBlock('latest'),
+    withTimeout(
+      provider.estimateGas(baseTx),
+      GAS_ESTIMATION_RPC_TIMEOUT_MS,
+      `estimateGas timed out after ${GAS_ESTIMATION_RPC_TIMEOUT_MS}ms`,
+    ),
+    withTimeout(
+      provider.getFeeData(),
+      GAS_ESTIMATION_RPC_TIMEOUT_MS,
+      `getFeeData timed out after ${GAS_ESTIMATION_RPC_TIMEOUT_MS}ms`,
+    ),
+    withTimeout(
+      provider.getBlock('latest'),
+      GAS_ESTIMATION_RPC_TIMEOUT_MS,
+      `getBlock(latest) timed out after ${GAS_ESTIMATION_RPC_TIMEOUT_MS}ms`,
+    ),
   ]);
 
   const txWithFreshFees = buildFreshTxRequest({
