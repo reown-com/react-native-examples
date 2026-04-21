@@ -57,11 +57,11 @@ export default function ScanScreen() {
     enabled: nfcEnabled,
     onNfcReady: () => {
       addLog("info", "NFC HCE activated", "scan", "useNfcPayment", {
-        paymentUrl: qrUri,
+        paymentId,
       });
     },
     onNfcError: (error) => {
-      addLog("error", error.message, "scan", "useNfcPayment", { error });
+      addLog("error", error.message, "scan", "useNfcPayment");
     },
     onTap: () => {
       addLog("info", "NFC tag read by wallet", "scan", "useNfcPayment", {

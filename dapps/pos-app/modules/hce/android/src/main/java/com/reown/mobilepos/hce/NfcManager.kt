@@ -26,6 +26,7 @@ internal object NfcManager {
   private var appContext: Context? = null
   private var foregroundActivityRef: WeakReference<Activity>? = null
 
+  @Volatile
   var onTap: (() -> Unit)? = null
 
   /** Whether HCE NFC tag emulation is available on this device. */

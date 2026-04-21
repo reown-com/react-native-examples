@@ -122,7 +122,7 @@ export const useSettingsStore = create<SettingsStore>()(
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
-      nfcEnabled: true,
+      nfcEnabled: false,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
@@ -340,7 +340,7 @@ export const useSettingsStore = create<SettingsStore>()(
         }
 
         if (version < 15) {
-          persistedState.nfcEnabled = persistedState.nfcEnabled ?? true;
+          persistedState.nfcEnabled = persistedState.nfcEnabled ?? false;
         }
 
         return persistedState;

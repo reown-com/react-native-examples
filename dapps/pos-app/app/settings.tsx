@@ -185,16 +185,8 @@ export default function SettingsScreen() {
     handleCustomerApiKeyInputChange(value);
   };
 
-  const handleNfcToggle = (value: boolean) => {
-    if (value && Platform.OS === "android" && !nfcCapabilities.isHceSupported) {
-      showErrorToast("NFC / HCE not supported on this device");
-      return;
-    }
-    setNfcEnabled(value);
-  };
-
   const showNfcToggle =
-    Platform.OS === "android" && nfcCapabilities.nfcMode === "hce";
+    Platform.OS === "android" && nfcCapabilities.isHceSupported;
 
   const handleTestPrinterPress = async () => {
     try {
@@ -308,7 +300,7 @@ export default function SettingsScreen() {
               <Switch
                 style={styles.switch}
                 value={nfcEnabled}
-                onValueChange={handleNfcToggle}
+                onValueChange={setNfcEnabled}
               />
             </View>
           </Card>

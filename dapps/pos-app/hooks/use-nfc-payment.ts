@@ -23,25 +23,34 @@ export function useNfcPayment(options: UseNfcPaymentOptions): UseNfcPaymentRetur
   const [isNfcActive, setIsNfcActive] = useState(false);
   const lastActivatedUrlRef = useRef<string | null>(null);
 
+  // Route callbacks through refs so consumers don't need to memoize them
+  // and so the native tap listener is subscribed exactly once.
+  const onNfcReadyRef = useRef(onNfcReady);
+  const onNfcErrorRef = useRef(onNfcError);
+  const onTapRef = useRef(onTap);
   useEffect(() => {
-    if (!onTap) return;
-    const sub = HceModule.addTapListener(onTap);
-    return () => sub.remove();
-  }, [onTap]);
+    onNfcReadyRef.current = onNfcReady;
+    onNfcErrorRef.current = onNfcError;
+    onTapRef.current = onTap;
+  }, [onNfcReady, onNfcError, onTap]);
 
-  const activate = useCallback(
-    async (url: string) => {
-      try {
-        await HceModule.setPaymentUrl(url);
-        lastActivatedUrlRef.current = url;
-        setIsNfcActive(true);
-        onNfcReady?.();
-      } catch (error) {
-        onNfcError?.(error instanceof Error ? error : new Error(String(error)));
-      }
-    },
-    [onNfcReady, onNfcError],
-  );
+  useEffect(() => {
+    const sub = HceModule.addTapListener(() => onTapRef.current?.());
+    return () => sub.remove();
+  }, []);
+
+  const activate = useCallback(async (url: string) => {
+    try {
+      await HceModule.setPaymentUrl(url);
+      lastActivatedUrlRef.current = url;
+      setIsNfcActive(true);
+      onNfcReadyRef.current?.();
+    } catch (error) {
+      onNfcErrorRef.current?.(
+        error instanceof Error ? error : new Error(String(error)),
+      );
+    }
+  }, []);
 
   const deactivate = useCallback(async () => {
     try {
@@ -52,6 +61,7 @@ export function useNfcPayment(options: UseNfcPaymentOptions): UseNfcPaymentRetur
     }
   }, []);
 
+  // Sync HCE with `enabled` + `paymentUrl`.
   useEffect(() => {
     const canStart =
       !capabilities.isLoading &&
@@ -63,16 +73,9 @@ export function useNfcPayment(options: UseNfcPaymentOptions): UseNfcPaymentRetur
       if (lastActivatedUrlRef.current !== paymentUrl) {
         activate(paymentUrl);
       }
-    } else if (isNfcActive) {
+    } else if (lastActivatedUrlRef.current !== null) {
       deactivate();
     }
-
-    return () => {
-      if (isNfcActive || lastActivatedUrlRef.current) {
-        HceModule.clearPaymentUrl().catch(() => {});
-        lastActivatedUrlRef.current = null;
-      }
-    };
   }, [
     enabled,
     paymentUrl,
@@ -80,8 +83,17 @@ export function useNfcPayment(options: UseNfcPaymentOptions): UseNfcPaymentRetur
     capabilities.nfcMode,
     activate,
     deactivate,
-    isNfcActive,
   ]);
+
+  // Clear HCE when the hook unmounts (e.g. navigating away from the scan screen).
+  useEffect(() => {
+    return () => {
+      if (lastActivatedUrlRef.current) {
+        HceModule.clearPaymentUrl().catch(() => {});
+        lastActivatedUrlRef.current = null;
+      }
+    };
+  }, []);
 
   return {
     isNfcActive,
