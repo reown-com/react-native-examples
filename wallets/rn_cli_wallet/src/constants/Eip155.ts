@@ -81,7 +81,7 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     chainId: '137',
     namespace: 'eip155',
     name: 'Polygon',
-    rpcUrl: 'https://polygon-rpc.com',
+    rpcUrl: 'https://polygon-bor-rpc.publicnode.com',
   },
   'eip155:80001': {
     chainId: '80001',

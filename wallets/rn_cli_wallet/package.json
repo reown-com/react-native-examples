@@ -19,7 +19,8 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "e2e": "maestro test ../../.maestro",
     "e2e:studio": "maestro studio",
-    "e2e:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro"
+    "e2e:upload": "maestro cloud ./android/app/build/outputs/apk/release/app-release.apk .maestro",
+    "permit2:revoke": "node ./scripts/revoke-permit2-approval.js"
   },
   "dependencies": {
     "@craftzdog/react-native-buffer": "6.1.1",
@@ -35,12 +36,12 @@
     "@react-navigation/native": "7.1.28",
     "@react-navigation/native-stack": "7.10.0",
     "@react-navigation/stack": "7.6.15",
-    "@reown/walletkit": "1.5.2",
+    "@reown/walletkit": "1.5.5",
     "@sentry/react-native": "7.3.0",
     "@ton/core": "0.62.0",
     "@ton/crypto": "3.3.0",
     "@ton/ton": "15.4.0",
-    "@walletconnect/react-native-compat": "2.23.8",
+    "@walletconnect/react-native-compat": "2.23.9",
     "@zoontek/react-native-navigation-bar": "1.1.0",
     "bip39": "3.1.0",
     "crc-32": "1.2.2",

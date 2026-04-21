@@ -1,17 +1,21 @@
 import { View, Image, StyleSheet } from 'react-native';
-import type { PaymentInfo, PaymentOption } from '@walletconnect/pay';
+import type { Action, PaymentInfo, PaymentOption } from '@walletconnect/pay';
 
 import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
 import { Text } from '@/components/Text';
 import { MerchantInfo } from './MerchantInfo';
 import { PresetsUtil } from '@/utils/PresetsUtil';
+import { getPaymentContext } from '@/utils/PaymentUtil';
 import { formatAmount, getCurrencySymbol } from './utils';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 
 interface ReviewPaymentViewProps {
   selectedOption: PaymentOption;
   info?: PaymentInfo;
+  paymentActions?: readonly Action[] | null;
+  approvalGasEstimate?: string | null;
+  isEstimatingApprovalGas?: boolean;
   isLoadingActions: boolean;
   isSigningPayment: boolean;
   onPay: () => void;
@@ -20,6 +24,9 @@ interface ReviewPaymentViewProps {
 export function ReviewPaymentView({
   selectedOption,
   info,
+  paymentActions,
+  approvalGasEstimate,
+  isEstimatingApprovalGas = false,
   isLoadingActions,
   isSigningPayment,
   onPay,
@@ -42,6 +49,11 @@ export function ReviewPaymentView({
   const chainIcon = PresetsUtil.getIconLogoByName(
     selectedOption.amount.display.networkName,
   );
+  const paymentContext = getPaymentContext({
+    paymentActions: paymentActions || null,
+  });
+  const requiresTokenApproval = paymentContext.requiresApproval;
+  const gasCostEstimate = approvalGasEstimate || 'Network fee set by wallet';
 
   return (
     <>
@@ -81,12 +93,33 @@ export function ReviewPaymentView({
             </View>
           </View>
         </View>
+
+        {requiresTokenApproval ? (
+          <View
+            style={[
+              styles.item,
+              { backgroundColor: Theme['foreground-primary'] },
+            ]}
+            testID="pay-review-one-time-fee"
+            accessibilityLabel="One-time fee"
+          >
+            <Text variant="lg-400" color="text-tertiary">
+              One-time fee
+            </Text>
+            <View style={styles.itemRight}>
+              <Text variant="lg-400" color="text-primary">
+                {isEstimatingApprovalGas ? 'Loading...' : gasCostEstimate}
+              </Text>
+            </View>
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.buttonContainer}>
         <ActionButton
           onPress={onPay}
-          disabled={isSigningPayment || isLoadingActions}
+          disabled={isSigningPayment}
+          silentDisabled={isLoadingActions}
           fullWidth
           testID="pay-button-pay"
           accessibilityLabel={`Pay ${currencySymbol}${payAmount}`}
