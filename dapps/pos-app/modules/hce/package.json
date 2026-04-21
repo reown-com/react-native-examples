@@ -1,0 +1,7 @@
+{
+  "name": "pos-hce",
+  "version": "1.0.0",
+  "description": "Local Expo module: NFC Host Card Emulation for the POS app",
+  "main": "index.ts",
+  "private": true
+}

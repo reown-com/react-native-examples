@@ -41,7 +41,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 20
+      "versionCode": 21
     },
     "web": {
       "output": "static",
@@ -68,6 +68,7 @@
         }
       ],
       "./scripts/withAndroidReleaseSigningConfig.js",
+    "./plugins/withHceNfc.js",
       [
         "expo-font",
         {
