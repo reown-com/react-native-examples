@@ -12,15 +12,13 @@ const GAS_ESTIMATION_RPC_TIMEOUT_MS = 15_000;
 
 const NATIVE_SYMBOL_BY_CHAIN_ID: Record<string, string> = {
   'eip155:1': 'ETH',
-  'eip155:5': 'ETH',
   'eip155:10': 'ETH',
   'eip155:11155420': 'ETH',
   'eip155:42161': 'ETH',
   'eip155:8453': 'ETH',
   'eip155:1313161554': 'ETH',
   'eip155:7777777': 'ETH',
-  'eip155:137': 'MATIC',
-  'eip155:80001': 'MATIC',
+  'eip155:137': 'POL',
   'eip155:56': 'BNB',
   'eip155:43114': 'AVAX',
   'eip155:43113': 'AVAX',
