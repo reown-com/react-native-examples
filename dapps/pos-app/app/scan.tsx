@@ -1,4 +1,5 @@
 import { CloseButton } from "@/components/close-button";
+import { NfcTapIcon } from "@/components/nfc-tap-icon";
 import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
@@ -190,8 +191,7 @@ export default function ScanScreen() {
   });
 
   const isProcessing = paymentStatusData?.status === "processing";
-  const showNfcIndicator = nfcMode === "hce" && isNfcActive;
-  const instructionText = showNfcIndicator ? "Tap or scan to pay" : "Scan to pay";
+  const showNfc = nfcMode === "hce" && isNfcActive;
 
   return (
     <View style={styles.container}>
@@ -208,21 +208,26 @@ export default function ScanScreen() {
         </View>
       ) : (
         <View style={styles.scanContainer}>
-          <View style={styles.amountContainer}>
-            <ThemedText
-              style={[styles.amountText, { color: Theme["text-tertiary"] }]}
-            >
-              {instructionText}
-            </ThemedText>
-            {showNfcIndicator && (
-              <View style={styles.nfcIndicator}>
-                <View style={[styles.nfcDot, { backgroundColor: "#4CAF50" }]} />
+          <View style={styles.header}>
+            {showNfc ? (
+              <>
+                <NfcTapIcon
+                  size={56}
+                  background={Theme["bg-accent-primary"]}
+                  foreground={Theme["text-invert"]}
+                />
                 <ThemedText
-                  style={[styles.nfcText, { color: Theme["text-tertiary"] }]}
+                  style={[styles.instructionText, { color: Theme["text-tertiary"] }]}
                 >
-                  NFC Ready
+                  Open your wallet app and tap
                 </ThemedText>
-              </View>
+              </>
+            ) : (
+              <ThemedText
+                style={[styles.instructionText, { color: Theme["text-tertiary"] }]}
+              >
+                Scan to pay
+              </ThemedText>
             )}
             <ThemedText
               style={[
@@ -233,6 +238,29 @@ export default function ScanScreen() {
               {formatAmountWithSymbol(amount, currency)}
             </ThemedText>
           </View>
+
+          {showNfc && (
+            <View style={styles.divider}>
+              <View
+                style={[
+                  styles.dividerLine,
+                  { backgroundColor: Theme["foreground-tertiary"] },
+                ]}
+              />
+              <ThemedText
+                style={[styles.dividerText, { color: Theme["text-tertiary"] }]}
+              >
+                Or scan the QR code
+              </ThemedText>
+              <View
+                style={[
+                  styles.dividerLine,
+                  { backgroundColor: Theme["foreground-tertiary"] },
+                ]}
+              />
+            </View>
+          )}
+
           <View style={styles.qrSection}>
             <QRCode
               size={300}
@@ -284,16 +312,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
     alignItems: "center",
-    justifyContent: "space-between",
-  },
-  amountContainer: {
-    width: "100%",
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     gap: Spacing["spacing-4"],
   },
+  header: {
+    width: "100%",
+    alignItems: "center",
+    gap: Spacing["spacing-3"],
+  },
   amountText: {
+    fontSize: 16,
+    textAlign: "center",
+  },
+  instructionText: {
     fontSize: 16,
     textAlign: "center",
   },
@@ -303,6 +333,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     letterSpacing: -1,
     lineHeight: 50,
+  },
+  divider: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing["spacing-3"],
+  },
+  dividerLine: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+  },
+  dividerText: {
+    fontSize: 14,
   },
   logo: {
     width: 80,
@@ -321,19 +364,5 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
-  },
-  nfcIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing["spacing-2"],
-  },
-  nfcDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  nfcText: {
-    fontSize: 12,
-    fontWeight: "500",
   },
 });
