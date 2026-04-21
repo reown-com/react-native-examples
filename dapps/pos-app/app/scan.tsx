@@ -1,5 +1,4 @@
 import { CloseButton } from "@/components/close-button";
-import { NfcTapIcon } from "@/components/nfc-tap-icon";
 import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
@@ -33,7 +32,10 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
-  const [assets] = useAssets([require("@/assets/images/wc_logo_dark.png")]);
+  const [assets] = useAssets([
+    require("@/assets/images/wc_logo_dark.png"),
+    require("@/assets/images/nfc.png"),
+  ]);
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
@@ -191,7 +193,10 @@ export default function ScanScreen() {
   });
 
   const isProcessing = paymentStatusData?.status === "processing";
-  const showNfc = nfcMode === "hce" && isNfcActive;
+  const showNfc = nfcEnabled && nfcMode === "hce";
+  const nfcIconTint = isNfcActive
+    ? Theme["icon-accent-primary"]
+    : Theme["icon-default"];
 
   return (
     <View style={styles.container}>
@@ -208,23 +213,29 @@ export default function ScanScreen() {
         </View>
       ) : (
         <View style={styles.scanContainer}>
-          <View style={styles.header}>
+          <View style={[styles.header, !showNfc && styles.headerCentered]}>
             {showNfc ? (
               <>
-                <NfcTapIcon
-                  size={56}
-                  background={Theme["bg-accent-primary"]}
-                  foreground={Theme["text-invert"]}
+                <Image
+                  source={assets?.[1]}
+                  style={[styles.nfcIcon, { tintColor: nfcIconTint }]}
+                  tintColor={nfcIconTint}
                 />
                 <ThemedText
-                  style={[styles.instructionText, { color: Theme["text-tertiary"] }]}
+                  style={[
+                    styles.instructionText,
+                    { color: Theme["text-secondary"] },
+                  ]}
                 >
                   Open your wallet app and tap
                 </ThemedText>
               </>
             ) : (
               <ThemedText
-                style={[styles.instructionText, { color: Theme["text-tertiary"] }]}
+                style={[
+                  styles.instructionText,
+                  { color: Theme["text-secondary"] },
+                ]}
               >
                 Scan to pay
               </ThemedText>
@@ -248,7 +259,10 @@ export default function ScanScreen() {
                 ]}
               />
               <ThemedText
-                style={[styles.dividerText, { color: Theme["text-tertiary"] }]}
+                style={[
+                  styles.instructionText,
+                  { color: Theme["text-secondary"] },
+                ]}
               >
                 Or scan the QR code
               </ThemedText>
@@ -319,12 +333,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing["spacing-3"],
   },
+  headerCentered: {
+    flex: 1,
+    justifyContent: "flex-end",
+    paddingBottom: Spacing["spacing-7"],
+  },
   amountText: {
     fontSize: 16,
     textAlign: "center",
   },
   instructionText: {
-    fontSize: 16,
+    fontSize: 18,
     textAlign: "center",
   },
   amountValue: {
@@ -338,6 +357,8 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
+    marginTop: Spacing["spacing-4"],
+    marginBottom: Spacing["spacing-3"],
     gap: Spacing["spacing-3"],
   },
   dividerLine: {
@@ -364,5 +385,10 @@ const styles = StyleSheet.create({
   closeButton: {
     position: "absolute",
     alignSelf: "center",
+  },
+  nfcIcon: {
+    width: 60,
+    height: 60,
+    marginBottom: Spacing["spacing-2"],
   },
 });
