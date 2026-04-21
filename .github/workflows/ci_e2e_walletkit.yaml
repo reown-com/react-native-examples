@@ -316,7 +316,13 @@ jobs:
         with:
           name: maestro-android-artifacts
           path: |
-            maestro-artifacts/
+            maestro-artifacts/**/*.png
+            maestro-artifacts/**/*.jpg
+            maestro-artifacts/**/*.jpeg
+            maestro-artifacts/**/*.mp4
+            maestro-artifacts/**/*.mov
+            maestro-artifacts/**/*.webm
+            maestro-artifacts/**/*.gif
             maestro-output.log
           if-no-files-found: warn
           retention-days: 14
