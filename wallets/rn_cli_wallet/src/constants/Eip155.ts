@@ -29,12 +29,6 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     name: 'Ethereum',
     rpcUrl: 'https://eth.llamarpc.com',
   },
-  'eip155:5': {
-    chainId: '5',
-    namespace: 'eip155',
-    name: 'Ethereum Goerli',
-    rpcUrl: 'https://rpc.ankr.com/eth_goerli',
-  },
   'eip155:42161': {
     chainId: '42161',
     namespace: 'eip155',
@@ -82,12 +76,6 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     namespace: 'eip155',
     name: 'Polygon',
     rpcUrl: 'https://polygon-bor-rpc.publicnode.com',
-  },
-  'eip155:80001': {
-    chainId: '80001',
-    namespace: 'eip155',
-    name: 'Polygon Mumbai',
-    rpcUrl: 'https://rpc.ankr.com/polygon_mumbai',
   },
   'eip155:100': {
     chainId: '100',
@@ -171,7 +159,6 @@ export const EIP155_CHAINS: Record<string, Chain> = {
 
 export const EIP155_NETWORK_IMAGES: Record<string, ImageSourcePropType> = {
   'eip155:1': Ethereum,
-  'eip155:5': Ethereum,
   'eip155:42161': Arbitrum,
   'eip155:43114': Avalanche,
   'eip155:43113': Avalanche,
@@ -180,7 +167,6 @@ export const EIP155_NETWORK_IMAGES: Record<string, ImageSourcePropType> = {
   'eip155:10': Optimism,
   'eip155:11155420': Optimism,
   'eip155:137': Polygon,
-  'eip155:80001': Polygon,
   'eip155:100': Gnosis,
   'eip155:9001': Evmos,
   'eip155:324': ZkSync,
