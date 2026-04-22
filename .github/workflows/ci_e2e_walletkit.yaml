@@ -138,14 +138,14 @@ jobs:
         run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
 
       - name: Copy shared Pay test flows
-        uses: WalletConnect/actions/maestro/pay-tests@f9522878950f7bd904a628b2c4d486b93034a4fe
+        uses: WalletConnect/actions/maestro/pay-tests@0c9875ae33fe85fa6a4110dc46c82876d91a551d
 
       - name: Install Maestro
-        uses: WalletConnect/actions/maestro/setup@f9522878950f7bd904a628b2c4d486b93034a4fe
+        uses: WalletConnect/actions/maestro/setup@0c9875ae33fe85fa6a4110dc46c82876d91a551d
 
       - name: Run Maestro tests
         id: maestro
-        uses: WalletConnect/actions/maestro/run@f9522878950f7bd904a628b2c4d486b93034a4fe
+        uses: WalletConnect/actions/maestro/run@0c9875ae33fe85fa6a4110dc46c82876d91a551d
         with:
           app-id: ${{ env.MAESTRO_APP_ID }}
           tags: ${{ env.MAESTRO_TAGS }}
@@ -284,10 +284,10 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Copy shared Pay test flows
-        uses: WalletConnect/actions/maestro/pay-tests@f9522878950f7bd904a628b2c4d486b93034a4fe
+        uses: WalletConnect/actions/maestro/pay-tests@0c9875ae33fe85fa6a4110dc46c82876d91a551d
 
       - name: Install Maestro
-        uses: WalletConnect/actions/maestro/setup@f9522878950f7bd904a628b2c4d486b93034a4fe
+        uses: WalletConnect/actions/maestro/setup@0c9875ae33fe85fa6a4110dc46c82876d91a551d
 
       - name: Run E2E tests on Android Emulator
         id: maestro
