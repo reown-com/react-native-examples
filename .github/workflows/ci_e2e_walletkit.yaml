@@ -40,7 +40,8 @@ env:
 jobs:
   check-balance:
     uses: ./.github/workflows/e2e-balance-check.yml
-    secrets: inherit
+    secrets:
+      SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
 
   e2e-ios:
     needs: check-balance
@@ -150,11 +151,24 @@ jobs:
 
       - name: Run Maestro tests
         id: maestro
+        env:
+          APP_ID: ${{ env.MAESTRO_APP_ID }}
+          WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
+          WPAY_MERCHANT_ID_MULTI_KYC: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
+          WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
+          WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
+          WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
         run: |
-          xcrun simctl launch "$DEVICE_ID" "${{ env.MAESTRO_APP_ID }}" || true
-          $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env WPAY_CUSTOMER_KEY_MULTI_KYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}" --env WPAY_MERCHANT_ID_MULTI_KYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}" --env WPAY_MERCHANT_ID_MULTI_NOKYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}" --include-tags "${{ env.MAESTRO_TAGS }}" --test-output-dir maestro-artifacts .maestro/ >maestro-output.log 2>&1; echo $? > maestro-exit-code
+          xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
+          set +e
+          $HOME/.maestro/bin/maestro test \
+            --include-tags "${{ env.MAESTRO_TAGS }}" \
+            --test-output-dir maestro-artifacts \
+            .maestro/ >maestro-output.log 2>&1
+          maestro_exit_code=$?
           cat maestro-output.log
-          exit $(cat maestro-exit-code)
+          exit "$maestro_exit_code"
 
       - name: Upload Maestro artifacts
         if: always()
@@ -309,6 +323,14 @@ jobs:
       - name: Run E2E tests on Android Emulator
         id: maestro
         uses: reactivecircus/android-emulator-runner@70f4dee990796918b78d040e3278474bdbd348a7 # v2
+        env:
+          APP_ID: ${{ env.MAESTRO_APP_ID }}
+          WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
+          WPAY_MERCHANT_ID_MULTI_KYC: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
+          WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
+          WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
+          WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
         with:
           api-level: 34
           arch: x86_64
@@ -323,9 +345,14 @@ jobs:
           disable-animations: true
           script: |
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
-            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env WPAY_CUSTOMER_KEY_MULTI_KYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}" --env WPAY_MERCHANT_ID_MULTI_KYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}" --env WPAY_MERCHANT_ID_MULTI_NOKYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}" --include-tags "${{ env.MAESTRO_TAGS }}" --test-output-dir maestro-artifacts .maestro/ >maestro-output.log 2>&1; echo $? > maestro-exit-code
+            set +e
+            $HOME/.maestro/bin/maestro test \
+              --include-tags "${{ env.MAESTRO_TAGS }}" \
+              --test-output-dir maestro-artifacts \
+              .maestro/ >maestro-output.log 2>&1
+            maestro_exit_code=$?
             cat maestro-output.log
-            exit $(cat maestro-exit-code)
+            exit "$maestro_exit_code"
 
       - name: Upload Maestro artifacts
         if: always()

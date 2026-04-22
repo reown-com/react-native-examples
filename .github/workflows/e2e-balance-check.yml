@@ -4,7 +4,10 @@ on:
   schedule:
     - cron: '0 * * * *' # Every hour
   workflow_dispatch: {}
-  workflow_call: {}
+  workflow_call:
+    secrets:
+      SLACK_FAUCETBOT_WEBHOOK_URL:
+        required: false
 
 permissions:
   contents: read
