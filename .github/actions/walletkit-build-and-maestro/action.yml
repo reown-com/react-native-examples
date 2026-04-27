@@ -17,7 +17,7 @@ inputs:
     required: true
   wallet-source-dir:
     description: |
-      Path (relative to ${{ github.workspace }}) where reown-com/react-native-examples
+      Path (relative to the workspace root) where reown-com/react-native-examples
       is checked out. Defaults to '.', i.e. the workspace root, which is the case for
       the wallet team's own CI. Cross-repo callers (e.g. pay-core) should checkout
       react-native-examples to a subdir and pass it here (e.g. 'rn-wallet').
