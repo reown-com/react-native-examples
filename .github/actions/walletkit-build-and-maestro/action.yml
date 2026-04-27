@@ -201,7 +201,7 @@ runs:
       with:
         ruby-version: 3.3.0
         bundler-cache: true
-        working-directory: ${{ steps.paths.outputs.wallet_root }}/..
+        working-directory: ${{ inputs.wallet-source-dir }}
 
     - name: Set Xcode paths
       if: inputs.platform == 'ios'
@@ -229,6 +229,7 @@ runs:
       uses: maierj/fastlane-action@v3.0.0
       with:
         lane: build_for_simulator
+        subdirectory: ${{ inputs.wallet-source-dir }}
       env:
         SCHEME: RNWallet-Internal
         BUNDLE_ID: com.walletconnect.web3wallet.rnsample.internal
@@ -249,8 +250,10 @@ runs:
     - name: Find .app path
       if: inputs.platform == 'ios'
       shell: bash
+      env:
+        SOURCE_DIR: ${{ inputs.wallet-source-dir }}
       run: |
-        APP_PATH=$(cat ./build/app_path.txt)
+        APP_PATH=$(cat "$SOURCE_DIR/build/app_path.txt")
         echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
 
     - name: Boot iOS Simulator
