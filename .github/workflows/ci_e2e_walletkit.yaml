@@ -38,8 +38,14 @@ env:
   ROOT_PATH: wallets/rn_cli_wallet
 
 jobs:
+  check-balance:
+    uses: ./.github/workflows/e2e-balance-check.yml
+    secrets:
+      SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
+
   e2e-ios:
-    if: inputs.platform != 'android'
+    needs: check-balance
+    if: always() && inputs.platform != 'android' # Balance alert should not block tests
     name: E2E Tests - iOS
     runs-on: macos-latest-xlarge
     timeout-minutes: 60
@@ -145,17 +151,49 @@ jobs:
 
       - name: Run Maestro tests
         id: maestro
-        uses: WalletConnect/actions/maestro/run@0c9875ae33fe85fa6a4110dc46c82876d91a551d
+        env:
+          APP_ID: ${{ env.MAESTRO_APP_ID }}
+          WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
+          WPAY_MERCHANT_ID_MULTI_KYC: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
+          WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
+          WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
+          WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
+        run: |
+          xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
+          set +e
+          $HOME/.maestro/bin/maestro test \
+            --env APP_ID="$APP_ID" \
+            --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
+            --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
+            --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
+            --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
+            --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
+            --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
+            --include-tags "${{ env.MAESTRO_TAGS }}" \
+            --test-output-dir maestro-artifacts \
+            --debug-output "${RUNNER_TEMP}/maestro-debug" \
+            .maestro/ >maestro-output.log 2>&1
+          maestro_exit_code=$?
+          cat maestro-output.log
+          exit "$maestro_exit_code"
+
+      - name: Upload Maestro artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          app-id: ${{ env.MAESTRO_APP_ID }}
-          tags: ${{ env.MAESTRO_TAGS }}
-          wpay-customer-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
-          wpay-merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
-          wpay-customer-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
-          wpay-merchant-id-multi-nokyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
-          wpay-customer-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
-          wpay-merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
-          artifact-name: maestro-ios-artifacts
+          name: maestro-ios-artifacts
+          path: |
+            maestro-artifacts/**/*.png
+            maestro-artifacts/**/*.jpg
+            maestro-artifacts/**/*.jpeg
+            maestro-artifacts/**/*.mp4
+            maestro-artifacts/**/*.mov
+            maestro-artifacts/**/*.webm
+            maestro-artifacts/**/*.gif
+            maestro-output.log
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Send Slack notification
         if: failure()
@@ -207,7 +245,8 @@ jobs:
             }
 
   e2e-android:
-    if: inputs.platform != 'ios'
+    needs: check-balance
+    if: always() && inputs.platform != 'ios' # Balance alert should not block tests
     name: E2E Tests - Android
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -306,9 +345,7 @@ jobs:
           disable-animations: true
           script: |
             adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
-            $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env WPAY_CUSTOMER_KEY_MULTI_KYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}" --env WPAY_MERCHANT_ID_MULTI_KYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}" --env WPAY_MERCHANT_ID_MULTI_NOKYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}" --include-tags "${{ env.MAESTRO_TAGS }}" --test-output-dir maestro-artifacts .maestro/ >maestro-output.log 2>&1; echo $? > maestro-exit-code
-            cat maestro-output.log
-            exit $(cat maestro-exit-code)
+            set +e; $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}" --env WPAY_MERCHANT_ID_MULTI_NOKYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}" --env WPAY_CUSTOMER_KEY_MULTI_KYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}" --env WPAY_MERCHANT_ID_MULTI_KYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}" --include-tags "${{ env.MAESTRO_TAGS }}" --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >maestro-output.log 2>&1; maestro_exit_code=$?; cat maestro-output.log; exit "$maestro_exit_code"
 
       - name: Upload Maestro artifacts
         if: always()

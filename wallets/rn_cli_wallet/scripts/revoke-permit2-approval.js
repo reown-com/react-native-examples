@@ -23,13 +23,16 @@ const MIN_PRIORITY_FEE_GWEI_BY_CHAIN = {
 function printUsage() {
   const supportedChains = Object.keys(USDT_BY_CHAIN).join(', ');
   console.log(`Usage:
-  yarn permit2:revoke --chainId <eip155:chainId|chainId> --walletAddress <0x...> --privateKey <0x...> --projectId <projectId> [--tokenAddress <0x...>] [--minPriorityFeeGwei <number>]
+  yarn permit2:revoke --chainId <eip155:chainId|chainId> --walletAddress <0x...> --privateKey <0x...> (--projectId <projectId> | --rpcUrl <url>) [--tokenAddress <0x...>] [--minPriorityFeeGwei <number>]
 
 Example:
   yarn permit2:revoke --chainId eip155:137 --walletAddress 0xYourAddress --privateKey 0xYourPrivateKey --projectId yourProjectId
+  yarn permit2:revoke --chainId eip155:42161 --walletAddress 0xYourAddress --privateKey 0xYourPrivateKey --rpcUrl https://arb1.arbitrum.io/rpc
 
 Defaults:
   If --tokenAddress is omitted, the script uses the USDT address for the selected chain.
+  If --rpcUrl is provided it takes precedence over --projectId (use this for chains where the
+  WalletConnect Blockchain API gates methods like eth_blockNumber, e.g. Arbitrum).
   For Polygon (eip155:137), min priority fee defaults to 25 gwei.
   Supported USDT chains: ${supportedChains}
 `);
@@ -144,7 +147,7 @@ function extractMinTipFromError(error) {
 
 function getWalletConnectRpcUrl(chainId, projectId) {
   if (!projectId) {
-    throw new Error('Missing --projectId');
+    throw new Error('Missing --projectId (or pass --rpcUrl to use a custom RPC).');
   }
 
   return `${WALLETCONNECT_RPC_BASE_URL}?chainId=${encodeURIComponent(chainId)}&projectId=${encodeURIComponent(projectId)}`;
@@ -166,8 +169,15 @@ async function buildFeeOverrides({
     from: signerAddress,
   });
   const feeData = await provider.getFeeData();
-  const latestBlock = await provider.getBlock('latest');
-  const baseFeePerGas = latestBlock?.baseFeePerGas || ethers.constants.Zero;
+  let baseFeePerGas = ethers.constants.Zero;
+  try {
+    const latestBlock = await provider.getBlock('latest');
+    baseFeePerGas = latestBlock?.baseFeePerGas || ethers.constants.Zero;
+  } catch (error) {
+    console.log(
+      `Skipping baseFee read (${error instanceof Error ? error.message : String(error)}); falling back to feeData.`,
+    );
+  }
 
   const hasEip1559FeeData =
     !!feeData.maxFeePerGas ||
@@ -224,6 +234,7 @@ async function main() {
     args.minPriorityFeeGwei,
   );
   const projectId = String(args.projectId || '').trim();
+  const rpcUrlOverride = String(args.rpcUrl || '').trim();
 
   if (!USDT_BY_CHAIN[chainId] && !args.tokenAddress) {
     throw new Error(
@@ -231,7 +242,7 @@ async function main() {
     );
   }
 
-  const rpcUrl = getWalletConnectRpcUrl(chainId, projectId);
+  const rpcUrl = rpcUrlOverride || getWalletConnectRpcUrl(chainId, projectId);
   const chainIdNumber = Number(chainId.split(':')[1]);
   const provider = new ethers.providers.StaticJsonRpcProvider(rpcUrl, {
     chainId: chainIdNumber,
