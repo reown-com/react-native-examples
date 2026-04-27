@@ -1432,7 +1432,7 @@ PODS:
     - ReactNativeDependencies
     - SwiftUIIntrospect (~> 1.0)
     - Yoga
-  - react-native-compat (2.23.8):
+  - react-native-compat (2.23.9):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2742,7 +2742,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 1fc10d873f00aa895836c316a9737ce7d43875ce
   React-microtasksnativemodule: 85ac7286ff84e8fc8e1956233748b8d4b2a6dcea
   react-native-bottom-tabs: 9bc516e03f7bc2b9116e24b6d4dbc828d60ed9af
-  react-native-compat: 93eadb5a021338baba9de02435a84938c1989b6b
+  react-native-compat: 15cc1497d6988a82f78c42a5fbf0440f98ad021d
   react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-keyboard-controller: 72bc609e3e5a5a1efd8d5911d349670f562ab8ca

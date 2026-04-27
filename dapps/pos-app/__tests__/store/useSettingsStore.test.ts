@@ -581,7 +581,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(14);
+      expect(persistOptions?.version).toBe(15);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();

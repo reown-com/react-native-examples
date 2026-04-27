@@ -10,9 +10,12 @@ import {
 } from "@/utils/secure-storage";
 import { isEmbedded } from "@/utils/is-embedded";
 import { storage } from "@/utils/storage";
-import { ThemeMode, TransactionFilterType } from "@/utils/types";
+import {
+  DateRangeFilterType,
+  ThemeMode,
+  TransactionFilterType,
+} from "@/utils/types";
 import * as Crypto from "expo-crypto";
-import { Appearance } from "react-native";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useLogsStore } from "./useLogsStore";
@@ -60,14 +63,18 @@ interface SettingsStore {
   merchantId: string | null;
   isCustomerApiKeySet: boolean;
 
-  // Transaction filter
+  // Transaction filters
   transactionFilter: TransactionFilterType;
+  dateRangeFilter: DateRangeFilterType;
 
   // PIN protection
   isPinHashSet: boolean;
   pinFailedAttempts: number;
   pinLockoutUntil: number | null;
   biometricEnabled: boolean;
+
+  // NFC
+  nfcEnabled: boolean;
 
   // Actions
   setThemeMode: (themeMode: ThemeMode) => void;
@@ -89,9 +96,11 @@ interface SettingsStore {
   getLockoutRemainingSeconds: () => number;
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
+  setNfcEnabled: (enabled: boolean) => void;
 
-  // Transaction filter
+  // Transaction filters
   setTransactionFilter: (filter: TransactionFilterType) => void;
+  setDateRangeFilter: (filter: DateRangeFilterType) => void;
 
   // Others
   getVariantPrinterLogo: () => string;
@@ -108,10 +117,12 @@ export const useSettingsStore = create<SettingsStore>()(
       merchantId: null,
       isCustomerApiKeySet: false,
       transactionFilter: "all",
+      dateRangeFilter: "today",
       isPinHashSet: false,
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
+      nfcEnabled: false,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
@@ -259,9 +270,12 @@ export const useSettingsStore = create<SettingsStore>()(
         set({ pinFailedAttempts: 0, pinLockoutUntil: null }),
       setBiometricEnabled: (enabled: boolean) =>
         set({ biometricEnabled: enabled }),
+      setNfcEnabled: (enabled: boolean) => set({ nfcEnabled: enabled }),
 
       setTransactionFilter: (filter: TransactionFilterType) =>
         set({ transactionFilter: filter }),
+      setDateRangeFilter: (filter: DateRangeFilterType) =>
+        set({ dateRangeFilter: filter }),
 
       getVariantPrinterLogo: () => {
         return Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64;
@@ -269,7 +283,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 14,
+      version: 15,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -319,6 +333,14 @@ export const useSettingsStore = create<SettingsStore>()(
         }
         if (version < 14) {
           persistedState.isPinHashSet = false;
+        }
+
+        if (version < 14) {
+          persistedState.dateRangeFilter = "today";
+        }
+
+        if (version < 15) {
+          persistedState.nfcEnabled = persistedState.nfcEnabled ?? false;
         }
 
         return persistedState;

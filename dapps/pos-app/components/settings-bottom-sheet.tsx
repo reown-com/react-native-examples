@@ -116,10 +116,7 @@ export function SettingsBottomSheet({
         {Platform.OS === "web" ? (
           sheetContent
         ) : (
-          <KeyboardAvoidingView
-            behavior="padding"
-            style={styles.keyboardAvoid}
-          >
+          <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}>
             {sheetContent}
           </KeyboardAvoidingView>
         )}

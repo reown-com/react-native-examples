@@ -74,6 +74,77 @@ If everything is set up _correctly_, you should see your new app running in your
 
 This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
 
+## Permit2 Revoke Script (Test Utility)
+
+The wallet UI no longer includes a Permit2 reset button. For testing, use the script below to send `approve(PERMIT2, 0)` directly.
+
+```bash
+yarn permit2:revoke --chainId eip155:137 --walletAddress 0xYourAddress --privateKey 0xYourPrivateKey --projectId yourProjectId
+```
+
+Notes:
+- `projectId` is required when using WalletConnect RPC (`https://rpc.walletconnect.org/v1/`).
+- `privateKey` is required because the script signs and sends an on-chain transaction.
+- If `--tokenAddress` is omitted, the script defaults to a USDT address for supported chains.
+
+## E2E Testing (Maestro)
+
+This project uses [Maestro](https://maestro.dev) for end-to-end testing. Tests are located in `.maestro/` at the repo root.
+
+### Prerequisites
+
+1. Install Maestro:
+```bash
+curl -fsSL "https://get.maestro.mobile.dev" | bash
+```
+
+2. Have the app installed on a running simulator/emulator
+
+3. (For payment tests) Set `ENV_TEST_PRIVATE_KEY` in your `.env` file with a funded wallet private key
+
+### Running Tests Locally
+
+Run all pay tests:
+```bash
+maestro test --env APP_ID=com.walletconnect.web3wallet.rnsample.internal --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="<key>" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="<id>" --env WPAY_CUSTOMER_KEY_MULTI_KYC="<key>" --env WPAY_MERCHANT_ID_MULTI_KYC="<id>" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="<key>" --env WPAY_MERCHANT_ID_MULTI_NOKYC="<id>" --include-tags pay .maestro/
+```
+
+Run a specific test:
+```bash
+maestro test --env APP_ID=com.walletconnect.web3wallet.rnsample.internal --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="<key>" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="<id>" .maestro/pay_single_option_nokyc.yaml
+```
+
+Run all tests:
+```bash
+maestro test --env APP_ID=com.walletconnect.web3wallet.rnsample.internal .maestro/
+```
+
+Use Maestro Studio for interactive test development:
+```bash
+maestro studio
+```
+
+### Test IDs
+
+The app uses standardized `testID` props designed for cross-platform reuse (React Native, Flutter, Swift, Kotlin):
+
+| testID | Element | Location |
+|--------|---------|----------|
+| `button-scan` | Scan button | Header |
+| `button-scan-qr` | Scan QR code option | ScannerOptionsModal |
+| `button-paste-url` | Paste URL option | ScannerOptionsModal |
+| `pay-merchant-info` | Merchant name/amount | PaymentOptionsModal |
+| `pay-button-continue` | Continue button | SelectOptionView |
+| `pay-button-pay` | Pay button | ReviewPaymentView |
+| `pay-loading-message` | Loading/confirming text | LoadingView |
+| `pay-result-success-icon` | Success checkmark icon | ResultView |
+| `pay-result-title` | Result title text | ResultView |
+| `pay-button-result-action` | Got it / Close button | ResultView |
+
+### CI
+
+E2E tests run automatically via GitHub Actions (`.github/workflows/ci_e2e_walletkit.yaml`) on PRs and pushes to main when wallet or maestro files change. On failure, artifacts (screenshots, recordings, logs) are uploaded and a Slack notification is sent.
+
 ## TODOs
 
 - [ ] Unify wallet addresses into a single source of truth (currently split between module-level exports in *WalletUtil files and SettingsStore)

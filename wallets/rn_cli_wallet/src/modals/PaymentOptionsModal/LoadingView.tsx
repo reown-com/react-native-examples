@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
+import Animated, { Keyframe } from 'react-native-reanimated';
 
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
@@ -9,13 +11,45 @@ interface LoadingViewProps {
   size?: number;
 }
 
+const enteringKeyframe = new Keyframe({
+  0: { opacity: 0, transform: [{ translateY: 14 }, { scale: 0.92 }] },
+  100: { opacity: 1, transform: [{ translateY: 0 }, { scale: 1 }] },
+}).duration(260);
+
+const exitingKeyframe = new Keyframe({
+  0: { opacity: 1, transform: [{ translateY: 0 }, { scale: 1 }] },
+  100: { opacity: 0, transform: [{ translateY: -14 }, { scale: 0.92 }] },
+}).duration(220);
+
 export function LoadingView({ message, size = 120 }: LoadingViewProps) {
+  const hasMountedRef = useRef(false);
+  const entering = hasMountedRef.current ? enteringKeyframe : undefined;
+  hasMountedRef.current = true;
+
+  const messageKey = message || 'default';
+
   return (
     <View style={styles.loadingContainer}>
       <WalletConnectLoading size={size} />
-      <Text variant="h6-400" color="text-primary" style={styles.loadingText}>
-        {message || 'Loading...'}
-      </Text>
+      <View style={styles.messageContainer}>
+        <Animated.View
+          key={messageKey}
+          entering={entering}
+          exiting={exitingKeyframe}
+          style={styles.messageSlot}
+        >
+          <Text
+            variant="h6-400"
+            color="text-primary"
+            style={styles.loadingText}
+            testID="pay-loading-message"
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {message || 'Loading...'}
+          </Text>
+        </Animated.View>
+      </View>
     </View>
   );
 }
@@ -26,7 +60,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  loadingText: {
+  messageContainer: {
     marginTop: Spacing[4],
+    minHeight: 48,
+    width: '100%',
+    overflow: 'hidden',
+  },
+  messageSlot: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing[2],
+  },
+  loadingText: {
+    textAlign: 'center',
   },
 });

@@ -107,9 +107,37 @@ platform :ios do
   end
 
   lane :build_for_simulator do |options|
-   
-    project_type = ENV['PROJECT_TYPE'] || ENV['SCHEME']
-    
+    sign_build = ENV['MATCH_GIT_URL'] && !ENV['MATCH_GIT_URL'].empty?
+
+    if sign_build
+      UI.message("🔑 Signing enabled — setting up Match development profile")
+      setup_ci()
+
+      api_key = app_store_connect_api_key(
+        key_id: ENV["APPLE_KEY_ID"],
+        issuer_id: ENV["APPLE_ISSUER_ID"],
+        key_content: ENV["APPLE_KEY_CONTENT"],
+        duration: 1200,
+        in_house: false,
+      )
+
+      match(
+        readonly: true,
+        type: "development",
+        app_identifier: ENV['BUNDLE_ID'],
+        git_url: ENV['MATCH_GIT_URL'],
+        api_key: api_key,
+      )
+
+      update_code_signing_settings(
+        use_automatic_signing: false,
+        path: ENV['XCODE_PROJECT_PATH'],
+        bundle_identifier: ENV['BUNDLE_ID'],
+        code_sign_identity: "Apple Development",
+        profile_name: "match Development #{ENV['BUNDLE_ID']}"
+      )
+    end
+
     # Install pods (skip repo_update if cache hit)
     cocoapods(
       clean_install: false,
@@ -117,52 +145,35 @@ platform :ios do
       podfile: ENV['PODFILE_PATH']
     )
 
-    # Build for simulator without code signing
-    archive_path = "./build/#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.xcarchive"
+    # Use an absolute path — gym (xcodebuild) runs from repo root while Ruby Dir/File
+    # operations use the fastlane/ directory as CWD, so relative paths diverge.
+    build_dir   = File.expand_path("../build")
+    archive_path = "#{build_dir}/wallet-simulator.xcarchive"
 
-    gym(
+    gym_params = {
       workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
       configuration: "Release",
       destination: "generic/platform=iOS Simulator",
       archive_path: archive_path,
-      skip_codesigning: true,
       skip_package_ipa: true,
-    )
+    }
 
-    # Find the .app in the archive
-    products_path = ".#{archive_path}/Products/Applications"
-    app_paths = Dir.glob("#{products_path}/*.app")  
-    app_path = app_paths.first
-    
-    if app_path     
-      output_name = "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
-      build_dir = File.expand_path('../build')
-      
-      # Ensure build directory exists
-      sh("mkdir -p #{build_dir}")
-      
-      # Create Payload directory structure
-      payload_dir = "#{build_dir}/Payload"
-      sh("rm -rf '#{payload_dir}'")  # Clean any existing Payload
-      sh("mkdir -p '#{payload_dir}'")
-      
-      # Copy .app into Payload
-      sh("cp -r '#{app_path}' '#{payload_dir}/'")
-      
-      # Create IPA by zipping Payload directory
-      sh("cd '#{build_dir}' && zip -r '#{output_name}' Payload")
-      
-      # Clean up Payload directory
-      sh("rm -rf '#{payload_dir}'")
-      
-      UI.success("✅ Created simulator build: #{build_dir}/#{output_name}")
+    if sign_build
+      gym_params[:xcargs] = "CODE_SIGNING_ALLOWED=YES"
     else
-      UI.user_error!("Could not find .app bundle in #{products_path}")
+      gym_params[:skip_codesigning] = true
     end
-    
-    # Only clean artifacts when running locally (not in CI)
-    clean_build_artifacts() unless ENV['CI']
+
+    gym(gym_params)
+
+    # Find the .app directly inside the xcarchive — no IPA needed for simulator install
+    app_path = Dir.glob("#{archive_path}/Products/Applications/*.app").first
+    UI.user_error!("Could not find .app in #{archive_path}/Products/Applications/") unless app_path
+
+    FileUtils.mkdir_p(build_dir)
+    File.write("#{build_dir}/app_path.txt", app_path)
+    UI.success("✅ Simulator .app: #{app_path}")
   end
 
   lane :test_code_signing do

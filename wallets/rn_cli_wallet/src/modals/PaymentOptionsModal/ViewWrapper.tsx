@@ -1,6 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Config from 'react-native-config';
 
 import { useTheme } from '@/hooks/useTheme';
 import SvgArrowLeft from '@/assets/ArrowLeft';
@@ -20,6 +21,7 @@ interface ViewWrapperProps {
 }
 
 const ANIMATION_DURATION = 250;
+const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
 
 export function ViewWrapper({
   children,
@@ -43,6 +45,7 @@ export function ViewWrapper({
           {showBackButton ? (
             <Button
               onPress={onBack}
+              testID="pay-button-back"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <SvgArrowLeft
@@ -61,7 +64,7 @@ export function ViewWrapper({
 
         {/* Close Button */}
         <View style={styles.headerRight}>
-          <ModalCloseButton onPress={onClose} />
+          <ModalCloseButton onPress={onClose} testID="pay-button-close" />
         </View>
       </View>
 
@@ -69,8 +72,16 @@ export function ViewWrapper({
       <Animated.View
         key={step}
         style={isWebView ? styles.webViewContent : undefined}
-        entering={FadeIn.duration(ANIMATION_DURATION)}
-        exiting={FadeOut.duration(ANIMATION_DURATION)}
+        entering={
+          arePayModalAnimationsEnabled
+            ? FadeIn.duration(ANIMATION_DURATION)
+            : undefined
+        }
+        exiting={
+          arePayModalAnimationsEnabled
+            ? FadeOut.duration(ANIMATION_DURATION)
+            : undefined
+        }
       >
         {children}
       </Animated.View>

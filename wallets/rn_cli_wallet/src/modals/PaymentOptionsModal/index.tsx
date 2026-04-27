@@ -33,6 +33,8 @@ export default function PaymentOptionsModal() {
   )?.collectData?.url;
 
   useEffect(() => {
+    let isActive = true;
+
     if (snap.step === 'loading') {
       if (snap.errorMessage) {
         LogStore.error(
@@ -71,14 +73,20 @@ export default function PaymentOptionsModal() {
 
           if (singleOptionWithoutCollectData) {
             PaymentStore.selectOption(firstOption as PaymentOption);
+            if (isActive) {
+              PaymentStore.setStep('review');
+            }
             PaymentStore.fetchPaymentActions(firstOption as PaymentOption);
-            PaymentStore.setStep('review');
           } else {
             PaymentStore.setStep('selectOption');
           }
         }
       }
     }
+
+    return () => {
+      isActive = false;
+    };
   }, [snap.step, snap.paymentOptions, snap.errorMessage]);
 
   const handleWebViewComplete = useCallback(() => {
@@ -216,7 +224,6 @@ export default function PaymentOptionsModal() {
             info={snap.paymentOptions?.info}
             options={(snap.paymentOptions?.options || []) as PaymentOption[]}
             selectedOption={snap.selectedOption as PaymentOption | null}
-            isLoadingActions={snap.isLoadingActions}
             isSigningPayment={false}
             onSelectOption={onSelectOption}
             onContinue={handleContinue}
@@ -229,6 +236,9 @@ export default function PaymentOptionsModal() {
           <ReviewPaymentView
             info={snap.paymentOptions?.info}
             selectedOption={snap.selectedOption as PaymentOption}
+            paymentActions={snap.paymentActions}
+            approvalGasEstimate={snap.approvalGasEstimate}
+            isEstimatingApprovalGas={snap.isEstimatingApprovalGas}
             isLoadingActions={snap.isLoadingActions}
             isSigningPayment={false}
             onPay={() => PaymentStore.approvePayment()}
@@ -236,7 +246,11 @@ export default function PaymentOptionsModal() {
         ) : null;
 
       case 'confirming':
-        return <LoadingView message="Processing your payment..." />;
+        return (
+          <LoadingView
+            message={snap.loadingMessage || 'Processing your payment...'}
+          />
+        );
 
       case 'expiryWarning':
         if (!snap.expiresAt) return null;
@@ -271,6 +285,9 @@ export default function PaymentOptionsModal() {
     snap.resultMessage,
     snap.loadingMessage,
     snap.paymentOptions,
+    snap.paymentActions,
+    snap.approvalGasEstimate,
+    snap.isEstimatingApprovalGas,
     snap.collectDataCompletedIds,
     snap.expiresAt,
     selectedOptionCollectDataUrl,
@@ -285,6 +302,7 @@ export default function PaymentOptionsModal() {
   ]);
 
   const paymentOptionsCount = snap.paymentOptions?.options?.length ?? 0;
+  const isCollectDataNeeded = snap.paymentOptions?.collectData?.url;
   const showBackButton =
     snap.step === 'collectData' ||
     snap.step === 'infoExplainer' ||
@@ -293,10 +311,11 @@ export default function PaymentOptionsModal() {
     snap.step === 'collectData' && !!selectedOptionCollectDataUrl;
 
   const headerLeftContent =
-    snap.step === 'selectOption' ? (
+    snap.step === 'selectOption' && isCollectDataNeeded ? (
       <Button
         onPress={() => PaymentStore.setStep('infoExplainer')}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        testID="pay-button-info"
         style={[
           styles.questionButton,
           { borderColor: Theme['border-secondary'] },

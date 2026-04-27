@@ -17,6 +17,7 @@ import Zora from '@/assets/chains/zora.webp';
 import Celo from '@/assets/chains/celo.webp';
 import Base from '@/assets/chains/base.png';
 import Aurora from '@/assets/chains/aurora.webp';
+import Monad from '@/assets/chains/monad.png';
 import { Chain } from '@/utils/TypesUtil';
 import { ImageSourcePropType } from 'react-native';
 
@@ -27,12 +28,6 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     namespace: 'eip155',
     name: 'Ethereum',
     rpcUrl: 'https://eth.llamarpc.com',
-  },
-  'eip155:5': {
-    chainId: '5',
-    namespace: 'eip155',
-    name: 'Ethereum Goerli',
-    rpcUrl: 'https://rpc.ankr.com/eth_goerli',
   },
   'eip155:42161': {
     chainId: '42161',
@@ -80,13 +75,7 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     chainId: '137',
     namespace: 'eip155',
     name: 'Polygon',
-    rpcUrl: 'https://polygon-rpc.com',
-  },
-  'eip155:80001': {
-    chainId: '80001',
-    namespace: 'eip155',
-    name: 'Polygon Mumbai',
-    rpcUrl: 'https://rpc.ankr.com/polygon_mumbai',
+    rpcUrl: 'https://polygon-bor-rpc.publicnode.com',
   },
   'eip155:100': {
     chainId: '100',
@@ -160,11 +149,16 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     name: 'Aurora',
     rpcUrl: 'https://mainnet.aurora.dev',
   },
+  'eip155:143': {
+    chainId: '143',
+    namespace: 'eip155',
+    name: 'Monad',
+    rpcUrl: 'https://rpc.monad.xyz',
+  },
 };
 
 export const EIP155_NETWORK_IMAGES: Record<string, ImageSourcePropType> = {
   'eip155:1': Ethereum,
-  'eip155:5': Ethereum,
   'eip155:42161': Arbitrum,
   'eip155:43114': Avalanche,
   'eip155:43113': Avalanche,
@@ -173,7 +167,6 @@ export const EIP155_NETWORK_IMAGES: Record<string, ImageSourcePropType> = {
   'eip155:10': Optimism,
   'eip155:11155420': Optimism,
   'eip155:137': Polygon,
-  'eip155:80001': Polygon,
   'eip155:100': Gnosis,
   'eip155:9001': Evmos,
   'eip155:324': ZkSync,
@@ -186,6 +179,7 @@ export const EIP155_NETWORK_IMAGES: Record<string, ImageSourcePropType> = {
   'eip155:42220': Celo,
   'eip155:8453': Base,
   'eip155:1313161554': Aurora,
+  'eip155:143': Monad,
 };
 
 export const EIP155_SIGNING_METHODS = {

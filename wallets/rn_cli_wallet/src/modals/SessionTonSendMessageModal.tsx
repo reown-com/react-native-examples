@@ -5,6 +5,7 @@ import { SignClientTypes } from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { NetworkInfoCard } from '@/components/NetworkInfoCard';
 import { Message } from '@/components/Modal/Message';
 import {
   approveTonRequest,
@@ -199,6 +200,7 @@ export default function SessionTonSendMessageModal() {
           validation={validation}
           isScam={isScam}
         />
+        <NetworkInfoCard chainId={params.chainId} />
 
         {/* Sign with Address */}
         <View

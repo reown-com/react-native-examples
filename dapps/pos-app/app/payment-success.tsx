@@ -154,6 +154,8 @@ export default function PaymentSuccessScreen() {
       {/* Content that fades in after circle expands */}
       <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
         <View
+          testID="pos-payment-success"
+          nativeID="pos-payment-success"
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <ThemedText
@@ -162,7 +164,7 @@ export default function PaymentSuccessScreen() {
               { color: Theme["text-payment-success"] },
             ]}
           >
-            Payment Successful
+            Payment successful
           </ThemedText>
           <ThemedText
             style={[
@@ -212,10 +214,7 @@ export default function PaymentSuccessScreen() {
             onPress={handleNewPayment}
           >
             <ThemedText
-              style={[
-                styles.buttonText,
-                { color: DarkTheme["text-primary"] },
-              ]}
+              style={[styles.buttonText, { color: DarkTheme["text-primary"] }]}
             >
               New payment
             </ThemedText>

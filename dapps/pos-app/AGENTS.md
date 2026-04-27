@@ -79,6 +79,7 @@ The app uses **Zustand** for state management with two main stores:
    - Biometric authentication settings
    - Printer connection status
    - Transaction filter preference (for Activity screen)
+   - Date range filter preference (for Activity screen)
 
 2. **`useLogsStore`** (`store/useLogsStore.ts`)
    - Debug logs for troubleshooting
@@ -220,20 +221,19 @@ All Payment API requests include:
 
 ### Transactions Service (`services/transactions.ts`)
 
-> **Note:** The Merchants API currently has its own auth layer separate from the Payment API. Both share the same base URL (`EXPO_PUBLIC_API_URL`), but merchant endpoints authenticate via `EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY` (sent as `x-api-key` header) rather than the partner API key used by payment endpoints. This will be unified in the future.
-
 **`getTransactions(options)`**
 
 - Fetches merchant transaction history
-- Endpoint: `GET /merchants/{merchant_id}/payments`
-- Uses the shared base URL (`EXPO_PUBLIC_API_URL`) but authenticates with `EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY`
-- Supports filtering by status, date range, pagination
-- Returns array of `PaymentRecord` objects
+- Endpoint: `GET /v1/merchants/payments`
+- Uses `getApiHeaders()` for authentication (same as payment endpoints)
+- Supports filtering by status, date range (`startTs`/`endTs`), pagination (`cursor`/`limit`)
+- Returns `TransactionsResponse` with nested camelCase DTOs (`PaymentRecord`, `AmountWithDisplay`, `BuyerInfo`, `TransactionInfo`, `SettlementInfo`)
 
 ### Server-Side Proxy (`api/transactions.ts`)
 
 - Vercel serverless function that proxies transaction requests (web only)
-- Client only sends `x-merchant-id` header; API key is handled server-side via `EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY`
+- Uses shared `extractCredentials()` and `getApiHeaders()` from `api/_utils.ts`
+- Client sends `x-api-key` and `x-merchant-id` headers; proxy forwards with full auth headers
 - Avoids CORS issues by making requests server-side
 
 ### useTransactions Hook (`services/hooks.ts`)
@@ -242,7 +242,8 @@ All Payment API requests include:
 import { useTransactions } from "@/services/hooks";
 
 const { data, isLoading, isError, refetch } = useTransactions({
-  filter: "all", // "all" | "completed" | "pending" | "failed"
+  filter: "all", // "all" | "pending" | "completed" | "failed" | "expired" | "cancelled"
+  dateRangeFilter: "today", // "all_time" | "today" | "7_days" | "this_week" | "this_month"
   enabled: true,
 });
 ```
@@ -261,11 +262,8 @@ EXPO_PUBLIC_PROJECT_ID=""              # WalletConnect project ID
 EXPO_PUBLIC_SENTRY_DSN=""              # Sentry error tracking DSN
 SENTRY_AUTH_TOKEN=""                   # Sentry authentication token
 EXPO_PUBLIC_API_URL=""                 # Payment API base URL
-EXPO_PUBLIC_GATEWAY_URL=""             # WalletConnect gateway URL
 EXPO_PUBLIC_DEFAULT_MERCHANT_ID=""     # Default merchant ID (optional)
 EXPO_PUBLIC_DEFAULT_CUSTOMER_API_KEY="" # Default customer API key (optional)
-EXPO_PUBLIC_MERCHANT_API_URL=""        # Merchant Portal API base URL
-EXPO_PUBLIC_MERCHANT_PORTAL_API_KEY="" # Merchant Portal API key (for Activity screen)
 ```
 
 Copy `.env.example` to `.env` and fill in values.

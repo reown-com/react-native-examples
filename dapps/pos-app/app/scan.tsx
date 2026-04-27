@@ -4,6 +4,7 @@ import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
@@ -31,7 +32,10 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
-  const [assets] = useAssets([require("@/assets/images/wc_logo_dark.png")]);
+  const [assets] = useAssets([
+    require("@/assets/images/wc_logo_dark.png"),
+    require("@/assets/images/nfc.png"),
+  ]);
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
@@ -42,12 +46,31 @@ export default function ScanScreen() {
     deviceId,
     merchantId,
     currency: currencyCode,
+    nfcEnabled,
   } = useSettingsStore((state) => state);
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
   const { amount } = params;
+
+  const { isNfcActive, nfcMode } = useNfcPayment({
+    paymentUrl: qrUri,
+    enabled: nfcEnabled,
+    onNfcReady: () => {
+      addLog("info", "NFC HCE activated", "scan", "useNfcPayment", {
+        paymentId,
+      });
+    },
+    onNfcError: (error) => {
+      addLog("error", error.message, "scan", "useNfcPayment");
+    },
+    onTap: () => {
+      addLog("info", "NFC tag read by wallet", "scan", "useNfcPayment", {
+        paymentId,
+      });
+    },
+  });
 
   const onSuccess = useCallback(() => {
     if (hasNavigatedRef.current) return;
@@ -170,6 +193,10 @@ export default function ScanScreen() {
   });
 
   const isProcessing = paymentStatusData?.status === "processing";
+  const showNfc = nfcEnabled && nfcMode === "hce";
+  const nfcIconTint = isNfcActive
+    ? Theme["icon-accent-primary"]
+    : Theme["icon-default"];
 
   return (
     <View style={styles.container}>
@@ -186,12 +213,33 @@ export default function ScanScreen() {
         </View>
       ) : (
         <View style={styles.scanContainer}>
-          <View style={styles.amountContainer}>
-            <ThemedText
-              style={[styles.amountText, { color: Theme["text-tertiary"] }]}
-            >
-              Scan to pay
-            </ThemedText>
+          <View style={[styles.header, !showNfc && styles.headerCentered]}>
+            {showNfc ? (
+              <>
+                <Image
+                  source={assets?.[1]}
+                  style={[styles.nfcIcon, { tintColor: nfcIconTint }]}
+                  tintColor={nfcIconTint}
+                />
+                <ThemedText
+                  style={[
+                    styles.instructionText,
+                    { color: Theme["text-secondary"] },
+                  ]}
+                >
+                  Open your wallet app and tap
+                </ThemedText>
+              </>
+            ) : (
+              <ThemedText
+                style={[
+                  styles.instructionText,
+                  { color: Theme["text-secondary"] },
+                ]}
+              >
+                Scan to pay
+              </ThemedText>
+            )}
             <ThemedText
               style={[
                 styles.amountValue,
@@ -201,30 +249,58 @@ export default function ScanScreen() {
               {formatAmountWithSymbol(amount, currency)}
             </ThemedText>
           </View>
+
+          {showNfc && (
+            <View style={styles.divider}>
+              <View
+                style={[
+                  styles.dividerLine,
+                  { backgroundColor: Theme["foreground-tertiary"] },
+                ]}
+              />
+              <ThemedText
+                style={[
+                  styles.instructionText,
+                  { color: Theme["text-secondary"] },
+                ]}
+              >
+                Or scan the QR code
+              </ThemedText>
+              <View
+                style={[
+                  styles.dividerLine,
+                  { backgroundColor: Theme["foreground-tertiary"] },
+                ]}
+              />
+            </View>
+          )}
+
           <View style={styles.qrSection}>
             <QRCode
               size={300}
               uri={qrUri}
               logoBorderRadius={100}
               onPress={handleCopyPaymentUrl}
+              testID="pos-qr-code"
             >
               <Image source={assets?.[0]} style={styles.logo} />
             </QRCode>
-            <ThemedText
+            <View
               aria-hidden={!isCountdownActive}
-              style={[
-                styles.timerText,
-                {
-                  color: Theme["text-secondary"],
-                  opacity: isCountdownActive ? 1 : 0,
-                },
-              ]}
+              style={[styles.timerRow, { opacity: isCountdownActive ? 1 : 0 }]}
             >
-              Payment expires in{" "}
-              <ThemedText style={{ color: Theme["bg-accent-primary"] }}>
+              <ThemedText style={{ color: Theme["text-secondary"] }}>
+                Payment expires in
+              </ThemedText>
+              <ThemedText
+                style={{
+                  color: Theme["bg-accent-primary"],
+                  fontVariant: ["tabular-nums"],
+                }}
+              >
                 {formatCountdown(remainingSeconds)}
               </ThemedText>
-            </ThemedText>
+            </View>
           </View>
           <View style={{ flex: 1 }} />
         </View>
@@ -250,17 +326,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
     alignItems: "center",
-    justifyContent: "space-between",
-  },
-  amountContainer: {
-    width: "100%",
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     gap: Spacing["spacing-4"],
+  },
+  header: {
+    width: "100%",
+    alignItems: "center",
+    gap: Spacing["spacing-3"],
+  },
+  headerCentered: {
+    flex: 1,
+    justifyContent: "flex-end",
+    paddingBottom: Spacing["spacing-7"],
   },
   amountText: {
     fontSize: 16,
+    textAlign: "center",
+  },
+  instructionText: {
+    fontSize: 18,
     textAlign: "center",
   },
   amountValue: {
@@ -270,6 +353,21 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     lineHeight: 50,
   },
+  divider: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: Spacing["spacing-4"],
+    marginBottom: Spacing["spacing-3"],
+    gap: Spacing["spacing-3"],
+  },
+  dividerLine: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+  },
+  dividerText: {
+    fontSize: 14,
+  },
   logo: {
     width: 80,
     height: 80,
@@ -278,11 +376,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing["spacing-4"],
   },
-  timerText: {
-    textAlign: "center",
+  timerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Spacing["spacing-1"],
   },
   closeButton: {
     position: "absolute",
     alignSelf: "center",
+  },
+  nfcIcon: {
+    width: 60,
+    height: 60,
+    marginBottom: Spacing["spacing-2"],
   },
 });

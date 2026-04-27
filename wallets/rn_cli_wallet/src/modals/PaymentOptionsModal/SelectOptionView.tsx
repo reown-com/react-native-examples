@@ -27,6 +27,7 @@ const OPTION_HEIGHT = 64;
 
 interface OptionItemProps {
   option: PaymentOption;
+  index: number;
   isSelected: boolean;
   hasCollectData: boolean;
   onSelect: (option: PaymentOption) => void;
@@ -36,6 +37,7 @@ const ANIMATION_DURATION = 250;
 
 function OptionItem({
   option,
+  index,
   isSelected,
   hasCollectData,
   onSelect,
@@ -95,7 +97,12 @@ function OptionItem({
   );
 
   return (
-    <Button onPress={() => onSelect(option)} style={styles.optionItem}>
+    <Button
+      onPress={() => onSelect(option)}
+      testID={`pay-option-${index}${isSelected ? '-selected' : ''}`}
+      accessibilityLabel={option.amount.display?.networkName?.toLowerCase() || ''}
+      style={styles.optionItem}
+    >
       <Animated.View
         style={[
           StyleSheet.absoluteFill,
@@ -128,7 +135,7 @@ function OptionItem({
           {amount} {option.amount.display.assetSymbol}
         </Text>
         {hasCollectData && (
-          <Animated.View style={[styles.collectDataPill, animatedPillStyle]}>
+          <Animated.View testID="pay-info-required-badge" style={[styles.collectDataPill, animatedPillStyle]}>
             <Animated.Text style={[styles.pillText, animatedPillTextStyle]}>
               Info required
             </Animated.Text>
@@ -144,7 +151,6 @@ function OptionItem({
 interface SelectOptionViewProps {
   options: PaymentOption[];
   selectedOption: PaymentOption | null;
-  isLoadingActions: boolean;
   isSigningPayment: boolean;
   onSelectOption: (option: PaymentOption) => void;
   onContinue: () => void;
@@ -159,7 +165,6 @@ export function SelectOptionView({
   onSelectOption,
   onContinue,
   info,
-  isLoadingActions,
   collectDataCompletedIds,
 }: SelectOptionViewProps) {
   const visibleCount = options.length;
@@ -193,10 +198,11 @@ export function SelectOptionView({
           showsVerticalScrollIndicator={false}
           nestedScrollEnabled
         >
-          {options.map(option => (
+          {options.map((option, index) => (
             <OptionItem
               key={option.id}
               option={option}
+              index={index}
               isSelected={option.id === selectedOption?.id}
               hasCollectData={
                 !!(option as PaymentOptionWithCollectData).collectData?.url &&
@@ -213,8 +219,8 @@ export function SelectOptionView({
         <ActionButton
           onPress={onContinue}
           disabled={isSigningPayment || !selectedOption}
-          silentDisabled={isLoadingActions}
           fullWidth
+          testID="pay-button-continue"
         >
           Continue
         </ActionButton>

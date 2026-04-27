@@ -7,6 +7,7 @@ import EIP155Lib from '../lib/EIP155Lib';
 import SuiLib from '../lib/SuiLib';
 import TonLib from '../lib/TonLib';
 import TronLib from '../lib/TronLib';
+import CantonLib from '../lib/CantonLib';
 import { MMKV } from 'react-native-mmkv';
 
 function getInitialThemeMode(): 'light' | 'dark' {
@@ -35,6 +36,8 @@ interface State {
   tonWallet: TonLib | null;
   tronAddress: string;
   tronWallet: TronLib | null;
+  cantonAddress: string;
+  cantonWallet: CantonLib | null;
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -65,6 +68,8 @@ const state = proxy<State>({
   tonWallet: null,
   tronAddress: '',
   tronWallet: null,
+  cantonAddress: '',
+  cantonWallet: null,
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
@@ -153,6 +158,14 @@ const SettingsStore = {
 
   setTronWallet(tronWallet: TronLib) {
     state.tronWallet = tronWallet;
+  },
+
+  setCantonAddress(cantonAddress: string) {
+    state.cantonAddress = cantonAddress;
+  },
+
+  setCantonWallet(cantonWallet: CantonLib) {
+    state.cantonWallet = cantonWallet;
   },
 
   setThemeMode(value: 'light' | 'dark') {

@@ -11,6 +11,7 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { VariantList, VariantName } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
+import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -74,6 +75,9 @@ export default function SettingsScreen() {
   const getVariantPrinterLogo = useSettingsStore(
     (state) => state.getVariantPrinterLogo,
   );
+  const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
+  const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
+  const nfcCapabilities = useNfcCapabilities();
   const addLog = useLogsStore((state) => state.addLog);
   const theme = useTheme();
 
@@ -181,6 +185,9 @@ export default function SettingsScreen() {
     handleCustomerApiKeyInputChange(value);
   };
 
+  const showNfcToggle =
+    Platform.OS === "android" && nfcCapabilities.isHceSupported;
+
   const handleTestPrinterPress = async () => {
     try {
       const isBluetoothPermissionGranted = await requestBluetoothPermission();
@@ -235,7 +242,12 @@ export default function SettingsScreen() {
     } else {
       handleBiometricAuthFailure();
     }
-  }, [authenticate, biometricLabel, handleBiometricAuthSuccess, handleBiometricAuthFailure]);
+  }, [
+    authenticate,
+    biometricLabel,
+    handleBiometricAuthSuccess,
+    handleBiometricAuthFailure,
+  ]);
 
   return (
     <View style={styles.container}>
@@ -273,6 +285,26 @@ export default function SettingsScreen() {
           value="**********"
           onPress={() => setActiveSheet("customerApiKey")}
         />
+
+        {showNfcToggle && (
+          <Card style={styles.biometricCard}>
+            <View style={styles.biometricRow}>
+              <View style={styles.biometricLabel}>
+                <ThemedText fontSize={16} lineHeight={18}>
+                  NFC (Tap to pay)
+                </ThemedText>
+                <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
+                  Emulates an NFC tag with the payment URL
+                </ThemedText>
+              </View>
+              <Switch
+                style={styles.switch}
+                value={nfcEnabled}
+                onValueChange={setNfcEnabled}
+              />
+            </View>
+          </Card>
+        )}
 
         {/* Biometric toggle - only show if PIN is set and biometrics available */}
         {shouldShowBiometricOption && biometricStatus && (

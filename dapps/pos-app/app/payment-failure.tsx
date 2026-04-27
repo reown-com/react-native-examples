@@ -30,7 +30,7 @@ export default function PaymentFailureScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View testID="pos-payment-failure" nativeID="pos-payment-failure" style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Image
           source={assets?.[0]}
           style={[
