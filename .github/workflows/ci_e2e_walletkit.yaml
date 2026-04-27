@@ -40,8 +40,14 @@ env:
   MAESTRO_TAGS: ${{ inputs.maestro-tags || 'pay' }}
 
 jobs:
+  check-balance:
+    uses: ./.github/workflows/e2e-balance-check.yml
+    secrets:
+      SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
+
   e2e-ios:
-    if: inputs.platform != 'android'
+    needs: check-balance
+    if: always() && inputs.platform != 'android' # Balance alert should not block tests
     name: E2E Tests - iOS
     runs-on: macos-latest-xlarge
     timeout-minutes: 60
@@ -120,7 +126,8 @@ jobs:
             }
 
   e2e-android:
-    if: inputs.platform != 'ios'
+    needs: check-balance
+    if: always() && inputs.platform != 'ios' # Balance alert should not block tests
     name: E2E Tests - Android
     runs-on: ubuntu-latest
     timeout-minutes: 60

@@ -367,49 +367,43 @@ runs:
     - name: Install Maestro
       uses: WalletConnect/actions/maestro/setup@0c9875ae33fe85fa6a4110dc46c82876d91a551d
 
-    - name: Resolve Maestro merchant fallbacks
-      id: merchants
-      shell: bash
-      env:
-        SINGLE_KEY: ${{ inputs.merchant-api-key }}
-        SINGLE_ID: ${{ inputs.merchant-id }}
-        MULTI_NOKYC_KEY: ${{ inputs.merchant-api-key-multi-nokyc }}
-        MULTI_NOKYC_ID: ${{ inputs.merchant-id-multi-nokyc }}
-        MULTI_KYC_KEY: ${{ inputs.merchant-api-key-multi-kyc }}
-        MULTI_KYC_ID: ${{ inputs.merchant-id-multi-kyc }}
-      run: |
-        # Multi-* slots default to the single-* values so the Maestro action does
-        # not receive empty inputs; tags select which slots are actually exercised.
-        echo "::add-mask::$SINGLE_KEY"
-        echo "single_key=$SINGLE_KEY" >> "$GITHUB_OUTPUT"
-        echo "single_id=$SINGLE_ID" >> "$GITHUB_OUTPUT"
-
-        MN_KEY="${MULTI_NOKYC_KEY:-$SINGLE_KEY}"
-        MN_ID="${MULTI_NOKYC_ID:-$SINGLE_ID}"
-        echo "::add-mask::$MN_KEY"
-        echo "multi_nokyc_key=$MN_KEY" >> "$GITHUB_OUTPUT"
-        echo "multi_nokyc_id=$MN_ID" >> "$GITHUB_OUTPUT"
-
-        MK_KEY="${MULTI_KYC_KEY:-$SINGLE_KEY}"
-        MK_ID="${MULTI_KYC_ID:-$SINGLE_ID}"
-        echo "::add-mask::$MK_KEY"
-        echo "multi_kyc_key=$MK_KEY" >> "$GITHUB_OUTPUT"
-        echo "multi_kyc_id=$MK_ID" >> "$GITHUB_OUTPUT"
-
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
       id: maestro-ios
-      uses: WalletConnect/actions/maestro/run@0c9875ae33fe85fa6a4110dc46c82876d91a551d
+      shell: bash
+      env:
+        APP_ID: com.walletconnect.web3wallet.rnsample.internal
+        MAESTRO_TAGS: ${{ inputs.maestro-tags }}
+        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key }}
+        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id }}
+        WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
+        WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
+        WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
+      run: |
+        xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
+        set +e
+        $HOME/.maestro/bin/maestro test --include-tags "$MAESTRO_TAGS" --test-output-dir maestro-artifacts .maestro/ >maestro-output.log 2>&1
+        maestro_exit_code=$?
+        cat maestro-output.log
+        exit "$maestro_exit_code"
+
+    - name: Upload Maestro artifacts (iOS)
+      if: always() && inputs.platform == 'ios'
+      uses: actions/upload-artifact@v4
       with:
-        app-id: com.walletconnect.web3wallet.rnsample.internal
-        tags: ${{ inputs.maestro-tags }}
-        wpay-customer-key-single-nokyc: ${{ steps.merchants.outputs.single_key }}
-        wpay-merchant-id-single-nokyc: ${{ steps.merchants.outputs.single_id }}
-        wpay-customer-key-multi-nokyc: ${{ steps.merchants.outputs.multi_nokyc_key }}
-        wpay-merchant-id-multi-nokyc: ${{ steps.merchants.outputs.multi_nokyc_id }}
-        wpay-customer-key-multi-kyc: ${{ steps.merchants.outputs.multi_kyc_key }}
-        wpay-merchant-id-multi-kyc: ${{ steps.merchants.outputs.multi_kyc_id }}
-        artifact-name: maestro-ios-artifacts
+        name: maestro-ios-artifacts
+        path: |
+          maestro-artifacts/**/*.png
+          maestro-artifacts/**/*.jpg
+          maestro-artifacts/**/*.jpeg
+          maestro-artifacts/**/*.mp4
+          maestro-artifacts/**/*.mov
+          maestro-artifacts/**/*.webm
+          maestro-artifacts/**/*.gif
+          maestro-output.log
+        if-no-files-found: warn
+        retention-days: 14
 
     - name: Run Maestro tests (Android)
       if: inputs.platform == 'android'
@@ -419,12 +413,12 @@ runs:
         APP_ID: com.walletconnect.web3wallet.rnsample.internal
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         APK_PATH: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
-        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ steps.merchants.outputs.single_key }}
-        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ steps.merchants.outputs.single_id }}
-        WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ steps.merchants.outputs.multi_nokyc_key }}
-        WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ steps.merchants.outputs.multi_nokyc_id }}
-        WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ steps.merchants.outputs.multi_kyc_key }}
-        WPAY_MERCHANT_ID_MULTI_KYC: ${{ steps.merchants.outputs.multi_kyc_id }}
+        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key }}
+        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id }}
+        WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
+        WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
+        WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
       with:
         api-level: 34
         arch: x86_64
@@ -439,9 +433,7 @@ runs:
         disable-animations: true
         script: |
           adb install "$APK_PATH"
-          $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --include-tags "$MAESTRO_TAGS" --test-output-dir maestro-artifacts .maestro/ >maestro-output.log 2>&1; echo $? > maestro-exit-code
-          cat maestro-output.log
-          exit $(cat maestro-exit-code)
+          set +e; $HOME/.maestro/bin/maestro test --include-tags "$MAESTRO_TAGS" --test-output-dir maestro-artifacts .maestro/ >maestro-output.log 2>&1; maestro_exit_code=$?; cat maestro-output.log; exit "$maestro_exit_code"
 
     - name: Upload Maestro artifacts (Android)
       if: always() && inputs.platform == 'android'
