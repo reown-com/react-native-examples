@@ -1,7 +1,7 @@
 diff --git a/Libraries/Renderer/implementations/ReactFabric-dev.js b/Libraries/Renderer/implementations/ReactFabric-dev.js
 --- a/Libraries/Renderer/implementations/ReactFabric-dev.js
 +++ b/Libraries/Renderer/implementations/ReactFabric-dev.js
-@@ -2006,7 +2006,7 @@
+@@ -2009,7 +2009,7 @@
          value
        ]);
      }
