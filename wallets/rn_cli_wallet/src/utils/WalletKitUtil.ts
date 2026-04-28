@@ -15,10 +15,12 @@ export async function createWalletKit(relayerRegionURL: string) {
     storage,
     relayUrl: relayerRegionURL || undefined,
   });
+  const payApiBaseUrl = Config.ENV_PAY_API_BASE_URL || undefined;
   walletKit = await WalletKit.init({
     core,
     metadata: getMetadata(),
-  });
+    ...(payApiBaseUrl ? { payApiBaseUrl } : {}),
+  } as Parameters<typeof WalletKit.init>[0]);
 
   try {
     const clientId =
