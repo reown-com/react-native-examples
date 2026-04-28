@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import Config from 'react-native-config';
 import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
 import { NavigationBar } from '@zoontek/react-native-navigation-bar';
@@ -13,6 +13,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { RELAYER_EVENTS } from '@walletconnect/core';
 
 import { RootStackNavigator } from '@/navigators/RootStackNavigator';
+import Modal from '@/components/Modal';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
 import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
 import { usePairing } from '@/hooks/usePairing';
@@ -23,12 +24,13 @@ import ModalStore from '@/store/ModalStore';
 import LogStore from '@/store/LogStore';
 import { getEnvironment } from '@/utils/misc';
 import { toastConfig } from '@/components/ToastConfig';
+import { DarkTheme, LightTheme } from '@/utils/ThemeUtil';
 
 Sentry.init({
   enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
   dsn: Config.ENV_SENTRY_DSN,
   environment: getEnvironment(),
-  sendDefaultPii: true,
+  sendDefaultPii: false,
   // Enable Logs
   enableLogs: true,
 
@@ -101,8 +103,9 @@ const App = () => {
 
   const deeplinkHandler = useCallback(
     ({ url }: { url: string }) => {
+      const sanitizedUrl = url.replace(/symKey=[^&]*/g, 'symKey=[REDACTED]');
       LogStore.log('Deep link received', 'App', 'deeplinkHandler', {
-        url,
+        url: sanitizedUrl,
       });
 
       // 1. Link mode (wc_ev) - SDK handles it, just set the flag
@@ -195,8 +198,14 @@ const App = () => {
     };
   }, [deeplinkHandler]);
 
+  const Theme = themeMode === 'dark' ? DarkTheme : LightTheme;
+  const rootStyle = useMemo(
+    () => [styles.root, { backgroundColor: Theme['bg-primary'] }],
+    [Theme],
+  );
+
   return (
-    <GestureHandlerRootView style={styles.root}>
+    <GestureHandlerRootView style={rootStyle}>
       <SafeAreaProvider>
         <KeyboardProvider>
           <NavigationContainer>
@@ -209,8 +218,9 @@ const App = () => {
               barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
             />
             <RootStackNavigator />
-            <Toast config={toastConfig} position="top" topOffset={0} />
+            <Modal />
           </NavigationContainer>
+          <Toast config={toastConfig} position="top" topOffset={0} />
         </KeyboardProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

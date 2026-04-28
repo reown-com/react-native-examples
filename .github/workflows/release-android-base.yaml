@@ -121,14 +121,12 @@ jobs:
 
       - name: Optimize Gradle for CI
         run: |
-          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m" >> ${{ inputs.root-path }}/android/gradle.properties
-          echo "org.gradle.parallel=true" >> ${{ inputs.root-path }}/android/gradle.properties
-          echo "org.gradle.caching=true" >> ${{ inputs.root-path }}/android/gradle.properties
+          printf '\norg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m\norg.gradle.parallel=true\norg.gradle.caching=true\n' >> ${{ inputs.root-path }}/android/gradle.properties
 
       - name: Configure ABI for internal builds
         if: ${{ inputs.release-type == 'internal' }}
         run: |
-          echo "reactNativeArchitectures=arm64-v8a,armeabi-v7a" >> ${{ inputs.root-path }}/android/gradle.properties
+          printf 'reactNativeArchitectures=arm64-v8a,armeabi-v7a\n' >> ${{ inputs.root-path }}/android/gradle.properties
 
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -150,6 +148,17 @@ jobs:
             cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} run android:build
           fi
   
+      - name: Debug - Dump APK theme resources
+        if: ${{ inputs.release-type == 'internal' }}
+        run: |
+          APK_PATH="${{ inputs.output-path }}"
+          echo "=== APK theme resources ==="
+          $ANDROID_HOME/build-tools/36.0.0/aapt2 dump resources "$APK_PATH" 2>&1 | grep -A15 "style/AppTheme\|style/BootTheme" || true
+          echo "=== AndroidManifest theme ==="
+          $ANDROID_HOME/build-tools/36.0.0/aapt2 dump xmltree "$APK_PATH" --file AndroidManifest.xml 2>&1 | grep -i "theme" || true
+          echo "=== Effective gradle.properties ==="
+          cat ${{ inputs.root-path }}/android/gradle.properties
+
       - name: Setup Firebase
         uses: w9jds/setup-firebase@main
         with:

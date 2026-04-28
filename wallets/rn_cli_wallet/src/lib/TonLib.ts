@@ -475,6 +475,7 @@ export default class TonLib {
     timestamp: number,
   ): Buffer {
     const cell = Cell.fromBase64(payload.cell);
+    // eslint-disable-next-line no-bitwise
     const schemaHash = crc32.buf(Buffer.from(payload.schema, 'utf8')) >>> 0; // unsigned crc32 hash
 
     // Encode domain in DNS-like format (e.g. "example.com" -> "com\0example\0")
