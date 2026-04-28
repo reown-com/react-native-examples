@@ -69,7 +69,7 @@ inputs:
   maestro-actions-ref:
     description: 'Pinned ref of WalletConnect/actions for maestro/pay-tests, maestro/setup, and maestro/run.'
     required: false
-    default: '0c9875ae33fe85fa6a4110dc46c82876d91a551d'
+    default: 'f05d704475f64a0538bd35437f2eb8c896a83189'
   apple-key-id:
     description: 'Apple App Store Connect API key id (iOS only).'
     required: false
@@ -106,6 +106,21 @@ inputs:
     description: 'Filename (without .keystore) used by the wallet build (Android only).'
     required: false
     default: 'WalletConnect-Internal'
+  pay-api-url:
+    description: |
+      Base URL the Maestro test scripts (create-payment.js, cancel-payment.js)
+      use when calling the WalletConnect Pay API. Defaults to prod
+      (https://api.pay.walletconnect.com). Cross-repo callers running against a
+      local pay-core on the runner should pass http://localhost:3080.
+    required: false
+    default: ''
+  expired-gateway-url:
+    description: |
+      Pre-expired payment gateway URL used by pay_expired_link.yaml. When unset,
+      the flow falls back to a hardcoded prod-expired link. Local pay-core CI
+      should seed an expired payment and pass its gateway URL here.
+    required: false
+    default: ''
 
 outputs:
   maestro-outcome:
@@ -362,10 +377,10 @@ runs:
 
     # --- Common: Maestro setup + run ---
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@0c9875ae33fe85fa6a4110dc46c82876d91a551d
+      uses: WalletConnect/actions/maestro/pay-tests@f05d704475f64a0538bd35437f2eb8c896a83189
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@0c9875ae33fe85fa6a4110dc46c82876d91a551d
+      uses: WalletConnect/actions/maestro/setup@f05d704475f64a0538bd35437f2eb8c896a83189
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -380,6 +395,8 @@ runs:
         WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
         WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
+        WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
       run: |
         xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
         set +e
@@ -391,6 +408,8 @@ runs:
           --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
           --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
           --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
+          --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
+          --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
           --include-tags "$MAESTRO_TAGS" \
           --test-output-dir maestro-artifacts \
           --debug-output "${RUNNER_TEMP}/maestro-debug" \
@@ -430,6 +449,8 @@ runs:
         WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
         WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
+        WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
       with:
         api-level: 34
         arch: x86_64
@@ -444,7 +465,7 @@ runs:
         disable-animations: true
         script: |
           adb install "$APK_PATH"
-          set +e; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --include-tags "$MAESTRO_TAGS" --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >maestro-output.log 2>&1; maestro_exit_code=$?; cat maestro-output.log; exit "$maestro_exit_code"
+          set +e; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >maestro-output.log 2>&1; maestro_exit_code=$?; cat maestro-output.log; exit "$maestro_exit_code"
 
     - name: Upload Maestro artifacts (Android)
       if: always() && inputs.platform == 'android'
