@@ -66,10 +66,18 @@ inputs:
     description: 'Maestro test tags to run (comma-separated).'
     required: false
     default: 'pay-single-nokyc'
+  maestro-exclude-tags:
+    description: |
+      Maestro test tags to exclude (comma-separated). Useful for cross-repo
+      callers running against a local pay-core that can't satisfy certain
+      flows (e.g. pay-needs-kyc-backend skips the two flows that submit
+      personal-details data through the prod KYC webview).
+    required: false
+    default: ''
   maestro-actions-ref:
     description: 'Pinned ref of WalletConnect/actions for maestro/pay-tests, maestro/setup, and maestro/run.'
     required: false
-    default: '5bb1712f3491497fdc2d48f585fcdae6bf4505e7'
+    default: '9d229682828dea4e0f31504466b6a2a545412cf9'
   apple-key-id:
     description: 'Apple App Store Connect API key id (iOS only).'
     required: false
@@ -377,10 +385,10 @@ runs:
 
     # --- Common: Maestro setup + run ---
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@5bb1712f3491497fdc2d48f585fcdae6bf4505e7
+      uses: WalletConnect/actions/maestro/pay-tests@9d229682828dea4e0f31504466b6a2a545412cf9
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@5bb1712f3491497fdc2d48f585fcdae6bf4505e7
+      uses: WalletConnect/actions/maestro/setup@9d229682828dea4e0f31504466b6a2a545412cf9
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -389,6 +397,7 @@ runs:
       env:
         APP_ID: com.walletconnect.web3wallet.rnsample.internal
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
+        MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
         WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key }}
         WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id }}
         WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
@@ -411,6 +420,7 @@ runs:
           --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
           --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
           --include-tags "$MAESTRO_TAGS" \
+          ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} \
           --test-output-dir maestro-artifacts \
           --debug-output "${RUNNER_TEMP}/maestro-debug" \
           .maestro/ >maestro-output.log 2>&1
@@ -442,6 +452,7 @@ runs:
       env:
         APP_ID: com.walletconnect.web3wallet.rnsample.internal
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
+        MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
         APK_PATH: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
         WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key }}
         WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id }}
@@ -465,7 +476,7 @@ runs:
         disable-animations: true
         script: |
           adb install "$APK_PATH"
-          set +e; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >maestro-output.log 2>&1; maestro_exit_code=$?; cat maestro-output.log; exit "$maestro_exit_code"
+          set +e; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >maestro-output.log 2>&1; maestro_exit_code=$?; cat maestro-output.log; exit "$maestro_exit_code"
 
     - name: Upload Maestro artifacts (Android)
       if: always() && inputs.platform == 'android'
