@@ -90,7 +90,7 @@ export function ReviewPaymentView({
           accessibilityLabel={`Pay ${currencySymbol}${totalPayAmount}`}
         >
           {`Pay ${currencySymbol}${totalPayAmount}`}{' '}
-          {gasCostEstimate && (
+          {canIncludeGasInTotal && (
             <Text variant="sm-400" color="text-invert">
               (incl. gas fee)
             </Text>
@@ -105,7 +105,8 @@ export function ReviewPaymentView({
             style={styles.feeText}
             onPress={onGasFeePress}
           >
-            Why does USDT require a gas fee?
+            Why does {selectedOption.amount.display.assetSymbol?.toUpperCase()}{' '}
+            require a gas fee?
           </Text>
         )}
       </View>

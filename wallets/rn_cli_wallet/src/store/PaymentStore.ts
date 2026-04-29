@@ -12,7 +12,7 @@ import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { eip155Wallets } from '@/utils/EIP155WalletUtil';
 import { storage } from '@/utils/storage';
-import type { Step } from '@/utils/TypesUtil';
+import type { OptionFeeEstimateStatus, Step } from '@/utils/TypesUtil';
 import {
   detectErrorType,
   getErrorMessage,
@@ -27,8 +27,6 @@ import {
 } from '@/utils/PaymentTransactionUtil';
 import type { TransactionFeeEstimate } from '@/utils/PaymentTransactionUtil';
 import { getApprovalAction } from '@/utils/PaymentUtil';
-
-type OptionFeeEstimateStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 interface PaymentState {
   paymentOptions: PaymentOptionsResponse | null;

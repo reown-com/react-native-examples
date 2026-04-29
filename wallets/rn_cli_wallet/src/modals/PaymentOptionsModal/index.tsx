@@ -301,7 +301,6 @@ export default function PaymentOptionsModal() {
           <SelectOptionView
             info={snap.paymentOptions?.info}
             options={(snap.paymentOptions?.options || []) as PaymentOption[]}
-            selectedOption={snap.selectedOption as PaymentOption | null}
             onOptionPress={handleSelectOption}
             onInfoPress={handleInfoPress}
             collectDataCompletedIds={snap.collectDataCompletedIds as string[]}

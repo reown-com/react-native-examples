@@ -5,7 +5,10 @@ import { FadeGradient } from '@/components/FadeGradient';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { formatAmount, getCurrencySymbol } from './utils';
-import type { PaymentOptionWithCollectData } from '@/utils/TypesUtil';
+import type {
+  OptionFeeEstimateStatus,
+  PaymentOptionWithCollectData,
+} from '@/utils/TypesUtil';
 import { OptionItem, OPTION_HEIGHT } from '@/components/OptionItem';
 import Info from '@/assets/Info';
 import SvgSelectToken from '@/assets/SelectToken';
@@ -16,16 +19,12 @@ const MAX_VISIBLE_OPTIONS = 4;
 
 interface SelectOptionViewProps {
   options: PaymentOption[];
-  selectedOption: PaymentOption | null;
   onOptionPress: (option: PaymentOption) => void;
   onInfoPress: () => void;
   info?: PaymentInfo;
   collectDataCompletedIds: string[];
   optionFeeEstimatesById: Record<string, TransactionFeeEstimate | null>;
-  optionFeeEstimateStatusById: Record<
-    string,
-    'idle' | 'loading' | 'ready' | 'error'
-  >;
+  optionFeeEstimateStatusById: Record<string, OptionFeeEstimateStatus>;
 }
 
 export function SelectOptionView({
