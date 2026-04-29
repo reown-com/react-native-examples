@@ -32,7 +32,9 @@ export function LoadingView({ message, note, size = 120 }: LoadingViewProps) {
   return (
     <View style={styles.loadingContainer}>
       <WalletConnectLoading size={size} />
-      <View style={styles.messageContainer}>
+      <View
+        style={[styles.messageContainer, note && styles.messageContainerWithNote]}
+      >
         <Animated.View
           key={messageKey}
           entering={entering}
@@ -73,9 +75,12 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     marginTop: Spacing[4],
-    minHeight: 48,
+    minHeight: 64,
     width: '100%',
     overflow: 'hidden',
+  },
+  messageContainerWithNote: {
+    minHeight: 110,
   },
   messageSlot: {
     ...StyleSheet.absoluteFill,
