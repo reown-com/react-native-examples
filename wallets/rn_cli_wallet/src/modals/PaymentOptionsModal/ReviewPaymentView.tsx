@@ -96,7 +96,7 @@ export function ReviewPaymentView({
             </Text>
           )}
         </ActionButton>
-        {requiresApproval && approvalGasEstimate && onGasFeePress && (
+        {requiresApproval && onGasFeePress && (
           <Text
             variant="lg-400"
             color="text-secondary"
