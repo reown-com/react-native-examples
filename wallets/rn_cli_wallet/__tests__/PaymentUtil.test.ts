@@ -1,7 +1,7 @@
 import type { Action } from '@walletconnect/pay';
 
 import { EIP155_SIGNING_METHODS } from '../src/constants/Eip155';
-import { getPaymentContext } from '../src/utils/PaymentUtil';
+import { getApprovalAction, requiresApproval } from '../src/utils/PaymentUtil';
 
 function createAction(method: string): Action {
   return {
@@ -13,16 +13,12 @@ function createAction(method: string): Action {
   };
 }
 
-describe('getPaymentContext', () => {
+describe('Payment approval helpers', () => {
   it('marks approval as required when eth_sendTransaction is present', () => {
     const sendTxAction = createAction(EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION);
 
-    const context = getPaymentContext({
-      paymentActions: [sendTxAction],
-    });
-
-    expect(context.requiresApproval).toBe(true);
-    expect(context.approvalAction).toBe(sendTxAction);
+    expect(requiresApproval([sendTxAction])).toBe(true);
+    expect(getApprovalAction([sendTxAction])).toBe(sendTxAction);
   });
 
   it('does not require approval when there is no eth_sendTransaction action', () => {
@@ -30,20 +26,33 @@ describe('getPaymentContext', () => {
       EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4,
     );
 
-    const context = getPaymentContext({
-      paymentActions: [typedDataAction],
-    });
-
-    expect(context.requiresApproval).toBe(false);
-    expect(context.approvalAction).toBeNull();
+    expect(requiresApproval([typedDataAction])).toBe(false);
+    expect(getApprovalAction([typedDataAction])).toBeNull();
   });
 
   it('does not require approval when actions are missing', () => {
-    const context = getPaymentContext({
-      paymentActions: null,
-    });
+    expect(requiresApproval(null)).toBe(false);
+    expect(getApprovalAction(null)).toBeNull();
+  });
 
-    expect(context.requiresApproval).toBe(false);
-    expect(context.approvalAction).toBeNull();
+  it('does not require approval for signature-only option actions', () => {
+    const typedDataAction = createAction(
+      EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4,
+    );
+
+    expect(requiresApproval([typedDataAction])).toBe(false);
+    expect(getApprovalAction([typedDataAction])).toBeNull();
+  });
+
+  it('finds the approval action when option actions include approval and signature steps', () => {
+    const sendTxAction = createAction(
+      EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION,
+    );
+    const typedDataAction = createAction(
+      EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4,
+    );
+
+    expect(requiresApproval([sendTxAction, typedDataAction])).toBe(true);
+    expect(getApprovalAction([sendTxAction, typedDataAction])).toBe(sendTxAction);
   });
 });

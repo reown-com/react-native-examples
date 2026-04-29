@@ -13,12 +13,19 @@ import { Spacing } from '@/utils/ThemeUtil';
 import type { ErrorType } from './utils';
 import { getErrorTitle } from './utils';
 
-const getResultButtonTestId = (isSuccess: boolean, errorType?: ErrorType | null) =>
+const getResultButtonTestId = (
+  isSuccess: boolean,
+  errorType?: ErrorType | null,
+) =>
   `pay-button-result-action-${isSuccess ? 'success' : errorType || 'generic'}`;
 
-const getActionButtonText = (isSuccess: boolean, errorType?: ErrorType | null) => {
+const getActionButtonText = (
+  isSuccess: boolean,
+  errorType?: ErrorType | null,
+) => {
   if (isSuccess || errorType === 'insufficient_funds') return 'Got it!';
-  if (errorType === 'expired' || errorType === 'cancelled') return 'Scan new QR code';
+  if (errorType === 'expired' || errorType === 'cancelled')
+    return 'Scan new QR code';
   return 'Close';
 };
 

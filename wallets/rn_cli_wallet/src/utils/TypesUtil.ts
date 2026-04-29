@@ -96,6 +96,7 @@ export type Step =
   | 'loading'
   | 'selectOption'
   | 'infoExplainer'
+  | 'gasFee'
   | 'collectData'
   | 'review'
   | 'confirming'

@@ -8,6 +8,7 @@ import { Text } from '@/components/Text';
 
 interface LoadingViewProps {
   message?: string;
+  note?: string;
   size?: number;
 }
 
@@ -21,7 +22,7 @@ const exitingKeyframe = new Keyframe({
   100: { opacity: 0, transform: [{ translateY: -14 }, { scale: 0.92 }] },
 }).duration(220);
 
-export function LoadingView({ message, size = 120 }: LoadingViewProps) {
+export function LoadingView({ message, note, size = 120 }: LoadingViewProps) {
   const hasMountedRef = useRef(false);
   const entering = hasMountedRef.current ? enteringKeyframe : undefined;
   hasMountedRef.current = true;
@@ -48,6 +49,16 @@ export function LoadingView({ message, size = 120 }: LoadingViewProps) {
           >
             {message || 'Loading...'}
           </Text>
+          {note && (
+            <Text
+              variant="lg-400"
+              color="text-secondary"
+              center
+              style={styles.loadingNote}
+            >
+              {note}
+            </Text>
+          )}
         </Animated.View>
       </View>
     </View>
@@ -74,5 +85,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     textAlign: 'center',
+  },
+  loadingNote: {
+    marginTop: Spacing[2],
   },
 });
