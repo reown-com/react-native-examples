@@ -19,8 +19,8 @@ export async function createWalletKit(relayerRegionURL: string) {
   walletKit = await WalletKit.init({
     core,
     metadata: getMetadata(),
-    ...(payApiBaseUrl ? { payApiBaseUrl } : {}),
-  } as Parameters<typeof WalletKit.init>[0]);
+    ...(payApiBaseUrl ? { payConfig: { baseUrl: payApiBaseUrl } } : {}),
+  });
 
   try {
     const clientId =
