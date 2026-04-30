@@ -10,11 +10,15 @@ on:
     paths:
       - 'wallets/rn_cli_wallet/**'
       - '.maestro/**'
+      - '.github/actions/walletkit-build-and-maestro/**'
+      - '.github/workflows/ci_e2e_walletkit.yaml'
   push:
     branches: [main]
     paths:
       - 'wallets/rn_cli_wallet/**'
       - '.maestro/**'
+      - '.github/actions/walletkit-build-and-maestro/**'
+      - '.github/workflows/ci_e2e_walletkit.yaml'
   workflow_dispatch:
     inputs:
       maestro-tags:
@@ -34,8 +38,6 @@ on:
 
 env:
   MAESTRO_TAGS: ${{ inputs.maestro-tags || 'pay' }}
-  MAESTRO_APP_ID: com.walletconnect.web3wallet.rnsample.internal
-  ROOT_PATH: wallets/rn_cli_wallet
 
 jobs:
   check-balance:
@@ -53,147 +55,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode 26.2
-        run: |
-          XCODE_PATH=/Applications/Xcode_26.2.app/Contents/Developer
-          if [ ! -d "$XCODE_PATH" ]; then
-            echo "Available Xcode versions:"
-            ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
-            exit 1
-          fi
-          sudo xcode-select -s "$XCODE_PATH"
-          xcodebuild -version
-
-      - name: Setup SSH for Match
-        uses: webfactory/ssh-agent@v0.9.0
+      - name: Build wallet and run Maestro tests (iOS)
+        id: walletkit
+        uses: ./.github/actions/walletkit-build-and-maestro
         with:
-          ssh-private-key: ${{ secrets.MATCH_SSH_KEY }}
-
-      - name: Setup
-        uses: ./.github/actions/ci-setup
-        with:
-          root-path: ${{ env.ROOT_PATH }}
-
-      - name: Create env file
-        run: |
-          if [ -z "${{ secrets.WALLETKIT_ENV_FILE }}" ]; then
-            echo "Error: WALLETKIT_ENV_FILE secret is empty or not set"
-            exit 1
-          fi
-          echo "${{ secrets.WALLETKIT_ENV_FILE }}" > ${{ env.ROOT_PATH }}/.env
-          echo "ENV_TEST_PRIVATE_KEY=${{ secrets.TEST_WALLET_PRIVATE_KEY }}" >> ${{ env.ROOT_PATH }}/.env
-          echo "ENV_TEST_MODE=true" >> ${{ env.ROOT_PATH }}/.env
-
-      - name: Install Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.3.0
-          bundler-cache: true
-
-      - name: Set Xcode paths
-        run: |
-          XCODEPROJ=$(find "${{ env.ROOT_PATH }}/ios" -maxdepth 1 -name "*.xcodeproj" -print -quit)
-          XCWORKSPACE=$(find "${{ env.ROOT_PATH }}/ios" -maxdepth 1 -name "*.xcworkspace" -print -quit)
-          echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
-          echo "XCWORKSPACE_PATH=$XCWORKSPACE" >> "$GITHUB_ENV"
-
-      - name: Cache Pods
-        id: pods-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.ROOT_PATH }}/ios/Pods
-          key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles('wallets/rn_cli_wallet/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-${{ github.ref_name }}-
-
-      - name: Build for Simulator
-        uses: maierj/fastlane-action@v3.0.0
-        with:
-          lane: build_for_simulator
-        env:
-          SCHEME: RNWallet-Internal
-          BUNDLE_ID: com.walletconnect.web3wallet.rnsample.internal
-          PODFILE_PATH: ${{ env.ROOT_PATH }}/ios/Podfile
-          XCWORKSPACE_PATH: ${{ env.XCWORKSPACE_PATH }}
-          XCODE_PROJECT_PATH: ${{ env.XCODE_PROJECT_PATH }}
-          PROJECT_TYPE: wallet
-          RELEASE_TYPE: internal
-          BUILD_FOR_SIMULATOR: true
-          PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
-          SENTRY_DISABLE_AUTO_UPLOAD: true
-          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
-          APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
-          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
-          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-
-      - name: Find .app path
-        run: |
-          APP_PATH=$(cat ./build/app_path.txt)
-          echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
-
-      - name: Boot iOS Simulator
-        run: |
-          DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "iPhone 16" 2>/dev/null || \
-            xcrun simctl list devices available -j | \
-            jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name == "iPhone 16") | .udid' | head -1)
-          xcrun simctl boot "$DEVICE_ID" || true
-          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
-
-      - name: Install app on Simulator
-        run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
-
-      - name: Copy shared Pay test flows
-        uses: WalletConnect/actions/maestro/pay-tests@0c9875ae33fe85fa6a4110dc46c82876d91a551d
-
-      - name: Install Maestro
-        uses: WalletConnect/actions/maestro/setup@0c9875ae33fe85fa6a4110dc46c82876d91a551d
-
-      - name: Run Maestro tests
-        id: maestro
-        env:
-          APP_ID: ${{ env.MAESTRO_APP_ID }}
-          WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
-          WPAY_MERCHANT_ID_MULTI_KYC: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
-          WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
-          WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
-          WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
-          WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
-        run: |
-          xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
-          set +e
-          $HOME/.maestro/bin/maestro test \
-            --env APP_ID="$APP_ID" \
-            --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
-            --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
-            --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
-            --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
-            --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
-            --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
-            --include-tags "${{ env.MAESTRO_TAGS }}" \
-            --test-output-dir maestro-artifacts \
-            --debug-output "${RUNNER_TEMP}/maestro-debug" \
-            .maestro/ >maestro-output.log 2>&1
-          maestro_exit_code=$?
-          cat maestro-output.log
-          exit "$maestro_exit_code"
-
-      - name: Upload Maestro artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: maestro-ios-artifacts
-          path: |
-            maestro-artifacts/**/*.png
-            maestro-artifacts/**/*.jpg
-            maestro-artifacts/**/*.jpeg
-            maestro-artifacts/**/*.mp4
-            maestro-artifacts/**/*.mov
-            maestro-artifacts/**/*.webm
-            maestro-artifacts/**/*.gif
-            maestro-output.log
-          if-no-files-found: warn
-          retention-days: 14
+          platform: ios
+          pay-core-url: https://api.pay.walletconnect.com
+          wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
+          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
+          merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
+          merchant-id-multi-nokyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
+          merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
+          merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
+          maestro-tags: ${{ env.MAESTRO_TAGS }}
+          apple-key-id: ${{ secrets.APPLE_KEY_ID }}
+          apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
+          apple-issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
+          match-git-url: ${{ secrets.MATCH_GIT_URL }}
+          match-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
 
       - name: Send Slack notification
         if: failure()
@@ -221,8 +103,7 @@ jobs:
                 {
                   "type": "section",
                   "fields": [
-                    { "type": "mrkdwn", "text": "*Build:*\n`${{ steps.maestro.outcome != 'skipped' && '✅ Success' || '❌ Failed' }}`" },
-                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.maestro.outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.walletkit.outputs.maestro-outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
                     { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
                   ]
                 },
@@ -254,115 +135,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup
-        uses: ./.github/actions/ci-setup
+      - name: Build wallet and run Maestro tests (Android)
+        id: walletkit
+        uses: ./.github/actions/walletkit-build-and-maestro
         with:
-          root-path: ${{ env.ROOT_PATH }}
-
-      - name: Create env file
-        run: |
-          if [ -z "${{ secrets.WALLETKIT_ENV_FILE }}" ]; then
-            echo "Error: WALLETKIT_ENV_FILE secret is empty or not set"
-            exit 1
-          fi
-          echo "${{ secrets.WALLETKIT_ENV_FILE }}" > ${{ env.ROOT_PATH }}/.env
-          echo "ENV_TEST_PRIVATE_KEY=${{ secrets.TEST_WALLET_PRIVATE_KEY }}" >> ${{ env.ROOT_PATH }}/.env
-          echo "ENV_TEST_MODE=true" >> ${{ env.ROOT_PATH }}/.env
-
-      - name: Install Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-          architecture: x86_64
-
-      - name: Accept Android Licenses
-        uses: SimonMarquis/android-accept-licenses@8d8deab5b7ab2aaea9ed69f0b802e53173f21fd1 # v1
-
-      - name: Add Secrets file
-        run: echo "${{ secrets.ANDROID_SECRETS_FILE }}" > ${{ env.ROOT_PATH }}/android/secrets.properties
-
-      - name: Add Keystore file
-        run: echo ${{ secrets.WC_INTERNAL_KEYSTORE }} | base64 --decode >> ${{ env.ROOT_PATH }}/android/app/${{ vars.WC_INTERNAL_KEYSTORE_NAME }}.keystore
-
-      - name: Optimize Gradle for CI
-        run: |
-          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m" >> ${{ env.ROOT_PATH }}/android/gradle.properties
-          echo "org.gradle.parallel=true" >> ${{ env.ROOT_PATH }}/android/gradle.properties
-          echo "org.gradle.caching=true" >> ${{ env.ROOT_PATH }}/android/gradle.properties
-
-      - name: Configure ABI for emulator
-        run: |
-          echo "reactNativeArchitectures=x86_64" >> ${{ env.ROOT_PATH }}/android/gradle.properties
-
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ${{ env.ROOT_PATH }}/android/.gradle
-          key: ${{ runner.os }}-gradle-walletkit-${{ hashFiles('wallets/rn_cli_wallet/android/**/*.gradle*', 'wallets/rn_cli_wallet/android/**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-walletkit-
-
-      - name: Build APK
-        id: build
-        run: cd ${{ env.ROOT_PATH }} && export SENTRY_DISABLE_AUTO_UPLOAD=true && yarn run android:build:internal
-
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/ndk /opt/ghc /usr/local/share/boost
-          sudo apt-get clean
-          df -h
-
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      - name: Copy shared Pay test flows
-        uses: WalletConnect/actions/maestro/pay-tests@0c9875ae33fe85fa6a4110dc46c82876d91a551d
-
-      - name: Install Maestro
-        uses: WalletConnect/actions/maestro/setup@0c9875ae33fe85fa6a4110dc46c82876d91a551d
-
-      - name: Run E2E tests on Android Emulator
-        id: maestro
-        uses: reactivecircus/android-emulator-runner@70f4dee990796918b78d040e3278474bdbd348a7 # v2
-        with:
-          api-level: 34
-          arch: x86_64
-          target: default
-          avd-name: test_device
-          ram-size: 4096M
-          disk-size: 4096M
-          heap-size: 576M
-          emulator-boot-timeout: 900
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
-          disable-animations: true
-          script: |
-            adb install ${{ env.ROOT_PATH }}/android/app/build/outputs/apk/internal/app-internal.apk
-            set +e; $HOME/.maestro/bin/maestro test --env APP_ID="${{ env.MAESTRO_APP_ID }}" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}" --env WPAY_MERCHANT_ID_MULTI_NOKYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}" --env WPAY_CUSTOMER_KEY_MULTI_KYC="${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}" --env WPAY_MERCHANT_ID_MULTI_KYC="${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}" --include-tags "${{ env.MAESTRO_TAGS }}" --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >maestro-output.log 2>&1; maestro_exit_code=$?; cat maestro-output.log; exit "$maestro_exit_code"
-
-      - name: Upload Maestro artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: maestro-android-artifacts
-          path: |
-            maestro-artifacts/**/*.png
-            maestro-artifacts/**/*.jpg
-            maestro-artifacts/**/*.jpeg
-            maestro-artifacts/**/*.mp4
-            maestro-artifacts/**/*.mov
-            maestro-artifacts/**/*.webm
-            maestro-artifacts/**/*.gif
-            maestro-output.log
-          if-no-files-found: warn
-          retention-days: 14
+          platform: android
+          pay-core-url: https://api.pay.walletconnect.com
+          wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
+          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
+          merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
+          merchant-id-multi-nokyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
+          merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
+          merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
+          maestro-tags: ${{ env.MAESTRO_TAGS }}
+          android-secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+          android-keystore-base64: ${{ secrets.WC_INTERNAL_KEYSTORE }}
+          android-keystore-name: ${{ vars.WC_INTERNAL_KEYSTORE_NAME }}
 
       - name: Send Slack notification
         if: failure()
@@ -390,8 +180,7 @@ jobs:
                 {
                   "type": "section",
                   "fields": [
-                    { "type": "mrkdwn", "text": "*Build:*\n`${{ steps.build.outcome == 'success' && '✅ Success' || '❌ Failed' }}`" },
-                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.maestro.outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.walletkit.outputs.maestro-outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
                     { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
                   ]
                 },

@@ -10,6 +10,7 @@ declare module 'react-native-config' {
     ENV_BLOCKCHAIN_API_URL: string;
     ENV_TEST_PRIVATE_KEY: string;
     ENV_TEST_MODE: string;
+    ENV_PAY_API_BASE_URL: string;
   }
 
   export const Config: NativeConfig;
