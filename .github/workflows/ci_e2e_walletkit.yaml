@@ -144,7 +144,7 @@ jobs:
         run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
 
       - name: Copy shared Pay test flows
-        uses: WalletConnect/actions/maestro/pay-tests@0c9875ae33fe85fa6a4110dc46c82876d91a551d
+        uses: WalletConnect/actions/maestro/pay-tests@fix-maestro-tests-pr480
 
       - name: Install Maestro
         uses: WalletConnect/actions/maestro/setup@0c9875ae33fe85fa6a4110dc46c82876d91a551d
@@ -323,7 +323,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Copy shared Pay test flows
-        uses: WalletConnect/actions/maestro/pay-tests@0c9875ae33fe85fa6a4110dc46c82876d91a551d
+        uses: WalletConnect/actions/maestro/pay-tests@fix-maestro-tests-pr480
 
       - name: Install Maestro
         uses: WalletConnect/actions/maestro/setup@0c9875ae33fe85fa6a4110dc46c82876d91a551d

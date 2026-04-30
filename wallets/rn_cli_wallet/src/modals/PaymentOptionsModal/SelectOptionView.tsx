@@ -92,6 +92,7 @@ export function SelectOptionView({
                 renderIconRight={
                   <Info height={20} width={20} fill={Theme['icon-invert']} />
                 }
+                rightIconTestID="pay-option-info"
                 onIconRightPress={hasCollectData ? onInfoPress : undefined}
                 onPress={() => onOptionPress(option)}
               />
