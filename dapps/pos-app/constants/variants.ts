@@ -1,6 +1,7 @@
 import {
   BINANCE_LOGO_BASE64,
   DEFAULT_LOGO_BASE64,
+  IMIN_LOGO_BASE64,
   LEDGER_LOGO_BASE64,
   PHANTOM_LOGO_BASE64,
   SOLANA_LOGO_BASE64,
@@ -16,7 +17,8 @@ export type VariantName =
   | "phantom"
   | "solana"
   | "trezor"
-  | "ledger";
+  | "ledger"
+  | "imin";
 
 type VariantColorOverrides = Partial<typeof Colors.light>;
 
@@ -173,6 +175,29 @@ export const Variants: Record<VariantName, Variant> = {
       dark: {
         "icon-accent-primary": "#000000",
         "bg-accent-primary": "#000000",
+        "bg-payment-success": "#000000",
+        "text-payment-success": "#FFFFFF",
+        "border-payment-success": "#E9E9E9",
+      },
+    },
+  },
+  imin: {
+    name: "iMin",
+    brandLogo: require("@/assets/images/variants/imin_brand.png"),
+    printerLogo: IMIN_LOGO_BASE64,
+    defaultTheme: "light",
+    brandLogoWidth: 150,
+    colors: {
+      light: {
+        "icon-accent-primary": "#3E4D59",
+        "bg-accent-primary": "#3E4D59",
+        "bg-payment-success": "#000000",
+        "text-payment-success": "#FFFFFF",
+        "border-payment-success": "#E9E9E9",
+      },
+      dark: {
+        "icon-accent-primary": "#3E4D59",
+        "bg-accent-primary": "#3E4D59",
         "bg-payment-success": "#000000",
         "text-payment-success": "#FFFFFF",
         "border-payment-success": "#E9E9E9",
