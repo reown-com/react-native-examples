@@ -27,41 +27,37 @@ inputs:
     description: |
       Full .env contents to seed the wallet (e.g. WALLETKIT_ENV_FILE secret used by
       ci_e2e_walletkit.yaml). When omitted, a minimal .env is written from
-      wallet-app-id alone — sufficient for pay-only flows.
+      reown-project-id alone — sufficient for pay-only flows.
     required: false
     default: ''
-  wallet-app-id:
+  reown-project-id:
     description: |
-      Reown project / wallet App ID. Required when wallet-env-file is not set;
-      when both are set, wallet-app-id is appended as ENV_PROJECT_ID and overrides
-      whatever is in wallet-env-file (last value wins in dotenv).
+      Reown project ID (written as ENV_PROJECT_ID into the wallet's .env).
+      Required when wallet-env-file is not set; when both are set, this value
+      is appended last and wins (dotenv last-value-wins).
     required: false
     default: ''
   wallet-private-key:
     description: 'Test wallet private key (sets ENV_TEST_PRIVATE_KEY).'
     required: true
-  merchant-api-key:
-    description: 'Merchant / partner API key passed to Maestro as WPAY_CUSTOMER_KEY_*.'
+  merchant-api-key-single-nokyc:
+    description: 'Partner API key for the single-option no-KYC merchant (WPAY_CUSTOMER_KEY_SINGLE_NOKYC).'
     required: true
-  merchant-id:
-    description: 'Merchant id passed to Maestro as WPAY_MERCHANT_ID_*.'
+  merchant-id-single-nokyc:
+    description: 'Merchant id for the single-option no-KYC merchant (WPAY_MERCHANT_ID_SINGLE_NOKYC).'
     required: true
   merchant-api-key-multi-nokyc:
-    description: 'Optional separate key for the multi-option no-KYC merchant slot.'
-    required: false
-    default: ''
+    description: 'Partner API key for the multi-option no-KYC merchant (WPAY_CUSTOMER_KEY_MULTI_NOKYC).'
+    required: true
   merchant-id-multi-nokyc:
-    description: 'Optional separate id for the multi-option no-KYC merchant slot.'
-    required: false
-    default: ''
+    description: 'Merchant id for the multi-option no-KYC merchant (WPAY_MERCHANT_ID_MULTI_NOKYC).'
+    required: true
   merchant-api-key-multi-kyc:
-    description: 'Optional separate key for the multi-option KYC merchant slot.'
-    required: false
-    default: ''
+    description: 'Partner API key for the multi-option KYC merchant (WPAY_CUSTOMER_KEY_MULTI_KYC).'
+    required: true
   merchant-id-multi-kyc:
-    description: 'Optional separate id for the multi-option KYC merchant slot.'
-    required: false
-    default: ''
+    description: 'Merchant id for the multi-option KYC merchant (WPAY_MERCHANT_ID_MULTI_KYC).'
+    required: true
   maestro-tags:
     description: 'Maestro test tags to run (comma-separated).'
     required: false
@@ -75,7 +71,7 @@ inputs:
     required: false
     default: ''
   maestro-actions-ref:
-    description: 'Pinned ref of WalletConnect/actions for maestro/pay-tests, maestro/setup, and maestro/run.'
+    description: 'Pinned ref of WalletConnect/actions for maestro/pay-tests and maestro/setup.'
     required: false
     default: '9d229682828dea4e0f31504466b6a2a545412cf9'
   apple-key-id:
@@ -174,21 +170,21 @@ runs:
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       env:
         WALLET_ENV_FILE: ${{ inputs.wallet-env-file }}
-        WALLET_APP_ID: ${{ inputs.wallet-app-id }}
+        REOWN_PROJECT_ID: ${{ inputs.reown-project-id }}
         WALLET_PRIVATE_KEY: ${{ inputs.wallet-private-key }}
         PAY_CORE_URL: ${{ inputs.pay-core-url }}
       run: |
         set -euo pipefail
         if [ -n "$WALLET_ENV_FILE" ]; then
           printf '%s\n' "$WALLET_ENV_FILE" > .env
-        elif [ -z "$WALLET_APP_ID" ]; then
-          echo "Error: either wallet-env-file or wallet-app-id must be provided"
+        elif [ -z "$REOWN_PROJECT_ID" ]; then
+          echo "Error: either wallet-env-file or reown-project-id must be provided"
           exit 1
         else
           : > .env
         fi
-        if [ -n "$WALLET_APP_ID" ]; then
-          echo "ENV_PROJECT_ID=$WALLET_APP_ID" >> .env
+        if [ -n "$REOWN_PROJECT_ID" ]; then
+          echo "ENV_PROJECT_ID=$REOWN_PROJECT_ID" >> .env
         fi
         {
           echo "ENV_TEST_PRIVATE_KEY=$WALLET_PRIVATE_KEY"
@@ -398,8 +394,8 @@ runs:
         APP_ID: com.walletconnect.web3wallet.rnsample.internal
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
-        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key }}
-        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id }}
+        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
+        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
         WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
@@ -454,8 +450,8 @@ runs:
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
         APK_PATH: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
-        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key }}
-        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id }}
+        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
+        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
         WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}

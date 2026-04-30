@@ -63,8 +63,8 @@ jobs:
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
           wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
-          merchant-api-key: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
-          merchant-id: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
+          merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
           merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
           merchant-id-multi-nokyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
           merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
@@ -143,8 +143,8 @@ jobs:
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
           wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
-          merchant-api-key: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
-          merchant-id: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
+          merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
           merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
           merchant-id-multi-nokyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
           merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
