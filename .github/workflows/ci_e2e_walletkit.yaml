@@ -147,7 +147,7 @@ jobs:
         uses: WalletConnect/actions/maestro/pay-tests@fix-maestro-tests-pr480
 
       - name: Install Maestro
-        uses: WalletConnect/actions/maestro/setup@595129e8647ce18e56eccae51374ab336de09110
+        uses: WalletConnect/actions/maestro/setup@13df6d8e4bc592d4565df7a979535f2753e22125
 
       - name: Run Maestro tests
         id: maestro
@@ -326,7 +326,7 @@ jobs:
         uses: WalletConnect/actions/maestro/pay-tests@fix-maestro-tests-pr480
 
       - name: Install Maestro
-        uses: WalletConnect/actions/maestro/setup@595129e8647ce18e56eccae51374ab336de09110
+        uses: WalletConnect/actions/maestro/setup@13df6d8e4bc592d4565df7a979535f2753e22125
 
       - name: Run E2E tests on Android Emulator
         id: maestro
