@@ -53,7 +53,7 @@ export function SelectOptionView({
 
   return (
     <>
-      <View style={styles.header}>
+      <View style={styles.header} testID="pay-select-option-header">
         <SvgSelectToken height={58} width={58} />
         <Text variant="h6-400" color="text-primary">
           Select a token to pay with
@@ -90,9 +90,13 @@ export function SelectOptionView({
                 }
                 testID={`pay-option-${index}`}
                 renderIconRight={
-                  <Info height={20} width={20} fill={Theme['icon-invert']} />
+                  <Info
+                    testID="pay-option-info"
+                    height={20}
+                    width={20}
+                    fill={Theme['icon-invert']}
+                  />
                 }
-                rightIconTestID="pay-option-info"
                 onIconRightPress={hasCollectData ? onInfoPress : undefined}
                 onPress={() => onOptionPress(option)}
               />

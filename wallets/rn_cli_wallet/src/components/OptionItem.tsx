@@ -20,7 +20,6 @@ interface OptionItemProps {
   onPress?: (option: PaymentOption) => void;
   onIconRightPress?: () => void;
   testID?: string;
-  rightIconTestID?: string;
 }
 
 function formatOptionAmount(value: string, decimals: number): string {
@@ -46,7 +45,6 @@ export function OptionItem({
   isEstimatingApprovalGas,
   onPress,
   testID,
-  rightIconTestID,
 }: OptionItemProps) {
   const Theme = useTheme();
 
@@ -111,7 +109,6 @@ export function OptionItem({
           )}
           {renderIconRight && onIconRightPress && (
             <Button
-              testID={rightIconTestID || 'pay-option-icon-right'}
               onPress={onIconRightPress}
               style={[
                 {
