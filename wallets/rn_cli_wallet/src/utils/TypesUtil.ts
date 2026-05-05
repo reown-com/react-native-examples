@@ -96,6 +96,7 @@ export type Step =
   | 'loading'
   | 'selectOption'
   | 'infoExplainer'
+  | 'gasFee'
   | 'collectData'
   | 'review'
   | 'confirming'
@@ -107,3 +108,5 @@ import type { PaymentOption, CollectDataAction } from '@walletconnect/pay';
 export interface PaymentOptionWithCollectData extends PaymentOption {
   collectData?: CollectDataAction;
 }
+
+export type OptionFeeEstimateStatus = 'idle' | 'loading' | 'ready' | 'error';

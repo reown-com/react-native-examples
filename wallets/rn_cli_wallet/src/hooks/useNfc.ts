@@ -64,7 +64,9 @@ export function useNfc() {
       });
   }, []);
 
-  const scanNfcTag = useCallback(async (): Promise<string | null | undefined> => {
+  const scanNfcTag = useCallback(async (): Promise<
+    string | null | undefined
+  > => {
     pauseForegroundDispatch();
     try {
       await NfcManager.unregisterTagEvent().catch(() => {});

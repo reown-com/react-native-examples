@@ -28,7 +28,10 @@ export const CANTON_TEST_CHAINS = {
   },
 };
 
-export const CANTON_CHAINS = { ...CANTON_MAINNET_CHAINS, ...CANTON_TEST_CHAINS };
+export const CANTON_CHAINS = {
+  ...CANTON_MAINNET_CHAINS,
+  ...CANTON_TEST_CHAINS,
+};
 
 export const CANTON_NETWORKS_IMAGES = {
   'canton:mainnet': Canton,

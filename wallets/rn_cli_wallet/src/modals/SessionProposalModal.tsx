@@ -20,7 +20,11 @@ import { TON_CHAINS, TON_SIGNING_METHODS } from '@/constants/Ton';
 import { getWallet, tonAddresses } from '@/utils/TonWalletUtil';
 import { tronAddresses } from '@/utils/TronWalletUtil';
 import { TRON_CHAINS, TRON_SIGNING_METHODS } from '@/constants/Tron';
-import { CANTON_CHAINS, CANTON_SIGNING_METHODS, CANTON_EVENTS } from '@/constants/Canton';
+import {
+  CANTON_CHAINS,
+  CANTON_SIGNING_METHODS,
+  CANTON_EVENTS,
+} from '@/constants/Canton';
 import { cantonAddresses } from '@/utils/CantonWalletUtil';
 import { AccordionCard } from '@/components/AccordionCard';
 import { AppInfoCard } from '@/components/AppInfoCard';

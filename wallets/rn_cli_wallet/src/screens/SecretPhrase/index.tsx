@@ -114,9 +114,8 @@ function SecretSection({
 }
 
 export default function SecretPhrase() {
-  const { eip155Address, suiWallet, tonWallet, tronWallet, cantonWallet } = useSnapshot(
-    SettingsStore.state,
-  );
+  const { eip155Address, suiWallet, tonWallet, tronWallet, cantonWallet } =
+    useSnapshot(SettingsStore.state);
   const Theme = useTheme();
 
   // Get EVM mnemonic
