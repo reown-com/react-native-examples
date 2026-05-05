@@ -91,7 +91,7 @@ export function SelectOptionView({
                 testID={`pay-option-${index}`}
                 renderIconRight={
                   <Info
-                    testID="pay-option-info"
+                    testID="pay-option-info-required"
                     height={20}
                     width={20}
                     fill={Theme['icon-invert']}
