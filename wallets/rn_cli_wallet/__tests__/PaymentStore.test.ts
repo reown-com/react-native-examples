@@ -447,6 +447,57 @@ describe('PaymentStore', () => {
     expect(PaymentStore.state.resultStatus).toBe('success');
   });
 
+  it('keeps the default processing message for single-step send-transaction payments', async () => {
+    const deferredActions = createDeferred<Action[]>();
+    mockedGetRequiredPaymentActions.mockImplementationOnce(
+      () => deferredActions.promise,
+    );
+    mockedSendTransactionWithFreshFees.mockImplementation(async () => {
+      expect(PaymentStore.state.loadingMessage).toBeNull();
+      expect(PaymentStore.state.loadingNote).toBeNull();
+      return {
+        hash: '0xhash',
+        wait: jest.fn(),
+      } as any;
+    });
+
+    const paymentOptions = createPaymentOptions([
+      {
+        id: 'single-step-sendtx-option',
+        actions: [
+          createAction(EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION, [
+            { from: '0xabc', to: '0xdef', value: '0x1' },
+          ]),
+        ],
+      },
+    ]);
+
+    PaymentStore.setPaymentOptions(paymentOptions);
+    PaymentStore.selectOption(paymentOptions.options[0]);
+    await flushPromises();
+
+    const approvePromise = PaymentStore.approvePayment();
+
+    expect(PaymentStore.state.step).toBe('confirming');
+    expect(PaymentStore.state.loadingMessage).toBeNull();
+    expect(PaymentStore.state.loadingNote).toBeNull();
+
+    deferredActions.resolve([
+      createAction(EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION, [
+        { from: '0xabc', to: '0xdef', value: '0x1' },
+      ]),
+    ]);
+
+    await approvePromise;
+
+    expect(mockedConfirmPayment).toHaveBeenCalledWith({
+      paymentId: 'payment-1',
+      optionId: 'single-step-sendtx-option',
+      signatures: [],
+    });
+    expect(PaymentStore.state.resultStatus).toBe('success');
+  });
+
   it('does not set a finalizing message for multi-step approval flows', async () => {
     mockedGetRequiredPaymentActions.mockResolvedValue([
       createAction(EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION, [

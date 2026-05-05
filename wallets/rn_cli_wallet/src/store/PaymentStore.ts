@@ -26,7 +26,7 @@ import {
   waitForTransactionConfirmation,
 } from '@/utils/PaymentTransactionUtil';
 import type { TransactionFeeEstimate } from '@/utils/PaymentTransactionUtil';
-import { getApprovalAction } from '@/utils/PaymentUtil';
+import { getApprovalAction, shouldShowSetupLoader } from '@/utils/PaymentUtil';
 
 interface PaymentState {
   paymentOptions: PaymentOptionsResponse | null;
@@ -491,12 +491,12 @@ const PaymentStore = {
     }
 
     const tokenSymbol = selectedOption.amount.display.assetSymbol || 'token';
-    const selectedOptionApprovalAction = getApprovalAction(
+    const showInitialSetupLoader = shouldShowSetupLoader(
       selectedOption.actions,
     );
 
     state.step = 'confirming';
-    if (selectedOptionApprovalAction) {
+    if (showInitialSetupLoader) {
       state.loadingMessage = `Setting up ${tokenSymbol} for one-time setup...`;
       state.loadingNote = `Future ${tokenSymbol} payments will be instant`;
     } else {
@@ -524,6 +524,7 @@ const PaymentStore = {
       }
       const totalActions = paymentActions.length;
       const approvalAction = getApprovalAction(paymentActions);
+      const showSetupLoader = shouldShowSetupLoader(paymentActions);
 
       for (const [index, action] of paymentActions.entries()) {
         const stepLabel = `${index + 1}/${totalActions}`;
@@ -533,7 +534,7 @@ const PaymentStore = {
           throw new Error(`Payment action ${stepLabel} is missing walletRpc`);
         }
 
-        if (approvalAction && action === approvalAction) {
+        if (showSetupLoader && approvalAction && action === approvalAction) {
           state.loadingMessage = `Setting up ${tokenSymbol} for one-time setup...`;
           state.loadingNote = `Future ${tokenSymbol} payments will be instant`;
         } else {

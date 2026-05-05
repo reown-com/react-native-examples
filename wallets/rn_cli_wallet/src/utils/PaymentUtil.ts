@@ -17,3 +17,9 @@ export function getApprovalAction(
 export function requiresApproval(actions: readonly Action[] | null): boolean {
   return !!getApprovalAction(actions);
 }
+
+export function shouldShowSetupLoader(
+  actions: readonly Action[] | null,
+): boolean {
+  return (actions?.length ?? 0) > 1 && requiresApproval(actions);
+}
