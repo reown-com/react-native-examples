@@ -4,6 +4,10 @@ run-name: "E2E WalletKit - ${{ inputs.platform || 'both' }} - Tags: ${{ inputs.m
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   schedule:
     - cron: '0 * * * *' # Every hour, UTC
