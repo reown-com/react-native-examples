@@ -1,0 +1,501 @@
+name: WalletKit Build and Maestro
+description: |
+  Build wallets/rn_cli_wallet for the requested platform and run Maestro tests
+  against a configurable pay-core URL. Used by the wallet's own CI and by pay-core
+  for cross-repo Maestro coverage (PR-time against local pay-core, CD against
+  deployed staging/prod).
+
+inputs:
+  platform:
+    description: 'ios or android'
+    required: true
+  pay-core-url:
+    description: |
+      Pay-core base URL the wallet should hit. http://localhost:3080 for iOS
+      Simulator on the same runner; http://10.0.2.2:3080 for Android emulator on
+      the same runner; deployed URL for CD.
+    required: true
+  wallet-source-dir:
+    description: |
+      Path (relative to the workspace root) where reown-com/react-native-examples
+      is checked out. Defaults to '.', i.e. the workspace root, which is the case for
+      the wallet team's own CI. Cross-repo callers (e.g. pay-core) should checkout
+      react-native-examples to a subdir and pass it here (e.g. 'rn-wallet').
+    required: false
+    default: '.'
+  wallet-env-file:
+    description: |
+      Full .env contents to seed the wallet (e.g. WALLETKIT_ENV_FILE secret used by
+      ci_e2e_walletkit.yaml). When omitted, a minimal .env is written from
+      reown-project-id alone — sufficient for pay-only flows.
+    required: false
+    default: ''
+  reown-project-id:
+    description: |
+      Reown project ID (written as ENV_PROJECT_ID into the wallet's .env).
+      Required when wallet-env-file is not set; when both are set, this value
+      is appended last and wins (dotenv last-value-wins).
+    required: false
+    default: ''
+  wallet-private-key:
+    description: 'Test wallet private key (sets ENV_TEST_PRIVATE_KEY).'
+    required: true
+  merchant-api-key-single-nokyc:
+    description: 'Partner API key for the single-option no-KYC merchant (WPAY_CUSTOMER_KEY_SINGLE_NOKYC).'
+    required: true
+  merchant-id-single-nokyc:
+    description: 'Merchant id for the single-option no-KYC merchant (WPAY_MERCHANT_ID_SINGLE_NOKYC).'
+    required: true
+  merchant-api-key-multi-nokyc:
+    description: 'Partner API key for the multi-option no-KYC merchant (WPAY_CUSTOMER_KEY_MULTI_NOKYC).'
+    required: true
+  merchant-id-multi-nokyc:
+    description: 'Merchant id for the multi-option no-KYC merchant (WPAY_MERCHANT_ID_MULTI_NOKYC).'
+    required: true
+  merchant-api-key-multi-kyc:
+    description: 'Partner API key for the multi-option KYC merchant (WPAY_CUSTOMER_KEY_MULTI_KYC).'
+    required: true
+  merchant-id-multi-kyc:
+    description: 'Merchant id for the multi-option KYC merchant (WPAY_MERCHANT_ID_MULTI_KYC).'
+    required: true
+  maestro-tags:
+    description: 'Maestro test tags to run (comma-separated).'
+    required: false
+    default: 'pay-single-nokyc'
+  maestro-exclude-tags:
+    description: |
+      Maestro test tags to exclude (comma-separated). Useful for cross-repo
+      callers running against a local pay-core that can't satisfy certain
+      flows (e.g. pay-needs-kyc-backend skips the two flows that submit
+      personal-details data through the prod KYC webview).
+    required: false
+    default: ''
+  maestro-actions-ref:
+    description: 'Pinned ref of WalletConnect/actions for maestro/pay-tests and maestro/setup.'
+    required: false
+    default: '9d229682828dea4e0f31504466b6a2a545412cf9'
+  apple-key-id:
+    description: 'Apple App Store Connect API key id (iOS only).'
+    required: false
+    default: ''
+  apple-key-content:
+    description: 'Apple App Store Connect API key content (iOS only).'
+    required: false
+    default: ''
+  apple-issuer-id:
+    description: 'Apple App Store Connect issuer id (iOS only).'
+    required: false
+    default: ''
+  match-git-url:
+    description: 'fastlane match git URL (iOS only).'
+    required: false
+    default: ''
+  match-password:
+    description: 'fastlane match keychain password (iOS only).'
+    required: false
+    default: ''
+  match-ssh-key:
+    description: 'SSH key for fastlane match repo (iOS only).'
+    required: false
+    default: ''
+  android-secrets-file:
+    description: 'Contents of android/secrets.properties (Android only).'
+    required: false
+    default: ''
+  android-keystore-base64:
+    description: 'Base64-encoded keystore file (Android only).'
+    required: false
+    default: ''
+  android-keystore-name:
+    description: 'Filename (without .keystore) used by the wallet build (Android only).'
+    required: false
+    default: 'WalletConnect-Internal'
+  pay-api-url:
+    description: |
+      Base URL the Maestro test scripts (create-payment.js, cancel-payment.js)
+      use when calling the WalletConnect Pay API. Defaults to prod
+      (https://api.pay.walletconnect.com). Cross-repo callers running against a
+      local pay-core on the runner should pass http://localhost:3080.
+    required: false
+    default: ''
+  expired-gateway-url:
+    description: |
+      Pre-expired payment gateway URL used by pay_expired_link.yaml. When unset,
+      the flow falls back to a hardcoded prod-expired link. Local pay-core CI
+      should seed an expired payment and pass its gateway URL here.
+    required: false
+    default: ''
+
+outputs:
+  maestro-outcome:
+    description: 'success | failure | cancelled — outcome of the Maestro run step.'
+    value: ${{ steps.maestro-ios.outcome || steps.maestro-android.outcome }}
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve wallet root
+      id: paths
+      shell: bash
+      env:
+        SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+      run: |
+        set -euo pipefail
+        if [ "$SOURCE_DIR" = "." ] || [ -z "$SOURCE_DIR" ]; then
+          ROOT="wallets/rn_cli_wallet"
+        else
+          ROOT="${SOURCE_DIR%/}/wallets/rn_cli_wallet"
+        fi
+        if [ ! -d "$ROOT" ]; then
+          echo "Error: wallet root not found at '$ROOT'. Did you forget to checkout react-native-examples?"
+          exit 1
+        fi
+        echo "wallet_root=$ROOT" >> "$GITHUB_OUTPUT"
+        echo "Resolved wallet root - $ROOT"
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: yarn
+        cache-dependency-path: ${{ steps.paths.outputs.wallet_root }}/yarn.lock
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      run: yarn install --immutable
+
+    - name: Write wallet .env
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      env:
+        WALLET_ENV_FILE: ${{ inputs.wallet-env-file }}
+        REOWN_PROJECT_ID: ${{ inputs.reown-project-id }}
+        WALLET_PRIVATE_KEY: ${{ inputs.wallet-private-key }}
+        PAY_CORE_URL: ${{ inputs.pay-core-url }}
+      run: |
+        set -euo pipefail
+        if [ -n "$WALLET_ENV_FILE" ]; then
+          printf '%s\n' "$WALLET_ENV_FILE" > .env
+        elif [ -z "$REOWN_PROJECT_ID" ]; then
+          echo "Error: either wallet-env-file or reown-project-id must be provided"
+          exit 1
+        else
+          : > .env
+        fi
+        if [ -n "$REOWN_PROJECT_ID" ]; then
+          echo "ENV_PROJECT_ID=$REOWN_PROJECT_ID" >> .env
+        fi
+        {
+          echo "ENV_TEST_PRIVATE_KEY=$WALLET_PRIVATE_KEY"
+          echo "ENV_TEST_MODE=true"
+          echo "ENV_PAY_API_BASE_URL=$PAY_CORE_URL"
+          echo "SENTRY_DISABLE_AUTO_UPLOAD=true"
+        } >> .env
+        echo "Wrote $(pwd)/.env"
+
+    # --- iOS leg ---
+    - name: Select Xcode 26.2
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: |
+        XCODE_PATH=/Applications/Xcode_26.2.app/Contents/Developer
+        if [ ! -d "$XCODE_PATH" ]; then
+          echo "Available Xcode versions:"
+          ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
+          exit 1
+        fi
+        sudo xcode-select -s "$XCODE_PATH"
+        xcodebuild -version
+
+    - name: Setup SSH for Match
+      if: inputs.platform == 'ios'
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ inputs.match-ssh-key }}
+
+    - name: Install Ruby
+      if: inputs.platform == 'ios'
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.3.0
+        bundler-cache: true
+        working-directory: ${{ inputs.wallet-source-dir }}
+
+    - name: Set Xcode paths
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        WALLET_ROOT: ${{ steps.paths.outputs.wallet_root }}
+      run: |
+        XCODEPROJ=$(find "$WALLET_ROOT/ios" -maxdepth 1 -name "*.xcodeproj" -print -quit)
+        XCWORKSPACE=$(find "$WALLET_ROOT/ios" -maxdepth 1 -name "*.xcworkspace" -print -quit)
+        echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
+        echo "XCWORKSPACE_PATH=$XCWORKSPACE" >> "$GITHUB_ENV"
+
+    - name: Cache Pods
+      if: inputs.platform == 'ios'
+      id: pods-cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.paths.outputs.wallet_root }}/ios/Pods
+        key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/ios/Podfile.lock', steps.paths.outputs.wallet_root)) }}
+        restore-keys: |
+          ${{ runner.os }}-pods-${{ github.ref_name }}-
+
+    - name: Build for Simulator
+      if: inputs.platform == 'ios'
+      uses: maierj/fastlane-action@v3.0.0
+      with:
+        lane: build_for_simulator
+        subdirectory: ${{ inputs.wallet-source-dir }}
+      env:
+        SCHEME: RNWallet-Internal
+        BUNDLE_ID: com.walletconnect.web3wallet.rnsample.internal
+        PODFILE_PATH: ${{ steps.paths.outputs.wallet_root }}/ios/Podfile
+        XCWORKSPACE_PATH: ${{ env.XCWORKSPACE_PATH }}
+        XCODE_PROJECT_PATH: ${{ env.XCODE_PROJECT_PATH }}
+        PROJECT_TYPE: wallet
+        RELEASE_TYPE: internal
+        BUILD_FOR_SIMULATOR: true
+        PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
+        SENTRY_DISABLE_AUTO_UPLOAD: true
+        APPLE_KEY_ID: ${{ inputs.apple-key-id }}
+        APPLE_KEY_CONTENT: ${{ inputs.apple-key-content }}
+        APPLE_ISSUER_ID: ${{ inputs.apple-issuer-id }}
+        MATCH_GIT_URL: ${{ inputs.match-git-url }}
+        MATCH_PASSWORD: ${{ inputs.match-password }}
+
+    - name: Find .app path
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+      run: |
+        APP_PATH=$(cat "$SOURCE_DIR/build/app_path.txt")
+        echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
+
+    - name: Boot iOS Simulator
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: |
+        DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "iPhone 16" 2>/dev/null || \
+          xcrun simctl list devices available -j | \
+          jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name == "iPhone 16") | .udid' | head -1)
+        xcrun simctl boot "$DEVICE_ID" || true
+        echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+
+    - name: Install app on Simulator
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+
+    # --- Android leg ---
+    - name: Install Java 17
+      if: inputs.platform == 'android'
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        architecture: x86_64
+
+    - name: Accept Android Licenses
+      if: inputs.platform == 'android'
+      uses: SimonMarquis/android-accept-licenses@8d8deab5b7ab2aaea9ed69f0b802e53173f21fd1 # v1
+
+    - name: Add Secrets file
+      if: inputs.platform == 'android'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      env:
+        ANDROID_SECRETS_FILE: ${{ inputs.android-secrets-file }}
+      run: |
+        if [ -z "$ANDROID_SECRETS_FILE" ]; then
+          echo "Error: android-secrets-file input is empty"
+          exit 1
+        fi
+        printf '%s\n' "$ANDROID_SECRETS_FILE" > android/secrets.properties
+
+    - name: Add Keystore file
+      if: inputs.platform == 'android'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      env:
+        ANDROID_KEYSTORE_BASE64: ${{ inputs.android-keystore-base64 }}
+        ANDROID_KEYSTORE_NAME: ${{ inputs.android-keystore-name }}
+      run: |
+        if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
+          echo "Error: android-keystore-base64 input is empty"
+          exit 1
+        fi
+        printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode >> "android/app/${ANDROID_KEYSTORE_NAME}.keystore"
+
+    - name: Optimize Gradle for CI
+      if: inputs.platform == 'android'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      run: |
+        {
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
+          echo "org.gradle.parallel=true"
+          echo "org.gradle.caching=true"
+          echo "reactNativeArchitectures=x86_64"
+        } >> android/gradle.properties
+
+    - name: Cache Gradle
+      if: inputs.platform == 'android'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+          ${{ steps.paths.outputs.wallet_root }}/android/.gradle
+        key: ${{ runner.os }}-gradle-walletkit-${{ hashFiles(format('{0}/android/**/*.gradle*', steps.paths.outputs.wallet_root), format('{0}/android/**/gradle-wrapper.properties', steps.paths.outputs.wallet_root)) }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-walletkit-
+
+    - name: Build APK
+      if: inputs.platform == 'android'
+      id: build
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      run: |
+        export SENTRY_DISABLE_AUTO_UPLOAD=true
+        yarn run android:build:internal
+
+    - name: Free disk space
+      if: inputs.platform == 'android'
+      shell: bash
+      run: |
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/ndk /opt/ghc /usr/local/share/boost
+        sudo apt-get clean
+        df -h
+
+    - name: Enable KVM
+      if: inputs.platform == 'android'
+      shell: bash
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    # --- Common: Maestro setup + run ---
+    - name: Copy shared Pay test flows
+      uses: WalletConnect/actions/maestro/pay-tests@9d229682828dea4e0f31504466b6a2a545412cf9
+
+    - name: Install Maestro
+      uses: WalletConnect/actions/maestro/setup@9d229682828dea4e0f31504466b6a2a545412cf9
+
+    - name: Run Maestro tests (iOS)
+      if: inputs.platform == 'ios'
+      id: maestro-ios
+      shell: bash
+      env:
+        APP_ID: com.walletconnect.web3wallet.rnsample.internal
+        MAESTRO_TAGS: ${{ inputs.maestro-tags }}
+        MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
+        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
+        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
+        WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
+        WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
+        WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
+      run: |
+        xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
+        set +e
+        $HOME/.maestro/bin/maestro test \
+          --env APP_ID="$APP_ID" \
+          --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
+          --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
+          --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
+          --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
+          --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
+          --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
+          --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
+          --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
+          --include-tags "$MAESTRO_TAGS" \
+          ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} \
+          --test-output-dir maestro-artifacts \
+          --debug-output "${RUNNER_TEMP}/maestro-debug" \
+          .maestro/ >maestro-output.log 2>&1
+        maestro_exit_code=$?
+        cat maestro-output.log
+        exit "$maestro_exit_code"
+
+    - name: Upload Maestro artifacts (iOS)
+      if: always() && inputs.platform == 'ios'
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-ios-artifacts
+        path: |
+          maestro-artifacts/**/*.png
+          maestro-artifacts/**/*.jpg
+          maestro-artifacts/**/*.jpeg
+          maestro-artifacts/**/*.mp4
+          maestro-artifacts/**/*.mov
+          maestro-artifacts/**/*.webm
+          maestro-artifacts/**/*.gif
+          maestro-output.log
+        if-no-files-found: warn
+        retention-days: 14
+
+    - name: Run Maestro tests (Android)
+      if: inputs.platform == 'android'
+      id: maestro-android
+      uses: reactivecircus/android-emulator-runner@70f4dee990796918b78d040e3278474bdbd348a7 # v2
+      env:
+        APP_ID: com.walletconnect.web3wallet.rnsample.internal
+        MAESTRO_TAGS: ${{ inputs.maestro-tags }}
+        MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
+        APK_PATH: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
+        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
+        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
+        WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
+        WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
+        WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
+      with:
+        api-level: 34
+        arch: x86_64
+        target: default
+        avd-name: test_device
+        ram-size: 4096M
+        disk-size: 4096M
+        heap-size: 576M
+        emulator-boot-timeout: 900
+        force-avd-creation: false
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
+        disable-animations: true
+        script: |
+          adb install "$APK_PATH"
+          set +e; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >maestro-output.log 2>&1; maestro_exit_code=$?; cat maestro-output.log; exit "$maestro_exit_code"
+
+    - name: Upload Maestro artifacts (Android)
+      if: always() && inputs.platform == 'android'
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-android-artifacts
+        path: |
+          maestro-artifacts/**/*.png
+          maestro-artifacts/**/*.jpg
+          maestro-artifacts/**/*.jpeg
+          maestro-artifacts/**/*.mp4
+          maestro-artifacts/**/*.mov
+          maestro-artifacts/**/*.webm
+          maestro-artifacts/**/*.gif
+          maestro-output.log
+        if-no-files-found: warn
+        retention-days: 14
+
+    - name: Log Maestro outcome
+      if: always()
+      shell: bash
+      env:
+        IOS_OUTCOME: ${{ steps.maestro-ios.outcome }}
+        ANDROID_OUTCOME: ${{ steps.maestro-android.outcome }}
+      run: |
+        echo "Maestro outcome - ios=${IOS_OUTCOME:-skipped} android=${ANDROID_OUTCOME:-skipped}"
