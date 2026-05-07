@@ -1,6 +1,5 @@
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
-import { CloseButton } from "@/components/close-button";
 import { PinModal } from "@/components/pin-modal";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
@@ -18,7 +17,6 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { ThemeMode } from "@/utils/types";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
-import { resetNavigation } from "@/utils/navigation";
 import {
   connectPrinter,
   printReceipt,
@@ -27,7 +25,6 @@ import {
 import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
@@ -341,19 +338,6 @@ export default function SettingsScreen() {
         </ThemedText>
       </ScrollView>
 
-      {/* <LinearGradient
-        colors={[
-          theme["bg-primary"] + "00",
-          theme["bg-primary"] + "40",
-          theme["bg-primary"] + "CC",
-          theme["bg-primary"],
-        ]}
-        locations={[0, 0.3, 0.5, 1]}
-        style={styles.gradient}
-        pointerEvents="none"
-      /> */}
-      {/* <CloseButton style={styles.closeButton} onPress={resetNavigation} /> */}
-
       {/* Theme Bottom Sheet */}
       <SettingsBottomSheet
         visible={activeSheet === "theme"}
@@ -526,17 +510,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing["spacing-5"],
     paddingBottom: Spacing["extra-spacing-2"],
     gap: Spacing["spacing-2"],
-  },
-  closeButton: {
-    position: "absolute",
-    alignSelf: "center",
-  },
-  gradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 200,
   },
   versionText: {
     alignSelf: "flex-end",
