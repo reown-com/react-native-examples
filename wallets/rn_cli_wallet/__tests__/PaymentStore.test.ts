@@ -493,7 +493,7 @@ describe('PaymentStore', () => {
     expect(mockedConfirmPayment).toHaveBeenCalledWith({
       paymentId: 'payment-1',
       optionId: 'single-step-sendtx-option',
-      signatures: [],
+      signatures: ['0xhash'],
     });
     expect(PaymentStore.state.resultStatus).toBe('success');
   });
@@ -539,6 +539,11 @@ describe('PaymentStore', () => {
     await flushPromises();
     await PaymentStore.approvePayment();
 
+    expect(mockedConfirmPayment).toHaveBeenCalledWith({
+      paymentId: 'payment-1',
+      optionId: 'approval-option',
+      signatures: ['0xhash', '0xsigned'],
+    });
     expect(PaymentStore.state.resultStatus).toBe('success');
   });
 

@@ -610,6 +610,7 @@ const PaymentStore = {
               'approvePayment',
               { chainId, step: stepLabel, txHash: tx.hash },
             );
+            signatures.push(tx.hash);
             break;
           }
 
