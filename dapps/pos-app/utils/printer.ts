@@ -181,3 +181,94 @@ export const printReceipt = async ({
     throw error;
   }
 };
+
+interface SplitEntry {
+  paymentId: string;
+  amountFiat: number;
+}
+
+interface PrintSplitSummaryReceiptProps {
+  totalFiat: number;
+  currency: Currency;
+  splits: SplitEntry[];
+  date?: string;
+  logoBase64?: string;
+}
+
+export const printSplitSummaryReceipt = async ({
+  totalFiat,
+  currency,
+  splits,
+  date = getDate(),
+  logoBase64 = DEFAULT_LOGO_BASE64,
+}: PrintSplitSummaryReceiptProps) => {
+  try {
+    await ReactNativePosPrinter.initializePrinter();
+
+    await ReactNativePosPrinter.printImage(logoBase64, {
+      align: "CENTER",
+    });
+
+    await ReactNativePosPrinter.newLine(1);
+    await ReactNativePosPrinter.printText("--------------------------------\n");
+    await ReactNativePosPrinter.newLine(1);
+
+    const normal = { size: 10 } as TextOptions;
+    const normalCenter = { size: 10, align: "CENTER" } as TextOptions;
+    const bold = { size: 10, bold: true } as TextOptions;
+    const idStyle = { size: 9, bold: true } as TextOptions;
+
+    await ReactNativePosPrinter.printText("DATE      ", normal);
+    await ReactNativePosPrinter.printText(`${date}\n`, bold);
+
+    await ReactNativePosPrinter.printText("METHOD    ", normal);
+    await ReactNativePosPrinter.printText("WalletConnect Pay\n", bold);
+
+    await ReactNativePosPrinter.printText("PAYMENTS  ", normal);
+    await ReactNativePosPrinter.printText(`${splits.length}\n`, bold);
+
+    await ReactNativePosPrinter.newLine(1);
+    await ReactNativePosPrinter.printText("--------------------------------\n");
+    await ReactNativePosPrinter.newLine(1);
+
+    for (let i = 0; i < splits.length; i++) {
+      const split = splits[i];
+      const label = `PAYMENT ${i + 1}`.padEnd(10, " ");
+      await ReactNativePosPrinter.printText(label, normal);
+      await ReactNativePosPrinter.printText(
+        `${formatAmountWithSymbol(split.amountFiat.toFixed(2), currency)}\n`,
+        bold,
+      );
+      await ReactNativePosPrinter.printText("ID        ", normal);
+      await ReactNativePosPrinter.printText(`${split.paymentId}\n`, idStyle);
+      await ReactNativePosPrinter.newLine(1);
+    }
+
+    await ReactNativePosPrinter.printText("--------------------------------\n");
+    await ReactNativePosPrinter.newLine(1);
+
+    await ReactNativePosPrinter.printText("TOTAL     ", normal);
+    await ReactNativePosPrinter.printText(
+      `${formatAmountWithSymbol(totalFiat.toFixed(2), currency)}\n`,
+      bold,
+    );
+
+    await ReactNativePosPrinter.newLine(1);
+    await ReactNativePosPrinter.printText("--------------------------------\n");
+
+    await ReactNativePosPrinter.newLine(2);
+    await ReactNativePosPrinter.printText(
+      "Thank you for your payment!\n",
+      normalCenter,
+    );
+
+    await ReactNativePosPrinter.newLine(2);
+    await ReactNativePosPrinter.cutPaper();
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    useLogsStore
+      .getState()
+      .addLog("error", errorMessage, "printer", "printSplitSummaryReceipt");
+    throw error;
+  }
+};

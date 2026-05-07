@@ -1,9 +1,8 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { useAssets } from "expo-asset";
-import { Image } from "expo-image";
 import { Platform, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { Button } from "./button";
+import { ThemedText } from "./themed-text";
 
 interface CloseButtonProps {
   onPress: () => void;
@@ -13,7 +12,6 @@ interface CloseButtonProps {
 
 export function CloseButton({ style, onPress, themeMode }: CloseButtonProps) {
   const Theme = useTheme(themeMode);
-  const [assets] = useAssets([require("@/assets/images/close.png")]);
 
   return (
     <Button
@@ -27,24 +25,19 @@ export function CloseButton({ style, onPress, themeMode }: CloseButtonProps) {
         style,
       ]}
     >
-      <Image
-        style={[styles.image, { tintColor: Theme["text-primary"] }]}
-        source={assets?.[0]}
-        tintColor={Theme["text-primary"]}
-        cachePolicy="memory-disk"
-        priority="high"
-      />
+      <ThemedText>Cancel</ThemedText>
     </Button>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: BorderRadius["full"],
-    height: 64,
-    width: 64,
+    width: "100%",
+    borderRadius: BorderRadius["5"],
     alignItems: "center",
     justifyContent: "center",
+    paddingVertical: Spacing["spacing-4"],
+    paddingHorizontal: Spacing["spacing-5"],
     bottom: Platform.OS === "web" ? 0 : Spacing["spacing-6"],
   },
   image: {

@@ -62,6 +62,17 @@ export default function AmountScreen() {
     });
   };
 
+  const onSplitPayment = ({ amount }: FormData) => {
+    const formattedAmount = formatAmount(amount);
+
+    router.push({
+      pathname: "/split-people",
+      params: {
+        totalAmount: formattedAmount,
+      },
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View
@@ -122,27 +133,51 @@ export default function AmountScreen() {
           />
         )}
       />
-      <Button
-        onPress={handleSubmit(onSubmit)}
-        disabled={!isValid}
-        style={[
-          styles.button,
-          {
-            backgroundColor: Theme["bg-accent-primary"],
-            opacity: isValid ? 1 : 0.6,
-          },
-        ]}
-      >
-        <ThemedText
-          fontSize={16}
-          lineHeight={18}
-          style={{ color: Theme["text-invert"] }}
+      <View style={styles.buttonContainer}>
+        <Button
+          onPress={handleSubmit(onSubmit)}
+          disabled={!isValid}
+          style={[
+            styles.button,
+            {
+              backgroundColor: Theme["bg-accent-primary"],
+              opacity: isValid ? 1 : 0.6,
+            },
+          ]}
         >
-          {isValid
-            ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
-            : "Enter amount"}
-        </ThemedText>
-      </Button>
+          <ThemedText
+            fontSize={16}
+            lineHeight={18}
+            style={{ color: Theme["text-invert"] }}
+          >
+            {isValid
+              ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
+              : "Enter amount"}
+          </ThemedText>
+        </Button>
+        <Button
+          onPress={handleSubmit(onSplitPayment)}
+          disabled={!isValid}
+          style={[
+            styles.button,
+            styles.splitButton,
+            {
+              borderColor: Theme["border-secondary"],
+              opacity: isValid ? 1 : 0.6,
+            },
+          ]}
+        >
+          <ThemedText
+            fontSize={16}
+            lineHeight={18}
+            style={{ color: Theme["text-primary"] }}
+          >
+            {isValid
+              ? `Pay in parts ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
+              : "Pay in parts"}
+          </ThemedText>
+        </Button>
+      </View>
     </View>
   );
 }
@@ -164,12 +199,20 @@ const styles = StyleSheet.create({
     paddingTop: Spacing["spacing-4"],
     paddingHorizontal: Spacing["spacing-5"],
   },
-  button: {
+  buttonContainer: {
     width: "100%",
     marginTop: Spacing["spacing-6"],
+    gap: Spacing["spacing-3"],
+  },
+  button: {
+    width: "100%",
     paddingVertical: Spacing["spacing-4"],
     paddingHorizontal: Spacing["spacing-5"],
     alignItems: "center",
     borderRadius: BorderRadius["5"],
+  },
+  splitButton: {
+    backgroundColor: "transparent",
+    borderWidth: StyleSheet.hairlineWidth,
   },
 });

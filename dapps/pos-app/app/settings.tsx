@@ -341,7 +341,7 @@ export default function SettingsScreen() {
         </ThemedText>
       </ScrollView>
 
-      <LinearGradient
+      {/* <LinearGradient
         colors={[
           theme["bg-primary"] + "00",
           theme["bg-primary"] + "40",
@@ -351,8 +351,8 @@ export default function SettingsScreen() {
         locations={[0, 0.3, 0.5, 1]}
         style={styles.gradient}
         pointerEvents="none"
-      />
-      <CloseButton style={styles.closeButton} onPress={resetNavigation} />
+      /> */}
+      {/* <CloseButton style={styles.closeButton} onPress={resetNavigation} /> */}
 
       {/* Theme Bottom Sheet */}
       <SettingsBottomSheet

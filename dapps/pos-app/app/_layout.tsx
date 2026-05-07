@@ -184,6 +184,13 @@ export default Sentry.wrap(function RootLayout() {
                   headerBackVisible: false,
                 }}
               />
+              <Stack.Screen name="split-people" />
+              <Stack.Screen
+                name="split-summary"
+                options={{
+                  headerBackVisible: false,
+                }}
+              />
               <Stack.Screen name="settings" />
               <Stack.Screen name="activity" />
               <Stack.Screen name="logs" />

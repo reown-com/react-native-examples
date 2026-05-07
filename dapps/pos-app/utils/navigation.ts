@@ -1,26 +1,30 @@
 import { Colors } from "@/constants/theme";
 import { Href, router } from "expo-router";
 
+const SUCCESS_ROUTES = new Set(["payment-success", "split-summary"]);
+
 export const shouldCenterHeaderTitle = (routeName: string) => {
-  return routeName === "index" || routeName === "payment-success";
+  return routeName === "index" || SUCCESS_ROUTES.has(routeName);
 };
 
 export const getHeaderBackgroundColor = (
   routeName: string,
 ): keyof typeof Colors.light | keyof typeof Colors.dark => {
-  return routeName === "payment-success" ? "bg-payment-success" : "bg-primary";
+  return SUCCESS_ROUTES.has(routeName) ? "bg-payment-success" : "bg-primary";
 };
 
 export const getHeaderTintColor = (
   routeName: string,
 ): keyof typeof Colors.light | keyof typeof Colors.dark => {
-  return routeName === "payment-success"
+  return SUCCESS_ROUTES.has(routeName)
     ? "text-payment-success"
     : "text-primary";
 };
 
 export const resetNavigation = (href?: Href) => {
-  router.dismissAll();
+  if (router.canDismiss()) {
+    router.dismissAll();
+  }
   router.replace("/");
   if (href) {
     router.navigate(href);

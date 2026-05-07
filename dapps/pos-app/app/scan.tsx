@@ -2,7 +2,7 @@ import { CloseButton } from "@/components/close-button";
 import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
-import { Spacing } from "@/constants/spacing";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -21,13 +21,22 @@ import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
-import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
+import {
+  router,
+  Stack,
+  UnknownOutputParams,
+  useLocalSearchParams,
+} from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
+  splitIndex: string;
+  splitCount: string;
+  splitTotalAmount: string;
+  splitPaymentIds: string;
 }
 
 export default function ScanScreen() {
@@ -52,7 +61,12 @@ export default function ScanScreen() {
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
-  const { amount } = params;
+  const { amount, splitIndex, splitCount, splitTotalAmount, splitPaymentIds } =
+    params;
+  const splitIndexNum = splitIndex ? Number(splitIndex) : undefined;
+  const splitCountNum = splitCount ? Number(splitCount) : undefined;
+  const isSplit = !!splitIndexNum && !!splitCountNum;
+  const isMidSplit = isSplit && splitIndexNum > 1;
 
   const { isNfcActive, nfcMode } = useNfcPayment({
     paymentUrl: qrUri,
@@ -81,9 +95,23 @@ export default function ScanScreen() {
       params: {
         amount,
         paymentId,
+        ...(isSplit && {
+          splitIndex,
+          splitCount,
+          splitTotalAmount,
+          splitPaymentIds,
+        }),
       },
     });
-  }, [paymentId, amount]);
+  }, [
+    paymentId,
+    amount,
+    isSplit,
+    splitIndex,
+    splitCount,
+    splitTotalAmount,
+    splitPaymentIds,
+  ]);
 
   const onFailure = useCallback(
     (errorCode?: string) => {
@@ -95,10 +123,23 @@ export default function ScanScreen() {
         params: {
           amount,
           ...(errorCode && { errorCode }),
+          ...(isSplit && {
+            splitIndex,
+            splitCount,
+            splitTotalAmount,
+            splitPaymentIds,
+          }),
         },
       });
     },
-    [amount],
+    [
+      amount,
+      isSplit,
+      splitIndex,
+      splitCount,
+      splitTotalAmount,
+      splitPaymentIds,
+    ],
   );
 
   const handleOnClosePress = () => {
@@ -193,13 +234,21 @@ export default function ScanScreen() {
   });
 
   const isProcessing = paymentStatusData?.status === "processing";
-  const showNfc = nfcEnabled && nfcMode === "hce";
-  const nfcIconTint = isNfcActive
-    ? Theme["icon-accent-primary"]
-    : Theme["icon-default"];
+  // const showNfc = nfcEnabled && nfcMode === "hce";
+  const showNfc = "true";
+  const nfcIconTint = isNfcActive ? Theme["icon-invert"] : Theme["icon-invert"];
 
   return (
     <View style={styles.container}>
+      {isMidSplit && (
+        <Stack.Screen
+          options={{
+            headerBackVisible: false,
+            headerLeft: () => null,
+            gestureEnabled: false,
+          }}
+        />
+      )}
       {isProcessing ? (
         <View style={styles.loadingContainer}>
           <WalletConnectLoading size={180} />
@@ -213,32 +262,49 @@ export default function ScanScreen() {
         </View>
       ) : (
         <View style={styles.scanContainer}>
-          <View style={[styles.header, !showNfc && styles.headerCentered]}>
-            {showNfc ? (
-              <>
-                <Image
-                  source={assets?.[1]}
-                  style={[styles.nfcIcon, { tintColor: nfcIconTint }]}
-                  tintColor={nfcIconTint}
-                />
-                <ThemedText
-                  style={[
-                    styles.instructionText,
-                    { color: Theme["text-secondary"] },
-                  ]}
-                >
-                  Open your wallet app and tap
-                </ThemedText>
-              </>
-            ) : (
+          {isSplit && splitCountNum && splitIndexNum && (
+            <View style={styles.splitStepper}>
+              <View style={styles.stepperRow}>
+                {Array.from({ length: splitCountNum }).map((_, i) => {
+                  const step = i + 1;
+                  const isCompleted = step < splitIndexNum;
+                  const isCurrent = step === splitIndexNum;
+                  return (
+                    <View
+                      key={i}
+                      style={[
+                        styles.stepperSegment,
+                        {
+                          backgroundColor:
+                            isCompleted || isCurrent
+                              ? Theme["bg-accent-primary"]
+                              : Theme["foreground-primary"],
+                          opacity: isCurrent ? 0.4 : 1,
+                        },
+                      ]}
+                    />
+                  );
+                })}
+              </View>
               <ThemedText
                 style={[
-                  styles.instructionText,
-                  { color: Theme["text-secondary"] },
+                  styles.stepperLabel,
+                  { color: Theme["bg-accent-primary"] },
                 ]}
+                fontSize={14}
+                lineHeight={16}
               >
-                Scan to pay
+                Payment {splitIndexNum} of {splitCountNum}
               </ThemedText>
+            </View>
+          )}
+          <View style={[styles.header, !showNfc && styles.headerCentered]}>
+            {showNfc && (
+              <Image
+                source={assets?.[1]}
+                style={[styles.nfcIcon, { tintColor: nfcIconTint }]}
+                tintColor={nfcIconTint}
+              />
             )}
             <ThemedText
               style={[
@@ -248,32 +314,15 @@ export default function ScanScreen() {
             >
               {formatAmountWithSymbol(amount, currency)}
             </ThemedText>
+            <ThemedText
+              style={[
+                styles.instructionText,
+                { color: Theme["text-secondary"] },
+              ]}
+            >
+              {showNfc ? "Scan or tap your wallet to pay" : "Scan to pay"}
+            </ThemedText>
           </View>
-
-          {showNfc && (
-            <View style={styles.divider}>
-              <View
-                style={[
-                  styles.dividerLine,
-                  { backgroundColor: Theme["foreground-tertiary"] },
-                ]}
-              />
-              <ThemedText
-                style={[
-                  styles.instructionText,
-                  { color: Theme["text-secondary"] },
-                ]}
-              >
-                Or scan the QR code
-              </ThemedText>
-              <View
-                style={[
-                  styles.dividerLine,
-                  { backgroundColor: Theme["foreground-tertiary"] },
-                ]}
-              />
-            </View>
-          )}
 
           <View style={styles.qrSection}>
             <QRCode
@@ -290,7 +339,7 @@ export default function ScanScreen() {
               style={[styles.timerRow, { opacity: isCountdownActive ? 1 : 0 }]}
             >
               <ThemedText style={{ color: Theme["text-secondary"] }}>
-                Payment expires in
+                Expires in
               </ThemedText>
               <ThemedText
                 style={{
@@ -303,9 +352,14 @@ export default function ScanScreen() {
             </View>
           </View>
           <View style={{ flex: 1 }} />
+          {!isMidSplit && (
+            <CloseButton
+              style={styles.closeButton}
+              onPress={handleOnClosePress}
+            />
+          )}
         </View>
       )}
-      <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
     </View>
   );
 }
@@ -353,21 +407,6 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     lineHeight: 50,
   },
-  divider: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: Spacing["spacing-4"],
-    marginBottom: Spacing["spacing-3"],
-    gap: Spacing["spacing-3"],
-  },
-  dividerLine: {
-    flex: 1,
-    height: StyleSheet.hairlineWidth,
-  },
-  dividerText: {
-    fontSize: 14,
-  },
   logo: {
     width: 80,
     height: 80,
@@ -387,8 +426,27 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   nfcIcon: {
-    width: 60,
-    height: 60,
-    marginBottom: Spacing["spacing-2"],
+    width: 71,
+    height: 42,
+    marginBottom: Spacing["spacing-3"],
+  },
+  splitStepper: {
+    width: "100%",
+    alignItems: "center",
+    gap: Spacing["spacing-3"],
+    marginBottom: Spacing["spacing-3"],
+  },
+  stepperRow: {
+    flexDirection: "row",
+    width: "100%",
+    gap: Spacing["spacing-2"],
+  },
+  stepperSegment: {
+    flex: 1,
+    height: 11,
+    borderRadius: BorderRadius[2],
+  },
+  stepperLabel: {
+    textAlign: "center",
   },
 });

@@ -1,6 +1,12 @@
-import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, Platform, StyleSheet, View } from "react-native";
+import { UnknownOutputParams, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Dimensions,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -16,24 +22,20 @@ import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { formatAmountWithSymbol, getCurrency } from "@/utils/currency";
+import {
+  amountToCents,
+  formatAmountWithSymbol,
+  getCurrency,
+} from "@/utils/currency";
 import { resetNavigation } from "@/utils/navigation";
-import { connectPrinter, printReceipt } from "@/utils/printer";
+import { connectPrinter, printSplitSummaryReceipt } from "@/utils/printer";
 import { Image } from "expo-image";
 import { StatusBar } from "expo-status-bar";
 
-interface SuccessParams extends UnknownOutputParams {
-  amount: string;
-  chainName: string;
-  token: string;
-  timestamp: string;
-  paymentId: string;
-  tokenAmount: string;
-  tokenDecimals: string;
-  splitIndex: string;
+interface SplitSummaryParams extends UnknownOutputParams {
   splitCount: string;
-  splitTotalAmount: string;
-  splitPaymentIds: string;
+  paymentIds: string;
+  perPersonAmount: string;
 }
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
@@ -41,12 +43,15 @@ const diagonalLength = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
 const initialCircleSize = 20;
 const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 
-export default function PaymentSuccessScreen() {
+const truncateId = (id: string): string =>
+  id.length > 12 ? `${id.slice(0, 6)}…${id.slice(-4)}` : id;
+
+export default function SplitSummaryScreen() {
   useDisableBackButton();
   const Theme = useTheme("light");
   const DarkTheme = useTheme("dark");
   const LightTheme = useTheme("light");
-  const params = useLocalSearchParams<SuccessParams>();
+  const params = useLocalSearchParams<SplitSummaryParams>();
   const themeMode = useSettingsStore((state) => state.themeMode);
   const currencyCode = useSettingsStore((state) => state.currency);
   const currency = getCurrency(currencyCode);
@@ -55,12 +60,6 @@ export default function PaymentSuccessScreen() {
   );
   const addLog = useLogsStore((state) => state.addLog);
   const { top } = useSafeAreaInsets();
-  const { amount, splitIndex, splitCount, splitPaymentIds, splitTotalAmount } =
-    params;
-  const splitIndexNum = splitIndex ? Number(splitIndex) : undefined;
-  const splitCountNum = splitCount ? Number(splitCount) : undefined;
-  const isSplit = !!splitIndexNum && !!splitCountNum;
-  const isLastSplit = isSplit && splitIndexNum === splitCountNum;
   const [isPrinterConnected, setIsPrinterConnected] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const isPrintingRef = useRef(false);
@@ -68,44 +67,21 @@ export default function PaymentSuccessScreen() {
   const circleScale = useSharedValue(1);
   const contentOpacity = useSharedValue(0);
 
-  const handleNewPayment = () => {
+  const paymentIds: string[] = useMemo(() => {
+    try {
+      return JSON.parse(params.paymentIds || "[]");
+    } catch {
+      return [];
+    }
+  }, [params.paymentIds]);
+
+  const perPersonAmount = params.perPersonAmount;
+  const splitCount = Number(params.splitCount);
+  const collectedTotalCents = amountToCents(perPersonAmount) * splitCount;
+  const collectedTotal = (collectedTotalCents / 100).toFixed(2);
+
+  const handleDone = () => {
     resetNavigation("/amount");
-  };
-
-  const handleNextSplit = () => {
-    if (!isSplit || !splitIndexNum || !splitCountNum) return;
-    const previousIds: string[] = splitPaymentIds
-      ? JSON.parse(splitPaymentIds)
-      : [];
-    const updatedIds = [...previousIds, params.paymentId];
-
-    router.replace({
-      pathname: "/scan",
-      params: {
-        amount,
-        splitIndex: String(splitIndexNum + 1),
-        splitCount: String(splitCountNum),
-        splitTotalAmount: splitTotalAmount ?? "",
-        splitPaymentIds: JSON.stringify(updatedIds),
-      },
-    });
-  };
-
-  const handleFinishSplit = () => {
-    if (!isSplit || !splitCountNum) return;
-    const previousIds: string[] = splitPaymentIds
-      ? JSON.parse(splitPaymentIds)
-      : [];
-    const allIds = [...previousIds, params.paymentId];
-
-    router.replace({
-      pathname: "/split-summary",
-      params: {
-        perPersonAmount: amount,
-        splitCount: String(splitCountNum),
-        paymentIds: JSON.stringify(allIds),
-      },
-    });
   };
 
   const handlePrintReceipt = async () => {
@@ -113,23 +89,19 @@ export default function PaymentSuccessScreen() {
     isPrintingRef.current = true;
     setIsPrinting(true);
     try {
-      await printReceipt({
-        txnId: params.paymentId,
-        amountFiat: Number(amount),
+      await printSplitSummaryReceipt({
+        totalFiat: Number(collectedTotal),
         currency,
-        tokenSymbol: params.token,
-        tokenAmount: params.tokenAmount,
-        tokenDecimals: params.tokenDecimals
-          ? Number(params.tokenDecimals)
-          : undefined,
-        networkName: params.chainName,
-        date: params.timestamp,
+        splits: paymentIds.map((paymentId) => ({
+          paymentId,
+          amountFiat: Number(perPersonAmount),
+        })),
         logoBase64: getVariantPrinterLogo(),
       });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      addLog("error", errorMessage, "payment-success", "handlePrintReceipt");
+      addLog("error", errorMessage, "split-summary", "handlePrintReceipt");
     } finally {
       isPrintingRef.current = false;
       setIsPrinting(false);
@@ -145,14 +117,14 @@ export default function PaymentSuccessScreen() {
         if (isMounted) {
           setIsPrinterConnected(connected);
           if (!connected && error) {
-            addLog("error", error, "payment-success", "initPrinter");
+            addLog("error", error, "split-summary", "initPrinter");
           }
         }
       } catch (error) {
         if (isMounted) {
           const errorMessage =
             error instanceof Error ? error.message : String(error);
-          addLog("error", errorMessage, "payment-success", "initPrinter");
+          addLog("error", errorMessage, "split-summary", "initPrinter");
           setIsPrinterConnected(false);
         }
       }
@@ -183,7 +155,6 @@ export default function PaymentSuccessScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
-      {/* Expanding circle background */}
       <Animated.View
         style={[
           styles.circle,
@@ -197,20 +168,16 @@ export default function PaymentSuccessScreen() {
         ]}
       />
 
-      {/* Content that fades in after circle expands */}
       <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
         <View
-          testID="pos-payment-success"
-          nativeID="pos-payment-success"
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          testID="pos-split-summary"
+          nativeID="pos-split-summary"
+          style={styles.content}
         >
           <ThemedText
-            style={[
-              styles.amountDescription,
-              { color: Theme["text-payment-success"] },
-            ]}
+            style={[styles.title, { color: Theme["text-payment-success"] }]}
           >
-            Payment successful
+            Payment complete
           </ThemedText>
           <ThemedText
             style={[
@@ -218,9 +185,53 @@ export default function PaymentSuccessScreen() {
               { color: Theme["text-payment-success"] },
             ]}
           >
-            {formatAmountWithSymbol(amount, currency)}
+            {formatAmountWithSymbol(collectedTotal, currency)}
           </ThemedText>
+
+          <ScrollView
+            style={styles.list}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {paymentIds.map((id, index) => (
+              <View
+                key={id}
+                style={[
+                  styles.row,
+                  { borderColor: Theme["border-payment-success"] },
+                ]}
+              >
+                <View style={styles.rowLeft}>
+                  <ThemedText
+                    style={[
+                      styles.rowLabel,
+                      { color: Theme["text-payment-success"] },
+                    ]}
+                  >
+                    Payment {index + 1} of {paymentIds.length}
+                  </ThemedText>
+                  <ThemedText
+                    style={[
+                      styles.rowId,
+                      { color: Theme["text-payment-success"] },
+                    ]}
+                  >
+                    {truncateId(id)}
+                  </ThemedText>
+                </View>
+                <ThemedText
+                  style={[
+                    styles.rowAmount,
+                    { color: Theme["text-payment-success"] },
+                  ]}
+                >
+                  {formatAmountWithSymbol(perPersonAmount, currency)}
+                </ThemedText>
+              </View>
+            ))}
+          </ScrollView>
         </View>
+
         <View style={styles.buttonContainer}>
           {isPrinterConnected && (
             <Button
@@ -240,7 +251,7 @@ export default function PaymentSuccessScreen() {
                   { color: DarkTheme["text-primary"] },
                 ]}
               >
-                {isPrinting ? "Printing..." : "Print receipt"}
+                {isPrinting ? "Printing..." : "Print total receipt"}
               </ThemedText>
               <Image
                 source={require("@/assets/images/receipt.png")}
@@ -250,48 +261,27 @@ export default function PaymentSuccessScreen() {
             </Button>
           )}
 
-          {isSplit ? (
-            <Button
-              style={[
-                styles.button,
-                {
-                  backgroundColor: Theme["foreground-primary"],
-                },
-              ]}
-              onPress={isLastSplit ? handleFinishSplit : handleNextSplit}
+          <Button
+            style={[
+              styles.button,
+              {
+                backgroundColor: LightTheme["foreground-primary"],
+                borderColor: LightTheme["border-secondary"],
+              },
+            ]}
+            onPress={handleDone}
+          >
+            <ThemedText
+              style={[styles.buttonText, { color: DarkTheme["text-invert"] }]}
             >
-              <ThemedText
-                style={[styles.buttonText, { color: Theme["text-primary"] }]}
-              >
-                {isLastSplit ? "Go to summary" : "Continue to next payment"}
-              </ThemedText>
-            </Button>
-          ) : (
-            <Button
-              style={[
-                styles.button,
-                {
-                  backgroundColor: LightTheme["foreground-primary"],
-                  borderColor: LightTheme["border-secondary"],
-                },
-              ]}
-              onPress={handleNewPayment}
-            >
-              <ThemedText
-                style={[
-                  styles.buttonText,
-                  { color: LightTheme["text-primary"] },
-                ]}
-              >
-                New payment
-              </ThemedText>
-              <Image
-                source={require("@/assets/images/plus.png")}
-                style={styles.buttonIcon}
-                tintColor={DarkTheme["icon-default"]}
-              />
-            </Button>
-          )}
+              Done
+            </ThemedText>
+            <Image
+              source={require("@/assets/images/plus.png")}
+              style={styles.buttonIcon}
+              tintColor={DarkTheme["icon-default"]}
+            />
+          </Button>
         </View>
       </Animated.View>
       <StatusBar style={themeMode === "system" ? "auto" : themeMode} />
@@ -316,7 +306,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
-  amountDescription: {
+  content: {
+    flex: 1,
+    paddingTop: Spacing["spacing-6"],
+  },
+  title: {
     fontSize: 18,
     lineHeight: 20,
     textAlign: "center",
@@ -326,6 +320,40 @@ const styles = StyleSheet.create({
     fontSize: 38,
     lineHeight: 38,
     textAlign: "center",
+    marginBottom: Spacing["spacing-6"],
+  },
+  list: {
+    flex: 1,
+  },
+  listContent: {
+    gap: Spacing["spacing-2"],
+    paddingBottom: Spacing["spacing-3"],
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: Spacing["spacing-3"],
+    paddingHorizontal: Spacing["spacing-4"],
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: BorderRadius["3"],
+  },
+  rowLeft: {
+    gap: Spacing["spacing-1"],
+  },
+  rowLabel: {
+    fontSize: 16,
+    lineHeight: 18,
+  },
+  rowId: {
+    fontSize: 12,
+    lineHeight: 14,
+    opacity: 0.7,
+  },
+  rowAmount: {
+    fontSize: 16,
+    lineHeight: 18,
+    fontFamily: "KH Teka Medium",
   },
   buttonContainer: {
     width: "100%",
@@ -335,6 +363,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
     borderRadius: BorderRadius["5"],
