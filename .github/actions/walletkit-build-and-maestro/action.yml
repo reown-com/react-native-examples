@@ -438,10 +438,10 @@ runs:
             --predicate "process == \"$APP_PROCESS_NAME\" OR sender == \"$APP_PROCESS_NAME\" OR processImagePath CONTAINS[c] \"/$APP_PROCESS_NAME.app/\" OR senderImagePath CONTAINS[c] \"/$APP_PROCESS_NAME.app/\" OR eventMessage CONTAINS[c] \"$APP_ID\"" \
             --last 5m \
             > ios-diagnostics/sim-app.log 2>&1 || true
-          xcrun simctl spawn "$DEVICE_ID" log show \
-            --last 5m \
-            > ios-diagnostics/sim-device.log 2>&1 || true
-          xcrun simctl diagnose -b --no-archive --output=ios-diagnostics/simctl-diagnose --udid "$DEVICE_ID" || true
+          # Redact 64-char hex strings (private-key shape) before upload.
+          sed -E 's/[0-9a-fA-F]{64}/[REDACTED]/g' ios-diagnostics/sim-app.log \
+            > ios-diagnostics/sim-app.log.tmp \
+            && mv ios-diagnostics/sim-app.log.tmp ios-diagnostics/sim-app.log
         fi
         ls -la ios-diagnostics || true
 
