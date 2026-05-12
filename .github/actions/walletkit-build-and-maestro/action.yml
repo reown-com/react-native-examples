@@ -404,6 +404,13 @@ runs:
         WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
       run: |
         xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
+        mkdir -p maestro-artifacts
+        xcrun simctl spawn "$DEVICE_ID" log stream \
+          --level=debug \
+          --style=compact \
+          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\"" \
+          > maestro-artifacts/ios-syslog.log 2>&1 &
+        SYSLOG_PID=$!
         set +e
         $HOME/.maestro/bin/maestro test \
           --env APP_ID="$APP_ID" \
@@ -418,9 +425,12 @@ runs:
           --include-tags "$MAESTRO_TAGS" \
           ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} \
           --test-output-dir maestro-artifacts \
-          --debug-output "${RUNNER_TEMP}/maestro-debug" \
+          --debug-output maestro-artifacts/maestro-debug \
           .maestro/ >maestro-output.log 2>&1
         maestro_exit_code=$?
+        kill "$SYSLOG_PID" 2>/dev/null || true
+        mkdir -p maestro-artifacts/ios-crash-reports
+        cp -R "$HOME/Library/Logs/DiagnosticReports/." maestro-artifacts/ios-crash-reports/ 2>/dev/null || true
         cat maestro-output.log
         exit "$maestro_exit_code"
 
@@ -437,6 +447,9 @@ runs:
           maestro-artifacts/**/*.mov
           maestro-artifacts/**/*.webm
           maestro-artifacts/**/*.gif
+          maestro-artifacts/ios-syslog.log
+          maestro-artifacts/ios-crash-reports/**
+          maestro-artifacts/maestro-debug/**
           maestro-output.log
         if-no-files-found: warn
         retention-days: 14
