@@ -3475,6 +3475,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nodable/entities@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@nodable/entities@npm:2.1.0"
+  checksum: ae5a432a665d210bb28b3a9dbe8caf49f46be65fdc626bd14febe8f150b735182efb6967fe12f8c8f39d22e572b8b9361b4915aec094f8cea5e01f683191cf80
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -6112,10 +6119,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:0.8.12":
-  version: 0.8.12
-  resolution: "@xmldom/xmldom@npm:0.8.12"
-  checksum: 609bbcd6f31fa24023f5cc836e804d49c60e3df83ca73f744da9caff7fed516221dcf2f23de44e5289d715951781ec35fa90adf57008c3eae944a7550c39e325
+"@xmldom/xmldom@npm:0.8.13":
+  version: 0.8.13
+  resolution: "@xmldom/xmldom@npm:0.8.13"
+  checksum: b5568a3dee6306c4c6256c94f27d74f904d7cc923607f0dcaa37998e370361ce37a6e99aa55e8e725f07079e619a6f8b3a7de218e76b522ba2b1aca3ada5265c
   languageName: node
   linkType: hard
 
@@ -9142,25 +9149,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-builder@npm:^1.1.4":
-  version: 1.1.4
-  resolution: "fast-xml-builder@npm:1.1.4"
+"fast-xml-builder@npm:^1.1.5":
+  version: 1.2.0
+  resolution: "fast-xml-builder@npm:1.2.0"
   dependencies:
-    path-expression-matcher: ^1.1.3
-  checksum: 90b019ed6f52cb30342a58d4bf8726a7723b4110cb9c0fd3fa2031e87506e8b18740fd349472926c9e2925d22ca6637b6d46a20eda537473cf63366970db4d7b
+    path-expression-matcher: ^1.5.0
+    xml-naming: ^0.1.0
+  checksum: 3bf38faf65dee87d213b4fc096b57141d68248d6c7e64f24879fce646f2e681f1ad2669e17eebc75abc8c6147a1c84001c1b8c4d9cb3c0fea21650b74c230c7d
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:5.5.7":
-  version: 5.5.7
-  resolution: "fast-xml-parser@npm:5.5.7"
+"fast-xml-parser@npm:5.7.0":
+  version: 5.7.0
+  resolution: "fast-xml-parser@npm:5.7.0"
   dependencies:
-    fast-xml-builder: ^1.1.4
-    path-expression-matcher: ^1.1.3
-    strnum: ^2.2.0
+    "@nodable/entities": ^2.1.0
+    fast-xml-builder: ^1.1.5
+    path-expression-matcher: ^1.5.0
+    strnum: ^2.2.3
   bin:
     fxparser: src/cli/cli.js
-  checksum: decac5d8cd603cb0a1037b632c1a7e267a5420da430ac3420e8a2aee4da7d044553ff80524cda8ed54741fea38202372c84959a52eee61a3a2b61e3233dd5ca5
+  checksum: b3c941d5ef41e504cee82b3bbce8224154d58b5018efd2fea695683cda7a4fe5c6c15d435ea1f6cb7e69aa1b27710ddb68db8c2be648647a7b6082663586f8bb
   languageName: node
   linkType: hard
 
@@ -9775,10 +9784,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hono@npm:4.12.12":
-  version: 4.12.12
-  resolution: "hono@npm:4.12.12"
-  checksum: 1f8fda5adc9de6c604ab6a29ed5817ab969cb10a8548afe5dfbf38ff3b642721a362c64038a5ba3fe5d6f4810eef91d6d008901dbc6d4dec4717f860839d0876
+"hono@npm:4.12.14":
+  version: 4.12.14
+  resolution: "hono@npm:4.12.14"
+  checksum: 7e0d6913a7cc2b40b83371ee3e29f2d51ac367643fc9b4fe6f874217b71c8a5f10e606f0a13a4dc248d9a5fb712f71e4c27c93ffb526491595c7bd575b5e3a7a
   languageName: node
   linkType: hard
 
@@ -13101,10 +13110,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-expression-matcher@npm:^1.1.3":
-  version: 1.2.0
-  resolution: "path-expression-matcher@npm:1.2.0"
-  checksum: 2811aab3269c288893aef09e5127124d3c434bfc7e1352fea6b7dd81ed20260001b072ff60bdcaaa393d50a4333725290dbad47bb612d95f5448e499b4ac887f
+"path-expression-matcher@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "path-expression-matcher@npm:1.5.0"
+  checksum: 52f0491a88f728f2eefb83a5c4f84f1185a8572e34ba41a72f88e270d5796c966ec1fe78e978599c490ccac0656a4cc55d75485538393873d32a4ef096a8dda6
   languageName: node
   linkType: hard
 
@@ -13332,14 +13341,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:~8.4.32":
-  version: 8.4.35
-  resolution: "postcss@npm:8.4.35"
+"postcss@npm:8.5.10":
+  version: 8.5.10
+  resolution: "postcss@npm:8.5.10"
   dependencies:
-    nanoid: ^3.3.7
-    picocolors: ^1.0.0
-    source-map-js: ^1.0.2
-  checksum: cf3c3124d3912a507603f6d9a49b3783f741075e9aa73eb592a6dd9194f9edab9d20a8875d16d137d4f779fe7b6fbd1f5727e39bfd1c3003724980ee4995e1da
+    nanoid: ^3.3.11
+    picocolors: ^1.1.1
+    source-map-js: ^1.2.1
+  checksum: 9af9cd7f2f0d4b8456f6710e48d586328433509b695911fda942c24ac4db4e62c6fed8c6c6d8c8258326285f669494c2c36a4ff84aa160f0586eb545e5258bf5
   languageName: node
   linkType: hard
 
@@ -14911,10 +14920,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-js@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "source-map-js@npm:1.0.2"
-  checksum: c049a7fc4deb9a7e9b481ae3d424cc793cb4845daa690bc5a05d428bf41bf231ced49b4cf0c9e77f9d42fdb3d20d6187619fc586605f5eabe995a316da8d377c
+"source-map-js@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "source-map-js@npm:1.2.1"
+  checksum: 4eb0cd997cdf228bc253bcaff9340afeb706176e64868ecd20efbe6efea931465f43955612346d6b7318789e5265bdc419bc7669c1cebe3db0eb255f57efa76b
   languageName: node
   linkType: hard
 
@@ -15237,10 +15246,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strnum@npm:^2.2.0":
-  version: 2.2.2
-  resolution: "strnum@npm:2.2.2"
-  checksum: 9142f1188b12041661353f8d8b658c495fa7b56a0f15d3bb6af38b3473c623ba31eead97aba0ea70956bcde1061fb4802e917a95b825aa939132e18d6320a8fb
+"strnum@npm:^2.2.3":
+  version: 2.3.0
+  resolution: "strnum@npm:2.3.0"
+  checksum: 4d397aab0751e7cdc755dbc7d64f29dd445c849c9b0f3f1d316c6a1d24b99af860ebb0c4e15299565296894d1558ab7bc1603e5094fc45b17d741d6d37daadb7
   languageName: node
   linkType: hard
 
@@ -16417,6 +16426,13 @@ __metadata:
   dependencies:
     xml-parser-xo: ^4.1.2
   checksum: e4c6927d30de9e82f69ea1752d93b9e31e5eb308c2261e039272a04cdf1120a03cf01aea5cbb01c4197a1dee9dc67b04bf91a24acd6a1abe52b4fcb7ac843086
+  languageName: node
+  linkType: hard
+
+"xml-naming@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "xml-naming@npm:0.1.0"
+  checksum: 8d1b5b84430f688a95f02ae1e13557d481242eed6de945569c444a6ec1553a0065afe39a1536aeffee3a787cb3cf99432e61d9fbbaa6d8d64555d550e6b4b13d
   languageName: node
   linkType: hard
 

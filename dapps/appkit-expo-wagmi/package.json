@@ -66,7 +66,7 @@
     "valtio": "2.1.8",
     "viem": "2.38.5",
     "fast-redact": "3.5.0",
-    "hono": "4.12.12",
+    "hono": "4.12.14",
     "node-forge": "1.4.0",
     "glob": "10.5.0",
     "tar": "7.5.11",
@@ -76,15 +76,16 @@
     "lodash": "4.18.1",
     "bn.js": "5.2.3",
     "minimatch": "9.0.9",
-    "fast-xml-parser": "5.5.7",
+    "fast-xml-parser": "5.7.0",
     "flatted": "3.4.2",
     "socket.io-parser": "4.2.6",
     "picomatch": "4.0.4",
     "yaml": "2.8.3",
     "defu": "6.1.5",
     "ajv": "6.14.0",
-    "@xmldom/xmldom": "0.8.12",
-    "cross-spawn": "7.0.6"
+    "@xmldom/xmldom": "0.8.13",
+    "cross-spawn": "7.0.6",
+    "postcss": "8.5.10"
   },
   "private": true
 }
