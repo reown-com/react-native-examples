@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, { Keyframe } from 'react-native-reanimated';
+import Config from 'react-native-config';
 
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
@@ -11,6 +12,8 @@ interface LoadingViewProps {
   note?: string;
   size?: number;
 }
+
+const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
 
 const enteringKeyframe = new Keyframe({
   0: { opacity: 0, transform: [{ translateY: 14 }, { scale: 0.92 }] },
@@ -24,7 +27,10 @@ const exitingKeyframe = new Keyframe({
 
 export function LoadingView({ message, note, size = 120 }: LoadingViewProps) {
   const hasMountedRef = useRef(false);
-  const entering = hasMountedRef.current ? enteringKeyframe : undefined;
+  const entering =
+    arePayModalAnimationsEnabled && hasMountedRef.current
+      ? enteringKeyframe
+      : undefined;
   hasMountedRef.current = true;
 
   const messageKey = message || 'default';
@@ -38,7 +44,7 @@ export function LoadingView({ message, note, size = 120 }: LoadingViewProps) {
         <Animated.View
           key={messageKey}
           entering={entering}
-          exiting={exitingKeyframe}
+          exiting={arePayModalAnimationsEnabled ? exitingKeyframe : undefined}
           style={styles.messageSlot}
         >
           <Text
