@@ -1,3 +1,7 @@
+[简体中文](README_zh-CN.md) | [English](README.md)
+
+---
+
 # React Native Examples
 
 A collection of React Native example apps showcasing [Reown](https://reown.com) AppKit and WalletKit SDKs. This repository includes sample dapps and reference wallet implementations that serve as testing grounds, learning resources, and reference code for developers integrating Reown SDKs into their projects.
