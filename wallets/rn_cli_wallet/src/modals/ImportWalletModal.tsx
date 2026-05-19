@@ -12,6 +12,7 @@ import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import WalletStore from '@/store/WalletStore';
+import PaymentStore from '@/store/PaymentStore';
 import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { loadTonWallet } from '@/utils/TonWalletUtil';
 import { loadTronWallet } from '@/utils/TronWalletUtil';
@@ -137,6 +138,17 @@ export default function ImportWalletModal() {
           });
           return;
         }
+      }
+
+      try {
+        await PaymentStore.clearLastPaidTokenUnit();
+      } catch (error: unknown) {
+        LogStore.warn(
+          'Failed to clear last paid token after wallet import',
+          'ImportWalletModal',
+          'handleImport',
+          { error: error instanceof Error ? error.message : 'unknown error' },
+        );
       }
 
       Toast.show({
