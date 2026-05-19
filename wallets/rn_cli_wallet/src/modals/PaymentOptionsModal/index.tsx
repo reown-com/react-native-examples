@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from 'react';
-import { StyleSheet } from 'react-native';
 import { useSnapshot } from 'valtio';
 import { useNavigation } from '@react-navigation/native';
 
@@ -8,10 +7,6 @@ import ModalStore from '@/store/ModalStore';
 import PaymentStore from '@/store/PaymentStore';
 import type { PaymentOption } from '@walletconnect/pay';
 import type { PaymentOptionWithCollectData } from '@/utils/TypesUtil';
-import { useTheme } from '@/hooks/useTheme';
-import { Button } from '@/components/Button';
-import { BorderRadius } from '@/utils/ThemeUtil';
-import QuestionMark from '@/assets/QuestionMark';
 
 import { LoadingView } from './LoadingView';
 import { CollectDataWebView } from './CollectDataWebView';
@@ -22,10 +17,11 @@ import { ExpiryWarningView } from './ExpiryWarningView';
 import { ResultView } from './ResultView';
 import { ViewWrapper } from './ViewWrapper';
 import { detectErrorType, getErrorMessage } from './utils';
+import { GasFeeView } from './GasFeeView';
+import { requiresApproval } from '@/utils/PaymentUtil';
 
 export default function PaymentOptionsModal() {
   const snap = useSnapshot(PaymentStore.state);
-  const Theme = useTheme();
   const navigation = useNavigation();
 
   const selectedOptionCollectDataUrl = (
@@ -35,7 +31,7 @@ export default function PaymentOptionsModal() {
   useEffect(() => {
     let isActive = true;
 
-    if (snap.step === 'loading') {
+    const resolveLoadingStep = async () => {
       if (snap.errorMessage) {
         LogStore.error(
           'Payment failed with initial error',
@@ -49,39 +45,98 @@ export default function PaymentOptionsModal() {
           message: getErrorMessage(errorType, snap.errorMessage),
           errorType,
         });
-      } else if (snap.paymentOptions) {
-        if (
-          !snap.paymentOptions.options ||
-          snap.paymentOptions.options.length === 0
-        ) {
-          LogStore.warn(
-            'No payment options available',
-            'PaymentOptionsModal',
-            'useEffect',
-            { paymentId: snap.paymentOptions.paymentId },
-          );
-          PaymentStore.setResult({
-            status: 'error',
-            errorType: 'insufficient_funds',
-            message: getErrorMessage('insufficient_funds'),
-          });
-        } else {
-          const options = snap.paymentOptions.options;
-          const firstOption = options[0] as PaymentOptionWithCollectData;
-          const singleOptionWithoutCollectData =
-            options.length === 1 && !firstOption.collectData?.url;
+        return;
+      }
 
-          if (singleOptionWithoutCollectData) {
-            PaymentStore.selectOption(firstOption as PaymentOption);
-            if (isActive) {
-              PaymentStore.setStep('review');
-            }
-            PaymentStore.fetchPaymentActions(firstOption as PaymentOption);
+      if (!snap.paymentOptions) {
+        return;
+      }
+
+      if (
+        !snap.paymentOptions.options ||
+        snap.paymentOptions.options.length === 0
+      ) {
+        LogStore.warn(
+          'No payment options available',
+          'PaymentOptionsModal',
+          'useEffect',
+          { paymentId: snap.paymentOptions.paymentId },
+        );
+        PaymentStore.setResult({
+          status: 'error',
+          errorType: 'insufficient_funds',
+          message: getErrorMessage('insufficient_funds'),
+        });
+        return;
+      }
+
+      const options = snap.paymentOptions.options as PaymentOption[];
+      const firstOption = options[0] as PaymentOptionWithCollectData;
+
+      if (options.length === 1) {
+        PaymentStore.selectOption(firstOption as PaymentOption);
+        if (isActive) {
+          if (firstOption.collectData?.url) {
+            PaymentStore.setStep('collectData');
           } else {
-            PaymentStore.setStep('selectOption');
+            PaymentStore.setStep('review');
           }
         }
+        return;
       }
+
+      try {
+        const lastPaidTokenUnit = await PaymentStore.loadLastPaidTokenUnit();
+        if (!isActive) return;
+
+        const preferredOption = PaymentStore.findPreferredOption(
+          options,
+          lastPaidTokenUnit,
+        ) as PaymentOptionWithCollectData | null;
+
+        if (!preferredOption) {
+          PaymentStore.setStep('selectOption');
+          return;
+        }
+
+        const needsCollectData = !!preferredOption.collectData?.url;
+        if (needsCollectData) {
+          PaymentStore.selectOption(preferredOption as PaymentOption);
+          PaymentStore.setStep('selectOption');
+          return;
+        }
+
+        PaymentStore.selectOption(preferredOption as PaymentOption);
+        PaymentStore.setStep('review');
+      } catch (error) {
+        LogStore.warn(
+          'Failed to load last paid token',
+          'PaymentOptionsModal',
+          'useEffect',
+          {
+            error:
+              error instanceof Error ? error.message : 'unknown storage error',
+          },
+        );
+        PaymentStore.setStep('selectOption');
+      }
+    };
+
+    if (snap.step === 'loading') {
+      resolveLoadingStep().catch(error => {
+        LogStore.error(
+          'Failed to resolve payment loading step',
+          'PaymentOptionsModal',
+          'useEffect',
+          {
+            error:
+              error instanceof Error
+                ? error.message
+                : 'unknown loading step error',
+          },
+        );
+        PaymentStore.setStep('selectOption');
+      });
     }
 
     return () => {
@@ -117,6 +172,10 @@ export default function PaymentOptionsModal() {
     navigation.navigate('Scan');
   }, [navigation]);
 
+  const handleInfoPress = useCallback(() => {
+    PaymentStore.setStep('infoExplainer');
+  }, []);
+
   const handleExpiryComplete = useCallback(() => {
     PaymentStore.setStep('review');
   }, []);
@@ -138,6 +197,9 @@ export default function PaymentOptionsModal() {
       case 'collectData':
         PaymentStore.setStep('selectOption');
         break;
+      case 'gasFee':
+        PaymentStore.setStep('review');
+        break;
       case 'review':
         PaymentStore.setStep('selectOption');
         break;
@@ -151,23 +213,24 @@ export default function PaymentOptionsModal() {
 
   const onSelectOption = useCallback((option: PaymentOption) => {
     PaymentStore.selectOption(option);
-    PaymentStore.fetchPaymentActions(option);
   }, []);
 
-  const handleContinue = useCallback(() => {
-    const { selectedOption, collectDataCompletedIds } = PaymentStore.state;
-    if (!selectedOption) return;
+  const handleSelectOption = useCallback(
+    (option: PaymentOption) => {
+      onSelectOption(option);
+      const { collectDataCompletedIds } = PaymentStore.state;
 
-    const option = selectedOption as PaymentOptionWithCollectData;
-    const needsCollectData = !!option.collectData?.url;
-    const alreadyCompleted = collectDataCompletedIds.includes(option.id);
+      const needsCollectData = !!option.collectData?.url;
+      const alreadyCompleted = collectDataCompletedIds.includes(option.id);
 
-    if (needsCollectData && !alreadyCompleted) {
-      PaymentStore.setStep('collectData');
-    } else {
-      PaymentStore.setStep('review');
-    }
-  }, []);
+      if (needsCollectData && !alreadyCompleted) {
+        PaymentStore.setStep('collectData');
+      } else {
+        PaymentStore.setStep('review');
+      }
+    },
+    [onSelectOption],
+  );
 
   useEffect(() => {
     if (snap.step === 'selectOption') {
@@ -209,6 +272,21 @@ export default function PaymentOptionsModal() {
           />
         );
 
+      case 'gasFee':
+        return (
+          <GasFeeView
+            onDismiss={() => PaymentStore.setStep('review')}
+            imageSource={snap.selectedOption?.amount.display?.iconUrl || ''}
+            tokenName={snap.selectedOption?.amount.display?.assetSymbol || ''}
+            gasCostEstimate={
+              snap.selectedOption
+                ? snap.optionFeeEstimatesById[snap.selectedOption.id]
+                    ?.display || ''
+                : ''
+            }
+          />
+        );
+
       case 'collectData':
         return (
           <CollectDataWebView
@@ -223,32 +301,49 @@ export default function PaymentOptionsModal() {
           <SelectOptionView
             info={snap.paymentOptions?.info}
             options={(snap.paymentOptions?.options || []) as PaymentOption[]}
-            selectedOption={snap.selectedOption as PaymentOption | null}
-            isSigningPayment={false}
-            onSelectOption={onSelectOption}
-            onContinue={handleContinue}
+            onOptionPress={handleSelectOption}
+            onInfoPress={handleInfoPress}
             collectDataCompletedIds={snap.collectDataCompletedIds as string[]}
+            optionFeeEstimatesById={snap.optionFeeEstimatesById}
+            optionFeeEstimateStatusById={snap.optionFeeEstimateStatusById}
           />
         );
 
-      case 'review':
-        return snap.selectedOption ? (
+      case 'review': {
+        if (!snap.selectedOption) {
+          return null;
+        }
+
+        const selectedOption = snap.selectedOption as PaymentOption;
+
+        return (
           <ReviewPaymentView
             info={snap.paymentOptions?.info}
-            selectedOption={snap.selectedOption as PaymentOption}
-            paymentActions={snap.paymentActions}
-            approvalGasEstimate={snap.approvalGasEstimate}
-            isEstimatingApprovalGas={snap.isEstimatingApprovalGas}
-            isLoadingActions={snap.isLoadingActions}
-            isSigningPayment={false}
+            selectedOption={selectedOption}
+            requiresApproval={requiresApproval(selectedOption.actions)}
+            approvalGasEstimate={
+              snap.optionFeeEstimatesById[selectedOption.id] ?? null
+            }
+            isEstimatingApprovalGas={
+              snap.optionFeeEstimateStatusById[selectedOption.id] === 'loading'
+            }
             onPay={() => PaymentStore.approvePayment()}
+            onGasFeePress={() => PaymentStore.setStep('gasFee')}
+            onChangeOption={
+              snap.paymentOptions?.options?.length &&
+              snap.paymentOptions?.options?.length > 1
+                ? () => PaymentStore.setStep('selectOption')
+                : undefined
+            }
           />
-        ) : null;
+        );
+      }
 
       case 'confirming':
         return (
           <LoadingView
             message={snap.loadingMessage || 'Processing your payment...'}
+            note={snap.loadingNote || undefined}
           />
         );
 
@@ -279,22 +374,21 @@ export default function PaymentOptionsModal() {
   }, [
     snap.step,
     snap.selectedOption,
-    snap.isLoadingActions,
     snap.resultStatus,
     snap.resultErrorType,
     snap.resultMessage,
     snap.loadingMessage,
+    snap.loadingNote,
     snap.paymentOptions,
-    snap.paymentActions,
-    snap.approvalGasEstimate,
-    snap.isEstimatingApprovalGas,
+    snap.optionFeeEstimatesById,
+    snap.optionFeeEstimateStatusById,
     snap.collectDataCompletedIds,
     snap.expiresAt,
     selectedOptionCollectDataUrl,
     handleWebViewComplete,
     handleWebViewError,
-    handleContinue,
-    onSelectOption,
+    handleSelectOption,
+    handleInfoPress,
     onClose,
     onScanQR,
     handleExpiryComplete,
@@ -302,28 +396,16 @@ export default function PaymentOptionsModal() {
   ]);
 
   const paymentOptionsCount = snap.paymentOptions?.options?.length ?? 0;
-  const isCollectDataNeeded = snap.paymentOptions?.collectData?.url;
   const showBackButton =
     snap.step === 'collectData' ||
     snap.step === 'infoExplainer' ||
-    (snap.step === 'review' && paymentOptionsCount > 1);
+    snap.step === 'gasFee' ||
+    (snap.step === 'review' &&
+      paymentOptionsCount > 1 &&
+      (snap.previousStep === 'selectOption' ||
+        snap.previousStep === 'collectData'));
   const isWebView =
     snap.step === 'collectData' && !!selectedOptionCollectDataUrl;
-
-  const headerLeftContent =
-    snap.step === 'selectOption' && isCollectDataNeeded ? (
-      <Button
-        onPress={() => PaymentStore.setStep('infoExplainer')}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        testID="pay-button-info"
-        style={[
-          styles.questionButton,
-          { borderColor: Theme['border-secondary'] },
-        ]}
-      >
-        <QuestionMark width={20} height={20} fill={Theme['text-primary']} />
-      </Button>
-    ) : undefined;
 
   return (
     <ViewWrapper
@@ -332,20 +414,8 @@ export default function PaymentOptionsModal() {
       showBackButton={showBackButton}
       onBack={goBack}
       onClose={onClose}
-      headerLeftContent={headerLeftContent}
     >
       {renderContent()}
     </ViewWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  questionButton: {
-    width: 38,
-    height: 38,
-    borderRadius: BorderRadius[3],
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
