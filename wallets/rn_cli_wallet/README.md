@@ -74,6 +74,19 @@ If everything is set up _correctly_, you should see your new app running in your
 
 This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
 
+## Permit2 Revoke Script (Test Utility)
+
+The wallet UI no longer includes a Permit2 reset button. For testing, use the script below to send `approve(PERMIT2, 0)` directly.
+
+```bash
+yarn permit2:revoke --chainId eip155:137 --walletAddress 0xYourAddress --privateKey 0xYourPrivateKey --projectId yourProjectId
+```
+
+Notes:
+- `projectId` is required when using WalletConnect RPC (`https://rpc.walletconnect.org/v1/`).
+- `privateKey` is required because the script signs and sends an on-chain transaction.
+- If `--tokenAddress` is omitted, the script defaults to a USDT address for supported chains.
+
 ## E2E Testing (Maestro)
 
 This project uses [Maestro](https://maestro.dev) for end-to-end testing. Tests are located in `.maestro/` at the repo root.

@@ -97,7 +97,9 @@ export default function Settings() {
       <View style={styles.sectionContainer}>
         <Card
           title="Client ID"
-          value={clientId ? `${clientId.slice(0, 8)}..${clientId.slice(-8)}` : ''}
+          value={
+            clientId ? `${clientId.slice(0, 8)}..${clientId.slice(-8)}` : ''
+          }
           onPress={() => copyToClipboard(clientId)}
         />
         <Card
@@ -105,10 +107,7 @@ export default function Settings() {
           value={`${getVersion()} (${getBuildNumber()}) - ${getEnvironmentLabel()}`}
         />
         <Card title="Socket status" value={socketStatus} />
-        <Card
-          title="Read logs"
-          onPress={() => navigation.navigate('Logs')}
-        />
+        <Card title="Read logs" onPress={() => navigation.navigate('Logs')} />
       </View>
     </ScrollView>
   );

@@ -99,7 +99,7 @@
     "tmp": "0.2.4",
     "on-headers": "1.1.0",
     "fast-redact": "3.5.0",
-    "hono": "4.12.12",
+    "hono": "4.12.14",
     "qs": "6.14.2",
     "ws": "8.18.1",
     "node-forge": "1.4.0",
@@ -109,7 +109,7 @@
     "js-yaml": "4.1.1",
     "h3": "1.15.9",
     "lodash": "4.18.1",
-    "fast-xml-parser": "5.5.7",
+    "fast-xml-parser": "5.7.0",
     "bn.js": "5.2.3",
     "minimatch": "9.0.9",
     "flatted": "3.4.2",
@@ -119,6 +119,7 @@
     "defu": "6.1.5",
     "ajv": "6.14.0",
     "elliptic": "6.6.1",
-    "@xmldom/xmldom": "0.8.12"
+    "@xmldom/xmldom": "0.8.13",
+    "postcss": "8.5.10"
   }
 }

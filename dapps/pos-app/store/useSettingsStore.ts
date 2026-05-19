@@ -73,6 +73,9 @@ interface SettingsStore {
   pinLockoutUntil: number | null;
   biometricEnabled: boolean;
 
+  // NFC
+  nfcEnabled: boolean;
+
   // Actions
   setThemeMode: (themeMode: ThemeMode) => void;
   setDeviceId: (deviceId: string) => void;
@@ -93,6 +96,7 @@ interface SettingsStore {
   getLockoutRemainingSeconds: () => number;
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
+  setNfcEnabled: (enabled: boolean) => void;
 
   // Transaction filters
   setTransactionFilter: (filter: TransactionFilterType) => void;
@@ -118,6 +122,7 @@ export const useSettingsStore = create<SettingsStore>()(
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
+      nfcEnabled: false,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
@@ -265,6 +270,7 @@ export const useSettingsStore = create<SettingsStore>()(
         set({ pinFailedAttempts: 0, pinLockoutUntil: null }),
       setBiometricEnabled: (enabled: boolean) =>
         set({ biometricEnabled: enabled }),
+      setNfcEnabled: (enabled: boolean) => set({ nfcEnabled: enabled }),
 
       setTransactionFilter: (filter: TransactionFilterType) =>
         set({ transactionFilter: filter }),
@@ -277,7 +283,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 14,
+      version: 15,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -331,6 +337,10 @@ export const useSettingsStore = create<SettingsStore>()(
 
         if (version < 14) {
           persistedState.dateRangeFilter = "today";
+        }
+
+        if (version < 15) {
+          persistedState.nfcEnabled = persistedState.nfcEnabled ?? false;
         }
 
         return persistedState;
