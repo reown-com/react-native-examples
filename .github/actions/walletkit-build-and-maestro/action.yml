@@ -290,6 +290,17 @@ runs:
       shell: bash
       run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
 
+    - name: Prime Universal Link AASA cache
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: |
+        xcrun simctl spawn "$DEVICE_ID" swcutil reset || true
+        for domain in pay.walletconnect.com staging.pay.walletconnect.com dev.pay.walletconnect.com; do
+          xcrun simctl spawn "$DEVICE_ID" swcutil dl -d "$domain" || true
+        done
+        sleep 3
+        xcrun simctl spawn "$DEVICE_ID" swcutil show 2>/dev/null | grep -i walletconnect || true
+
     # --- Android leg ---
     - name: Install Java 17
       if: inputs.platform == 'android'
@@ -408,7 +419,7 @@ runs:
         xcrun simctl spawn "$DEVICE_ID" log stream \
           --level=debug \
           --style=compact \
-          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\"" \
+          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\" OR process CONTAINS \"maestro\" OR process == \"xctest\" OR process == \"testmanagerd\" OR process == \"tccd\" OR process == \"SpringBoard\"" \
           > maestro-artifacts/ios-syslog.log 2>&1 &
         SYSLOG_PID=$!
         set +e
