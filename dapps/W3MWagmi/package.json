@@ -82,6 +82,7 @@
   },
   "packageManager": "yarn@3.6.4",
   "resolutions": {
+    "@babel/plugin-transform-modules-systemjs": "7.29.4",
     "tar-fs": "2.1.4",
     "ip": "2.0.1",
     "micromatch": "4.0.8",
