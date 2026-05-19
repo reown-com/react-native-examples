@@ -36,7 +36,7 @@ PODS:
   - hermes-engine (0.82.0):
     - hermes-engine/Pre-built (= 0.82.0)
   - hermes-engine/Pre-built (0.82.0)
-  - OpenSSL-Universal (3.3.3001)
+  - OpenSSL-Universal (3.6.0000)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1811,7 +1811,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - SocketRocket
-  - react-native-compat (2.23.8):
+  - react-native-compat (2.23.9):
     - boost
     - DoubleConversion
     - fast_float
@@ -3384,7 +3384,7 @@ SPEC CHECKSUMS:
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   Haptics: caa98be61cf6b0ccfdc461321b0c1dd2a9d49b8e
   hermes-engine: 8642d8f14a548ab718ec112e9bebdfdd154138b5
-  OpenSSL-Universal: 6082b0bf950e5636fe0d78def171184e2b3899c2
+  OpenSSL-Universal: 9110d21982bb7e8b22a962b6db56a8aa805afde7
   RCT-Folly: 846fda9475e61ec7bcbf8a3fe81edfcaeb090669
   RCTDeprecation: 22bf66112da540a7d40e536366ddd8557934fca1
   RCTRequired: a0ed4dc41b35f79fbb6d8ba320e06882a8c792cf
@@ -3418,7 +3418,7 @@ SPEC CHECKSUMS:
   React-logger: 30adf849117e87cf86e88dca1824bb0f18f87e10
   React-Mapbuffer: 499069c3dcd4b438a70fcc2a65e8a4185ea9170b
   React-microtasksnativemodule: f0238469cb9894fd18c419137d312665b8fc05b3
-  react-native-compat: bdfea8c94465a2d23fcda5d2dd0d7d6379a8fa6c
+  react-native-compat: 0d5b264ac5c04ad1a2ca50e7a8d0a4d6889b14cb
   react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-keyboard-controller: c95cddf0041af48e87ca9e53b87a4fbd7cfc619f
