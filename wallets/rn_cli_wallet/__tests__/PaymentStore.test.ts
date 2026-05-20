@@ -16,11 +16,13 @@ jest.mock('../src/store/LogStore', () => ({
   ),
 }));
 
+const mockedSolanaSignTransaction = jest.fn();
 jest.mock('../src/store/SettingsStore', () => ({
   __esModule: true,
   default: {
     state: {
       eip155Address: '0xabc',
+      solanaWallet: { signTransaction: mockedSolanaSignTransaction },
     },
   },
 }));
@@ -62,7 +64,9 @@ jest.mock('../src/utils/storage', () => ({
 }));
 
 import PaymentStore from '../src/store/PaymentStore';
+import SettingsStore from '../src/store/SettingsStore';
 import { EIP155_SIGNING_METHODS } from '../src/constants/Eip155';
+import { SOLANA_SIGNING_METHODS } from '../src/constants/Solana';
 import { walletKit } from '../src/utils/WalletKitUtil';
 import { eip155Wallets } from '../src/utils/EIP155WalletUtil';
 import { storage } from '../src/utils/storage';
@@ -93,6 +97,21 @@ function createAction(method: string, params: unknown[] = []): Action {
   return {
     walletRpc: {
       chainId: 'eip155:137',
+      method,
+      params: JSON.stringify(params),
+    },
+  };
+}
+
+const SOLANA_CHAIN_ID = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp';
+
+function createSolanaAction(
+  method: string,
+  params: Record<string, unknown> | unknown[],
+): Action {
+  return {
+    walletRpc: {
+      chainId: SOLANA_CHAIN_ID,
       method,
       params: JSON.stringify(params),
     },
@@ -198,6 +217,13 @@ describe('PaymentStore', () => {
     } as any);
     mockedWaitForTransactionConfirmation.mockResolvedValue(undefined);
     mockedSignTypedData.mockResolvedValue('0xsigned');
+    mockedSolanaSignTransaction.mockResolvedValue({
+      transaction: 'signed-b64',
+      signature: 'sol-sig-1',
+    });
+    (SettingsStore.state as any).solanaWallet = {
+      signTransaction: mockedSolanaSignTransaction,
+    };
     mockedStorageGetItem.mockResolvedValue(undefined);
     mockedStorageSetItem.mockResolvedValue(undefined as any);
     mockedStorageRemoveItem.mockResolvedValue(undefined as any);
@@ -667,5 +693,103 @@ describe('PaymentStore', () => {
       'caip19/eip155:137/erc20:0x1',
     );
     expect(PaymentStore.state.resultStatus).toBe('success');
+  });
+
+  it('signs and forwards the signed blob for Solana payment actions (array-wrapped params)', async () => {
+    mockedGetRequiredPaymentActions.mockResolvedValue([
+      createSolanaAction(SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION, [
+        { transaction: 'unsigned-b64' },
+      ]),
+    ]);
+
+    const paymentOptions = createPaymentOptions([
+      {
+        id: 'solana-option',
+        account: `${SOLANA_CHAIN_ID}:SoLPubKey`,
+        amount: {
+          unit: `caip19/${SOLANA_CHAIN_ID}/slip44:501`,
+          value: '1000000',
+          display: {
+            assetSymbol: 'SOL',
+            assetName: 'Solana',
+            decimals: 9,
+            networkName: 'Solana',
+            iconUrl: 'https://example.com/sol.png',
+            networkIconUrl: 'https://example.com/solana.png',
+          },
+        } as PaymentOption['amount'],
+        actions: [],
+      },
+    ]);
+
+    PaymentStore.setPaymentOptions(paymentOptions);
+    PaymentStore.selectOption(paymentOptions.options[0]);
+
+    await flushPromises();
+    await PaymentStore.approvePayment();
+
+    expect(mockedSolanaSignTransaction).toHaveBeenCalledWith({
+      transaction: 'unsigned-b64',
+    });
+    expect(mockedConfirmPayment).toHaveBeenCalledWith({
+      paymentId: 'payment-1',
+      optionId: 'solana-option',
+      signatures: ['signed-b64'],
+    });
+    expect(PaymentStore.state.resultStatus).toBe('success');
+  });
+
+  it('also accepts Solana params as a bare object (forward compat)', async () => {
+    mockedGetRequiredPaymentActions.mockResolvedValue([
+      createSolanaAction(SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION, {
+        transaction: 'unsigned-b64',
+      }),
+    ]);
+
+    const paymentOptions = createPaymentOptions([
+      {
+        id: 'solana-option',
+        account: `${SOLANA_CHAIN_ID}:SoLPubKey`,
+        actions: [],
+      },
+    ]);
+
+    PaymentStore.setPaymentOptions(paymentOptions);
+    PaymentStore.selectOption(paymentOptions.options[0]);
+
+    await flushPromises();
+    await PaymentStore.approvePayment();
+
+    expect(mockedSolanaSignTransaction).toHaveBeenCalledWith({
+      transaction: 'unsigned-b64',
+    });
+    expect(PaymentStore.state.resultStatus).toBe('success');
+  });
+
+  it('surfaces an error when the Solana wallet is not initialized', async () => {
+    (SettingsStore.state as any).solanaWallet = null;
+    mockedGetRequiredPaymentActions.mockResolvedValue([
+      createSolanaAction(SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION, [
+        { transaction: 'unsigned-b64' },
+      ]),
+    ]);
+
+    const paymentOptions = createPaymentOptions([
+      {
+        id: 'solana-option',
+        account: `${SOLANA_CHAIN_ID}:SoLPubKey`,
+        actions: [],
+      },
+    ]);
+
+    PaymentStore.setPaymentOptions(paymentOptions);
+    PaymentStore.selectOption(paymentOptions.options[0]);
+
+    await flushPromises();
+    await PaymentStore.approvePayment();
+
+    expect(mockedSolanaSignTransaction).not.toHaveBeenCalled();
+    expect(mockedConfirmPayment).not.toHaveBeenCalled();
+    expect(PaymentStore.state.resultStatus).toBe('error');
   });
 });
