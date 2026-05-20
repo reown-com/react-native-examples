@@ -26,6 +26,12 @@ import {
   CANTON_EVENTS,
 } from '@/constants/Canton';
 import { cantonAddresses } from '@/utils/CantonWalletUtil';
+import { solanaAddresses } from '@/utils/SolanaWalletUtil';
+import {
+  SOLANA_CHAINS,
+  SOLANA_EVENTS,
+  SOLANA_SIGNING_METHODS,
+} from '@/constants/Solana';
 import { AccordionCard } from '@/components/AccordionCard';
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkSelector } from '@/components/NetworkSelector';
@@ -80,6 +86,10 @@ export default function SessionProposalModal() {
     const cantonMethods = Object.values(CANTON_SIGNING_METHODS);
     const cantonEvents = Object.values(CANTON_EVENTS);
 
+    const solanaChains = Object.keys(SOLANA_CHAINS);
+    const solanaMethods = Object.values(SOLANA_SIGNING_METHODS);
+    const solanaEvents = Object.values(SOLANA_EVENTS);
+
     return {
       eip155: {
         chains: eip155Chains,
@@ -115,6 +125,14 @@ export default function SessionProposalModal() {
         events: cantonEvents,
         accounts: cantonChains
           .map(chain => `${chain}:${cantonAddresses[0]}`)
+          .flat(),
+      },
+      solana: {
+        chains: solanaChains,
+        methods: solanaMethods,
+        events: solanaEvents,
+        accounts: solanaChains
+          .map(chain => `${chain}:${solanaAddresses?.[0] ?? ''}`)
           .flat(),
       },
     };

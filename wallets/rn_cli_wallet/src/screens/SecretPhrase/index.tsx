@@ -114,8 +114,14 @@ function SecretSection({
 }
 
 export default function SecretPhrase() {
-  const { eip155Address, suiWallet, tonWallet, tronWallet, cantonWallet } =
-    useSnapshot(SettingsStore.state);
+  const {
+    eip155Address,
+    suiWallet,
+    tonWallet,
+    tronWallet,
+    cantonWallet,
+    solanaWallet,
+  } = useSnapshot(SettingsStore.state);
   const Theme = useTheme();
 
   // Get EVM mnemonic
@@ -132,6 +138,10 @@ export default function SecretPhrase() {
 
   // Get Canton secret key
   const cantonSecretKey = cantonWallet?.getSecretKey?.() ?? null;
+
+  // Get Solana mnemonic (or secret key when imported from raw bytes)
+  const solanaMnemonic = solanaWallet?.getMnemonic?.() || null;
+  const solanaSecretKey = solanaWallet?.getSecretKey?.() ?? null;
 
   return (
     <ScrollView
@@ -183,6 +193,22 @@ export default function SecretPhrase() {
         type="hex"
         notAvailableMessage="Canton wallet not initialized"
       />
+
+      {solanaMnemonic ? (
+        <SecretSection
+          title="SOLANA"
+          secret={solanaMnemonic}
+          type="mnemonic"
+          notAvailableMessage="Solana wallet not initialized"
+        />
+      ) : (
+        <SecretSection
+          title="SOLANA"
+          secret={solanaSecretKey}
+          type="hex"
+          notAvailableMessage="Solana wallet not initialized"
+        />
+      )}
     </ScrollView>
   );
 }

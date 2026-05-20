@@ -19,6 +19,8 @@ import SessionTonSendMessageModal from '@/modals/SessionTonSendMessageModal';
 import SessionTonSignDataModal from '@/modals/SessionTonSignDataModal';
 import SessionSignTronModal from '@/modals/SessionSignTronModal';
 import SessionSignCantonModal from '@/modals/SessionSignCantonModal';
+import SessionSolanaSignMessageModal from '@/modals/SessionSolanaSignMessageModal';
+import SessionSolanaSignTransactionModal from '@/modals/SessionSolanaSignTransactionModal';
 import PaymentOptionsModal from '@/modals/PaymentOptionsModal';
 import ImportWalletModal from '@/modals/ImportWalletModal';
 import SessionDetailModal from '@/modals/SessionDetailModal';
@@ -61,6 +63,10 @@ export default function Modal() {
         return <SessionSignTronModal />;
       case 'SessionSignCantonModal':
         return <SessionSignCantonModal />;
+      case 'SessionSolanaSignMessageModal':
+        return <SessionSolanaSignMessageModal />;
+      case 'SessionSolanaSignTransactionModal':
+        return <SessionSolanaSignTransactionModal />;
       case 'PaymentOptionsModal':
         return <PaymentOptionsModal />;
       case 'ImportWalletModal':

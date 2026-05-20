@@ -15,6 +15,7 @@ import { TON_SIGNING_METHODS } from '@/constants/Ton';
 import { TRON_SIGNING_METHODS } from '@/constants/Tron';
 import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
 import { approveCantonRequest } from '@/utils/CantonRequestHandlerUtil';
+import { SOLANA_SIGNING_METHODS } from '@/constants/Solana';
 
 export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -163,6 +164,18 @@ export default function useWalletKitEventsManager(initialized: boolean) {
         case CANTON_SIGNING_METHODS.SIGN_MESSAGE:
         case CANTON_SIGNING_METHODS.PREPARE_SIGN_EXECUTE:
           return ModalStore.open('SessionSignCantonModal', {
+            requestEvent,
+            requestSession,
+          });
+        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_MESSAGE:
+          return ModalStore.open('SessionSolanaSignMessageModal', {
+            requestEvent,
+            requestSession,
+          });
+        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION:
+        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_ALL_TRANSACTIONS:
+        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_AND_SEND_TRANSACTION:
+          return ModalStore.open('SessionSolanaSignTransactionModal', {
             requestEvent,
             requestSession,
           });

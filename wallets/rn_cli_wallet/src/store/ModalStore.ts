@@ -33,6 +33,8 @@ interface State {
     | 'SessionSignTronModal'
     | 'SessionTonSignDataModal'
     | 'SessionSignCantonModal'
+    | 'SessionSolanaSignMessageModal'
+    | 'SessionSolanaSignTransactionModal'
     | 'PaymentOptionsModal'
     | 'ImportWalletModal'
     | 'SessionDetailModal'
