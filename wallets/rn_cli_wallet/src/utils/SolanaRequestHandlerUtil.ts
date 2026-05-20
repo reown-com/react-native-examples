@@ -16,6 +16,14 @@ export async function approveSolanaRequest(requestEvent: RequestEventArgs) {
   const { chainId, request } = params;
 
   const wallet = await getWallet();
+  if (!wallet) {
+    LogStore.error(
+      'Solana wallet not initialized',
+      'SolanaRequestHandler',
+      'approveSolanaRequest',
+    );
+    return formatJsonRpcError(id, 'Solana wallet not initialized');
+  }
 
   switch (request.method) {
     case SOLANA_SIGNING_METHODS.SOLANA_SIGN_MESSAGE:

@@ -39,12 +39,16 @@ interface ISignAndSendTransactionArguments {
 
 const SOLANA_PATH = "m/44'/501'/0'/0'";
 
+const BASE64_REGEX = /^[A-Za-z0-9+/]+={0,2}$/;
+
 function decodeTransactionBytes(transaction: string): Uint8Array {
-  try {
+  // Buffer.from(_, 'base64') never throws — it silently mis-decodes non-base64
+  // input. Detect the encoding explicitly so bs58-encoded transactions don't
+  // fall through to a confusing downstream deserialization error.
+  if (BASE64_REGEX.test(transaction)) {
     return new Uint8Array(Buffer.from(transaction, 'base64'));
-  } catch {
-    return bs58.decode(transaction);
   }
+  return bs58.decode(transaction);
 }
 
 function deserializeTransaction(
