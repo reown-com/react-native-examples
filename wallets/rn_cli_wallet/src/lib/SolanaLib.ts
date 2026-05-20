@@ -1,5 +1,5 @@
 import * as bip39 from 'bip39';
-import { Buffer } from 'buffer';
+import { Buffer } from '@craftzdog/react-native-buffer';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import { derivePath } from 'ed25519-hd-key';

@@ -131,9 +131,9 @@ export default function SessionProposalModal() {
         chains: solanaChains,
         methods: solanaMethods,
         events: solanaEvents,
-        accounts: solanaChains
-          .map(chain => `${chain}:${solanaAddresses?.[0] ?? ''}`)
-          .flat(),
+        accounts: solanaAddresses?.[0]
+          ? solanaChains.map(chain => `${chain}:${solanaAddresses[0]}`)
+          : [],
       },
     };
   }, []);

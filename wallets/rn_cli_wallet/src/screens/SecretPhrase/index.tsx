@@ -139,9 +139,11 @@ export default function SecretPhrase() {
   // Get Canton secret key
   const cantonSecretKey = cantonWallet?.getSecretKey?.() ?? null;
 
-  // Get Solana mnemonic (or secret key when imported from raw bytes)
+  // Get Solana mnemonic (or base58-encoded secret key when imported from
+  // raw bytes — note: unlike TON/TRON/Canton, Solana's secret is base58
+  // not hex; SecretSection's `type` prop only drives layout, not encoding).
   const solanaMnemonic = solanaWallet?.getMnemonic?.() || null;
-  const solanaSecretKey = solanaWallet?.getSecretKey?.() ?? null;
+  const solanaBase58SecretKey = solanaWallet?.getSecretKey?.() ?? null;
 
   return (
     <ScrollView
@@ -203,8 +205,8 @@ export default function SecretPhrase() {
         />
       ) : (
         <SecretSection
-          title="SOLANA"
-          secret={solanaSecretKey}
+          title="SOLANA (base58 secret key)"
+          secret={solanaBase58SecretKey}
           type="hex"
           notAvailableMessage="Solana wallet not initialized"
         />
