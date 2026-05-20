@@ -20,6 +20,8 @@ import {
 } from '@/modals/PaymentOptionsModal/utils';
 import type { ErrorType } from '@/modals/PaymentOptionsModal/utils';
 import { EIP155_SIGNING_METHODS } from '@/constants/Eip155';
+import { SOLANA_SIGNING_METHODS } from '@/constants/Solana';
+import type SolanaLib from '@/lib/SolanaLib';
 import {
   estimateTransactionFee,
   sendTransactionWithFreshFees,
@@ -510,11 +512,6 @@ const PaymentStore = {
         throw new Error('Pay SDK not available');
       }
 
-      const wallet = eip155Wallets[SettingsStore.state.eip155Address];
-      if (!wallet) {
-        throw new Error('Wallet not found for selected EIP155 account');
-      }
-
       const signatures: string[] = [];
       const paymentActions = await PaymentStore.fetchPaymentActions(
         selectedOption,
@@ -565,15 +562,53 @@ const PaymentStore = {
           );
         }
 
-        if (!Array.isArray(parsedParams)) {
-          throw new Error(
-            `Invalid params for ${method} (${stepLabel}): expected array`,
-          );
+        const requireArrayParams = () => {
+          if (!Array.isArray(parsedParams)) {
+            throw new Error(
+              `Invalid params for ${method} (${stepLabel}): expected array`,
+            );
+          }
+          return parsedParams as unknown[];
+        };
+
+        const namespace = chainId.split(':')[0];
+        let evmWallet:
+          | (typeof eip155Wallets)[keyof typeof eip155Wallets]
+          | undefined;
+        let solanaWallet: SolanaLib | undefined;
+
+        switch (namespace) {
+          case 'eip155': {
+            const stored = eip155Wallets[SettingsStore.state.eip155Address];
+            if (!stored) {
+              throw new Error('EIP155 wallet not found for selected account');
+            }
+            evmWallet = stored;
+            break;
+          }
+          case 'solana': {
+            const stored = SettingsStore.state.solanaWallet;
+            if (!stored) {
+              throw new Error('Solana wallet not initialized');
+            }
+            solanaWallet = stored;
+            break;
+          }
+          default:
+            throw new Error(
+              `Unsupported payment chain namespace: ${namespace} (chainId=${chainId})`,
+            );
         }
 
         switch (method) {
           case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION: {
-            const txPayload = parsedParams[0];
+            if (!evmWallet) {
+              throw new Error(
+                `${method} requires an eip155 chainId, got ${chainId}`,
+              );
+            }
+            const arrayParams = requireArrayParams();
+            const txPayload = arrayParams[0];
             if (!txPayload || typeof txPayload !== 'object') {
               throw new Error(
                 `Invalid tx payload for ${method} (${stepLabel})`,
@@ -583,7 +618,7 @@ const PaymentStore = {
             const tx = await sendTransactionWithFreshFees({
               chainId,
               baseTx: { ...(txPayload as providers.TransactionRequest) },
-              wallet,
+              wallet: evmWallet,
               logContext: 'approvePayment',
             });
 
@@ -617,7 +652,13 @@ const PaymentStore = {
           case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
           case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
           case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4: {
-            let typedData: unknown = parsedParams[1];
+            if (!evmWallet) {
+              throw new Error(
+                `${method} requires an eip155 chainId, got ${chainId}`,
+              );
+            }
+            const arrayParams = requireArrayParams();
+            let typedData: unknown = arrayParams[1];
             try {
               if (typeof typedData === 'string')
                 typedData = JSON.parse(typedData);
@@ -652,12 +693,54 @@ const PaymentStore = {
             }
 
             delete types.EIP712Domain;
-            const signature = await wallet._signTypedData(
+            const signature = await evmWallet._signTypedData(
               domain,
               types,
               messageData,
             );
             signatures.push(signature);
+            break;
+          }
+
+          case SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION: {
+            if (!solanaWallet) {
+              throw new Error(
+                `${method} requires a solana chainId, got ${chainId}`,
+              );
+            }
+            // Pay backend may serialize params as either a bare object
+            // ({ transaction }) or wrapped in a single-element array
+            // ([{ transaction }]); unwrap the array form transparently.
+            const rawParams = Array.isArray(parsedParams)
+              ? parsedParams[0]
+              : parsedParams;
+            if (
+              !rawParams ||
+              typeof rawParams !== 'object' ||
+              Array.isArray(rawParams)
+            ) {
+              throw new Error(
+                `Invalid params for ${method} (${stepLabel}): expected object`,
+              );
+            }
+            const transactionParam = (rawParams as Record<string, unknown>)
+              .transaction;
+            if (typeof transactionParam !== 'string') {
+              throw new Error(
+                `Invalid Solana transaction param for ${method} (${stepLabel})`,
+              );
+            }
+            const { transaction: signedTransaction, signature } =
+              await solanaWallet.signTransaction({
+                transaction: transactionParam,
+              });
+            LogStore.log(
+              'Solana payment transaction signed',
+              'PaymentStore',
+              'approvePayment',
+              { chainId, step: stepLabel, signature },
+            );
+            signatures.push(signedTransaction);
             break;
           }
 
