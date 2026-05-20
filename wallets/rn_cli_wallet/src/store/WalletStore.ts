@@ -207,7 +207,10 @@ const WalletStore = {
     state.isLoading = loading;
   },
 
-  async fetchBalances(addresses: WalletAddresses) {
+  async fetchBalances(
+    addresses: WalletAddresses,
+    options?: { force?: boolean },
+  ) {
     // Early return if no addresses are available
     if (
       !addresses.eip155Address &&
@@ -314,11 +317,18 @@ const WalletStore = {
         }
       }
 
-      // Protect against API returning empty data when we have valid cached data
-      const totalValue = apiBalances.reduce((s, b) => s + b.value, 0);
-      const cachedTotalValue = state.balances.reduce((s, b) => s + b.value, 0);
-      if (totalValue === 0 && cachedTotalValue > 0) {
-        return;
+      // Protect against API returning empty data when we have valid cached
+      // data. Skipped on explicit refetch (e.g. after wallet import), where
+      // an "empty" result is the desired ground truth.
+      if (!options?.force) {
+        const totalValue = apiBalances.reduce((s, b) => s + b.value, 0);
+        const cachedTotalValue = state.balances.reduce(
+          (s, b) => s + b.value,
+          0,
+        );
+        if (totalValue === 0 && cachedTotalValue > 0) {
+          return;
+        }
       }
 
       // Filter 0-balance tokens and ensure mainnet natives are present

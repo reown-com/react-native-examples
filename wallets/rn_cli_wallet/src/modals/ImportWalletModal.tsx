@@ -85,52 +85,64 @@ export default function ImportWalletModal() {
           const result = loadEIP155Wallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new EVM address
-          WalletStore.fetchBalances({
-            eip155Address: address,
-            tonAddress: SettingsStore.state.tonAddress,
-            tronAddress: SettingsStore.state.tronAddress,
-            suiAddress: SettingsStore.state.suiAddress,
-            solanaAddress: SettingsStore.state.solanaAddress,
-          });
+          WalletStore.fetchBalances(
+            {
+              eip155Address: address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
         case 'TON': {
           const result = await loadTonWallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new TON address
-          WalletStore.fetchBalances({
-            eip155Address: SettingsStore.state.eip155Address,
-            tonAddress: address,
-            tronAddress: SettingsStore.state.tronAddress,
-            suiAddress: SettingsStore.state.suiAddress,
-            solanaAddress: SettingsStore.state.solanaAddress,
-          });
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: address,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
         case 'TRON': {
           const result = await loadTronWallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new TRON address
-          WalletStore.fetchBalances({
-            eip155Address: SettingsStore.state.eip155Address,
-            tonAddress: SettingsStore.state.tonAddress,
-            tronAddress: address,
-            suiAddress: SettingsStore.state.suiAddress,
-            solanaAddress: SettingsStore.state.solanaAddress,
-          });
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: address,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
         case 'SUI': {
           const result = await loadSuiWallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new SUI address
-          WalletStore.fetchBalances({
-            eip155Address: SettingsStore.state.eip155Address,
-            tonAddress: SettingsStore.state.tonAddress,
-            tronAddress: SettingsStore.state.tronAddress,
-            suiAddress: address,
-            solanaAddress: SettingsStore.state.solanaAddress,
-          });
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: address,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
         case 'CANTON': {
@@ -142,13 +154,16 @@ export default function ImportWalletModal() {
           const result = await loadSolanaWallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new Solana address
-          WalletStore.fetchBalances({
-            eip155Address: SettingsStore.state.eip155Address,
-            tonAddress: SettingsStore.state.tonAddress,
-            tronAddress: SettingsStore.state.tronAddress,
-            suiAddress: SettingsStore.state.suiAddress,
-            solanaAddress: address,
-          });
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: address,
+            },
+            { force: true },
+          );
           break;
         }
         default: {
