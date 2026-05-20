@@ -39,7 +39,10 @@ export function LoadingView({ message, note, size = 120 }: LoadingViewProps) {
     <View style={styles.loadingContainer}>
       <WalletConnectLoading size={size} />
       <View
-        style={[styles.messageContainer, note && styles.messageContainerWithNote]}
+        style={[
+          styles.messageContainer,
+          note && styles.messageContainerWithNote,
+        ]}
       >
         <Animated.View
           key={messageKey}
