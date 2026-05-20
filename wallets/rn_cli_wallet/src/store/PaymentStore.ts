@@ -602,6 +602,11 @@ const PaymentStore = {
 
         switch (method) {
           case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION: {
+            if (!evmWallet) {
+              throw new Error(
+                `${method} requires an eip155 chainId, got ${chainId}`,
+              );
+            }
             const arrayParams = requireArrayParams();
             const txPayload = arrayParams[0];
             if (!txPayload || typeof txPayload !== 'object') {
@@ -613,7 +618,7 @@ const PaymentStore = {
             const tx = await sendTransactionWithFreshFees({
               chainId,
               baseTx: { ...(txPayload as providers.TransactionRequest) },
-              wallet: evmWallet!,
+              wallet: evmWallet,
               logContext: 'approvePayment',
             });
 
@@ -647,6 +652,11 @@ const PaymentStore = {
           case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
           case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
           case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4: {
+            if (!evmWallet) {
+              throw new Error(
+                `${method} requires an eip155 chainId, got ${chainId}`,
+              );
+            }
             const arrayParams = requireArrayParams();
             let typedData: unknown = arrayParams[1];
             try {
@@ -683,7 +693,7 @@ const PaymentStore = {
             }
 
             delete types.EIP712Domain;
-            const signature = await evmWallet!._signTypedData(
+            const signature = await evmWallet._signTypedData(
               domain,
               types,
               messageData,
@@ -693,6 +703,11 @@ const PaymentStore = {
           }
 
           case SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION: {
+            if (!solanaWallet) {
+              throw new Error(
+                `${method} requires a solana chainId, got ${chainId}`,
+              );
+            }
             // Pay backend may serialize params as either a bare object
             // ({ transaction }) or wrapped in a single-element array
             // ([{ transaction }]); unwrap the array form transparently.
@@ -716,7 +731,7 @@ const PaymentStore = {
               );
             }
             const { transaction: signedTransaction, signature } =
-              await solanaWallet!.signTransaction({
+              await solanaWallet.signTransaction({
                 transaction: transactionParam,
               });
             LogStore.log(
