@@ -4548,42 +4548,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@reown/appkit-bitcoin-react-native@npm:2.0.2"
+"@reown/appkit-bitcoin-react-native@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@reown/appkit-bitcoin-react-native@npm:2.0.4"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.2
+    "@reown/appkit-common-react-native": 2.0.4
   peerDependencies:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 71b21997cf9b8ac281bddb1d225c54909eb5598792a7dc025bad6a44e3d5a63735295ba35ec944acbd46039e1c6f1780c2e0747f8cc91bc5cc348776f654ad7c
+  checksum: 962e5fbf7a99c00a74ce3324846484e655756ba4ad85ab811bf1800aca2c4f518947b609a3a06ca42ea27f8dc25817e548018f3ada25d785d5b3d77c3325f067
   languageName: node
   linkType: hard
 
-"@reown/appkit-coinbase-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@reown/appkit-coinbase-react-native@npm:2.0.2"
+"@reown/appkit-coinbase-react-native@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@reown/appkit-coinbase-react-native@npm:2.0.4"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.2
+    "@reown/appkit-common-react-native": 2.0.4
   peerDependencies:
     "@coinbase/wallet-mobile-sdk": ">=1.1.2"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 69821ef9ecb20d0dd451f34aaa3dd39e9bd2428e032f94e1b905e87e93cea0d4c75b481b76198e9ee51bc9fe349c790e0ab9118f0c2e243d430d84576c4564eb
+  checksum: 7818c19af82458a5f5d6c95019924963cb552cb6491745ad7762d6ef6af2fa63d972e26b46892186a1de51e2ebdc98f8ace45059d08fd6b107a44ba0b61cef72
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@reown/appkit-common-react-native@npm:2.0.2"
+"@reown/appkit-common-react-native@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@reown/appkit-common-react-native@npm:2.0.4"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
-  checksum: e6456c6403d48c6f2867d0991d32d86ffb7d7a7487d8e769768b7da2c5281c79dc6a67ddef77c50effcde0d103116eb6494fe01ad09f2a05bb89628a4f4693a8
+  checksum: 3ce6a50644a4236fcdeab7670f0aef8970e60fa7902c367f791deb8d6f8a6bffb90293ec7ae2c2c8e7ade6f502f97092e2321ad27a2f951f557a471c75e425ac
   languageName: node
   linkType: hard
 
@@ -4611,11 +4611,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@reown/appkit-core-react-native@npm:2.0.2"
+"@reown/appkit-core-react-native@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@reown/appkit-core-react-native@npm:2.0.4"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.2
+    "@reown/appkit-common-react-native": 2.0.4
     countries-and-timezones: 3.7.2
     derive-valtio: 0.2.0
     valtio: 2.1.8
@@ -4623,7 +4623,7 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: a5181b515c083c36a61289d08babee675a27c61c9065f3e6f472422cf2f6f65c6e493d3da2080c8f29ab590fd97262abc1e93bf7a642856c45fd16ff5a023b90
+  checksum: e90d6e202b98ad0757102ba8a8c4ea0998de130c29fc025f5a217826db7762cf8ba5ebf2b4c7a8875ea69363cbfde2c8e9c435f66c388278facb6ff3870eab48
   languageName: node
   linkType: hard
 
@@ -4650,13 +4650,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@reown/appkit-react-native@npm:2.0.2"
+"@reown/appkit-react-native@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@reown/appkit-react-native@npm:2.0.4"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.2
-    "@reown/appkit-core-react-native": 2.0.2
-    "@reown/appkit-ui-react-native": 2.0.2
+    "@reown/appkit-common-react-native": 2.0.4
+    "@reown/appkit-core-react-native": 2.0.4
+    "@reown/appkit-ui-react-native": 2.0.4
     "@walletconnect/universal-provider": 2.21.10
     valtio: 2.1.8
   peerDependencies:
@@ -4666,7 +4666,7 @@ __metadata:
     react-native: ">=0.72"
     react-native-safe-area-context: ">=4.4.0"
     react-native-svg: ">=13.10"
-  checksum: 9c46847b9d50d01a099286bca25f7918870fa93e9c0d895bbbc21adb00ecc34d64c8ecbfe411bbcdb55b2e1ae8a5f0b968357b6f0d16b8b90801013783decc2d
+  checksum: 44087f3d043a23ab698ce6493407f4482a7661760efeaa8d3d4d4b7416461d3cb297a6d2ba3b07c6b6ec44de936e827bfd1e087e604b60d5172e40dd011229b2
   languageName: node
   linkType: hard
 
@@ -4684,11 +4684,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@reown/appkit-solana-react-native@npm:2.0.2"
+"@reown/appkit-solana-react-native@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@reown/appkit-solana-react-native@npm:2.0.4"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.2
+    "@reown/appkit-common-react-native": 2.0.4
     "@solana/spl-token": 0.4.13
     "@solana/web3.js": 1.98.2
     bs58: 6.0.0
@@ -4697,22 +4697,22 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: a8e8491739da1ebfee427aa94d013e9dedc07b9a64f1a0df464db8c337971ddb725dd60492d35acd3254743de377a49fbaad5a0de79aaa7389f7573a88aefb53
+  checksum: 8caeabc96a2c7b58880fc14053b3136928a84eba6063051351f09b9c0a09248ae5ba9ff2fdbc27b89875fed502aff44f38fb1e9343e873c6765e4eab177ee4e2
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@reown/appkit-ui-react-native@npm:2.0.2"
+"@reown/appkit-ui-react-native@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@reown/appkit-ui-react-native@npm:2.0.4"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.2
+    "@reown/appkit-common-react-native": 2.0.4
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: 1a01dec429fd4ac98bcf9a30dee345ce76ff3c1171ce7de7574de69f0a1b2366210a310bd32c62703d9d7e889fdd414038cd50ff24058e28ece1ec43bc856d01
+  checksum: 85f164fda92fc5c6d41e4a33f2d3127af3e023f34540d50e0797a53f779ca9f9b6cfa2f3a90ce7f9ca55559e750e09871786c80bc84d8c65eac6c551f36af1bb
   languageName: node
   linkType: hard
 
@@ -4749,12 +4749,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:2.0.2":
-  version: 2.0.2
-  resolution: "@reown/appkit-wagmi-react-native@npm:2.0.2"
+"@reown/appkit-wagmi-react-native@npm:2.0.4":
+  version: 2.0.4
+  resolution: "@reown/appkit-wagmi-react-native@npm:2.0.4"
   dependencies:
-    "@reown/appkit-common-react-native": 2.0.2
-    "@reown/appkit-react-native": 2.0.2
+    "@reown/appkit-common-react-native": 2.0.4
+    "@reown/appkit-react-native": 2.0.4
   peerDependencies:
     "@react-native-community/netinfo": "*"
     "@walletconnect/react-native-compat": ">=2.16.1"
@@ -4763,7 +4763,7 @@ __metadata:
     react-native-get-random-values: "*"
     viem: ">=2 <3.0.0"
     wagmi: ">=2 <3.0.0"
-  checksum: 429d9a3adb1c8161d3719519e7cc76560627562204ca81618b108a4ca95e4566a4c66992f32ec69ecf7471f0f656d464e011aafbc348faf06a59bb9a87da1333
+  checksum: 32217a3dfe52b4c5fda90157b2f8ddd003532fff1db3515deed54e1cbab6f36fb97635832782b39bae1a329be9daf2c5d15bc96faa5628cd0e91e0f351804bc9
   languageName: node
   linkType: hard
 
@@ -14445,11 +14445,11 @@ __metadata:
     "@react-navigation/bottom-tabs": 7.7.0
     "@react-navigation/native": 7.1.19
     "@react-navigation/native-stack": 7.6.1
-    "@reown/appkit-bitcoin-react-native": 2.0.2
-    "@reown/appkit-coinbase-react-native": 2.0.2
-    "@reown/appkit-react-native": 2.0.2
-    "@reown/appkit-solana-react-native": 2.0.2
-    "@reown/appkit-wagmi-react-native": 2.0.2
+    "@reown/appkit-bitcoin-react-native": 2.0.4
+    "@reown/appkit-coinbase-react-native": 2.0.4
+    "@reown/appkit-react-native": 2.0.4
+    "@reown/appkit-solana-react-native": 2.0.4
+    "@reown/appkit-wagmi-react-native": 2.0.4
     "@sentry/react-native": 7.3.0
     "@solana/web3.js": 1.98.2
     "@tanstack/react-query": 5.62.2
