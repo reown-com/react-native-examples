@@ -1,7 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, { Keyframe } from 'react-native-reanimated';
-import Config from 'react-native-config';
 import LottieView from 'lottie-react-native';
 
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
@@ -9,14 +8,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { Spacing } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 
+import { arePayModalAnimationsEnabled } from './utils';
+
 interface LoadingViewProps {
   message?: string;
   note?: string;
   size?: number;
   variant?: 'lottie' | 'spinner';
 }
-
-const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
 
 const enteringKeyframe = new Keyframe({
   0: { opacity: 0, transform: [{ translateY: 14 }, { scale: 0.92 }] },
@@ -67,6 +66,7 @@ export function LoadingView({
           loop
           colorFilters={lottieColorFilters}
           style={{ width: size, height: size }}
+          testID="pay-loading-lottie"
         />
       )}
       <View

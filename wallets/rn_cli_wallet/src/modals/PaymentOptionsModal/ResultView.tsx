@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import Config from 'react-native-config';
 import LottieView from 'lottie-react-native';
 
 import { ActionButton } from '@/components/ActionButton';
@@ -11,9 +10,7 @@ import { haptics } from '@/utils/haptics';
 import { Spacing } from '@/utils/ThemeUtil';
 
 import type { ErrorType } from './utils';
-import { getErrorTitle } from './utils';
-
-const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
+import { arePayModalAnimationsEnabled, getErrorTitle } from './utils';
 
 const getResultButtonTestId = (
   isSuccess: boolean,
