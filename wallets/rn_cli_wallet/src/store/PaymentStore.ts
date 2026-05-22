@@ -499,8 +499,8 @@ const PaymentStore = {
 
     state.step = 'confirming';
     if (showInitialSetupLoader) {
-      state.loadingMessage = `Setting up ${tokenSymbol} for one-time setup...`;
-      state.loadingNote = `Future ${tokenSymbol} payments will be instant`;
+      state.loadingMessage = `Setting up ${tokenSymbol}`;
+      state.loadingNote = `This usually takes a few seconds. Future ${tokenSymbol} payments will skip this step.`;
     } else {
       state.loadingMessage = null;
       state.loadingNote = null;
@@ -532,8 +532,8 @@ const PaymentStore = {
         }
 
         if (showSetupLoader && approvalAction && action === approvalAction) {
-          state.loadingMessage = `Setting up ${tokenSymbol} for one-time setup...`;
-          state.loadingNote = `Future ${tokenSymbol} payments will be instant`;
+          state.loadingMessage = `Setting up ${tokenSymbol}`;
+          state.loadingNote = `This usually takes a few seconds. Future ${tokenSymbol} payments will skip this step.`;
         } else {
           state.loadingMessage = null;
           state.loadingNote = null;
