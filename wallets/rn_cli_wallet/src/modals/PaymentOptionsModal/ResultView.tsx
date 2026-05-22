@@ -63,6 +63,7 @@ export function ResultView({
           source={require('@/assets/lottie/Success.json')}
           autoPlay={arePayModalAnimationsEnabled}
           loop={false}
+          progress={arePayModalAnimationsEnabled ? undefined : 1}
           style={styles.successAnimation}
           testID="pay-result-success-icon"
         />

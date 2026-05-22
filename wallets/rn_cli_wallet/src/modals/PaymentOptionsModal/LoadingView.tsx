@@ -55,14 +55,16 @@ export function LoadingView({
     [Theme],
   );
 
+  const resolvedVariant = arePayModalAnimationsEnabled ? variant : 'spinner';
+
   return (
     <View style={styles.loadingContainer}>
-      {variant === 'spinner' ? (
+      {resolvedVariant === 'spinner' ? (
         <WalletConnectLoading size={size} />
       ) : (
         <LottieView
           source={require('@/assets/lottie/Loading.json')}
-          autoPlay={arePayModalAnimationsEnabled}
+          autoPlay
           loop
           colorFilters={lottieColorFilters}
           style={{ width: size, height: size }}
