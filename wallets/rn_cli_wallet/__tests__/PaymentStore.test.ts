@@ -611,10 +611,10 @@ describe('PaymentStore', () => {
 
     expect(PaymentStore.state.step).toBe('confirming');
     expect(PaymentStore.state.loadingMessage).toBe(
-      'Setting up USDT for one-time setup...',
+      'Setting up USDT',
     );
     expect(PaymentStore.state.loadingNote).toBe(
-      'Future USDT payments will be instant',
+      'This usually takes a few seconds. Future USDT payments will skip this step.',
     );
 
     deferredActions.resolve([
