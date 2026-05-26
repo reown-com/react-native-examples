@@ -474,26 +474,6 @@ describe("useSettingsStore", () => {
     });
   });
 
-  describe("getVariantPrinterLogo", () => {
-    it("should return default logo for default variant", () => {
-      useSettingsStore.setState({ variant: "default" });
-
-      const logo = useSettingsStore.getState().getVariantPrinterLogo();
-
-      expect(logo).toBeDefined();
-      expect(typeof logo).toBe("string");
-    });
-
-    it("should return variant-specific logo", () => {
-      useSettingsStore.setState({ variant: "solflare" });
-
-      const logo = useSettingsStore.getState().getVariantPrinterLogo();
-
-      expect(logo).toBeDefined();
-      expect(typeof logo).toBe("string");
-    });
-  });
-
   describe("setHasHydrated", () => {
     it("should set hydration state to true", () => {
       useSettingsStore.getState().setHasHydrated(true);
@@ -581,7 +561,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(15);
+      expect(persistOptions?.version).toBe(16);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();

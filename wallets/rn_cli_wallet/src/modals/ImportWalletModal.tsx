@@ -12,18 +12,27 @@ import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import WalletStore from '@/store/WalletStore';
+import PaymentStore from '@/store/PaymentStore';
 import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { loadTonWallet } from '@/utils/TonWalletUtil';
 import { loadTronWallet } from '@/utils/TronWalletUtil';
 import { loadSuiWallet } from '@/utils/SuiWalletUtil';
 import { loadCantonWallet } from '@/utils/CantonWalletUtil';
+import { loadSolanaWallet } from '@/utils/SolanaWalletUtil';
 import { Text } from '@/components/Text';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { SegmentedControl } from '@/components/SegmentedControl';
 import { Spacing, BorderRadius, FontFamily } from '@/utils/ThemeUtil';
 import { ActionButton } from '@/components/ActionButton';
 
-const CHAIN_OPTIONS = ['EVM', 'TON', 'TRON', 'SUI', 'CANTON'] as const;
+const CHAIN_OPTIONS = [
+  'EVM',
+  'TON',
+  'TRON',
+  'SUI',
+  'CANTON',
+  'SOLANA',
+] as const;
 type ChainOption = (typeof CHAIN_OPTIONS)[number];
 
 const PLACEHOLDER_TEXT: Record<ChainOption, string> = {
@@ -32,6 +41,7 @@ const PLACEHOLDER_TEXT: Record<ChainOption, string> = {
   TRON: 'Enter private key (64 hex)',
   SUI: 'Enter mnemonic phrase (12-24 words)',
   CANTON: 'Enter secret key (128 hex chars)',
+  SOLANA: 'Enter mnemonic (12-24 words) or base58 secret key (64 bytes)',
 };
 
 const EMPTY_INPUT_ERROR: Record<ChainOption, string> = {
@@ -40,6 +50,7 @@ const EMPTY_INPUT_ERROR: Record<ChainOption, string> = {
   TRON: 'Please enter a private key',
   SUI: 'Please enter a mnemonic phrase',
   CANTON: 'Please enter an Ed25519 secret key',
+  SOLANA: 'Please enter a mnemonic or base58 secret key',
 };
 
 export default function ImportWalletModal() {
@@ -74,53 +85,85 @@ export default function ImportWalletModal() {
           const result = loadEIP155Wallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new EVM address
-          WalletStore.fetchBalances({
-            eip155Address: address,
-            tonAddress: SettingsStore.state.tonAddress,
-            tronAddress: SettingsStore.state.tronAddress,
-            suiAddress: SettingsStore.state.suiAddress,
-          });
+          WalletStore.fetchBalances(
+            {
+              eip155Address: address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
         case 'TON': {
           const result = await loadTonWallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new TON address
-          WalletStore.fetchBalances({
-            eip155Address: SettingsStore.state.eip155Address,
-            tonAddress: address,
-            tronAddress: SettingsStore.state.tronAddress,
-            suiAddress: SettingsStore.state.suiAddress,
-          });
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: address,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
         case 'TRON': {
           const result = await loadTronWallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new TRON address
-          WalletStore.fetchBalances({
-            eip155Address: SettingsStore.state.eip155Address,
-            tonAddress: SettingsStore.state.tonAddress,
-            tronAddress: address,
-            suiAddress: SettingsStore.state.suiAddress,
-          });
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: address,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
         case 'SUI': {
           const result = await loadSuiWallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new SUI address
-          WalletStore.fetchBalances({
-            eip155Address: SettingsStore.state.eip155Address,
-            tonAddress: SettingsStore.state.tonAddress,
-            tronAddress: SettingsStore.state.tronAddress,
-            suiAddress: address,
-          });
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: address,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
         case 'CANTON': {
           const result = await loadCantonWallet(sanitizedInput);
           address = result.address;
+          break;
+        }
+        case 'SOLANA': {
+          const result = await loadSolanaWallet(sanitizedInput);
+          address = result.address;
+          // Refetch balances with the new Solana address
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: address,
+            },
+            { force: true },
+          );
           break;
         }
         default: {
@@ -137,6 +180,17 @@ export default function ImportWalletModal() {
           });
           return;
         }
+      }
+
+      try {
+        await PaymentStore.clearLastPaidTokenUnit();
+      } catch (error: unknown) {
+        LogStore.warn(
+          'Failed to clear last paid token after wallet import',
+          'ImportWalletModal',
+          'handleImport',
+          { error: error instanceof Error ? error.message : 'unknown error' },
+        );
       }
 
       Toast.show({

@@ -1,12 +1,3 @@
-import {
-  BINANCE_LOGO_BASE64,
-  DEFAULT_LOGO_BASE64,
-  LEDGER_LOGO_BASE64,
-  PHANTOM_LOGO_BASE64,
-  SOLANA_LOGO_BASE64,
-  SOLFLARE_LOGO_BASE64,
-  TREZOR_LOGO_BASE64,
-} from "./printer-logos";
 import { Colors } from "./theme";
 
 export type VariantName =
@@ -16,15 +7,16 @@ export type VariantName =
   | "phantom"
   | "solana"
   | "trezor"
-  | "ledger";
+  | "ledger"
+  | "imin"
+  | "money2020"
+  | "xmoney";
 
 type VariantColorOverrides = Partial<typeof Colors.light>;
 
 interface Variant {
   name: string;
-  brandLogo: ReturnType<typeof require>; // require() asset
-  brandLogoWidth?: number;
-  printerLogo: string; // base64 string
+  variantLogo?: ReturnType<typeof require>; // require() asset, omitted for default
   defaultTheme?: "light" | "dark";
   colors: {
     light: VariantColorOverrides;
@@ -35,9 +27,6 @@ interface Variant {
 export const Variants: Record<VariantName, Variant> = {
   default: {
     name: "None",
-    brandLogo: require("@/assets/images/brand.png"),
-    brandLogoWidth: 60,
-    printerLogo: DEFAULT_LOGO_BASE64,
     colors: {
       light: {},
       dark: {},
@@ -45,8 +34,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   solflare: {
     name: "Solflare",
-    brandLogo: require("@/assets/images/variants/solflare_brand.png"),
-    printerLogo: SOLFLARE_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/solflare_brand.png"),
     defaultTheme: "dark",
     colors: {
       light: {
@@ -68,8 +56,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   binance: {
     name: "Binance",
-    brandLogo: require("@/assets/images/variants/binance_brand.png"),
-    printerLogo: BINANCE_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/binance_brand.png"),
     defaultTheme: "light",
     colors: {
       light: {
@@ -91,8 +78,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   phantom: {
     name: "Phantom",
-    brandLogo: require("@/assets/images/variants/phantom_brand.png"),
-    printerLogo: PHANTOM_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/phantom_brand.png"),
     defaultTheme: "light",
     colors: {
       light: {
@@ -113,8 +99,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   solana: {
     name: "Solana",
-    brandLogo: require("@/assets/images/variants/solana_brand.png"),
-    printerLogo: SOLANA_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/solana_brand.png"),
     defaultTheme: "dark",
     colors: {
       light: {
@@ -136,8 +121,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   trezor: {
     name: "Trezor",
-    brandLogo: require("@/assets/images/variants/trezor_brand.png"),
-    printerLogo: TREZOR_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/trezor_brand.png"),
     defaultTheme: "light",
     colors: {
       light: {
@@ -159,8 +143,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   ledger: {
     name: "Ledger",
-    brandLogo: require("@/assets/images/variants/ledger_brand.png"),
-    printerLogo: LEDGER_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/ledger_brand.png"),
     defaultTheme: "light",
     colors: {
       light: {
@@ -177,6 +160,45 @@ export const Variants: Record<VariantName, Variant> = {
         "text-payment-success": "#FFFFFF",
         "border-payment-success": "#E9E9E9",
       },
+    },
+  },
+  imin: {
+    name: "iMin",
+    variantLogo: require("@/assets/images/variants/imin_brand.png"),
+    defaultTheme: "light",
+    colors: {
+      light: {
+        "icon-accent-primary": "#3E4D59",
+        "bg-accent-primary": "#3E4D59",
+        "bg-payment-success": "#000000",
+        "text-payment-success": "#FFFFFF",
+        "border-payment-success": "#E9E9E9",
+      },
+      dark: {
+        "icon-accent-primary": "#3E4D59",
+        "bg-accent-primary": "#3E4D59",
+        "bg-payment-success": "#000000",
+        "text-payment-success": "#FFFFFF",
+        "border-payment-success": "#E9E9E9",
+      },
+    },
+  },
+  money2020: {
+    name: "Money 20/20",
+    variantLogo: require("@/assets/images/variants/money2020_brand.png"),
+    defaultTheme: "dark",
+    colors: {
+      light: {},
+      dark: {},
+    },
+  },
+  xmoney: {
+    name: "xMoney",
+    variantLogo: require("@/assets/images/variants/xmoney_brand.png"),
+    defaultTheme: "dark",
+    colors: {
+      light: {},
+      dark: {},
     },
   },
 };

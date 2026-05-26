@@ -4,6 +4,7 @@ import { SUI_CHAINS, SUI_NETWORKS_IMAGES } from '@/constants/Sui';
 import { EIP155_CHAINS, EIP155_NETWORK_IMAGES } from '@/constants/Eip155';
 import { TRON_CHAINS, TRON_NETWORKS_IMAGES } from '@/constants/Tron';
 import { CANTON_CHAINS, CANTON_NETWORKS_IMAGES } from '@/constants/Canton';
+import { SOLANA_CHAINS, SOLANA_NETWORKS_IMAGES } from '@/constants/Solana';
 
 const NetworkImages: Record<string, ImageSourcePropType> = {
   ...EIP155_NETWORK_IMAGES,
@@ -11,6 +12,7 @@ const NetworkImages: Record<string, ImageSourcePropType> = {
   ...TON_NETWORKS_IMAGES,
   ...TRON_NETWORKS_IMAGES,
   ...CANTON_NETWORKS_IMAGES,
+  ...SOLANA_NETWORKS_IMAGES,
 };
 
 export const ALL_CHAINS = {
@@ -19,6 +21,7 @@ export const ALL_CHAINS = {
   ...TON_CHAINS,
   ...TRON_CHAINS,
   ...CANTON_CHAINS,
+  ...SOLANA_CHAINS,
 };
 
 export const PresetsUtil = {

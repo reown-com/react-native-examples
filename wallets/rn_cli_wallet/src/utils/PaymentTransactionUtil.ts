@@ -7,8 +7,14 @@ import { PresetsUtil } from '@/utils/PresetsUtil';
 
 const POLYGON_MIN_PRIORITY_FEE_WEI = BigNumber.from('30000000000'); // 30 gwei
 const WALLETCONNECT_RPC_BASE_URL = 'https://rpc.walletconnect.org/v1/';
+const WALLETCONNECT_FUNGIBLE_PRICE_URL =
+  'https://rpc.walletconnect.org/v1/fungible/price';
+const NATIVE_TOKEN_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const TX_CONFIRMATION_TIMEOUT_MS = 120_000;
 const GAS_ESTIMATION_RPC_TIMEOUT_MS = 15_000;
+const PRICE_ESTIMATION_TIMEOUT_MS = 10_000;
+const PRICE_CACHE_TTL_MS = 60_000;
+const DEFAULT_FIAT_CURRENCY = 'USD';
 
 const NATIVE_SYMBOL_BY_CHAIN_ID: Record<string, string> = {
   'eip155:1': 'ETH',
@@ -35,10 +41,38 @@ const NATIVE_SYMBOL_BY_CHAIN_ID: Record<string, string> = {
   'eip155:143': 'MON',
 };
 
+const SUPPORTED_FIAT_CURRENCIES = new Set(['USD', 'EUR']);
+
+type FungiblePriceResponse = {
+  fungibles?: Array<{
+    address?: string;
+    price?: number;
+    symbol?: string;
+  }>;
+};
+
+type CachedPrice = {
+  price: number;
+  expiresAt: number;
+};
+
+const nativePriceCache = new Map<string, CachedPrice>();
+const nativePriceRequestCache = new Map<
+  string,
+  Promise<{ price: number; currency: string } | null>
+>();
+
+export type TransactionFeeEstimate = {
+  display: string;
+  nativeDisplay: string;
+  fiatValue: number | null;
+  fiatCurrency: string | null;
+  chainId: string;
+  nativeSymbol: string;
+};
+
 export type TransactionWallet = {
-  connect: (
-    provider: providers.JsonRpcProvider,
-  ) =>
+  connect: (provider: providers.JsonRpcProvider) =>
     | providers.JsonRpcSigner
     | {
         sendTransaction: (
@@ -70,7 +104,9 @@ function getWalletConnectRpcUrl(chainId: string): string | null {
     return null;
   }
 
-  return `${WALLETCONNECT_RPC_BASE_URL}?chainId=${encodeURIComponent(chainId)}&projectId=${encodeURIComponent(projectId)}`;
+  return `${WALLETCONNECT_RPC_BASE_URL}?chainId=${encodeURIComponent(
+    chainId,
+  )}&projectId=${encodeURIComponent(projectId)}`;
 }
 
 function getHighestBigNumber(
@@ -89,6 +125,108 @@ function toBigNumber(value: unknown): BigNumber | null {
   } catch {
     return null;
   }
+}
+
+function normalizeFiatCurrency(currency?: string): string {
+  const normalized = currency?.trim().toUpperCase();
+  if (normalized && SUPPORTED_FIAT_CURRENCIES.has(normalized)) {
+    return normalized;
+  }
+  return DEFAULT_FIAT_CURRENCY;
+}
+
+function getNativeFungibleAddress(chainId: string): string {
+  return `${chainId}:${NATIVE_TOKEN_ADDRESS}`;
+}
+
+async function fetchNativeTokenPrice({
+  chainId,
+  currency,
+}: {
+  chainId: string;
+  currency?: string;
+}): Promise<{ price: number; currency: string } | null> {
+  const projectId = Config.ENV_PROJECT_ID?.trim();
+  if (!projectId) {
+    return null;
+  }
+
+  const fiatCurrency = normalizeFiatCurrency(currency);
+  const cacheKey = `${fiatCurrency}:${chainId}`;
+  const cachedPrice = nativePriceCache.get(cacheKey);
+  if (cachedPrice && cachedPrice.expiresAt > Date.now()) {
+    return { price: cachedPrice.price, currency: fiatCurrency };
+  }
+
+  const pendingRequest = nativePriceRequestCache.get(cacheKey);
+  if (pendingRequest) {
+    return pendingRequest;
+  }
+
+  const nativeAddress = getNativeFungibleAddress(chainId);
+
+  const request = (async () => {
+    try {
+      const response = await withTimeout(
+        fetch(WALLETCONNECT_FUNGIBLE_PRICE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            projectId,
+            currency: fiatCurrency.toLowerCase(),
+            addresses: [nativeAddress],
+          }),
+        }),
+        PRICE_ESTIMATION_TIMEOUT_MS,
+        `fungible price timed out after ${PRICE_ESTIMATION_TIMEOUT_MS}ms`,
+      );
+
+      if (!response.ok) {
+        LogStore.warn(
+          'Native token price request failed',
+          'PaymentTransactionUtil',
+          'fetchNativeTokenPrice',
+          { chainId, currency: fiatCurrency, status: response.status },
+        );
+        return null;
+      }
+
+      const data = (await response.json()) as FungiblePriceResponse;
+      const fungible = data.fungibles?.find(
+        item => item.address?.toLowerCase() === nativeAddress.toLowerCase(),
+      );
+      const price = fungible?.price;
+      if (!Number.isFinite(price) || !price || price <= 0) {
+        return null;
+      }
+
+      nativePriceCache.set(cacheKey, {
+        price,
+        expiresAt: Date.now() + PRICE_CACHE_TTL_MS,
+      });
+
+      return { price, currency: fiatCurrency };
+    } catch (error) {
+      LogStore.warn(
+        'Failed to fetch native token price',
+        'PaymentTransactionUtil',
+        'fetchNativeTokenPrice',
+        {
+          chainId,
+          currency: fiatCurrency,
+          error: serializeError(error),
+        },
+      );
+      return null;
+    }
+  })();
+
+  nativePriceRequestCache.set(cacheKey, request);
+  return request.finally(() => {
+    nativePriceRequestCache.delete(cacheKey);
+  });
 }
 
 export function createPayRpcProvider(
@@ -201,11 +339,13 @@ function serializeTxRequestForLog(tx: providers.TransactionRequest) {
     maxFeePerGas: asString(tx.maxFeePerGas),
     maxPriorityFeePerGas: asString(tx.maxPriorityFeePerGas),
     dataLength:
-      typeof tx.data === 'string' ? Math.max(0, (tx.data.length - 2) / 2) : null,
+      typeof tx.data === 'string'
+        ? Math.max(0, (tx.data.length - 2) / 2)
+        : null,
   };
 }
 
-function formatGasEstimate({
+function formatNativeGasEstimate({
   totalFeeWei,
   chainId,
 }: {
@@ -220,10 +360,64 @@ function formatGasEstimate({
   }
 
   if (feeValue >= 0.01) {
-    return `~${feeValue.toFixed(4)} ${symbol}`;
+    return `${feeValue.toFixed(4)} ${symbol}`;
   }
 
-  return `~${feeValue.toFixed(6)} ${symbol}`;
+  return `${feeValue.toFixed(6)} ${symbol}`;
+}
+
+function formatFiatGasEstimate({
+  fiatValue,
+  currency,
+}: {
+  fiatValue: number;
+  currency: string;
+}): string {
+  const symbol = currency === 'EUR' ? '€' : '$';
+
+  if (!Number.isFinite(fiatValue) || fiatValue <= 0) {
+    return `${symbol}0.00`;
+  }
+
+  if (fiatValue < 0.01) {
+    return `<${symbol}0.01`;
+  }
+
+  return `${symbol}${fiatValue.toFixed(2)}`;
+}
+
+function buildGasEstimate({
+  totalFeeWei,
+  chainId,
+  nativeTokenPrice,
+}: {
+  totalFeeWei: BigNumber;
+  chainId: string;
+  nativeTokenPrice: { price: number; currency: string } | null;
+}): TransactionFeeEstimate {
+  const nativeSymbol = NATIVE_SYMBOL_BY_CHAIN_ID[chainId] || 'ETH';
+  const nativeDisplay = formatNativeGasEstimate({ totalFeeWei, chainId });
+  const nativeValue = Number(utils.formatEther(totalFeeWei));
+  const fiatCurrency = nativeTokenPrice?.currency ?? null;
+  const fiatValue =
+    nativeTokenPrice && Number.isFinite(nativeValue) && nativeValue > 0
+      ? nativeValue * nativeTokenPrice.price
+      : null;
+
+  return {
+    display:
+      fiatValue !== null
+        ? formatFiatGasEstimate({
+            fiatValue,
+            currency: fiatCurrency ?? DEFAULT_FIAT_CURRENCY,
+          })
+        : nativeDisplay,
+    nativeDisplay,
+    fiatValue,
+    fiatCurrency,
+    chainId,
+    nativeSymbol,
+  };
 }
 
 function withTimeout<T>(
@@ -248,7 +442,8 @@ function withTimeout<T>(
 
 export async function estimateTransactionFee(
   action: Action,
-): Promise<string | null> {
+  options: { currency?: string } = {},
+): Promise<TransactionFeeEstimate | null> {
   const { walletRpc } = action;
   if (!walletRpc?.params) {
     return null;
@@ -306,7 +501,16 @@ export async function estimateTransactionFee(
   }
 
   const totalFeeWei = gasLimit.mul(feePerGas);
-  return formatGasEstimate({ totalFeeWei, chainId: walletRpc.chainId });
+  const nativeTokenPrice = await fetchNativeTokenPrice({
+    chainId: walletRpc.chainId,
+    currency: options.currency,
+  });
+
+  return buildGasEstimate({
+    totalFeeWei,
+    chainId: walletRpc.chainId,
+    nativeTokenPrice,
+  });
 }
 
 export async function sendTransactionWithFreshFees({
@@ -344,15 +548,10 @@ export async function sendTransactionWithFreshFees({
     );
   }
 
-  LogStore.log(
-    'Submitting transaction',
-    'PaymentTransactionUtil',
-    logContext,
-    {
-      chainId,
-      tx: serializeTxRequestForLog(txRequest),
-    },
-  );
+  LogStore.log('Submitting transaction', 'PaymentTransactionUtil', logContext, {
+    chainId,
+    tx: serializeTxRequestForLog(txRequest),
+  });
 
   try {
     return await connectedWallet.sendTransaction(txRequest);

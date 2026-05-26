@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, { Keyframe } from 'react-native-reanimated';
+import Config from 'react-native-config';
 
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
@@ -8,8 +9,11 @@ import { Text } from '@/components/Text';
 
 interface LoadingViewProps {
   message?: string;
+  note?: string;
   size?: number;
 }
+
+const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
 
 const enteringKeyframe = new Keyframe({
   0: { opacity: 0, transform: [{ translateY: 14 }, { scale: 0.92 }] },
@@ -21,9 +25,12 @@ const exitingKeyframe = new Keyframe({
   100: { opacity: 0, transform: [{ translateY: -14 }, { scale: 0.92 }] },
 }).duration(220);
 
-export function LoadingView({ message, size = 120 }: LoadingViewProps) {
+export function LoadingView({ message, note, size = 120 }: LoadingViewProps) {
   const hasMountedRef = useRef(false);
-  const entering = hasMountedRef.current ? enteringKeyframe : undefined;
+  const entering =
+    arePayModalAnimationsEnabled && hasMountedRef.current
+      ? enteringKeyframe
+      : undefined;
   hasMountedRef.current = true;
 
   const messageKey = message || 'default';
@@ -31,11 +38,16 @@ export function LoadingView({ message, size = 120 }: LoadingViewProps) {
   return (
     <View style={styles.loadingContainer}>
       <WalletConnectLoading size={size} />
-      <View style={styles.messageContainer}>
+      <View
+        style={[
+          styles.messageContainer,
+          note && styles.messageContainerWithNote,
+        ]}
+      >
         <Animated.View
           key={messageKey}
           entering={entering}
-          exiting={exitingKeyframe}
+          exiting={arePayModalAnimationsEnabled ? exitingKeyframe : undefined}
           style={styles.messageSlot}
         >
           <Text
@@ -48,6 +60,16 @@ export function LoadingView({ message, size = 120 }: LoadingViewProps) {
           >
             {message || 'Loading...'}
           </Text>
+          {note && (
+            <Text
+              variant="lg-400"
+              color="text-secondary"
+              center
+              style={styles.loadingNote}
+            >
+              {note}
+            </Text>
+          )}
         </Animated.View>
       </View>
     </View>
@@ -62,9 +84,12 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     marginTop: Spacing[4],
-    minHeight: 48,
+    minHeight: 64,
     width: '100%',
     overflow: 'hidden',
+  },
+  messageContainerWithNote: {
+    minHeight: 110,
   },
   messageSlot: {
     ...StyleSheet.absoluteFill,
@@ -74,5 +99,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     textAlign: 'center',
+  },
+  loadingNote: {
+    marginTop: Spacing[2],
   },
 });

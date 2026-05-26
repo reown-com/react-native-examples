@@ -20,8 +20,18 @@ import { TON_CHAINS, TON_SIGNING_METHODS } from '@/constants/Ton';
 import { getWallet, tonAddresses } from '@/utils/TonWalletUtil';
 import { tronAddresses } from '@/utils/TronWalletUtil';
 import { TRON_CHAINS, TRON_SIGNING_METHODS } from '@/constants/Tron';
-import { CANTON_CHAINS, CANTON_SIGNING_METHODS, CANTON_EVENTS } from '@/constants/Canton';
+import {
+  CANTON_CHAINS,
+  CANTON_SIGNING_METHODS,
+  CANTON_EVENTS,
+} from '@/constants/Canton';
 import { cantonAddresses } from '@/utils/CantonWalletUtil';
+import { solanaAddresses } from '@/utils/SolanaWalletUtil';
+import {
+  SOLANA_CHAINS,
+  SOLANA_EVENTS,
+  SOLANA_SIGNING_METHODS,
+} from '@/constants/Solana';
 import { AccordionCard } from '@/components/AccordionCard';
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkSelector } from '@/components/NetworkSelector';
@@ -76,6 +86,10 @@ export default function SessionProposalModal() {
     const cantonMethods = Object.values(CANTON_SIGNING_METHODS);
     const cantonEvents = Object.values(CANTON_EVENTS);
 
+    const solanaChains = Object.keys(SOLANA_CHAINS);
+    const solanaMethods = Object.values(SOLANA_SIGNING_METHODS);
+    const solanaEvents = Object.values(SOLANA_EVENTS);
+
     return {
       eip155: {
         chains: eip155Chains,
@@ -112,6 +126,14 @@ export default function SessionProposalModal() {
         accounts: cantonChains
           .map(chain => `${chain}:${cantonAddresses[0]}`)
           .flat(),
+      },
+      solana: {
+        chains: solanaChains,
+        methods: solanaMethods,
+        events: solanaEvents,
+        accounts: solanaAddresses?.[0]
+          ? solanaChains.map(chain => `${chain}:${solanaAddresses[0]}`)
+          : [],
       },
     };
   }, []);
