@@ -72,9 +72,6 @@ export default function SettingsScreen() {
   const setVariant = useSettingsStore((state) => state.setVariant);
   const currency = useSettingsStore((state) => state.currency);
   const setCurrency = useSettingsStore((state) => state.setCurrency);
-  const getVariantPrinterLogo = useSettingsStore(
-    (state) => state.getVariantPrinterLogo,
-  );
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
   const nfcCapabilities = useNfcCapabilities();
@@ -223,7 +220,6 @@ export default function SettingsScreen() {
         tokenDecimals: 6,
         networkName: "Base",
         date: new Date().toLocaleDateString("en-GB"),
-        logoBase64: getVariantPrinterLogo(),
       });
     } catch (error) {
       const errorMessage =
@@ -291,10 +287,10 @@ export default function SettingsScreen() {
             <View style={styles.biometricRow}>
               <View style={styles.biometricLabel}>
                 <ThemedText fontSize={16} lineHeight={18}>
-                  NFC (Tap to pay)
+                  Show NFC UI
                 </ThemedText>
                 <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Emulates an NFC tag with the payment URL
+                  Show NFC tap UI on the payment screen
                 </ThemedText>
               </View>
               <Switch

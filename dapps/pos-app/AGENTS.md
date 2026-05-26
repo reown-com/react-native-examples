@@ -396,10 +396,9 @@ This POS app supports a **variants system** that allows for minor UI customizati
    - Each variant can override theme colors, logos, and default theme mode
    - Variants are selected via settings and stored in Zustand store
 
-3. **Printer Logos** (`constants/printer-logos.ts`)
-   - Contains base64-encoded logos for thermal printer receipts
-   - Each variant has its own printer logo
-   - Default logo uses `brand.png` converted to base64
+3. **Printer Logo** (`constants/printer-logos.ts`)
+   - Contains the single base64-encoded `DEFAULT_LOGO_BASE64` used on thermal printer receipts
+   - All variants share this default logo on the printed receipt
 
 ### How Variants Work
 
@@ -408,11 +407,11 @@ This POS app supports a **variants system** that allows for minor UI customizati
 Each variant is defined with:
 
 - **name**: Display name (e.g., "Solflare", "Binance")
-- **brandLogo**: Image asset for UI branding (loaded via `require()`)
-- **brandLogoWidth**: Optional width override for brand logo
-- **printerLogo**: Base64-encoded string for receipt printing
+- **variantLogo**: Variant-only image asset (loaded via `require()`), omitted for the `default` variant. The header composes this with `brand.png` and `plus.png` at runtime to render `<WPay> + <variant>`. Width auto-sizes from the asset's intrinsic aspect ratio at a fixed render height — export logos trimmed of transparent padding.
 - **defaultTheme**: Optional default theme mode ("light" or "dark")
 - **colors**: Color overrides for light and dark themes
+
+The thermal printer receipt always uses `DEFAULT_LOGO_BASE64` regardless of variant.
 
 #### Color Override System
 
@@ -427,8 +426,7 @@ Variants can override any color from the base theme:
 ```typescript
 solflare: {
   name: "Solflare",
-  brandLogo: require("@/assets/images/variants/solflare_brand.png"),
-  printerLogo: SOLFLARE_LOGO_BASE64,
+  variantLogo: require("@/assets/images/variants/solflare_brand.png"),
   defaultTheme: "dark",
   colors: {
     light: {
@@ -489,31 +487,22 @@ Variants are stored in Zustand store (`store/useSettingsStore.ts`):
 #### Steps
 
 1. **Add variant logo image**
-   - Place in `assets/images/variants/<variant-name>_brand.png`
+   - Place the variant-only mark (no WPay wordmark, no "+") in `assets/images/variants/<variant-name>_brand.png`
    - PNG format recommended
+   - The header renders `brand.png` + `plus.png` + your variant logo as three separate images
 
-2. **Convert logo to base64 for printer**
-   - Use online tool or command: `base64 -i assets/images/variants/<variant-name>_brand.png`
-   - Add to `constants/printer-logos.ts` as `export const <VARIANT>_LOGO_BASE64`
-
-3. **Define variant in `constants/variants.ts`**
+2. **Define variant in `constants/variants.ts`**
    - Add variant name to `VariantName` type
-   - Import printer logo base64
-   - Add variant configuration to `Variants` object
+   - Add variant configuration to `Variants` object with `variantLogo`
    - Specify color overrides for light/dark themes
 
-4. **Update version code** (if needed)
+3. **Update version code** (if needed)
    - Increment `expo.android.versionCode` in `app.json`
 
 #### Example: Adding a New Variant
 
 ```typescript
-// 1. In printer-logos.ts
-export const MYVARIANT_LOGO_BASE64 = "data:image/png;base64,...";
-
-// 2. In variants.ts
-import { MYVARIANT_LOGO_BASE64 } from "./printer-logos";
-
+// In variants.ts
 export type VariantName =
   | "default"
   | "solflare"
@@ -526,8 +515,7 @@ export const Variants: Record<VariantName, Variant> = {
   // ... existing variants
   myvariant: {
     name: "My Variant",
-    brandLogo: require("@/assets/images/variants/myvariant_brand.png"),
-    printerLogo: MYVARIANT_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/myvariant_brand.png"),
     defaultTheme: "light",
     colors: {
       light: {
@@ -550,10 +538,9 @@ export const Variants: Record<VariantName, Variant> = {
    - Dark backgrounds need light text
    - Some variants use `text-invert` override for better contrast
 
-2. **Printer Logos**: Must be base64-encoded PNG strings
-   - Format: `"data:image/png;base64,<base64-string>"`
-   - Used in thermal printer receipts
-   - Logo size is automatically handled by printer library
+2. **Printer Logo**: Receipts use the shared `DEFAULT_LOGO_BASE64` for every variant
+   - Defined in `constants/printer-logos.ts` as a `data:image/png;base64,...` string
+   - Logo size is automatically handled by the printer library
 
 3. **Default Theme**: Variants can specify a default theme mode
    - Users can still switch themes manually
@@ -576,7 +563,6 @@ export const Variants: Record<VariantName, Variant> = {
    - Brand logo changes in header
    - Accent colors update throughout app
    - Payment success screen uses variant colors
-   - Receipt printing uses variant logo
 
 ### Related Files
 
@@ -617,7 +603,6 @@ export const Variants: Record<VariantName, Variant> = {
 - **Current version code**: Check the current value in `app.json` and increment by 1
 - **Why**: Android requires a unique version code for each release. Without incrementing, new builds cannot be installed over previous versions
 - **Example**: If current version code is `15`, change it to `16` for your changes
-- Current version code: 16
 
 ## Key Dependencies & Their Purposes
 
