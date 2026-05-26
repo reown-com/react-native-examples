@@ -1,5 +1,11 @@
 import { useEffect } from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import {
+  Dimensions,
+  Platform,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 
 import {
   Camera,
@@ -29,7 +35,12 @@ type Props = RootStackScreenProps<'Scan'>;
 export default function Scan({ navigation }: Props) {
   const Theme = useTheme();
   const { top } = useSafeAreaInsets();
-  const { width: rawWidth, height: rawHeight } = useWindowDimensions();
+  // Subscribe to window changes so we re-render on rotation/foldables/multi-window.
+  // On Android we then read 'screen' dimensions to include the navigation bar area
+  // for the edge-to-edge overlay; on iOS the window value is what we want.
+  const windowDims = useWindowDimensions();
+  const { width: rawWidth, height: rawHeight } =
+    Platform.OS === 'android' ? Dimensions.get('screen') : windowDims;
   // Small buffer to avoid sub-pixel gaps on devices with non-integer pixel ratios
   const screenWidth = rawWidth + 2;
   const screenHeight = rawHeight + 2;
