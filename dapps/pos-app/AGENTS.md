@@ -563,7 +563,6 @@ export const Variants: Record<VariantName, Variant> = {
    - Brand logo changes in header
    - Accent colors update throughout app
    - Payment success screen uses variant colors
-   - Receipt printing uses variant logo
 
 ### Related Files
 
