@@ -1,3 +1,7 @@
+import Config from 'react-native-config';
+
+export const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
+
 // Format date input as user types (YYYY-MM-DD)
 export function formatDateInput(value: string): string {
   // Remove any non-numeric characters except dashes

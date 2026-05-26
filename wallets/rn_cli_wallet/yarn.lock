@@ -4722,6 +4722,7 @@ __metadata:
     eslint-plugin-ft-flow: ^2.0.1
     ethers: 5.8.0
     jest: 29.7.0
+    lottie-react-native: 7.3.5
     pressto: 0.6.0
     prettier: 2.8.8
     react: 19.1.1
@@ -9356,6 +9357,23 @@ __metadata:
   bin:
     loose-envify: cli.js
   checksum: 6517e24e0cad87ec9888f500c5b5947032cdfe6ef65e1c1936a0c48a524b81e65542c9c3edc91c97d5bddc806ee2a985dbc79be89215d613b1de5db6d1cfe6f4
+  languageName: node
+  linkType: hard
+
+"lottie-react-native@npm:7.3.5":
+  version: 7.3.5
+  resolution: "lottie-react-native@npm:7.3.5"
+  peerDependencies:
+    "@lottiefiles/dotlottie-react": ^0.13.5
+    react: "*"
+    react-native: ">=0.46"
+    react-native-windows: ">=0.63.x"
+  peerDependenciesMeta:
+    "@lottiefiles/dotlottie-react":
+      optional: true
+    react-native-windows:
+      optional: true
+  checksum: 0c77f9423490eb4d2c0345f6ddaca64854066678e2d2d6b1d2a4fec9ef7d59964ce401c2789b55c3541103dcb564174755cb6e9cfab8d650c0cbd78125f39662
   languageName: node
   linkType: hard
 
