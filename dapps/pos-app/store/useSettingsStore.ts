@@ -1,4 +1,3 @@
-import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { VariantName, Variants } from "@/constants/variants";
 import { CurrencyCode } from "@/utils/currency";
 import { MerchantConfig } from "@/utils/merchant-config";
@@ -101,9 +100,6 @@ interface SettingsStore {
   // Transaction filters
   setTransactionFilter: (filter: TransactionFilterType) => void;
   setDateRangeFilter: (filter: DateRangeFilterType) => void;
-
-  // Others
-  getVariantPrinterLogo: () => string;
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -122,7 +118,7 @@ export const useSettingsStore = create<SettingsStore>()(
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
-      nfcEnabled: false,
+      nfcEnabled: true,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
@@ -276,14 +272,10 @@ export const useSettingsStore = create<SettingsStore>()(
         set({ transactionFilter: filter }),
       setDateRangeFilter: (filter: DateRangeFilterType) =>
         set({ dateRangeFilter: filter }),
-
-      getVariantPrinterLogo: () => {
-        return Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64;
-      },
     }),
     {
       name: "settings",
-      version: 15,
+      version: 16,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -341,6 +333,12 @@ export const useSettingsStore = create<SettingsStore>()(
 
         if (version < 15) {
           persistedState.nfcEnabled = persistedState.nfcEnabled ?? false;
+        }
+
+        if (version < 16) {
+          // nfcEnabled now means "show NFC UI" (HCE always runs when supported).
+          // Preserve any user-set value; only fresh installs get the new default of true.
+          persistedState.nfcEnabled = persistedState.nfcEnabled ?? true;
         }
 
         return persistedState;

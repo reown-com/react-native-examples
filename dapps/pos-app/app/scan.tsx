@@ -56,7 +56,8 @@ export default function ScanScreen() {
 
   const { isNfcActive, nfcMode } = useNfcPayment({
     paymentUrl: qrUri,
-    enabled: nfcEnabled,
+    // HCE runs whenever the device supports it; `nfcEnabled` only controls UI visibility below.
+    enabled: true,
     onNfcReady: () => {
       addLog("info", "NFC HCE activated", "scan", "useNfcPayment", {
         paymentId,
