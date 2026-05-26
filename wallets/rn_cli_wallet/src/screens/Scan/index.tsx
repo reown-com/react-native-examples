@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Dimensions, Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
 
 import {
   Camera,
@@ -10,24 +10,18 @@ import {
 } from 'react-native-vision-camera';
 import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path, Defs, ClipPath, Rect } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 
 import SvgClose from '@/assets/Close';
 import { RootStackScreenProps } from '@/utils/TypesUtil';
-import styles, { SCAN_AREA_SIZE, scanAreaLeft, scanAreaTop } from './styles';
+import styles, { SCAN_AREA_SIZE } from './styles';
 import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
 import { haptics } from '@/utils/haptics';
 import { Button } from '@/components/Button';
 import { ScannerFrame } from '@/components/ScannerFrame';
+import { Spacing } from '@/utils/ThemeUtil';
 
-// Use 'screen' on Android to include the navigation bar area in edge-to-edge mode
-// Add a small buffer to avoid sub-pixel gaps on devices with non-integer pixel ratios
-const { width: rawWidth, height: rawHeight } = Dimensions.get(
-  Platform.OS === 'android' ? 'screen' : 'window',
-);
-const screenWidth = rawWidth + 2;
-const screenHeight = rawHeight + 2;
 const CUTOUT_RADIUS = 16;
 
 type Props = RootStackScreenProps<'Scan'>;
@@ -35,6 +29,13 @@ type Props = RootStackScreenProps<'Scan'>;
 export default function Scan({ navigation }: Props) {
   const Theme = useTheme();
   const { top } = useSafeAreaInsets();
+  const { width: rawWidth, height: rawHeight } = useWindowDimensions();
+  // Small buffer to avoid sub-pixel gaps on devices with non-integer pixel ratios
+  const screenWidth = rawWidth + 2;
+  const screenHeight = rawHeight + 2;
+  const scanAreaLeft = (rawWidth - SCAN_AREA_SIZE) / 2;
+  const scanAreaTop = (rawHeight - SCAN_AREA_SIZE) / 3;
+
   const device = useCameraDevice('back', {
     physicalDevices: ['wide-angle-camera'],
   });
@@ -43,16 +44,17 @@ export default function Scan({ navigation }: Props) {
   const isActive = useIsFocused();
 
   const onCodeScanned = (codes: Code[]) => {
+    const uri = codes[0]?.value;
+    if (!uri) return;
     haptics.scanSuccess();
-    const uri = codes[0].value;
     navigation.navigate('Home', {
       screen: 'Connections',
-      params: { uri: uri! },
+      params: { uri },
     });
   };
 
   const codeScanner = useCodeScanner({
-    codeTypes: ['qr', 'ean-13'],
+    codeTypes: ['qr'],
     onCodeScanned,
   });
 
@@ -89,11 +91,6 @@ export default function Scan({ navigation }: Props) {
         width={screenWidth}
         height={screenHeight}
       >
-        <Defs>
-          <ClipPath id="overlay">
-            <Rect x={0} y={0} width={screenWidth} height={screenHeight} />
-          </ClipPath>
-        </Defs>
         <Path
           d={`M0,0 L${screenWidth},0 L${screenWidth},${screenHeight} L0,${screenHeight} Z M${
             scanAreaLeft + CUTOUT_RADIUS
@@ -120,7 +117,12 @@ export default function Scan({ navigation }: Props) {
       </Svg>
 
       {/* Scanner frame corners */}
-      <View style={styles.scanFrame}>
+      <View
+        style={[
+          styles.scanFrame,
+          { top: scanAreaTop - 14, left: scanAreaLeft - 14 },
+        ]}
+      >
         <ScannerFrame size={SCAN_AREA_SIZE + 28} />
       </View>
 
@@ -140,7 +142,12 @@ export default function Scan({ navigation }: Props) {
       </Button>
 
       {/* Instruction text */}
-      <View style={styles.instructionContainer}>
+      <View
+        style={[
+          styles.instructionContainer,
+          { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[8] },
+        ]}
+      >
         <Text variant="lg-400" style={styles.instructionText}>
           Find a WalletConnect QR Code to scan
         </Text>

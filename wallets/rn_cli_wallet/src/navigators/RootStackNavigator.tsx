@@ -56,6 +56,7 @@ export function RootStackNavigator() {
           headerBackButtonDisplayMode: 'minimal',
           headerTintColor: Theme['text-primary'],
           headerTitleStyle: {
+            ...headerTitleStyle,
             fontWeight: '400',
           },
         }}
@@ -69,6 +70,7 @@ export function RootStackNavigator() {
           headerBackButtonDisplayMode: 'minimal',
           headerTintColor: Theme['text-primary'],
           headerTitleStyle: {
+            ...headerTitleStyle,
             fontWeight: '400',
           },
         }}
