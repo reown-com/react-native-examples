@@ -17,7 +17,9 @@ interface UseNfcPaymentReturn {
   isLoading: boolean;
 }
 
-export function useNfcPayment(options: UseNfcPaymentOptions): UseNfcPaymentReturn {
+export function useNfcPayment(
+  options: UseNfcPaymentOptions,
+): UseNfcPaymentReturn {
   const { paymentUrl, enabled, onNfcReady, onNfcError, onTap } = options;
   const capabilities = useNfcCapabilities();
   const [isNfcActive, setIsNfcActive] = useState(false);
