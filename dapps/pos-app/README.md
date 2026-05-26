@@ -161,7 +161,7 @@ To create a branded variant for a specific client:
 
    The tag will trigger the release workflow automatically.
 
-7. **Verify the release**
+6. **Verify the release**
    - Check the build status and Firebase link in the `#system-releases-react-native` Slack channel
 
 **Manual release**: If you need to trigger the release manually instead of using a tag, go to GitHub Actions and run the `release-android-mobilepos` workflow.

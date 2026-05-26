@@ -27,7 +27,11 @@ export const HceModule = {
 
   async getNfcCapabilities(): Promise<NfcCapabilitiesResult> {
     if (!Native) {
-      return { isNfcSupported: false, isNfcEnabled: false, isHceSupported: false };
+      return {
+        isNfcSupported: false,
+        isNfcEnabled: false,
+        isHceSupported: false,
+      };
     }
     return Native.getNfcCapabilities();
   },
