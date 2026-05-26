@@ -1,17 +1,16 @@
 import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
+import LottieView from 'lottie-react-native';
 
-import { useTheme } from '@/hooks/useTheme';
 import { ActionButton } from '@/components/ActionButton';
 import { Text } from '@/components/Text';
-import CheckCircle from '@/assets/CheckCircle';
 import CoinStack from '@/assets/CoinStack';
 import WarningCircle from '@/assets/WarningCircle';
 import { haptics } from '@/utils/haptics';
 import { Spacing } from '@/utils/ThemeUtil';
 
 import type { ErrorType } from './utils';
-import { getErrorTitle } from './utils';
+import { arePayModalAnimationsEnabled, getErrorTitle } from './utils';
 
 const getResultButtonTestId = (
   isSuccess: boolean,
@@ -44,8 +43,6 @@ export function ResultView({
   onClose,
   onScanQR,
 }: ResultViewProps) {
-  const Theme = useTheme();
-
   useEffect(() => {
     if (status === 'success') {
       haptics.success();
@@ -62,10 +59,12 @@ export function ResultView({
   const renderIcon = () => {
     if (isSuccess) {
       return (
-        <CheckCircle
-          width={40}
-          height={40}
-          fill={Theme['text-success']}
+        <LottieView
+          source={require('@/assets/lottie/Success.json')}
+          autoPlay={arePayModalAnimationsEnabled}
+          loop={false}
+          progress={arePayModalAnimationsEnabled ? undefined : 1}
+          style={styles.successAnimation}
           testID="pay-result-success-icon"
         />
       );
@@ -195,6 +194,10 @@ export function ResultView({
 const styles = StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
+  },
+  successAnimation: {
+    width: 120,
+    height: 120,
   },
   title: {
     marginTop: Spacing[4],

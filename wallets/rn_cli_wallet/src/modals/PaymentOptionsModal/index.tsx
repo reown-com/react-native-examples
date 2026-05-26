@@ -261,6 +261,7 @@ export default function PaymentOptionsModal() {
       case 'loading':
         return (
           <LoadingView
+            variant="spinner"
             message={snap.loadingMessage || 'Preparing your payment...'}
           />
         );
