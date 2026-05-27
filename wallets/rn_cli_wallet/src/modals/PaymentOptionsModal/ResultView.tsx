@@ -161,7 +161,10 @@ export function ResultView({
 
   return (
     <>
-      <View style={styles.iconArea} testID="pay-result-container">
+      <View
+        style={isSuccess ? styles.iconArea : styles.iconAreaCompact}
+        testID="pay-result-container"
+      >
         {renderIcon()}
       </View>
       <View style={styles.textArea}>
@@ -200,6 +203,11 @@ const styles = StyleSheet.create({
     height: PAY_STATUS_LAYOUT.iconAreaHeight,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  iconAreaCompact: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing[4],
   },
   successAnimation: {
     width: LOTTIE_ICON_SIZE,

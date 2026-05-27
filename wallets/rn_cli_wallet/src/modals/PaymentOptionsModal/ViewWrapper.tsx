@@ -5,7 +5,6 @@ import Animated, {
   FadeOut,
   LinearTransition,
 } from 'react-native-reanimated';
-import Config from 'react-native-config';
 
 import { useTheme } from '@/hooks/useTheme';
 import SvgArrowLeft from '@/assets/ArrowLeft';
@@ -13,6 +12,8 @@ import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Button } from '@/components/Button';
 import type { Step } from '@/utils/TypesUtil';
+
+import { arePayModalAnimationsEnabled } from './utils';
 
 interface ViewWrapperProps {
   children: React.ReactNode;
@@ -26,7 +27,6 @@ interface ViewWrapperProps {
 
 const ANIMATION_DURATION = 250;
 const LAYOUT_TRANSITION_DURATION = 280;
-const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
 
 export function ViewWrapper({
   children,
