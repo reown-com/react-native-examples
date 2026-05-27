@@ -1,6 +1,10 @@
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+} from 'react-native-reanimated';
 import Config from 'react-native-config';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -21,6 +25,7 @@ interface ViewWrapperProps {
 }
 
 const ANIMATION_DURATION = 250;
+const LAYOUT_TRANSITION_DURATION = 280;
 const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
 
 export function ViewWrapper({
@@ -106,9 +111,16 @@ export function ViewWrapper({
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
+    <Animated.View
+      style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
+      layout={
+        arePayModalAnimationsEnabled
+          ? LinearTransition.duration(LAYOUT_TRANSITION_DURATION)
+          : undefined
+      }
+    >
       {content}
-    </View>
+    </Animated.View>
   );
 }
 

@@ -8,7 +8,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { Spacing } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 
-import { arePayModalAnimationsEnabled } from './utils';
+import {
+  arePayModalAnimationsEnabled,
+  LOTTIE_ICON_SIZE,
+  PAY_STATUS_LAYOUT,
+} from './utils';
 
 interface LoadingViewProps {
   message?: string;
@@ -30,7 +34,7 @@ const exitingKeyframe = new Keyframe({
 export function LoadingView({
   message,
   note,
-  size = 120,
+  size,
   variant = 'lottie',
 }: LoadingViewProps) {
   const Theme = useTheme();
@@ -57,31 +61,32 @@ export function LoadingView({
 
   const resolvedVariant = arePayModalAnimationsEnabled ? variant : 'spinner';
 
+  const lottieSize = size ?? LOTTIE_ICON_SIZE;
+
   return (
-    <View style={styles.loadingContainer}>
+    <>
       {resolvedVariant === 'spinner' ? (
-        <WalletConnectLoading size={size} />
+        <View style={styles.spinnerArea}>
+          <WalletConnectLoading size={size} />
+        </View>
       ) : (
-        <LottieView
-          source={require('@/assets/lottie/Loading.json')}
-          autoPlay
-          loop
-          colorFilters={lottieColorFilters}
-          style={{ width: size, height: size }}
-          testID="pay-loading-lottie"
-        />
+        <View style={styles.iconArea}>
+          <LottieView
+            source={require('@/assets/lottie/Loading.json')}
+            autoPlay
+            loop
+            colorFilters={lottieColorFilters}
+            style={{ width: lottieSize, height: lottieSize }}
+            testID="pay-loading-lottie"
+          />
+        </View>
       )}
-      <View
-        style={[
-          styles.messageContainer,
-          note && styles.messageContainerWithNote,
-        ]}
-      >
+      <View style={styles.textArea}>
         <Animated.View
           key={messageKey}
           entering={entering}
           exiting={arePayModalAnimationsEnabled ? exitingKeyframe : undefined}
-          style={styles.messageSlot}
+          style={styles.textSlot}
         >
           <Text
             variant="h6-400"
@@ -105,29 +110,27 @@ export function LoadingView({
           )}
         </Animated.View>
       </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    padding: Spacing[5],
+  iconArea: {
+    height: PAY_STATUS_LAYOUT.iconAreaHeight,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  messageContainer: {
-    marginTop: Spacing[4],
-    minHeight: 64,
+  spinnerArea: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing[4],
+  },
+  textArea: {
     width: '100%',
-    overflow: 'hidden',
+    paddingVertical: Spacing[4],
   },
-  messageContainerWithNote: {
-    minHeight: 110,
-  },
-  messageSlot: {
-    ...StyleSheet.absoluteFill,
+  textSlot: {
     alignItems: 'center',
-    justifyContent: 'center',
     paddingHorizontal: Spacing[2],
   },
   loadingText: {

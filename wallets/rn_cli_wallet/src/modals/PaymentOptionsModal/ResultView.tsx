@@ -10,7 +10,12 @@ import { haptics } from '@/utils/haptics';
 import { Spacing } from '@/utils/ThemeUtil';
 
 import type { ErrorType } from './utils';
-import { arePayModalAnimationsEnabled, getErrorTitle } from './utils';
+import {
+  arePayModalAnimationsEnabled,
+  getErrorTitle,
+  LOTTIE_ICON_SIZE,
+  PAY_STATUS_LAYOUT,
+} from './utils';
 
 const getResultButtonTestId = (
   isSuccess: boolean,
@@ -121,7 +126,6 @@ export function ResultView({
           variant="h6-400"
           color="text-primary"
           center
-          style={styles.title}
           numberOfLines={2}
           testID="pay-result-title"
         >
@@ -136,7 +140,6 @@ export function ResultView({
           variant="h6-400"
           color="text-primary"
           center
-          style={styles.title}
           testID="pay-result-title"
         >
           {message || defaultMessage}
@@ -149,7 +152,6 @@ export function ResultView({
         variant="h6-400"
         color="text-primary"
         center
-        style={styles.title}
         testID="pay-result-title"
       >
         {getErrorTitle(errorType)}
@@ -159,8 +161,10 @@ export function ResultView({
 
   return (
     <>
-      <View style={styles.contentContainer} testID="pay-result-container">
+      <View style={styles.iconArea} testID="pay-result-container">
         {renderIcon()}
+      </View>
+      <View style={styles.textArea}>
         {renderTitle()}
         {!isSuccess && (
           <Text
@@ -192,22 +196,27 @@ export function ResultView({
 }
 
 const styles = StyleSheet.create({
-  contentContainer: {
+  iconArea: {
+    height: PAY_STATUS_LAYOUT.iconAreaHeight,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   successAnimation: {
-    width: 120,
-    height: 120,
+    width: LOTTIE_ICON_SIZE,
+    height: LOTTIE_ICON_SIZE,
   },
-  title: {
-    marginTop: Spacing[4],
+  textArea: {
+    width: '100%',
+    paddingHorizontal: Spacing[2],
+    paddingVertical: Spacing[4],
+    alignItems: 'center',
   },
   message: {
     marginTop: Spacing[1],
   },
   footerContainer: {
-    paddingTop: Spacing[7],
-    marginBottom: Spacing[2],
+    paddingTop: Spacing[2],
+    paddingBottom: Spacing[2],
     alignItems: 'center',
   },
 });
