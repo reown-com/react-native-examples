@@ -1,0 +1,98 @@
+{
+  "expo": {
+    "name": "Merchant POS",
+    "slug": "merchant-pos-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/app_icons/icon.png",
+    "scheme": "merchantpos",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.reown.merchantpos",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos to set a business logo."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0f0f0f",
+        "foregroundImage": "./assets/app_icons/android_icon_foreground.png",
+        "backgroundImage": "./assets/app_icons/android_icon_background.png",
+        "monochromeImage": "./assets/app_icons/android_icon_monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.reown.merchantpos"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/app_icons/icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/app_icons/splash_icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#0f0f0f"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to set a business logo."
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "KH Teka",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/KHTeka-Light.otf",
+                    "weight": 300
+                  },
+                  {
+                    "path": "./assets/fonts/KHTeka-Regular.otf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/KHTeka-Medium.otf",
+                    "weight": 500
+                  }
+                ]
+              }
+            ]
+          },
+          "ios": {
+            "fonts": [
+              "./assets/fonts/KHTeka-Light.otf",
+              "./assets/fonts/KHTeka-Regular.otf",
+              "./assets/fonts/KHTeka-Medium.otf"
+            ]
+          }
+        }
+      ],
+      [
+        "expo-asset",
+        {
+          "assets": ["./assets/images"]
+        }
+      ],
+      "expo-image"
+    ],
+    "experiments": {
+      "reactCompiler": true
+    }
+  }
+}
