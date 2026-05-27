@@ -22,7 +22,9 @@ export default function HomeScreen() {
   const handleStartPayment = () => {
     if (!merchantId || !isCustomerApiKeySet) {
       router.push("/settings");
-      showErrorToast("Add a merchant ID in Settings before starting a payment.");
+      showErrorToast(
+        "Add a merchant ID in Settings before starting a payment.",
+      );
       return;
     }
 

@@ -204,21 +204,16 @@ export default function PaymentSuccessScreen() {
             style={[
               styles.button,
               {
-                backgroundColor: DarkTheme["foreground-primary"],
+                backgroundColor: DarkTheme["bg-invert"],
               },
             ]}
             onPress={handleNewPayment}
           >
             <ThemedText
-              style={[styles.buttonText, { color: DarkTheme["text-primary"] }]}
+              style={[styles.buttonText, { color: DarkTheme["text-invert"] }]}
             >
-              Start payment
+              Start new payment
             </ThemedText>
-            <Image
-              source={require("@/assets/images/plus.png")}
-              style={styles.buttonIcon}
-              tintColor={DarkTheme["icon-default"]}
-            />
           </Button>
         </View>
       </Animated.View>

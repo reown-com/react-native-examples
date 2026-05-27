@@ -44,10 +44,7 @@ function EmptyStateBase({
       {ctaLabel && onCtaPress && (
         <Button
           onPress={onCtaPress}
-          style={[
-            styles.cta,
-            { backgroundColor: theme["bg-accent-primary"] },
-          ]}
+          style={[styles.cta, { backgroundColor: theme["bg-accent-primary"] }]}
         >
           <ThemedText fontSize={16} lineHeight={18} color="text-invert">
             {ctaLabel}
