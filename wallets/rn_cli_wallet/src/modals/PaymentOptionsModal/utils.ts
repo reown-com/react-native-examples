@@ -2,6 +2,18 @@ import Config from 'react-native-config';
 
 export const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
 
+// The Loading.json / Success.json artwork has inner padding inside its
+// 1080×1080 canvas, so the visible glyph is smaller than the container.
+export const LOTTIE_ICON_SIZE = 200;
+
+// Shared icon area height for the LoadingView + ResultView screens. The fixed
+// height keeps the Lottie centered at the same Y across the loading -> success
+// transition, so the W and check don't jump. Text and any button below size
+// naturally — the ViewWrapper's LinearTransition animates the modal growth.
+export const PAY_STATUS_LAYOUT = {
+  iconAreaHeight: 200,
+} as const;
+
 // Format date input as user types (YYYY-MM-DD)
 export function formatDateInput(value: string): string {
   // Remove any non-numeric characters except dashes
