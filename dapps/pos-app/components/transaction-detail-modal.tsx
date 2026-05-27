@@ -135,7 +135,7 @@ function TransactionDetailModalBase({
   const handleCopyHash = async () => {
     if (!txHash) return;
     await Clipboard.setStringAsync(txHash);
-    showSuccessToast("Transaction hash copied to clipboard");
+    showSuccessToast("Transaction ID copied to clipboard");
   };
 
   return (

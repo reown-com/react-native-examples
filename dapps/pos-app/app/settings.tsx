@@ -208,7 +208,7 @@ export default function SettingsScreen() {
         );
         showErrorToast(
           error ||
-            "We couldn't connect to the printer. Check that it's on and paired in Settings.",
+            "We couldn't connect to the printer. Check that it's on and paired in your device's Bluetooth settings.",
         );
         return;
       }

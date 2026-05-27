@@ -178,8 +178,10 @@ export default function ActivityScreen() {
       <EmptyState
         title="No activity yet"
         subtitle="Your payments will show up here once you start taking them."
-        ctaLabel="Start payment"
-        onCtaPress={() => router.push("/amount")}
+        cta={{
+          label: "Start payment",
+          onPress: () => router.push("/amount"),
+        }}
       />
     );
   }, [isLoading, theme]);

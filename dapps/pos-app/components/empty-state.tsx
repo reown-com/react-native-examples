@@ -9,17 +9,13 @@ interface EmptyStateProps {
   title: string;
   subtitle: string;
   icon?: ReactNode;
-  ctaLabel?: string;
-  onCtaPress?: () => void;
+  cta?: {
+    label: string;
+    onPress: () => void;
+  };
 }
 
-function EmptyStateBase({
-  title,
-  subtitle,
-  icon,
-  ctaLabel,
-  onCtaPress,
-}: EmptyStateProps) {
+function EmptyStateBase({ title, subtitle, icon, cta }: EmptyStateProps) {
   const theme = useTheme();
 
   return (
@@ -41,13 +37,13 @@ function EmptyStateBase({
       >
         {subtitle}
       </ThemedText>
-      {ctaLabel && onCtaPress && (
+      {cta && (
         <Button
-          onPress={onCtaPress}
+          onPress={cta.onPress}
           style={[styles.cta, { backgroundColor: theme["bg-accent-primary"] }]}
         >
           <ThemedText fontSize={16} lineHeight={18} color="text-invert">
-            {ctaLabel}
+            {cta.label}
           </ThemedText>
         </Button>
       )}
