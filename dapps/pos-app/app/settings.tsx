@@ -195,7 +195,9 @@ export default function SettingsScreen() {
           "settings",
           "handleTestPrinterPress",
         );
-        showErrorToast("Failed to request Bluetooth permission");
+        showErrorToast(
+          "We need Bluetooth to connect your printer. Allow it in your device settings.",
+        );
         return;
       }
       const { connected, error } = await connectPrinter();
@@ -207,7 +209,10 @@ export default function SettingsScreen() {
           "handleTestPrinterPress",
           { error },
         );
-        showErrorToast(error || "Failed to connect to printer");
+        showErrorToast(
+          error ||
+            "We couldn't connect to the printer. Check that it's on and paired in Settings.",
+        );
         return;
       }
       const currencyData = getCurrency(currency);
@@ -277,7 +282,7 @@ export default function SettingsScreen() {
         />
 
         <SettingsItem
-          title="Customer API KEY"
+          title="Customer API key"
           value="**********"
           onPress={() => setActiveSheet("customerApiKey")}
         />
@@ -287,10 +292,10 @@ export default function SettingsScreen() {
             <View style={styles.biometricRow}>
               <View style={styles.biometricLabel}>
                 <ThemedText fontSize={16} lineHeight={18}>
-                  Show NFC UI
+                  Tap-to-pay prompt
                 </ThemedText>
                 <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Show NFC tap UI on the payment screen
+                  Show the tap-to-pay prompt on the payment screen.
                 </ThemedText>
               </View>
               <Switch
@@ -311,7 +316,7 @@ export default function SettingsScreen() {
                   {getBiometricLabel(biometricStatus.biometricType)}
                 </ThemedText>
                 <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Use instead of PIN
+                  Use instead of PIN.
                 </ThemedText>
               </View>
               <Switch
@@ -325,7 +330,7 @@ export default function SettingsScreen() {
 
         <SettingsItem title="Test printer" onPress={handleTestPrinterPress} />
 
-        <SettingsItem title="View Logs" onPress={() => router.push("/logs")} />
+        <SettingsItem title="View logs" onPress={() => router.push("/logs")} />
 
         <ThemedText
           fontSize={12}
@@ -439,7 +444,7 @@ export default function SettingsScreen() {
       {/* Customer API Key Bottom Sheet */}
       <SettingsBottomSheet
         visible={activeSheet === "customerApiKey"}
-        title="Customer API KEY"
+        title="Customer API key"
         onClose={closeSheet}
       >
         <View style={styles.inputContent}>
@@ -496,8 +501,8 @@ export default function SettingsScreen() {
         title={activeModal === "pin-verify" ? "Enter PIN" : "Create PIN"}
         subtitle={
           activeModal === "pin-verify"
-            ? "Enter your PIN to save merchant settings"
-            : "Set a 4-digit PIN to protect merchant settings"
+            ? "Enter your PIN to save these settings."
+            : "Set a 4-digit PIN to protect your settings."
         }
         onComplete={
           activeModal === "pin-verify"

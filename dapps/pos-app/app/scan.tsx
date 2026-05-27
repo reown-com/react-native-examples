@@ -109,7 +109,7 @@ export default function ScanScreen() {
           paymentId,
           error,
         });
-        showErrorToast("Failed to cancel payment");
+        showErrorToast("We couldn't cancel this payment. Try again.");
       });
     }
     resetNavigation("/amount");
@@ -117,7 +117,7 @@ export default function ScanScreen() {
 
   const handleCopyPaymentUrl = async () => {
     await Clipboard.setStringAsync(qrUri);
-    showSuccessToast("Payment URL copied");
+    showSuccessToast("Payment link copied");
   };
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function ScanScreen() {
           "scan",
           "initiatePayment",
         );
-        showErrorToast("Merchant ID is not configured");
+        showErrorToast("Add a merchant ID in Settings before starting a payment.");
         return;
       }
 
@@ -209,7 +209,7 @@ export default function ScanScreen() {
             fontSize={16}
             lineHeight={18}
           >
-            Waiting for payment confirmation…
+            Waiting for confirmation. This usually takes a few seconds.
           </ThemedText>
         </View>
       ) : (
@@ -228,7 +228,7 @@ export default function ScanScreen() {
                     { color: Theme["text-secondary"] },
                   ]}
                 >
-                  Open your wallet app and tap
+                  Open your wallet and tap to pay
                 </ThemedText>
               </>
             ) : (

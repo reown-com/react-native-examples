@@ -196,7 +196,7 @@ function TransactionDetailModalBase({
                 />
 
                 {payment.tokenAmount?.value && (
-                  <DetailRow label="Crypto received">
+                  <DetailRow label="Asset received">
                     <View style={styles.cryptoValue}>
                       <ThemedText
                         fontSize={16}
@@ -225,7 +225,7 @@ function TransactionDetailModalBase({
 
                 {txHash && (
                   <DetailRow
-                    label="Hash ID"
+                    label="Transaction ID"
                     value={truncateHash(txHash)}
                     onPress={handleCopyHash}
                     underline

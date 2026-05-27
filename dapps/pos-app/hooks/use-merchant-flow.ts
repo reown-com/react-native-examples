@@ -233,7 +233,7 @@ export function useMerchantFlow() {
   const handleBiometricAuthFailure = useCallback(() => {
     setState((prev) => ({
       ...prev,
-      pinError: "Biometric authentication failed. Please use PIN.",
+      pinError: "Biometric check failed. Use your PIN instead.",
     }));
   }, []);
 

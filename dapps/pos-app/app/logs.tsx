@@ -99,7 +99,7 @@ export default function LogsScreen() {
     <View style={styles.container}>
       <Card onPress={clearLogs} style={styles.clearButton}>
         <ThemedText fontSize={16} lineHeight={18}>
-          Clear Logs
+          Clear logs
         </ThemedText>
       </Card>
 

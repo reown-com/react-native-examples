@@ -190,7 +190,7 @@ export default function PaymentSuccessScreen() {
                   { color: DarkTheme["text-primary"] },
                 ]}
               >
-                {isPrinting ? "Printing..." : "Print receipt"}
+                {isPrinting ? "Printing receipt…" : "Print receipt"}
               </ThemedText>
               <Image
                 source={require("@/assets/images/receipt.png")}
@@ -212,7 +212,7 @@ export default function PaymentSuccessScreen() {
             <ThemedText
               style={[styles.buttonText, { color: DarkTheme["text-primary"] }]}
             >
-              New payment
+              Start payment
             </ThemedText>
             <Image
               source={require("@/assets/images/plus.png")}

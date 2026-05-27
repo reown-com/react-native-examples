@@ -46,7 +46,7 @@ export function useBiometricAuth() {
           showSuccessToast("Biometric unlock enabled");
           return true;
         } else {
-          showErrorToast("Biometric authentication failed");
+          showErrorToast("Biometric check failed. Use your PIN instead.");
           return false;
         }
       } else {

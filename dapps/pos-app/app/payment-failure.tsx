@@ -71,7 +71,7 @@ export default function PaymentFailureScreen() {
             lineHeight={18}
             style={{ color: Theme["text-invert"] }}
           >
-            New payment
+            Start payment
           </ThemedText>
           <Image
             source={require("@/assets/images/plus.png")}

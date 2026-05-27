@@ -14,6 +14,7 @@ import {
   TransactionFilterType,
 } from "@/utils/types";
 import { showErrorToast } from "@/utils/toast";
+import { router } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -27,11 +28,11 @@ import {
 type ActiveSheet = "status" | "dateRange" | null;
 
 const DATE_RANGE_OPTIONS: { value: DateRangeFilterType; label: string }[] = [
-  { value: "all_time", label: "All Time" },
+  { value: "all_time", label: "All time" },
   { value: "today", label: "Today" },
-  { value: "7_days", label: "7 Days" },
-  { value: "this_week", label: "This Week" },
-  { value: "this_month", label: "This Month" },
+  { value: "7_days", label: "7 days" },
+  { value: "this_week", label: "This week" },
+  { value: "this_month", label: "This month" },
 ];
 
 const STATUS_LABELS: Record<TransactionFilterType, string> = {
@@ -46,9 +47,9 @@ const STATUS_LABELS: Record<TransactionFilterType, string> = {
 const DATE_RANGE_LABELS: Record<DateRangeFilterType, string> = {
   all_time: "Date range",
   today: "Today",
-  "7_days": "7 Days",
-  this_week: "This Week",
-  this_month: "This Month",
+  "7_days": "7 days",
+  this_week: "This week",
+  this_month: "This month",
 };
 
 export default function ActivityScreen() {
@@ -111,7 +112,10 @@ export default function ActivityScreen() {
   // Show error toast when fetch fails
   useEffect(() => {
     if (isError && error) {
-      showErrorToast(error.message || "Failed to load transactions");
+      showErrorToast(
+        error.message ||
+          "We couldn't load your transactions. Pull to refresh, or try again in a moment.",
+      );
     }
   }, [isError, error]);
 
@@ -173,7 +177,9 @@ export default function ActivityScreen() {
     return (
       <EmptyState
         title="No activity yet"
-        subtitle="Your transaction history will appear here"
+        subtitle="Your payments will show up here once you start taking them."
+        ctaLabel="Start payment"
+        onCtaPress={() => router.push("/amount")}
       />
     );
   }, [isLoading, theme]);
@@ -250,7 +256,7 @@ export default function ActivityScreen() {
 
       <SettingsBottomSheet
         visible={activeSheet === "dateRange"}
-        title="Date Range"
+        title="Date range"
         onClose={closeSheet}
       >
         <RadioList
