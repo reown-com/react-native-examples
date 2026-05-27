@@ -1,8 +1,9 @@
 import { useSnapshot } from 'valtio';
 import { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import RNModal from 'react-native-modal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ModalStore from '@/store/ModalStore';
 import { Spacing } from '@/utils/ThemeUtil';
@@ -28,6 +29,16 @@ import ScannerOptionsModal from '@/modals/ScannerOptionsModal';
 
 export default function Modal() {
   const { open, view } = useSnapshot(ModalStore.state);
+  const insets = useSafeAreaInsets();
+  const gestureRootStyle = useMemo(
+    () => [
+      styles.gestureRoot,
+      Platform.OS === 'android' && insets.bottom > 0
+        ? { paddingBottom: insets.bottom }
+        : null,
+    ],
+    [insets.bottom],
+  );
   // handle the modal being closed by click outside
   const onClose = useCallback(() => {
     if (open) {
@@ -92,7 +103,7 @@ export default function Modal() {
       style={styles.modal}
       isVisible={open}
     >
-      <GestureHandlerRootView style={styles.gestureRoot}>
+      <GestureHandlerRootView style={gestureRootStyle}>
         {componentView}
       </GestureHandlerRootView>
     </RNModal>

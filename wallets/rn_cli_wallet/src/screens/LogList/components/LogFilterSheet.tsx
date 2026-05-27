@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import RNModal from 'react-native-modal';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
@@ -14,6 +15,7 @@ const options: { value: LogSource; label: string }[] = [
   { value: 'app', label: 'App' },
   { value: 'walletkit', label: 'WalletKit' },
 ];
+const SHEET_PADDING = Spacing[5];
 
 interface LogFilterSheetProps {
   visible: boolean;
@@ -29,6 +31,7 @@ export function LogFilterSheet({
   onClose,
 }: LogFilterSheetProps) {
   const Theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <RNModal
@@ -39,7 +42,18 @@ export function LogFilterSheet({
       statusBarTranslucent
       style={styles.modal}
     >
-      <View style={[styles.sheet, { backgroundColor: Theme['bg-primary'] }]}>
+      <View
+        style={[
+          styles.sheet,
+          {
+            backgroundColor: Theme['bg-primary'],
+            paddingBottom:
+              Platform.OS === 'android'
+                ? SHEET_PADDING + insets.bottom
+                : SHEET_PADDING,
+          },
+        ]}
+      >
         <View style={styles.header}>
           <View style={styles.headerSpacer} />
           <Text variant="h6-400" color="text-primary" style={styles.title}>
@@ -64,7 +78,7 @@ export function LogFilterSheet({
                 onPress={() => onSelect(option.value)}
                 style={[
                   styles.item,
-                  //eslint-disable-next-line react-native/no-inline-styles
+                  // eslint-disable-next-line react-native/no-inline-styles
                   {
                     backgroundColor: isSelected
                       ? Theme['foreground-accent-primary-10']
@@ -120,7 +134,7 @@ const styles = StyleSheet.create({
   sheet: {
     borderTopLeftRadius: BorderRadius[8],
     borderTopRightRadius: BorderRadius[8],
-    padding: Spacing[5],
+    padding: SHEET_PADDING,
     gap: Spacing[7],
   },
   header: {

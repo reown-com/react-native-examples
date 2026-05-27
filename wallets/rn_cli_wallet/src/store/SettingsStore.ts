@@ -15,10 +15,13 @@ function getInitialThemeMode(): 'light' | 'dark' {
   const mmkv = new MMKV();
   const saved = mmkv.getString('THEME_MODE');
   if (saved === 'light' || saved === 'dark') {
+    Appearance.setColorScheme(saved);
     return saved;
   }
 
-  return Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+  const systemMode = Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+  Appearance.setColorScheme(systemMode);
+  return systemMode;
 }
 
 /**
@@ -180,6 +183,7 @@ const SettingsStore = {
 
   setThemeMode(value: 'light' | 'dark') {
     state.themeMode = value;
+    Appearance.setColorScheme(value);
     storage.setItem('THEME_MODE', value);
   },
 
@@ -187,6 +191,7 @@ const SettingsStore = {
     const saved = await storage.getItem<string>('THEME_MODE');
     if (saved === 'light' || saved === 'dark') {
       state.themeMode = saved;
+      Appearance.setColorScheme(saved);
     }
   },
 };
