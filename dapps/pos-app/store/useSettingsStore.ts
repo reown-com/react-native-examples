@@ -62,6 +62,10 @@ interface SettingsStore {
   merchantId: string | null;
   isCustomerApiKeySet: boolean;
 
+  // Transient hand-off from the QR scanner to the Update keys screen.
+  // Never persisted — it holds a raw customer API key (see partialize).
+  scannedCustomerKey: string | null;
+
   // Transaction filters
   transactionFilter: TransactionFilterType;
   dateRangeFilter: DateRangeFilterType;
@@ -82,6 +86,7 @@ interface SettingsStore {
   setVariant: (variant: VariantName) => void;
   setCurrency: (currency: CurrencyCode) => void;
   setMerchantId: (merchantId: string | null) => void;
+  setScannedCustomerKey: (value: string | null) => void;
   clearMerchantId: () => Promise<string | null>;
   setCustomerApiKey: (apiKey: string | null) => Promise<void>;
   clearCustomerApiKey: () => Promise<void>;
@@ -112,6 +117,7 @@ export const useSettingsStore = create<SettingsStore>()(
       _hasHydrated: false,
       merchantId: null,
       isCustomerApiKeySet: false,
+      scannedCustomerKey: null,
       transactionFilter: "all",
       dateRangeFilter: "today",
       isPinHashSet: false,
@@ -130,6 +136,8 @@ export const useSettingsStore = create<SettingsStore>()(
         }
       },
       setCurrency: (currency: CurrencyCode) => set({ currency }),
+      setScannedCustomerKey: (value: string | null) =>
+        set({ scannedCustomerKey: value }),
       setMerchantId: (merchantId: string | null) => {
         // If clearing, reset to env default (unless embedded — parent provides credentials)
         if (!merchantId || merchantId.trim() === "") {
@@ -277,6 +285,10 @@ export const useSettingsStore = create<SettingsStore>()(
       name: "settings",
       version: 16,
       storage,
+      // Never write the raw scanned customer API key to MMKV; it is a
+      // transient hand-off that lives only in memory.
+      partialize: ({ scannedCustomerKey: _scannedCustomerKey, ...rest }) =>
+        rest,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
           return { variant: "default" };

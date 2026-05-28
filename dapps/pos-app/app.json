@@ -41,7 +41,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 24
+      "versionCode": 25
     },
     "web": {
       "output": "static",
@@ -126,6 +126,12 @@
         {
           "configureAndroidBackup": true,
           "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) needs camera access to scan QR codes."
         }
       ],
       "@sentry/react-native",
