@@ -73,7 +73,7 @@ inputs:
   maestro-actions-ref:
     description: 'Pinned ref of WalletConnect/actions for maestro/pay-tests and maestro/setup.'
     required: false
-    default: '70301a88d7465309d5553376655a46cbba3cbcae'
+    default: '6628a30e8e92ab36c1051e6f62b68add6a737f3f'
   apple-key-id:
     description: 'Apple App Store Connect API key id (iOS only).'
     required: false
@@ -392,10 +392,10 @@ runs:
 
     # --- Common: Maestro setup + run ---
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@70301a88d7465309d5553376655a46cbba3cbcae
+      uses: WalletConnect/actions/maestro/pay-tests@6628a30e8e92ab36c1051e6f62b68add6a737f3f
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@70301a88d7465309d5553376655a46cbba3cbcae
+      uses: WalletConnect/actions/maestro/setup@6628a30e8e92ab36c1051e6f62b68add6a737f3f
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
