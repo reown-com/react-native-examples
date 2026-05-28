@@ -468,6 +468,11 @@ runs:
           maestro-output.log
         if-no-files-found: warn
         retention-days: 14
+        # Allow callers to invoke this composite twice in the same run
+        # (e.g. a retry wrapper) without the second upload 409'ing
+        # against the first. Last-wins; combine with an out-of-action
+        # download+rename step if both attempts' artifacts are needed.
+        overwrite: true
 
     - name: Run Maestro tests (Android)
       if: inputs.platform == 'android'
@@ -522,6 +527,11 @@ runs:
           maestro-output.log
         if-no-files-found: warn
         retention-days: 14
+        # Allow callers to invoke this composite twice in the same run
+        # (e.g. a retry wrapper) without the second upload 409'ing
+        # against the first. Last-wins; combine with an out-of-action
+        # download+rename step if both attempts' artifacts are needed.
+        overwrite: true
 
     - name: Log Maestro outcome
       if: always()
