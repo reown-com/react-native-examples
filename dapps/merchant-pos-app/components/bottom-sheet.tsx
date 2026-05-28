@@ -1,6 +1,14 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { Modal, Pressable, StyleSheet, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedText } from "./themed-text";
 
@@ -24,37 +32,50 @@ export function BottomSheet({ visible, onClose, title, children }: Props) {
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable
-          style={[
-            styles.sheet,
-            {
-              backgroundColor: Theme["foreground-primary"],
-              borderColor: Theme["border-primary"],
-              paddingBottom: insets.bottom + Spacing["spacing-6"],
-            },
-          ]}
-          onPress={(e) => e.stopPropagation()}
+      {/* Modals render outside the root GestureHandlerRootView, so gesture-based
+          pressables (pressto) inside the sheet need their own root to receive
+          touches. KeyboardAvoidingView keeps the action button above the keyboard. */}
+      <GestureHandlerRootView style={styles.fill}>
+        <KeyboardAvoidingView
+          style={styles.fill}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <View
-            style={[
-              styles.handle,
-              { backgroundColor: Theme["border-secondary"] },
-            ]}
-          />
-          {title ? (
-            <ThemedText weight="500" style={styles.title}>
-              {title}
-            </ThemedText>
-          ) : null}
-          {children}
-        </Pressable>
-      </Pressable>
+          <Pressable style={styles.backdrop} onPress={onClose}>
+            <Pressable
+              style={[
+                styles.sheet,
+                {
+                  backgroundColor: Theme["foreground-primary"],
+                  borderColor: Theme["border-primary"],
+                  paddingBottom: insets.bottom + Spacing["spacing-6"],
+                },
+              ]}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <View
+                style={[
+                  styles.handle,
+                  { backgroundColor: Theme["border-secondary"] },
+                ]}
+              />
+              {title ? (
+                <ThemedText weight="500" style={styles.title}>
+                  {title}
+                </ThemedText>
+              ) : null}
+              {children}
+            </Pressable>
+          </Pressable>
+        </KeyboardAvoidingView>
+      </GestureHandlerRootView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  fill: {
+    flex: 1,
+  },
   backdrop: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.65)",

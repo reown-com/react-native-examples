@@ -46,14 +46,21 @@ export default function LinksScreen() {
     currency: CurrencyCode;
   }) => {
     try {
+      const now = Date.now();
+      // Mint a payment that stays payable for 10 days (vs the ~15-min POS default).
+      const expiresAtSec = Math.floor((now + PAYMENT_LINK_VALIDITY_MS) / 1000);
       const res = await startPayment.mutateAsync({
         referenceId: generateReferenceId(),
         amount: {
           value: String(input.amountCents),
           unit: getCurrency(input.currency).unit,
         },
+        expiresAt: expiresAtSec,
       });
-      const now = Date.now();
+      // Prefer the server's echoed expiry; fall back to our 10-day window.
+      const expiresAt = res.expiresAt
+        ? res.expiresAt * 1000
+        : now + PAYMENT_LINK_VALIDITY_MS;
       addLink({
         id: uuidv4(),
         merchantAddress: activeAddress ?? "",
@@ -62,10 +69,12 @@ export default function LinksScreen() {
         currency: input.currency,
         gatewayUrl: res.gatewayUrl,
         createdAt: now,
-        expiresAt: now + PAYMENT_LINK_VALIDITY_MS,
+        expiresAt,
       });
       setSheetOpen(false);
       showToast("Payment link created");
+      // Pop the native share sheet so the merchant can send it right away.
+      await sharePaymentLink(res.gatewayUrl, input.label);
     } catch (e) {
       const message = e instanceof Error ? e.message : "Failed to create link";
       showErrorToast(message);

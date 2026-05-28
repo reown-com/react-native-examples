@@ -17,6 +17,11 @@ export interface StartPaymentRequest {
     value: string;
     unit: string;
   };
+  /**
+   * Optional absolute expiry (epoch seconds). Defaults server-side to ~15 min
+   * for a POS charge; payment links pass a 10-day expiry.
+   */
+  expiresAt?: number;
 }
 
 export interface StartPaymentResponse {
