@@ -1,4 +1,4 @@
-import { CloseIcon, WcLogo } from "@/components/icons";
+import { CloseIcon } from "@/components/icons";
 import { PrimaryButton } from "@/components/primary-button";
 import QrCode from "@/components/qr-code";
 import { Screen } from "@/components/screen";
@@ -14,6 +14,7 @@ import { formatCentsWithSymbol, getCurrency } from "@/utils/currency";
 import { showToast } from "@/utils/toast";
 import { PaymentStatus } from "@/utils/types";
 import * as Clipboard from "expo-clipboard";
+import { Image } from "expo-image";
 import { useLocalSearchParams, router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
@@ -185,7 +186,11 @@ export default function CheckoutScreen() {
             >
               <View style={styles.qrInner}>
                 <QrCode size={232} uri={gatewayUrl}>
-                  <WcLogo size={44} radius={10} />
+                  <Image
+                    source={require("@/assets/images/wc_logo_dark.png")}
+                    style={qrLogoStyle}
+                    contentFit="cover"
+                  />
                 </QrCode>
               </View>
               <ThemedText weight="500" style={styles.qrAmount}>
@@ -248,6 +253,8 @@ export default function CheckoutScreen() {
     </Screen>
   );
 }
+
+const qrLogoStyle = { width: 44, height: 44, borderRadius: 22 } as const;
 
 const styles = StyleSheet.create({
   content: {

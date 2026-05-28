@@ -9,20 +9,20 @@ locally on the device.
 
 ## Screens
 
-| Flow | Screen | Route |
-| --- | --- | --- |
-| Welcome | Value prop, Get started / Log in | `app/index.tsx` |
-| Onboarding | Business details (email, company, logo) | `app/onboarding/business-details.tsx` |
-| | Settlement networks (Ethereum / Solana) | `app/onboarding/networks.tsx` |
-| | Connect wallet (AppKit, "already registered" guard) | `app/onboarding/connect-wallet.tsx` |
-| | Verify ownership (sign message) | `app/onboarding/verify.tsx` |
-| | Choose tokens | `app/onboarding/tokens.tsx` |
-| Home | Merchant card, stats, actions, recent activity | `app/home.tsx` |
-| POS | Amount entry (numpad + currency) | `app/pos/amount.tsx` |
-| | Checkout: QR + polling + 15-min expiry + cancel | `app/pos/checkout.tsx` |
-| | Payment received / cancelled-expired-failed | `app/pos/success.tsx`, `app/pos/cancelled.tsx` |
-| Links | List, create, native share (10-day validity) | `app/links/index.tsx` |
-| Activity | Locally tracked payment history | `app/activity.tsx` |
+| Flow       | Screen                                              | Route                                          |
+| ---------- | --------------------------------------------------- | ---------------------------------------------- |
+| Welcome    | Value prop, Get started / Log in                    | `app/index.tsx`                                |
+| Onboarding | Business details (email, company, logo)             | `app/onboarding/business-details.tsx`          |
+|            | Settlement networks (Ethereum / Solana)             | `app/onboarding/networks.tsx`                  |
+|            | Connect wallet (AppKit, "already registered" guard) | `app/onboarding/connect-wallet.tsx`            |
+|            | Verify ownership (sign message)                     | `app/onboarding/verify.tsx`                    |
+|            | Choose tokens                                       | `app/onboarding/tokens.tsx`                    |
+| Home       | Merchant card, stats, actions, recent activity      | `app/home.tsx`                                 |
+| POS        | Amount entry (numpad + currency)                    | `app/pos/amount.tsx`                           |
+|            | Checkout: QR + polling + 15-min expiry + cancel     | `app/pos/checkout.tsx`                         |
+|            | Payment received / cancelled-expired-failed         | `app/pos/success.tsx`, `app/pos/cancelled.tsx` |
+| Links      | List, create, native share (10-day validity)        | `app/links/index.tsx`                          |
+| Activity   | Locally tracked payment history                     | `app/activity.tsx`                             |
 
 ## Architecture
 
@@ -39,18 +39,18 @@ locally on the device.
 - **Theme:** light + dark token system (`constants/theme.ts`, `hooks/use-theme-color.ts`); defaults
   to dark, matching the prototype.
 
-### Identity ↔ payments reconciliation (V1)
+### Identity ↔ payments
 
-The merchant identity is **local** (wallet = merchant; registry in MMKV, signature verified
-client-side). The WCPay API, however, authenticates with a server-side `Merchant-Id` + `Api-Key`
-and is **fiat-denominated** (`startPayment({ referenceId, amount: { value, unit } })` →
-`{ paymentId, expiresAt, gatewayUrl }`) with no per-request recipient wallet or token/network.
+A persistent **install id** (`utils/install-id.ts`, MMKV — survives launches, wiped on uninstall)
+is the merchant id. On onboarding finish the app calls **PUT
+`{EXPO_PUBLIC_PAY_CORE_API_URL}/v2/internal/merchant`** with a Cognito access token (minted via
+client_credentials, cached for 50 min — see `services/cognito-auth.ts`), passing the install id,
+business name, settlement networks (CAIP-10 MTAs + CAIP-19 tokens), and `partnerId`. The local
+`MerchantConfig` records the `merchantId` and `version`; re-onboarding bumps the version.
 
-Until a wallet-based merchant onboarding API exists, the two are bridged by env credentials
-(`utils/merchant-config.ts`): the locally-onboarded wallet/networks/tokens are the merchant's
-displayed settlement profile, while the live payment rail uses the configured WCPay merchant. The
-returned `gatewayUrl` is what the customer scans/opens; status is polled for real. Onboarding works
-without any API credentials — only the POS/links payment leg needs them.
+WCPay payment calls (`startPayment` / status / cancel) then go to the customer API with
+`Merchant-Id` = the active merchant's id (the one we just created), `Api-Key` = the partner-scoped
+key from env. The returned `gatewayUrl` is what the customer scans/opens.
 
 > AppKit's network set is fixed at `createAppKit` time, so the Screen-3 network selection is stored
 > as a settlement preference and rendered as scope rather than re-scoping AppKit at runtime.
@@ -66,10 +66,35 @@ cp .env.example .env   # fill in values
 
 ```bash
 EXPO_PUBLIC_PROJECT_ID=""              # Reown AppKit project id — https://dashboard.reown.com
-EXPO_PUBLIC_API_URL=""                 # WCPay API base URL
-EXPO_PUBLIC_DEFAULT_MERCHANT_ID=""     # WCPay merchant id (payment rail)
-EXPO_PUBLIC_DEFAULT_CUSTOMER_API_KEY="" # WCPay api key (payment rail)
+EXPO_PUBLIC_API_URL=""                 # WCPay API base URL (include /v1)
+EXPO_PUBLIC_DEFAULT_CUSTOMER_API_KEY="" # WCPay api key (partner-scoped)
+
+# Merchant-Id is no longer env-sourced. It's the install-bound id of the
+# merchant we created at onboarding finish via the pay-core upsert.
+
+# Pay-core internal API (used to upsert the merchant on onboarding finish).
+# Mirrors dashboard-new/src/server/clients/pay-core (PUT /v2/internal/merchant).
+EXPO_PUBLIC_PAY_CORE_API_URL=""
+EXPO_PUBLIC_PAY_PARTNER_ID=""
+
+# Pay-core Cognito (OAuth2 client_credentials). The app mints an access token
+# via these creds and caches it for 50 min, refreshing on 401.
+EXPO_PUBLIC_PAY_CORE_COGNITO_TOKEN_ENDPOINT=""
+EXPO_PUBLIC_PAY_CORE_COGNITO_CLIENT_ID=""
+EXPO_PUBLIC_PAY_CORE_COGNITO_CLIENT_SECRET=""
+EXPO_PUBLIC_PAY_CORE_COGNITO_SCOPE=""
 ```
+
+## Merchant identity & upsert
+
+A persistent install id (`utils/install-id.ts`, stored in MMKV — survives app
+launches, wiped on uninstall) is minted on first launch and used as the
+**merchant id**. When the user completes onboarding (Finish setup on the tokens
+screen), the app builds a `MerchantUpsertRequest` from the draft + connected
+addresses (per-namespace CAIP-10 MTAs + CAIP-19 tokens for the selected
+networks) and PUTs it to `EXPO_PUBLIC_PAY_CORE_API_URL/v2/internal/merchant`
+with the bearer token. The local merchant config records the `merchantId` and
+`version`; re-onboarding bumps the version.
 
 ## Run
 

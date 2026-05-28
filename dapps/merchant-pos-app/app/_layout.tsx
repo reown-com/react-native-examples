@@ -30,6 +30,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { appkitStorage } from "@/utils/appkit-storage";
+import { getInstallId } from "@/utils/install-id";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +92,9 @@ export default function RootLayout() {
   useEffect(() => {
     useMerchantStore.persist.rehydrate();
     useSettingsStore.persist.rehydrate();
+    // Mint the persistent install id on first launch so it's ready when
+    // onboarding finishes and we upsert the merchant.
+    getInstallId();
   }, []);
 
   if (!fontsLoaded || !merchantHydrated || !settingsHydrated) {

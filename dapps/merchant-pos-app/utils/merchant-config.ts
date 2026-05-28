@@ -1,18 +1,14 @@
 /**
- * WCPay credentials for the payment rail.
+ * Customer-facing WCPay credentials (the partner-scoped API key).
  *
- * In V1 the merchant identity is the locally-onboarded wallet, but the WCPay
- * API authenticates with a server-side Merchant-Id + Api-Key. Until a
- * wallet-based merchant onboarding API exists, these come from env and act as
- * the bridge between the local identity and the real payment gateway.
+ * The Merchant-Id is no longer sourced from env — it's the install-bound id
+ * of the merchant we created via the pay-core upsert at onboarding finish.
+ * See `services/client.ts#getApiHeaders`.
  */
-const DEFAULT_MERCHANT_ID = process.env.EXPO_PUBLIC_DEFAULT_MERCHANT_ID ?? null;
 const DEFAULT_CUSTOMER_API_KEY =
   process.env.EXPO_PUBLIC_DEFAULT_CUSTOMER_API_KEY ?? null;
 
 export const MerchantConfig = {
-  getMerchantId: (): string | null => DEFAULT_MERCHANT_ID,
   getCustomerApiKey: (): string | null => DEFAULT_CUSTOMER_API_KEY,
-  hasPaymentCredentials: (): boolean =>
-    Boolean(DEFAULT_MERCHANT_ID && DEFAULT_CUSTOMER_API_KEY),
+  hasCustomerApiKey: (): boolean => Boolean(DEFAULT_CUSTOMER_API_KEY),
 };

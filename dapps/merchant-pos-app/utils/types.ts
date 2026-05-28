@@ -42,11 +42,18 @@ export interface ApiError {
   status?: number;
 }
 
-// ── Local merchant identity (wallet = merchant) ─────────────────────
+// ── Local merchant identity (one merchant per app install) ──────────
 export interface MerchantConfig {
-  /** Connected wallet address for the active namespace — the merchant identity key. */
+  /** Connected wallet address for the active namespace — local routing key. */
   address: string;
   namespace: NetworkId;
+  /**
+   * Remote merchant id (the persistent per-install id used to upsert the
+   * merchant via the pay-core API). Stable across re-onboards on this install.
+   */
+  merchantId?: string;
+  /** Last pay-core merchant `version` we synced; incremented on each upsert. */
+  version?: number;
   /**
    * Settlement address per namespace. A wallet can expose a different address
    * for EVM vs Solana, so each connected namespace is tracked separately.

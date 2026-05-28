@@ -7,14 +7,18 @@ import { ThemedText } from "@/components/themed-text";
 import { TokenChip } from "@/components/token-chip";
 import { getNetwork, NetworkId, tokensForNetwork } from "@/constants/networks";
 import { Spacing } from "@/constants/spacing";
+import { syncMerchantToPayCore } from "@/services/merchant";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
+import { getInstallId } from "@/utils/install-id";
 import { showErrorToast } from "@/utils/toast";
 import { getConnectedAddresses } from "@/utils/wallet-accounts";
 import { useAccount } from "@reown/appkit-react-native";
 import { router } from "expo-router";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
+
+const PARTNER_ID = process.env.EXPO_PUBLIC_PAY_PARTNER_ID;
 
 export default function TokensScreen() {
   const { address, namespace } = useAccount();
@@ -23,19 +27,51 @@ export default function TokensScreen() {
   const toggleToken = useOnboardingStore((s) => s.toggleToken);
   const upsertMerchant = useMerchantStore((s) => s.upsertMerchant);
   const setActive = useMerchantStore((s) => s.setActive);
+  const [submitting, setSubmitting] = useState(false);
 
-  const onFinish = () => {
+  const onFinish = async () => {
+    if (submitting) return;
     if (!address) {
       showErrorToast("Wallet disconnected — reconnect to finish");
       return;
     }
+    if (!PARTNER_ID) {
+      showErrorToast("EXPO_PUBLIC_PAY_PARTNER_ID is not configured");
+      return;
+    }
+
     const ns: NetworkId = namespace === "solana" ? "solana" : "eip155";
     // Capture an address per connected namespace; ensure the active one is set.
     const addresses = getConnectedAddresses();
     if (!addresses[ns]) addresses[ns] = address;
+
+    const merchantId = getInstallId();
+
+    setSubmitting(true);
+    let version = 1;
+    try {
+      // syncMerchantToPayCore fetches the current server version and sends
+      // serverVersion + 1 — sending a stale local version is ignored.
+      const result = await syncMerchantToPayCore({
+        merchantId,
+        partnerId: PARTNER_ID,
+        companyName: draft.companyName,
+        addresses,
+      });
+      version = result.version;
+    } catch (e) {
+      setSubmitting(false);
+      const message =
+        e instanceof Error ? e.message : "Failed to create merchant";
+      showErrorToast(message);
+      return;
+    }
+
     upsertMerchant({
       address,
       namespace: ns,
+      merchantId,
+      version,
       addresses,
       email: draft.email,
       companyName: draft.companyName,
@@ -46,6 +82,7 @@ export default function TokensScreen() {
     });
     setActive(address);
     draft.reset();
+    setSubmitting(false);
     router.replace("/home");
   };
 
@@ -95,9 +132,9 @@ export default function TokensScreen() {
 
       <View style={styles.footer}>
         <PrimaryButton
-          label="Finish setup"
+          label={submitting ? "Creating merchant…" : "Finish setup"}
           onPress={onFinish}
-          disabled={selectedTokens.length === 0}
+          disabled={selectedTokens.length === 0 || submitting}
           icon={<CheckCircleIcon size={18} color="#fff" />}
         />
       </View>

@@ -2,16 +2,22 @@ import { PrimaryButton } from "@/components/primary-button";
 import { Screen } from "@/components/screen";
 import { ThemedText } from "@/components/themed-text";
 import { WcLogo } from "@/components/icons";
+import { NetworkId } from "@/constants/networks";
 import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { syncMerchantToPayCore } from "@/services/merchant";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { nukeAllStorage } from "@/utils/dev-reset";
+import { getInstallId } from "@/utils/install-id";
 import { showErrorToast, showToast } from "@/utils/toast";
+import { getConnectedAddresses } from "@/utils/wallet-accounts";
 import { useAccount, useAppKit } from "@reown/appkit-react-native";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
+
+const PARTNER_ID = process.env.EXPO_PUBLIC_PAY_PARTNER_ID;
 
 const TRUST_PILLS = ["✓ EVM + Solana", "✓ Self-custody", "✓ Instant QR"];
 
@@ -20,23 +26,80 @@ export default function WelcomeScreen() {
   const { open, disconnect } = useAppKit();
   const { address, isConnected } = useAccount();
   const isRegistered = useMerchantStore((s) => s.isRegistered);
+  const findByMerchantId = useMerchantStore((s) => s.findByMerchantId);
+  const upsertLocalMerchant = useMerchantStore((s) => s.upsertMerchant);
   const setActive = useMerchantStore((s) => s.setActive);
+  const { namespace } = useAccount();
   const resetOnboarding = useOnboardingStore((s) => s.reset);
   const onboardingStarted = useOnboardingStore((s) => s.started);
   const onboardingVerified = useOnboardingStore((s) => s.verified);
   const [loggingIn, setLoggingIn] = useState(false);
   const handledLogin = useRef(false);
+  const [switching, setSwitching] = useState(false);
+  const handledSwitchRef = useRef<string | null>(null);
 
   // When Welcome is shown with a live wallet session, route to the right place.
   // The wallet's return deep link (merchantpos://) lands here, so we resume:
-  // registered → Home; verified mid-onboarding → Tokens; started → Verify.
+  // registered → Home; verified mid-onboarding → Tokens; started → Verify;
+  // new wallet on an existing install merchant → upsert with new addresses → Home.
   useFocusEffect(
     useCallback(() => {
-      if (!isConnected || !address) return;
+      if (!isConnected || !address || switching) return;
+
       if (isRegistered(address)) {
         setActive(address);
         router.replace("/home");
-      } else if (onboardingVerified) {
+        return;
+      }
+
+      // Wallet not in registry. If this install already has a merchant from a
+      // prior onboarding, upsert it with the new wallet's addresses and route
+      // home — no need to re-onboard from scratch.
+      const installId = getInstallId();
+      const existing = findByMerchantId(installId);
+      if (existing && handledSwitchRef.current !== address) {
+        handledSwitchRef.current = address;
+        (async () => {
+          if (!PARTNER_ID) {
+            showErrorToast("EXPO_PUBLIC_PAY_PARTNER_ID is not configured");
+            return;
+          }
+          setSwitching(true);
+          try {
+            const ns: NetworkId = namespace === "solana" ? "solana" : "eip155";
+            const addresses = getConnectedAddresses();
+            if (!addresses[ns]) addresses[ns] = address;
+            const { version } = await syncMerchantToPayCore({
+              merchantId: existing.merchantId ?? installId,
+              partnerId: PARTNER_ID,
+              companyName: existing.companyName,
+              addresses,
+            });
+            upsertLocalMerchant({
+              ...existing,
+              address,
+              namespace: ns,
+              merchantId: existing.merchantId ?? installId,
+              version,
+              addresses,
+            });
+            setActive(address);
+            setLoggingIn(false);
+            showToast("Wallet switched");
+            router.replace("/home");
+          } catch (e) {
+            handledSwitchRef.current = null;
+            const message =
+              e instanceof Error ? e.message : "Failed to update merchant";
+            showErrorToast(message);
+          } finally {
+            setSwitching(false);
+          }
+        })();
+        return;
+      }
+
+      if (onboardingVerified) {
         router.replace("/onboarding/tokens");
       } else if (onboardingStarted) {
         router.replace("/onboarding/verify");
@@ -48,11 +111,15 @@ export default function WelcomeScreen() {
     }, [
       isConnected,
       address,
+      namespace,
       isRegistered,
+      findByMerchantId,
+      upsertLocalMerchant,
       setActive,
       onboardingVerified,
       onboardingStarted,
       loggingIn,
+      switching,
     ]),
   );
 

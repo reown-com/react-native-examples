@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 
 interface IconProps {
@@ -5,27 +6,20 @@ interface IconProps {
   color?: string;
 }
 
-/** WalletConnect rounded-square logo mark. */
+/** Brand mark — the dark circular WalletConnect logo (wc_logo_dark.png). */
 export function WcLogo({
   size = 38,
-  radius = 11,
 }: {
   size?: number;
+  /** @deprecated kept for back-compat; the image is already circular. */
   radius?: number;
 }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 38 38" fill="none">
-      <Rect width={38} height={38} rx={radius} fill="#3b99fc" />
-      <Path
-        d="M19 9.5C14 9.5 10 13 9 17.7c4.8-2.2 8.7-2.2 10-2.2s5.2 0 10 2.2C28 13 24 9.5 19 9.5Z"
-        fill="white"
-        opacity={0.5}
-      />
-      <Path
-        d="M19 15.5c-1.3 0-5.2 0-10 2.2 0 0 0 .1 0 .1 0 5.5 4.5 10 10 10s10-4.5 10-10v-.1c-4.8-2.2-8.7-2.2-10-2.2Z"
-        fill="white"
-      />
-    </Svg>
+    <Image
+      source={require("@/assets/images/wc_logo_dark.png")}
+      style={{ width: size, height: size, borderRadius: size / 2 }}
+      contentFit="cover"
+    />
   );
 }
 

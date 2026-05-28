@@ -1,3 +1,4 @@
+import { useMerchantStore } from "@/store/useMerchantStore";
 import { MerchantConfig } from "@/utils/merchant-config";
 import { ApiError } from "@/utils/types";
 
@@ -134,16 +135,18 @@ class ApiClient {
 export const apiClient = new ApiClient(API_BASE_URL ?? "");
 
 /**
- * Auth headers for WCPay requests. Credentials come from env (see merchant-config):
- * the local wallet identity maps onto a server-side merchant for the payment rail.
+ * Auth headers for WCPay requests. Merchant-Id is the id of the currently
+ * active merchant (created via the pay-core upsert at onboarding finish); the
+ * Api-Key is the partner-scoped customer key from env.
  */
 export function getApiHeaders(): Record<string, string> {
-  const merchantId = MerchantConfig.getMerchantId();
   const customerApiKey = MerchantConfig.getCustomerApiKey();
+  const active = useMerchantStore.getState().getActiveMerchant();
+  const merchantId = active?.merchantId;
 
   if (!merchantId || merchantId.trim().length === 0) {
     throw new Error(
-      "Merchant ID is not configured — set EXPO_PUBLIC_DEFAULT_MERCHANT_ID in .env.",
+      "No active merchant — finish onboarding to create one before charging.",
     );
   }
   if (!customerApiKey || customerApiKey.trim().length === 0) {

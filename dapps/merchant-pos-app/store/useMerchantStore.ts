@@ -17,6 +17,8 @@ interface MerchantStore {
 
   isRegistered: (address: string) => boolean;
   getMerchant: (address: string) => MerchantConfig | undefined;
+  /** Any local entry whose `merchantId` matches — used to detect "this install already has a merchant". */
+  findByMerchantId: (merchantId: string) => MerchantConfig | undefined;
   upsertMerchant: (config: MerchantConfig) => void;
   setActive: (address: string | null) => void;
   /** End the session (disconnect). Registry is kept so the merchant can log back in. */
@@ -34,6 +36,8 @@ export const useMerchantStore = create<MerchantStore>()(
 
       isRegistered: (address) => Boolean(get().merchants[keyFor(address)]),
       getMerchant: (address) => get().merchants[keyFor(address)],
+      findByMerchantId: (merchantId) =>
+        Object.values(get().merchants).find((m) => m.merchantId === merchantId),
       upsertMerchant: (config) =>
         set((state) => ({
           merchants: { ...state.merchants, [keyFor(config.address)]: config },

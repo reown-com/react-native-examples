@@ -30,11 +30,15 @@ export default function AmountScreen() {
   const onKey = (key: string) => {
     setRaw((prev) => {
       if (key === "erase") return prev.slice(0, -1);
-      if (key === ".") return prev.includes(".") ? prev : prev || "0" + ".";
+      if (key === ".") {
+        if (prev.includes(".")) return prev; // already has a decimal point
+        if (prev === "") return "0."; // leading dot becomes "0."
+        return prev + "."; // append to any whole-number value
+      }
       // limit to 2 decimals
       if (prev.includes(".") && prev.split(".")[1]?.length >= 2) return prev;
       if (prev.length >= 9) return prev;
-      if (prev === "0") return key;
+      if (prev === "0") return key; // don't keep a leading zero before a digit
       return prev + key;
     });
   };
