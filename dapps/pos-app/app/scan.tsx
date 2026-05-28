@@ -270,21 +270,23 @@ export default function ScanScreen() {
           <View style={{ flex: 1 }} />
         </View>
       )}
-      <Button
-        onPress={handleOnClosePress}
-        style={[
-          styles.closeButton,
-          { backgroundColor: Theme["foreground-primary"] },
-        ]}
-      >
-        <ThemedText
-          style={{ color: Theme["text-primary"] }}
-          fontSize={16}
-          lineHeight={18}
+      {!isProcessing && (
+        <Button
+          onPress={handleOnClosePress}
+          style={[
+            styles.closeButton,
+            { backgroundColor: Theme["foreground-primary"] },
+          ]}
         >
-          Cancel
-        </ThemedText>
-      </Button>
+          <ThemedText
+            style={{ color: Theme["text-primary"] }}
+            fontSize={16}
+            lineHeight={18}
+          >
+            Cancel
+          </ThemedText>
+        </Button>
+      )}
     </View>
   );
 }
