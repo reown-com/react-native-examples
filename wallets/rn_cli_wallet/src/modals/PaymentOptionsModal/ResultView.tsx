@@ -27,9 +27,10 @@ const getActionButtonText = (
   isSuccess: boolean,
   errorType?: ErrorType | null,
 ) => {
-  if (isSuccess || errorType === 'insufficient_funds') return 'Got it!';
+  if (isSuccess) return 'Done';
+  if (errorType === 'insufficient_funds') return 'Got it';
   if (errorType === 'expired' || errorType === 'cancelled')
-    return 'Scan new QR code';
+    return 'Scan a new QR code';
   return 'Close';
 };
 
@@ -58,8 +59,8 @@ export function ResultView({
 
   const isSuccess = status === 'success';
   const defaultMessage = isSuccess
-    ? 'Your payment has been confirmed'
-    : 'An error occurred';
+    ? 'Payment confirmed'
+    : 'Payment didn’t go through. No funds were moved. Try again, or pay with a different asset.';
 
   const renderIcon = () => {
     if (isSuccess) {

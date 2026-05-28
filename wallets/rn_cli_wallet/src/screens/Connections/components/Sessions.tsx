@@ -3,8 +3,10 @@ import { useSnapshot } from 'valtio';
 import { SessionTypes } from '@walletconnect/types';
 
 import SettingsStore from '@/store/SettingsStore';
+import ModalStore from '@/store/ModalStore';
 import IndividualSession from './IndividualSession';
 import { Text } from '@/components/Text';
+import { ActionButton } from '@/components/ActionButton';
 import { Spacing } from '@/utils/ThemeUtil';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -15,7 +17,7 @@ function Sessions() {
   if (!sessions?.length) {
     return (
       <View
-        style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
+        style={[styles.container, styles.emptyStateContainer, { backgroundColor: Theme['bg-primary'] }]}
       >
         <Text variant="h6-400" color="text-primary">
           No connected apps yet
@@ -23,6 +25,13 @@ function Sessions() {
         <Text variant="lg-400" color="text-secondary" center>
           Scan a WalletConnect QR code to get started.
         </Text>
+        <ActionButton
+          style={styles.emptyStateButton}
+          fullWidth
+          onPress={() => ModalStore.open('ScannerOptionsModal', {})}
+        >
+          Scan QR code
+        </ActionButton>
       </View>
     );
   }
@@ -66,5 +75,11 @@ const styles = StyleSheet.create({
     paddingTop: Spacing[4],
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  emptyStateContainer: {
+    paddingHorizontal: Spacing[6],
+  },
+  emptyStateButton: {
+    marginTop: Spacing[4],
   },
 });

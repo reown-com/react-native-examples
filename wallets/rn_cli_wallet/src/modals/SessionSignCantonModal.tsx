@@ -90,7 +90,7 @@ export default function SessionSignCantonModal() {
       );
       Toast.show({
         type: 'error',
-        text1: 'Rejection failed',
+        text1: 'Couldn’t reject request',
         text2: (e as Error).message,
       });
     } finally {
@@ -116,7 +116,7 @@ export default function SessionSignCantonModal() {
       isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
       rejectLoader={isLoadingReject}
-      approveLabel="Approve"
+      approveLabel="Sign"
     >
       <View style={styles.container}>
         <AppInfoCard

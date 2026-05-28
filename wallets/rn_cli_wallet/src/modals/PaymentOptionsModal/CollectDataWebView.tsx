@@ -148,7 +148,10 @@ export function CollectDataWebView({
       LogStore.error('WebView error', 'CollectDataWebView', 'handleError', {
         error: description,
       });
-      onError(description || 'Failed to load the form');
+      onError(
+        description ||
+          'Couldn’t load the form. Check your connection, then try again.',
+      );
     },
     [onError],
   );

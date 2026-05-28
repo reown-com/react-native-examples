@@ -100,7 +100,7 @@ export default function SessionAuthenticateModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Authentication failed',
+          text1: 'Couldn’t authenticate',
           text2: (e as Error).message,
         });
       } finally {
@@ -137,7 +137,7 @@ export default function SessionAuthenticateModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {

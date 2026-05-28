@@ -66,7 +66,7 @@ export default function SessionSignTypedDataModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Signature failed',
+          text1: 'Couldn’t sign typed data',
           text2: (e as Error).message,
         });
       } finally {
@@ -95,7 +95,7 @@ export default function SessionSignTypedDataModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {

@@ -32,7 +32,7 @@ function SecretSection({
       Clipboard.setString(secret);
       Toast.show({
         type: 'info',
-        text1: `${title} copied to clipboard`,
+        text1: `${title} secret copied`,
       });
     }
   };
@@ -157,40 +157,40 @@ export default function SecretPhrase() {
         ]}
       >
         <Text variant="sm-500" color="text-primary">
-          Mnemonics and secret keys are provided for development purposes only
-          and should not be used elsewhere
+          These mnemonics and secret keys are for development only. Don’t use
+          them anywhere else.
         </Text>
       </View>
       <SecretSection
-        title="EVM (Ethereum)"
+        title="Ethereum"
         secret={evmMnemonic}
         type="mnemonic"
-        notAvailableMessage="Imported via private key - no recovery phrase"
+        notAvailableMessage="Imported via private key. No recovery phrase."
       />
 
       <SecretSection
-        title="SUI"
+        title="Sui"
         secret={suiMnemonic}
         type="mnemonic"
-        notAvailableMessage="SUI wallet not initialized"
+        notAvailableMessage="Sui wallet not initialized"
       />
 
       <SecretSection
-        title="TON"
+        title="Ton"
         secret={tonSecretKey}
         type="hex"
-        notAvailableMessage="TON wallet not initialized"
+        notAvailableMessage="Ton wallet not initialized"
       />
 
       <SecretSection
-        title="TRON"
+        title="Tron"
         secret={tronPrivateKey}
         type="hex"
-        notAvailableMessage="TRON wallet not initialized"
+        notAvailableMessage="Tron wallet not initialized"
       />
 
       <SecretSection
-        title="CANTON"
+        title="Canton"
         secret={cantonSecretKey}
         type="hex"
         notAvailableMessage="Canton wallet not initialized"
@@ -198,14 +198,14 @@ export default function SecretPhrase() {
 
       {solanaMnemonic ? (
         <SecretSection
-          title="SOLANA"
+          title="Solana"
           secret={solanaMnemonic}
           type="mnemonic"
           notAvailableMessage="Solana wallet not initialized"
         />
       ) : (
         <SecretSection
-          title="SOLANA (base58 secret key)"
+          title="Solana (base58 secret key)"
           secret={solanaBase58SecretKey}
           type="hex"
           notAvailableMessage="Solana wallet not initialized"

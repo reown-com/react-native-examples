@@ -96,7 +96,7 @@ export function LoadingView({
             numberOfLines={2}
             ellipsizeMode="tail"
           >
-            {message || 'Loading...'}
+            {message || 'Loading…'}
           </Text>
           {note && (
             <Text

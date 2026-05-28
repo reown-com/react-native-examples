@@ -55,7 +55,7 @@ export function HomeTabNavigator() {
         name="Connections"
         component={Connections}
         options={{
-          tabBarLabel: 'Connected Apps',
+          tabBarLabel: 'Connected apps',
           tabBarIcon: () => tabConnectionsIcon,
           lazy: false,
           sceneStyle,

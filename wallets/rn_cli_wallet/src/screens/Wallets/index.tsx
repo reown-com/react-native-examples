@@ -100,7 +100,7 @@ export default function Wallets() {
         <View style={styles.emptyContainer}>
           <WalletConnectLoading size={60} />
           <Text variant="lg-400" color="text-primary">
-            Loading balances...
+            Loading your balances…
           </Text>
         </View>
       );
@@ -109,7 +109,7 @@ export default function Wallets() {
     return (
       <View style={styles.emptyContainer}>
         <Text variant="lg-400" color="text-primary" style={styles.emptyText}>
-          No balances found
+          No balances yet
         </Text>
       </View>
     );

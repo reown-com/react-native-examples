@@ -34,7 +34,7 @@ export function LoadingModal() {
         <WalletConnectLoading size={120} />
       )}
       <Text center variant="h6-400" color="text-primary">
-        {data?.loadingMessage || data?.errorMessage || 'Loading...'}
+        {data?.loadingMessage || data?.errorMessage || 'Loading…'}
       </Text>
     </View>
   );

@@ -77,7 +77,7 @@ export default function SessionSignSuiPersonalMessageModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Transaction signing failed',
+          text1: 'Couldn’t sign transaction',
           text2: (e as Error).message,
         });
       } finally {
@@ -111,7 +111,7 @@ export default function SessionSignSuiPersonalMessageModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {
