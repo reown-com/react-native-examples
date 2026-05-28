@@ -1,5 +1,4 @@
 import { Card } from "@/components/card";
-import { CloseButton } from "@/components/close-button";
 import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -99,7 +98,7 @@ export default function LogsScreen() {
     <View style={styles.container}>
       <Card onPress={clearLogs} style={styles.clearButton}>
         <ThemedText fontSize={16} lineHeight={18}>
-          Clear Logs
+          Clear logs
         </ThemedText>
       </Card>
 
@@ -118,18 +117,6 @@ export default function LogsScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
-      <LinearGradient
-        colors={[
-          Theme["bg-primary"] + "00",
-          Theme["bg-primary"] + "40",
-          Theme["bg-primary"] + "CC",
-          Theme["bg-primary"],
-        ]}
-        locations={[0, 0.3, 0.5, 1]}
-        style={styles.gradient}
-        pointerEvents="none"
-      />
-      <CloseButton style={styles.closeButton} onPress={resetNavigation} />
     </View>
   );
 }
@@ -178,16 +165,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  closeButton: {
-    position: "absolute",
-    alignSelf: "center",
-  },
-  gradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 200,
   },
 });

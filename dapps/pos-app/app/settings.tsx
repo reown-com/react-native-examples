@@ -1,6 +1,5 @@
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
-import { CloseButton } from "@/components/close-button";
 import { PinModal } from "@/components/pin-modal";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
@@ -18,7 +17,6 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { ThemeMode } from "@/utils/types";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
-import { resetNavigation } from "@/utils/navigation";
 import {
   connectPrinter,
   printReceipt,
@@ -27,7 +25,6 @@ import {
 import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
@@ -195,7 +192,9 @@ export default function SettingsScreen() {
           "settings",
           "handleTestPrinterPress",
         );
-        showErrorToast("Failed to request Bluetooth permission");
+        showErrorToast(
+          "We need Bluetooth to connect your printer. Allow it in your device settings.",
+        );
         return;
       }
       const { connected, error } = await connectPrinter();
@@ -207,7 +206,10 @@ export default function SettingsScreen() {
           "handleTestPrinterPress",
           { error },
         );
-        showErrorToast(error || "Failed to connect to printer");
+        showErrorToast(
+          error ||
+            "We couldn't connect to the printer. Check that it's on and paired in your device's Bluetooth settings.",
+        );
         return;
       }
       const currencyData = getCurrency(currency);
@@ -277,7 +279,7 @@ export default function SettingsScreen() {
         />
 
         <SettingsItem
-          title="Customer API KEY"
+          title="Customer API key"
           value="**********"
           onPress={() => setActiveSheet("customerApiKey")}
         />
@@ -287,10 +289,10 @@ export default function SettingsScreen() {
             <View style={styles.biometricRow}>
               <View style={styles.biometricLabel}>
                 <ThemedText fontSize={16} lineHeight={18}>
-                  Show NFC UI
+                  Tap-to-pay prompt
                 </ThemedText>
                 <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Show NFC tap UI on the payment screen
+                  Show the tap-to-pay prompt on the payment screen.
                 </ThemedText>
               </View>
               <Switch
@@ -311,7 +313,7 @@ export default function SettingsScreen() {
                   {getBiometricLabel(biometricStatus.biometricType)}
                 </ThemedText>
                 <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Use instead of PIN
+                  Use instead of PIN.
                 </ThemedText>
               </View>
               <Switch
@@ -325,7 +327,7 @@ export default function SettingsScreen() {
 
         <SettingsItem title="Test printer" onPress={handleTestPrinterPress} />
 
-        <SettingsItem title="View Logs" onPress={() => router.push("/logs")} />
+        <SettingsItem title="View logs" onPress={() => router.push("/logs")} />
 
         <ThemedText
           fontSize={12}
@@ -336,19 +338,6 @@ export default function SettingsScreen() {
           Version {appVersion} ({buildVersion})
         </ThemedText>
       </ScrollView>
-
-      <LinearGradient
-        colors={[
-          theme["bg-primary"] + "00",
-          theme["bg-primary"] + "40",
-          theme["bg-primary"] + "CC",
-          theme["bg-primary"],
-        ]}
-        locations={[0, 0.3, 0.5, 1]}
-        style={styles.gradient}
-        pointerEvents="none"
-      />
-      <CloseButton style={styles.closeButton} onPress={resetNavigation} />
 
       {/* Theme Bottom Sheet */}
       <SettingsBottomSheet
@@ -439,7 +428,7 @@ export default function SettingsScreen() {
       {/* Customer API Key Bottom Sheet */}
       <SettingsBottomSheet
         visible={activeSheet === "customerApiKey"}
-        title="Customer API KEY"
+        title="Customer API key"
         onClose={closeSheet}
       >
         <View style={styles.inputContent}>
@@ -496,8 +485,8 @@ export default function SettingsScreen() {
         title={activeModal === "pin-verify" ? "Enter PIN" : "Create PIN"}
         subtitle={
           activeModal === "pin-verify"
-            ? "Enter your PIN to save merchant settings"
-            : "Set a 4-digit PIN to protect merchant settings"
+            ? "Enter your PIN to save these settings."
+            : "Set a 4-digit PIN to protect your settings."
         }
         onComplete={
           activeModal === "pin-verify"
@@ -522,17 +511,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing["spacing-5"],
     paddingBottom: Spacing["extra-spacing-2"],
     gap: Spacing["spacing-2"],
-  },
-  closeButton: {
-    position: "absolute",
-    alignSelf: "center",
-  },
-  gradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 200,
   },
   versionText: {
     alignSelf: "flex-end",

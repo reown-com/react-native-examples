@@ -100,7 +100,7 @@ export default Sentry.wrap(function RootLayout() {
               "layout",
               "checkBluetoothPermission",
             );
-          showInfoToast("Bluetooth permission is needed to connect to printer");
+          showInfoToast("We need Bluetooth to connect your printer.");
         }
       } catch (error) {
         const errorMessage =
