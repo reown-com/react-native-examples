@@ -1,5 +1,4 @@
 import { Button } from "@/components/button";
-import { CloseButton } from "@/components/close-button";
 import { PinModal } from "@/components/pin-modal";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
@@ -8,7 +7,6 @@ import { useMerchantFlow } from "@/hooks/use-merchant-flow";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { MerchantConfig } from "@/utils/merchant-config";
-import { resetNavigation } from "@/utils/navigation";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router, useFocusEffect } from "expo-router";
@@ -202,15 +200,13 @@ export default function UpdateKeysScreen() {
         )}
       </ScrollView>
 
-      <CloseButton style={styles.closeButton} onPress={resetNavigation} />
-
       <PinModal
         visible={activeModal !== "none"}
         title={activeModal === "pin-verify" ? "Enter PIN" : "Create PIN"}
         subtitle={
           activeModal === "pin-verify"
-            ? "Enter your PIN to update keys"
-            : "Set a 4-digit PIN to protect merchant settings"
+            ? "Enter your PIN to save these settings."
+            : "Set a 4-digit PIN to protect your settings."
         }
         onComplete={
           activeModal === "pin-verify"
@@ -284,9 +280,5 @@ const styles = StyleSheet.create({
   resetLabel: {
     textAlign: "center",
     textDecorationLine: "underline",
-  },
-  closeButton: {
-    position: "absolute",
-    alignSelf: "center",
   },
 });

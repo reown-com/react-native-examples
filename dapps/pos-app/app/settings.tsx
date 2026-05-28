@@ -1,5 +1,4 @@
 import { Card } from "@/components/card";
-import { CloseButton } from "@/components/close-button";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { SettingsItem } from "@/components/settings-item";
@@ -9,13 +8,11 @@ import { Spacing } from "@/constants/spacing";
 import { VariantList, VariantName } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
-import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { ThemeMode } from "@/utils/types";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
-import { resetNavigation } from "@/utils/navigation";
 import {
   connectPrinter,
   printReceipt,
@@ -24,7 +21,6 @@ import {
 import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
@@ -67,7 +63,6 @@ export default function SettingsScreen() {
   const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
   const nfcCapabilities = useNfcCapabilities();
   const addLog = useLogsStore((state) => state.addLog);
-  const theme = useTheme();
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
 
@@ -141,7 +136,9 @@ export default function SettingsScreen() {
           "settings",
           "handleTestPrinterPress",
         );
-        showErrorToast("Failed to request Bluetooth permission");
+        showErrorToast(
+          "We need Bluetooth to connect your printer. Allow it in your device settings.",
+        );
         return;
       }
       const { connected, error } = await connectPrinter();
@@ -153,7 +150,10 @@ export default function SettingsScreen() {
           "handleTestPrinterPress",
           { error },
         );
-        showErrorToast(error || "Failed to connect to printer");
+        showErrorToast(
+          error ||
+            "We couldn't connect to the printer. Check that it's on and paired in your device's Bluetooth settings.",
+        );
         return;
       }
       const currencyData = getCurrency(currency);
@@ -210,10 +210,10 @@ export default function SettingsScreen() {
             <View style={styles.biometricRow}>
               <View style={styles.biometricLabel}>
                 <ThemedText fontSize={16} lineHeight={18}>
-                  Show NFC UI
+                  Tap-to-pay prompt
                 </ThemedText>
                 <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Show NFC tap UI on the payment screen
+                  Show the tap-to-pay prompt on the payment screen.
                 </ThemedText>
               </View>
               <Switch
@@ -234,7 +234,7 @@ export default function SettingsScreen() {
                   {getBiometricLabel(biometricStatus.biometricType)}
                 </ThemedText>
                 <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Use instead of PIN
+                  Use instead of PIN.
                 </ThemedText>
               </View>
               <Switch
@@ -248,7 +248,7 @@ export default function SettingsScreen() {
 
         <SettingsItem title="Test printer" onPress={handleTestPrinterPress} />
 
-        <SettingsItem title="View Logs" onPress={() => router.push("/logs")} />
+        <SettingsItem title="View logs" onPress={() => router.push("/logs")} />
 
         <ThemedText
           fontSize={12}
@@ -259,19 +259,6 @@ export default function SettingsScreen() {
           Version {appVersion} ({buildVersion})
         </ThemedText>
       </ScrollView>
-
-      <LinearGradient
-        colors={[
-          theme["bg-primary"] + "00",
-          theme["bg-primary"] + "40",
-          theme["bg-primary"] + "CC",
-          theme["bg-primary"],
-        ]}
-        locations={[0, 0.3, 0.5, 1]}
-        style={styles.gradient}
-        pointerEvents="none"
-      />
-      <CloseButton style={styles.closeButton} onPress={resetNavigation} />
 
       {/* Theme Bottom Sheet */}
       <SettingsBottomSheet
@@ -324,17 +311,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing["spacing-5"],
     paddingBottom: Spacing["extra-spacing-2"],
     gap: Spacing["spacing-2"],
-  },
-  closeButton: {
-    position: "absolute",
-    alignSelf: "center",
-  },
-  gradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 200,
   },
   versionText: {
     alignSelf: "flex-end",

@@ -1,5 +1,7 @@
-import { CloseButton } from "@/components/close-button";
+import { Button } from "@/components/button";
+import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   BarcodeScanningResult,
@@ -20,7 +22,8 @@ const scanAreaLeft = (width - SCAN_AREA_SIZE) / 2;
 const scanAreaTop = (height - SCAN_AREA_SIZE) / 3;
 
 export default function ScanCustomerKeyScreen() {
-  const { top } = useSafeAreaInsets();
+  const { bottom } = useSafeAreaInsets();
+  const theme = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const setScannedCustomerKey = useSettingsStore(
     (state) => state.setScannedCustomerKey,
@@ -99,12 +102,6 @@ export default function ScanCustomerKeyScreen() {
       {/* Scan-area frame */}
       <View style={[styles.frame, { top: scanAreaTop, left: scanAreaLeft }]} />
 
-      <CloseButton
-        style={[styles.closeButton, { top: top + Spacing["spacing-4"] }]}
-        themeMode="dark"
-        onPress={goBack}
-      />
-
       <View style={[styles.instruction, { top: scanAreaTop + SCAN_AREA_SIZE }]}>
         <Text style={styles.instructionText}>
           {permission?.granted
@@ -112,6 +109,21 @@ export default function ScanCustomerKeyScreen() {
             : "Camera not available"}
         </Text>
       </View>
+
+      <Button
+        onPress={goBack}
+        style={[
+          styles.cancelButton,
+          {
+            backgroundColor: theme["foreground-primary"],
+            bottom: bottom + Spacing["spacing-6"],
+          },
+        ]}
+      >
+        <ThemedText color="text-primary" fontSize={16} lineHeight={18}>
+          Cancel
+        </ThemedText>
+      </Button>
     </SafeAreaView>
   );
 }
@@ -133,9 +145,14 @@ const styles = StyleSheet.create({
     borderColor: "white",
     borderRadius: BorderRadius["5"],
   },
-  closeButton: {
+  cancelButton: {
     position: "absolute",
+    left: Spacing["spacing-5"],
     right: Spacing["spacing-5"],
+    height: 48,
+    borderRadius: BorderRadius["4"],
+    alignItems: "center",
+    justifyContent: "center",
   },
   instruction: {
     position: "absolute",

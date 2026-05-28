@@ -73,7 +73,7 @@ inputs:
   maestro-actions-ref:
     description: 'Pinned ref of WalletConnect/actions for maestro/pay-tests and maestro/setup.'
     required: false
-    default: 'afc741fbe638ca13cfc10de2ed59b064c2b59436'
+    default: '6628a30e8e92ab36c1051e6f62b68add6a737f3f'
   apple-key-id:
     description: 'Apple App Store Connect API key id (iOS only).'
     required: false
@@ -392,10 +392,10 @@ runs:
 
     # --- Common: Maestro setup + run ---
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@afc741fbe638ca13cfc10de2ed59b064c2b59436
+      uses: WalletConnect/actions/maestro/pay-tests@6628a30e8e92ab36c1051e6f62b68add6a737f3f
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@afc741fbe638ca13cfc10de2ed59b064c2b59436
+      uses: WalletConnect/actions/maestro/setup@6628a30e8e92ab36c1051e6f62b68add6a737f3f
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -468,6 +468,11 @@ runs:
           maestro-output.log
         if-no-files-found: warn
         retention-days: 14
+        # Allow callers to invoke this composite twice in the same run
+        # (e.g. a retry wrapper) without the second upload 409'ing
+        # against the first. Last-wins; combine with an out-of-action
+        # download+rename step if both attempts' artifacts are needed.
+        overwrite: true
 
     - name: Run Maestro tests (Android)
       if: inputs.platform == 'android'
@@ -522,6 +527,11 @@ runs:
           maestro-output.log
         if-no-files-found: warn
         retention-days: 14
+        # Allow callers to invoke this composite twice in the same run
+        # (e.g. a retry wrapper) without the second upload 409'ing
+        # against the first. Last-wins; combine with an out-of-action
+        # download+rename step if both attempts' artifacts are needed.
+        overwrite: true
 
     - name: Log Maestro outcome
       if: always()
