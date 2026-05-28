@@ -9,6 +9,7 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
+import { scopeNetworksToNamespaces } from "@/utils/network-scope";
 import { useAccount, useAppKit } from "@reown/appkit-react-native";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -23,6 +24,13 @@ export default function ConnectWalletScreen() {
   const isRegistered = useMerchantStore((s) => s.isRegistered);
   const [showExists, setShowExists] = useState(false);
   const handled = useRef(false);
+
+  // Scope the AppKit/WC session proposal to the namespaces the merchant
+  // selected on Screen 3 so we don't ask the wallet to approve chains they
+  // didn't pick.
+  useEffect(() => {
+    scopeNetworksToNamespaces(networks);
+  }, [networks]);
 
   // React to a wallet connection initiated from this screen.
   useEffect(() => {

@@ -2,22 +2,18 @@ import { PrimaryButton } from "@/components/primary-button";
 import { Screen } from "@/components/screen";
 import { ThemedText } from "@/components/themed-text";
 import { WcLogo } from "@/components/icons";
-import { NetworkId } from "@/constants/networks";
 import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { syncMerchantToPayCore } from "@/services/merchant";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { nukeAllStorage } from "@/utils/dev-reset";
 import { getInstallId } from "@/utils/install-id";
-import { showErrorToast, showToast } from "@/utils/toast";
-import { getConnectedAddresses } from "@/utils/wallet-accounts";
+import { restoreFullNamespaceScope } from "@/utils/network-scope";
+import { showToast } from "@/utils/toast";
 import { useAccount, useAppKit } from "@reown/appkit-react-native";
-import { router, useFocusEffect } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { router, useFocusEffect, usePathname } from "expo-router";
+import { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
-
-const PARTNER_ID = process.env.EXPO_PUBLIC_PAY_PARTNER_ID;
 
 const TRUST_PILLS = ["✓ EVM + Solana", "✓ Self-custody", "✓ Instant QR"];
 
@@ -25,101 +21,42 @@ export default function WelcomeScreen() {
   const Theme = useTheme();
   const { open, disconnect } = useAppKit();
   const { address, isConnected } = useAccount();
-  const isRegistered = useMerchantStore((s) => s.isRegistered);
   const findByMerchantId = useMerchantStore((s) => s.findByMerchantId);
-  const upsertLocalMerchant = useMerchantStore((s) => s.upsertMerchant);
   const setActive = useMerchantStore((s) => s.setActive);
-  const { namespace } = useAccount();
   const resetOnboarding = useOnboardingStore((s) => s.reset);
-  const onboardingStarted = useOnboardingStore((s) => s.started);
   const onboardingVerified = useOnboardingStore((s) => s.verified);
-  const [loggingIn, setLoggingIn] = useState(false);
-  const handledLogin = useRef(false);
-  const [switching, setSwitching] = useState(false);
-  const handledSwitchRef = useRef<string | null>(null);
+  const pathname = usePathname();
 
-  // When Welcome is shown with a live wallet session, route to the right place.
-  // The wallet's return deep link (merchantpos://) lands here, so we resume:
-  // registered → Home; verified mid-onboarding → Tokens; started → Verify;
-  // new wallet on an existing install merchant → upsert with new addresses → Home.
+  // Simple routing cascade when Welcome is shown with a connected wallet:
+  //   !signed   → verify
+  //   signed & !merchant → tokens
+  //   signed &  merchant → home
+  // dismissTo pops down to an existing instance (no remount/flash) and only
+  // falls back to a replace when the target isn't in the stack. The
+  // current-path guard skips no-op self-navigations.
   useFocusEffect(
     useCallback(() => {
-      if (!isConnected || !address || switching) return;
+      if (!isConnected || !address) return;
 
-      if (isRegistered(address)) {
+      let target: "/onboarding/verify" | "/onboarding/tokens" | "/home";
+      if (!onboardingVerified) {
+        target = "/onboarding/verify";
+      } else if (!findByMerchantId(getInstallId())) {
+        target = "/onboarding/tokens";
+      } else {
         setActive(address);
-        router.replace("/home");
-        return;
+        target = "/home";
       }
 
-      // Wallet not in registry. If this install already has a merchant from a
-      // prior onboarding, upsert it with the new wallet's addresses and route
-      // home — no need to re-onboard from scratch.
-      const installId = getInstallId();
-      const existing = findByMerchantId(installId);
-      if (existing && handledSwitchRef.current !== address) {
-        handledSwitchRef.current = address;
-        (async () => {
-          if (!PARTNER_ID) {
-            showErrorToast("EXPO_PUBLIC_PAY_PARTNER_ID is not configured");
-            return;
-          }
-          setSwitching(true);
-          try {
-            const ns: NetworkId = namespace === "solana" ? "solana" : "eip155";
-            const addresses = getConnectedAddresses();
-            if (!addresses[ns]) addresses[ns] = address;
-            const { version } = await syncMerchantToPayCore({
-              merchantId: existing.merchantId ?? installId,
-              partnerId: PARTNER_ID,
-              companyName: existing.companyName,
-              addresses,
-            });
-            upsertLocalMerchant({
-              ...existing,
-              address,
-              namespace: ns,
-              merchantId: existing.merchantId ?? installId,
-              version,
-              addresses,
-            });
-            setActive(address);
-            setLoggingIn(false);
-            showToast("Wallet switched");
-            router.replace("/home");
-          } catch (e) {
-            handledSwitchRef.current = null;
-            const message =
-              e instanceof Error ? e.message : "Failed to update merchant";
-            showErrorToast(message);
-          } finally {
-            setSwitching(false);
-          }
-        })();
-        return;
-      }
-
-      if (onboardingVerified) {
-        router.replace("/onboarding/tokens");
-      } else if (onboardingStarted) {
-        router.replace("/onboarding/verify");
-      } else if (loggingIn && !handledLogin.current) {
-        handledLogin.current = true;
-        setLoggingIn(false);
-        showErrorToast("No merchant account for this wallet. Tap Get started.");
-      }
+      if (pathname === target) return;
+      router.dismissTo(target);
     }, [
       isConnected,
       address,
-      namespace,
-      isRegistered,
-      findByMerchantId,
-      upsertLocalMerchant,
-      setActive,
+      pathname,
       onboardingVerified,
-      onboardingStarted,
-      loggingIn,
-      switching,
+      findByMerchantId,
+      setActive,
     ]),
   );
 
@@ -129,8 +66,9 @@ export default function WelcomeScreen() {
   };
 
   const onLogin = () => {
-    handledLogin.current = false;
-    setLoggingIn(true);
+    // Log in should accept any wallet — undo any namespace scoping a prior
+    // onboarding may have applied.
+    restoreFullNamespaceScope();
     open();
   };
 
@@ -141,8 +79,6 @@ export default function WelcomeScreen() {
       // ignore — may already be disconnected
     }
     await nukeAllStorage();
-    handledLogin.current = false;
-    setLoggingIn(false);
     showToast("Storage cleared");
   };
 

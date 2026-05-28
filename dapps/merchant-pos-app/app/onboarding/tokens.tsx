@@ -57,6 +57,7 @@ export default function TokensScreen() {
         partnerId: PARTNER_ID,
         companyName: draft.companyName,
         addresses,
+        tokens: draft.tokens,
       });
       version = result.version;
     } catch (e) {

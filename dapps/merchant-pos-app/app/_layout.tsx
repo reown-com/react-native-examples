@@ -1,16 +1,7 @@
 import "@/utils/polyfills";
 
-import {
-  AppKit,
-  AppKitProvider,
-  createAppKit,
-  solana,
-} from "@reown/appkit-react-native";
-import { SolanaAdapter } from "@reown/appkit-solana-react-native";
-import { WagmiAdapter } from "@reown/appkit-wagmi-react-native";
+import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { arbitrum, base, mainnet, polygon } from "@wagmi/core/chains";
-import * as Clipboard from "expo-clipboard";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -27,54 +18,12 @@ import { WagmiProvider } from "wagmi";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useTheme } from "@/hooks/use-theme-color";
+import { appkit, wagmiAdapter } from "@/services/appkit-instance";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { appkitStorage } from "@/utils/appkit-storage";
 import { getInstallId } from "@/utils/install-id";
 
 const queryClient = new QueryClient();
-
-// Reown AppKit project id — https://dashboard.reown.com.
-// The fallback id only works in Expo Go; set EXPO_PUBLIC_PROJECT_ID for production builds.
-const projectId =
-  process.env.EXPO_PUBLIC_PROJECT_ID ?? "b8e39dfb697ba26ac5a77a4b29b35604";
-
-const metadata = {
-  name: "Merchant POS",
-  description: "Accept crypto payments. Settle to your wallet.",
-  url: "https://reown.com/appkit",
-  icons: ["https://avatars.githubusercontent.com/u/179229932"],
-  redirect: {
-    native: "merchantpos://",
-    universal: "",
-  },
-};
-
-const evmNetworks = [mainnet, polygon, arbitrum, base];
-
-const wagmiAdapter = new WagmiAdapter({
-  projectId,
-  networks: evmNetworks as any,
-});
-
-const solanaAdapter = new SolanaAdapter();
-
-const clipboardClient = {
-  setString: async (value: string) => {
-    await Clipboard.setStringAsync(value);
-  },
-};
-
-const appkit = createAppKit({
-  projectId,
-  networks: [...evmNetworks, solana],
-  adapters: [wagmiAdapter, solanaAdapter],
-  metadata,
-  clipboardClient,
-  storage: appkitStorage,
-  defaultNetwork: mainnet,
-  enableAnalytics: true,
-});
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

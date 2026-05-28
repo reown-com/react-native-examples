@@ -15,6 +15,8 @@ interface OnboardingStore {
   started: boolean;
   /** True once ownership has been verified by signing (next step is tokens). */
   verified: boolean;
+  /** Namespaces that have already produced a valid signature in this onboarding. */
+  signedNamespaces: NetworkId[];
 
   setBusinessDetails: (details: {
     email: string;
@@ -26,6 +28,7 @@ interface OnboardingStore {
   setTokens: (tokens: string[]) => void;
   toggleToken: (tokenId: string) => void;
   setVerified: (verified: boolean) => void;
+  markSigned: (namespace: NetworkId) => void;
   reset: () => void;
 }
 
@@ -37,6 +40,7 @@ const initialState = {
   tokens: DEFAULT_TOKEN_IDS,
   started: false,
   verified: false,
+  signedNamespaces: [] as NetworkId[],
 };
 
 export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
@@ -63,5 +67,11 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
     });
   },
   setVerified: (verified) => set({ verified }),
+  markSigned: (namespace) =>
+    set((state) =>
+      state.signedNamespaces.includes(namespace)
+        ? state
+        : { signedNamespaces: [...state.signedNamespaces, namespace] },
+    ),
   reset: () => set({ ...initialState }),
 }));

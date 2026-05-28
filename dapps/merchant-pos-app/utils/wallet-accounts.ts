@@ -29,19 +29,42 @@ export function getConnectedAccounts(): ConnectedAccount[] {
   const accounts: ConnectedAccount[] = [];
   const seen = new Set<NetworkId>();
   try {
-    ConnectionsController.state.connections.forEach((connection) => {
-      for (const caip of connection.accounts ?? []) {
-        const parts = caip.split(":");
-        const ns = parts[0];
-        const address = parts[parts.length - 1];
-        if (isSupportedNamespace(ns) && address && !seen.has(ns)) {
-          seen.add(ns);
-          accounts.push({ namespace: ns, address, caip });
-        }
+    const connections = ConnectionsController.state?.connections;
+    if (__DEV__) {
+      const dump: string[] = [];
+      if (connections && typeof connections.forEach === "function") {
+        connections.forEach((connection, ns) => {
+          dump.push(`${ns}=[${(connection?.accounts ?? []).join(",")}]`);
+        });
+        console.log(
+          `[merchant] connections size=${connections.size ?? "?"}: ${
+            dump.length ? dump.join(" | ") : "(empty)"
+          }`,
+        );
+      } else {
+        console.log(
+          "[merchant] connections shape:",
+          connections === undefined ? "undefined" : typeof connections,
+        );
       }
-    });
-  } catch {
-    // Controller not ready / shape changed.
+    }
+    if (connections && typeof connections.forEach === "function") {
+      connections.forEach((connection) => {
+        for (const caip of connection?.accounts ?? []) {
+          const parts = caip.split(":");
+          const ns = parts[0];
+          const address = parts[parts.length - 1];
+          if (isSupportedNamespace(ns) && address && !seen.has(ns)) {
+            seen.add(ns);
+            accounts.push({ namespace: ns, address, caip });
+          }
+        }
+      });
+    }
+  } catch (e) {
+    if (__DEV__) {
+      console.log("[merchant] connections read threw:", String(e));
+    }
   }
   if (__DEV__) {
     console.log(

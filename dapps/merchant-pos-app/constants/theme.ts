@@ -118,6 +118,8 @@ export const Brand = {
   usdc: "#2775CA",
   usdt: "#26A17B",
   dai: "#F5AC37",
+  pyusd: "#0070BA",
+  usdg: "#3F8EFC",
 };
 
 export const Fonts = Platform.select({

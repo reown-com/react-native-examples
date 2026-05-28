@@ -32,7 +32,7 @@ export function getNetwork(id: NetworkId): NetworkConfig {
   return NETWORKS.find((n) => n.id === id) ?? NETWORKS[0];
 }
 
-export type TokenSymbol = "USDC" | "USDT" | "ETH" | "DAI" | "SOL";
+export type TokenSymbol = "USDC" | "USDT" | "PYUSD" | "USDG";
 
 export interface TokenConfig {
   /** Unique id, namespaced by network: e.g. `eip155:USDC`. */
@@ -44,8 +44,13 @@ export interface TokenConfig {
   glyph: string;
 }
 
+/**
+ * Tokens shown as chips during onboarding. The set mirrors what's actually
+ * settleable in `constants/token-contracts.ts#CONTRACTS` so the user's
+ * selection drives the pay-core upsert one-to-one.
+ */
 export const TOKENS: TokenConfig[] = [
-  // Ethereum
+  // Ethereum (mainnet contracts; USDC is also auto-included on other EVM chains)
   {
     id: "eip155:USDC",
     network: "eip155",
@@ -55,28 +60,20 @@ export const TOKENS: TokenConfig[] = [
     glyph: "$",
   },
   {
-    id: "eip155:USDT",
+    id: "eip155:PYUSD",
     network: "eip155",
-    symbol: "USDT",
-    name: "Tether USD",
-    color: Brand.usdt,
-    glyph: "₮",
+    symbol: "PYUSD",
+    name: "PayPal USD",
+    color: Brand.pyusd,
+    glyph: "$",
   },
   {
-    id: "eip155:ETH",
+    id: "eip155:USDG",
     network: "eip155",
-    symbol: "ETH",
-    name: "Ether",
-    color: Brand.ethereum,
-    glyph: "Ξ",
-  },
-  {
-    id: "eip155:DAI",
-    network: "eip155",
-    symbol: "DAI",
-    name: "Dai",
-    color: Brand.dai,
-    glyph: "◈",
+    symbol: "USDG",
+    name: "Global Dollar",
+    color: Brand.usdg,
+    glyph: "$",
   },
   // Solana
   {
@@ -95,21 +92,11 @@ export const TOKENS: TokenConfig[] = [
     color: Brand.usdt,
     glyph: "₮",
   },
-  {
-    id: "solana:SOL",
-    network: "solana",
-    symbol: "SOL",
-    name: "Solana",
-    color: Brand.solanaFrom,
-    glyph: "◎",
-  },
 ];
 
 export function tokensForNetwork(network: NetworkId): TokenConfig[] {
   return TOKENS.filter((t) => t.network === network);
 }
 
-/** Tokens selected by default during onboarding (the stablecoins). */
-export const DEFAULT_TOKEN_IDS = TOKENS.filter(
-  (t) => t.symbol === "USDC" || t.symbol === "USDT",
-).map((t) => t.id);
+/** Tokens selected by default during onboarding (every supported one). */
+export const DEFAULT_TOKEN_IDS = TOKENS.map((t) => t.id);

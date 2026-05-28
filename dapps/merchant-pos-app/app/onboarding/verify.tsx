@@ -12,16 +12,22 @@ import {
   buildOwnershipMessage,
   signOwnership,
 } from "@/hooks/use-sign-ownership";
+import { syncMerchantToPayCore } from "@/services/merchant";
+import { useMerchantStore } from "@/store/useMerchantStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
-import { showErrorToast } from "@/utils/toast";
+import { getInstallId } from "@/utils/install-id";
+import { showErrorToast, showToast } from "@/utils/toast";
 import {
   ConnectedAccount,
   getConnectedAccounts,
+  getConnectedAddresses,
 } from "@/utils/wallet-accounts";
 import { useAccount } from "@reown/appkit-react-native";
 import { router } from "expo-router";
 import { useMemo, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
+
+const PARTNER_ID = process.env.EXPO_PUBLIC_PAY_PARTNER_ID;
 
 const BADGE_LABEL: Record<NetworkId, string> = {
   eip155: "ETH",
@@ -44,7 +50,15 @@ export default function VerifyScreen() {
     return [];
   }, [address, chainId, namespace]);
 
-  const [signed, setSigned] = useState<Record<string, boolean>>({});
+  // Signing progress lives in the onboarding store so a remount (e.g. wallet's
+  // return deep link bouncing us through Welcome → verify) doesn't wipe it.
+  const signedNamespaces = useOnboardingStore((s) => s.signedNamespaces);
+  const markSigned = useOnboardingStore((s) => s.markSigned);
+  const signed = useMemo(() => {
+    const map: Record<string, boolean> = {};
+    for (const ns of signedNamespaces) map[ns] = true;
+    return map;
+  }, [signedNamespaces]);
   const [signingNs, setSigningNs] = useState<NetworkId | null>(null);
   // Synchronous re-entrancy lock: React state updates aren't flushed before a
   // second press can fire, which would dispatch a duplicate sign request.
@@ -61,18 +75,63 @@ export default function VerifyScreen() {
 
   const onSign = async () => {
     if (inFlightRef.current) return;
+    // Sign only the next unsigned account; the user clicks again for the next.
+    const nextAccount = accounts.find((a) => !signed[a.namespace]);
+    if (!nextAccount) return;
     inFlightRef.current = true;
     try {
-      for (const account of accounts) {
-        if (signed[account.namespace]) continue;
-        setSigningNs(account.namespace);
-        await signOwnership(account);
-        setSigned((prev) => ({ ...prev, [account.namespace]: true }));
-      }
-      // Mark verified so the flow can resume to token selection even if the
-      // wallet's return deep link bounces us back to Welcome.
+      setSigningNs(nextAccount.namespace);
+      await signOwnership(nextAccount);
+      markSigned(nextAccount.namespace);
+
+      // Read fresh from the store (the React-subscribed `signed` hasn't
+      // re-rendered yet) so we know if any signature is still outstanding.
+      const signedSet = new Set([
+        ...useOnboardingStore.getState().signedNamespaces,
+        nextAccount.namespace,
+      ]);
+      const stillRemaining = accounts.some((a) => !signedSet.has(a.namespace));
+      if (stillRemaining) return; // user clicks again for the next message
+
+      // Verified locally — flip the flag so Welcome's cascade knows we've signed
+      // even if the wallet's return deep link bounces us through Welcome.
       useOnboardingStore.getState().setVerified(true);
-      router.push("/onboarding/tokens");
+
+      // Routing after sign: if the install already has a merchant, this is a
+      // "log in / switch wallet" — upsert with the new wallet's addresses and
+      // go Home. Otherwise it's first-time onboarding — continue to Tokens.
+      const installId = getInstallId();
+      const existing = useMerchantStore.getState().findByMerchantId(installId);
+      if (existing && address) {
+        if (!PARTNER_ID) {
+          showErrorToast("EXPO_PUBLIC_PAY_PARTNER_ID is not configured");
+          return;
+        }
+        const ns: NetworkId = namespace === "solana" ? "solana" : "eip155";
+        const addresses = getConnectedAddresses();
+        if (!addresses[ns]) addresses[ns] = address;
+        const { version } = await syncMerchantToPayCore({
+          merchantId: existing.merchantId ?? installId,
+          partnerId: PARTNER_ID,
+          companyName: existing.companyName,
+          addresses,
+          tokens: existing.tokens,
+        });
+        useMerchantStore.getState().upsertMerchant({
+          ...existing,
+          address,
+          namespace: ns,
+          merchantId: existing.merchantId ?? installId,
+          version,
+          addresses,
+          verifiedAt: Date.now(),
+        });
+        useMerchantStore.getState().setActive(address);
+        showToast("Wallet switched");
+        router.replace("/home");
+      } else {
+        router.replace("/onboarding/tokens");
+      }
     } catch (e) {
       const message = e instanceof Error ? e.message : "Signing failed";
       showErrorToast(message);
@@ -88,7 +147,7 @@ export default function VerifyScreen() {
       ? `Awaiting signature… (${signedCount + 1}/${accounts.length})`
       : "Awaiting signature…"
     : multi
-      ? `Sign ${accounts.length} messages`
+      ? `Sign message (${signedCount + 1}/${accounts.length})`
       : "Sign message";
 
   return (

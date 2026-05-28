@@ -176,24 +176,49 @@ export async function getMerchant(
 }
 
 /**
+ * Map a list of selected token ids (`<namespace>:<SYMBOL>`) into a per-namespace
+ * Set of symbols, used to filter cryptoSettlements down to what the merchant
+ * actually chose during onboarding.
+ */
+function symbolsByNamespace(
+  tokens?: string[],
+): Partial<Record<NetworkId, Set<string>>> {
+  if (!tokens || tokens.length === 0) return {};
+  const out: Partial<Record<NetworkId, Set<string>>> = {};
+  for (const id of tokens) {
+    const [ns, symbol] = id.split(":");
+    if (!symbol) continue;
+    if (ns !== "eip155" && ns !== "solana") continue;
+    const set = out[ns] ?? new Set<string>();
+    set.add(symbol);
+    out[ns] = set;
+  }
+  return out;
+}
+
+/**
  * Expand a per-namespace address map into cryptoSettlements + mtaAddresses by
  * iterating every chain in CONTRACTS for that namespace and every token
- * configured on that chain. `mta` is `true` for EVM entries (Solana isn't an
- * MTA in pay-core).
+ * configured on that chain. When `tokens` is provided, only tokens whose
+ * symbol appears in the merchant's selection are included. `mta` is `true`
+ * for EVM entries (Solana isn't an MTA in pay-core).
  */
 export function buildCryptoSettlements(
   addresses: Partial<Record<NetworkId, string>>,
+  tokens?: string[],
 ): { cryptoSettlements: CryptoSettlement[]; mtaAddresses: string[] } {
+  const allowed = symbolsByNamespace(tokens);
   const mtaAddresses: string[] = [];
   const cryptoSettlements: CryptoSettlement[] = [];
   (Object.keys(addresses) as NetworkId[]).forEach((namespace) => {
     const address = addresses[namespace];
     if (!address) return;
+    const allowedSymbols = allowed[namespace];
     const isMta = namespace === "eip155";
     for (const chainPrefix of chainsForNamespace(namespace)) {
       const caip10 = caip10ForChain(chainPrefix, address);
       if (isMta) mtaAddresses.push(caip10);
-      for (const caip19 of getTokensCaip19(chainPrefix)) {
+      for (const caip19 of getTokensCaip19(chainPrefix, allowedSymbols)) {
         cryptoSettlements.push({
           caip10,
           caip19,
@@ -212,6 +237,8 @@ interface SyncMerchantParams {
   companyName: string;
   iconUrl?: string;
   addresses: Partial<Record<NetworkId, string>>;
+  /** Selected token ids (`<namespace>:<SYMBOL>`). When provided, only matching tokens settle. */
+  tokens?: string[];
 }
 
 /**
@@ -234,6 +261,7 @@ export async function syncMerchantToPayCore(
 
   const { cryptoSettlements, mtaAddresses } = buildCryptoSettlements(
     params.addresses,
+    params.tokens,
   );
 
   await upsertMerchant({
