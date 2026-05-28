@@ -27,8 +27,6 @@ import { router } from "expo-router";
 import { useMemo, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
-const PARTNER_ID = process.env.EXPO_PUBLIC_PAY_PARTNER_ID;
-
 const BADGE_LABEL: Record<NetworkId, string> = {
   eip155: "ETH",
   solana: "SOL",
@@ -103,16 +101,11 @@ export default function VerifyScreen() {
       const installId = getInstallId();
       const existing = useMerchantStore.getState().findByMerchantId(installId);
       if (existing && address) {
-        if (!PARTNER_ID) {
-          showErrorToast("EXPO_PUBLIC_PAY_PARTNER_ID is not configured");
-          return;
-        }
         const ns: NetworkId = namespace === "solana" ? "solana" : "eip155";
         const addresses = getConnectedAddresses();
         if (!addresses[ns]) addresses[ns] = address;
         const { version } = await syncMerchantToPayCore({
           merchantId: existing.merchantId ?? installId,
-          partnerId: PARTNER_ID,
           companyName: existing.companyName,
           addresses,
           tokens: existing.tokens,

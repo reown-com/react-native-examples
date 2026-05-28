@@ -18,8 +18,6 @@ import { router } from "expo-router";
 import { Fragment, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
-const PARTNER_ID = process.env.EXPO_PUBLIC_PAY_PARTNER_ID;
-
 export default function TokensScreen() {
   const { address, namespace } = useAccount();
   const draft = useOnboardingStore();
@@ -33,10 +31,6 @@ export default function TokensScreen() {
     if (submitting) return;
     if (!address) {
       showErrorToast("Wallet disconnected — reconnect to finish");
-      return;
-    }
-    if (!PARTNER_ID) {
-      showErrorToast("EXPO_PUBLIC_PAY_PARTNER_ID is not configured");
       return;
     }
 
@@ -54,7 +48,6 @@ export default function TokensScreen() {
       // serverVersion + 1 — sending a stale local version is ignored.
       const result = await syncMerchantToPayCore({
         merchantId,
-        partnerId: PARTNER_ID,
         companyName: draft.companyName,
         addresses,
         tokens: draft.tokens,

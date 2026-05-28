@@ -11,6 +11,7 @@ import {
 } from "./cognito-auth";
 
 const PAY_CORE_API_URL = process.env.EXPO_PUBLIC_PAY_CORE_API_URL;
+const PARTNER_ID = process.env.EXPO_PUBLIC_PAY_PARTNER_ID;
 
 export interface CryptoSettlement {
   caip10: string;
@@ -233,7 +234,6 @@ export function buildCryptoSettlements(
 
 interface SyncMerchantParams {
   merchantId: string;
-  partnerId: string;
   companyName: string;
   iconUrl?: string;
   addresses: Partial<Record<NetworkId, string>>;
@@ -254,6 +254,12 @@ interface SyncMerchantParams {
 export async function syncMerchantToPayCore(
   params: SyncMerchantParams,
 ): Promise<{ version: number }> {
+  if (!PARTNER_ID) {
+    throw new Error(
+      "EXPO_PUBLIC_PAY_PARTNER_ID is not set — required to upsert the merchant.",
+    );
+  }
+
   const existing = await getMerchant(params.merchantId);
   const now = new Date().toISOString();
   const version = (existing?.version ?? 0) + 1;
@@ -268,7 +274,7 @@ export async function syncMerchantToPayCore(
     id: params.merchantId,
     name: params.companyName || "Merchant",
     iconUrl: params.iconUrl,
-    partnerId: params.partnerId,
+    partnerId: PARTNER_ID,
     cryptoSettlements,
     providers: {
       iron: null,
