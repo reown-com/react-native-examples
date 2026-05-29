@@ -4,75 +4,113 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
+import { usePinGate } from "@/hooks/use-pin-gate";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { MerchantConfig } from "@/utils/merchant-config";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback } from "react";
-import { Platform, Pressable, StyleSheet, TextInput, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 const isNative = Platform.OS !== "web";
+const isWeb = Platform.OS === "web";
 
 export default function UpdateKeysScreen() {
   const theme = useTheme();
   const [assets] = useAssets([require("@/assets/images/scan.png")]);
 
-  const scannedCustomerKey = useSettingsStore(
-    (state) => state.scannedCustomerKey,
-  );
-  const setScannedCustomerKey = useSettingsStore(
-    (state) => state.setScannedCustomerKey,
-  );
+  const scannedSetup = useSettingsStore((state) => state.scannedSetup);
+  const setScannedSetup = useSettingsStore((state) => state.setScannedSetup);
+
+  const {
+    activeModal,
+    pinError,
+    requireAuth,
+    handlePinVerifyComplete,
+    handlePinSetupComplete,
+    handleBiometricSuccess,
+    handleBiometricFailure,
+    cancel,
+  } = usePinGate();
+  const { biometricLabel, canUseBiometric, authenticate } = useBiometricAuth();
+
+  // Require a PIN once, on entry. The form stays hidden until it's unlocked.
+  const [unlocked, setUnlocked] = useState(false);
+  const startedRef = useRef(false);
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    requireAuth(() => setUnlocked(true));
+  }, [requireAuth]);
+
+  // Return to the previous screen once the keys are saved.
+  const handleSaved = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+    }
+  }, []);
 
   const {
     merchantIdInput,
     customerApiKeyInput,
-    activeModal,
-    pinError,
+    storedMerchantId,
     isUpdateKeysConfirmDisabled,
     hasStoredCustomerApiKey,
     handleMerchantIdInputChange,
     handleCustomerApiKeyInputChange,
     handleUpdateKeysConfirm,
-    handlePinVerifyComplete,
-    handleBiometricAuthSuccess,
-    handleBiometricAuthFailure,
-    handlePinSetupComplete,
-    handleCancelSecurityFlow,
-  } = useMerchantFlow();
+  } = useMerchantFlow(handleSaved);
 
-  const { biometricLabel, canUseBiometric, authenticate } = useBiometricAuth();
-
-  // Apply a value handed back by the QR scanner, then clear the hand-off.
+  // Apply the credentials handed back by the QR scanner, then clear the
+  // hand-off. A setup QR carries both merchant ID and customer key.
   useFocusEffect(
     useCallback(() => {
-      if (scannedCustomerKey) {
-        handleCustomerApiKeyInputChange(scannedCustomerKey);
-        setScannedCustomerKey(null);
+      if (scannedSetup) {
+        if (scannedSetup.merchantId) {
+          handleMerchantIdInputChange(scannedSetup.merchantId);
+        }
+        if (scannedSetup.customerApiKey) {
+          handleCustomerApiKeyInputChange(scannedSetup.customerApiKey);
+        }
+        setScannedSetup(null);
       }
     }, [
-      scannedCustomerKey,
+      scannedSetup,
+      handleMerchantIdInputChange,
       handleCustomerApiKeyInputChange,
-      setScannedCustomerKey,
+      setScannedSetup,
     ]),
   );
 
   const handleBiometricAuth = useCallback(async () => {
     const success = await authenticate(`Use ${biometricLabel} to update keys`);
     if (success) {
-      handleBiometricAuthSuccess();
+      handleBiometricSuccess();
     } else {
-      handleBiometricAuthFailure();
+      handleBiometricFailure();
     }
   }, [
     authenticate,
     biometricLabel,
-    handleBiometricAuthSuccess,
-    handleBiometricAuthFailure,
+    handleBiometricSuccess,
+    handleBiometricFailure,
   ]);
+
+  // Cancelling the PIN prompt leaves the screen entirely.
+  const handleCancel = useCallback(() => {
+    cancel();
+    router.back();
+  }, [cancel]);
 
   const handleResetToDefault = useCallback(() => {
     const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
@@ -85,6 +123,10 @@ export default function UpdateKeysScreen() {
     }
   }, [handleMerchantIdInputChange, handleCustomerApiKeyInputChange]);
 
+  // Export shares the device's currently active credentials, so it requires
+  // both to already be saved.
+  const canExport = !!storedMerchantId && hasStoredCustomerApiKey;
+
   const inputStyle = [
     styles.input,
     {
@@ -95,117 +137,149 @@ export default function UpdateKeysScreen() {
   ];
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Merchant ID */}
-        <View style={styles.field}>
-          <ThemedText fontSize={14} lineHeight={16} color="text-secondary">
-            Merchant ID
-          </ThemedText>
-          <TextInput
-            value={merchantIdInput}
-            onChangeText={handleMerchantIdInputChange}
-            placeholder="Enter merchant ID"
-            placeholderTextColor={theme["text-tertiary"]}
-            autoCapitalize="none"
-            autoCorrect={false}
-            style={inputStyle}
-          />
-        </View>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      {unlocked && (
+        <>
+          <ScrollView
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Merchant ID */}
+            <View style={styles.field}>
+              <ThemedText fontSize={14} lineHeight={16} color="text-secondary">
+                Merchant ID
+              </ThemedText>
+              <TextInput
+                value={merchantIdInput}
+                onChangeText={handleMerchantIdInputChange}
+                placeholderTextColor={theme["text-tertiary"]}
+                autoCapitalize="none"
+                autoCorrect={false}
+                style={inputStyle}
+              />
+            </View>
 
-        {/* Customer API Key */}
-        <View style={styles.field}>
-          <ThemedText fontSize={14} lineHeight={16} color="text-secondary">
-            Customer API key
-          </ThemedText>
-          <View style={styles.inputRow}>
-            <TextInput
-              value={customerApiKeyInput}
-              onChangeText={handleCustomerApiKeyInputChange}
-              placeholder={
-                hasStoredCustomerApiKey
-                  ? "Enter new customer API key"
-                  : "Enter customer API key"
-              }
-              placeholderTextColor={theme["text-tertiary"]}
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry
-              style={[inputStyle, isNative && styles.inputWithAction]}
-            />
+            {/* Customer API Key */}
+            <View style={styles.field}>
+              <ThemedText fontSize={14} lineHeight={16} color="text-secondary">
+                Customer API key
+              </ThemedText>
+              <TextInput
+                value={customerApiKeyInput}
+                onChangeText={handleCustomerApiKeyInputChange}
+                placeholder="wcp_…"
+                placeholderTextColor={theme["text-tertiary"]}
+                autoCapitalize="none"
+                autoCorrect={false}
+                secureTextEntry
+                style={inputStyle}
+              />
+            </View>
+          </ScrollView>
+
+          <View style={styles.footer}>
+            {/* Provision this device by scanning another's export QR. */}
             {isNative && (
+              <Button
+                onPress={() => router.push("/scan-customer-key")}
+                style={[
+                  styles.secondaryButton,
+                  { borderColor: theme["border-primary"] },
+                ]}
+              >
+                <View style={styles.secondaryButtonContent}>
+                  <Image
+                    source={assets?.[0]}
+                    style={[
+                      styles.scanIcon,
+                      { tintColor: theme["text-primary"] },
+                    ]}
+                    tintColor={theme["text-primary"]}
+                    cachePolicy="memory-disk"
+                  />
+                  <ThemedText
+                    fontSize={16}
+                    lineHeight={18}
+                    color="text-primary"
+                  >
+                    Import keys
+                  </ThemedText>
+                </View>
+              </Button>
+            )}
+
+            {/* Share this device's keys so another can be set up (web only). */}
+            {isWeb && (
+              <Button
+                onPress={() => router.push("/export-keys")}
+                disabled={!canExport}
+                style={[
+                  styles.secondaryButton,
+                  {
+                    borderColor: theme["border-primary"],
+                    opacity: canExport ? 1 : 0.4,
+                  },
+                ]}
+              >
+                <ThemedText fontSize={16} lineHeight={18} color="text-primary">
+                  Export keys
+                </ThemedText>
+              </Button>
+            )}
+
+            <Button
+              onPress={handleUpdateKeysConfirm}
+              disabled={isUpdateKeysConfirmDisabled}
+              style={[
+                styles.saveButton,
+                {
+                  backgroundColor: isUpdateKeysConfirmDisabled
+                    ? theme["foreground-accent-primary-60"]
+                    : theme["bg-accent-primary"],
+                },
+              ]}
+            >
+              <ThemedText
+                fontSize={16}
+                lineHeight={18}
+                color="text-invert"
+                style={styles.saveButtonLabel}
+              >
+                Save keys
+              </ThemedText>
+            </Button>
+
+            {MerchantConfig.hasEnvDefaults() && (
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel="Scan customer API key QR code"
-                onPress={() => router.push("/scan-customer-key")}
-                style={styles.scanButton}
+                onPress={handleResetToDefault}
+                style={styles.resetLink}
                 hitSlop={8}
               >
-                <Image
-                  source={assets?.[0]}
-                  style={[
-                    styles.scanIcon,
-                    { tintColor: theme["text-primary"] },
-                  ]}
-                  tintColor={theme["text-primary"]}
-                  cachePolicy="memory-disk"
-                />
+                <ThemedText
+                  fontSize={14}
+                  lineHeight={16}
+                  color="text-tertiary"
+                  style={styles.resetLabel}
+                >
+                  Reset to default
+                </ThemedText>
               </Pressable>
             )}
           </View>
-        </View>
-
-        <Button
-          onPress={handleUpdateKeysConfirm}
-          disabled={isUpdateKeysConfirmDisabled}
-          style={[
-            styles.saveButton,
-            {
-              backgroundColor: isUpdateKeysConfirmDisabled
-                ? theme["foreground-accent-primary-60"]
-                : theme["bg-accent-primary"],
-            },
-          ]}
-        >
-          <ThemedText
-            fontSize={16}
-            lineHeight={18}
-            color="text-invert"
-            style={styles.saveButtonLabel}
-          >
-            Save
-          </ThemedText>
-        </Button>
-
-        {MerchantConfig.hasEnvDefaults() && (
-          <Pressable
-            accessibilityRole="button"
-            onPress={handleResetToDefault}
-            style={styles.resetLink}
-            hitSlop={8}
-          >
-            <ThemedText
-              fontSize={14}
-              lineHeight={16}
-              color="text-tertiary"
-              style={styles.resetLabel}
-            >
-              Reset to default
-            </ThemedText>
-          </Pressable>
-        )}
-      </ScrollView>
+        </>
+      )}
 
       <PinModal
         visible={activeModal !== "none"}
         title={activeModal === "pin-verify" ? "Enter PIN" : "Create PIN"}
         subtitle={
           activeModal === "pin-verify"
-            ? "Enter your PIN to save these settings."
+            ? "Enter your PIN to manage keys."
             : "Set a 4-digit PIN to protect your settings."
         }
         onComplete={
@@ -213,12 +287,12 @@ export default function UpdateKeysScreen() {
             ? handlePinVerifyComplete
             : handlePinSetupComplete
         }
-        onCancel={handleCancelSecurityFlow}
+        onCancel={handleCancel}
         error={pinError}
         showBiometric={activeModal === "pin-verify" && !!canUseBiometric}
         onBiometricPress={handleBiometricAuth}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -229,15 +303,12 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: Spacing["spacing-5"],
-    paddingBottom: Spacing["extra-spacing-2"],
     gap: Spacing["spacing-5"],
+    // Leave room for the input focus ring so the ScrollView doesn't clip it.
+    ...(isWeb && { paddingHorizontal: Spacing["spacing-2"] }),
   },
   field: {
     gap: Spacing["spacing-2"],
-  },
-  inputRow: {
-    position: "relative",
-    justifyContent: "center",
   },
   input: {
     borderWidth: 1,
@@ -249,23 +320,30 @@ const styles = StyleSheet.create({
     fontFamily: "KH Teka",
     height: 60,
   },
-  inputWithAction: {
-    paddingRight: Spacing["spacing-12"],
+  footer: {
+    paddingTop: Spacing["spacing-4"],
+    gap: Spacing["spacing-3"],
+    ...(isWeb && { paddingHorizontal: Spacing["spacing-2"] }),
   },
-  scanButton: {
-    position: "absolute",
-    right: Spacing["spacing-4"],
-    height: 60,
+  secondaryButton: {
+    height: 56,
+    borderWidth: 1,
+    borderRadius: BorderRadius["4"],
     justifyContent: "center",
     alignItems: "center",
+  },
+  secondaryButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing["spacing-2"],
   },
   scanIcon: {
     width: 24,
     height: 24,
   },
   saveButton: {
+    height: 56,
     borderRadius: BorderRadius["4"],
-    paddingVertical: Spacing["spacing-4"],
     justifyContent: "center",
     alignItems: "center",
   },
@@ -274,8 +352,7 @@ const styles = StyleSheet.create({
   },
   resetLink: {
     alignSelf: "center",
-    paddingVertical: Spacing["spacing-3"],
-    marginTop: Spacing["spacing-2"],
+    paddingVertical: Spacing["spacing-2"],
   },
   resetLabel: {
     textAlign: "center",

@@ -3,6 +3,8 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { decodeDeviceSetupQr } from "@/utils/device-setup-qr";
+import { showErrorToast } from "@/utils/toast";
 import {
   BarcodeScanningResult,
   CameraView,
@@ -16,6 +18,9 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+// Don't spam the "invalid QR" toast for every camera frame.
+const INVALID_QR_TOAST_COOLDOWN_MS = 2500;
+
 const { width, height } = Dimensions.get("window");
 const SCAN_AREA_SIZE = 280;
 const scanAreaLeft = (width - SCAN_AREA_SIZE) / 2;
@@ -25,11 +30,10 @@ export default function ScanCustomerKeyScreen() {
   const { bottom } = useSafeAreaInsets();
   const theme = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
-  const setScannedCustomerKey = useSettingsStore(
-    (state) => state.setScannedCustomerKey,
-  );
+  const setScannedSetup = useSettingsStore((state) => state.setScannedSetup);
   // onBarcodeScanned fires for every frame; guard so we navigate back once.
   const hasScannedRef = useRef(false);
+  const lastInvalidToastRef = useRef(0);
 
   useEffect(() => {
     if (!permission?.granted) {
@@ -42,11 +46,26 @@ export default function ScanCustomerKeyScreen() {
       if (hasScannedRef.current) return;
       const value = result.data?.trim();
       if (!value) return;
+
+      const payload = decodeDeviceSetupQr(value);
+      if (!payload) {
+        // Not one of our setup QRs — keep scanning, nudge the user at intervals.
+        const now = Date.now();
+        if (now - lastInvalidToastRef.current > INVALID_QR_TOAST_COOLDOWN_MS) {
+          lastInvalidToastRef.current = now;
+          showErrorToast("That QR code isn't a valid setup code");
+        }
+        return;
+      }
+
       hasScannedRef.current = true;
-      setScannedCustomerKey(value);
+      setScannedSetup({
+        merchantId: payload.merchantId,
+        customerApiKey: payload.customerApiKey,
+      });
       router.back();
     },
-    [setScannedCustomerKey],
+    [setScannedSetup],
   );
 
   const goBack = () => router.back();
@@ -105,8 +124,8 @@ export default function ScanCustomerKeyScreen() {
       <View style={[styles.instruction, { top: scanAreaTop + SCAN_AREA_SIZE }]}>
         <Text style={styles.instructionText}>
           {permission?.granted
-            ? "Scan a QR code containing the customer API key"
-            : "Camera not available"}
+            ? "Scan a setup code from another device"
+            : "Camera access is off. Allow it in your device settings to scan."}
         </Text>
       </View>
 

@@ -186,6 +186,7 @@ export default Sentry.wrap(function RootLayout() {
               />
               <Stack.Screen name="settings" />
               <Stack.Screen name="update-keys" />
+              <Stack.Screen name="export-keys" />
               <Stack.Screen
                 name="scan-customer-key"
                 options={{ headerShown: false }}

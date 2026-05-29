@@ -63,8 +63,9 @@ interface SettingsStore {
   isCustomerApiKeySet: boolean;
 
   // Transient hand-off from the QR scanner to the Update keys screen.
-  // Never persisted — it holds a raw customer API key (see partialize).
-  scannedCustomerKey: string | null;
+  // Never persisted — it holds raw credentials scanned from a setup QR
+  // (see partialize).
+  scannedSetup: { merchantId?: string; customerApiKey?: string } | null;
 
   // Transaction filters
   transactionFilter: TransactionFilterType;
@@ -86,7 +87,9 @@ interface SettingsStore {
   setVariant: (variant: VariantName) => void;
   setCurrency: (currency: CurrencyCode) => void;
   setMerchantId: (merchantId: string | null) => void;
-  setScannedCustomerKey: (value: string | null) => void;
+  setScannedSetup: (
+    value: { merchantId?: string; customerApiKey?: string } | null,
+  ) => void;
   clearMerchantId: () => Promise<string | null>;
   setCustomerApiKey: (apiKey: string | null) => Promise<void>;
   clearCustomerApiKey: () => Promise<void>;
@@ -117,7 +120,7 @@ export const useSettingsStore = create<SettingsStore>()(
       _hasHydrated: false,
       merchantId: null,
       isCustomerApiKeySet: false,
-      scannedCustomerKey: null,
+      scannedSetup: null,
       transactionFilter: "all",
       dateRangeFilter: "today",
       isPinHashSet: false,
@@ -136,8 +139,7 @@ export const useSettingsStore = create<SettingsStore>()(
         }
       },
       setCurrency: (currency: CurrencyCode) => set({ currency }),
-      setScannedCustomerKey: (value: string | null) =>
-        set({ scannedCustomerKey: value }),
+      setScannedSetup: (value) => set({ scannedSetup: value }),
       setMerchantId: (merchantId: string | null) => {
         // If clearing, reset to env default (unless embedded — parent provides credentials)
         if (!merchantId || merchantId.trim() === "") {
@@ -285,10 +287,9 @@ export const useSettingsStore = create<SettingsStore>()(
       name: "settings",
       version: 16,
       storage,
-      // Never write the raw scanned customer API key to MMKV; it is a
-      // transient hand-off that lives only in memory.
-      partialize: ({ scannedCustomerKey: _scannedCustomerKey, ...rest }) =>
-        rest,
+      // Never write the raw scanned credentials to MMKV; they are a transient
+      // hand-off that lives only in memory.
+      partialize: ({ scannedSetup: _scannedSetup, ...rest }) => rest,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
           return { variant: "default" };
