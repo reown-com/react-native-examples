@@ -41,7 +41,7 @@ export default function SessionAuthenticateModal() {
   // the chains that are supported by the wallet from the proposal
   const supportedChains = useMemo(() => {
     const chains = authRequest.params.authPayload.chains.filter(
-      chain => !!EIP155_CHAINS[chain.split(':')[1]],
+      chain => !!EIP155_CHAINS[chain],
     );
     return chains;
   }, [authRequest]);

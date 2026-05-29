@@ -11,6 +11,7 @@ interface ModalData {
   requestSession?: SessionTypes.Struct;
   authRequest?: SignClientTypes.EventArguments['session_authenticate'];
   loadingMessage?: string;
+  errorTitle?: string;
   errorMessage?: string;
   session?: SessionTypes.Struct;
 }

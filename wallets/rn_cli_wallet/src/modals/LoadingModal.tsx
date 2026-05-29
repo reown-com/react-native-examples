@@ -16,26 +16,42 @@ export function LoadingModal() {
   const { data } = useSnapshot(ModalStore.state);
 
   useEffect(() => {
-    if (data?.errorMessage) {
+    if (data?.errorMessage || data?.errorTitle) {
       haptics.error();
     }
-  }, [data?.errorMessage]);
+  }, [data?.errorMessage, data?.errorTitle]);
 
   const onClose = () => {
     ModalStore.close();
   };
 
+  // When an errorTitle is set, it acts as the heading and errorMessage as the
+  // supporting body. Otherwise fall back to the single-line legacy behavior.
+  const title =
+    data?.errorTitle ||
+    data?.loadingMessage ||
+    data?.errorMessage ||
+    'Loading…';
+  const body = data?.errorTitle ? data?.errorMessage : undefined;
+
   return (
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       <ModalCloseButton onPress={onClose} style={styles.closeButton} />
-      {data?.errorMessage ? (
+      {data?.errorMessage || data?.errorTitle ? (
         <Icon name="warningCircle" color="text-error" width={48} height={48} />
       ) : (
         <WalletConnectLoading size={120} />
       )}
-      <Text center variant="h6-400" color="text-primary">
-        {data?.loadingMessage || data?.errorMessage || 'Loading…'}
-      </Text>
+      <View style={styles.textContainer}>
+        <Text center variant="h6-400" color="text-primary">
+          {title}
+        </Text>
+        {body ? (
+          <Text center variant="md-400" color="text-secondary">
+            {body}
+          </Text>
+        ) : null}
+      </View>
     </View>
   );
 }
@@ -49,6 +65,10 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: BorderRadius[8],
     borderTopRightRadius: BorderRadius[8],
     rowGap: Spacing[4],
+  },
+  textContainer: {
+    alignItems: 'center',
+    rowGap: Spacing[2],
   },
   closeButton: {
     marginRight: Spacing[1],
