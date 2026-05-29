@@ -14,7 +14,18 @@
     android:allowBackup="false"
     android:theme="@style/AppTheme"
     android:usesCleartextTraffic="true"
-    android:supportsRtl="true">
+    android:supportsRtl="true"
+    android:gwpAsanMode="never"><!--
+      Disabled to avoid a SIGSEGV in libhermesvm.so that surfaced when
+      RN was upgraded to 0.85.3 (#420). Hermes's new Boost.Context-based
+      coroutine scheduler (`hoost_make_fcontext`) synthesizes stacks
+      with no valid frame-pointer chain at the bottom; when GWP-ASan
+      samples an allocation on such a stack, its frame-pointer walker
+      (`android_unsafe_frame_pointer_chase`) reads past the stack end
+      into a guard page and the process crashes with SEGV_ACCERR ~4s
+      after launch. Repros at ~15-20% rate on Android-14 x86_64
+      emulator; see pay-core PR #630 for the full forensics.
+    -->
     <activity
       android:name=".MainActivity"
       android:label="@string/app_name"
