@@ -1,3 +1,4 @@
+import { MONEY2020_LOGO_BASE64 } from "./printer-logos";
 import { Colors } from "./theme";
 
 export type VariantName =
@@ -17,7 +18,9 @@ type VariantColorOverrides = Partial<typeof Colors.light>;
 interface Variant {
   name: string;
   variantLogo?: ReturnType<typeof require>; // require() asset, omitted for default
+  printerLogo?: string; // base64 PNG printed on the receipt; falls back to default when omitted
   defaultTheme?: "light" | "dark";
+  allowThemeToggle?: boolean; // let users switch theme manually even on a branded variant
   colors: {
     light: VariantColorOverrides;
     dark: VariantColorOverrides;
@@ -186,7 +189,9 @@ export const Variants: Record<VariantName, Variant> = {
   money2020: {
     name: "Money 20/20",
     variantLogo: require("@/assets/images/variants/money2020_brand.png"),
-    defaultTheme: "dark",
+    printerLogo: MONEY2020_LOGO_BASE64,
+    defaultTheme: "light",
+    allowThemeToggle: true,
     colors: {
       light: {},
       dark: {},
@@ -195,7 +200,8 @@ export const Variants: Record<VariantName, Variant> = {
   xmoney: {
     name: "xMoney",
     variantLogo: require("@/assets/images/variants/xmoney_brand.png"),
-    defaultTheme: "dark",
+    defaultTheme: "light",
+    allowThemeToggle: true,
     colors: {
       light: {},
       dark: {},

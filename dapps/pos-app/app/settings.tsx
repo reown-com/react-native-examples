@@ -7,7 +7,7 @@ import { SettingsItem } from "@/components/settings-item";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
-import { VariantList, VariantName } from "@/constants/variants";
+import { VariantList, VariantName, Variants } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
@@ -137,7 +137,9 @@ export default function SettingsScreen() {
 
   const currentVariant = VariantList.find((v) => v.id === variant);
   const currentCurrency = getCurrency(currency);
-  const isCustomVariant = variant !== "default";
+  // Branded variants lock the theme to their default, unless they opt into manual switching.
+  const isThemeLocked =
+    variant !== "default" && !Variants[variant].allowThemeToggle;
 
   const closeSheet = () => {
     if (activeSheet === "customerApiKey") {
@@ -257,7 +259,7 @@ export default function SettingsScreen() {
           title="Theme"
           value={THEME_LABELS[themeMode]}
           onPress={() => setActiveSheet("theme")}
-          disabled={isCustomVariant}
+          disabled={isThemeLocked}
         />
 
         <SettingsItem

@@ -44,6 +44,9 @@ export default function PaymentSuccessScreen() {
   const params = useLocalSearchParams<SuccessParams>();
   const themeMode = useSettingsStore((state) => state.themeMode);
   const currencyCode = useSettingsStore((state) => state.currency);
+  const getVariantPrinterLogo = useSettingsStore(
+    (state) => state.getVariantPrinterLogo,
+  );
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const { top } = useSafeAreaInsets();
@@ -75,6 +78,7 @@ export default function PaymentSuccessScreen() {
           : undefined,
         networkName: params.chainName,
         date: params.timestamp,
+        logoBase64: getVariantPrinterLogo(),
       });
     } catch (error) {
       const errorMessage =
