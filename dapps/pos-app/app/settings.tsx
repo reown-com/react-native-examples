@@ -4,14 +4,15 @@ import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { SettingsItem } from "@/components/settings-item";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
-import { Spacing } from "@/constants/spacing";
-import { VariantList, VariantName } from "@/constants/variants";
+import { BorderRadius, Spacing } from "@/constants/spacing";
+import { VariantList, VariantName, Variants } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { ThemeMode } from "@/utils/types";
 import { getBiometricLabel } from "@/utils/biometrics";
+import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
 import {
   connectPrinter,
@@ -57,6 +58,9 @@ export default function SettingsScreen() {
   const setThemeMode = useSettingsStore((state) => state.setThemeMode);
   const variant = useSettingsStore((state) => state.variant);
   const setVariant = useSettingsStore((state) => state.setVariant);
+  const getVariantPrinterLogo = useSettingsStore(
+    (state) => state.getVariantPrinterLogo,
+  );
   const currency = useSettingsStore((state) => state.currency);
   const setCurrency = useSettingsStore((state) => state.setCurrency);
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
@@ -102,7 +106,9 @@ export default function SettingsScreen() {
 
   const currentVariant = VariantList.find((v) => v.id === variant);
   const currentCurrency = getCurrency(currency);
-  const isCustomVariant = variant !== "default";
+  // Branded variants lock the theme to their default, unless they opt into manual switching.
+  const isThemeLocked =
+    variant !== "default" && !Variants[variant].allowThemeToggle;
 
   const closeSheet = () => {
     setActiveSheet(null);
@@ -157,6 +163,10 @@ export default function SettingsScreen() {
         return;
       }
       const currencyData = getCurrency(currency);
+      // Build the header lockup for the active variant so each one can be
+      // test-printed easily; fall back to the pre-built logo on failure.
+      const logoBase64 =
+        (await buildReceiptLogo(variant)) ?? getVariantPrinterLogo();
       await printReceipt({
         txnId: "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
         amountFiat: 15,
@@ -166,6 +176,7 @@ export default function SettingsScreen() {
         tokenDecimals: 6,
         networkName: "Base",
         date: new Date().toLocaleDateString("en-GB"),
+        logoBase64,
       });
     } catch (error) {
       const errorMessage =
@@ -184,7 +195,7 @@ export default function SettingsScreen() {
           title="Theme"
           value={THEME_LABELS[themeMode]}
           onPress={() => setActiveSheet("theme")}
-          disabled={isCustomVariant}
+          disabled={isThemeLocked}
         />
 
         <SettingsItem

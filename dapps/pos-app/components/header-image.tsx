@@ -13,7 +13,7 @@ interface HeaderImageProps {
 const BASE_LOGO = require("@/assets/images/brand.png");
 const PLUS_LOGO = require("@/assets/images/plus.png");
 
-const LOGO_HEIGHT = 18;
+const LOGO_HEIGHT = 22;
 
 function getAspectRatio(source: number): number {
   const asset = Asset.fromModule(source);
