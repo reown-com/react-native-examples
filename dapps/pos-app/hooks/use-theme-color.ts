@@ -5,7 +5,13 @@ import { Appearance } from "react-native";
 
 function resolveTheme(themeMode: string): "light" | "dark" {
   if (themeMode === "system") {
-    return Appearance.getColorScheme() || "light";
+    const scheme = Appearance.getColorScheme();
+
+    if (!scheme || scheme === "unspecified") {
+      return "light";
+    }
+
+    return scheme;
   }
   return themeMode as "light" | "dark";
 }

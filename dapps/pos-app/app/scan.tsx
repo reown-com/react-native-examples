@@ -223,7 +223,13 @@ export default function ScanScreen() {
       ) : (
         <View style={styles.scanContainer}>
           <View style={[styles.header, !showNfc && styles.headerCentered]}>
-            {showNfc && <Image source={assets?.[1]} style={styles.nfcIcon} />}
+            {showNfc && (
+              <Image
+                source={assets?.[1]}
+                contentFit="contain"
+                style={[styles.nfcIcon, { tintColor: Theme["text-primary"] }]}
+              />
+            )}
             <ThemedText
               style={[
                 styles.amountValue,
@@ -355,8 +361,13 @@ const styles = StyleSheet.create({
     height: 48,
   },
   nfcIcon: {
-    width: 70,
-    height: 42,
-    marginBottom: Spacing["spacing-2"],
+    // The artwork is not centered within its bounding box (the hand holding the
+    // card sits to the right), so the unbalanced marginLeft nudges it back to
+    // optically align with the amount text below it. Intentional — do not add a
+    // matching marginRight.
+    marginLeft: Spacing["spacing-5"],
+    width: 80,
+    height: 60,
+    marginBottom: Spacing["spacing-3"],
   },
 });
