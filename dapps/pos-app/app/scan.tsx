@@ -361,6 +361,10 @@ const styles = StyleSheet.create({
     height: 48,
   },
   nfcIcon: {
+    // The artwork is not centered within its bounding box (the hand holding the
+    // card sits to the right), so the unbalanced marginLeft nudges it back to
+    // optically align with the amount text below it. Intentional — do not add a
+    // matching marginRight.
     marginLeft: Spacing["spacing-5"],
     width: 80,
     height: 60,
