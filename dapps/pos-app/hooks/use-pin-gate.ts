@@ -22,13 +22,11 @@ export function usePinGate() {
   const getLockoutRemainingSeconds = useSettingsStore(
     (state) => state.getLockoutRemainingSeconds,
   );
-  const pinFailedAttempts = useSettingsStore(
-    (state) => state.pinFailedAttempts,
-  );
 
   const [activeModal, setActiveModal] = useState<GateModal>("none");
   const [pinError, setPinError] = useState<string | null>(null);
   const onSuccessRef = useRef<(() => void | Promise<void>) | null>(null);
+  const onLockoutRef = useRef<(() => void) | null>(null);
 
   const formatLockoutMessage = useCallback(() => {
     const remaining = getLockoutRemainingSeconds();
@@ -37,13 +35,17 @@ export function usePinGate() {
     return `Too many failed attempts. Try again in ${minutes}:${seconds.toString().padStart(2, "0")}`;
   }, [getLockoutRemainingSeconds]);
 
+  // `onLockout` lets a caller react (e.g. navigate away) when the gate can't
+  // be opened — either locked out on entry, or tripped into lockout mid-verify.
   const requireAuth = useCallback(
-    (onSuccess: () => void | Promise<void>) => {
+    (onSuccess: () => void | Promise<void>, onLockout?: () => void) => {
       if (isLockedOut()) {
         showErrorToast(formatLockoutMessage());
+        onLockout?.();
         return;
       }
       onSuccessRef.current = onSuccess;
+      onLockoutRef.current = onLockout ?? null;
       setPinError(null);
       setActiveModal(isPinSet() ? "pin-verify" : "pin-setup");
     },
@@ -53,6 +55,7 @@ export function usePinGate() {
   const runSuccess = useCallback(async () => {
     const onSuccess = onSuccessRef.current;
     onSuccessRef.current = null;
+    onLockoutRef.current = null;
     setActiveModal("none");
     setPinError(null);
     if (onSuccess) {
@@ -66,22 +69,22 @@ export function usePinGate() {
       if (isValid) {
         await runSuccess();
       } else if (isLockedOut()) {
+        const onLockout = onLockoutRef.current;
+        onSuccessRef.current = null;
+        onLockoutRef.current = null;
         setActiveModal("none");
         showErrorToast(formatLockoutMessage());
+        onLockout?.();
       } else {
-        const attemptsLeft = MAX_PIN_ATTEMPTS - pinFailedAttempts;
+        // Read the post-increment count so "N attempts remaining" is accurate.
+        const attemptsLeft =
+          MAX_PIN_ATTEMPTS - useSettingsStore.getState().pinFailedAttempts;
         setPinError(
           `Incorrect PIN. ${attemptsLeft} attempt${attemptsLeft !== 1 ? "s" : ""} remaining.`,
         );
       }
     },
-    [
-      verifyPin,
-      isLockedOut,
-      formatLockoutMessage,
-      pinFailedAttempts,
-      runSuccess,
-    ],
+    [verifyPin, isLockedOut, formatLockoutMessage, runSuccess],
   );
 
   const handlePinSetupComplete = useCallback(
@@ -103,6 +106,7 @@ export function usePinGate() {
 
   const cancel = useCallback(() => {
     onSuccessRef.current = null;
+    onLockoutRef.current = null;
     setActiveModal("none");
     setPinError(null);
   }, []);

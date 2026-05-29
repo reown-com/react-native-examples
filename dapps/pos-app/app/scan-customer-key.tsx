@@ -34,9 +34,14 @@ export default function ScanCustomerKeyScreen() {
   // onBarcodeScanned fires for every frame; guard so we navigate back once.
   const hasScannedRef = useRef(false);
   const lastInvalidToastRef = useRef(0);
+  const requestedRef = useRef(false);
 
+  // Ask for camera access only when it hasn't been decided yet. Re-requesting
+  // after a denial would re-prompt (or no-op loop) on every re-render.
   useEffect(() => {
-    if (!permission?.granted) {
+    if (requestedRef.current || !permission) return;
+    if (permission.status === "undetermined") {
+      requestedRef.current = true;
       requestPermission();
     }
   }, [permission, requestPermission]);

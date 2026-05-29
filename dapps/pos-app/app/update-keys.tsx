@@ -44,21 +44,22 @@ export default function UpdateKeysScreen() {
   } = usePinGate();
   const { biometricLabel, canUseBiometric, authenticate } = useBiometricAuth();
 
-  // Require a PIN once, on entry. The form stays hidden until it's unlocked.
+  // Leave the screen (after save, on cancel, or when locked out).
+  const leaveScreen = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+    }
+  }, []);
+
+  // Require a PIN once, on entry. The form stays hidden until it's unlocked;
+  // a locked-out user is sent back rather than left on a blank screen.
   const [unlocked, setUnlocked] = useState(false);
   const startedRef = useRef(false);
   useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
-    requireAuth(() => setUnlocked(true));
-  }, [requireAuth]);
-
-  // Return to the previous screen once the keys are saved.
-  const handleSaved = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-    }
-  }, []);
+    requireAuth(() => setUnlocked(true), leaveScreen);
+  }, [requireAuth, leaveScreen]);
 
   const {
     merchantIdInput,
@@ -69,7 +70,7 @@ export default function UpdateKeysScreen() {
     handleMerchantIdInputChange,
     handleCustomerApiKeyInputChange,
     handleUpdateKeysConfirm,
-  } = useMerchantFlow(handleSaved);
+  } = useMerchantFlow(leaveScreen);
 
   // Apply the credentials handed back by the QR scanner, then clear the
   // hand-off. A setup QR carries both merchant ID and customer key.
@@ -109,8 +110,8 @@ export default function UpdateKeysScreen() {
   // Cancelling the PIN prompt leaves the screen entirely.
   const handleCancel = useCallback(() => {
     cancel();
-    router.back();
-  }, [cancel]);
+    leaveScreen();
+  }, [cancel, leaveScreen]);
 
   const handleResetToDefault = useCallback(() => {
     const defaultMerchantId = MerchantConfig.getDefaultMerchantId();

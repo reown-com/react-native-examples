@@ -4,7 +4,7 @@ import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { SettingsItem } from "@/components/settings-item";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { VariantList, VariantName, Variants } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";

@@ -10,8 +10,10 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { encodeDeviceSetupQr } from "@/utils/device-setup-qr";
 import { router } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+
+const isWeb = Platform.OS === "web";
 
 export default function ExportKeysScreen() {
   const theme = useTheme();
@@ -37,12 +39,26 @@ export default function ExportKeysScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const startedRef = useRef(false);
 
-  // Require a PIN once, before anything sensitive is read or shown.
+  const leaveScreen = useCallback(() => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/update-keys");
+    }
+  }, []);
+
+  // Export is web-only: native builds must have no path to reveal credentials.
+  // Require a PIN once, before anything sensitive is read or shown; a
+  // locked-out user is sent back rather than left on a blank screen.
   useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
-    requireAuth(() => setUnlocked(true));
-  }, [requireAuth]);
+    if (!isWeb) {
+      leaveScreen();
+      return;
+    }
+    requireAuth(() => setUnlocked(true), leaveScreen);
+  }, [requireAuth, leaveScreen]);
 
   // Read the customer key only after the user has unlocked.
   useEffect(() => {
@@ -85,16 +101,8 @@ export default function ExportKeysScreen() {
   // Cancelling the PIN prompt leaves the screen entirely.
   const handleCancel = useCallback(() => {
     cancel();
-    router.back();
-  }, [cancel]);
-
-  const goToUpdateKeys = useCallback(() => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace("/update-keys");
-    }
-  }, []);
+    leaveScreen();
+  }, [cancel, leaveScreen]);
 
   return (
     <View style={styles.container}>
@@ -114,7 +122,7 @@ export default function ExportKeysScreen() {
                 Set a merchant ID and customer API key first.
               </ThemedText>
               <Button
-                onPress={goToUpdateKeys}
+                onPress={leaveScreen}
                 style={[
                   styles.cta,
                   { backgroundColor: theme["bg-accent-primary"] },
