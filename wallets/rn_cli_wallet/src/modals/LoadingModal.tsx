@@ -16,10 +16,10 @@ export function LoadingModal() {
   const { data } = useSnapshot(ModalStore.state);
 
   useEffect(() => {
-    if (data?.errorMessage) {
+    if (data?.errorMessage || data?.errorTitle) {
       haptics.error();
     }
-  }, [data?.errorMessage]);
+  }, [data?.errorMessage, data?.errorTitle]);
 
   const onClose = () => {
     ModalStore.close();
@@ -37,7 +37,7 @@ export function LoadingModal() {
   return (
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       <ModalCloseButton onPress={onClose} style={styles.closeButton} />
-      {data?.errorMessage ? (
+      {data?.errorMessage || data?.errorTitle ? (
         <Icon name="warningCircle" color="text-error" width={48} height={48} />
       ) : (
         <WalletConnectLoading size={120} />
