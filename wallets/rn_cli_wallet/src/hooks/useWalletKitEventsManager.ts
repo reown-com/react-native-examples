@@ -41,7 +41,11 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       );
 
       if (chains.length === 0) {
-        ModalStore.open('LoadingModal', { errorMessage: 'Unsupported chains' });
+        ModalStore.open('LoadingModal', {
+          errorTitle: "These networks aren’t supported",
+          errorMessage:
+            'This wallet doesn’t support any of the networks this app requested. Try connecting to a different app.',
+        });
       } else {
         ModalStore.open('SessionProposalModal', { proposal });
       }
@@ -201,11 +205,15 @@ export default function useWalletKitEventsManager(initialized: boolean) {
         },
       );
       const chains = authRequest.params.authPayload.chains.filter(
-        chain => !!EIP155_CHAINS[chain.split(':')[1]],
+        chain => !!EIP155_CHAINS[chain],
       );
 
       if (chains.length === 0) {
-        ModalStore.open('LoadingModal', { errorMessage: 'Unsupported chains' });
+        ModalStore.open('LoadingModal', {
+          errorTitle: "These networks aren’t supported",
+          errorMessage:
+            'This wallet doesn’t support any of the networks this app requested. Try connecting to a different app.',
+        });
       } else {
         ModalStore.open('SessionAuthenticateModal', { authRequest });
       }
