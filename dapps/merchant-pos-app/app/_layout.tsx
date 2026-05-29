@@ -1,11 +1,11 @@
 import "@/utils/polyfills";
 
-import { AppKit, AppKitProvider } from "@reown/appkit-react-native";
+import { AppKit, AppKitProvider, useAccount } from "@reown/appkit-react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
@@ -24,6 +24,27 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { getInstallId } from "@/utils/install-id";
 
 const queryClient = new QueryClient();
+
+/**
+ * Clears session verification + the active merchant when the wallet
+ * disconnects. A `connected → disconnected` transition (tracked via a ref so
+ * cold-start session restore, which goes `false → true`, never triggers it)
+ * means a real disconnect, so the next reconnect must sign again.
+ */
+function SessionWatcher() {
+  const { isConnected } = useAccount();
+  const wasConnected = useRef(false);
+
+  useEffect(() => {
+    if (wasConnected.current && !isConnected) {
+      useMerchantStore.getState().clearVerified();
+      useMerchantStore.getState().clearActive();
+    }
+    wasConnected.current = isConnected;
+  }, [isConnected]);
+
+  return null;
+}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -56,6 +77,7 @@ export default function RootLayout() {
         <WagmiProvider config={wagmiAdapter.wagmiConfig}>
           <QueryClientProvider client={queryClient}>
             <AppKitProvider instance={appkit}>
+              <SessionWatcher />
               <Stack
                 screenOptions={{
                   headerShown: false,

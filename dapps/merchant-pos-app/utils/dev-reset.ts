@@ -11,7 +11,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
  */
 export async function nukeAllStorage() {
   // Reset in-memory state immediately.
-  useMerchantStore.setState({ merchants: {}, activeAddress: null });
+  useMerchantStore.setState({
+    merchants: {},
+    activeAddress: null,
+    verifiedAddresses: [],
+  });
   usePaymentsStore.setState({ payments: [] });
   usePaymentLinksStore.setState({ links: [] });
   useOnboardingStore.getState().reset();

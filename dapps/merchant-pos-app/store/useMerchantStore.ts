@@ -13,6 +13,12 @@ interface MerchantStore {
   merchants: Record<string, MerchantConfig>;
   /** Address of the merchant in the current session, or null when logged out. */
   activeAddress: string | null;
+  /**
+   * Addresses that have proved ownership (signed) for the *current* wallet
+   * connection. Persisted so an app restart with the same live session doesn't
+   * re-prompt, but cleared on disconnect so a reconnect signs again.
+   */
+  verifiedAddresses: string[];
   _hasHydrated: boolean;
 
   isRegistered: (address: string) => boolean;
@@ -24,6 +30,12 @@ interface MerchantStore {
   /** End the session (disconnect). Registry is kept so the merchant can log back in. */
   clearActive: () => void;
   getActiveMerchant: () => MerchantConfig | undefined;
+  /** Whether `address` has signed for the current connection session. */
+  isVerified: (address: string) => boolean;
+  /** Record that `address` signed in this session. */
+  markVerified: (address: string) => void;
+  /** Forget all session verifications (called on disconnect). */
+  clearVerified: () => void;
   setHasHydrated: (state: boolean) => void;
 }
 
@@ -32,6 +44,7 @@ export const useMerchantStore = create<MerchantStore>()(
     (set, get) => ({
       merchants: {},
       activeAddress: null,
+      verifiedAddresses: [],
       _hasHydrated: false,
 
       isRegistered: (address) => Boolean(get().merchants[keyFor(address)]),
@@ -49,6 +62,20 @@ export const useMerchantStore = create<MerchantStore>()(
         if (!activeAddress) return undefined;
         return merchants[keyFor(activeAddress)];
       },
+      isVerified: (address) =>
+        get().verifiedAddresses.includes(keyFor(address)),
+      markVerified: (address) =>
+        set((state) =>
+          state.verifiedAddresses.includes(keyFor(address))
+            ? state
+            : {
+                verifiedAddresses: [
+                  ...state.verifiedAddresses,
+                  keyFor(address),
+                ],
+              },
+        ),
+      clearVerified: () => set({ verifiedAddresses: [] }),
       setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {

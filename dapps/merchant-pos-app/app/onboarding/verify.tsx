@@ -91,9 +91,10 @@ export default function VerifyScreen() {
       const stillRemaining = accounts.some((a) => !signedSet.has(a.namespace));
       if (stillRemaining) return; // user clicks again for the next message
 
-      // Verified locally — flip the flag so Welcome's cascade knows we've signed
-      // even if the wallet's return deep link bounces us through Welcome.
+      // Mark this address verified for the session. Persisted so an app
+      // restart with the same connection won't re-prompt; cleared on disconnect.
       useOnboardingStore.getState().setVerified(true);
+      if (address) useMerchantStore.getState().markVerified(address);
 
       // Routing after sign: if the install already has a merchant, this is a
       // "log in / switch wallet" — upsert with the new wallet's addresses and

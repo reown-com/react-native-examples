@@ -6,6 +6,7 @@ import { persist } from "zustand/middleware";
 interface PaymentLinksStore {
   links: PaymentLink[];
   addLink: (link: PaymentLink) => void;
+  updateLink: (id: string, patch: Partial<PaymentLink>) => void;
   removeLink: (id: string) => void;
   clear: () => void;
 }
@@ -15,6 +16,10 @@ export const usePaymentLinksStore = create<PaymentLinksStore>()(
     (set) => ({
       links: [],
       addLink: (link) => set((state) => ({ links: [link, ...state.links] })),
+      updateLink: (id, patch) =>
+        set((state) => ({
+          links: state.links.map((l) => (l.id === id ? { ...l, ...patch } : l)),
+        })),
       removeLink: (id) =>
         set((state) => ({ links: state.links.filter((l) => l.id !== id) })),
       clear: () => set({ links: [] }),

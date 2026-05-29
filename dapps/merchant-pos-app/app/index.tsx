@@ -23,14 +23,17 @@ export default function WelcomeScreen() {
   const { address, isConnected } = useAccount();
   const findByMerchantId = useMerchantStore((s) => s.findByMerchantId);
   const setActive = useMerchantStore((s) => s.setActive);
+  const isVerified = useMerchantStore((s) => s.isVerified);
   const resetOnboarding = useOnboardingStore((s) => s.reset);
-  const onboardingVerified = useOnboardingStore((s) => s.verified);
   const pathname = usePathname();
 
   // Simple routing cascade when Welcome is shown with a connected wallet:
   //   !signed   → verify
   //   signed & !merchant → tokens
   //   signed &  merchant → home
+  // `isVerified` is persisted per address for the live connection session, so
+  // an app restart with the same session skips verify; a disconnect clears it
+  // (see SessionWatcher in _layout) so a reconnect signs again.
   // dismissTo pops down to an existing instance (no remount/flash) and only
   // falls back to a replace when the target isn't in the stack. The
   // current-path guard skips no-op self-navigations.
@@ -39,7 +42,7 @@ export default function WelcomeScreen() {
       if (!isConnected || !address) return;
 
       let target: "/onboarding/verify" | "/onboarding/tokens" | "/home";
-      if (!onboardingVerified) {
+      if (!isVerified(address)) {
         target = "/onboarding/verify";
       } else if (!findByMerchantId(getInstallId())) {
         target = "/onboarding/tokens";
@@ -54,7 +57,7 @@ export default function WelcomeScreen() {
       isConnected,
       address,
       pathname,
-      onboardingVerified,
+      isVerified,
       findByMerchantId,
       setActive,
     ]),

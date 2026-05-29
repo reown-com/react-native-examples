@@ -5,6 +5,7 @@ import { Screen } from "@/components/screen";
 import { ScreenHeader } from "@/components/screen-header";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { useReconcilePaymentLinks } from "@/hooks/use-reconcile-payment-links";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useStartPayment } from "@/services/hooks";
 import { useMerchantStore } from "@/store/useMerchantStore";
@@ -30,6 +31,8 @@ import { v4 as uuidv4 } from "uuid";
 
 export default function LinksScreen() {
   const Theme = useTheme();
+  // Detect link payments so rows flip to "Paid" and the payment lands in stats.
+  useReconcilePaymentLinks();
   const activeAddress = useMerchantStore((s) => s.activeAddress);
   const allLinks = usePaymentLinksStore((s) => s.links);
   const links = useMemo(
@@ -64,6 +67,7 @@ export default function LinksScreen() {
       addLink({
         id: uuidv4(),
         merchantAddress: activeAddress ?? "",
+        paymentId: res.paymentId,
         label: input.label,
         amountCents: input.amountCents,
         currency: input.currency,
@@ -136,7 +140,9 @@ export default function LinksScreen() {
 
 function LinkRow({ link }: { link: PaymentLink }) {
   const Theme = useTheme();
-  const active = isLinkActive(link);
+  const paid = link.status === "succeeded";
+  const active = !paid && isLinkActive(link);
+  const pillLabel = paid ? "Paid" : active ? "Active" : "Expired";
 
   return (
     <View style={[styles.row, { borderBottomColor: Theme["border-primary"] }]}>
@@ -158,9 +164,10 @@ function LinkRow({ link }: { link: PaymentLink }) {
           style={[
             styles.pill,
             {
-              backgroundColor: active
-                ? Theme["surface-success"]
-                : Theme["foreground-tertiary"],
+              backgroundColor:
+                paid || active
+                  ? Theme["surface-success"]
+                  : Theme["foreground-tertiary"],
             },
           ]}
         >
@@ -169,11 +176,14 @@ function LinkRow({ link }: { link: PaymentLink }) {
             style={[
               styles.pillText,
               {
-                color: active ? Theme["text-success"] : Theme["text-secondary"],
+                color:
+                  paid || active
+                    ? Theme["text-success"]
+                    : Theme["text-secondary"],
               },
             ]}
           >
-            {active ? "Active" : "Expired"}
+            {pillLabel}
           </ThemedText>
         </View>
         {active ? (

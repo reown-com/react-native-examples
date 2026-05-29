@@ -86,6 +86,8 @@ export interface PaymentLink {
   id: string;
   /** Active merchant (wallet) this link belongs to — scopes links per merchant. */
   merchantAddress: string;
+  /** WCPay payment id backing this link — polled to detect payment. */
+  paymentId?: string;
   label?: string;
   amountCents: number;
   currency: string;
@@ -93,4 +95,11 @@ export interface PaymentLink {
   createdAt: number;
   /** Epoch ms; links display a 10-day validity window. */
   expiresAt: number;
+  /** Last polled payment status (undefined until first reconcile). */
+  status?: PaymentStatus;
+  /**
+   * True once this link's payment has reached a final state and been folded
+   * into the payments store — stops further polling and double-counting.
+   */
+  recorded?: boolean;
 }

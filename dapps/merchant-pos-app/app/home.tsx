@@ -14,6 +14,7 @@ import { StatBox } from "@/components/stat-box";
 import { ThemedText } from "@/components/themed-text";
 import { Brand } from "@/constants/theme";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { useReconcilePaymentLinks } from "@/hooks/use-reconcile-payment-links";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -35,6 +36,9 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 export default function HomeScreen() {
   const Theme = useTheme();
   const { disconnect } = useAppKit();
+  // Fold any newly-paid payment links into the payments store so they show up
+  // in the stats + recent activity below.
+  useReconcilePaymentLinks();
   const merchant = useMerchantStore((s) => s.getActiveMerchant());
   const activeAddress = useMerchantStore((s) => s.activeAddress);
   const clearActive = useMerchantStore((s) => s.clearActive);
