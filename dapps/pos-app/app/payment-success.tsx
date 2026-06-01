@@ -17,6 +17,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { formatAmountWithSymbol, getCurrency } from "@/utils/currency";
+import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
 import { Image } from "expo-image";
@@ -44,6 +45,10 @@ export default function PaymentSuccessScreen() {
   const params = useLocalSearchParams<SuccessParams>();
   const themeMode = useSettingsStore((state) => state.themeMode);
   const currencyCode = useSettingsStore((state) => state.currency);
+  const variant = useSettingsStore((state) => state.variant);
+  const getVariantPrinterLogo = useSettingsStore(
+    (state) => state.getVariantPrinterLogo,
+  );
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const { top } = useSafeAreaInsets();
@@ -64,6 +69,10 @@ export default function PaymentSuccessScreen() {
     isPrintingRef.current = true;
     setIsPrinting(true);
     try {
+      // Build the header lockup (wpay + "+" + partner logo) from the live
+      // assets; fall back to the pre-built logo if Skia rendering fails.
+      const logoBase64 =
+        (await buildReceiptLogo(variant)) ?? getVariantPrinterLogo();
       await printReceipt({
         txnId: params.paymentId,
         amountFiat: Number(amount),
@@ -75,6 +84,7 @@ export default function PaymentSuccessScreen() {
           : undefined,
         networkName: params.chainName,
         date: params.timestamp,
+        logoBase64,
       });
     } catch (error) {
       const errorMessage =
