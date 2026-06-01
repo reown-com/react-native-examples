@@ -1,0 +1,95 @@
+name: Create iOS App
+run-name: "Create iOS App - ${{ inputs.bundle-id }}"
+
+# Registers a new app in App Store Connect and creates its signing certificates
+# entirely on CI, so developers don't need Ruby / fastlane / CocoaPods locally.
+# Auth uses the App Store Connect API key (no Apple ID / 2FA).
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      bundle-id:
+        description: "App bundle identifier (e.g. com.reown.merchantpos)"
+        required: true
+        type: string
+      app-name:
+        description: "App name in App Store Connect (e.g. Merchant POS)"
+        required: true
+        type: string
+      certs-repo:
+        description: "Match certificates repo (owner/repo)"
+        required: true
+        default: 'reown-com/mobile-match'
+        type: string
+      match-types:
+        description: "Comma-separated match types to create"
+        required: true
+        default: 'appstore,development'
+        type: string
+      create-app:
+        description: "Register the app in App Store Connect (fastlane produce). Uncheck to only (re)create certificates for an app that already exists."
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  create-app:
+    runs-on: macos-latest-xlarge
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: webfactory/ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_SSH_KEY }}
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.0
+          bundler-cache: true
+
+      - name: Register app in App Store Connect
+        if: ${{ inputs.create-app == true }}
+        env:
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+          BUNDLE_ID: ${{ inputs.bundle-id }}
+          APP_NAME: ${{ inputs.app-name }}
+        run: |
+          bundle exec fastlane ios create_app
+          echo "### App registered" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`${{ inputs.app-name }}\` (\`${{ inputs.bundle-id }}\`) is now in App Store Connect." >> "$GITHUB_STEP_SUMMARY"
+          echo "Open App Store Connect to read its numeric **Apple App ID** (the \`apple-id\` input for the release workflow)." >> "$GITHUB_STEP_SUMMARY"
+
+      # Certs are pushed to a branch over SSH (MATCH_SSH_KEY); no GitHub token is used.
+      # A teammate opens & merges the PR in the certs repo (see job summary).
+      - name: Create certificates
+        env:
+          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+          APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+        run: |
+          chmod +x scripts/create-certificates.sh
+          IFS=',' read -ra TYPES <<< "${{ inputs.match-types }}"
+          {
+            echo "### ⚠️ Action required: merge the certificates PR(s)"
+            echo "Certs were pushed to branch(es) in \`${{ inputs.certs-repo }}\`. The release"
+            echo "workflow will fail until they are merged into \`master\`:"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+          for type in "${TYPES[@]}"; do
+            type="$(echo "$type" | xargs)" # trim whitespace
+            echo "::group::Creating ${type} certificates"
+            ./scripts/create-certificates.sh "${{ inputs.certs-repo }}" "${{ inputs.bundle-id }}" "" "$type" --no-pr
+            echo "::endgroup::"
+            branch="certs/add-${{ inputs.bundle-id }}-${type}"
+            compare="https://github.com/${{ inputs.certs-repo }}/compare/master...${branch}?expand=1"
+            echo "- **${type}**: [open PR for \`${branch}\`](${compare})" >> "$GITHUB_STEP_SUMMARY"
+          done
