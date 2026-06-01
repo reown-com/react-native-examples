@@ -176,38 +176,11 @@ platform :ios do
     UI.success("✅ Simulator .app: #{app_path}")
   end
 
-  # Register a new app in App Store Connect / the Developer Portal.
-  # Uses the App Store Connect API key (no Apple ID / 2FA) so it can run on CI.
-  # Idempotent: produce no-ops if the app already exists.
-  lane :create_app do
-    # Sets Spaceship::ConnectAPI token globally (set_spaceship_token defaults to true),
-    # which produce picks up implicitly — produce has no api_key parameter of its own.
-    app_store_connect_api_key(
-      key_id: ENV["APPLE_KEY_ID"],
-      issuer_id: ENV["APPLE_ISSUER_ID"],
-      key_content: ENV["APPLE_KEY_CONTENT"],
-      duration: 1200,
-      in_house: false,
-    )
-
-    bundle_id = ENV["BUNDLE_ID"]
-    app_name = ENV["APP_NAME"]
-
-    UI.user_error!("BUNDLE_ID is required") if bundle_id.to_s.empty?
-    UI.user_error!("APP_NAME is required") if app_name.to_s.empty?
-
-    produce(
-      # produce requires a username config value, but auth still goes through the
-      # Spaceship token set above — this does NOT trigger a password / 2FA prompt.
-      username: ENV["APPLE_USERNAME"],
-      app_identifier: bundle_id,
-      app_name: app_name,
-      sku: bundle_id,
-      language: ENV["APP_LANGUAGE"] || "en-US",
-    )
-
-    UI.success("✅ App registered in App Store Connect: #{app_name} (#{bundle_id})")
-  end
+  # NOTE: There is intentionally no `create_app` lane. fastlane `produce` only supports
+  # Apple ID + password (web session / 2FA) auth — it ignores the App Store Connect API
+  # key — so it can't run unattended on CI. Create the App Store Connect app record
+  # manually (App Store Connect → Apps → +), then use create_certs below for signing.
+  # See docs/releasing-a-new-app.md.
 
   # Create / sync certificates and provisioning profiles for an app, pushing them
   # to a branch in the match git repo. Uses the App Store Connect API key (no 2FA)
