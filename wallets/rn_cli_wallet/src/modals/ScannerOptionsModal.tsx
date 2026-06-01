@@ -47,7 +47,8 @@ export default function ScannerOptionsModal() {
         if (!url.trim()) {
           Toast.show({
             type: 'info',
-            text1: 'No URL found in clipboard',
+            text1: 'No URL in your clipboard',
+            text2: 'Copy a payment URL, then try again.',
           });
           return;
         }
@@ -61,7 +62,8 @@ export default function ScannerOptionsModal() {
         ModalStore.close();
         Toast.show({
           type: 'error',
-          text1: 'Failed to read clipboard',
+          text1: 'Couldn’t read your clipboard',
+          text2: 'Check app permissions, then try again.',
         });
       });
   };
@@ -112,7 +114,7 @@ export default function ScannerOptionsModal() {
                   color: Theme['text-primary'],
                 },
               ]}
-              placeholder="Paste payment URL here"
+              placeholder="Paste payment URL"
               placeholderTextColor={Theme['text-tertiary']}
               value={urlInput}
               onChangeText={setUrlInput}

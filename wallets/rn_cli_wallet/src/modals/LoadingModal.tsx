@@ -31,7 +31,7 @@ export function LoadingModal() {
     data?.errorTitle ||
     data?.loadingMessage ||
     data?.errorMessage ||
-    'Loading...';
+    'Loading…';
   const body = data?.errorTitle ? data?.errorMessage : undefined;
 
   return (

@@ -78,7 +78,7 @@ export default function SessionSuiSignAndExecuteTransactionModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Transaction failed',
+          text1: 'Couldn’t execute transaction',
           text2: (e as Error).message,
         });
       } finally {
@@ -112,7 +112,7 @@ export default function SessionSuiSignAndExecuteTransactionModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {

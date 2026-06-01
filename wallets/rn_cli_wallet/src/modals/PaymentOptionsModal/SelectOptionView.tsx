@@ -56,7 +56,7 @@ export function SelectOptionView({
       <View style={styles.header} testID="pay-select-option-header">
         <SvgSelectToken height={58} width={58} />
         <Text variant="h6-400" color="text-primary">
-          Select a token to pay with
+          Choose the asset you want to pay with
         </Text>
       </View>
 

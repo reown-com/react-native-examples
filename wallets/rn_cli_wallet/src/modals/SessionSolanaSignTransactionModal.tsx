@@ -71,7 +71,7 @@ export default function SessionSolanaSignTransactionModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Transaction failed',
+          text1: 'Couldn’t sign transaction',
           text2: (e as Error).message,
         });
       } finally {
@@ -101,7 +101,7 @@ export default function SessionSolanaSignTransactionModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {

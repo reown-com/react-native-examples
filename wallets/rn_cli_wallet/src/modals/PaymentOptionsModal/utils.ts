@@ -171,15 +171,15 @@ export function detectErrorType(message: string): ErrorType {
 export function getErrorTitle(errorType: ErrorType): string {
   switch (errorType) {
     case 'insufficient_funds':
-      return 'Not enough funds';
+      return 'Not enough funds in your wallet';
     case 'expired':
-      return 'Your payment has expired';
+      return 'Payment expired';
     case 'cancelled':
-      return 'This payment was cancelled';
+      return 'Payment cancelled';
     case 'not_found':
       return 'Payment not found';
     case 'generic':
-      return 'Transaction failed';
+      return 'Payment didn’t go through';
   }
 }
 
@@ -189,16 +189,17 @@ export function getErrorMessage(
 ): string {
   switch (errorType) {
     case 'insufficient_funds':
-      return "This wallet doesn't have enough funds on the supported networks to complete the payment.";
+      return 'This wallet doesn’t have enough funds on the supported networks. Add funds, or pay with a different asset.';
     case 'expired':
-      return 'Please ask the merchant to generate a new payment and try again.';
+      return 'Ask the merchant to create a new payment, then try again.';
     case 'cancelled':
-      return 'Please ask the merchant to generate a new payment and try again.';
+      return 'Ask the merchant to create a new payment, then try again.';
     case 'not_found':
-      return 'This payment link is not valid or has already been completed.';
+      return 'This payment link isn’t valid, or it’s already been completed.';
     case 'generic':
       return (
-        originalMessage || "The network couldn't complete this transaction."
+        originalMessage ||
+        'The network couldn’t complete this payment. No funds were moved. Try again, or pay with a different asset.'
       );
   }
 }

@@ -91,7 +91,7 @@ export default function Scan({ navigation }: Props) {
       ) : (
         <View style={styles.errorContainer}>
           <Text variant="lg-400" color="text-invert">
-            Camera not available
+            Camera unavailable. Enable camera access in Settings.
           </Text>
         </View>
       )}
@@ -160,7 +160,7 @@ export default function Scan({ navigation }: Props) {
         ]}
       >
         <Text variant="lg-400" style={styles.instructionText}>
-          Find a WalletConnect QR Code to scan
+          Scan a WalletConnect QR code
         </Text>
       </View>
     </View>

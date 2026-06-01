@@ -289,7 +289,7 @@ export default function SessionProposalModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {

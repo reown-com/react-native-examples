@@ -262,7 +262,7 @@ export default function PaymentOptionsModal() {
         return (
           <LoadingView
             variant="spinner"
-            message={snap.loadingMessage || 'Preparing your payment...'}
+            message={snap.loadingMessage || 'Preparing your payment…'}
           />
         );
 
@@ -343,7 +343,7 @@ export default function PaymentOptionsModal() {
       case 'confirming':
         return (
           <LoadingView
-            message={snap.loadingMessage || 'Processing your payment...'}
+            message={snap.loadingMessage || 'Confirming your payment…'}
             note={snap.loadingNote || undefined}
           />
         );

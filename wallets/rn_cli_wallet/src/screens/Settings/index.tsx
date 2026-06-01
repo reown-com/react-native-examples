@@ -34,11 +34,11 @@ export default function Settings() {
     getAsyncData();
   }, []);
 
-  const copyToClipboard = (value: string) => {
+  const copyToClipboard = (value: string, label: string = 'Value') => {
     Clipboard.setString(value);
     Toast.show({
       type: 'info',
-      text1: 'Value copied to clipboard',
+      text1: `${label} copied`,
     });
   };
 
@@ -83,11 +83,11 @@ export default function Settings() {
           </View>
         </Button>
         <Card
-          title="Secret Keys & Phrases"
+          title="Secret keys & phrases"
           onPress={() => navigation.navigate('SecretPhrase')}
         />
         <Card
-          title="Import Wallet"
+          title="Import wallet"
           onPress={() => ModalStore.open('ImportWalletModal', {})}
         />
       </View>
@@ -100,7 +100,7 @@ export default function Settings() {
           value={
             clientId ? `${clientId.slice(0, 8)}..${clientId.slice(-8)}` : ''
           }
-          onPress={() => copyToClipboard(clientId)}
+          onPress={() => copyToClipboard(clientId, 'Client ID')}
         />
         <Card
           title="App version"
