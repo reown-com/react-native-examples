@@ -208,7 +208,11 @@ const styles = StyleSheet.create({
   iconAreaCompact: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: Spacing[4],
+    // Static-icon results (errors) keep only top padding so the icon sits
+    // 16px above the text — matching the Figma "Visual Asset + text" group
+    // (gap-4). The textArea's own top padding supplies that 16px gap; a
+    // bottom padding here would double it to 32px.
+    paddingTop: Spacing[4],
   },
   successAnimation: {
     width: LOTTIE_ICON_SIZE,
@@ -221,7 +225,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   message: {
-    marginTop: Spacing[1],
+    // Title → body gap of 8px to match the Figma text group (gap-2).
+    marginTop: Spacing[2],
   },
   footerContainer: {
     paddingTop: Spacing[2],
