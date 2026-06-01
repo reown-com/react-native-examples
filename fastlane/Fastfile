@@ -197,6 +197,9 @@ platform :ios do
     UI.user_error!("APP_NAME is required") if app_name.to_s.empty?
 
     produce(
+      # produce requires a username config value, but auth still goes through the
+      # Spaceship token set above — this does NOT trigger a password / 2FA prompt.
+      username: ENV["APPLE_USERNAME"],
       app_identifier: bundle_id,
       app_name: app_name,
       sku: bundle_id,

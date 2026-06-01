@@ -59,6 +59,7 @@ jobs:
           APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
           APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+          APPLE_USERNAME: ${{ secrets.APPLE_USERNAME }}
           BUNDLE_ID: ${{ inputs.bundle-id }}
           APP_NAME: ${{ inputs.app-name }}
         run: |
