@@ -4,6 +4,7 @@ import { TokenBalance } from '@/utils/BalanceTypes';
 import { fetchBalancesForChains } from '@/services/BalanceService';
 import { fetchERC20Balances } from '@/services/ERC20BalanceService';
 import { EIP155_CHAINS } from '@/constants/Eip155';
+import { isSpamToken } from '@/utils/SpamFilter';
 import { SOLANA_MAINNET_CAIP2 } from '@/constants/Solana';
 import LogStore, { serializeError } from '@/store/LogStore';
 
@@ -92,6 +93,8 @@ function processBalances(
 
   // Filter: keep tokens with value > 0, mainnet native tokens, or tokens with a non-zero quantity (on-chain ERC-20s without USD price)
   const filtered = apiBalances.filter(b => {
+    // Drop spam/airdrop token contracts (native rows have no address)
+    if (b.address && isSpamToken(b.symbol)) return false;
     if (b.value > 0) return true;
     if (mainnetChainIds.includes(b.chainId) && !b.address) return true;
     if (parseFloat(b.quantity.numeric) > 0) return true;
