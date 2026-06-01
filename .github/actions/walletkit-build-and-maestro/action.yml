@@ -261,17 +261,18 @@ runs:
         PB=/usr/libexec/PlistBuddy
         ENT="$WALLET_ROOT/ios/RNWeb3Wallet/RNWeb3Wallet.entitlements"
         KEY=":com.apple.developer.associated-domains"
-        count=$("$PB" -c "Print $KEY" "$ENT" | grep -c 'applinks:')
-        echo "Patching $count associated-domain entries in $ENT"
+        # Walk the array by index until PlistBuddy reports the entry is missing —
+        # avoids pre-counting (which can hard-fail under pipefail) and stays correct
+        # regardless of array order or non-applinks entries (webcredentials:, etc.).
         i=0
-        while [ "$i" -lt "$count" ]; do
-          val=$("$PB" -c "Print $KEY:$i" "$ENT")
+        while val=$("$PB" -c "Print $KEY:$i" "$ENT" 2>/dev/null); do
           case "$val" in
-            *'?mode=developer') ;;
-            *) "$PB" -c "Set $KEY:$i ${val}?mode=developer" "$ENT" ;;
+            applinks:*'?mode=developer') ;;
+            applinks:*) "$PB" -c "Set $KEY:$i ${val}?mode=developer" "$ENT" ;;
           esac
           i=$((i + 1))
         done
+        echo "Patched applinks entries in $ENT:"
         "$PB" -c "Print $KEY" "$ENT"
 
     - name: Build for Simulator
@@ -330,7 +331,7 @@ runs:
           xcrun simctl spawn "$DEVICE_ID" swcutil dl -d "$domain" || true
         done
         sleep 3
-        xcrun simctl spawn "$DEVICE_ID" swcutil show 2>/dev/null | grep -i walletconnect || true
+        xcrun simctl spawn "$DEVICE_ID" swcutil show 2>/dev/null | grep -iE 'walletconnect|reown' || true
 
     # --- Android leg ---
     - name: Install Java 17
