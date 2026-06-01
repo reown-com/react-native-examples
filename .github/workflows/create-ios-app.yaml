@@ -4,12 +4,13 @@ run-name: "Create iOS App (certs) - ${{ inputs.bundle-id }}"
 
 # Creates the signing certificates / provisioning profiles for an iOS app on CI, so
 # developers don't need Ruby / fastlane / CocoaPods locally. Auth uses the App Store
-# Connect API key (no Apple ID / 2FA). This also registers the bundle id / App ID in the
-# Apple Developer Portal as a side effect of running match.
+# Connect API key (no Apple ID / 2FA).
 #
-# NOTE: This does NOT create the App Store Connect app record — fastlane `produce` only
-# supports Apple ID + 2FA auth, so the app record must be created manually first
-# (App Store Connect → Apps → +). See docs/releasing-a-new-app.md.
+# PREREQUISITE: the app's bundle id / App ID must already be registered in the Apple
+# Developer Portal, and the App Store Connect app record must already exist. `match` does
+# NOT create the identifier — it fails with "Couldn't find bundle identifier" otherwise.
+# Both are created manually (App Store Connect → Apps → +) because fastlane `produce` only
+# supports Apple ID + 2FA auth. See docs/releasing-a-new-app.md.
 
 permissions:
   contents: read
