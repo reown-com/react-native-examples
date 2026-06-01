@@ -61,7 +61,6 @@ export function LoadingView({
             source={require('@/assets/lottie/Loading.json')}
             autoPlay
             loop
-            // colorFilters={lottieColorFilters}
             style={{ width: lottieSize, height: lottieSize }}
             testID="pay-loading-lottie"
           />
