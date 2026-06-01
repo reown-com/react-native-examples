@@ -23,13 +23,22 @@ export function WalletConnectLoading({ size = 120 }: { size?: number }) {
 
   const clock = useClock();
 
-  const frame = useDerivedValue(() => {
-    const fps = animation.fps();
-    const totalFrames = animation.duration() * fps;
-    return ((clock.value / 1000) * fps) % totalFrames;
-  });
+  // Read the (constant) frame rate / length on the JS thread so the worklet
+  // below only does arithmetic — no per-frame JSI calls into the Skottie
+  // object. Safe defaults keep the worklet valid if the animation failed to
+  // load (Skia.Skottie.Make can return null).
+  const fps = animation?.fps() ?? 60;
+  const totalFrames = (animation?.duration() ?? 1) * fps;
+
+  const frame = useDerivedValue(
+    () => ((clock.value / 1000) * fps) % totalFrames,
+  );
 
   const scale = size / SOURCE_SIZE;
+
+  if (!animation) {
+    return null;
+  }
 
   return (
     <Canvas style={{ width: size, height: size }}>
