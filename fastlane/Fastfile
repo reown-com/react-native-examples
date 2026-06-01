@@ -180,7 +180,9 @@ platform :ios do
   # Uses the App Store Connect API key (no Apple ID / 2FA) so it can run on CI.
   # Idempotent: produce no-ops if the app already exists.
   lane :create_app do
-    api_key = app_store_connect_api_key(
+    # Sets Spaceship::ConnectAPI token globally (set_spaceship_token defaults to true),
+    # which produce picks up implicitly — produce has no api_key parameter of its own.
+    app_store_connect_api_key(
       key_id: ENV["APPLE_KEY_ID"],
       issuer_id: ENV["APPLE_ISSUER_ID"],
       key_content: ENV["APPLE_KEY_CONTENT"],
@@ -199,7 +201,6 @@ platform :ios do
       app_name: app_name,
       sku: bundle_id,
       language: ENV["APP_LANGUAGE"] || "en-US",
-      api_key: api_key,
     )
 
     UI.success("✅ App registered in App Store Connect: #{app_name} (#{bundle_id})")
