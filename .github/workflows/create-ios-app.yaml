@@ -1,0 +1,15 @@
+name: Create iOS App
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    name: Placeholder Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Do nothing
+        run: echo "Placeholder to enable manual dispatch from feature branches. The real workflow lives on the feature branch — run it via 'Use workflow from'."
