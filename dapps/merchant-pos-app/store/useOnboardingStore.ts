@@ -2,8 +2,11 @@ import { DEFAULT_TOKEN_IDS, NetworkId } from "@/constants/networks";
 import { create } from "zustand";
 
 /**
- * Transient onboarding draft (in-memory). Populated across screens S2–S6, then
- * committed to useMerchantStore on "Finish setup". Reset on finish or restart.
+ * Transient onboarding state (in-memory): the draft collected across screens
+ * S2–S6 (committed to useMerchantStore on "Finish setup") plus the verify
+ * screen's per-namespace signing progress. The persisted "has this address
+ * verified this session" truth lives in useMerchantStore.verifiedAddresses —
+ * not here.
  */
 interface OnboardingStore {
   email: string;
@@ -11,11 +14,7 @@ interface OnboardingStore {
   logoUri?: string;
   networks: NetworkId[];
   tokens: string[];
-  /** True once onboarding has begun (used to resume the flow). */
-  started: boolean;
-  /** True once ownership has been verified by signing (next step is tokens). */
-  verified: boolean;
-  /** Namespaces that have already produced a valid signature in this onboarding. */
+  /** Namespaces that have produced a valid signature in the current verify attempt. */
   signedNamespaces: NetworkId[];
 
   setBusinessDetails: (details: {
@@ -27,8 +26,9 @@ interface OnboardingStore {
   toggleNetwork: (network: NetworkId) => void;
   setTokens: (tokens: string[]) => void;
   toggleToken: (tokenId: string) => void;
-  setVerified: (verified: boolean) => void;
   markSigned: (namespace: NetworkId) => void;
+  /** Reset just the signing progress (on disconnect) — keeps the draft. */
+  resetVerification: () => void;
   reset: () => void;
 }
 
@@ -38,15 +38,13 @@ const initialState = {
   logoUri: undefined as string | undefined,
   networks: ["eip155", "solana"] as NetworkId[],
   tokens: DEFAULT_TOKEN_IDS,
-  started: false,
-  verified: false,
   signedNamespaces: [] as NetworkId[],
 };
 
 export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
   ...initialState,
   setBusinessDetails: ({ email, companyName, logoUri }) =>
-    set({ email, companyName, logoUri, started: true }),
+    set({ email, companyName, logoUri }),
   setNetworks: (networks) => set({ networks }),
   toggleNetwork: (network) => {
     const current = get().networks;
@@ -66,12 +64,12 @@ export const useOnboardingStore = create<OnboardingStore>((set, get) => ({
         : [...current, tokenId],
     });
   },
-  setVerified: (verified) => set({ verified }),
   markSigned: (namespace) =>
     set((state) =>
       state.signedNamespaces.includes(namespace)
         ? state
         : { signedNamespaces: [...state.signedNamespaces, namespace] },
     ),
+  resetVerification: () => set({ signedNamespaces: [] }),
   reset: () => set({ ...initialState }),
 }));

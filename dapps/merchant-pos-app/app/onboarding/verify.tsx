@@ -93,7 +93,6 @@ export default function VerifyScreen() {
 
       // Mark this address verified for the session. Persisted so an app
       // restart with the same connection won't re-prompt; cleared on disconnect.
-      useOnboardingStore.getState().setVerified(true);
       if (address) useMerchantStore.getState().markVerified(address);
 
       // Routing after sign: if the install already has a merchant, this is a

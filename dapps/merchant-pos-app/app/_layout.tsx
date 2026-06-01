@@ -20,6 +20,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useTheme } from "@/hooks/use-theme-color";
 import { appkit, wagmiAdapter } from "@/services/appkit-instance";
 import { useMerchantStore } from "@/store/useMerchantStore";
+import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getInstallId } from "@/utils/install-id";
 
@@ -39,6 +40,9 @@ function SessionWatcher() {
     if (wasConnected.current && !isConnected) {
       useMerchantStore.getState().clearVerified();
       useMerchantStore.getState().clearActive();
+      // Also clear the onboarding signing progress, else verify re-mounts
+      // thinking every namespace is already signed (Continue stays disabled).
+      useOnboardingStore.getState().resetVerification();
     }
     wasConnected.current = isConnected;
   }, [isConnected]);
