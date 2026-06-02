@@ -11,6 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.reown.merchantpos",
+      "appleTeamId": "W5R8AG9K22",
       "config": {
         "usesNonExemptEncryption": false
       },
