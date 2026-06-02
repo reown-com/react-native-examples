@@ -57,18 +57,23 @@ echo "   Branch: ${BRANCH_NAME}"
 echo "   PR mode: $([ "$SKIP_PR" = true ] && echo 'skip (manual merge)' || echo "create$([ "$AUTO_MERGE" = true ] && echo ' + auto-merge')")"
 echo ""
 
-# Cleanup function for error cases (only when we manage the branch via gh)
+# Cleanup function for error cases — remove the branch we created so a retry is clean.
 cleanup_branch() {
+  echo "🧹 Cleaning up branch ${BRANCH_NAME}..."
   if [ "$SKIP_PR" = false ]; then
-    echo "🧹 Cleaning up branch ${BRANCH_NAME}..."
     gh api repos/${CERTS_REPO}/git/refs/heads/${BRANCH_NAME} -X DELETE 2>/dev/null || true
+  else
+    git push "${CERTS_GIT_URL}" --delete "${BRANCH_NAME}" 2>/dev/null || true
   fi
 }
 
-# In gh mode, pre-create the branch from master. In --no-pr mode, fastlane match
-# creates and pushes the branch itself over SSH, so we skip these GitHub API calls.
+# The branch MUST be created from master before match runs, so match adds the new
+# profile on top of the existing certs (reusing the shared distribution/development
+# certificate) and produces a mergeable diff. If match is pointed at a non-existent
+# branch it creates an ORPHAN branch with only the new files — unmergeable, and it
+# re-mints a duplicate certificate because it can't see the existing one.
 if [ "$SKIP_PR" = false ]; then
-  # 1. Check if branch already exists
+  # gh-based pre-create (uses a GitHub token)
   echo "🔍 Checking if branch already exists..."
   if gh api repos/${CERTS_REPO}/git/ref/heads/${BRANCH_NAME} &>/dev/null; then
     echo "⚠️  Branch ${BRANCH_NAME} already exists."
@@ -76,7 +81,6 @@ if [ "$SKIP_PR" = false ]; then
     exit 1
   fi
 
-  # 2. Get master SHA with error handling
   echo "📌 Creating branch ${BRANCH_NAME} from master..."
   MASTER_SHA=$(gh api repos/${CERTS_REPO}/git/ref/heads/master --jq '.object.sha' 2>/dev/null)
   if [ -z "$MASTER_SHA" ]; then
@@ -85,7 +89,6 @@ if [ "$SKIP_PR" = false ]; then
     exit 1
   fi
 
-  # 3. Create branch
   if ! gh api repos/${CERTS_REPO}/git/refs \
     -f ref="refs/heads/${BRANCH_NAME}" \
     -f sha="${MASTER_SHA}" > /dev/null 2>&1; then
@@ -93,6 +96,25 @@ if [ "$SKIP_PR" = false ]; then
     exit 1
   fi
   echo "   ✓ Branch created"
+else
+  # --no-pr: pre-create the branch from master over SSH (no GitHub token needed).
+  echo "📌 Creating branch ${BRANCH_NAME} from master over SSH..."
+  WORKDIR=$(mktemp -d)
+  if ! git clone --depth 1 --branch master "${CERTS_GIT_URL}" "${WORKDIR}" >/dev/null 2>&1; then
+    echo "❌ Error: failed to clone ${CERTS_GIT_URL} (check SSH access / MATCH_SSH_KEY)"
+    rm -rf "${WORKDIR}"
+    exit 1
+  fi
+  git -C "${WORKDIR}" checkout -b "${BRANCH_NAME}" >/dev/null 2>&1
+  if ! git -C "${WORKDIR}" push origin "${BRANCH_NAME}" >/dev/null 2>&1; then
+    echo "❌ Error: failed to push branch ${BRANCH_NAME}."
+    echo "   It probably already exists (e.g. from a previous run). Delete it first:"
+    echo "   git push ${CERTS_GIT_URL} --delete ${BRANCH_NAME}"
+    rm -rf "${WORKDIR}"
+    exit 1
+  fi
+  rm -rf "${WORKDIR}"
+  echo "   ✓ Branch created from master"
 fi
 
 # 4. Run fastlane match
