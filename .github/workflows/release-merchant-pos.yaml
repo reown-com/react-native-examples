@@ -50,9 +50,7 @@ jobs:
       release-type: 'production'
       scheme-name: 'MerchantPOS'
       bundle-id: 'com.reown.merchantpos'
-      # TODO: replace with the numeric Apple App ID from App Store Connect
-      # (printed by the "Create iOS App" workflow run / visible in App Store Connect).
-      apple-id: 'REPLACE_WITH_APPLE_APP_ID'
+      apple-id: '6775838853'
       project-type: 'dapp'
       package-manager: 'npm'
       testflight-groups: 'Internal'
