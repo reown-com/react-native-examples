@@ -172,6 +172,46 @@ notification with the build result + TestFlight link.
 
 ---
 
+## Step 8 — Distribute on TestFlight (internal vs external + public link)
+
+Uploading the build is not the same as letting people install it. Choose how to distribute:
+
+| | Internal testing | External group (public link) |
+| --- | --- | --- |
+| Who | Up to 100 App Store Connect **team users** (by role) | Up to 10,000 — anyone with the link |
+| **Beta App Review** | ❌ not required | ✅ **required** for the first build of each version |
+| **Public link** | ❌ no (invite by Apple ID) | ✅ `https://testflight.apple.com/join/…` |
+| Availability | Immediately after processing | After review is **Approved** |
+
+> **How the release workflow distributes:** the `release_testflight` lane sets
+> `distribute_external: true` whenever `testflight-groups` is non-empty (`fastlane/Fastfile`).
+> So **any** group named in `testflight-groups` is treated as an **external** group — it needs
+> Beta App Review and can have a public link. For pure internal testing (no review), leave
+> `testflight-groups` empty and add internal testers by Apple ID instead.
+
+**To get a public link (external):**
+
+1. Create an **external** group in the app's **TestFlight** tab (e.g. `Public`) and reference
+   its name in the release workflow's `testflight-groups`.
+2. Fill in the group's **Test Information**: what to test, beta description, contact email, and
+   a **demo/login account** if the app requires sign-in (reviewers are blocked without it —
+   missing creds is the most common rejection).
+3. After a release uploads, the build shows **"Waiting for Review"**. Wait for **Beta App
+   Review** to finish (usually a few hours, up to ~24–48h for a first submission). When it's
+   **Approved / Ready to Test**, the group can distribute.
+4. In the group, **Enable Public Link** and copy the `testflight.apple.com/join/…` URL.
+5. Put that URL in the `TESTFLIGHT_<APP>_URL` repo **variable** (e.g. `TESTFLIGHT_MERCHANTPOS_URL`)
+   so the Slack "View in TestFlight" button links to it.
+
+**Notes:**
+- With a public link you don't add testers manually — they self-join via the link (counts
+  toward the 10,000 cap).
+- Every TestFlight build **expires 90 days** after upload; ship a fresh build before then.
+- Later builds of the **same version** usually skip review; a new version's first build is
+  reviewed again.
+
+---
+
 ## Troubleshooting
 
 | Symptom | Cause / fix |
