@@ -57,7 +57,17 @@ bundle install
 
 ### Creating Certificates for a New App
 
-Use the provided script to create new certificates and provisioning profiles. The script handles creating a branch, running fastlane match, and creating a PR (required since the certificates repo has branch protection):
+**Preferred: do it on CI.** You don't need Ruby/fastlane/CocoaPods locally. Run the
+**Create iOS Certificates** GitHub Action (`.github/workflows/create-ios-certs.yaml`) — it
+creates the app's signing certificates via the App Store Connect API key (no 2FA). The App
+Store Connect app record itself is created manually first; see the full runbook in
+[`docs/releasing-a-new-app.md`](docs/releasing-a-new-app.md).
+
+**Local fallback.** Use the provided script to create new certificates and provisioning
+profiles. The script handles creating a branch, running fastlane match, and creating a PR
+(required since the certificates repo has branch protection). When the App Store Connect API
+key env vars (`APPLE_KEY_ID`, `APPLE_ISSUER_ID`, `APPLE_KEY_CONTENT`) are set, it uses API-key
+auth (no 2FA); otherwise it falls back to interactive Apple ID auth:
 
 ```bash
 # Make the script executable (first time only)
@@ -76,8 +86,11 @@ chmod +x scripts/create-certificates.sh
 **Example:**
 
 ```bash
-./scripts/create-certificates.sh reown-com/mobile-certificates com.reown.myapp dev@reown.com appstore
-./scripts/create-certificates.sh reown-com/mobile-certificates com.reown.myapp dev@reown.com development
+./scripts/create-certificates.sh reown-com/mobile-match com.reown.myapp dev@reown.com appstore
+./scripts/create-certificates.sh reown-com/mobile-match com.reown.myapp dev@reown.com development
+
+# With API-key auth (no 2FA), the Apple email is optional — pass "" instead:
+./scripts/create-certificates.sh reown-com/mobile-match com.reown.myapp "" appstore --auto-merge
 ```
 
 > **Note:** Requires [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated. By default, the script creates a PR that requires manual merge. Use `--auto-merge` to automatically merge.
