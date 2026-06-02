@@ -1,6 +1,6 @@
-name: Create iOS App
+name: Create iOS Certificates
 
-run-name: "Create iOS App (certs) - ${{ inputs.bundle-id }}"
+run-name: "Create iOS Certificates - ${{ inputs.bundle-id }}"
 
 # Creates the signing certificates / provisioning profiles for an iOS app on CI, so
 # developers don't need Ruby / fastlane / CocoaPods locally. Auth uses the App Store
