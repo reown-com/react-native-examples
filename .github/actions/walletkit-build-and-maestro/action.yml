@@ -243,6 +243,38 @@ runs:
         restore-keys: |
           ${{ runner.os }}-pods-${{ github.ref_name }}-
 
+    # Universal Links resolve their app association from the AASA file, which iOS
+    # normally fetches via Apple's CDN. On a fresh simulator that copy can be stale
+    # or missing, so the link opens Safari instead of the wallet. Appending
+    # `?mode=developer` to each associated domain puts it in developer mode, making
+    # the simulator fetch the AASA directly from the origin server and bypass the CDN.
+    # This is patched only here, on the ephemeral Maestro runner — the committed
+    # entitlements file is untouched, so TestFlight builds (which must not ship
+    # dev-mode entitlements) read the clean file in their own separate job.
+    - name: Enable associated-domains developer mode (Maestro build only)
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        WALLET_ROOT: ${{ steps.paths.outputs.wallet_root }}
+      run: |
+        set -euo pipefail
+        PB=/usr/libexec/PlistBuddy
+        ENT="$WALLET_ROOT/ios/RNWeb3Wallet/RNWeb3Wallet.entitlements"
+        KEY=":com.apple.developer.associated-domains"
+        # Walk the array by index until PlistBuddy reports the entry is missing —
+        # avoids pre-counting (which can hard-fail under pipefail) and stays correct
+        # regardless of array order or non-applinks entries (webcredentials:, etc.).
+        i=0
+        while val=$("$PB" -c "Print $KEY:$i" "$ENT" 2>/dev/null); do
+          case "$val" in
+            applinks:*'?mode=developer') ;;
+            applinks:*) "$PB" -c "Set $KEY:$i ${val}?mode=developer" "$ENT" ;;
+          esac
+          i=$((i + 1))
+        done
+        echo "Patched applinks entries in $ENT:"
+        "$PB" -c "Print $KEY" "$ENT"
+
     - name: Build for Simulator
       if: inputs.platform == 'ios'
       uses: maierj/fastlane-action@v3.0.0
@@ -295,11 +327,11 @@ runs:
       shell: bash
       run: |
         xcrun simctl spawn "$DEVICE_ID" swcutil reset || true
-        for domain in pay.walletconnect.com staging.pay.walletconnect.com dev.pay.walletconnect.com; do
+        for domain in pay.walletconnect.com staging.pay.walletconnect.com dev.pay.walletconnect.com lab.reown.com; do
           xcrun simctl spawn "$DEVICE_ID" swcutil dl -d "$domain" || true
         done
         sleep 3
-        xcrun simctl spawn "$DEVICE_ID" swcutil show 2>/dev/null | grep -i walletconnect || true
+        xcrun simctl spawn "$DEVICE_ID" swcutil show 2>/dev/null | grep -iE 'walletconnect|reown' || true
 
     # --- Android leg ---
     - name: Install Java 17
