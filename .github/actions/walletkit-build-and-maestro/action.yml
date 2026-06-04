@@ -432,10 +432,10 @@ runs:
 
     # --- Common: Maestro setup + run ---
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@b25143709bc7218c4ab1b956b94041e97bf1100c
+      uses: WalletConnect/actions/maestro/pay-tests@3a49367c9c3fc6802e7bcd508c2adc189cd5818f
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@b25143709bc7218c4ab1b956b94041e97bf1100c
+      uses: WalletConnect/actions/maestro/setup@3a49367c9c3fc6802e7bcd508c2adc189cd5818f
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
