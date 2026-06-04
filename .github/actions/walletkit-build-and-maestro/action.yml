@@ -311,6 +311,8 @@ runs:
           xcrun simctl list devices available -j | \
           jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name == "iPhone 16") | .udid' | head -1)
         xcrun simctl boot "$DEVICE_ID" || true
+        # Wait for full boot so the steps below don't race a not-ready simulator
+        xcrun simctl bootstatus "$DEVICE_ID" -b
         # Disable UIKit animations to reduce Maestro timing flakiness
         xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
         echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
