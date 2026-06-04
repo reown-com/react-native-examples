@@ -70,10 +70,6 @@ inputs:
       personal-details data through the prod KYC webview).
     required: false
     default: ''
-  maestro-actions-ref:
-    description: 'Pinned ref of WalletConnect/actions for maestro/pay-tests and maestro/setup.'
-    required: false
-    default: '6628a30e8e92ab36c1051e6f62b68add6a737f3f'
   apple-key-id:
     description: 'Apple App Store Connect API key id (iOS only).'
     required: false
@@ -315,6 +311,8 @@ runs:
           xcrun simctl list devices available -j | \
           jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name == "iPhone 16") | .udid' | head -1)
         xcrun simctl boot "$DEVICE_ID" || true
+        # Disable UIKit animations to reduce Maestro timing flakiness
+        xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
         echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
 
     - name: Install app on Simulator
@@ -424,10 +422,10 @@ runs:
 
     # --- Common: Maestro setup + run ---
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@6628a30e8e92ab36c1051e6f62b68add6a737f3f
+      uses: WalletConnect/actions/maestro/pay-tests@ceff6c331fb6ea701448d03f64e3aeb3d73d24d3
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@6628a30e8e92ab36c1051e6f62b68add6a737f3f
+      uses: WalletConnect/actions/maestro/setup@ceff6c331fb6ea701448d03f64e3aeb3d73d24d3
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
