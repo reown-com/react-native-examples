@@ -58,6 +58,18 @@ describe('getResultContent', () => {
     );
   });
 
+  it('maps not_found to its title, description and close action', () => {
+    const content = getResultContent('error', 'not_found');
+
+    expect(content).toMatchObject({
+      title: 'Payment request not found',
+      iconTestId: 'pay-result-error-icon',
+      actionLabel: 'Close',
+      actionKind: 'close',
+    });
+    expect(content.description).toContain('isn’t valid');
+  });
+
   it('treats an error with no classified type as generic', () => {
     expect(getResultContent('error', null)).toMatchObject({
       title: 'Payment didn’t go through',

@@ -181,11 +181,13 @@ const PaymentStore = {
 
   setError(errorMessage: string) {
     const errorType = detectErrorType(errorMessage);
-    state.errorMessage = errorMessage;
-    state.setupTokenSymbol = null;
     state.resultStatus = 'error';
     state.resultMessage = errorMessage;
     state.resultErrorType = errorType;
+    // Clear the transient loading-phase errorMessage so it can't re-trigger the
+    // error branch in resolveLoadingStep, consistent with setResult.
+    state.errorMessage = null;
+    state.setupTokenSymbol = null;
     state.step = 'result';
   },
 
