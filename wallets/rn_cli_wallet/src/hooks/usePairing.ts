@@ -12,9 +12,7 @@ export { isPaymentLink };
 
 export function usePairing() {
   const handlePaymentLink = useCallback(async (paymentLink: string) => {
-    PaymentStore.startPayment({
-      loadingMessage: 'Preparing your payment...',
-    });
+    PaymentStore.startPayment();
     ModalStore.open('PaymentOptionsModal');
 
     await SettingsStore.state.initPromise;
