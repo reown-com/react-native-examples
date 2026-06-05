@@ -23,7 +23,7 @@ function Sessions() {
           No connected apps yet
         </Text>
         <Text variant="lg-400" color="text-secondary" center>
-          Scan a WalletConnect QR code to get started.
+          Apps you connect will show up here. Scan a QR code to add your first one.
         </Text>
         <ActionButton
           style={styles.emptyStateButton}

@@ -445,7 +445,7 @@ describe('PaymentStore', () => {
 
   it('keeps the default processing message for single-step typed-data payments', async () => {
     mockedSignTypedData.mockImplementation(async () => {
-      expect(PaymentStore.state.loadingMessage).toBeNull();
+      expect(PaymentStore.state.setupTokenSymbol).toBeNull();
       return '0xsigned';
     });
 
@@ -479,8 +479,7 @@ describe('PaymentStore', () => {
       () => deferredActions.promise,
     );
     mockedSendTransactionWithFreshFees.mockImplementation(async () => {
-      expect(PaymentStore.state.loadingMessage).toBeNull();
-      expect(PaymentStore.state.loadingNote).toBeNull();
+      expect(PaymentStore.state.setupTokenSymbol).toBeNull();
       return {
         hash: '0xhash',
         wait: jest.fn(),
@@ -505,8 +504,7 @@ describe('PaymentStore', () => {
     const approvePromise = PaymentStore.approvePayment();
 
     expect(PaymentStore.state.step).toBe('confirming');
-    expect(PaymentStore.state.loadingMessage).toBeNull();
-    expect(PaymentStore.state.loadingNote).toBeNull();
+    expect(PaymentStore.state.setupTokenSymbol).toBeNull();
 
     deferredActions.resolve([
       createAction(EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION, [
@@ -543,7 +541,7 @@ describe('PaymentStore', () => {
     ]);
 
     mockedSignTypedData.mockImplementation(async () => {
-      expect(PaymentStore.state.loadingMessage).toBeNull();
+      expect(PaymentStore.state.setupTokenSymbol).toBeNull();
       return '0xsigned';
     });
 
@@ -610,12 +608,7 @@ describe('PaymentStore', () => {
     const approvePromise = PaymentStore.approvePayment();
 
     expect(PaymentStore.state.step).toBe('confirming');
-    expect(PaymentStore.state.loadingMessage).toBe(
-      'Setting up USDT',
-    );
-    expect(PaymentStore.state.loadingNote).toBe(
-      'This usually takes a few seconds. Future USDT payments will skip this step.',
-    );
+    expect(PaymentStore.state.setupTokenSymbol).toBe('USDT');
 
     deferredActions.resolve([
       createAction(EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION, [

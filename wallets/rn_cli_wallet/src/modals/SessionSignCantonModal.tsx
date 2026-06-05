@@ -52,7 +52,7 @@ export default function SessionSignCantonModal() {
           topic,
           response: errorResponse,
         });
-      } catch (_) {
+      } catch {
         // best effort
       }
       LogStore.error(
