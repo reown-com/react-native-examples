@@ -7,10 +7,9 @@ import { ThemedText } from "@/components/themed-text";
 import { TokenChip } from "@/components/token-chip";
 import { getNetwork, NetworkId, tokensForNetwork } from "@/constants/networks";
 import { Spacing } from "@/constants/spacing";
-import { syncMerchantToPayCore } from "@/services/merchant";
+import { provisionMerchant } from "@/services/merchant";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
-import { getInstallId } from "@/utils/install-id";
 import { showErrorToast } from "@/utils/toast";
 import { getConnectedAddresses } from "@/utils/wallet-accounts";
 import { useAccount } from "@reown/appkit-react-native";
@@ -24,6 +23,7 @@ export default function TokensScreen() {
   const selectedTokens = useOnboardingStore((s) => s.tokens);
   const toggleToken = useOnboardingStore((s) => s.toggleToken);
   const upsertMerchant = useMerchantStore((s) => s.upsertMerchant);
+  const setInstallMerchantId = useMerchantStore((s) => s.setInstallMerchantId);
   const setActive = useMerchantStore((s) => s.setActive);
   const [submitting, setSubmitting] = useState(false);
 
@@ -39,20 +39,18 @@ export default function TokensScreen() {
     const addresses = getConnectedAddresses();
     if (!addresses[ns]) addresses[ns] = address;
 
-    const merchantId = getInstallId();
-
     setSubmitting(true);
-    let version = 1;
+    let merchantId: string;
     try {
-      // syncMerchantToPayCore fetches the current server version and sends
-      // serverVersion + 1 — sending a stale local version is ignored.
-      const result = await syncMerchantToPayCore({
-        merchantId,
-        companyName: draft.companyName,
+      // Create the merchant (POST /v1/merchants) and register its crypto
+      // settlements (POST .../settlements/crypto) in one step.
+      const result = await provisionMerchant({
+        name: draft.companyName,
+        email: draft.email,
         addresses,
         tokens: draft.tokens,
       });
-      version = result.version;
+      merchantId = result.merchantId;
     } catch (e) {
       setSubmitting(false);
       const message =
@@ -61,11 +59,11 @@ export default function TokensScreen() {
       return;
     }
 
+    setInstallMerchantId(merchantId);
     upsertMerchant({
       address,
       namespace: ns,
       merchantId,
-      version,
       addresses,
       email: draft.email,
       companyName: draft.companyName,

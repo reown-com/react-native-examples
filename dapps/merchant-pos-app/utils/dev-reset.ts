@@ -13,6 +13,7 @@ export async function nukeAllStorage() {
   // Reset in-memory state immediately.
   useMerchantStore.setState({
     merchants: {},
+    installMerchantId: null,
     activeAddress: null,
     verifiedAddresses: [],
   });

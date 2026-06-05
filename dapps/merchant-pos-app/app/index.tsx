@@ -7,7 +7,6 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { nukeAllStorage } from "@/utils/dev-reset";
-import { getInstallId } from "@/utils/install-id";
 import { restoreFullNamespaceScope } from "@/utils/network-scope";
 import { showToast } from "@/utils/toast";
 import { useAccount, useAppKit } from "@reown/appkit-react-native";
@@ -21,7 +20,7 @@ export default function WelcomeScreen() {
   const Theme = useTheme();
   const { open, disconnect } = useAppKit();
   const { address, isConnected } = useAccount();
-  const findByMerchantId = useMerchantStore((s) => s.findByMerchantId);
+  const installMerchantId = useMerchantStore((s) => s.installMerchantId);
   const setActive = useMerchantStore((s) => s.setActive);
   const isVerified = useMerchantStore((s) => s.isVerified);
   const resetOnboarding = useOnboardingStore((s) => s.reset);
@@ -44,7 +43,7 @@ export default function WelcomeScreen() {
       let target: "/onboarding/verify" | "/onboarding/tokens" | "/home";
       if (!isVerified(address)) {
         target = "/onboarding/verify";
-      } else if (!findByMerchantId(getInstallId())) {
+      } else if (!installMerchantId) {
         target = "/onboarding/tokens";
       } else {
         setActive(address);
@@ -58,7 +57,7 @@ export default function WelcomeScreen() {
       address,
       pathname,
       isVerified,
-      findByMerchantId,
+      installMerchantId,
       setActive,
     ]),
   );

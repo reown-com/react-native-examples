@@ -48,12 +48,11 @@ export interface MerchantConfig {
   address: string;
   namespace: NetworkId;
   /**
-   * Remote merchant id (the persistent per-install id used to upsert the
-   * merchant via the pay-core API). Stable across re-onboards on this install.
+   * Server-assigned merchant id (`mrch_…`) from POST /v1/merchants. Sent as the
+   * Merchant-Id on payment + settlement calls. One merchant per install, so all
+   * wallets onboarded on this install share the same id.
    */
   merchantId?: string;
-  /** Last pay-core merchant `version` we synced; incremented on each upsert. */
-  version?: number;
   /**
    * Settlement address per namespace. A wallet can expose a different address
    * for EVM vs Solana, so each connected namespace is tracked separately.

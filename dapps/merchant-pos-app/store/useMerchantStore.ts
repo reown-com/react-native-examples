@@ -11,6 +11,13 @@ function keyFor(address: string): string {
 interface MerchantStore {
   /** Registry of every wallet that has completed onboarding, keyed by address. */
   merchants: Record<string, MerchantConfig>;
+  /**
+   * Server merchant id (`mrch_…`) for this install, set once at first
+   * onboarding. One merchant per install: it's the anchor for "already
+   * onboarded?" routing and is reused (with re-synced settlements) when a
+   * different wallet logs in. Null until the first merchant is created.
+   */
+  installMerchantId: string | null;
   /** Address of the merchant in the current session, or null when logged out. */
   activeAddress: string | null;
   /**
@@ -26,6 +33,8 @@ interface MerchantStore {
   /** Any local entry whose `merchantId` matches — used to detect "this install already has a merchant". */
   findByMerchantId: (merchantId: string) => MerchantConfig | undefined;
   upsertMerchant: (config: MerchantConfig) => void;
+  /** Record this install's server merchant id (set once at first onboarding). */
+  setInstallMerchantId: (id: string | null) => void;
   setActive: (address: string | null) => void;
   /** End the session (disconnect). Registry is kept so the merchant can log back in. */
   clearActive: () => void;
@@ -43,6 +52,7 @@ export const useMerchantStore = create<MerchantStore>()(
   persist(
     (set, get) => ({
       merchants: {},
+      installMerchantId: null,
       activeAddress: null,
       verifiedAddresses: [],
       _hasHydrated: false,
@@ -55,6 +65,7 @@ export const useMerchantStore = create<MerchantStore>()(
         set((state) => ({
           merchants: { ...state.merchants, [keyFor(config.address)]: config },
         })),
+      setInstallMerchantId: (id) => set({ installMerchantId: id }),
       setActive: (address) => set({ activeAddress: address }),
       clearActive: () => set({ activeAddress: null }),
       getActiveMerchant: () => {
@@ -80,7 +91,7 @@ export const useMerchantStore = create<MerchantStore>()(
     }),
     {
       name: "merchants",
-      version: 1,
+      version: 2,
       storage,
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);

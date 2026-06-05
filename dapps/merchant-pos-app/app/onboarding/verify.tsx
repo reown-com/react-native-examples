@@ -12,10 +12,12 @@ import {
   buildOwnershipMessage,
   signOwnership,
 } from "@/hooks/use-sign-ownership";
-import { syncMerchantToPayCore } from "@/services/merchant";
+import {
+  buildCryptoSettlements,
+  syncCryptoSettlements,
+} from "@/services/merchant";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
-import { getInstallId } from "@/utils/install-id";
 import { showErrorToast, showToast } from "@/utils/toast";
 import {
   ConnectedAccount,
@@ -96,26 +98,26 @@ export default function VerifyScreen() {
       if (address) useMerchantStore.getState().markVerified(address);
 
       // Routing after sign: if the install already has a merchant, this is a
-      // "log in / switch wallet" — upsert with the new wallet's addresses and
-      // go Home. Otherwise it's first-time onboarding — continue to Tokens.
-      const installId = getInstallId();
-      const existing = useMerchantStore.getState().findByMerchantId(installId);
-      if (existing && address) {
+      // "log in / switch wallet" — re-sync settlements to the new wallet's
+      // addresses (same merchant id) and go Home. Otherwise it's first-time
+      // onboarding — continue to Tokens.
+      const merchantId = useMerchantStore.getState().installMerchantId;
+      const existing = Object.values(
+        useMerchantStore.getState().merchants,
+      ).find((m) => m.merchantId === merchantId);
+      if (merchantId && existing && address) {
         const ns: NetworkId = namespace === "solana" ? "solana" : "eip155";
         const addresses = getConnectedAddresses();
         if (!addresses[ns]) addresses[ns] = address;
-        const { version } = await syncMerchantToPayCore({
-          merchantId: existing.merchantId ?? installId,
-          companyName: existing.companyName,
-          addresses,
-          tokens: existing.tokens,
-        });
+        await syncCryptoSettlements(
+          merchantId,
+          buildCryptoSettlements(addresses, existing.tokens),
+        );
         useMerchantStore.getState().upsertMerchant({
           ...existing,
           address,
           namespace: ns,
-          merchantId: existing.merchantId ?? installId,
-          version,
+          merchantId,
           addresses,
           verifiedAt: Date.now(),
         });

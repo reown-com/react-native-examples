@@ -22,7 +22,6 @@ import { appkit, wagmiAdapter } from "@/services/appkit-instance";
 import { useMerchantStore } from "@/store/useMerchantStore";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { getInstallId } from "@/utils/install-id";
 
 const queryClient = new QueryClient();
 
@@ -66,9 +65,6 @@ export default function RootLayout() {
   useEffect(() => {
     useMerchantStore.persist.rehydrate();
     useSettingsStore.persist.rehydrate();
-    // Mint the persistent install id on first launch so it's ready when
-    // onboarding finishes and we upsert the merchant.
-    getInstallId();
   }, []);
 
   if (!fontsLoaded || !merchantHydrated || !settingsHydrated) {

@@ -4,182 +4,82 @@ import {
   chainsForNamespace,
   getTokensCaip19,
 } from "@/constants/token-contracts";
-import { ApiError } from "@/utils/types";
-import {
-  clearPayCoreCognitoTokenCache,
-  getPayCoreCognitoToken,
-} from "./cognito-auth";
+import { v4 as uuidv4 } from "uuid";
+import { apiClient, getMerchantManagementHeaders } from "./client";
 
-const PAY_CORE_API_URL = process.env.EXPO_PUBLIC_PAY_CORE_API_URL;
-const PARTNER_ID = process.env.EXPO_PUBLIC_PAY_PARTNER_ID;
+/**
+ * Merchant + settlement management against the public WalletConnect Pay REST
+ * API (https://api.pay.walletconnect.com/v1). Authed by the partner-scoped
+ * customer Api-Key — no Cognito, no internal pay-core upsert.
+ *
+ *   POST   /merchants                              create a merchant
+ *   GET    /merchants/{id}/settlements             list fiat + crypto settlements
+ *   POST   /merchants/{id}/settlements/crypto      add crypto settlements
+ *   PUT    /merchants/{id}/settlements/crypto/{id} change a settlement destination
+ *   DELETE /merchants/{id}/settlements/crypto/{id} remove a settlement
+ */
 
-export interface CryptoSettlement {
-  caip10: string;
-  caip19: string;
-  mta: boolean;
-  type: string;
+/** A crypto settlement as the API represents it: CAIP-19 asset → CAIP-10 destination. */
+export interface CryptoSettlementInput {
+  /** CAIP-19 token id, e.g. `eip155:8453/erc20:0x833589…`. */
+  asset: string;
+  /** CAIP-10 account, e.g. `eip155:8453:0x1234…` (chain must match the asset's). */
+  destination: string;
 }
 
-export interface MerchantProviders {
-  iron: null;
-  turnkey: {
-    mtaAddresses: string[];
-    organizationId: string;
-  } | null;
-}
-
-/** Mirrors pay-core's MerchantUpsertRequest (see walletconnect-apps dashboard). */
-export interface MerchantUpsertRequest {
-  alwaysCollectData: boolean;
-  createdAt: string;
-  cryptoSettlements: CryptoSettlement[];
-  deleted: boolean;
-  fees: null;
-  iconUrl?: string;
+export interface CryptoSettlement extends CryptoSettlementInput {
+  /** Server settlement id, e.g. `crypto_Xk7nWp8…`. */
   id: string;
-  name: string;
-  neverCollectData: boolean;
-  partnerId: string;
-  providers: MerchantProviders;
-  updatedAt: string;
-  version: number;
 }
 
-export interface MerchantResponse {
-  id: string;
-  name: string;
-  iconUrl?: string;
-  partnerId: string;
-  cryptoSettlements: CryptoSettlement[];
-  fees: null;
-  providers: MerchantProviders;
-  alwaysCollectData: boolean;
-  neverCollectData: boolean;
-  deleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  version: number;
-}
-
-function isRetriableStatus(status: number): boolean {
-  // 401 is retriable (token refresh), 5xx are retriable.
-  return status === 401 || status >= 500;
-}
-
-async function putMerchant(
-  request: MerchantUpsertRequest,
-  retryOn401 = true,
-): Promise<void> {
-  if (!PAY_CORE_API_URL) {
-    throw new Error(
-      "EXPO_PUBLIC_PAY_CORE_API_URL is not set — required to upsert the merchant.",
-    );
-  }
-
-  const url = `${PAY_CORE_API_URL.replace(/\/+$/, "")}/v2/internal/merchant`;
-  const token = await getPayCoreCognitoToken();
-
-  if (__DEV__) {
-    console.log(
-      `[merchant-api] → PUT ${url} id=${request.id} v${request.version}`,
-    );
-    console.log("request", JSON.stringify(request, null, 2));
-  }
-
-  const response = await fetch(url, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (response.status === 204) {
-    if (__DEV__) console.log(`[merchant-api] ✓ 204 ${request.id}`);
-    return;
-  }
-
-  if (response.status === 401 && retryOn401) {
-    if (__DEV__) console.log(`[merchant-api] 401 — clearing token, retrying`);
-    clearPayCoreCognitoTokenCache();
-    return putMerchant(request, false);
-  }
-
-  const text = await response.text().catch(() => "");
-  if (__DEV__) {
-    console.warn(`[merchant-api] ✗ ${response.status} ${url} — ${text}`);
-  }
-  const error: ApiError = {
-    message: `Merchant upsert failed (${response.status}): ${text || response.statusText}`,
-    status: response.status,
-    code: isRetriableStatus(response.status) ? "RETRIABLE" : undefined,
+interface CreateMerchantResponse {
+  merchant: {
+    id: string;
+    name: string;
+    email: string | null;
+    status: "active" | "inactive" | "suspended";
+    createdAt: string;
   };
-  throw error;
+}
+
+interface SettlementsResponse {
+  fiat: { id: string; status: string; bankType: string }[];
+  crypto: CryptoSettlement[];
+}
+
+interface CreateCryptoSettlementsResponse {
+  settlements: CryptoSettlement[];
 }
 
 /**
- * PUT /v2/internal/merchant on pay-core. Mints a Cognito access token via
- * client_credentials (cached for 50 min) and retries once on 401.
+ * Create a merchant. Returns the server-assigned id (`mrch_…`) used as the
+ * Merchant-Id on every subsequent payment + settlement call. A fresh
+ * Idempotency-Key is minted per attempt so a transport-level retry won't create
+ * a duplicate; cross-run dedup is handled by the caller (only create when no
+ * merchant exists locally).
+ *
+ * `iconUrl` is intentionally omitted: the onboarding logo is a local `file://`
+ * URI and the API requires an HTTPS URL.
  */
-export async function upsertMerchant(
-  request: MerchantUpsertRequest,
-): Promise<void> {
-  return putMerchant(request, true);
-}
-
-/**
- * GET the current pay-core merchant state. Returns `null` on 404 (no merchant
- * yet). Used to source the next upsert's `version` + `createdAt` so the server
- * actually applies the update.
- */
-export async function getMerchant(
-  merchantId: string,
-  retryOn401 = true,
-): Promise<MerchantResponse | null> {
-  if (!PAY_CORE_API_URL) {
-    throw new Error(
-      "EXPO_PUBLIC_PAY_CORE_API_URL is not set — required to fetch the merchant.",
-    );
-  }
-  const url = `${PAY_CORE_API_URL.replace(/\/+$/, "")}/v2/internal/merchant/${encodeURIComponent(merchantId)}`;
-  const token = await getPayCoreCognitoToken();
-  if (__DEV__) console.log(`[merchant-api] → GET ${url}`);
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-  if (response.ok) {
-    const data = (await response.json()) as MerchantResponse;
-    if (__DEV__) {
-      console.log(`[merchant-api] ✓ GET 200 v${data.version} ${merchantId}`);
-    }
-    return data;
-  }
-  if (response.status === 404) {
-    if (__DEV__) console.log(`[merchant-api] GET 404 — no merchant yet`);
-    return null;
-  }
-  if (response.status === 401 && retryOn401) {
-    clearPayCoreCognitoTokenCache();
-    return getMerchant(merchantId, false);
-  }
-  const text = await response.text().catch(() => "");
-  if (__DEV__) {
-    console.warn(`[merchant-api] ✗ GET ${response.status} ${url} — ${text}`);
-  }
-  throw {
-    message: `Merchant fetch failed (${response.status}): ${text || response.statusText}`,
-    status: response.status,
-  } satisfies ApiError;
+export async function createMerchant(params: {
+  name: string;
+  email: string;
+}): Promise<{ id: string }> {
+  const res = await apiClient.post<CreateMerchantResponse>(
+    "/merchants",
+    {
+      merchantName: params.name || "Merchant",
+      merchantEmail: params.email,
+    },
+    { headers: getMerchantManagementHeaders(uuidv4()) },
+  );
+  return { id: res.merchant.id };
 }
 
 /**
  * Map a list of selected token ids (`<namespace>:<SYMBOL>`) into a per-namespace
- * Set of symbols, used to filter cryptoSettlements down to what the merchant
- * actually chose during onboarding.
+ * Set of symbols, used to filter settlements down to what the merchant actually
+ * chose during onboarding.
  */
 function symbolsByNamespace(
   tokens?: string[],
@@ -198,100 +98,138 @@ function symbolsByNamespace(
 }
 
 /**
- * Expand a per-namespace address map into cryptoSettlements + mtaAddresses by
- * iterating every chain in CONTRACTS for that namespace and every token
- * configured on that chain. When `tokens` is provided, only tokens whose
- * symbol appears in the merchant's selection are included. `mta` is `true`
- * for EVM entries (Solana isn't an MTA in pay-core).
+ * Expand a per-namespace settlement address map into the API's
+ * `{ asset, destination }` pairs by iterating every chain in CONTRACTS for that
+ * namespace and every token configured on that chain. When `tokens` is
+ * provided, only tokens whose symbol appears in the merchant's selection are
+ * included.
  */
 export function buildCryptoSettlements(
   addresses: Partial<Record<NetworkId, string>>,
   tokens?: string[],
-): { cryptoSettlements: CryptoSettlement[]; mtaAddresses: string[] } {
+): CryptoSettlementInput[] {
   const allowed = symbolsByNamespace(tokens);
-  const mtaAddresses: string[] = [];
-  const cryptoSettlements: CryptoSettlement[] = [];
+  const settlements: CryptoSettlementInput[] = [];
   (Object.keys(addresses) as NetworkId[]).forEach((namespace) => {
     const address = addresses[namespace];
     if (!address) return;
     const allowedSymbols = allowed[namespace];
-    const isMta = namespace === "eip155";
     for (const chainPrefix of chainsForNamespace(namespace)) {
-      const caip10 = caip10ForChain(chainPrefix, address);
-      if (isMta) mtaAddresses.push(caip10);
-      for (const caip19 of getTokensCaip19(chainPrefix, allowedSymbols)) {
-        cryptoSettlements.push({
-          caip10,
-          caip19,
-          mta: isMta,
-          type: "caip19",
-        });
+      const destination = caip10ForChain(chainPrefix, address);
+      for (const asset of getTokensCaip19(chainPrefix, allowedSymbols)) {
+        settlements.push({ asset, destination });
       }
     }
   });
-  return { cryptoSettlements, mtaAddresses };
+  return settlements;
 }
 
-interface SyncMerchantParams {
-  merchantId: string;
-  companyName: string;
-  iconUrl?: string;
+/** GET the merchant's current crypto settlements (empty array if none). */
+export async function getCryptoSettlements(
+  merchantId: string,
+): Promise<CryptoSettlement[]> {
+  const res = await apiClient.get<SettlementsResponse>(
+    `/merchants/${encodeURIComponent(merchantId)}/settlements`,
+    { headers: getMerchantManagementHeaders() },
+  );
+  return res.crypto ?? [];
+}
+
+/** POST one or more new crypto settlements (the API rejects duplicate assets). */
+async function addCryptoSettlements(
+  merchantId: string,
+  settlements: CryptoSettlementInput[],
+): Promise<void> {
+  if (settlements.length === 0) return;
+  await apiClient.post<CreateCryptoSettlementsResponse>(
+    `/merchants/${encodeURIComponent(merchantId)}/settlements/crypto`,
+    { settlements },
+    { headers: getMerchantManagementHeaders(uuidv4()) },
+  );
+}
+
+/** PUT a single settlement to point its asset at a new destination. */
+async function updateCryptoSettlement(
+  merchantId: string,
+  settlementId: string,
+  destination: string,
+): Promise<void> {
+  await apiClient.put(
+    `/merchants/${encodeURIComponent(merchantId)}/settlements/crypto/${encodeURIComponent(settlementId)}`,
+    { destination },
+    { headers: getMerchantManagementHeaders(uuidv4()) },
+  );
+}
+
+/** DELETE a single settlement. */
+async function deleteCryptoSettlement(
+  merchantId: string,
+  settlementId: string,
+): Promise<void> {
+  await apiClient.delete(
+    `/merchants/${encodeURIComponent(merchantId)}/settlements/crypto/${encodeURIComponent(settlementId)}`,
+    { headers: getMerchantManagementHeaders() },
+  );
+}
+
+/**
+ * Reconcile the merchant's crypto settlements to match `desired`, diffing by
+ * asset (each (merchant, asset) pair is unique server-side):
+ *   - asset in desired but not current        → POST (added in one batch)
+ *   - asset in both, destination changed       → PUT  (re-point destination)
+ *   - asset in current but not desired         → DELETE
+ *
+ * Drives both first-time onboarding (current is empty → everything is added)
+ * and wallet switch (addresses change → destinations are re-pointed).
+ */
+export async function syncCryptoSettlements(
+  merchantId: string,
+  desired: CryptoSettlementInput[],
+): Promise<void> {
+  const current = await getCryptoSettlements(merchantId);
+  const currentByAsset = new Map(current.map((s) => [s.asset, s]));
+  const desiredByAsset = new Map(desired.map((s) => [s.asset, s]));
+
+  const toAdd: CryptoSettlementInput[] = [];
+  for (const [asset, want] of desiredByAsset) {
+    const existing = currentByAsset.get(asset);
+    if (!existing) {
+      toAdd.push(want);
+    } else if (existing.destination !== want.destination) {
+      await updateCryptoSettlement(merchantId, existing.id, want.destination);
+    }
+  }
+  await addCryptoSettlements(merchantId, toAdd);
+
+  for (const [asset, existing] of currentByAsset) {
+    if (!desiredByAsset.has(asset)) {
+      await deleteCryptoSettlement(merchantId, existing.id);
+    }
+  }
+}
+
+interface ProvisionMerchantParams {
+  name: string;
+  email: string;
   addresses: Partial<Record<NetworkId, string>>;
-  /** Selected token ids (`<namespace>:<SYMBOL>`). When provided, only matching tokens settle. */
+  /** Selected token ids (`<namespace>:<SYMBOL>`). Only matching tokens settle. */
   tokens?: string[];
 }
 
 /**
- * Build the MerchantUpsertRequest from a high-level set of inputs and PUT it
- * to pay-core. Used both at onboarding finish and when a different wallet
- * connects against an existing install merchant (the addresses change, the
- * merchant id stays).
- *
- * Sources `version` and `createdAt` from the server (`getMerchant`) so the
- * upsert always carries `serverVersion + 1` — sending a stale local version
- * is ignored by pay-core.
+ * First-time provisioning at onboarding finish: create the merchant, then
+ * register its crypto settlements. Returns the server merchant id.
  */
-export async function syncMerchantToPayCore(
-  params: SyncMerchantParams,
-): Promise<{ version: number }> {
-  if (!PARTNER_ID) {
-    throw new Error(
-      "EXPO_PUBLIC_PAY_PARTNER_ID is not set — required to upsert the merchant.",
-    );
-  }
-
-  const existing = await getMerchant(params.merchantId);
-  const now = new Date().toISOString();
-  const version = (existing?.version ?? 0) + 1;
-  const createdAt = existing?.createdAt ?? now;
-
-  const { cryptoSettlements, mtaAddresses } = buildCryptoSettlements(
-    params.addresses,
-    params.tokens,
-  );
-
-  await upsertMerchant({
-    id: params.merchantId,
-    name: params.companyName || "Merchant",
-    iconUrl: params.iconUrl,
-    partnerId: PARTNER_ID,
-    cryptoSettlements,
-    providers: {
-      iron: null,
-      // Turnkey provider hosts EVM MTAs; omit when no EVM address is present.
-      turnkey:
-        mtaAddresses.length > 0
-          ? { mtaAddresses, organizationId: params.merchantId }
-          : null,
-    },
-    alwaysCollectData: false,
-    neverCollectData: false,
-    deleted: false,
-    fees: null,
-    createdAt,
-    updatedAt: now,
-    version,
+export async function provisionMerchant(
+  params: ProvisionMerchantParams,
+): Promise<{ merchantId: string }> {
+  const { id } = await createMerchant({
+    name: params.name,
+    email: params.email,
   });
-
-  return { version };
+  await syncCryptoSettlements(
+    id,
+    buildCryptoSettlements(params.addresses, params.tokens),
+  );
+  return { merchantId: id };
 }

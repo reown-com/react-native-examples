@@ -57,6 +57,7 @@ class ApiClient {
 
     if (__DEV__) {
       console.log(`[WCPay] → ${fetchOptions.method ?? "GET"} ${url}`);
+      if (config.body) console.log(`[WCPay]   body ${config.body}`);
     }
 
     try {
@@ -75,6 +76,9 @@ class ApiClient {
           console.warn(
             `[WCPay] ✗ ${response.status} ${fetchOptions.method ?? "GET"} ${url} — ${error.message}`,
           );
+          // Surface the full body — validation errors carry field-level detail
+          // that the top-level message/code alone hides.
+          if (errorData.raw) console.warn(`[WCPay]   ↳ ${errorData.raw}`);
         }
         throw error;
       }
@@ -82,7 +86,10 @@ class ApiClient {
       if (__DEV__) {
         console.log(`[WCPay] ✓ ${response.status} ${url}`);
       }
-      return (await response.json()) as T;
+      // 204 No Content (e.g. DELETE) or an empty body — nothing to parse.
+      if (response.status === 204) return undefined as T;
+      const text = await response.text();
+      return (text ? JSON.parse(text) : undefined) as T;
     } catch (error) {
       clearTimeout(timeoutId);
 
@@ -111,11 +118,13 @@ class ApiClient {
 
   private async parseErrorResponse(
     response: Response,
-  ): Promise<{ message?: string; code?: string }> {
+  ): Promise<{ message?: string; code?: string; raw?: string }> {
+    const raw = await response.text().catch(() => "");
     try {
-      return await response.json();
+      const json = JSON.parse(raw) as { message?: string; code?: string };
+      return { ...json, raw };
     } catch {
-      return { message: response.statusText };
+      return { message: raw || response.statusText, raw };
     }
   }
 
@@ -130,17 +139,48 @@ class ApiClient {
   ): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: "POST", body });
   }
+
+  async put<T>(
+    endpoint: string,
+    body?: unknown,
+    options?: RequestOptions,
+  ): Promise<T> {
+    return this.request<T>(endpoint, { ...options, method: "PUT", body });
+  }
+
+  async delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
+    return this.request<T>(endpoint, { ...options, method: "DELETE" });
+  }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL ?? "");
 
+/** Common SDK/version headers sent on every WCPay request. */
+const SDK_HEADERS: Record<string, string> = {
+  "WCP-Version": "2026-02-19.preview",
+  "Sdk-Name": "pos-device",
+  "Sdk-Version": "1.0.0",
+  "Sdk-Platform": "react-native",
+};
+
+/** Resolve the partner-scoped customer API key, throwing if unset. */
+function requireCustomerApiKey(): string {
+  const customerApiKey = MerchantConfig.getCustomerApiKey();
+  if (!customerApiKey || customerApiKey.trim().length === 0) {
+    throw new Error(
+      "API key is not configured — set EXPO_PUBLIC_DEFAULT_CUSTOMER_API_KEY in .env.",
+    );
+  }
+  return customerApiKey;
+}
+
 /**
- * Auth headers for WCPay requests. Merchant-Id is the id of the currently
- * active merchant (created via the pay-core upsert at onboarding finish); the
- * Api-Key is the partner-scoped customer key from env.
+ * Auth headers for WCPay payment requests. Merchant-Id is the id of the
+ * currently active merchant (created via POST /v1/merchants at onboarding
+ * finish); the Api-Key is the partner-scoped customer key from env.
  */
 export function getApiHeaders(): Record<string, string> {
-  const customerApiKey = MerchantConfig.getCustomerApiKey();
+  const customerApiKey = requireCustomerApiKey();
   const active = useMerchantStore.getState().getActiveMerchant();
   const merchantId = active?.merchantId;
 
@@ -149,18 +189,27 @@ export function getApiHeaders(): Record<string, string> {
       "No active merchant — finish onboarding to create one before charging.",
     );
   }
-  if (!customerApiKey || customerApiKey.trim().length === 0) {
-    throw new Error(
-      "API key is not configured — set EXPO_PUBLIC_DEFAULT_CUSTOMER_API_KEY in .env.",
-    );
-  }
 
   return {
     "Api-Key": customerApiKey,
     "Merchant-Id": merchantId,
-    "WCP-Version": "2026-02-19.preview",
-    "Sdk-Name": "pos-device",
-    "Sdk-Version": "1.0.0",
-    "Sdk-Platform": "react-native",
+    ...SDK_HEADERS,
   };
+}
+
+/**
+ * Auth headers for merchant-management + settlement requests. Unlike
+ * `getApiHeaders`, this does NOT require an active Merchant-Id: at create time
+ * no merchant exists yet, and for settlement calls the merchant id lives in the
+ * URL path. Pass an `idempotencyKey` on mutating calls (POST/PUT).
+ */
+export function getMerchantManagementHeaders(
+  idempotencyKey?: string,
+): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Api-Key": requireCustomerApiKey(),
+    ...SDK_HEADERS,
+  };
+  if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
+  return headers;
 }

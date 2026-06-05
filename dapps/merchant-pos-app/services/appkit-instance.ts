@@ -5,10 +5,11 @@ import { WagmiAdapter } from "@reown/appkit-wagmi-react-native";
 import { arbitrum, base, mainnet, polygon } from "@wagmi/core/chains";
 import * as Clipboard from "expo-clipboard";
 
-// Reown AppKit project id — https://dashboard.reown.com.
-// The fallback id only works in Expo Go; set EXPO_PUBLIC_PROJECT_ID for production builds.
-const projectId =
-  process.env.EXPO_PUBLIC_PROJECT_ID ?? "b8e39dfb697ba26ac5a77a4b29b35604";
+const projectId = process.env.EXPO_PUBLIC_PROJECT_ID;
+
+if (!projectId) {
+  throw new Error("EXPO_PUBLIC_PROJECT_ID is not available");
+}
 
 const metadata = {
   name: "Merchant POS",
