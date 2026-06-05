@@ -70,10 +70,6 @@ inputs:
       personal-details data through the prod KYC webview).
     required: false
     default: ''
-  maestro-actions-ref:
-    description: 'Pinned ref of WalletConnect/actions for maestro/pay-tests and maestro/setup.'
-    required: false
-    default: '6628a30e8e92ab36c1051e6f62b68add6a737f3f'
   apple-key-id:
     description: 'Apple App Store Connect API key id (iOS only).'
     required: false
@@ -315,6 +311,15 @@ runs:
           xcrun simctl list devices available -j | \
           jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name == "iPhone 16") | .udid' | head -1)
         xcrun simctl boot "$DEVICE_ID" || true
+        # Wait for full boot so the steps below don't race a not-ready simulator
+        xcrun simctl bootstatus "$DEVICE_ID" -b
+        # Clear stale Shared Web Credentials / associated-domains state on the fresh
+        # boot BEFORE the app is installed, so the install-time applinks binding isn't
+        # wiped by a later reset (which would force a racy dev-mode AASA re-fetch and
+        # leave the Universal Link unresolved → openurl falls back to Safari).
+        xcrun simctl spawn "$DEVICE_ID" swcutil reset || true
+        # Disable UIKit animations to reduce Maestro timing flakiness
+        xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
         echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
 
     - name: Install app on Simulator
@@ -326,12 +331,15 @@ runs:
       if: inputs.platform == 'ios'
       shell: bash
       run: |
-        xcrun simctl spawn "$DEVICE_ID" swcutil reset || true
         for domain in pay.walletconnect.com staging.pay.walletconnect.com dev.pay.walletconnect.com lab.reown.com; do
           xcrun simctl spawn "$DEVICE_ID" swcutil dl -d "$domain" || true
         done
         sleep 3
-        xcrun simctl spawn "$DEVICE_ID" swcutil show 2>/dev/null | grep -iE 'walletconnect|reown' || true
+        # Dump the FULL association table (not grep-filtered): swcd's per-app/domain
+        # verdict is what tells us whether the Universal Link will resolve, so it must
+        # be visible in CI logs when the deeplink flow flakes.
+        echo "=== swcutil show (associated-domains state after install + priming) ==="
+        xcrun simctl spawn "$DEVICE_ID" swcutil show 2>/dev/null || true
 
     # --- Android leg ---
     - name: Install Java 17
@@ -424,10 +432,10 @@ runs:
 
     # --- Common: Maestro setup + run ---
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@6628a30e8e92ab36c1051e6f62b68add6a737f3f
+      uses: WalletConnect/actions/maestro/pay-tests@52e0ab7755ca993bd829062278654ed12b2d471d
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@6628a30e8e92ab36c1051e6f62b68add6a737f3f
+      uses: WalletConnect/actions/maestro/setup@52e0ab7755ca993bd829062278654ed12b2d471d
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -448,10 +456,14 @@ runs:
       run: |
         xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
         mkdir -p maestro-artifacts
+        # Snapshot the associated-domains verification state at run start — brackets the
+        # post-install dump above and shows swcd's verdict closer to the deeplink flow.
+        echo "=== swcutil show (Maestro run start) ==="
+        xcrun simctl spawn "$DEVICE_ID" swcutil show 2>/dev/null || true
         xcrun simctl spawn "$DEVICE_ID" log stream \
           --level=debug \
           --style=compact \
-          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\" OR process CONTAINS \"maestro\" OR process == \"xctest\" OR process == \"testmanagerd\" OR process == \"tccd\" OR process == \"SpringBoard\"" \
+          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\" OR process CONTAINS \"maestro\" OR process == \"xctest\" OR process == \"testmanagerd\" OR process == \"tccd\" OR process == \"SpringBoard\" OR process == \"swcd\" OR process == \"swcagent\"" \
           > maestro-artifacts/ios-syslog.log 2>&1 &
         SYSLOG_PID=$!
         set +e
