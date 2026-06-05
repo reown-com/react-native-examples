@@ -37,7 +37,7 @@ export function RootStackNavigator() {
       <StackNavigator.Screen
         options={{
           headerShown: true,
-          header: () => <Header />,
+          header: Header,
         }}
         name="Home"
         component={HomeTabNavigator}

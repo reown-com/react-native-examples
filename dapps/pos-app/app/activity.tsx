@@ -176,7 +176,7 @@ export default function ActivityScreen() {
 
     return (
       <EmptyState
-        title="No activity yet"
+        title="No payments yet"
         subtitle="Your payments will show up here once you start taking them."
         cta={{
           label: "Start payment",

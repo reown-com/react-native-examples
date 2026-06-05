@@ -16,7 +16,7 @@ import { InfoExplainerView } from './InfoExplainerView';
 import { ExpiryWarningView } from './ExpiryWarningView';
 import { ResultView } from './ResultView';
 import { ViewWrapper } from './ViewWrapper';
-import { detectErrorType, getErrorMessage } from './utils';
+import { detectErrorType, getLoadingContent } from './utils';
 import { GasFeeView } from './GasFeeView';
 import { requiresApproval } from '@/utils/PaymentUtil';
 
@@ -42,7 +42,7 @@ export default function PaymentOptionsModal() {
         const errorType = detectErrorType(snap.errorMessage);
         PaymentStore.setResult({
           status: 'error',
-          message: getErrorMessage(errorType, snap.errorMessage),
+          message: snap.errorMessage,
           errorType,
         });
         return;
@@ -65,7 +65,6 @@ export default function PaymentOptionsModal() {
         PaymentStore.setResult({
           status: 'error',
           errorType: 'insufficient_funds',
-          message: getErrorMessage('insufficient_funds'),
         });
         return;
       }
@@ -156,7 +155,7 @@ export default function PaymentOptionsModal() {
     const errorType = detectErrorType(error);
     PaymentStore.setResult({
       status: 'error',
-      message: getErrorMessage(errorType, error),
+      message: error,
       errorType,
     });
   }, []);
@@ -184,7 +183,6 @@ export default function PaymentOptionsModal() {
     PaymentStore.setResult({
       status: 'error',
       errorType: 'expired',
-      message: getErrorMessage('expired'),
     });
   }, []);
 
@@ -240,7 +238,6 @@ export default function PaymentOptionsModal() {
         PaymentStore.setResult({
           status: 'error',
           errorType: 'insufficient_funds',
-          message: getErrorMessage('insufficient_funds'),
         });
         return;
       }
@@ -262,7 +259,11 @@ export default function PaymentOptionsModal() {
         return (
           <LoadingView
             variant="spinner"
-            message={snap.loadingMessage || 'Preparing your payment…'}
+            message={
+              getLoadingContent('loading', {
+                setupTokenSymbol: snap.setupTokenSymbol,
+              }).message
+            }
           />
         );
 
@@ -340,13 +341,14 @@ export default function PaymentOptionsModal() {
         );
       }
 
-      case 'confirming':
+      case 'confirming': {
+        const confirming = getLoadingContent('confirming', {
+          setupTokenSymbol: snap.setupTokenSymbol,
+        });
         return (
-          <LoadingView
-            message={snap.loadingMessage || 'Confirming your payment…'}
-            note={snap.loadingNote || undefined}
-          />
+          <LoadingView message={confirming.message} note={confirming.note} />
         );
+      }
 
       case 'expiryWarning':
         if (!snap.expiresAt) return null;
@@ -370,7 +372,7 @@ export default function PaymentOptionsModal() {
         );
 
       default:
-        return <LoadingView message="Loading..." />;
+        return <LoadingView message="Loading…" />;
     }
   }, [
     snap.step,
@@ -378,8 +380,7 @@ export default function PaymentOptionsModal() {
     snap.resultStatus,
     snap.resultErrorType,
     snap.resultMessage,
-    snap.loadingMessage,
-    snap.loadingNote,
+    snap.setupTokenSymbol,
     snap.paymentOptions,
     snap.optionFeeEstimatesById,
     snap.optionFeeEstimateStatusById,

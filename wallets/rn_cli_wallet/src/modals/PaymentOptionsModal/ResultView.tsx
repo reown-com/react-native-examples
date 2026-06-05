@@ -9,13 +9,15 @@ import WarningCircle from '@/assets/WarningCircle';
 import { haptics } from '@/utils/haptics';
 import { Spacing } from '@/utils/ThemeUtil';
 
-import type { ErrorType } from './utils';
+import type { ErrorType, ResultIcon } from './utils';
 import {
   arePayModalAnimationsEnabled,
-  getErrorTitle,
+  getResultContent,
   LOTTIE_ICON_SIZE,
   PAY_STATUS_LAYOUT,
 } from './utils';
+
+const ERROR_ICON_COLOR = '#0988F0';
 
 const getResultButtonTestId = (
   isSuccess: boolean,
@@ -23,15 +25,38 @@ const getResultButtonTestId = (
 ) =>
   `pay-button-result-action-${isSuccess ? 'success' : errorType || 'generic'}`;
 
-const getActionButtonText = (
-  isSuccess: boolean,
-  errorType?: ErrorType | null,
-) => {
-  if (isSuccess) return 'Done';
-  if (errorType === 'insufficient_funds') return 'Got it';
-  if (errorType === 'expired' || errorType === 'cancelled')
-    return 'Scan a new QR code';
-  return 'Close';
+const renderIcon = (icon: ResultIcon, testID: string) => {
+  switch (icon) {
+    case 'success':
+      return (
+        <LottieView
+          source={require('@/assets/lottie/Success.json')}
+          autoPlay={arePayModalAnimationsEnabled}
+          loop={false}
+          progress={arePayModalAnimationsEnabled ? undefined : 1}
+          style={styles.successAnimation}
+          testID={testID}
+        />
+      );
+    case 'coins':
+      return (
+        <CoinStack
+          width={40}
+          height={40}
+          fill={ERROR_ICON_COLOR}
+          testID={testID}
+        />
+      );
+    case 'warning':
+      return (
+        <WarningCircle
+          width={40}
+          height={40}
+          fill={ERROR_ICON_COLOR}
+          testID={testID}
+        />
+      );
+  }
 };
 
 interface ResultViewProps {
@@ -58,107 +83,9 @@ export function ResultView({
   }, [status]);
 
   const isSuccess = status === 'success';
-  const defaultMessage = isSuccess
-    ? 'Payment confirmed'
-    : 'Payment didn’t go through. No funds were moved. Try again, or pay with a different asset.';
-
-  const renderIcon = () => {
-    if (isSuccess) {
-      return (
-        <LottieView
-          source={require('@/assets/lottie/Success.json')}
-          autoPlay={arePayModalAnimationsEnabled}
-          loop={false}
-          progress={arePayModalAnimationsEnabled ? undefined : 1}
-          style={styles.successAnimation}
-          testID="pay-result-success-icon"
-        />
-      );
-    }
-
-    const iconColor = '#0988F0';
-
-    switch (errorType) {
-      case 'insufficient_funds':
-        return (
-          <CoinStack
-            width={40}
-            height={40}
-            fill={iconColor}
-            testID="pay-result-insufficient-funds-icon"
-          />
-        );
-      case 'expired':
-        return (
-          <WarningCircle
-            width={40}
-            height={40}
-            fill={iconColor}
-            testID="pay-result-expired-icon"
-          />
-        );
-      case 'cancelled':
-        return (
-          <WarningCircle
-            width={40}
-            height={40}
-            fill={iconColor}
-            testID="pay-result-cancelled-icon"
-          />
-        );
-      case 'not_found':
-      case 'generic':
-      default:
-        return (
-          <WarningCircle
-            width={40}
-            height={40}
-            fill={iconColor}
-            testID="pay-result-error-icon"
-          />
-        );
-    }
-  };
-
-  const renderTitle = () => {
-    if (isSuccess) {
-      return (
-        <Text
-          variant="h6-400"
-          color="text-primary"
-          center
-          numberOfLines={2}
-          testID="pay-result-title"
-        >
-          {message || defaultMessage}
-        </Text>
-      );
-    }
-
-    if (!errorType) {
-      return (
-        <Text
-          variant="h6-400"
-          color="text-primary"
-          center
-          testID="pay-result-title"
-        >
-          {message || defaultMessage}
-        </Text>
-      );
-    }
-
-    return (
-      <Text
-        variant="h6-400"
-        color="text-primary"
-        center
-        testID="pay-result-title"
-      >
-        {getErrorTitle(errorType)}
-      </Text>
-    );
-  };
+  const content = getResultContent(status, errorType ?? null, { message });
+  const onPress =
+    content.actionKind === 'scanQR' && onScanQR ? onScanQR : onClose;
 
   return (
     <>
@@ -166,11 +93,19 @@ export function ResultView({
         style={isSuccess ? styles.iconArea : styles.iconAreaCompact}
         testID="pay-result-container"
       >
-        {renderIcon()}
+        {renderIcon(content.icon, content.iconTestId)}
       </View>
       <View style={styles.textArea}>
-        {renderTitle()}
-        {!isSuccess && (
+        <Text
+          variant="h6-400"
+          color="text-primary"
+          center
+          numberOfLines={isSuccess ? 2 : undefined}
+          testID="pay-result-title"
+        >
+          {content.title}
+        </Text>
+        {content.description && (
           <Text
             variant="lg-400"
             color="text-tertiary"
@@ -178,21 +113,17 @@ export function ResultView({
             numberOfLines={3}
             center
           >
-            {message || defaultMessage}
+            {content.description}
           </Text>
         )}
       </View>
       <View style={styles.footerContainer}>
         <ActionButton
-          onPress={
-            (errorType === 'expired' || errorType === 'cancelled') && onScanQR
-              ? onScanQR
-              : onClose
-          }
+          onPress={onPress}
           fullWidth
           testID={getResultButtonTestId(isSuccess, errorType)}
         >
-          {getActionButtonText(isSuccess, errorType)}
+          {content.actionLabel}
         </ActionButton>
       </View>
     </>

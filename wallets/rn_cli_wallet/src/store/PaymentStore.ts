@@ -15,7 +15,6 @@ import { storage } from '@/utils/storage';
 import type { OptionFeeEstimateStatus, Step } from '@/utils/TypesUtil';
 import {
   detectErrorType,
-  getErrorMessage,
   formatAmount,
 } from '@/modals/PaymentOptionsModal/utils';
 import type { ErrorType } from '@/modals/PaymentOptionsModal/utils';
@@ -32,8 +31,7 @@ import { getApprovalAction, shouldShowSetupLoader } from '@/utils/PaymentUtil';
 
 interface PaymentState {
   paymentOptions: PaymentOptionsResponse | null;
-  loadingMessage: string | null;
-  loadingNote: string | null;
+  setupTokenSymbol: string | null;
   errorMessage: string | null;
   step: Step;
   previousStep: Step | null;
@@ -48,15 +46,13 @@ interface PaymentState {
 }
 
 const PAY_EXPIRY_GUARD_MS = 10_000;
-const FAILED_CONFIRMATION_MESSAGE = 'The payment could not be confirmed.';
 const PAY_LAST_TOKEN_UNIT_KEY = 'PAY_LAST_TOKEN_UNIT';
 const DEFAULT_FIAT_CURRENCY = 'USD';
 
 function createInitialState(): PaymentState {
   return {
     paymentOptions: null,
-    loadingMessage: null,
-    loadingNote: null,
+    setupTokenSymbol: null,
     errorMessage: null,
     step: 'loading',
     previousStep: null,
@@ -108,7 +104,6 @@ function setPaymentResultFromConfirmStatus({
     PaymentStore.setResult({
       status: 'error',
       errorType: 'expired',
-      message: getErrorMessage('expired'),
     });
     return;
   }
@@ -117,7 +112,6 @@ function setPaymentResultFromConfirmStatus({
     PaymentStore.setResult({
       status: 'error',
       errorType: 'cancelled',
-      message: getErrorMessage('cancelled'),
     });
     return;
   }
@@ -126,7 +120,6 @@ function setPaymentResultFromConfirmStatus({
     PaymentStore.setResult({
       status: 'error',
       errorType: 'generic',
-      message: FAILED_CONFIRMATION_MESSAGE,
     });
     return;
   }
@@ -144,18 +137,18 @@ function setPaymentResultFromConfirmStatus({
   PaymentStore.setResult({
     status: 'error',
     errorType: 'generic',
-    message: FAILED_CONFIRMATION_MESSAGE,
   });
 }
 
 const PaymentStore = {
   state,
 
-  startPayment(params: {
-    paymentOptions?: PaymentOptionsResponse;
-    loadingMessage?: string;
-    errorMessage?: string;
-  }) {
+  startPayment(
+    params: {
+      paymentOptions?: PaymentOptionsResponse;
+      errorMessage?: string;
+    } = {},
+  ) {
     PaymentStore.clearExpiryTimer();
     paymentActionsRequestSeq += 1;
     optionFeeEstimateRequestSeq += 1;
@@ -163,14 +156,12 @@ const PaymentStore = {
     if (params.paymentOptions) {
       state.paymentOptions = ref(params.paymentOptions);
     }
-    state.loadingMessage = params.loadingMessage ?? null;
     state.errorMessage = params.errorMessage ?? null;
   },
 
   setPaymentOptions(options: PaymentOptionsResponse) {
     state.paymentOptions = ref(options);
-    state.loadingMessage = null;
-    state.loadingNote = null;
+    state.setupTokenSymbol = null;
     state.errorMessage = null;
     state.resultErrorType = null;
     state.optionFeeEstimatesById = {};
@@ -190,12 +181,13 @@ const PaymentStore = {
 
   setError(errorMessage: string) {
     const errorType = detectErrorType(errorMessage);
-    state.errorMessage = errorMessage;
-    state.loadingMessage = null;
-    state.loadingNote = null;
     state.resultStatus = 'error';
-    state.resultMessage = getErrorMessage(errorType, errorMessage);
+    state.resultMessage = errorMessage;
     state.resultErrorType = errorType;
+    // Clear the transient loading-phase errorMessage so it can't re-trigger the
+    // error branch in resolveLoadingStep, consistent with setResult.
+    state.errorMessage = null;
+    state.setupTokenSymbol = null;
     state.step = 'result';
   },
 
@@ -216,15 +208,16 @@ const PaymentStore = {
 
   setResult(payload: {
     status: 'success' | 'error';
-    message: string;
+    // Optional dynamic context — success summary, or raw error message. Result
+    // copy itself is resolved in the view via getResultContent.
+    message?: string;
     errorType?: ErrorType;
   }) {
     state.resultStatus = payload.status;
-    state.resultMessage = payload.message;
+    state.resultMessage = payload.message ?? '';
     state.resultErrorType = payload.errorType ?? null;
     state.errorMessage = null;
-    state.loadingMessage = null;
-    state.loadingNote = null;
+    state.setupTokenSymbol = null;
     state.step = 'result';
   },
 
@@ -487,7 +480,6 @@ const PaymentStore = {
       PaymentStore.setResult({
         status: 'error',
         errorType: 'expired',
-        message: getErrorMessage('expired'),
       });
       return;
     }
@@ -498,13 +490,7 @@ const PaymentStore = {
     );
 
     state.step = 'confirming';
-    if (showInitialSetupLoader) {
-      state.loadingMessage = `Setting up ${tokenSymbol}`;
-      state.loadingNote = `This usually takes a few seconds. Future ${tokenSymbol} payments will skip this step.`;
-    } else {
-      state.loadingMessage = null;
-      state.loadingNote = null;
-    }
+    state.setupTokenSymbol = showInitialSetupLoader ? tokenSymbol : null;
 
     try {
       const payClient = walletKit?.pay;
@@ -531,13 +517,10 @@ const PaymentStore = {
           throw new Error(`Payment action ${stepLabel} is missing walletRpc`);
         }
 
-        if (showSetupLoader && approvalAction && action === approvalAction) {
-          state.loadingMessage = `Setting up ${tokenSymbol}`;
-          state.loadingNote = `This usually takes a few seconds. Future ${tokenSymbol} payments will skip this step.`;
-        } else {
-          state.loadingMessage = null;
-          state.loadingNote = null;
-        }
+        state.setupTokenSymbol =
+          showSetupLoader && approvalAction && action === approvalAction
+            ? tokenSymbol
+            : null;
 
         LogStore.log(
           'Executing payment action',
@@ -803,7 +786,7 @@ const PaymentStore = {
       PaymentStore.setResult({
         status: 'error',
         errorType,
-        message: getErrorMessage(errorType, errorMessage),
+        message: errorMessage,
       });
     }
   },
