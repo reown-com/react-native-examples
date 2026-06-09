@@ -2,7 +2,6 @@ import type { CharacterItem } from "../utils/getCharactersArray";
 import { useMemo } from "react";
 
 const ITEM_HEIGHT = 60;
-const CURSOR_OFFSET = 0;
 const CURRENCY_SPACE = 6;
 const SPACING_FACTOR = 0.9;
 
@@ -58,7 +57,6 @@ export type AnimatedNumberLayout = {
   itemHeight: number;
   scale: number;
   totalContentWidth: number;
-  cursorPosition: number;
   characterLayouts: CharacterLayoutInfo[];
   getCharWidth: (char: string) => number;
 };
@@ -102,37 +100,14 @@ export const useAnimatedNumberLayout = ({
     return last.position + last.visualWidth;
   }, [characterLayouts]);
 
-  const cursorPosition = useMemo(() => {
-    if (characterLayouts.length === 0) return 0;
-
-    const placeholderIdx = characters.findIndex((c) => c.isPlaceholderDecimal);
-    const cursorIdx =
-      placeholderIdx !== -1 ? placeholderIdx - 1 : characters.length - 1;
-    const layout = characterLayouts[cursorIdx];
-    if (!layout) return 0;
-
-    const charRight = layout.position + layout.visualWidth;
-    const sep = separators[cursorIdx];
-
-    if (sep) return charRight + getCharWidth(sep) * scale + CURSOR_OFFSET;
-
-    const nextChar = characters[cursorIdx + 1];
-    if (nextChar?.isPlaceholderDecimal && characterLayouts[cursorIdx + 1]) {
-      return (charRight + characterLayouts[cursorIdx + 1].position) / 2;
-    }
-
-    return charRight + CURSOR_OFFSET;
-  }, [characters, characterLayouts, separators, scale]);
-
   return useMemo(
     () => ({
       itemHeight: ITEM_HEIGHT,
       scale,
       totalContentWidth,
-      cursorPosition,
       characterLayouts,
       getCharWidth,
     }),
-    [scale, totalContentWidth, cursorPosition, characterLayouts],
+    [scale, totalContentWidth, characterLayouts],
   );
 };

@@ -7,7 +7,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { AnimatedCursor } from "./AnimatedCursor";
 import { AnimatedNumberCharacters } from "./AnimatedNumberCharacters";
 import { useAnimatedNumberLayout } from "../hooks/useAnimatedNumberLayout";
 import { useAnimatedNumberValue } from "../hooks/useAnimatedNumberValue";
@@ -21,8 +20,6 @@ type AnimatedNumberProps = {
   symbolPosition?: SymbolPosition;
   locale?: SupportedLocale;
   placeholder?: string;
-  isFocused?: boolean;
-  cursorBlinkEnabled?: boolean;
 };
 
 export const AnimatedNumber = ({
@@ -31,8 +28,6 @@ export const AnimatedNumber = ({
   symbolPosition = "left",
   locale,
   placeholder = "0.00",
-  isFocused = false,
-  cursorBlinkEnabled = true,
 }: AnimatedNumberProps) => {
   const Theme = useTheme();
   const { characters, separators, isEmpty, decimalSeparator } =
@@ -67,14 +62,6 @@ export const AnimatedNumber = ({
         textPrimaryColor={Theme["text-primary"]}
         textSecondaryColor={Theme["text-secondary"]}
         textTertiaryColor={Theme["text-tertiary"]}
-      />
-      <AnimatedCursor
-        isFocused={isFocused}
-        cursorPosition={layout.cursorPosition}
-        scale={layout.scale}
-        blinkEnabled={cursorBlinkEnabled}
-        containerHeight={layout.itemHeight}
-        cursorColor={Theme["bg-accent-primary"]}
       />
     </Animated.View>
   );
