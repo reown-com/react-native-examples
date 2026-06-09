@@ -3,8 +3,6 @@ import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { LogEntry, useLogsStore } from "@/store/useLogsStore";
-import { resetNavigation } from "@/utils/navigation";
-import { LinearGradient } from "expo-linear-gradient";
 import { useCallback } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 
@@ -81,7 +79,6 @@ function LogItem({ item }: { item: LogEntry }) {
 }
 
 export default function LogsScreen() {
-  const Theme = useTheme();
   const logs = useLogsStore((state) => state.logs);
   const clearLogs = useLogsStore((state) => state.clearLogs);
 

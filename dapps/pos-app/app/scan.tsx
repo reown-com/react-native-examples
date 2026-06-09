@@ -42,12 +42,10 @@ export default function ScanScreen() {
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const hasNavigatedRef = useRef(false);
 
-  const {
-    deviceId,
-    merchantId,
-    currency: currencyCode,
-    nfcEnabled,
-  } = useSettingsStore((state) => state);
+  const deviceId = useSettingsStore((state) => state.deviceId);
+  const merchantId = useSettingsStore((state) => state.merchantId);
+  const currencyCode = useSettingsStore((state) => state.currency);
+  const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
