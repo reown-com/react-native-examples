@@ -66,6 +66,7 @@ function getBaseUrl(urlString: string): string {
 const PREFILL_DATA = {
   fullName: 'John Doe',
   dob: '1990-06-15',
+  pobAddress: 'Buenos Aires',
 };
 
 function buildUrlWithPrefill(
@@ -147,7 +148,10 @@ export function CollectDataWebView({
       LogStore.error('WebView error', 'CollectDataWebView', 'handleError', {
         error: description,
       });
-      onError(description || 'Failed to load the form');
+      onError(
+        description ||
+          'Couldn’t load the form. Check your connection, then try again.',
+      );
     },
     [onError],
   );

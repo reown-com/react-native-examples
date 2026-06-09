@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { NetworkInfoCard } from '@/components/NetworkInfoCard';
 
 import { walletKit } from '@/utils/WalletKitUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
@@ -76,7 +77,7 @@ export default function SessionSignSuiPersonalMessageModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Transaction signing failed',
+          text1: 'Couldn’t sign transaction',
           text2: (e as Error).message,
         });
       } finally {
@@ -110,7 +111,7 @@ export default function SessionSignSuiPersonalMessageModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {
@@ -146,6 +147,7 @@ export default function SessionSignSuiPersonalMessageModal() {
           validation={validation}
           isScam={isScam}
         />
+        <NetworkInfoCard chainId={params.chainId} />
         <Message message={transaction} />
       </View>
     </RequestModal>

@@ -24,6 +24,8 @@ export interface ActionButtonProps {
   fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  testID?: string;
+  accessibilityLabel?: string;
 }
 
 export function ActionButton({
@@ -36,6 +38,8 @@ export function ActionButton({
   fullWidth = false,
   style,
   textStyle,
+  testID,
+  accessibilityLabel,
 }: ActionButtonProps) {
   const Theme = useTheme();
 
@@ -68,6 +72,8 @@ export function ActionButton({
     <Button
       onPress={onPress}
       disabled={disabled || loading || silentDisabled}
+      testID={testID}
+      accessibilityLabel={accessibilityLabel}
       style={[
         styles.container,
         { backgroundColor, borderColor },

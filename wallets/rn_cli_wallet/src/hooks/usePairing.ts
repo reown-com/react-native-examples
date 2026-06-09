@@ -6,14 +6,13 @@ import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import PaymentStore from '@/store/PaymentStore';
 import { EIP155_CHAINS } from '@/constants/Eip155';
+import { SOLANA_CHAINS } from '@/constants/Solana';
 
 export { isPaymentLink };
 
 export function usePairing() {
   const handlePaymentLink = useCallback(async (paymentLink: string) => {
-    PaymentStore.startPayment({
-      loadingMessage: 'Preparing your payment...',
-    });
+    PaymentStore.startPayment();
     ModalStore.open('PaymentOptionsModal');
 
     await SettingsStore.state.initPromise;
@@ -26,11 +25,19 @@ export function usePairing() {
 
     try {
       const eip155Address = SettingsStore.state.eip155Address;
-      const accounts = eip155Address
-        ? Object.keys(EIP155_CHAINS).map(
-            chainKey => `${chainKey}:${eip155Address}`,
-          )
-        : [];
+      const solanaAddress = SettingsStore.state.solanaAddress;
+      const accounts = [
+        ...(eip155Address
+          ? Object.keys(EIP155_CHAINS).map(
+              chainKey => `${chainKey}:${eip155Address}`,
+            )
+          : []),
+        ...(solanaAddress
+          ? Object.keys(SOLANA_CHAINS).map(
+              chainKey => `${chainKey}:${solanaAddress}`,
+            )
+          : []),
+      ];
 
       const paymentOptions = await payClient.getPaymentOptions({
         paymentLink,

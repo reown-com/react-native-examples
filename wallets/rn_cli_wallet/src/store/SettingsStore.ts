@@ -7,16 +7,21 @@ import EIP155Lib from '../lib/EIP155Lib';
 import SuiLib from '../lib/SuiLib';
 import TonLib from '../lib/TonLib';
 import TronLib from '../lib/TronLib';
+import CantonLib from '../lib/CantonLib';
+import SolanaLib from '../lib/SolanaLib';
 import { MMKV } from 'react-native-mmkv';
 
 function getInitialThemeMode(): 'light' | 'dark' {
   const mmkv = new MMKV();
   const saved = mmkv.getString('THEME_MODE');
   if (saved === 'light' || saved === 'dark') {
+    Appearance.setColorScheme(saved);
     return saved;
   }
 
-  return Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+  const systemMode = Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+  Appearance.setColorScheme(systemMode);
+  return systemMode;
 }
 
 /**
@@ -32,6 +37,10 @@ interface State {
   tonWallet: TonLib | null;
   tronAddress: string;
   tronWallet: TronLib | null;
+  cantonAddress: string;
+  cantonWallet: CantonLib | null;
+  solanaAddress: string;
+  solanaWallet: SolanaLib | null;
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -62,6 +71,10 @@ const state = proxy<State>({
   tonWallet: null,
   tronAddress: '',
   tronWallet: null,
+  cantonAddress: '',
+  cantonWallet: null,
+  solanaAddress: '',
+  solanaWallet: null,
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
@@ -152,8 +165,25 @@ const SettingsStore = {
     state.tronWallet = tronWallet;
   },
 
+  setCantonAddress(cantonAddress: string) {
+    state.cantonAddress = cantonAddress;
+  },
+
+  setCantonWallet(cantonWallet: CantonLib) {
+    state.cantonWallet = cantonWallet;
+  },
+
+  setSolanaAddress(solanaAddress: string) {
+    state.solanaAddress = solanaAddress;
+  },
+
+  setSolanaWallet(solanaWallet: SolanaLib) {
+    state.solanaWallet = solanaWallet;
+  },
+
   setThemeMode(value: 'light' | 'dark') {
     state.themeMode = value;
+    Appearance.setColorScheme(value);
     storage.setItem('THEME_MODE', value);
   },
 
@@ -161,6 +191,7 @@ const SettingsStore = {
     const saved = await storage.getItem<string>('THEME_MODE');
     if (saved === 'light' || saved === 'dark') {
       state.themeMode = saved;
+      Appearance.setColorScheme(saved);
     }
   },
 };

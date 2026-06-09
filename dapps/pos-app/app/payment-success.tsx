@@ -17,8 +17,10 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { formatAmountWithSymbol, getCurrency } from "@/utils/currency";
+import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
+import { Image } from "expo-image";
 import { StatusBar } from "expo-status-bar";
 
 interface SuccessParams extends UnknownOutputParams {
@@ -39,13 +41,15 @@ const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
   const Theme = useTheme("light");
+  const DarkTheme = useTheme("dark");
   const params = useLocalSearchParams<SuccessParams>();
   const themeMode = useSettingsStore((state) => state.themeMode);
   const currencyCode = useSettingsStore((state) => state.currency);
-  const currency = getCurrency(currencyCode);
+  const variant = useSettingsStore((state) => state.variant);
   const getVariantPrinterLogo = useSettingsStore(
     (state) => state.getVariantPrinterLogo,
   );
+  const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const { top } = useSafeAreaInsets();
   const { amount } = params;
@@ -65,6 +69,10 @@ export default function PaymentSuccessScreen() {
     isPrintingRef.current = true;
     setIsPrinting(true);
     try {
+      // Build the header lockup (wpay + "+" + partner logo) from the live
+      // assets; fall back to the pre-built logo if Skia rendering fails.
+      const logoBase64 =
+        (await buildReceiptLogo(variant)) ?? getVariantPrinterLogo();
       await printReceipt({
         txnId: params.paymentId,
         amountFiat: Number(amount),
@@ -76,7 +84,7 @@ export default function PaymentSuccessScreen() {
           : undefined,
         networkName: params.chainName,
         date: params.timestamp,
-        logoBase64: getVariantPrinterLogo(),
+        logoBase64,
       });
     } catch (error) {
       const errorMessage =
@@ -152,6 +160,8 @@ export default function PaymentSuccessScreen() {
       {/* Content that fades in after circle expands */}
       <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
         <View
+          testID="pos-payment-success"
+          nativeID="pos-payment-success"
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <ThemedText
@@ -160,7 +170,7 @@ export default function PaymentSuccessScreen() {
               { color: Theme["text-payment-success"] },
             ]}
           >
-            Payment Successful
+            Payment successful
           </ThemedText>
           <ThemedText
             style={[
@@ -179,8 +189,7 @@ export default function PaymentSuccessScreen() {
               style={[
                 styles.button,
                 {
-                  backgroundColor: Theme["bg-payment-success"],
-                  borderColor: Theme["border-payment-success"],
+                  backgroundColor: DarkTheme["foreground-primary"],
                   opacity: isPrinting ? 0.6 : 1,
                 },
               ]}
@@ -188,11 +197,16 @@ export default function PaymentSuccessScreen() {
               <ThemedText
                 style={[
                   styles.buttonText,
-                  { color: Theme["text-payment-success"] },
+                  { color: DarkTheme["text-primary"] },
                 ]}
               >
-                {isPrinting ? "Printing..." : "Print receipt"}
+                {isPrinting ? "Printing receipt…" : "Print receipt"}
               </ThemedText>
+              <Image
+                source={require("@/assets/images/receipt.png")}
+                style={styles.buttonIcon}
+                tintColor={DarkTheme["icon-default"]}
+              />
             </Button>
           )}
 
@@ -200,16 +214,15 @@ export default function PaymentSuccessScreen() {
             style={[
               styles.button,
               {
-                backgroundColor: Theme["bg-primary"],
-                borderColor: Theme["bg-primary"],
+                backgroundColor: DarkTheme["bg-invert"],
               },
             ]}
             onPress={handleNewPayment}
           >
             <ThemedText
-              style={[styles.buttonText, { color: Theme["text-primary"] }]}
+              style={[styles.buttonText, { color: DarkTheme["text-invert"] }]}
             >
-              New Sale
+              Start new payment
             </ThemedText>
           </Button>
         </View>
@@ -258,10 +271,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
     borderRadius: BorderRadius["5"],
-    borderWidth: 1,
+    gap: Spacing["spacing-2"],
   },
   buttonText: {
-    fontSize: 18,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 18,
+  },
+  buttonIcon: {
+    width: 16,
+    height: 16,
   },
 });

@@ -12,8 +12,6 @@ export const BigAmountInput = ({
   symbolPosition = "left",
   locale,
   placeholder = "0.00",
-  isFocused = true,
-  cursorBlinkEnabled = true,
   testID,
   style,
 }: BigAmountInputProps) => {
@@ -25,8 +23,6 @@ export const BigAmountInput = ({
         symbolPosition={symbolPosition}
         locale={locale}
         placeholder={placeholder}
-        isFocused={isFocused}
-        cursorBlinkEnabled={cursorBlinkEnabled}
       />
     </View>
   );

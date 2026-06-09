@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { NetworkInfoCard } from '@/components/NetworkInfoCard';
 import {
   approveEIP155Request,
   rejectEIP155Request,
@@ -62,7 +63,7 @@ export default function SessionSendTransactionModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Transaction failed',
+          text1: 'Couldn’t send transaction',
           text2: (e as Error).message,
         });
       } finally {
@@ -91,7 +92,7 @@ export default function SessionSendTransactionModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {
@@ -118,6 +119,7 @@ export default function SessionSendTransactionModal() {
           validation={validation}
           isScam={isScam}
         />
+        <NetworkInfoCard chainId={params?.chainId} />
         <Message message={JSON.stringify(transaction, null, 2)} />
       </View>
     </RequestModal>

@@ -6,15 +6,19 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+
 import { Button } from "./button";
 import { FramedModal } from "./framed-modal";
 import { ThemedText } from "./themed-text";
@@ -36,6 +40,8 @@ export function SettingsBottomSheet({
   children,
 }: SettingsBottomSheetProps) {
   const Theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions();
 
   const translateY = useSharedValue(Platform.OS === "web" ? 300 : 0);
 
@@ -62,13 +68,20 @@ export function SettingsBottomSheet({
     <Animated.View
       style={[
         styles.sheet,
-        { backgroundColor: Theme["bg-primary"] },
+        {
+          backgroundColor: Theme["bg-primary"],
+          maxHeight: windowHeight * 0.85,
+        },
         sheetAnimatedStyle,
       ]}
     >
-      <Pressable
-        onPress={(e) => e.stopPropagation()}
-        style={styles.sheetContent}
+      <View
+        style={[
+          styles.sheetContent,
+          {
+            paddingBottom: Math.max(insets.bottom, Spacing["spacing-5"]),
+          },
+        ]}
       >
         <View style={styles.header}>
           <View style={styles.headerSpacer} />
@@ -95,25 +108,30 @@ export function SettingsBottomSheet({
             />
           </Button>
         </View>
-        {children}
-      </Pressable>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {children}
+        </ScrollView>
+      </View>
     </Animated.View>
   );
 
   return (
     <FramedModal visible={visible} onRequestClose={onClose}>
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <View style={styles.overlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         {Platform.OS === "web" ? (
           sheetContent
         ) : (
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.keyboardAvoid}
-          >
+          <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}>
             {sheetContent}
           </KeyboardAvoidingView>
         )}
-      </Pressable>
+      </View>
     </FramedModal>
   );
 }
@@ -138,7 +156,15 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   sheetContent: {
-    padding: Spacing["spacing-5"],
+    paddingHorizontal: Spacing["spacing-5"],
+    paddingTop: Spacing["spacing-5"],
+    gap: Spacing["spacing-7"],
+    flexShrink: 1,
+  },
+  scroll: {
+    flexShrink: 1,
+  },
+  scrollContent: {
     gap: Spacing["spacing-7"],
   },
   header: {

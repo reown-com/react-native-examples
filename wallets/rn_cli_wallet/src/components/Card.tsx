@@ -30,7 +30,7 @@ export function Card({ title, value, onPress, icon, style }: CardProps) {
           {title}
         </Text>
         {value && (
-          <Text variant="md-400" color="text-secondary">
+          <Text variant="md-400" color="text-secondary" numberOfLines={1}>
             {value}
           </Text>
         )}
@@ -43,8 +43,8 @@ export function Card({ title, value, onPress, icon, style }: CardProps) {
 const styles = StyleSheet.create({
   container: {
     borderRadius: BorderRadius[4],
-    paddingVertical: Spacing[4],
-    paddingHorizontal: Spacing[4],
+    height: 76,
+    paddingHorizontal: Spacing[6],
     rowGap: Spacing[1],
     flexDirection: 'row',
     alignItems: 'center',

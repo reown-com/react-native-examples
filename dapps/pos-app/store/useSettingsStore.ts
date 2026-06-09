@@ -4,14 +4,18 @@ import { CurrencyCode } from "@/utils/currency";
 import { MerchantConfig } from "@/utils/merchant-config";
 import {
   clearStaleSecureStorage,
-  migratePartnerApiKey,
+  migrateCustomerApiKey,
   SECURE_STORAGE_KEYS,
   secureStorage,
 } from "@/utils/secure-storage";
+import { isEmbedded } from "@/utils/is-embedded";
 import { storage } from "@/utils/storage";
-import { ThemeMode, TransactionFilterType } from "@/utils/types";
+import {
+  DateRangeFilterType,
+  ThemeMode,
+  TransactionFilterType,
+} from "@/utils/types";
 import * as Crypto from "expo-crypto";
-import { Appearance } from "react-native";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useLogsStore } from "./useLogsStore";
@@ -57,42 +61,47 @@ interface SettingsStore {
   currency: CurrencyCode;
   _hasHydrated: boolean;
   merchantId: string | null;
-  isPartnerApiKeySet: boolean;
+  isCustomerApiKeySet: boolean;
 
-  // Transaction filter
+  // Transaction filters
   transactionFilter: TransactionFilterType;
+  dateRangeFilter: DateRangeFilterType;
 
   // PIN protection
+  isPinHashSet: boolean;
   pinFailedAttempts: number;
   pinLockoutUntil: number | null;
   biometricEnabled: boolean;
+
+  // NFC
+  nfcEnabled: boolean;
 
   // Actions
   setThemeMode: (themeMode: ThemeMode) => void;
   setDeviceId: (deviceId: string) => void;
   setHasHydrated: (state: boolean) => void;
   setVariant: (variant: VariantName) => void;
+  getVariantPrinterLogo: () => string;
   setCurrency: (currency: CurrencyCode) => void;
   setMerchantId: (merchantId: string | null) => void;
   clearMerchantId: () => Promise<string | null>;
-  setPartnerApiKey: (apiKey: string | null) => Promise<void>;
-  clearPartnerApiKey: () => Promise<void>;
-  getPartnerApiKey: () => Promise<string | null>;
+  setCustomerApiKey: (apiKey: string | null) => Promise<void>;
+  clearCustomerApiKey: () => Promise<void>;
+  getCustomerApiKey: () => Promise<string | null>;
 
   // PIN actions
   setPin: (pin: string) => Promise<void>;
   verifyPin: (pin: string) => Promise<boolean>;
-  isPinSet: () => Promise<boolean>;
+  isPinSet: () => boolean;
   isLockedOut: () => boolean;
   getLockoutRemainingSeconds: () => number;
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
+  setNfcEnabled: (enabled: boolean) => void;
 
-  // Transaction filter
+  // Transaction filters
   setTransactionFilter: (filter: TransactionFilterType) => void;
-
-  // Others
-  getVariantPrinterLogo: () => string;
+  setDateRangeFilter: (filter: DateRangeFilterType) => void;
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -104,11 +113,14 @@ export const useSettingsStore = create<SettingsStore>()(
       currency: "USD",
       _hasHydrated: false,
       merchantId: null,
-      isPartnerApiKeySet: false,
+      isCustomerApiKeySet: false,
       transactionFilter: "all",
+      dateRangeFilter: "today",
+      isPinHashSet: false,
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
+      nfcEnabled: true,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
@@ -119,54 +131,72 @@ export const useSettingsStore = create<SettingsStore>()(
           set({ themeMode: variantData.defaultTheme });
         }
       },
+      getVariantPrinterLogo: () =>
+        Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64,
       setCurrency: (currency: CurrencyCode) => set({ currency }),
       setMerchantId: (merchantId: string | null) => {
-        // If clearing, reset to env default
+        // If clearing, reset to env default (unless embedded — parent provides credentials)
         if (!merchantId || merchantId.trim() === "") {
-          set({ merchantId: MerchantConfig.getDefaultMerchantId() });
+          set({
+            merchantId: isEmbedded()
+              ? null
+              : MerchantConfig.getDefaultMerchantId(),
+          });
         } else {
           set({ merchantId });
         }
       },
       clearMerchantId: async () => {
-        // Reset both merchant ID and API key to env defaults
+        // When embedded, clear to null — parent provides credentials via postMessage.
+        // Otherwise, reset both merchant ID and API key to env defaults.
+        if (isEmbedded()) {
+          set({ merchantId: null });
+          await secureStorage.removeItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
+          set({ isCustomerApiKeySet: false });
+          return null;
+        }
+
         const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
         set({ merchantId: defaultMerchantId });
-        const defaultApiKey = MerchantConfig.getDefaultPartnerApiKey();
+        const defaultApiKey = MerchantConfig.getDefaultCustomerApiKey();
         if (defaultApiKey) {
           await secureStorage.setItem(
-            SECURE_STORAGE_KEYS.PARTNER_API_KEY,
+            SECURE_STORAGE_KEYS.CUSTOMER_API_KEY,
             defaultApiKey,
           );
-          set({ isPartnerApiKeySet: true });
+          set({ isCustomerApiKeySet: true });
         } else {
-          await secureStorage.removeItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
-          set({ isPartnerApiKeySet: false });
+          await secureStorage.removeItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
+          set({ isCustomerApiKeySet: false });
         }
         return defaultMerchantId;
       },
-      setPartnerApiKey: async (apiKey: string | null) => {
+      setCustomerApiKey: async (apiKey: string | null) => {
         try {
           if (apiKey) {
             await secureStorage.setItem(
-              SECURE_STORAGE_KEYS.PARTNER_API_KEY,
+              SECURE_STORAGE_KEYS.CUSTOMER_API_KEY,
               apiKey,
             );
-            set({ isPartnerApiKeySet: true });
+            set({ isCustomerApiKeySet: true });
           } else {
-            await secureStorage.removeItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
-            set({ isPartnerApiKeySet: false });
+            await secureStorage.removeItem(
+              SECURE_STORAGE_KEYS.CUSTOMER_API_KEY,
+            );
+            set({ isCustomerApiKeySet: false });
           }
         } catch {
           throw new Error("Failed to save credentials securely");
         }
       },
-      clearPartnerApiKey: async () => {
-        await secureStorage.removeItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
-        set({ isPartnerApiKeySet: false });
+      clearCustomerApiKey: async () => {
+        await secureStorage.removeItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
+        set({ isCustomerApiKeySet: false });
       },
-      getPartnerApiKey: async () => {
-        return await secureStorage.getItem(SECURE_STORAGE_KEYS.PARTNER_API_KEY);
+      getCustomerApiKey: async () => {
+        return await secureStorage.getItem(
+          SECURE_STORAGE_KEYS.CUSTOMER_API_KEY,
+        );
       },
 
       // PIN methods
@@ -174,6 +204,7 @@ export const useSettingsStore = create<SettingsStore>()(
         const hashedPin = await hashPin(pin);
         await secureStorage.setItem(SECURE_STORAGE_KEYS.PIN_HASH, hashedPin);
         set({
+          isPinHashSet: true,
           pinFailedAttempts: 0,
           pinLockoutUntil: null,
         });
@@ -217,11 +248,8 @@ export const useSettingsStore = create<SettingsStore>()(
 
         return false;
       },
-      isPinSet: async () => {
-        const pinHash = await secureStorage.getItem(
-          SECURE_STORAGE_KEYS.PIN_HASH,
-        );
-        return pinHash !== null;
+      isPinSet: () => {
+        return get().isPinHashSet;
       },
       isLockedOut: () => {
         const state = get();
@@ -242,17 +270,16 @@ export const useSettingsStore = create<SettingsStore>()(
         set({ pinFailedAttempts: 0, pinLockoutUntil: null }),
       setBiometricEnabled: (enabled: boolean) =>
         set({ biometricEnabled: enabled }),
+      setNfcEnabled: (enabled: boolean) => set({ nfcEnabled: enabled }),
 
       setTransactionFilter: (filter: TransactionFilterType) =>
         set({ transactionFilter: filter }),
-
-      getVariantPrinterLogo: () => {
-        return Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64;
-      },
+      setDateRangeFilter: (filter: DateRangeFilterType) =>
+        set({ dateRangeFilter: filter }),
     }),
     {
       name: "settings",
-      version: 12,
+      version: 16,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -293,6 +320,30 @@ export const useSettingsStore = create<SettingsStore>()(
         if (version < 11) {
           persistedState.currency = "USD";
         }
+        if (version < 13) {
+          if ("isPartnerApiKeySet" in persistedState) {
+            persistedState.isCustomerApiKeySet =
+              persistedState.isPartnerApiKeySet;
+            delete persistedState.isPartnerApiKeySet;
+          }
+        }
+        if (version < 14) {
+          persistedState.isPinHashSet = false;
+        }
+
+        if (version < 14) {
+          persistedState.dateRangeFilter = "today";
+        }
+
+        if (version < 15) {
+          persistedState.nfcEnabled = persistedState.nfcEnabled ?? false;
+        }
+
+        if (version < 16) {
+          // nfcEnabled now means "show NFC UI" (HCE always runs when supported).
+          // Preserve any user-set value; only fresh installs get the new default of true.
+          persistedState.nfcEnabled = persistedState.nfcEnabled ?? true;
+        }
 
         return persistedState;
       },
@@ -320,32 +371,41 @@ export const useSettingsStore = create<SettingsStore>()(
             delete (state as any).__migrationData;
           }
 
-          // Run partner API key migration before applying defaults
+          // Run customer API key migration before applying defaults
           // This ensures existing users keep their API key during the rename
-          const migrated = await migratePartnerApiKey();
+          const migrated = await migrateCustomerApiKey();
           if (migrated) {
             // Migration was performed, sync the flag
-            state.isPartnerApiKeySet = true;
+            state.isCustomerApiKeySet = true;
             useLogsStore
               .getState()
               .addLog(
                 "info",
-                "Partner API key migrated from merchant_api_key",
+                "Customer API key migrated from legacy storage key",
                 "Settings",
                 "onRehydrateStorage",
               );
           }
 
-          // Initialize merchant defaults from env if not set
-          const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
-          const defaultApiKey = MerchantConfig.getDefaultPartnerApiKey();
+          // Sync isPinHashSet from secure storage
+          const pinHash = await secureStorage.getItem(
+            SECURE_STORAGE_KEYS.PIN_HASH,
+          );
+          state.isPinHashSet = pinHash !== null;
 
-          if (!state.merchantId && defaultMerchantId) {
-            state.setMerchantId(defaultMerchantId);
-          }
+          // Initialize merchant defaults from env if not set.
+          // Skip when embedded in an iframe — parent provides credentials via postMessage.
+          if (!isEmbedded()) {
+            const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
+            const defaultApiKey = MerchantConfig.getDefaultCustomerApiKey();
 
-          if (!state.isPartnerApiKeySet && defaultApiKey) {
-            await state.setPartnerApiKey(defaultApiKey);
+            if (!state.merchantId && defaultMerchantId) {
+              state.setMerchantId(defaultMerchantId);
+            }
+
+            if (!state.isCustomerApiKeySet && defaultApiKey) {
+              await state.setCustomerApiKey(defaultApiKey);
+            }
           }
         }
 

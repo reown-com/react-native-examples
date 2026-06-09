@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { NetworkInfoCard } from '@/components/NetworkInfoCard';
 import {
   approveTonRequest,
   rejectTonRequest,
@@ -58,7 +59,7 @@ export default function SessionTonSignDataModal() {
       if (validationResult) {
         Toast.show({
           type: 'error',
-          text1: 'Validation failed',
+          text1: 'Couldn’t validate request',
           text2: validationResult.error.message,
         });
         await walletKit.respondSessionRequest({
@@ -116,7 +117,7 @@ export default function SessionTonSignDataModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Signature failed',
+          text1: 'Couldn’t sign data',
           text2: (e as Error).message,
         });
       } finally {
@@ -150,7 +151,7 @@ export default function SessionTonSignDataModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {
@@ -186,6 +187,7 @@ export default function SessionTonSignDataModal() {
           validation={validation}
           isScam={isScam}
         />
+        <NetworkInfoCard chainId={params.chainId} />
 
         {/* Sign with Address */}
         <View
@@ -199,7 +201,7 @@ export default function SessionTonSignDataModal() {
             color="text-tertiary"
             style={styles.sectionTitle}
           >
-            Sign with Address
+            Signing address
           </Text>
           <Text variant="md-400" color="text-primary">
             {tonAddresses[0]}

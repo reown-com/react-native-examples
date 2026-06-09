@@ -11,24 +11,23 @@ interface InfoExplainerViewProps {
 export function InfoExplainerView({ onDismiss }: InfoExplainerViewProps) {
   return (
     <View style={styles.container}>
-      <Text variant="h6-400" color="text-primary" style={styles.title}>
-        Why we need your information?
+      <Text center variant="h6-400" color="text-primary" style={styles.title}>
+        Why we collect personal details
       </Text>
 
-      <Text variant="lg-400" color="text-tertiary" style={styles.body}>
-        For regulatory compliance, we collect basic information on your first
-        payment: full name, date of birth, and place of birth.
+      <Text center variant="lg-400" color="text-secondary" style={styles.body}>
+        We collect a few basic details to meet compliance requirements for
+        WalletConnect Pay.
       </Text>
 
-      <Text variant="lg-400" color="text-tertiary" style={styles.lastBody}>
-        This information is tied to your wallet address and this specific
-        network. If you use the same wallet on this network again, you won't
-        need to provide it again.
+      <Text center variant="lg-400" color="text-secondary">
+        We only ask once per wallet on this network. You won’t see this again
+        unless your details change.
       </Text>
 
       <View style={styles.buttonContainer}>
         <ActionButton onPress={onDismiss} fullWidth>
-          Got it!
+          Got it
         </ActionButton>
       </View>
     </View>
@@ -38,19 +37,16 @@ export function InfoExplainerView({ onDismiss }: InfoExplainerViewProps) {
 const styles = StyleSheet.create({
   container: {
     paddingTop: Spacing[2],
+    alignItems: 'center',
   },
   title: {
     marginBottom: Spacing[2],
-    textAlign: 'center',
   },
   body: {
     marginBottom: Spacing[2],
-    textAlign: 'center',
-  },
-  lastBody: {
-    textAlign: 'center',
   },
   buttonContainer: {
+    width: '100%',
     marginTop: Spacing[7],
     marginBottom: Spacing[2],
   },

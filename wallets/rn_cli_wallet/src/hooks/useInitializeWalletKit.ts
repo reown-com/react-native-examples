@@ -8,6 +8,8 @@ import { createOrRestoreSuiWallet } from '@/utils/SuiWalletUtil';
 import { createWalletKit, walletKit } from '@/utils/WalletKitUtil';
 import { createOrRestoreTonWallet } from '@/utils/TonWalletUtil';
 import { createOrRestoreTronWallet } from '@/utils/TronWalletUtil';
+import { createOrRestoreCantonWallet } from '@/utils/CantonWalletUtil';
+import { createOrRestoreSolanaWallet } from '@/utils/SolanaWalletUtil';
 
 export default function useInitializeWalletKit() {
   const [initialized, setInitialized] = useState(false);
@@ -20,15 +22,25 @@ export default function useInitializeWalletKit() {
       const { eip155Addresses, eip155Wallets } =
         await createOrRestoreEIP155Wallet();
       const { suiAddresses, suiWallet } = await createOrRestoreSuiWallet();
-      const { tonAddresses } = await createOrRestoreTonWallet();
-      const { tronAddresses } = await createOrRestoreTronWallet();
+      const { tonAddresses, tonWallets } = await createOrRestoreTonWallet();
+      const { tronAddresses, tronWallets } = await createOrRestoreTronWallet();
+      const { cantonAddresses, cantonWallet } =
+        await createOrRestoreCantonWallet();
+      const { solanaAddress, solanaWallet } =
+        await createOrRestoreSolanaWallet();
 
       SettingsStore.setEIP155Address(eip155Addresses[0]);
       SettingsStore.setWallet(eip155Wallets[eip155Addresses[0]]);
       SettingsStore.setSuiAddress(suiAddresses[0]);
       SettingsStore.setSuiWallet(suiWallet);
       SettingsStore.setTonAddress(tonAddresses[0]);
+      SettingsStore.setTonWallet(tonWallets[tonAddresses[0]]);
       SettingsStore.setTronAddress(tronAddresses[0]);
+      SettingsStore.setTronWallet(tronWallets[tronAddresses[0]]);
+      SettingsStore.setCantonAddress(cantonAddresses[0]);
+      SettingsStore.setCantonWallet(cantonWallet);
+      SettingsStore.setSolanaAddress(solanaAddress);
+      SettingsStore.setSolanaWallet(solanaWallet);
       await createWalletKit(relayerRegionURL);
       setInitialized(true);
       SettingsStore.state.initPromiseResolver?.resolve(undefined);

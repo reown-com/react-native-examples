@@ -41,7 +41,7 @@ export default function SessionAuthenticateModal() {
   // the chains that are supported by the wallet from the proposal
   const supportedChains = useMemo(() => {
     const chains = authRequest.params.authPayload.chains.filter(
-      chain => !!EIP155_CHAINS[chain.split(':')[1]],
+      chain => !!EIP155_CHAINS[chain],
     );
     return chains;
   }, [authRequest]);
@@ -100,7 +100,7 @@ export default function SessionAuthenticateModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Authentication failed',
+          text1: 'Couldn’t authenticate',
           text2: (e as Error).message,
         });
       } finally {
@@ -137,7 +137,7 @@ export default function SessionAuthenticateModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {

@@ -1,8 +1,7 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { formatFiatAmount } from "@/utils/currency";
+import { formatFiatAmount, formatTokenAmount } from "@/utils/currency";
 import { formatDateTime } from "@/utils/misc";
-import { formatCryptoReceived, getTokenSymbol } from "@/utils/tokens";
 import { PaymentRecord } from "@/utils/types";
 import { memo, useEffect } from "react";
 import {
@@ -12,6 +11,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -46,21 +46,22 @@ function truncateHash(hash?: string): string {
   return `${hash.slice(0, 4)}...${hash.slice(-4)}`;
 }
 
-/**
- * Get the token icon based on CAIP-19 identifier
- * Returns the icon source or null if not USDC/USDT
- */
-function getTokenIcon(tokenCaip19?: string): number | null {
-  const symbol = getTokenSymbol(tokenCaip19);
-  if (!symbol) return null;
+function formatTokenAmountLabel(
+  tokenAmount: NonNullable<PaymentRecord["tokenAmount"]>,
+): string {
+  const { value, display } = tokenAmount;
+  const symbol = display?.assetSymbol;
 
-  if (symbol === "USDC") {
-    return require("@/assets/images/tokens/usdc.png");
+  let amount = display?.formatted;
+  if (!amount && value) {
+    amount =
+      display?.decimals != null
+        ? formatTokenAmount(value, display.decimals)
+        : value;
   }
-  if (symbol === "USDT") {
-    return require("@/assets/images/tokens/usdt.png");
-  }
-  return null;
+
+  if (!amount) return symbol ?? "";
+  return symbol ? `${amount} ${symbol}` : amount;
 }
 
 interface DetailRowProps {
@@ -117,6 +118,7 @@ function TransactionDetailModalBase({
   onClose,
 }: TransactionDetailModalProps) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   const translateY = useSharedValue(Platform.OS === "web" ? 300 : 0);
 
@@ -142,20 +144,22 @@ function TransactionDetailModalBase({
   if (!payment) return null;
 
   const handleCopyPaymentId = async () => {
-    if (!payment?.payment_id) return;
-    await Clipboard.setStringAsync(payment.payment_id);
+    if (!payment?.paymentId) return;
+    await Clipboard.setStringAsync(payment.paymentId);
     showSuccessToast("Payment ID copied to clipboard");
   };
 
+  const txHash = payment.transaction?.hash;
   const handleCopyHash = async () => {
-    if (!payment?.tx_hash) return;
-    await Clipboard.setStringAsync(payment.tx_hash);
-    showSuccessToast("Transaction hash copied to clipboard");
+    if (!txHash) return;
+    await Clipboard.setStringAsync(txHash);
+    showSuccessToast("Transaction ID copied to clipboard");
   };
 
   return (
     <FramedModal visible={visible} onRequestClose={onClose}>
-      <Pressable style={styles.overlay} onPress={onClose}>
+      <View style={styles.overlay}>
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         <Animated.View
           style={[
             styles.container,
@@ -163,9 +167,13 @@ function TransactionDetailModalBase({
             sheetAnimatedStyle,
           ]}
         >
-          <Pressable
-            style={styles.containerInner}
-            onPress={(e) => e.stopPropagation()}
+          <View
+            style={[
+              styles.containerInner,
+              {
+                paddingBottom: Math.max(insets.bottom, Spacing["spacing-6"]),
+              },
+            ]}
           >
             <View style={styles.header}>
               <Button
@@ -190,7 +198,7 @@ function TransactionDetailModalBase({
               <View style={styles.details}>
                 <DetailRow
                   label="Date"
-                  value={formatDateTime(payment.created_at)}
+                  value={formatDateTime(payment.createdAt)}
                 />
 
                 <DetailRow label="Status">
@@ -200,55 +208,57 @@ function TransactionDetailModalBase({
                 <DetailRow
                   label="Amount"
                   value={formatFiatAmount(
-                    payment.fiat_amount,
-                    payment.fiat_currency,
+                    payment.fiatAmount?.value,
+                    payment.fiatAmount?.unit,
                   )}
                 />
 
-                {payment.token_amount && payment.token_caip19 && (
-                  <DetailRow label="Crypto received">
+                {payment.tokenAmount?.value && (
+                  <DetailRow label="Asset received">
                     <View style={styles.cryptoValue}>
                       <ThemedText
                         fontSize={16}
                         lineHeight={18}
                         color="text-primary"
                       >
-                        {formatCryptoReceived(
-                          payment.token_caip19,
-                          payment.token_amount,
-                        ) ?? payment.token_amount}
+                        {formatTokenAmountLabel(payment.tokenAmount)}
                       </ThemedText>
-                      {(() => {
-                        const icon = getTokenIcon(payment.token_caip19);
-                        return icon ? (
-                          <Image style={styles.tokenIcon} source={icon} />
-                        ) : null;
-                      })()}
+                      {payment.tokenAmount.display?.iconUrl && (
+                        <Image
+                          style={styles.tokenIcon}
+                          source={{ uri: payment.tokenAmount.display.iconUrl }}
+                        />
+                      )}
                     </View>
                   </DetailRow>
                 )}
 
                 <DetailRow
                   label="Payment ID"
-                  value={payment.payment_id}
+                  value={payment.paymentId}
                   onPress={handleCopyPaymentId}
                   underline
                 />
 
-                {payment.tx_hash && (
+                {txHash && (
                   <DetailRow
-                    label="Hash ID"
-                    value={truncateHash(payment.tx_hash)}
+                    label="Transaction ID"
+                    value={truncateHash(txHash)}
                     onPress={handleCopyHash}
                     underline
                   />
                 )}
               </View>
             </ScrollView>
-          </Pressable>
+          </View>
         </Animated.View>
-      </Pressable>
-      <Toast config={toastConfig} position="bottom" visibilityTime={6000} />
+      </View>
+      <Toast
+        config={toastConfig}
+        position="bottom"
+        bottomOffset={insets.bottom}
+        visibilityTime={2000}
+      />
     </FramedModal>
   );
 }

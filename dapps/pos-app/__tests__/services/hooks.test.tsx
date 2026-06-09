@@ -310,10 +310,9 @@ describe("Payment Hooks", () => {
           });
         });
 
-        const { result } = renderHook(
-          () => usePaymentStatus("pay_polling", { pollingInterval: 100 }),
-          { wrapper: createWrapper() },
-        );
+        const { result } = renderHook(() => usePaymentStatus("pay_polling"), {
+          wrapper: createWrapper(),
+        });
 
         // Initial fetch should happen immediately
         await waitFor(
@@ -391,10 +390,9 @@ describe("Payment Hooks", () => {
           });
         });
 
-        const { result } = renderHook(
-          () => usePaymentStatus("pay_fail_poll", { pollingInterval: 100 }),
-          { wrapper: createWrapper() },
-        );
+        const { result } = renderHook(() => usePaymentStatus("pay_fail_poll"), {
+          wrapper: createWrapper(),
+        });
 
         // Initial fetch should happen immediately
         await waitFor(
@@ -461,7 +459,6 @@ describe("Payment Hooks", () => {
         renderHook(
           () =>
             usePaymentStatus("pay_callback", {
-              pollingInterval: 100,
               onTerminalState,
             }),
           { wrapper: createWrapper() },

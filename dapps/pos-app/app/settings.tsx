@@ -1,6 +1,5 @@
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
-import { CloseButton } from "@/components/close-button";
 import { PinModal } from "@/components/pin-modal";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
@@ -8,16 +7,17 @@ import { SettingsItem } from "@/components/settings-item";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
-import { VariantList, VariantName } from "@/constants/variants";
+import { VariantList, VariantName, Variants } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
+import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { ThemeMode } from "@/utils/types";
 import { getBiometricLabel } from "@/utils/biometrics";
+import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
-import { resetNavigation } from "@/utils/navigation";
 import {
   connectPrinter,
   printReceipt,
@@ -27,9 +27,8 @@ import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import * as Updates from "expo-updates";
 import Constants from "expo-constants";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -38,7 +37,7 @@ type ActiveSheet =
   | "walletTheme"
   | "currency"
   | "merchantId"
-  | "partnerApiKey"
+  | "customerApiKey"
   | null;
 
 const THEME_OPTIONS: RadioOption<ThemeMode>[] = [
@@ -70,16 +69,19 @@ export default function SettingsScreen() {
   const setThemeMode = useSettingsStore((state) => state.setThemeMode);
   const variant = useSettingsStore((state) => state.variant);
   const setVariant = useSettingsStore((state) => state.setVariant);
-  const currency = useSettingsStore((state) => state.currency);
-  const setCurrency = useSettingsStore((state) => state.setCurrency);
   const getVariantPrinterLogo = useSettingsStore(
     (state) => state.getVariantPrinterLogo,
   );
+  const currency = useSettingsStore((state) => state.currency);
+  const setCurrency = useSettingsStore((state) => state.setCurrency);
+  const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
+  const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
+  const nfcCapabilities = useNfcCapabilities();
   const addLog = useLogsStore((state) => state.addLog);
   const theme = useTheme();
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
-  const [isEditingPartnerKey, setIsEditingPartnerKey] = useState(false);
+  const [isEditingCustomerKey, setIsEditingCustomerKey] = useState(false);
 
   // Custom hooks for biometrics and merchant flow
   const {
@@ -94,17 +96,17 @@ export default function SettingsScreen() {
 
   const {
     merchantIdInput,
-    partnerApiKeyInput,
+    customerApiKeyInput,
     activeModal,
     pinError,
     isMerchantIdConfirmDisabled,
-    isPartnerApiKeyConfirmDisabled,
-    hasStoredPartnerApiKey,
+    isCustomerApiKeyConfirmDisabled,
+    hasStoredCustomerApiKey,
     handleMerchantIdInputChange,
-    handlePartnerApiKeyInputChange,
-    resetPartnerApiKeyInput,
+    handleCustomerApiKeyInputChange,
+    resetCustomerApiKeyInput,
     handleMerchantIdConfirm,
-    handlePartnerApiKeyConfirm,
+    handleCustomerApiKeyConfirm,
     handlePinVerifyComplete,
     handleBiometricAuthSuccess,
     handleBiometricAuthFailure,
@@ -140,13 +142,16 @@ export default function SettingsScreen() {
 
   const currentVariant = VariantList.find((v) => v.id === variant);
   const currentCurrency = getCurrency(currency);
+  // Branded variants lock the theme to their default, unless they opt into manual switching.
+  const isThemeLocked =
+    variant !== "default" && !Variants[variant].allowThemeToggle;
 
   const closeSheet = () => {
-    if (activeSheet === "partnerApiKey") {
-      resetPartnerApiKeyInput();
+    if (activeSheet === "customerApiKey") {
+      resetCustomerApiKeyInput();
     }
     setActiveSheet(null);
-    setIsEditingPartnerKey(false);
+    setIsEditingCustomerKey(false);
   };
 
   const handleThemeModeChange = (value: ThemeMode) => {
@@ -164,22 +169,25 @@ export default function SettingsScreen() {
     closeSheet();
   };
 
-  const handleMerchantIdSave = async () => {
-    await handleMerchantIdConfirm();
+  const handleMerchantIdSave = () => {
     closeSheet();
+    handleMerchantIdConfirm();
   };
 
-  const handlePartnerApiKeySave = async () => {
-    await handlePartnerApiKeyConfirm();
+  const handleCustomerApiKeySave = () => {
     closeSheet();
+    handleCustomerApiKeyConfirm();
   };
 
-  const handlePartnerKeyChange = (value: string) => {
-    if (!isEditingPartnerKey) {
-      setIsEditingPartnerKey(true);
+  const handleCustomerKeyChange = (value: string) => {
+    if (!isEditingCustomerKey) {
+      setIsEditingCustomerKey(true);
     }
-    handlePartnerApiKeyInputChange(value);
+    handleCustomerApiKeyInputChange(value);
   };
+
+  const showNfcToggle =
+    Platform.OS === "android" && nfcCapabilities.isHceSupported;
 
   const handleTestPrinterPress = async () => {
     try {
@@ -191,7 +199,9 @@ export default function SettingsScreen() {
           "settings",
           "handleTestPrinterPress",
         );
-        showErrorToast("Failed to request Bluetooth permission");
+        showErrorToast(
+          "We need Bluetooth to connect your printer. Allow it in your device settings.",
+        );
         return;
       }
       const { connected, error } = await connectPrinter();
@@ -203,10 +213,17 @@ export default function SettingsScreen() {
           "handleTestPrinterPress",
           { error },
         );
-        showErrorToast(error || "Failed to connect to printer");
+        showErrorToast(
+          error ||
+            "We couldn't connect to the printer. Check that it's on and paired in your device's Bluetooth settings.",
+        );
         return;
       }
       const currencyData = getCurrency(currency);
+      // Build the header lockup for the active variant so each one can be
+      // test-printed easily; fall back to the pre-built logo on failure.
+      const logoBase64 =
+        (await buildReceiptLogo(variant)) ?? getVariantPrinterLogo();
       await printReceipt({
         txnId: "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
         amountFiat: 15,
@@ -216,7 +233,7 @@ export default function SettingsScreen() {
         tokenDecimals: 6,
         networkName: "Base",
         date: new Date().toLocaleDateString("en-GB"),
-        logoBase64: getVariantPrinterLogo(),
+        logoBase64,
       });
     } catch (error) {
       const errorMessage =
@@ -225,7 +242,7 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleBiometricAuth = async () => {
+  const handleBiometricAuth = useCallback(async () => {
     const success = await authenticate(
       `Use ${biometricLabel} to change merchant settings`,
     );
@@ -235,7 +252,12 @@ export default function SettingsScreen() {
     } else {
       handleBiometricAuthFailure();
     }
-  };
+  }, [
+    authenticate,
+    biometricLabel,
+    handleBiometricAuthSuccess,
+    handleBiometricAuthFailure,
+  ]);
 
   return (
     <View style={styles.container}>
@@ -247,6 +269,7 @@ export default function SettingsScreen() {
           title="Theme"
           value={THEME_LABELS[themeMode]}
           onPress={() => setActiveSheet("theme")}
+          disabled={isThemeLocked}
         />
 
         <SettingsItem
@@ -268,10 +291,30 @@ export default function SettingsScreen() {
         />
 
         <SettingsItem
-          title="Partner API KEY"
+          title="Customer API key"
           value="**********"
-          onPress={() => setActiveSheet("partnerApiKey")}
+          onPress={() => setActiveSheet("customerApiKey")}
         />
+
+        {showNfcToggle && (
+          <Card style={styles.biometricCard}>
+            <View style={styles.biometricRow}>
+              <View style={styles.biometricLabel}>
+                <ThemedText fontSize={16} lineHeight={18}>
+                  Tap-to-pay prompt
+                </ThemedText>
+                <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
+                  Show the tap-to-pay prompt on the payment screen.
+                </ThemedText>
+              </View>
+              <Switch
+                style={styles.switch}
+                value={nfcEnabled}
+                onValueChange={setNfcEnabled}
+              />
+            </View>
+          </Card>
+        )}
 
         {/* Biometric toggle - only show if PIN is set and biometrics available */}
         {shouldShowBiometricOption && biometricStatus && (
@@ -282,7 +325,7 @@ export default function SettingsScreen() {
                   {getBiometricLabel(biometricStatus.biometricType)}
                 </ThemedText>
                 <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Use instead of PIN
+                  Use instead of PIN.
                 </ThemedText>
               </View>
               <Switch
@@ -296,7 +339,7 @@ export default function SettingsScreen() {
 
         <SettingsItem title="Test printer" onPress={handleTestPrinterPress} />
 
-        <SettingsItem title="View Logs" onPress={() => router.push("/logs")} />
+        <SettingsItem title="View logs" onPress={() => router.push("/logs")} />
 
         <ThemedText
           fontSize={12}
@@ -309,19 +352,6 @@ export default function SettingsScreen() {
           {Updates.channel ? ` (${Updates.channel})` : ""}
         </ThemedText>
       </ScrollView>
-
-      <LinearGradient
-        colors={[
-          theme["bg-primary"] + "00",
-          theme["bg-primary"] + "40",
-          theme["bg-primary"] + "CC",
-          theme["bg-primary"],
-        ]}
-        locations={[0, 0.3, 0.5, 1]}
-        style={styles.gradient}
-        pointerEvents="none"
-      />
-      <CloseButton style={styles.closeButton} onPress={resetNavigation} />
 
       {/* Theme Bottom Sheet */}
       <SettingsBottomSheet
@@ -409,23 +439,23 @@ export default function SettingsScreen() {
         </View>
       </SettingsBottomSheet>
 
-      {/* Partner API Key Bottom Sheet */}
+      {/* Customer API Key Bottom Sheet */}
       <SettingsBottomSheet
-        visible={activeSheet === "partnerApiKey"}
-        title="Partner API KEY"
+        visible={activeSheet === "customerApiKey"}
+        title="Customer API key"
         onClose={closeSheet}
       >
         <View style={styles.inputContent}>
           <TextInput
             value={
-              isEditingPartnerKey
-                ? partnerApiKeyInput
-                : hasStoredPartnerApiKey
+              isEditingCustomerKey
+                ? customerApiKeyInput
+                : hasStoredCustomerApiKey
                   ? "********"
                   : ""
             }
-            onChangeText={handlePartnerKeyChange}
-            placeholder="Enter partner API key"
+            onChangeText={handleCustomerKeyChange}
+            placeholder="Enter customer API key"
             placeholderTextColor={theme["text-tertiary"]}
             autoCapitalize="none"
             autoCorrect={false}
@@ -440,12 +470,12 @@ export default function SettingsScreen() {
             ]}
           />
           <Button
-            onPress={handlePartnerApiKeySave}
-            disabled={isPartnerApiKeyConfirmDisabled}
+            onPress={handleCustomerApiKeySave}
+            disabled={isCustomerApiKeyConfirmDisabled}
             style={[
               styles.saveButton,
               {
-                backgroundColor: isPartnerApiKeyConfirmDisabled
+                backgroundColor: isCustomerApiKeyConfirmDisabled
                   ? theme["foreground-accent-primary-60"]
                   : theme["bg-accent-primary"],
               },
@@ -463,25 +493,24 @@ export default function SettingsScreen() {
         </View>
       </SettingsBottomSheet>
 
-      {/* PIN Verification Modal */}
+      {/* PIN Modal */}
       <PinModal
-        visible={activeModal === "pin-verify"}
-        title="Enter PIN"
-        subtitle="Enter your PIN to save merchant settings"
-        onComplete={handlePinVerifyComplete}
+        visible={activeModal !== "none"}
+        title={activeModal === "pin-verify" ? "Enter PIN" : "Create PIN"}
+        subtitle={
+          activeModal === "pin-verify"
+            ? "Enter your PIN to save these settings."
+            : "Set a 4-digit PIN to protect your settings."
+        }
+        onComplete={
+          activeModal === "pin-verify"
+            ? handlePinVerifyComplete
+            : handlePinSetupComplete
+        }
         onCancel={handleCancelSecurityFlow}
         error={pinError}
-        showBiometric={canUseBiometric}
+        showBiometric={activeModal === "pin-verify" && !!canUseBiometric}
         onBiometricPress={handleBiometricAuth}
-      />
-
-      {/* PIN Setup Modal */}
-      <PinModal
-        visible={activeModal === "pin-setup"}
-        title="Create PIN"
-        subtitle="Set a 4-digit PIN to protect merchant settings"
-        onComplete={handlePinSetupComplete}
-        onCancel={handleCancelSecurityFlow}
       />
     </View>
   );
@@ -496,17 +525,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing["spacing-5"],
     paddingBottom: Spacing["extra-spacing-2"],
     gap: Spacing["spacing-2"],
-  },
-  closeButton: {
-    position: "absolute",
-    alignSelf: "center",
-  },
-  gradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 200,
   },
   versionText: {
     alignSelf: "flex-end",

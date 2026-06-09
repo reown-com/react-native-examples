@@ -12,36 +12,50 @@ import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import WalletStore from '@/store/WalletStore';
+import PaymentStore from '@/store/PaymentStore';
 import { loadEIP155Wallet } from '@/utils/EIP155WalletUtil';
 import { loadTonWallet } from '@/utils/TonWalletUtil';
 import { loadTronWallet } from '@/utils/TronWalletUtil';
 import { loadSuiWallet } from '@/utils/SuiWalletUtil';
+import { loadCantonWallet } from '@/utils/CantonWalletUtil';
+import { loadSolanaWallet } from '@/utils/SolanaWalletUtil';
 import { Text } from '@/components/Text';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { SegmentedControl } from '@/components/SegmentedControl';
 import { Spacing, BorderRadius, FontFamily } from '@/utils/ThemeUtil';
 import { ActionButton } from '@/components/ActionButton';
 
-const CHAIN_OPTIONS = ['EVM', 'TON', 'TRON', 'SUI'] as const;
+const CHAIN_OPTIONS = [
+  'Ethereum',
+  'Ton',
+  'Tron',
+  'Sui',
+  'Canton',
+  'Solana',
+] as const;
 type ChainOption = (typeof CHAIN_OPTIONS)[number];
 
 const PLACEHOLDER_TEXT: Record<ChainOption, string> = {
-  EVM: 'Enter mnemonic or private key (0x...)',
-  TON: 'Enter secret key (128 hex) or seed (64 hex)',
-  TRON: 'Enter private key (64 hex)',
-  SUI: 'Enter mnemonic phrase (12-24 words)',
+  Ethereum: 'Mnemonic or private key (0x…)',
+  Ton: 'Secret key (128 hex) or seed (64 hex)',
+  Tron: 'Private key (64 hex)',
+  Sui: 'Mnemonic phrase (12–24 words)',
+  Canton: 'Secret key (128 hex chars)',
+  Solana: 'Mnemonic (12–24 words) or base58 secret key',
 };
 
 const EMPTY_INPUT_ERROR: Record<ChainOption, string> = {
-  EVM: 'Please enter a mnemonic or private key',
-  TON: 'Please enter a secret key or seed',
-  TRON: 'Please enter a private key',
-  SUI: 'Please enter a mnemonic phrase',
+  Ethereum: 'Enter a mnemonic or private key.',
+  Ton: 'Enter a secret key or seed.',
+  Tron: 'Enter a private key.',
+  Sui: 'Enter a mnemonic phrase.',
+  Canton: 'Enter an Ed25519 secret key.',
+  Solana: 'Enter a mnemonic or base58 secret key.',
 };
 
 export default function ImportWalletModal() {
   const Theme = useTheme();
-  const [selectedChain, setSelectedChain] = useState<ChainOption>('EVM');
+  const [selectedChain, setSelectedChain] = useState<ChainOption>('Ethereum');
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -67,52 +81,89 @@ export default function ImportWalletModal() {
       let address: string;
 
       switch (selectedChain) {
-        case 'EVM': {
+        case 'Ethereum': {
           const result = loadEIP155Wallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new EVM address
-          WalletStore.fetchBalances({
-            eip155Address: address,
-            tonAddress: SettingsStore.state.tonAddress,
-            tronAddress: SettingsStore.state.tronAddress,
-            suiAddress: SettingsStore.state.suiAddress,
-          });
+          WalletStore.fetchBalances(
+            {
+              eip155Address: address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
-        case 'TON': {
+        case 'Ton': {
           const result = await loadTonWallet(sanitizedInput);
           address = result.address;
-          // Refetch balances with the new TON address
-          WalletStore.fetchBalances({
-            eip155Address: SettingsStore.state.eip155Address,
-            tonAddress: address,
-            tronAddress: SettingsStore.state.tronAddress,
-            suiAddress: SettingsStore.state.suiAddress,
-          });
+          // Refetch balances with the new Ton address
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: address,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
-        case 'TRON': {
+        case 'Tron': {
           const result = await loadTronWallet(sanitizedInput);
           address = result.address;
-          // Refetch balances with the new TRON address
-          WalletStore.fetchBalances({
-            eip155Address: SettingsStore.state.eip155Address,
-            tonAddress: SettingsStore.state.tonAddress,
-            tronAddress: address,
-            suiAddress: SettingsStore.state.suiAddress,
-          });
+          // Refetch balances with the new Tron address
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: address,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
           break;
         }
-        case 'SUI': {
+        case 'Sui': {
           const result = await loadSuiWallet(sanitizedInput);
           address = result.address;
-          // Refetch balances with the new SUI address
-          WalletStore.fetchBalances({
-            eip155Address: SettingsStore.state.eip155Address,
-            tonAddress: SettingsStore.state.tonAddress,
-            tronAddress: SettingsStore.state.tronAddress,
-            suiAddress: address,
-          });
+          // Refetch balances with the new Sui address
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: address,
+              solanaAddress: SettingsStore.state.solanaAddress,
+            },
+            { force: true },
+          );
+          break;
+        }
+        case 'Canton': {
+          const result = await loadCantonWallet(sanitizedInput);
+          address = result.address;
+          break;
+        }
+        case 'Solana': {
+          const result = await loadSolanaWallet(sanitizedInput);
+          address = result.address;
+          // Refetch balances with the new Solana address
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: address,
+            },
+            { force: true },
+          );
           break;
         }
         default: {
@@ -124,16 +175,27 @@ export default function ImportWalletModal() {
           );
           Toast.show({
             type: 'error',
-            text1: 'Error',
+            text1: 'Couldn’t import wallet',
             text2: `Unsupported chain: ${unsupportedChain}`,
           });
           return;
         }
       }
 
+      try {
+        await PaymentStore.clearLastPaidTokenUnit();
+      } catch (error: unknown) {
+        LogStore.warn(
+          'Failed to clear last paid token after wallet import',
+          'ImportWalletModal',
+          'handleImport',
+          { error: error instanceof Error ? error.message : 'unknown error' },
+        );
+      }
+
       Toast.show({
         type: 'success',
-        text1: `${selectedChain} wallet imported!`,
+        text1: `${selectedChain} wallet added`,
         text2: `New address: ${address}`,
       });
       ModalStore.close();
@@ -141,7 +203,7 @@ export default function ImportWalletModal() {
       const message = error instanceof Error ? error.message : 'Invalid input';
       Toast.show({
         type: 'error',
-        text1: 'Error',
+        text1: 'Couldn’t import wallet',
         text2: message,
       });
     } finally {
@@ -159,7 +221,7 @@ export default function ImportWalletModal() {
         </View>
 
         <Text variant="h6-400" color="text-primary" center>
-          Import Wallet
+          Import wallet
         </Text>
 
         <View style={styles.segmentContainer}>
@@ -204,7 +266,7 @@ export default function ImportWalletModal() {
             onPress={handleImport}
             disabled={isLoading || !input.trim()}
           >
-            {isLoading ? 'Importing...' : 'Import'}
+            {isLoading ? 'Importing…' : 'Import'}
           </ActionButton>
         </View>
       </View>

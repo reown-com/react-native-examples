@@ -111,24 +111,12 @@ export default function ScanScreen() {
 
         const data = await startPayment(paymentRequest);
 
-        if (process.env.EXPO_PUBLIC_GATEWAY_URL) {
-          const url = `${process.env.EXPO_PUBLIC_GATEWAY_URL}/${data.paymentId}`;
-
-          addLog("info", "Payment started", "scan", "initiatePayment", {
-            paymentId: data.paymentId,
-            gatewayUrl: url,
-          });
-          setQrUri(url);
-          setPaymentId(data.paymentId);
-        } else {
-          addLog(
-            "error",
-            "Gateway URL is not configured",
-            "scan",
-            "initiatePayment",
-          );
-          showErrorToast("Gateway URL is not configured");
-        }
+        addLog("info", "Payment started", "scan", "initiatePayment", {
+          paymentId: data.paymentId,
+          gatewayUrl: data.gatewayUrl,
+        });
+        setQrUri(data.gatewayUrl);
+        setPaymentId(data.paymentId);
       } catch (error: any) {
         addLog(
           "error",

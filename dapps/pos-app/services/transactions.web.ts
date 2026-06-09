@@ -7,12 +7,12 @@ export interface GetTransactionsOptions {
   sortDir?: "asc" | "desc";
   limit?: number;
   cursor?: string;
+  startTs?: string;
+  endTs?: string;
 }
 
 /**
  * Fetch merchant transactions via server-side proxy (web version)
- * API key is handled server-side, only merchantId is sent from client
- * TODO: Once Merchants API unifies auth with Payment API, pass credentials from client
  * @param options - Optional query parameters for filtering and pagination
  * @returns TransactionsResponse with list of payments and stats
  */
@@ -20,9 +20,14 @@ export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
   const merchantId = useSettingsStore.getState().merchantId;
+  const apiKey = await useSettingsStore.getState().getCustomerApiKey();
 
   if (!merchantId || merchantId.trim().length === 0) {
     throw new Error("Merchant ID is not configured");
+  }
+
+  if (!apiKey || apiKey.trim().length === 0) {
+    throw new Error("Customer API key is not configured");
   }
 
   // Build query string from options
@@ -37,11 +42,11 @@ export async function getTransactions(
   }
 
   if (options.sortBy) {
-    params.append("sort_by", options.sortBy);
+    params.append("sortBy", options.sortBy);
   }
 
   if (options.sortDir) {
-    params.append("sort_dir", options.sortDir);
+    params.append("sortDir", options.sortDir);
   }
 
   if (options.limit) {
@@ -52,6 +57,14 @@ export async function getTransactions(
     params.append("cursor", options.cursor);
   }
 
+  if (options.startTs) {
+    params.append("startTs", options.startTs);
+  }
+
+  if (options.endTs) {
+    params.append("endTs", options.endTs);
+  }
+
   const queryString = params.toString();
   const url = `/api/transactions${queryString ? `?${queryString}` : ""}`;
 
@@ -59,6 +72,7 @@ export async function getTransactions(
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "x-api-key": apiKey,
       "x-merchant-id": merchantId,
     },
   });

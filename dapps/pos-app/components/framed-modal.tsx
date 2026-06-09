@@ -1,5 +1,6 @@
 import React from "react";
-import { Modal } from "react-native";
+import { Modal, Platform } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 interface FramedModalProps {
   visible: boolean;
@@ -9,6 +10,8 @@ interface FramedModalProps {
 
 /**
  * Native modal wrapper. On native platforms, uses React Native's Modal directly.
+ * Wraps children in GestureHandlerRootView on Android since Modals create a
+ * separate Window that needs its own gesture handler root.
  */
 export function FramedModal({
   visible,
@@ -20,9 +23,16 @@ export function FramedModal({
       visible={visible}
       transparent
       animationType="fade"
+      statusBarTranslucent
       onRequestClose={onRequestClose}
     >
-      {children}
+      {Platform.OS === "android" ? (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          {children}
+        </GestureHandlerRootView>
+      ) : (
+        children
+      )}
     </Modal>
   );
 }

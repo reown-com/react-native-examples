@@ -154,25 +154,12 @@ To create a branded variant for a specific client:
    ```
 
 2. **Add the variant logo**
-   - Add the client's logo to `assets/images/variants/<client-name>_brand.png`
+   - Add the client's logo (variant mark only — no WPay wordmark, no "+") to `assets/images/variants/<client-name>_brand.png`
    - **Requirements**: PNG format
+   - The header composes three separate images at runtime: `assets/images/brand.png` (WPay) + `assets/images/plus.png` (+) + your variant logo
+   - The thermal printer receipt always uses the default WPay logo, so no base64 conversion is needed
 
-3. **Add the printer logo** in `constants/printer-logos.ts`
-   - Convert the client's logo to base64 using https://base64.guru/converter/encode/image/png
-   - Add the base64 string as a new constant:
-     ```typescript
-     export const <CLIENT_NAME>_LOGO_BASE64 =
-       "data:image/png;base64,<base64-string>";
-     ```
-
-4. **Define the variant** in `constants/variants.ts`
-   - Import the printer logo at the top of the file:
-     ```typescript
-     import {
-       // ... existing imports ...
-       <CLIENT_NAME>_LOGO_BASE64,
-     } from "./printer-logos";
-     ```
+3. **Define the variant** in `constants/variants.ts`
    - Add the variant name to the `VariantName` type:
      ```typescript
      export type VariantName =
@@ -187,8 +174,7 @@ To create a branded variant for a specific client:
      ```typescript
      <client-name>: {
        name: "<Client Name>",
-       brandLogo: require("@/assets/images/variants/<client-name>_brand.png"),
-       printerLogo: <CLIENT_NAME>_LOGO_BASE64,
+       variantLogo: require("@/assets/images/variants/<client-name>_brand.png"),
        defaultTheme: "light", // or "dark"
        colors: {
          light: {
@@ -205,10 +191,10 @@ To create a branded variant for a specific client:
      },
      ```
 
-5. **Update Android version code** in `app.json`
+4. **Update Android version code** in `app.json`
    - Increment `expo.android.versionCode`
 
-6. **Commit, push, and create a release tag (Devin only)**
+5. **Commit, push, and create a release tag (Devin only)**
 
    ```bash
    git add .
@@ -220,7 +206,7 @@ To create a branded variant for a specific client:
 
    The tag will trigger the release workflow automatically.
 
-7. **Verify the release**
+6. **Verify the release**
    - Check the build status and Firebase link in the `#system-releases-react-native` Slack channel
 
 **Manual release**: If you need to trigger the release manually instead of using a tag, go to GitHub Actions and run the `release-android-mobilepos` workflow.

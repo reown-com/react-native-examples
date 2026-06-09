@@ -1,0 +1,209 @@
+name: CI E2E WalletKit
+run-name: "E2E WalletKit - ${{ inputs.platform || 'both' }} - Tags: ${{ inputs.maestro-tags || 'pay' }}"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Every hour, UTC
+  pull_request:
+    branches: [main]
+    paths:
+      - 'wallets/rn_cli_wallet/**'
+      - '.maestro/**'
+      - '.github/actions/walletkit-build-and-maestro/**'
+      - '.github/workflows/ci_e2e_walletkit.yaml'
+  push:
+    branches: [main]
+    paths:
+      - 'wallets/rn_cli_wallet/**'
+      - '.maestro/**'
+      - '.github/actions/walletkit-build-and-maestro/**'
+      - '.github/workflows/ci_e2e_walletkit.yaml'
+  workflow_dispatch:
+    inputs:
+      maestro-tags:
+        description: 'Maestro test tags to run (comma-separated)'
+        required: false
+        default: 'pay'
+        type: string
+      platform:
+        description: 'Platform to run tests on'
+        required: false
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - ios
+          - android
+
+env:
+  MAESTRO_TAGS: ${{ inputs.maestro-tags || 'pay' }}
+
+jobs:
+  check-balance:
+    uses: ./.github/workflows/e2e-balance-check.yml
+    secrets:
+      SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
+
+  e2e-ios:
+    needs: check-balance
+    if: always() && inputs.platform != 'android' # Balance alert should not block tests
+    name: E2E Tests - iOS
+    runs-on: macos-latest-xlarge
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build wallet and run Maestro tests (iOS)
+        id: walletkit
+        uses: ./.github/actions/walletkit-build-and-maestro
+        with:
+          platform: ios
+          pay-core-url: https://api.pay.walletconnect.com
+          wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
+          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
+          merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
+          merchant-id-multi-nokyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
+          merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
+          merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
+          maestro-tags: ${{ env.MAESTRO_TAGS }}
+          apple-key-id: ${{ secrets.APPLE_KEY_ID }}
+          apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
+          apple-issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
+          match-git-url: ${{ secrets.MATCH_GIT_URL }}
+          match-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
+
+      - name: Send Slack notification
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "E2E Test Report - iOS - WalletKit",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🧪 E2E Test Report - iOS (${{ env.MAESTRO_TAGS }})" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
+                    { "type": "mrkdwn", "text": "*Platform:*\n`iOS`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.walletkit.outputs.maestro-outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "Download Artifacts" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts"
+                    }
+                  ]
+                }
+              ]
+            }
+
+  e2e-android:
+    needs: check-balance
+    if: always() && inputs.platform != 'ios' # Balance alert should not block tests
+    name: E2E Tests - Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build wallet and run Maestro tests (Android)
+        id: walletkit
+        uses: ./.github/actions/walletkit-build-and-maestro
+        with:
+          platform: android
+          pay-core-url: https://api.pay.walletconnect.com
+          wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
+          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
+          merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
+          merchant-id-multi-nokyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
+          merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
+          merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
+          maestro-tags: ${{ env.MAESTRO_TAGS }}
+          android-secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+          android-keystore-base64: ${{ secrets.WC_INTERNAL_KEYSTORE }}
+          android-keystore-name: ${{ vars.WC_INTERNAL_KEYSTORE_NAME }}
+
+      - name: Send Slack notification
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "E2E Test Report - Android - WalletKit",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🧪 E2E Test Report - Android (${{ env.MAESTRO_TAGS }})" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
+                    { "type": "mrkdwn", "text": "*Platform:*\n`Android`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.walletkit.outputs.maestro-outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "Download Artifacts" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts"
+                    }
+                  ]
+                }
+              ]
+            }

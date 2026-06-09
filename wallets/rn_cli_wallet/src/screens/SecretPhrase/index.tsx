@@ -32,7 +32,7 @@ function SecretSection({
       Clipboard.setString(secret);
       Toast.show({
         type: 'info',
-        text1: `${title} copied to clipboard`,
+        text1: `${title} secret copied`,
       });
     }
   };
@@ -114,9 +114,14 @@ function SecretSection({
 }
 
 export default function SecretPhrase() {
-  const { eip155Address, suiWallet, tonWallet, tronWallet } = useSnapshot(
-    SettingsStore.state,
-  );
+  const {
+    eip155Address,
+    suiWallet,
+    tonWallet,
+    tronWallet,
+    cantonWallet,
+    solanaWallet,
+  } = useSnapshot(SettingsStore.state);
   const Theme = useTheme();
 
   // Get EVM mnemonic
@@ -131,6 +136,15 @@ export default function SecretPhrase() {
   // Get TRON private key
   const tronPrivateKey = tronWallet?.privateKey ?? null;
 
+  // Get Canton secret key
+  const cantonSecretKey = cantonWallet?.getSecretKey?.() ?? null;
+
+  // Get Solana mnemonic (or base58-encoded secret key when imported from
+  // raw bytes — note: unlike TON/TRON/Canton, Solana's secret is base58
+  // not hex; SecretSection's `type` prop only drives layout, not encoding).
+  const solanaMnemonic = solanaWallet?.getMnemonic?.() || null;
+  const solanaBase58SecretKey = solanaWallet?.getSecretKey?.() ?? null;
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
@@ -143,37 +157,60 @@ export default function SecretPhrase() {
         ]}
       >
         <Text variant="sm-500" color="text-primary">
-          Mnemonics and secret keys are provided for development purposes only
-          and should not be used elsewhere
+          These mnemonics and secret keys are for development only. Don’t use
+          them anywhere else.
         </Text>
       </View>
       <SecretSection
-        title="EVM (Ethereum)"
+        title="Ethereum"
         secret={evmMnemonic}
         type="mnemonic"
-        notAvailableMessage="Imported via private key - no recovery phrase"
+        notAvailableMessage="Imported via private key. No recovery phrase."
       />
 
       <SecretSection
-        title="SUI"
+        title="Sui"
         secret={suiMnemonic}
         type="mnemonic"
-        notAvailableMessage="SUI wallet not initialized"
+        notAvailableMessage="Sui wallet not initialized"
       />
 
       <SecretSection
-        title="TON"
+        title="Ton"
         secret={tonSecretKey}
         type="hex"
-        notAvailableMessage="TON wallet not initialized"
+        notAvailableMessage="Ton wallet not initialized"
       />
 
       <SecretSection
-        title="TRON"
+        title="Tron"
         secret={tronPrivateKey}
         type="hex"
-        notAvailableMessage="TRON wallet not initialized"
+        notAvailableMessage="Tron wallet not initialized"
       />
+
+      <SecretSection
+        title="Canton"
+        secret={cantonSecretKey}
+        type="hex"
+        notAvailableMessage="Canton wallet not initialized"
+      />
+
+      {solanaMnemonic ? (
+        <SecretSection
+          title="Solana"
+          secret={solanaMnemonic}
+          type="mnemonic"
+          notAvailableMessage="Solana wallet not initialized"
+        />
+      ) : (
+        <SecretSection
+          title="Solana (base58 secret key)"
+          secret={solanaBase58SecretKey}
+          type="hex"
+          notAvailableMessage="Solana wallet not initialized"
+        />
+      )}
     </ScrollView>
   );
 }

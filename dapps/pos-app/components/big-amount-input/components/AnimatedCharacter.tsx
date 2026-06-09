@@ -35,6 +35,7 @@ type AnimatedCharacterProps = {
   isPlaceholder?: boolean;
   textPrimaryColor: string;
   textSecondaryColor: string;
+  textTertiaryColor: string;
 };
 
 function AnimatedCharacterComponent({
@@ -46,6 +47,7 @@ function AnimatedCharacterComponent({
   isPlaceholder = false,
   textPrimaryColor,
   textSecondaryColor,
+  textTertiaryColor,
 }: AnimatedCharacterProps) {
   // Compensate for scale origin: RN scales from center, so we offset
   // by half the width * (1 - scale) to simulate left-origin scaling
@@ -56,24 +58,30 @@ function AnimatedCharacterComponent({
   const animatedTranslateX = useSharedValue(positionX - scaleOffsetX);
   const animatedScale = useSharedValue(scale);
   const isMounted = useRef(false);
+  const prevScale = useRef(scale);
 
   useEffect(() => {
     translateY.value = withTiming(0, TIMING_CONFIG);
     opacity.value = withTiming(1, TIMING_CONFIG);
   }, [translateY, opacity]);
 
+  // Reposition / rescale an existing character. A scale-tier change (crossing a
+  // digit-count threshold) resizes and repositions every character at once, so
+  // we snap those instantly to avoid a burst of simultaneous timing animations
+  // on low-end devices. Pure repositions (e.g. a thousands separator shifting
+  // digits without a scale change) still animate smoothly.
   useEffect(() => {
     if (!isMounted.current) return;
-    animatedTranslateX.value = withTiming(
-      positionX - scaleOffsetX,
-      TIMING_CONFIG,
-    );
-  }, [positionX, scaleOffsetX, animatedTranslateX]);
-
-  useEffect(() => {
-    if (!isMounted.current) return;
-    animatedScale.value = withTiming(scale, TIMING_CONFIG);
-  }, [scale, animatedScale]);
+    const targetX = positionX - scaleOffsetX;
+    const scaleChanged = prevScale.current !== scale;
+    prevScale.current = scale;
+    if (scaleChanged) {
+      animatedTranslateX.value = targetX;
+      animatedScale.value = scale;
+    } else {
+      animatedTranslateX.value = withTiming(targetX, TIMING_CONFIG);
+    }
+  }, [positionX, scaleOffsetX, scale, animatedTranslateX, animatedScale]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -88,8 +96,11 @@ function AnimatedCharacterComponent({
     ],
   }));
 
-  const isPlaceholderChar = isPlaceholder || item.isPlaceholderDecimal;
-  const textColor = isPlaceholderChar ? textSecondaryColor : textPrimaryColor;
+  const textColor = isPlaceholder
+    ? textSecondaryColor
+    : item.isPlaceholderDecimal || item.isTertiaryCurrency
+      ? textTertiaryColor
+      : textPrimaryColor;
 
   return (
     <Animated.View exiting={exitAnimation}>
@@ -116,8 +127,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
-    fontFamily: "KH Teka",
+    fontFamily: "KH Teka Medium",
     fontSize: 64,
+    letterSpacing: -1,
     position: "absolute",
     textAlign: "center",
   },

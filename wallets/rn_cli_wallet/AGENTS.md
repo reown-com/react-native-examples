@@ -170,8 +170,39 @@ ENV_PROJECT_ID=""              # WalletConnect Project ID (required)
 ENV_SENTRY_DSN=""              # Sentry error tracking (optional)
 ENV_TON_CENTER_API_KEY=""      # TON blockchain API key (optional)
 ENV_BLOCKCHAIN_API_URL=""      # Blockchain API URL (to get wallet balances)
+ENV_TEST_PRIVATE_KEY=""        # Private key for funded test wallet (Maestro E2E only)
 SENTRY_DISABLE_AUTO_UPLOAD=true  # Disable Sentry auto upload for Android builds
 ```
+
+## E2E Testing (Maestro)
+
+### Test IDs Convention
+The app uses standardized `testID` props for Maestro E2E testing. These IDs are designed to be reused across wallet implementations (React Native, Flutter, Swift, Kotlin):
+
+- `button-*`: Tappable UI elements (e.g., `button-scan`, `button-paste-url`)
+- `pay-*`: WalletConnect Pay flow elements (e.g., `pay-merchant-info`, `pay-button-pay`, `pay-result-success-icon`)
+
+### Test Files
+- `.maestro/pay_single_option_nokyc.yaml`: Single payment option, no KYC — goes straight to review screen
+- `.maestro/pay_multiple_options_nokyc.yaml`: Multiple payment options, no KYC — option selection then review
+- `.maestro/pay_multiple_options_kyc.yaml`: Multiple payment options with KYC — option selection, webview KYC flow, then review
+- `.maestro/flows/pay_open_and_paste_url.yaml`: Shared sub-flow — opens wallet, pastes payment URL, waits for merchant info
+- `.maestro/flows/pay_confirm_and_verify.yaml`: Shared sub-flow — taps Pay, verifies success screen
+- `.maestro/scripts/create-payment.js`: Creates a payment via the WalletConnect Pay API (called via `runScript`)
+
+### Running Pay Tests Locally
+```bash
+maestro test --env APP_ID=com.walletconnect.web3wallet.rnsample.internal --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="<key>" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="<id>" --env WPAY_CUSTOMER_KEY_MULTI_KYC="<key>" --env WPAY_MERCHANT_ID_MULTI_KYC="<id>" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="<key>" --env WPAY_MERCHANT_ID_MULTI_NOKYC="<id>" --include-tags pay .maestro/
+```
+
+### Dynamic App ID
+Maestro tests use `${APP_ID}` env variable instead of hardcoded bundle IDs, enabling reuse across wallet platforms. Pass via `--env APP_ID=<bundle-id>` when running tests.
+
+### ENV_TEST_PRIVATE_KEY
+When set, the wallet auto-loads this private key on startup (if no stored wallet exists). Used in CI to ensure a funded wallet is available for payment tests. The key is NOT persisted to storage — Maestro's `clearState` wipes AsyncStorage, so the ENV key is used on every test run.
+
+### CI Workflow
+`.github/workflows/ci_e2e_walletkit.yaml` runs Maestro tests on both iOS (simulator) and Android (emulator). Triggers on PRs/pushes to main when `wallets/rn_cli_wallet/` or `.maestro/` files change.
 
 ## Development
 

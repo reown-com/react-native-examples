@@ -24,15 +24,6 @@ export type BigAmountInputProps = {
    */
   placeholder?: string;
   /**
-   * Whether the input is focused (shows blinking cursor)
-   */
-  isFocused?: boolean;
-  /**
-   * Whether cursor blinks when focused
-   * @default true
-   */
-  cursorBlinkEnabled?: boolean;
-  /**
    * Test ID for testing
    */
   testID?: string;

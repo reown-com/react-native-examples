@@ -5,6 +5,7 @@ import { SignClientTypes } from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
 import { AppInfoCard } from '@/components/AppInfoCard';
+import { NetworkInfoCard } from '@/components/NetworkInfoCard';
 import { Message } from '@/components/Modal/Message';
 import {
   approveTonRequest,
@@ -59,7 +60,7 @@ export default function SessionTonSendMessageModal() {
       if (validationResult) {
         Toast.show({
           type: 'error',
-          text1: 'Validation failed',
+          text1: 'Couldn’t validate request',
           text2: validationResult.error.message,
         });
         await walletKit.respondSessionRequest({
@@ -129,7 +130,7 @@ export default function SessionTonSendMessageModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Send message failed',
+          text1: 'Couldn’t send message',
           text2: (e as Error).message,
         });
       } finally {
@@ -163,7 +164,7 @@ export default function SessionTonSendMessageModal() {
         );
         Toast.show({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {
@@ -199,6 +200,7 @@ export default function SessionTonSendMessageModal() {
           validation={validation}
           isScam={isScam}
         />
+        <NetworkInfoCard chainId={params.chainId} />
 
         {/* Sign with Address */}
         <View
@@ -212,7 +214,7 @@ export default function SessionTonSendMessageModal() {
             color="text-tertiary"
             style={styles.sectionTitle}
           >
-            Sign with Address
+            Signing address
           </Text>
           <Text variant="md-400" color="text-primary">
             {tonAddresses[0]}
@@ -222,7 +224,7 @@ export default function SessionTonSendMessageModal() {
         {/* Transaction Details */}
         <Message
           message={formatTransactionDetails()}
-          title="Transaction Details"
+          title="Transaction details"
           style={styles.transactionDetails}
         />
       </View>

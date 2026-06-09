@@ -16,6 +16,7 @@ type CharacterGroupProps = {
   isEmpty: boolean;
   textPrimaryColor: string;
   textSecondaryColor: string;
+  textTertiaryColor: string;
 };
 
 function CharacterGroupComponent({
@@ -28,6 +29,7 @@ function CharacterGroupComponent({
   isEmpty,
   textPrimaryColor,
   textSecondaryColor,
+  textTertiaryColor,
 }: CharacterGroupProps) {
   const separatorItem = useMemo<CharacterItem | null>(() => {
     if (!separator) return null;
@@ -47,6 +49,7 @@ function CharacterGroupComponent({
         isPlaceholder={isEmpty}
         textPrimaryColor={textPrimaryColor}
         textSecondaryColor={textSecondaryColor}
+        textTertiaryColor={textTertiaryColor}
       />
       {separatorItem && separator ? (
         <AnimatedCharacter
@@ -58,6 +61,7 @@ function CharacterGroupComponent({
           isPlaceholder={isEmpty}
           textPrimaryColor={textPrimaryColor}
           textSecondaryColor={textSecondaryColor}
+          textTertiaryColor={textTertiaryColor}
         />
       ) : null}
     </>
@@ -74,6 +78,7 @@ type AnimatedNumberCharactersProps = {
   layout: AnimatedNumberLayout;
   textPrimaryColor: string;
   textSecondaryColor: string;
+  textTertiaryColor: string;
 };
 
 function AnimatedNumberCharactersComponent({
@@ -84,6 +89,7 @@ function AnimatedNumberCharactersComponent({
   layout,
   textPrimaryColor,
   textSecondaryColor,
+  textTertiaryColor,
 }: AnimatedNumberCharactersProps) {
   return (
     <>
@@ -99,6 +105,7 @@ function AnimatedNumberCharactersComponent({
           isEmpty={isEmpty}
           textPrimaryColor={textPrimaryColor}
           textSecondaryColor={textSecondaryColor}
+          textTertiaryColor={textTertiaryColor}
         />
       ))}
     </>

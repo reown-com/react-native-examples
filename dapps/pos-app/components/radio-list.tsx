@@ -8,6 +8,7 @@ export interface RadioOption<T extends string = string> {
   value: T;
   label: string;
   icon?: ImageSource;
+  dotColor?: string;
 }
 
 interface RadioListProps<T extends string = string> {
@@ -64,6 +65,11 @@ export function RadioList<T extends string = string>({
                   cachePolicy="memory-disk"
                 />
               )}
+              {option.dotColor && (
+                <View
+                  style={[styles.dot, { backgroundColor: option.dotColor }]}
+                />
+              )}
               <ThemedText fontSize={16} lineHeight={18} color="text-primary">
                 {option.label}
               </ThemedText>
@@ -111,6 +117,11 @@ const styles = StyleSheet.create({
   icon: {
     width: 24,
     height: 24,
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: BorderRadius["full"],
   },
   radioOuter: {
     width: 24,

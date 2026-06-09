@@ -2,7 +2,10 @@ import { proxy } from 'valtio';
 import { MMKV } from 'react-native-mmkv';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { fetchBalancesForChains } from '@/services/BalanceService';
+import { fetchERC20Balances } from '@/services/ERC20BalanceService';
 import { EIP155_CHAINS } from '@/constants/Eip155';
+import { isSpamToken } from '@/utils/SpamFilter';
+import { SOLANA_MAINNET_CAIP2 } from '@/constants/Solana';
 import LogStore, { serializeError } from '@/store/LogStore';
 
 const mmkv = new MMKV();
@@ -12,12 +15,14 @@ const STORAGE_KEY = 'WALLET_BALANCES';
 const TON_SUPPORTED_CHAINS = ['ton:-239'];
 const TRON_SUPPORTED_CHAINS = ['tron:0x2b6653dc'];
 const SUI_SUPPORTED_CHAINS = ['sui:mainnet'];
+const SOLANA_SUPPORTED_CHAINS = [SOLANA_MAINNET_CAIP2];
 
 export interface WalletAddresses {
   eip155Address?: string;
   tonAddress?: string;
   tronAddress?: string;
   suiAddress?: string;
+  solanaAddress?: string;
 }
 
 interface WalletState {
@@ -72,6 +77,7 @@ const MAINNET_NATIVE_TOKENS = {
   'ton:-239': { name: 'Toncoin', symbol: 'TON', decimals: '9' },
   'tron:0x2b6653dc': { name: 'TRON', symbol: 'TRX', decimals: '6' },
   'sui:mainnet': { name: 'Sui', symbol: 'SUI', decimals: '9' },
+  [SOLANA_MAINNET_CAIP2]: { name: 'Solana', symbol: 'SOL', decimals: '9' },
 };
 
 /**
@@ -85,12 +91,13 @@ function processBalances(
 ): TokenBalance[] {
   const mainnetChainIds = Object.keys(MAINNET_NATIVE_TOKENS);
 
-  // Filter: keep tokens with value > 0, OR mainnet native tokens (even if 0)
+  // Filter: keep tokens with value > 0, mainnet native tokens, or tokens with a non-zero quantity (on-chain ERC-20s without USD price)
   const filtered = apiBalances.filter(b => {
-    // Always keep tokens with value
+    // Drop spam/airdrop token contracts (native rows have no address)
+    if (b.address && isSpamToken(b.symbol)) return false;
     if (b.value > 0) return true;
-    // Keep mainnet native tokens (no address = native token)
     if (mainnetChainIds.includes(b.chainId) && !b.address) return true;
+    if (parseFloat(b.quantity.numeric) > 0) return true;
     return false;
   });
 
@@ -169,6 +176,24 @@ function processBalances(
     }
   }
 
+  // SOL on mainnet
+  if (addresses.solanaAddress) {
+    const hasSolanaMainnet = result.some(
+      b => b.chainId === SOLANA_MAINNET_CAIP2 && !b.address,
+    );
+    if (!hasSolanaMainnet) {
+      result.push({
+        name: 'Solana',
+        symbol: 'SOL',
+        chainId: SOLANA_MAINNET_CAIP2,
+        value: 0,
+        price: 0,
+        quantity: { decimals: '9', numeric: '0' },
+        iconUrl: undefined,
+      });
+    }
+  }
+
   return result;
 }
 
@@ -185,13 +210,17 @@ const WalletStore = {
     state.isLoading = loading;
   },
 
-  async fetchBalances(addresses: WalletAddresses) {
+  async fetchBalances(
+    addresses: WalletAddresses,
+    options?: { force?: boolean },
+  ) {
     // Early return if no addresses are available
     if (
       !addresses.eip155Address &&
       !addresses.tonAddress &&
       !addresses.tronAddress &&
-      !addresses.suiAddress
+      !addresses.suiAddress &&
+      !addresses.solanaAddress
     ) {
       return;
     }
@@ -202,65 +231,107 @@ const WalletStore = {
       // Fetch all balances in parallel for better performance and resilience
       const eip155ChainIds = Object.keys(EIP155_CHAINS);
 
-      const [eip155Result, tonResult, tronResult, suiResult] =
-        await Promise.all([
-          // EIP155 balances (or empty result if no address)
-          addresses.eip155Address
-            ? fetchBalancesForChains(addresses.eip155Address, eip155ChainIds)
-            : Promise.resolve({
-                balances: [] as TokenBalance[],
-                anySuccess: false,
-              }),
-          // TON balances (or empty result if no address)
-          addresses.tonAddress
-            ? fetchBalancesForChains(addresses.tonAddress, TON_SUPPORTED_CHAINS)
-            : Promise.resolve({
-                balances: [] as TokenBalance[],
-                anySuccess: false,
-              }),
-          // TRON balances (or empty result if no address)
-          addresses.tronAddress
-            ? fetchBalancesForChains(
-                addresses.tronAddress,
-                TRON_SUPPORTED_CHAINS,
-              )
-            : Promise.resolve({
-                balances: [] as TokenBalance[],
-                anySuccess: false,
-              }),
-          // SUI balances (or empty result if no address)
-          addresses.suiAddress
-            ? fetchBalancesForChains(addresses.suiAddress, SUI_SUPPORTED_CHAINS)
-            : Promise.resolve({
-                balances: [] as TokenBalance[],
-                anySuccess: false,
-              }),
-        ]);
+      const [
+        eip155Result,
+        tonResult,
+        tronResult,
+        suiResult,
+        solanaResult,
+        erc20Balances,
+      ] = await Promise.all([
+        // EIP155 balances (or empty result if no address)
+        addresses.eip155Address
+          ? fetchBalancesForChains(addresses.eip155Address, eip155ChainIds)
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
+        // TON balances (or empty result if no address)
+        addresses.tonAddress
+          ? fetchBalancesForChains(addresses.tonAddress, TON_SUPPORTED_CHAINS)
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
+        // TRON balances (or empty result if no address)
+        addresses.tronAddress
+          ? fetchBalancesForChains(addresses.tronAddress, TRON_SUPPORTED_CHAINS)
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
+        // SUI balances (or empty result if no address)
+        addresses.suiAddress
+          ? fetchBalancesForChains(addresses.suiAddress, SUI_SUPPORTED_CHAINS)
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
+        // Solana balances (or empty result if no address)
+        addresses.solanaAddress
+          ? fetchBalancesForChains(
+              addresses.solanaAddress,
+              SOLANA_SUPPORTED_CHAINS,
+            )
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
+        // On-chain ERC-20 balances (EURC etc.)
+        addresses.eip155Address
+          ? fetchERC20Balances(addresses.eip155Address)
+          : Promise.resolve([] as TokenBalance[]),
+      ]);
 
       // Only update state if at least one API call succeeded
       const anySuccess =
         eip155Result.anySuccess ||
         tonResult.anySuccess ||
         tronResult.anySuccess ||
-        suiResult.anySuccess;
+        suiResult.anySuccess ||
+        solanaResult.anySuccess;
 
       if (!anySuccess) {
         return;
       }
 
-      // Combine all balances
+      // Combine all balances from the blockchain API
       const apiBalances = [
         ...eip155Result.balances,
         ...tonResult.balances,
         ...tronResult.balances,
         ...suiResult.balances,
+        ...solanaResult.balances,
       ];
 
-      // Protect against API returning empty data when we have valid cached data
-      const totalValue = apiBalances.reduce((s, b) => s + b.value, 0);
-      const cachedTotalValue = state.balances.reduce((s, b) => s + b.value, 0);
-      if (totalValue === 0 && cachedTotalValue > 0) {
-        return;
+      // Merge on-chain ERC-20 balances (only non-zero) unless the API already returned them
+      for (const erc20 of erc20Balances) {
+        const hasBalance = parseFloat(erc20.quantity.numeric) > 0;
+        if (!hasBalance) {
+          continue;
+        }
+        const alreadyFromApi = apiBalances.some(
+          b =>
+            b.chainId === erc20.chainId &&
+            b.address?.toLowerCase() === erc20.address?.toLowerCase(),
+        );
+        if (!alreadyFromApi) {
+          apiBalances.push(erc20);
+        }
+      }
+
+      // Protect against API returning empty data when we have valid cached
+      // data. Skipped on explicit refetch (e.g. after wallet import), where
+      // an "empty" result is the desired ground truth.
+      if (!options?.force) {
+        const totalValue = apiBalances.reduce((s, b) => s + b.value, 0);
+        const cachedTotalValue = state.balances.reduce(
+          (s, b) => s + b.value,
+          0,
+        );
+        if (totalValue === 0 && cachedTotalValue > 0) {
+          return;
+        }
       }
 
       // Filter 0-balance tokens and ensure mainnet natives are present

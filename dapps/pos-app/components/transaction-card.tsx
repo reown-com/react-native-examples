@@ -4,7 +4,7 @@ import { formatFiatAmount } from "@/utils/currency";
 import { formatShortDate } from "@/utils/misc";
 import { PaymentRecord } from "@/utils/types";
 import { memo } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Button } from "./button";
 import { StatusBadge } from "./status-badge";
 import { ThemedText } from "./themed-text";
@@ -12,9 +12,14 @@ import { ThemedText } from "./themed-text";
 interface TransactionCardProps {
   payment: PaymentRecord;
   onPress: () => void;
+  style?: StyleProp<ViewStyle>;
 }
 
-function TransactionCardBase({ payment, onPress }: TransactionCardProps) {
+function TransactionCardBase({
+  payment,
+  onPress,
+  style,
+}: TransactionCardProps) {
   const theme = useTheme();
 
   return (
@@ -23,11 +28,15 @@ function TransactionCardBase({ payment, onPress }: TransactionCardProps) {
       style={[
         styles.container,
         { backgroundColor: theme["foreground-primary"] },
+        style,
       ]}
     >
       <View style={styles.leftContent}>
         <ThemedText fontSize={16} lineHeight={20} color="text-primary">
-          {formatFiatAmount(payment.fiat_amount, payment.fiat_currency)}
+          {formatFiatAmount(
+            payment.fiatAmount?.value,
+            payment.fiatAmount?.unit,
+          )}
         </ThemedText>
         <ThemedText
           fontSize={14}
@@ -35,7 +44,7 @@ function TransactionCardBase({ payment, onPress }: TransactionCardProps) {
           color="text-secondary"
           style={styles.date}
         >
-          {formatShortDate(payment.created_at)}
+          {formatShortDate(payment.createdAt)}
         </ThemedText>
       </View>
       <StatusBadge status={payment.status} />

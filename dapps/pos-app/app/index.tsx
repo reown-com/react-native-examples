@@ -10,12 +10,15 @@ import { Platform, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   const Theme = useTheme();
-  const { merchantId, isPartnerApiKeySet } = useSettingsStore();
+  const merchantId = useSettingsStore((state) => state.merchantId);
+  const isCustomerApiKeySet = useSettingsStore(
+    (state) => state.isCustomerApiKeySet,
+  );
 
   const handleStartPayment = () => {
-    if (!merchantId || !isPartnerApiKeySet) {
+    if (!merchantId || !isCustomerApiKeySet) {
       router.push("/settings");
-      showErrorToast("Merchant information not configured");
+      showErrorToast("Finish setup in Settings before starting a payment.");
       return;
     }
 
@@ -42,10 +45,11 @@ export default function HomeScreen() {
         <Image
           source={require("@/assets/images/plus.png")}
           style={styles.actionButtonImage}
+          tintColor={Theme["icon-default"]}
           cachePolicy="memory-disk"
           priority="high"
         />
-        <ThemedText fontSize={18}>New sale</ThemedText>
+        <ThemedText fontSize={18}>Start payment</ThemedText>
       </Button>
       <Button
         onPress={handleActivityPress}
@@ -57,6 +61,7 @@ export default function HomeScreen() {
         <Image
           source={require("@/assets/images/clock.png")}
           style={styles.actionButtonImage}
+          tintColor={Theme["icon-default"]}
           cachePolicy="memory-disk"
           priority="high"
         />
@@ -72,6 +77,7 @@ export default function HomeScreen() {
         <Image
           source={require("@/assets/images/gear.png")}
           style={styles.actionButtonImage}
+          tintColor={Theme["icon-default"]}
           cachePolicy="memory-disk"
           priority="high"
         />

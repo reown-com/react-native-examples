@@ -1,133 +1,225 @@
 import { proxy, ref } from 'valtio';
-import type { PaymentOptionsResponse, PaymentOption } from '@walletconnect/pay';
+import type {
+  Action,
+  ConfirmPaymentResponse,
+  PaymentOptionsResponse,
+  PaymentOption,
+} from '@walletconnect/pay';
+import { providers } from 'ethers';
 
-import LogStore from '@/store/LogStore';
+import LogStore, { serializeError } from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { eip155Wallets } from '@/utils/EIP155WalletUtil';
-import type { Step } from '@/utils/TypesUtil';
+import { storage } from '@/utils/storage';
+import type { OptionFeeEstimateStatus, Step } from '@/utils/TypesUtil';
 import {
   detectErrorType,
-  getErrorMessage,
   formatAmount,
 } from '@/modals/PaymentOptionsModal/utils';
 import type { ErrorType } from '@/modals/PaymentOptionsModal/utils';
+import { EIP155_SIGNING_METHODS } from '@/constants/Eip155';
+import { SOLANA_SIGNING_METHODS } from '@/constants/Solana';
+import type SolanaLib from '@/lib/SolanaLib';
+import {
+  estimateTransactionFee,
+  sendTransactionWithFreshFees,
+  waitForTransactionConfirmation,
+} from '@/utils/PaymentTransactionUtil';
+import type { TransactionFeeEstimate } from '@/utils/PaymentTransactionUtil';
+import { getApprovalAction, shouldShowSetupLoader } from '@/utils/PaymentUtil';
 
-/**
- * Types
- */
 interface PaymentState {
-  // Flow-level data (persists across modal open/close)
   paymentOptions: PaymentOptionsResponse | null;
-  loadingMessage: string | null;
+  setupTokenSymbol: string | null;
   errorMessage: string | null;
-  // Step navigation
   step: Step;
-
-  // Result state
+  previousStep: Step | null;
   resultStatus: 'success' | 'error';
   resultMessage: string;
   resultErrorType: ErrorType | null;
-
-  // Payment state
   selectedOption: PaymentOption | null;
-  paymentActions: any[] | null;
-  isLoadingActions: boolean;
-  actionsError: string | null;
-
-  // Tracks option IDs that have completed collectData
+  optionFeeEstimatesById: Record<string, TransactionFeeEstimate | null>;
+  optionFeeEstimateStatusById: Record<string, OptionFeeEstimateStatus>;
   collectDataCompletedIds: string[];
+  expiresAt: number | null;
 }
 
-/**
- * Initial State
- */
-const initialState: PaymentState = {
-  paymentOptions: null,
-  loadingMessage: null,
-  errorMessage: null,
-  step: 'loading',
-  resultStatus: 'success',
-  resultMessage: '',
-  resultErrorType: null,
+const PAY_EXPIRY_GUARD_MS = 10_000;
+const PAY_LAST_TOKEN_UNIT_KEY = 'PAY_LAST_TOKEN_UNIT';
+const DEFAULT_FIAT_CURRENCY = 'USD';
 
-  selectedOption: null,
-  paymentActions: null,
-  isLoadingActions: false,
-  actionsError: null,
-  collectDataCompletedIds: [],
-};
+function createInitialState(): PaymentState {
+  return {
+    paymentOptions: null,
+    setupTokenSymbol: null,
+    errorMessage: null,
+    step: 'loading',
+    previousStep: null,
+    resultStatus: 'success',
+    resultMessage: '',
+    resultErrorType: null,
+    selectedOption: null,
+    optionFeeEstimatesById: {},
+    optionFeeEstimateStatusById: {},
+    collectDataCompletedIds: [],
+    expiresAt: null,
+  };
+}
 
-/**
- * State
- */
-const state = proxy<PaymentState>({ ...initialState });
+const state = proxy<PaymentState>(createInitialState());
+let expiryTimerId: ReturnType<typeof setTimeout> | null = null;
+let paymentActionsRequestSeq = 0;
+let optionFeeEstimateRequestSeq = 0;
 
-/**
- * Store / Actions
- */
+function isPaymentExpiredLocally(expiresAt: number | null): boolean {
+  if (!expiresAt) return false;
+  const expiresAtMs = expiresAt * 1000;
+  return Date.now() + PAY_EXPIRY_GUARD_MS >= expiresAtMs;
+}
+
+function setPaymentResultFromConfirmStatus({
+  confirmResult,
+  selectedOption,
+  paymentOptions,
+}: {
+  confirmResult: ConfirmPaymentResponse;
+  selectedOption: PaymentOption;
+  paymentOptions: PaymentOptionsResponse;
+}): void {
+  if (confirmResult.status === 'succeeded') {
+    const amount = formatAmount(
+      selectedOption.amount.value,
+      selectedOption.amount.display.decimals,
+      2,
+    );
+    PaymentStore.setResult({
+      status: 'success',
+      message: `You've paid ${amount} ${selectedOption.amount.display.assetSymbol} to ${paymentOptions.info?.merchant?.name}`,
+    });
+    return;
+  }
+
+  if (confirmResult.status === 'expired') {
+    PaymentStore.setResult({
+      status: 'error',
+      errorType: 'expired',
+    });
+    return;
+  }
+
+  if ((confirmResult.status as string) === 'cancelled') {
+    PaymentStore.setResult({
+      status: 'error',
+      errorType: 'cancelled',
+    });
+    return;
+  }
+
+  if (confirmResult.status === 'failed') {
+    PaymentStore.setResult({
+      status: 'error',
+      errorType: 'generic',
+    });
+    return;
+  }
+
+  LogStore.warn(
+    'Unhandled final payment status',
+    'PaymentStore',
+    'approvePayment',
+    {
+      status: confirmResult.status,
+      isFinal: confirmResult.isFinal,
+    },
+  );
+
+  PaymentStore.setResult({
+    status: 'error',
+    errorType: 'generic',
+  });
+}
+
 const PaymentStore = {
   state,
 
-  // --- Flow lifecycle ---
-
-  startPayment(params: {
-    paymentOptions?: PaymentOptionsResponse;
-    loadingMessage?: string;
-    errorMessage?: string;
-  }) {
-    Object.assign(state, { ...initialState });
-
+  startPayment(
+    params: {
+      paymentOptions?: PaymentOptionsResponse;
+      errorMessage?: string;
+    } = {},
+  ) {
+    PaymentStore.clearExpiryTimer();
+    paymentActionsRequestSeq += 1;
+    optionFeeEstimateRequestSeq += 1;
+    Object.assign(state, createInitialState());
     if (params.paymentOptions) {
       state.paymentOptions = ref(params.paymentOptions);
     }
-    state.loadingMessage = params.loadingMessage ?? null;
     state.errorMessage = params.errorMessage ?? null;
   },
 
   setPaymentOptions(options: PaymentOptionsResponse) {
     state.paymentOptions = ref(options);
-    state.loadingMessage = null;
+    state.setupTokenSymbol = null;
     state.errorMessage = null;
     state.resultErrorType = null;
+    state.optionFeeEstimatesById = {};
+    state.optionFeeEstimateStatusById = {};
+
+    const expiresAt = options.info?.expiresAt;
+    if (typeof expiresAt === 'number' && expiresAt > 0) {
+      state.expiresAt = expiresAt;
+      PaymentStore.startExpiryTimer(expiresAt);
+    } else {
+      PaymentStore.clearExpiryTimer();
+      state.expiresAt = null;
+    }
+
+    PaymentStore.preloadOptionFeeEstimates(options);
   },
 
   setError(errorMessage: string) {
     const errorType = detectErrorType(errorMessage);
-    state.errorMessage = errorMessage;
-    state.loadingMessage = null;
     state.resultStatus = 'error';
-    state.resultMessage = getErrorMessage(errorType, errorMessage);
+    state.resultMessage = errorMessage;
     state.resultErrorType = errorType;
+    // Clear the transient loading-phase errorMessage so it can't re-trigger the
+    // error branch in resolveLoadingStep, consistent with setResult.
+    state.errorMessage = null;
+    state.setupTokenSymbol = null;
     state.step = 'result';
   },
 
   reset() {
-    Object.assign(state, { ...initialState });
+    PaymentStore.clearExpiryTimer();
+    paymentActionsRequestSeq += 1;
+    optionFeeEstimateRequestSeq += 1;
+    Object.assign(state, createInitialState());
   },
 
-  // --- Navigation ---
-
   setStep(step: Step) {
+    if (state.step === step) {
+      return;
+    }
+    state.previousStep = state.step;
     state.step = step;
   },
 
-  // --- Result ---
-
   setResult(payload: {
     status: 'success' | 'error';
-    message: string;
+    // Optional dynamic context — success summary, or raw error message. Result
+    // copy itself is resolved in the view via getResultContent.
+    message?: string;
     errorType?: ErrorType;
   }) {
     state.resultStatus = payload.status;
-    state.resultMessage = payload.message;
+    state.resultMessage = payload.message ?? '';
     state.resultErrorType = payload.errorType ?? null;
     state.errorMessage = null;
-    state.loadingMessage = null;
+    state.setupTokenSymbol = null;
     state.step = 'result';
   },
-
-  // --- Payment option selection ---
 
   selectOption(option: PaymentOption) {
     state.selectedOption = ref(option);
@@ -135,8 +227,6 @@ const PaymentStore = {
 
   clearSelectedOption() {
     state.selectedOption = null;
-    state.paymentActions = null;
-    state.actionsError = null;
   },
 
   markCollectDataCompleted(optionId: string) {
@@ -149,34 +239,148 @@ const PaymentStore = {
     return state.collectDataCompletedIds.includes(optionId);
   },
 
-  setPaymentActions(actions: any[]) {
-    state.paymentActions = ref(actions);
+  getOptionFeeEstimate(optionId: string): TransactionFeeEstimate | null {
+    return state.optionFeeEstimatesById[optionId] ?? null;
   },
 
-  setLoadingActions(loading: boolean) {
-    state.isLoadingActions = loading;
+  getOptionFeeEstimateStatus(optionId: string): OptionFeeEstimateStatus {
+    return state.optionFeeEstimateStatusById[optionId] ?? 'idle';
   },
 
-  setActionsError(error: string | null) {
-    state.actionsError = error;
+  async loadLastPaidTokenUnit(): Promise<string | undefined> {
+    return storage.getItem<string>(PAY_LAST_TOKEN_UNIT_KEY);
   },
 
-  // --- Business logic ---
+  async saveLastPaidTokenUnit(unit: string): Promise<void> {
+    await storage.setItem(PAY_LAST_TOKEN_UNIT_KEY, unit);
+  },
 
-  async fetchPaymentActions(option: PaymentOption) {
-    const payClient = walletKit?.pay;
-    if (!payClient || !state.paymentOptions) {
-      LogStore.error(
-        'Pay SDK not initialized',
-        'PaymentStore',
-        'fetchPaymentActions',
-      );
-      state.actionsError = 'Pay SDK not initialized';
+  async clearLastPaidTokenUnit(): Promise<void> {
+    await storage.removeItem(PAY_LAST_TOKEN_UNIT_KEY);
+  },
+
+  findPreferredOption(
+    options: readonly PaymentOption[],
+    tokenUnit?: string,
+  ): PaymentOption | null {
+    if (!tokenUnit) return null;
+    return options.find(option => option.amount.unit === tokenUnit) ?? null;
+  },
+
+  startExpiryTimer(expiresAt: number) {
+    PaymentStore.clearExpiryTimer();
+    const TWO_MINUTES_MS = 2 * 60 * 1000;
+    const now = Date.now();
+    const expiresAtMs = expiresAt * 1000;
+    const warningTime = expiresAtMs - TWO_MINUTES_MS;
+    const delay = warningTime - now;
+    const interruptibleSteps: Step[] = [
+      'selectOption',
+      'review',
+      'collectData',
+      'infoExplainer',
+      'gasFee',
+    ];
+
+    if (delay <= 0) {
+      if (expiresAtMs > now && interruptibleSteps.includes(state.step)) {
+        state.step = 'expiryWarning';
+      }
       return;
     }
 
-    state.isLoadingActions = true;
-    state.actionsError = null;
+    expiryTimerId = setTimeout(() => {
+      if (interruptibleSteps.includes(state.step)) {
+        state.step = 'expiryWarning';
+      }
+    }, delay);
+  },
+
+  clearExpiryTimer() {
+    if (expiryTimerId !== null) {
+      clearTimeout(expiryTimerId);
+      expiryTimerId = null;
+    }
+  },
+
+  async preloadOptionFeeEstimates(options: PaymentOptionsResponse) {
+    const requestSeq = ++optionFeeEstimateRequestSeq;
+    const paymentId = options.paymentId;
+
+    await Promise.allSettled(
+      options.options.map(async option => {
+        const approvalAction = getApprovalAction(option.actions);
+
+        if (!approvalAction) {
+          state.optionFeeEstimateStatusById[option.id] = 'ready';
+          return;
+        }
+
+        state.optionFeeEstimateStatusById[option.id] = 'loading';
+
+        try {
+          const estimate = await estimateTransactionFee(approvalAction, {
+            currency:
+              options.info?.amount?.display?.assetSymbol ??
+              DEFAULT_FIAT_CURRENCY,
+          });
+
+          if (
+            requestSeq !== optionFeeEstimateRequestSeq ||
+            state.paymentOptions?.paymentId !== paymentId
+          ) {
+            return;
+          }
+
+          if (estimate) {
+            state.optionFeeEstimatesById[option.id] = estimate;
+          }
+          state.optionFeeEstimateStatusById[option.id] = 'ready';
+
+          LogStore.log(
+            'Option approval gas estimate resolved',
+            'PaymentStore',
+            'preloadOptionFeeEstimates',
+            {
+              optionId: option.id,
+              chainId: approvalAction.walletRpc?.chainId,
+              estimate,
+            },
+          );
+        } catch (error) {
+          if (
+            requestSeq !== optionFeeEstimateRequestSeq ||
+            state.paymentOptions?.paymentId !== paymentId
+          ) {
+            return;
+          }
+
+          state.optionFeeEstimateStatusById[option.id] = 'error';
+
+          LogStore.warn(
+            'Failed to estimate option approval gas fee',
+            'PaymentStore',
+            'preloadOptionFeeEstimates',
+            {
+              optionId: option.id,
+              chainId: approvalAction.walletRpc?.chainId,
+              error: serializeError(error),
+            },
+          );
+        }
+      }),
+    );
+  },
+
+  async fetchPaymentActions(option: PaymentOption): Promise<Action[]> {
+    const payClient = walletKit?.pay;
+    if (!payClient || !state.paymentOptions) {
+      const errorMessage = 'Pay SDK not initialized';
+      LogStore.error(errorMessage, 'PaymentStore', 'fetchPaymentActions');
+      throw new Error(errorMessage);
+    }
+
+    const requestSeq = ++paymentActionsRequestSeq;
 
     try {
       LogStore.log(
@@ -185,18 +389,47 @@ const PaymentStore = {
         'fetchPaymentActions',
         { optionId: option.id },
       );
+
       const actions = await payClient.getRequiredPaymentActions({
         paymentId: state.paymentOptions.paymentId,
         optionId: option.id,
       });
+
       LogStore.log(
         'Required actions received',
         'PaymentStore',
         'fetchPaymentActions',
         { actionsCount: actions.length },
       );
-      state.paymentActions = ref(actions);
+
+      if (
+        requestSeq !== paymentActionsRequestSeq ||
+        state.selectedOption?.id !== option.id
+      ) {
+        LogStore.warn(
+          'Skipping stale payment actions response',
+          'PaymentStore',
+          'fetchPaymentActions',
+          { optionId: option.id },
+        );
+        return [];
+      }
+
+      return actions;
     } catch (error: any) {
+      if (
+        requestSeq !== paymentActionsRequestSeq ||
+        state.selectedOption?.id !== option.id
+      ) {
+        LogStore.warn(
+          'Skipping stale payment actions error',
+          'PaymentStore',
+          'fetchPaymentActions',
+          { optionId: option.id, error: error?.message },
+        );
+        return [];
+      }
+
       LogStore.error(
         'Error getting payment actions',
         'PaymentStore',
@@ -204,13 +437,7 @@ const PaymentStore = {
         { error: error?.message },
       );
       const errorMessage = error?.message || 'Failed to get payment actions';
-      const errorType = detectErrorType(errorMessage);
-      state.resultStatus = 'error';
-      state.resultMessage = getErrorMessage(errorType, errorMessage);
-      state.resultErrorType = errorType;
-      state.step = 'result';
-    } finally {
-      state.isLoadingActions = false;
+      throw error instanceof Error ? error : new Error(errorMessage);
     }
   },
 
@@ -224,20 +451,13 @@ const PaymentStore = {
       return;
     }
 
-    const { paymentActions, selectedOption, paymentOptions } = state;
-
-    if (
-      !paymentActions ||
-      paymentActions.length === 0 ||
-      !selectedOption ||
-      !paymentOptions
-    ) {
+    const { selectedOption, paymentOptions, expiresAt } = state;
+    if (!selectedOption || !paymentOptions) {
       LogStore.warn(
         'Cannot approve payment - missing required state',
         'PaymentStore',
         'approvePayment',
         {
-          hasPaymentActions: !!paymentActions?.length,
           hasSelectedOption: !!selectedOption,
           hasPaymentData: !!paymentOptions,
         },
@@ -245,73 +465,270 @@ const PaymentStore = {
       return;
     }
 
+    if (isPaymentExpiredLocally(expiresAt)) {
+      LogStore.warn(
+        'Payment expired locally before approval',
+        'PaymentStore',
+        'approvePayment',
+        {
+          paymentId: paymentOptions.paymentId,
+          expiresAt,
+          now: Math.floor(Date.now() / 1000),
+          guardMs: PAY_EXPIRY_GUARD_MS,
+        },
+      );
+      PaymentStore.setResult({
+        status: 'error',
+        errorType: 'expired',
+      });
+      return;
+    }
+
+    const tokenSymbol = selectedOption.amount.display.assetSymbol || 'token';
+    const showInitialSetupLoader = shouldShowSetupLoader(
+      selectedOption.actions,
+    );
+
     state.step = 'confirming';
-    state.actionsError = null;
+    state.setupTokenSymbol = showInitialSetupLoader ? tokenSymbol : null;
 
     try {
       const payClient = walletKit?.pay;
       if (!payClient) {
-        LogStore.error(
-          'Pay client not available for confirmation',
-          'PaymentStore',
-          'approvePayment',
-        );
         throw new Error('Pay SDK not available');
       }
 
-      const wallet = eip155Wallets[SettingsStore.state.eip155Address];
       const signatures: string[] = [];
+      const paymentActions = await PaymentStore.fetchPaymentActions(
+        selectedOption,
+      );
+      if (!paymentActions.length) {
+        throw new Error('No payment actions returned for the selected option');
+      }
+      const totalActions = paymentActions.length;
+      const approvalAction = getApprovalAction(paymentActions);
+      const showSetupLoader = shouldShowSetupLoader(paymentActions);
 
       for (const [index, action] of paymentActions.entries()) {
-        if (action.walletRpc) {
-          try {
-            const { method, params } = action.walletRpc;
-            const parsedParams = JSON.parse(params);
+        const stepLabel = `${index + 1}/${totalActions}`;
+        const method = action.walletRpc?.method;
 
-            LogStore.log('Signing action', 'PaymentStore', 'approvePayment', {
-              method,
-            });
+        if (!action.walletRpc) {
+          throw new Error(`Payment action ${stepLabel} is missing walletRpc`);
+        }
 
-            if (
-              method === 'eth_signTypedData_v4' ||
-              method === 'eth_signTypedData_v3' ||
-              method === 'eth_signTypedData'
-            ) {
-              const typedData = JSON.parse(parsedParams[1]);
-              const { domain, types, message: messageData } = typedData;
-              delete types.EIP712Domain;
-              const signature = await wallet._signTypedData(
-                domain,
-                types,
-                messageData,
-              );
-              LogStore.log(
-                'Signature received',
-                'PaymentStore',
-                'approvePayment',
-              );
-              signatures.push(signature);
-            } else {
-              LogStore.warn(
-                `Unsupported wallet RPC method: ${method}`,
-                'PaymentStore',
-                'approvePayment',
-              );
-              throw new Error(`Unsupported signature method: ${method}`);
-            }
-          } catch (error: any) {
-            LogStore.error(
-              `Error signing action ${index}`,
-              'PaymentStore',
-              'approvePayment',
-              { error: error?.message },
-            );
+        state.setupTokenSymbol =
+          showSetupLoader && approvalAction && action === approvalAction
+            ? tokenSymbol
+            : null;
+
+        LogStore.log(
+          'Executing payment action',
+          'PaymentStore',
+          'approvePayment',
+          {
+            step: stepLabel,
+            method,
+          },
+        );
+
+        const { params, chainId } = action.walletRpc;
+        let parsedParams: unknown;
+        try {
+          parsedParams =
+            typeof params === 'string' ? JSON.parse(params) : params;
+        } catch (error) {
+          throw new Error(
+            `Failed to parse params for ${method} (${stepLabel}): ${
+              error instanceof Error ? error.message : String(error)
+            }`,
+          );
+        }
+
+        const requireArrayParams = () => {
+          if (!Array.isArray(parsedParams)) {
             throw new Error(
-              `Failed to sign action ${index + 1}: ${
-                error?.message || 'Unknown error'
-              }`,
+              `Invalid params for ${method} (${stepLabel}): expected array`,
             );
           }
+          return parsedParams as unknown[];
+        };
+
+        const namespace = chainId.split(':')[0];
+        let evmWallet:
+          | (typeof eip155Wallets)[keyof typeof eip155Wallets]
+          | undefined;
+        let solanaWallet: SolanaLib | undefined;
+
+        switch (namespace) {
+          case 'eip155': {
+            const stored = eip155Wallets[SettingsStore.state.eip155Address];
+            if (!stored) {
+              throw new Error('EIP155 wallet not found for selected account');
+            }
+            evmWallet = stored;
+            break;
+          }
+          case 'solana': {
+            const stored = SettingsStore.state.solanaWallet;
+            if (!stored) {
+              throw new Error('Solana wallet not initialized');
+            }
+            solanaWallet = stored;
+            break;
+          }
+          default:
+            throw new Error(
+              `Unsupported payment chain namespace: ${namespace} (chainId=${chainId})`,
+            );
+        }
+
+        switch (method) {
+          case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION: {
+            if (!evmWallet) {
+              throw new Error(
+                `${method} requires an eip155 chainId, got ${chainId}`,
+              );
+            }
+            const arrayParams = requireArrayParams();
+            const txPayload = arrayParams[0];
+            if (!txPayload || typeof txPayload !== 'object') {
+              throw new Error(
+                `Invalid tx payload for ${method} (${stepLabel})`,
+              );
+            }
+
+            const tx = await sendTransactionWithFreshFees({
+              chainId,
+              baseTx: { ...(txPayload as providers.TransactionRequest) },
+              wallet: evmWallet,
+              logContext: 'approvePayment',
+            });
+
+            try {
+              await waitForTransactionConfirmation(tx);
+            } catch (error) {
+              LogStore.error(
+                'Action transaction confirmation failed',
+                'PaymentStore',
+                'approvePayment',
+                {
+                  chainId,
+                  step: stepLabel,
+                  txHash: tx.hash,
+                  error: serializeError(error),
+                },
+              );
+              throw new Error('Action transaction confirmation failed');
+            }
+
+            LogStore.log(
+              'Action transaction confirmed',
+              'PaymentStore',
+              'approvePayment',
+              { chainId, step: stepLabel, txHash: tx.hash },
+            );
+            signatures.push(tx.hash);
+            break;
+          }
+
+          case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
+          case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
+          case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4: {
+            if (!evmWallet) {
+              throw new Error(
+                `${method} requires an eip155 chainId, got ${chainId}`,
+              );
+            }
+            const arrayParams = requireArrayParams();
+            let typedData: unknown = arrayParams[1];
+            try {
+              if (typeof typedData === 'string')
+                typedData = JSON.parse(typedData);
+            } catch (error) {
+              throw new Error(
+                `Failed to parse typed-data for ${method} (${stepLabel}): ${
+                  error instanceof Error ? error.message : String(error)
+                }`,
+              );
+            }
+
+            if (!typedData || typeof typedData !== 'object') {
+              throw new Error(
+                `Invalid typed-data for ${method} (${stepLabel})`,
+              );
+            }
+
+            const {
+              domain,
+              types,
+              message: messageData,
+            } = typedData as {
+              domain: Record<string, unknown>;
+              types: Record<string, Array<Record<string, unknown>>>;
+              message: Record<string, unknown>;
+            };
+
+            if (!types || typeof types !== 'object') {
+              throw new Error(
+                `Typed-data missing types for ${method} (${stepLabel})`,
+              );
+            }
+
+            delete types.EIP712Domain;
+            const signature = await evmWallet._signTypedData(
+              domain,
+              types,
+              messageData,
+            );
+            signatures.push(signature);
+            break;
+          }
+
+          case SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION: {
+            if (!solanaWallet) {
+              throw new Error(
+                `${method} requires a solana chainId, got ${chainId}`,
+              );
+            }
+            // Pay backend may serialize params as either a bare object
+            // ({ transaction }) or wrapped in a single-element array
+            // ([{ transaction }]); unwrap the array form transparently.
+            const rawParams = Array.isArray(parsedParams)
+              ? parsedParams[0]
+              : parsedParams;
+            if (
+              !rawParams ||
+              typeof rawParams !== 'object' ||
+              Array.isArray(rawParams)
+            ) {
+              throw new Error(
+                `Invalid params for ${method} (${stepLabel}): expected object`,
+              );
+            }
+            const transactionParam = (rawParams as Record<string, unknown>)
+              .transaction;
+            if (typeof transactionParam !== 'string') {
+              throw new Error(
+                `Invalid Solana transaction param for ${method} (${stepLabel})`,
+              );
+            }
+            const { transaction: signedTransaction, signature } =
+              await solanaWallet.signTransaction({
+                transaction: transactionParam,
+              });
+            LogStore.log(
+              'Solana payment transaction signed',
+              'PaymentStore',
+              'approvePayment',
+              { chainId, step: stepLabel, signature },
+            );
+            signatures.push(signedTransaction);
+            break;
+          }
+
+          default:
+            throw new Error(`Unsupported wallet RPC method: ${method}`);
         }
       }
 
@@ -329,45 +746,48 @@ const PaymentStore = {
         'Payment confirmation result',
         'PaymentStore',
         'approvePayment',
-        { status: confirmResult?.status },
+        {
+          status: confirmResult.status,
+          isFinal: confirmResult.isFinal,
+        },
       );
 
-      if (!confirmResult) {
-        throw new Error('Payment confirmation failed - no response received');
-      }
+      setPaymentResultFromConfirmStatus({
+        confirmResult,
+        selectedOption,
+        paymentOptions,
+      });
 
-      if (confirmResult.status === 'expired') {
-        LogStore.warn('Payment expired', 'PaymentStore', 'approvePayment', {
-          paymentId: paymentOptions.paymentId,
-        });
-        state.resultStatus = 'error';
-        state.resultErrorType = 'expired';
-        state.resultMessage = getErrorMessage('expired');
-        state.step = 'result';
-        return;
+      if (confirmResult.status === 'succeeded') {
+        try {
+          await PaymentStore.saveLastPaidTokenUnit(selectedOption.amount.unit);
+        } catch (error) {
+          LogStore.warn(
+            'Failed to persist last paid token',
+            'PaymentStore',
+            'approvePayment',
+            { error: serializeError(error) },
+          );
+        }
       }
-
-      const amount = formatAmount(
-        selectedOption.amount.value,
-        selectedOption.amount.display.decimals,
-        2,
-      );
-      state.resultStatus = 'success';
-      state.resultMessage = `You've paid ${amount} ${selectedOption.amount.display.assetSymbol} to ${paymentOptions.info?.merchant?.name}`;
-      state.step = 'result';
-    } catch (error: any) {
+    } catch (error: unknown) {
       LogStore.error(
-        'Error signing payment',
+        'Error executing payment actions',
         'PaymentStore',
         'approvePayment',
-        { error: error?.message },
+        { error: serializeError(error) },
       );
-      const errorMessage = error?.message || 'Failed to sign payment';
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to execute payment actions';
       const errorType = detectErrorType(errorMessage);
-      state.resultStatus = 'error';
-      state.resultErrorType = errorType;
-      state.resultMessage = getErrorMessage(errorType, errorMessage);
-      state.step = 'result';
+      PaymentStore.setResult({
+        status: 'error',
+        errorType,
+        message: errorMessage,
+      });
     }
   },
 };

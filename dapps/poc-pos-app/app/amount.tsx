@@ -1,3 +1,4 @@
+import { exceedsU64Max } from "@/utils/currency";
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
@@ -109,6 +110,7 @@ export default function AmountScreen() {
                 onChange?.(newDisplay);
               } else {
                 const newDisplay = prev === "0" ? key : prev + key;
+                if (exceedsU64Max(newDisplay)) return;
                 onChange?.(newDisplay);
               }
             }}

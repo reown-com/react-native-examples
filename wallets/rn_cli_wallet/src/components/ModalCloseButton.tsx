@@ -9,17 +9,20 @@ interface ModalCloseButtonProps {
   onPress: () => void;
   showBorder?: boolean;
   style?: StyleProp<ViewStyle>;
+  testID?: string;
 }
 
 export function ModalCloseButton({
   onPress,
   showBorder = true,
   style,
+  testID,
 }: ModalCloseButtonProps) {
   const Theme = useTheme();
   return (
     <Button
       onPress={onPress}
+      testID={testID}
       style={[
         styles.closeButton,
         showBorder && { borderColor: Theme['border-secondary'] },

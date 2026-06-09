@@ -1,25 +1,44 @@
 import { StyleSheet } from 'react-native';
-import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
+
+export const SCAN_AREA_SIZE = 280;
 
 export default StyleSheet.create({
-  backButton: {
-    zIndex: 1,
-    backgroundColor: 'black',
-    opacity: 0.7,
+  overlay: {
+    left: -1,
+    top: -1,
+  },
+  scanFrame: {
+    position: 'absolute',
+    width: SCAN_AREA_SIZE + 28,
+    height: SCAN_AREA_SIZE + 28,
+  },
+  closeButton: {
+    position: 'absolute',
+    right: Spacing[5],
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: BorderRadius[6],
-    height: Spacing[9],
-    width: Spacing[9],
-    marginTop: Spacing[4],
-    marginLeft: Spacing[4],
+    width: 38,
+    height: 38,
+    borderRadius: BorderRadius[3],
+    borderWidth: 1,
+    zIndex: 2,
   },
-  backIcon: {
-    transform: [{ rotate: '180deg' }],
+  instructionContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
   },
   errorContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  instructionText: {
+    color: 'white',
+  },
+  container: {
+    backgroundColor: 'black',
   },
 });

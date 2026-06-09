@@ -2,6 +2,8 @@ import { useCallback, useEffect } from 'react';
 import { SignClientTypes } from '@walletconnect/types';
 import Toast from 'react-native-toast-message';
 
+import { formatJsonRpcError } from '@json-rpc-tools/utils';
+import { getSdkError } from '@walletconnect/utils';
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
@@ -11,6 +13,9 @@ import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SUI_SIGNING_METHODS } from '@/constants/Sui';
 import { TON_SIGNING_METHODS } from '@/constants/Ton';
 import { TRON_SIGNING_METHODS } from '@/constants/Tron';
+import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
+import { approveCantonRequest } from '@/utils/CantonRequestHandlerUtil';
+import { SOLANA_SIGNING_METHODS } from '@/constants/Solana';
 
 export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -36,7 +41,11 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       );
 
       if (chains.length === 0) {
-        ModalStore.open('LoadingModal', { errorMessage: 'Unsupported chains' });
+        ModalStore.open('LoadingModal', {
+          errorTitle: "These networks aren’t supported",
+          errorMessage:
+            'This wallet doesn’t support any of the networks this app requested. Try connecting to a different app.',
+        });
       } else {
         ModalStore.open('SessionProposalModal', { proposal });
       }
@@ -124,6 +133,56 @@ export default function useWalletKitEventsManager(initialized: boolean) {
             requestEvent,
             requestSession,
           });
+        // Canton auto-approve (read-only methods)
+        case CANTON_SIGNING_METHODS.LIST_ACCOUNTS:
+        case CANTON_SIGNING_METHODS.GET_PRIMARY_ACCOUNT:
+        case CANTON_SIGNING_METHODS.GET_ACTIVE_NETWORK:
+        case CANTON_SIGNING_METHODS.STATUS:
+        case CANTON_SIGNING_METHODS.LEDGER_API:
+          try {
+            const cantonResponse = await approveCantonRequest(requestEvent);
+            return walletKit.respondSessionRequest({
+              topic,
+              response: cantonResponse,
+            });
+          } catch (e) {
+            LogStore.error(
+              (e as Error).message,
+              'WalletKitEvents',
+              'onSessionRequest:cantonAutoApprove',
+            );
+            Toast.show({
+              type: 'error',
+              text1: 'Canton request failed',
+              text2: (e as Error).message,
+            });
+            return walletKit.respondSessionRequest({
+              topic,
+              response: formatJsonRpcError(
+                requestEvent.id,
+                getSdkError('INVALID_METHOD').message,
+              ),
+            });
+          }
+        // Canton manual-approve (sensitive methods)
+        case CANTON_SIGNING_METHODS.SIGN_MESSAGE:
+        case CANTON_SIGNING_METHODS.PREPARE_SIGN_EXECUTE:
+          return ModalStore.open('SessionSignCantonModal', {
+            requestEvent,
+            requestSession,
+          });
+        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_MESSAGE:
+          return ModalStore.open('SessionSolanaSignMessageModal', {
+            requestEvent,
+            requestSession,
+          });
+        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION:
+        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_ALL_TRANSACTIONS:
+        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_AND_SEND_TRANSACTION:
+          return ModalStore.open('SessionSolanaSignTransactionModal', {
+            requestEvent,
+            requestSession,
+          });
         default:
           return ModalStore.open('SessionUnsuportedMethodModal', {
             requestEvent,
@@ -146,11 +205,15 @@ export default function useWalletKitEventsManager(initialized: boolean) {
         },
       );
       const chains = authRequest.params.authPayload.chains.filter(
-        chain => !!EIP155_CHAINS[chain.split(':')[1]],
+        chain => !!EIP155_CHAINS[chain],
       );
 
       if (chains.length === 0) {
-        ModalStore.open('LoadingModal', { errorMessage: 'Unsupported chains' });
+        ModalStore.open('LoadingModal', {
+          errorTitle: "These networks aren’t supported",
+          errorMessage:
+            'This wallet doesn’t support any of the networks this app requested. Try connecting to a different app.',
+        });
       } else {
         ModalStore.open('SessionAuthenticateModal', { authRequest });
       }

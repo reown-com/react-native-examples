@@ -4,11 +4,11 @@ import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useCallback, useEffect, useState } from "react";
 
 type ModalType = "none" | "pin-verify" | "pin-setup";
-type PendingAction = "merchant-id" | "partner-api-key" | null;
+type PendingAction = "merchant-id" | "customer-api-key" | null;
 
 interface MerchantFlowState {
   merchantIdInput: string;
-  partnerApiKeyInput: string;
+  customerApiKeyInput: string;
   activeModal: ModalType;
   pinError: string | null;
   pendingValue: string | null;
@@ -17,7 +17,7 @@ interface MerchantFlowState {
 
 const initialState: MerchantFlowState = {
   merchantIdInput: "",
-  partnerApiKeyInput: "",
+  customerApiKeyInput: "",
   activeModal: "none",
   pinError: null,
   pendingValue: null,
@@ -28,9 +28,11 @@ export function useMerchantFlow() {
   const storedMerchantId = useSettingsStore((state) => state.merchantId);
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);
   const clearMerchantId = useSettingsStore((state) => state.clearMerchantId);
-  const setPartnerApiKey = useSettingsStore((state) => state.setPartnerApiKey);
-  const isPartnerApiKeySet = useSettingsStore(
-    (state) => state.isPartnerApiKeySet,
+  const setCustomerApiKey = useSettingsStore(
+    (state) => state.setCustomerApiKey,
+  );
+  const isCustomerApiKeySet = useSettingsStore(
+    (state) => state.isCustomerApiKeySet,
   );
   const isPinSet = useSettingsStore((state) => state.isPinSet);
   const verifyPin = useSettingsStore((state) => state.verifyPin);
@@ -71,49 +73,41 @@ export function useMerchantFlow() {
     }));
   }, []);
 
-  const handlePartnerApiKeyInputChange = useCallback((value: string) => {
+  const handleCustomerApiKeyInputChange = useCallback((value: string) => {
     setState((prev) => ({
       ...prev,
-      partnerApiKeyInput: value,
+      customerApiKeyInput: value,
     }));
   }, []);
 
-  const resetPartnerApiKeyInput = useCallback(() => {
+  const resetCustomerApiKeyInput = useCallback(() => {
     setState((prev) => ({
       ...prev,
-      partnerApiKeyInput: "",
+      customerApiKeyInput: "",
     }));
   }, []);
 
   const initiateSave = useCallback(
-    async (value: string, action: PendingAction) => {
+    (value: string, action: PendingAction) => {
       // Check if locked out
       if (isLockedOut()) {
         showErrorToast(formatLockoutMessage());
         return;
       }
 
+      const pinExists = isPinSet();
+
       setState((prev) => ({
         ...prev,
         pendingValue: value,
         pendingAction: action,
+        activeModal: pinExists ? "pin-verify" : "pin-setup",
       }));
-
-      // Check if PIN is set
-      const pinExists = await isPinSet();
-
-      if (pinExists) {
-        // PIN exists, show verification modal
-        setState((prev) => ({ ...prev, activeModal: "pin-verify" }));
-      } else {
-        // No PIN, show setup modal
-        setState((prev) => ({ ...prev, activeModal: "pin-setup" }));
-      }
     },
     [isLockedOut, formatLockoutMessage, isPinSet],
   );
 
-  const handleMerchantIdConfirm = useCallback(async () => {
+  const handleMerchantIdConfirm = useCallback(() => {
     const trimmedMerchantId = state.merchantIdInput.trim();
 
     // Check if value changed
@@ -122,17 +116,17 @@ export function useMerchantFlow() {
     }
 
     // Pass empty string to indicate clearing (will reset to default)
-    await initiateSave(trimmedMerchantId || "", "merchant-id");
+    initiateSave(trimmedMerchantId || "", "merchant-id");
   }, [state.merchantIdInput, storedMerchantId, initiateSave]);
 
-  const handlePartnerApiKeyConfirm = useCallback(async () => {
-    const trimmedApiKey = state.partnerApiKeyInput.trim();
+  const handleCustomerApiKeyConfirm = useCallback(() => {
+    const trimmedApiKey = state.customerApiKeyInput.trim();
     if (!trimmedApiKey) {
       return;
     }
 
-    await initiateSave(trimmedApiKey, "partner-api-key");
-  }, [state.partnerApiKeyInput, initiateSave]);
+    initiateSave(trimmedApiKey, "customer-api-key");
+  }, [state.customerApiKeyInput, initiateSave]);
 
   const completeSave = useCallback(async () => {
     if (state.pendingValue === null || !state.pendingAction) {
@@ -166,14 +160,14 @@ export function useMerchantFlow() {
             "completeSave",
           );
         }
-      } else if (state.pendingAction === "partner-api-key") {
-        await setPartnerApiKey(state.pendingValue);
+      } else if (state.pendingAction === "customer-api-key") {
+        await setCustomerApiKey(state.pendingValue);
         setState((prev) => ({
           ...prev,
-          partnerApiKeyInput: "", // Clear input after saving
+          customerApiKeyInput: "", // Clear input after saving
         }));
-        showSuccessToast("Partner API key saved successfully");
-        addLog("info", "Partner API key updated", "settings", "completeSave");
+        showSuccessToast("Customer API key saved successfully");
+        addLog("info", "Customer API key updated", "settings", "completeSave");
       }
 
       setState((prev) => ({
@@ -193,7 +187,7 @@ export function useMerchantFlow() {
     state.pendingAction,
     setMerchantId,
     clearMerchantId,
-    setPartnerApiKey,
+    setCustomerApiKey,
     addLog,
   ]);
 
@@ -239,7 +233,7 @@ export function useMerchantFlow() {
   const handleBiometricAuthFailure = useCallback(() => {
     setState((prev) => ({
       ...prev,
-      pinError: "Biometric authentication failed. Please use PIN.",
+      pinError: "Biometric check failed. Use your PIN instead.",
     }));
   }, []);
 
@@ -260,7 +254,7 @@ export function useMerchantFlow() {
       pendingValue: null,
       pendingAction: null,
       merchantIdInput: storedMerchantId ?? "",
-      partnerApiKeyInput: "", // Clear input on cancel
+      customerApiKeyInput: "", // Clear input on cancel
     }));
   }, [storedMerchantId]);
 
@@ -268,28 +262,28 @@ export function useMerchantFlow() {
   const isMerchantIdConfirmDisabled =
     state.merchantIdInput.trim() === (storedMerchantId ?? "");
 
-  const isPartnerApiKeyConfirmDisabled =
-    state.partnerApiKeyInput.trim().length === 0;
+  const isCustomerApiKeyConfirmDisabled =
+    state.customerApiKeyInput.trim().length === 0;
 
-  const hasStoredPartnerApiKey = isPartnerApiKeySet;
+  const hasStoredCustomerApiKey = isCustomerApiKeySet;
 
   return {
     // State
     merchantIdInput: state.merchantIdInput,
-    partnerApiKeyInput: state.partnerApiKeyInput,
+    customerApiKeyInput: state.customerApiKeyInput,
     activeModal: state.activeModal,
     pinError: state.pinError,
     storedMerchantId,
     isMerchantIdConfirmDisabled,
-    isPartnerApiKeyConfirmDisabled,
-    hasStoredPartnerApiKey,
+    isCustomerApiKeyConfirmDisabled,
+    hasStoredCustomerApiKey,
 
     // Handlers
     handleMerchantIdInputChange,
-    handlePartnerApiKeyInputChange,
-    resetPartnerApiKeyInput,
+    handleCustomerApiKeyInputChange,
+    resetCustomerApiKeyInput,
     handleMerchantIdConfirm,
-    handlePartnerApiKeyConfirm,
+    handleCustomerApiKeyConfirm,
     handlePinVerifyComplete,
     handleBiometricAuthSuccess,
     handleBiometricAuthFailure,
