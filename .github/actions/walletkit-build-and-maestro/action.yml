@@ -399,14 +399,13 @@ runs:
         sudo udevadm trigger --name-match=kvm
 
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions PR #93 (fix/maestro-ios-universal-link-retry):
-    # retries the iOS universal-link open until pay-merchant-info is visible.
-    # Re-pin to master once that PR merges.
+    # Pinned to WalletConnect/actions master (incl. PR #93): retries the iOS
+    # universal-link open until pay-merchant-info is visible.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@6e17edbaac3da5bf7d8015d8146860034ea36f39
+      uses: WalletConnect/actions/maestro/pay-tests@3a145abaa0dcf9f609fabe17f6e6722e0db49535
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@6e17edbaac3da5bf7d8015d8146860034ea36f39
+      uses: WalletConnect/actions/maestro/setup@3a145abaa0dcf9f609fabe17f6e6722e0db49535
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
