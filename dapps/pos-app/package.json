@@ -106,7 +106,8 @@
     "lodash": "4.18.1",
     "defu": "6.1.5",
     "undici": "6.24.1",
-    "postcss": "8.5.10"
+    "postcss": "8.5.10",
+    "expo-updates-interface": "55.1.3"
   },
   "private": true
 }
