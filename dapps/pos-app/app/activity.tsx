@@ -54,12 +54,16 @@ const DATE_RANGE_LABELS: Record<DateRangeFilterType, string> = {
 
 export default function ActivityScreen() {
   const theme = useTheme();
-  const {
-    transactionFilter,
-    setTransactionFilter,
-    dateRangeFilter,
-    setDateRangeFilter,
-  } = useSettingsStore();
+  const transactionFilter = useSettingsStore(
+    (state) => state.transactionFilter,
+  );
+  const setTransactionFilter = useSettingsStore(
+    (state) => state.setTransactionFilter,
+  );
+  const dateRangeFilter = useSettingsStore((state) => state.dateRangeFilter);
+  const setDateRangeFilter = useSettingsStore(
+    (state) => state.setDateRangeFilter,
+  );
   const [selectedPayment, setSelectedPayment] = useState<PaymentRecord | null>(
     null,
   );
@@ -231,7 +235,7 @@ export default function ActivityScreen() {
         ListFooterComponent={renderFooter}
         onEndReached={handleEndReached}
         onEndReachedThreshold={0.5}
-        removeClippedSubviews={false}
+        removeClippedSubviews={true}
         maxToRenderPerBatch={10}
         initialNumToRender={10}
         windowSize={10}

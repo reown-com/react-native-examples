@@ -17,7 +17,10 @@ export default function HomeScreen() {
   ]);
 
   const Theme = useTheme();
-  const { merchantId, isCustomerApiKeySet } = useSettingsStore();
+  const merchantId = useSettingsStore((state) => state.merchantId);
+  const isCustomerApiKeySet = useSettingsStore(
+    (state) => state.isCustomerApiKeySet,
+  );
 
   const handleStartPayment = () => {
     if (!merchantId || !isCustomerApiKeySet) {
