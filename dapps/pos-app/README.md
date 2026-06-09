@@ -120,7 +120,7 @@ The workflow will automatically verify that no native changes are included. If n
 
 ```bash
 cd dapps/pos-app
-eas update --channel production --message "fix: description of changes"
+eas update --channel production --environment production --message "fix: description of changes"
 ```
 
 ### Verifying an Update

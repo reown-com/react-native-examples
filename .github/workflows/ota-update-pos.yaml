@@ -114,6 +114,7 @@ jobs:
         run: |
           eas update \
             --channel production \
+            --environment production \
             --message "${{ inputs.message || format('OTA update from {0}', github.ref_name) }}" \
             --non-interactive
 
