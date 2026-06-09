@@ -34,7 +34,6 @@ const getCharWidth = (char: string): number =>
 type UseAnimatedNumberLayoutParams = {
   characters: CharacterItem[];
   separators: (string | null)[];
-  isEmpty: boolean;
 };
 
 function getScaleForLength(length: number): number {
@@ -64,7 +63,6 @@ export type AnimatedNumberLayout = {
 export const useAnimatedNumberLayout = ({
   characters,
   separators,
-  isEmpty,
 }: UseAnimatedNumberLayoutParams): AnimatedNumberLayout => {
   const scale = useMemo(
     () => getScaleForLength(characters.length),

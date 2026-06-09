@@ -38,7 +38,7 @@ export const AnimatedNumber = ({
       locale,
       placeholder,
     });
-  const layout = useAnimatedNumberLayout({ characters, separators, isEmpty });
+  const layout = useAnimatedNumberLayout({ characters, separators });
 
   const animatedWidth = useSharedValue(layout.totalContentWidth);
 

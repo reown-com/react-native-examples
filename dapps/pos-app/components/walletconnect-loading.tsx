@@ -1,6 +1,6 @@
 import { Canvas, Group, Skia, Skottie } from "@shopify/react-native-skia";
 import { useEffect, useMemo } from "react";
-import { AppState } from "react-native";
+import { AppState, AppStateStatus } from "react-native";
 import {
   useDerivedValue,
   useFrameCallback,
@@ -47,10 +47,8 @@ export function WalletConnectLoading({ size = 120 }: { size?: number }) {
   // not visible) so it doesn't keep burning CPU/GPU on the UI thread. Resumes
   // automatically when the app returns to the foreground.
   useEffect(() => {
-    const syncActive = () =>
-      frameCallback.setActive(
-        !!animation && AppState.currentState === "active",
-      );
+    const syncActive = (state: AppStateStatus = AppState.currentState) =>
+      frameCallback.setActive(!!animation && state === "active");
     syncActive();
     const subscription = AppState.addEventListener("change", syncActive);
     return () => {
