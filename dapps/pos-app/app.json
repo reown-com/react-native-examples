@@ -138,6 +138,15 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/caf3a0d7-e413-45c2-b3b9-879cd30b3501",
+      "requestHeaders": {
+        "expo-channel-name": "production"
+      }
+    },
     "extra": {
       "router": {},
       "eas": {
