@@ -45,9 +45,10 @@ inputs:
       Polygon RPC URL used by the Permit2 allowance-reset step. Defaults to the
       public endpoint. USDT on Polygon is a plain ERC-20 (no EIP-3009/2612), so
       WC Pay uses the Permit2 approve path — this lets the reset revoke that
-      allowance so each run re-exercises the approve step.
+      allowance so each run re-exercises the approve step. Default avoids
+      polygon-rpc.com, which gates requests (HTTP 401 "tenant disabled") in CI.
     required: false
-    default: 'https://polygon-rpc.com'
+    default: 'https://polygon-bor-rpc.publicnode.com'
   merchant-api-key-single-nokyc:
     description: 'Partner API key for the single-option no-KYC merchant (WPAY_CUSTOMER_KEY_SINGLE_NOKYC).'
     required: true

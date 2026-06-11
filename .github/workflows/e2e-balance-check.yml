@@ -16,7 +16,8 @@ env:
   OP_USDC: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85'
   OP_RPC: 'https://mainnet.optimism.io'
   POLYGON_USDT: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
-  POLYGON_RPC: 'https://polygon-rpc.com'
+  # polygon-rpc.com gates requests (HTTP 401 "tenant disabled") in CI; use publicnode.
+  POLYGON_RPC: 'https://polygon-bor-rpc.publicnode.com'
 
 jobs:
   check-balance:
