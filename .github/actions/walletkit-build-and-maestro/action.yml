@@ -411,7 +411,7 @@ runs:
     # TEMP: pinned to the WalletConnect/actions PR #97 head (adds pay_usdt_polygon).
     # Re-pin to the squash-merge commit on master once #97 lands.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@e78552d1094d43321bb9b9a34d138216a2bafb5c
+      uses: WalletConnect/actions/maestro/pay-tests@06e4e04ca111ab27cdcb35b73d70325607510f83
 
     - name: Install Maestro
       uses: WalletConnect/actions/maestro/setup@3a145abaa0dcf9f609fabe17f6e6722e0db49535

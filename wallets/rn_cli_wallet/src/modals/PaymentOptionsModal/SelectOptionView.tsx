@@ -78,28 +78,37 @@ export function SelectOptionView({
               !!(option as PaymentOptionWithCollectData).collectData?.url &&
               !collectDataCompletedIds.includes(option.id);
 
+            // Stable, network+token-keyed testID for deterministic selection
+            // (e.g. `pay-option-usdt-polygon`), additive to the order-dependent
+            // `pay-option-${index}`. Lets a test pick a specific asset+network
+            // when several options share a token symbol across networks.
+            const optionTestID = `pay-option-${`${option.amount.display.assetSymbol}-${option.amount.display.networkName}`
+              .toLowerCase()
+              .replace(/\s+/g, '-')}`;
+
             return (
-              <OptionItem
-                key={option.id}
-                option={option}
-                gasCostEstimate={
-                  optionFeeEstimatesById[option.id]?.display ?? undefined
-                }
-                isEstimatingApprovalGas={
-                  optionFeeEstimateStatusById[option.id] === 'loading'
-                }
-                testID={`pay-option-${index}`}
-                renderIconRight={
-                  <Info
-                    testID="pay-option-info-required"
-                    height={20}
-                    width={20}
-                    fill={Theme['icon-invert']}
-                  />
-                }
-                onIconRightPress={hasCollectData ? onInfoPress : undefined}
-                onPress={() => onOptionPress(option)}
-              />
+              <View key={option.id} testID={optionTestID}>
+                <OptionItem
+                  option={option}
+                  gasCostEstimate={
+                    optionFeeEstimatesById[option.id]?.display ?? undefined
+                  }
+                  isEstimatingApprovalGas={
+                    optionFeeEstimateStatusById[option.id] === 'loading'
+                  }
+                  testID={`pay-option-${index}`}
+                  renderIconRight={
+                    <Info
+                      testID="pay-option-info-required"
+                      height={20}
+                      width={20}
+                      fill={Theme['icon-invert']}
+                    />
+                  }
+                  onIconRightPress={hasCollectData ? onInfoPress : undefined}
+                  onPress={() => onOptionPress(option)}
+                />
+              </View>
             );
           })}
         </ScrollView>
