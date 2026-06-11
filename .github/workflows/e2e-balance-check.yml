@@ -128,17 +128,17 @@ jobs:
             "${{ vars.TEST_WALLET_ADDRESS }}" | sed 's/\[.*\]//' | tr -d '[:space:]')
           echo "balance=$BALANCE" >> $GITHUB_OUTPUT
           BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
-          echo "USDT on Polygon: $BALANCE_HUMAN ($BALANCE raw)"
+          echo "USDT0 on Polygon: $BALANCE_HUMAN ($BALANCE raw)"
 
       - name: Prepare USDT on Polygon alert
         id: poly_usdt_alert
         run: |
           BALANCE="${{ steps.poly_usdt_balance.outputs.balance }}"
-          THRESHOLD="${{ vars.USDT_POLYGON_THRESHOLD_UNITS || '5000000' }}"
+          THRESHOLD="${{ vars.USDT_POLYGON_THRESHOLD_UNITS || '1000000' }}"
           if [ "$BALANCE" -lt "$THRESHOLD" ]; then
             BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
             THRESHOLD_HUMAN=$(echo "scale=2; $THRESHOLD / 1000000" | bc)
-            ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} USDT on Polygon in wallet: \
+            ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} USDT0 on Polygon in wallet: \
               ${{ vars.TEST_WALLET_ADDRESS }}"
             echo "should_alert=true" >> "$GITHUB_OUTPUT"
             echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
