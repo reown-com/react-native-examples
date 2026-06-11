@@ -40,6 +40,13 @@ inputs:
   wallet-private-key:
     description: 'Test wallet private key (sets ENV_TEST_PRIVATE_KEY).'
     required: true
+  arbitrum-rpc-url:
+    description: |
+      Arbitrum One RPC URL used by the Permit2 allowance-reset step. Defaults to
+      the public endpoint. A custom RPC is recommended because the WalletConnect
+      Blockchain API gates some methods on Arbitrum.
+    required: false
+    default: 'https://arb1.arbitrum.io/rpc'
   merchant-api-key-single-nokyc:
     description: 'Partner API key for the single-option no-KYC merchant (WPAY_CUSTOMER_KEY_SINGLE_NOKYC).'
     required: true
@@ -399,9 +406,10 @@ runs:
         sudo udevadm trigger --name-match=kvm
 
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions master
+    # TEMP: pinned to the WalletConnect/actions PR #97 head (adds pay_usdt_arbitrum).
+    # Re-pin to the squash-merge commit on master once #97 lands.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@3a145abaa0dcf9f609fabe17f6e6722e0db49535
+      uses: WalletConnect/actions/maestro/pay-tests@3ccda39148c71e8d85ee8ae324d23a0b8b02f02f
 
     - name: Install Maestro
       uses: WalletConnect/actions/maestro/setup@3a145abaa0dcf9f609fabe17f6e6722e0db49535
@@ -561,6 +569,25 @@ runs:
         # against the first. Last-wins; combine with an out-of-action
         # download+rename step if both attempts' artifacts are needed.
         overwrite: true
+
+    # Reset the USDT Permit2 allowance back to 0 so the next pay_usdt_arbitrum run
+    # re-exercises the approve step. Runs even when the suite failed (if: always())
+    # so a mid-flow failure doesn't leave the allowance set. Must be a Node step —
+    # Maestro's runScript sandbox can't sign transactions. Non-fatal: a reset hiccup
+    # shouldn't fail an otherwise-green run.
+    - name: Reset USDT Permit2 allowance (Arbitrum)
+      if: always() && contains(inputs.maestro-tags, 'pay')
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      env:
+        WALLET_PRIVATE_KEY: ${{ inputs.wallet-private-key }}
+        ARBITRUM_RPC_URL: ${{ inputs.arbitrum-rpc-url }}
+      run: |
+        # walletAddress is derived from the private key (no separate var needed).
+        node ./scripts/revoke-permit2-approval.js \
+          --chainId eip155:42161 \
+          --privateKey "$WALLET_PRIVATE_KEY" \
+          --rpcUrl "$ARBITRUM_RPC_URL" || echo "::warning::Permit2 allowance reset failed; next run may skip the approve step."
 
     - name: Log Maestro outcome
       if: always()

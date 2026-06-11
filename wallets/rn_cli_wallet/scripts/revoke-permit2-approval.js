@@ -23,13 +23,14 @@ const MIN_PRIORITY_FEE_GWEI_BY_CHAIN = {
 function printUsage() {
   const supportedChains = Object.keys(USDT_BY_CHAIN).join(', ');
   console.log(`Usage:
-  yarn permit2:revoke --chainId <eip155:chainId|chainId> --walletAddress <0x...> --privateKey <0x...> (--projectId <projectId> | --rpcUrl <url>) [--tokenAddress <0x...>] [--minPriorityFeeGwei <number>]
+  yarn permit2:revoke --chainId <eip155:chainId|chainId> --privateKey <0x...> (--projectId <projectId> | --rpcUrl <url>) [--walletAddress <0x...>] [--tokenAddress <0x...>] [--minPriorityFeeGwei <number>]
 
 Example:
-  yarn permit2:revoke --chainId eip155:137 --walletAddress 0xYourAddress --privateKey 0xYourPrivateKey --projectId yourProjectId
-  yarn permit2:revoke --chainId eip155:42161 --walletAddress 0xYourAddress --privateKey 0xYourPrivateKey --rpcUrl https://arb1.arbitrum.io/rpc
+  yarn permit2:revoke --chainId eip155:137 --privateKey 0xYourPrivateKey --projectId yourProjectId
+  yarn permit2:revoke --chainId eip155:42161 --privateKey 0xYourPrivateKey --rpcUrl https://arb1.arbitrum.io/rpc
 
 Defaults:
+  If --walletAddress is omitted, it is derived from --privateKey. If provided, it is verified to match the key.
   If --tokenAddress is omitted, the script uses the USDT address for the selected chain.
   If --rpcUrl is provided it takes precedence over --projectId (use this for chains where the
   WalletConnect Blockchain API gates methods like eth_blockNumber, e.g. Arbitrum).
@@ -223,7 +224,9 @@ async function main() {
   }
 
   const chainId = normalizeChainId(args.chainId);
-  const walletAddress = normalizeAddress('walletAddress', args.walletAddress);
+  const walletAddressArg = args.walletAddress
+    ? normalizeAddress('walletAddress', args.walletAddress)
+    : null;
   const privateKey = normalizePrivateKey(args.privateKey);
   const tokenAddress = normalizeAddress(
     'tokenAddress',
@@ -251,11 +254,12 @@ async function main() {
 
   const signer = new ethers.Wallet(privateKey, provider);
   const signerAddress = ethers.utils.getAddress(signer.address);
-  if (signerAddress !== walletAddress) {
+  if (walletAddressArg && signerAddress !== walletAddressArg) {
     throw new Error(
-      `walletAddress (${walletAddress}) does not match private key (${signerAddress}).`,
+      `walletAddress (${walletAddressArg}) does not match private key (${signerAddress}).`,
     );
   }
+  const walletAddress = signerAddress;
 
   const token = new ethers.Contract(tokenAddress, ERC20_ABI, signer);
 
