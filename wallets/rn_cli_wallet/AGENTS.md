@@ -186,7 +186,7 @@ The app uses standardized `testID` props for Maestro E2E testing. These IDs are 
 - `.maestro/pay_single_option_nokyc.yaml`: Single payment option, no KYC — goes straight to review screen
 - `.maestro/pay_multiple_options_nokyc.yaml`: Multiple payment options, no KYC — option selection then review
 - `.maestro/pay_multiple_options_kyc.yaml`: Multiple payment options with KYC — option selection, webview KYC flow, then review
-- `.maestro/pay_usdt_arbitrum.yaml`: USDT on Arbitrum — Permit2 token, so the wallet sends an `approve` (allowance) tx then the payment tx. Best-effort observes the setup step via the `pay-loading-setup-note` testID (soft screenshot), then asserts the success screen. The allowance is reset to 0 after the run (see below) so each run re-exercises `approve`.
+- `.maestro/pay_usdt_polygon.yaml`: USDT on Polygon — a plain ERC-20 (no EIP-3009/2612), so WC Pay uses the Permit2 path: the wallet sends an `approve` (allowance) tx then the payment tx. Best-effort observes the setup step via the `pay-loading-setup-note` testID (soft screenshot), then asserts the success screen. The allowance is reset to 0 after the run (see below) so each run re-exercises `approve`. (Note: USDT on Arbitrum is EIP-3009 / signature-based, so it never needs an on-chain approve — Polygon is used precisely because it does.)
 - `.maestro/flows/pay_open_and_paste_url.yaml`: Shared sub-flow — opens wallet, pastes payment URL, waits for merchant info
 - `.maestro/flows/pay_confirm_and_verify.yaml`: Shared sub-flow — taps Pay, verifies success screen
 - `.maestro/scripts/create-payment.js`: Creates a payment via the WalletConnect Pay API (called via `runScript`)
@@ -206,7 +206,7 @@ When set, the wallet auto-loads this private key on startup (if no stored wallet
 `.github/workflows/ci_e2e_walletkit.yaml` runs Maestro tests on both iOS (simulator) and Android (emulator). Triggers on PRs/pushes to main when `wallets/rn_cli_wallet/` or `.maestro/` files change.
 
 ### Permit2 allowance reset (USDT)
-After the suite runs, the composite action (`.github/actions/walletkit-build-and-maestro`) runs `scripts/revoke-permit2-approval.js` (yarn `permit2:revoke`) to reset the USDT-on-Arbitrum Permit2 allowance back to 0, so `pay_usdt_arbitrum` always re-exercises the `approve` step. This is a Node step, not a Maestro `runScript` — Maestro's script sandbox cannot sign transactions. `.github/workflows/e2e-balance-check.yml` also monitors USDT + ETH (gas) on Arbitrum and pings the faucet bot on Slack when low.
+After the suite runs, the composite action (`.github/actions/walletkit-build-and-maestro`) runs `scripts/revoke-permit2-approval.js` (yarn `permit2:revoke`) to reset the USDT-on-Polygon Permit2 allowance back to 0, so `pay_usdt_polygon` always re-exercises the `approve` step. This is a Node step, not a Maestro `runScript` — Maestro's script sandbox cannot sign transactions. `.github/workflows/e2e-balance-check.yml` also monitors USDT + POL (gas) on Polygon and pings the faucet bot on Slack when low.
 
 ## Development
 
