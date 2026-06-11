@@ -8,6 +8,7 @@ import { usePinGate } from "@/hooks/use-pin-gate";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { encodeDeviceSetupQr } from "@/utils/device-setup-qr";
+import { MerchantConfig } from "@/utils/merchant-config";
 import { router } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
@@ -47,18 +48,19 @@ export default function ExportKeysScreen() {
     }
   }, []);
 
-  // Export is web-only: native builds must have no path to reveal credentials.
-  // Require a PIN once, before anything sensitive is read or shown; a
-  // locked-out user is sent back rather than left on a blank screen.
+  // Export is web-only (native must have no path to reveal credentials) and
+  // never exposes the bundled default keys. Require a PIN once before anything
+  // sensitive is read; a locked-out user is sent back, not left on a blank
+  // screen.
   useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
-    if (!isWeb) {
+    if (!isWeb || MerchantConfig.isUsingDefaultKeys(storedMerchantId)) {
       leaveScreen();
       return;
     }
     requireAuth(() => setUnlocked(true), leaveScreen);
-  }, [requireAuth, leaveScreen]);
+  }, [requireAuth, leaveScreen, storedMerchantId]);
 
   // Read the customer key only after the user has unlocked.
   useEffect(() => {

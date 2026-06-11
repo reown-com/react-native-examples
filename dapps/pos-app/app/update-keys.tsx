@@ -125,8 +125,11 @@ export default function UpdateKeysScreen() {
   }, [handleMerchantIdInputChange, handleCustomerApiKeyInputChange]);
 
   // Export shares the device's currently active credentials, so it requires
-  // both to already be saved.
-  const canExport = !!storedMerchantId && hasStoredCustomerApiKey;
+  // both to be saved — and never the bundled default keys.
+  const canExport =
+    !!storedMerchantId &&
+    hasStoredCustomerApiKey &&
+    !MerchantConfig.isUsingDefaultKeys(storedMerchantId);
 
   const inputStyle = [
     styles.input,
@@ -213,17 +216,14 @@ export default function UpdateKeysScreen() {
               </Button>
             )}
 
-            {/* Share this device's keys so another can be set up (web only). */}
-            {isWeb && (
+            {/* Share this device's keys so another can be set up (web only,
+                and never the bundled default keys). */}
+            {isWeb && canExport && (
               <Button
                 onPress={() => router.push("/export-keys")}
-                disabled={!canExport}
                 style={[
                   styles.secondaryButton,
-                  {
-                    borderColor: theme["border-primary"],
-                    opacity: canExport ? 1 : 0.4,
-                  },
+                  { borderColor: theme["border-primary"] },
                 ]}
               >
                 <ThemedText fontSize={16} lineHeight={18} color="text-primary">
