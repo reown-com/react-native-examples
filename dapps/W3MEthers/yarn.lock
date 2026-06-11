@@ -2717,74 +2717,74 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@reown/appkit-bitcoin-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-2.0.1.tgz#a451d8fd74ef9feec91851fb74f4d3d7cc36cd5b"
-  integrity sha512-dnP3HBNrWOAvsLHKv7ha0HmmsZneJaxIOA/9liJam13FLfacLZzRkIDaiNjok6vjNFBidmx76iwpdHoJ1xJxnw==
+"@reown/appkit-bitcoin-react-native@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-bitcoin-react-native/-/appkit-bitcoin-react-native-2.0.5.tgz#6ca68b8335285438f20ad68a8a676a4af389a32a"
+  integrity sha512-03pnkyPDRvENkuEwp3BV47ukl9k8JIV5kJ29OboiMejRY+QiZRZY6YxeflYVeaoswKG8+JNLBxu+LehI/t7mAw==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.1"
+    "@reown/appkit-common-react-native" "2.0.5"
 
-"@reown/appkit-coinbase-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-2.0.1.tgz#df07bc9ddace00aef4853d65acc145f6ef4b78dd"
-  integrity sha512-2X/fyNLOhBboC+p6Q+nZZFXlDQJTwbq7WWe3WM4FO+y6T4wFNbPMO2PMIenJcJkdHGDRugZYp048vn53LhM1/Q==
+"@reown/appkit-coinbase-react-native@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-coinbase-react-native/-/appkit-coinbase-react-native-2.0.5.tgz#ef1a7a4fd0bca659197db4188b07c44840437e93"
+  integrity sha512-nSX/l9EAW2aUT4allDqpXL1Jfe9HdcNqTlhgOLGGvaJTpaZCbA7NLauBH2TjIsYk5KaurtCsVU/NrevaRbxjWw==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.1"
+    "@reown/appkit-common-react-native" "2.0.5"
 
-"@reown/appkit-common-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-2.0.1.tgz#8eb5f9d618ba358374a2bd7c1c61fc2251bbc49b"
-  integrity sha512-xw+4gJBQSakcBn9rHCoH1gnr0PsmurJ0GMx+sIz8focuZqWNcsN+84tEHtQPo1bkfTwvv3WoNPV2tzZnpaQxRA==
+"@reown/appkit-common-react-native@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-common-react-native/-/appkit-common-react-native-2.0.5.tgz#ced004e14929422b4bd570bcc4b16769f91e91c7"
+  integrity sha512-+9ZG8HT+7VUWU1perKqOyFAokVuIYdXnBTd87oMMcAT5LcDAwjrnXkRDph7ajB1jzjzTJc1OnDnzyo6yErbSug==
   dependencies:
     bignumber.js "9.1.2"
     dayjs "1.11.10"
 
-"@reown/appkit-core-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-2.0.1.tgz#fda13faf175b312f22d64e05909a31e0f3d56990"
-  integrity sha512-9kCM/ogh15pK/QbKuALcF6MaW1Db3VbhhV2ggTNougD7QQgikoyJs6KhiKOb0iDb2/cXgA29Dcn0oKm53JM+YA==
+"@reown/appkit-core-react-native@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-core-react-native/-/appkit-core-react-native-2.0.5.tgz#88e5631c80e61532ea9ac7a3718a16711561c9bb"
+  integrity sha512-8HpuDpR1oVp7f7J+fDwqFtzf1k+LjfgKywft4sUcBZUtvnLIv9uzux+ZCyfH4nrUlpyAJzmTkqma1DWQjKReBA==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.1"
+    "@reown/appkit-common-react-native" "2.0.5"
     countries-and-timezones "3.7.2"
     derive-valtio "0.2.0"
     valtio "2.1.8"
 
-"@reown/appkit-ethers-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-2.0.1.tgz#d7469eca74bcc5eaa71694feecd7de7f7ed877bc"
-  integrity sha512-NHzBNfQB0vjjM4fLoUdHvwCqxZs+VRTdmswrzvr+VCTr9EGoYZVjlajsZUZJPsIp3CdkvbZJMQK6HNHx/pPNXA==
+"@reown/appkit-ethers-react-native@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ethers-react-native/-/appkit-ethers-react-native-2.0.5.tgz#c725c03b196a70c079cb623f07cc5e446a36ac5c"
+  integrity sha512-OIgMB2+OdlGJsnmgBulpMbQELOtmVXeqSbK7dSbxwGgACPPmNt1DqwAxPMnrfSYRyIbjwm9wbNROHV3ffH9XHQ==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.1"
-    "@reown/appkit-react-native" "2.0.1"
+    "@reown/appkit-common-react-native" "2.0.5"
+    "@reown/appkit-react-native" "2.0.5"
 
-"@reown/appkit-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-2.0.1.tgz#38091c2c66a22d68fff1b06ddca575693498aecf"
-  integrity sha512-+MEEbezLag30babXB82gF2GiM7xKUcfx/4vz0uXjxQ9zk+grsGlQpqttuChvsJafljdw7LuweXegIXZ6qLD+xw==
+"@reown/appkit-react-native@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-react-native/-/appkit-react-native-2.0.5.tgz#d18165618e004985347a82edcbcf30290d2bdfca"
+  integrity sha512-8twhbWJDMh5adFOmxDoeHz4vVHhALLlqzt18TFo8DPDRh2XpOYXQq301eTnpNAUa/Ads/lpJYhBB8wIV693a/Q==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.1"
-    "@reown/appkit-core-react-native" "2.0.1"
-    "@reown/appkit-ui-react-native" "2.0.1"
+    "@reown/appkit-common-react-native" "2.0.5"
+    "@reown/appkit-core-react-native" "2.0.5"
+    "@reown/appkit-ui-react-native" "2.0.5"
     "@walletconnect/universal-provider" "2.21.10"
     valtio "2.1.8"
 
-"@reown/appkit-solana-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-2.0.1.tgz#c7822c1e7821046515dfdca7e779df50a4b970ad"
-  integrity sha512-U5ERN7wT8mIiDOY1klh14yQOwj4Z/d4UcmBPWF2pSCOespoL8CZB8DH0C/xa3pDf+nAs6eRxyToyDOp/3xGygA==
+"@reown/appkit-solana-react-native@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-solana-react-native/-/appkit-solana-react-native-2.0.5.tgz#839739736c87dadf70fbcafa6ec5ce67ce76aa91"
+  integrity sha512-Gs4VFTTeEeiSlChEDxWNiOiFBsyFirRUvpxOQdVW2Lzzn71pRqn572O7GSCva6NxyWt4/+kfSTkY3EnMBpHTZg==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.1"
+    "@reown/appkit-common-react-native" "2.0.5"
     "@solana/spl-token" "0.4.13"
     "@solana/web3.js" "1.98.2"
     bs58 "6.0.0"
     tweetnacl "1.0.3"
 
-"@reown/appkit-ui-react-native@2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-2.0.1.tgz#7068bcc6921f4398814d53866224fc49899a62b3"
-  integrity sha512-UzI3I1Upf5LYNGB8Qt8sjtFmm1SvS+lpGWdyjYhBb/YmalV0oEIZB5pAG/eFjxUrTOoKIrQppHuFE43W9DsoDQ==
+"@reown/appkit-ui-react-native@2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@reown/appkit-ui-react-native/-/appkit-ui-react-native-2.0.5.tgz#846600e7913b4d44ad6e70c31f067fcea1f4e1bb"
+  integrity sha512-qz7hvsYJDiHj25uLnnJbAk5k3MBBnpeiif6/3HZDSa8qvVo4UXvJgyCs/iAAhjgyBj7qKz4LFYOHWla8pN5Piw==
   dependencies:
-    "@reown/appkit-common-react-native" "2.0.1"
+    "@reown/appkit-common-react-native" "2.0.5"
     polished "4.3.1"
     qrcode "1.5.3"
 
