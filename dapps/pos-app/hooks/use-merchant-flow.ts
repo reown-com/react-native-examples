@@ -1,6 +1,6 @@
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { showErrorToast, showInfoToast, showSuccessToast } from "@/utils/toast";
+import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useCallback, useEffect, useState } from "react";
 
 // The Update keys screen gates access with a PIN on entry (see usePinGate), so
@@ -11,9 +11,6 @@ export function useMerchantFlow(onSaved?: () => void) {
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);
   const setCustomerApiKey = useSettingsStore(
     (state) => state.setCustomerApiKey,
-  );
-  const clearCustomerApiKey = useSettingsStore(
-    (state) => state.clearCustomerApiKey,
   );
   const isCustomerApiKeySet = useSettingsStore(
     (state) => state.isCustomerApiKeySet,
@@ -47,17 +44,19 @@ export function useMerchantFlow(onSaved?: () => void) {
     trimmedMerchantId !== (storedMerchantId ?? "");
   const customerKeyProvided = trimmedApiKey.length > 0;
 
-  // Write whichever of merchant ID / customer key actually changed.
+  // A new merchant ID invalidates the old key (it belongs to the old merchant),
+  // so changing it always requires entering a fresh customer key in the same
+  // save. This also blocks swapping the merchant ID to keep the previous key.
+  const customerKeyRequired = merchantIdChanged && !customerKeyProvided;
+
+  // Enabled when there's a valid change to commit and no required field missing.
+  const isUpdateKeysConfirmDisabled =
+    (!merchantIdChanged && !customerKeyProvided) || customerKeyRequired;
+
   const handleUpdateKeysConfirm = useCallback(async () => {
-    if (!merchantIdChanged && !customerKeyProvided) {
+    if (isUpdateKeysConfirmDisabled) {
       return;
     }
-
-    // Changing the merchant without supplying a new key invalidates the stored
-    // one — it belongs to the old merchant. Clear it (and don't let someone
-    // swap the merchant ID to keep using/exporting the previous key).
-    const clearsStaleKey =
-      merchantIdChanged && !customerKeyProvided && isCustomerApiKeySet;
 
     try {
       const saved: string[] = [];
@@ -82,23 +81,9 @@ export function useMerchantFlow(onSaved?: () => void) {
           "handleUpdateKeysConfirm",
         );
         saved.push("Customer API key");
-      } else if (clearsStaleKey) {
-        await clearCustomerApiKey();
-        addLog(
-          "info",
-          "Customer API key cleared (merchant ID changed)",
-          "settings",
-          "handleUpdateKeysConfirm",
-        );
       }
 
       setCustomerApiKeyInput("");
-
-      if (clearsStaleKey) {
-        // Stay on the screen so the user can enter the new merchant's key.
-        showInfoToast("Merchant ID saved. Add the new customer API key.");
-        return;
-      }
 
       showSuccessToast(saved.length > 1 ? "Keys saved" : `${saved[0]} saved`);
 
@@ -112,26 +97,23 @@ export function useMerchantFlow(onSaved?: () => void) {
       addLog("error", errorMessage, "settings", "handleUpdateKeysConfirm");
     }
   }, [
+    isUpdateKeysConfirmDisabled,
     merchantIdChanged,
     customerKeyProvided,
-    isCustomerApiKeySet,
     trimmedMerchantId,
     trimmedApiKey,
     setMerchantId,
     setCustomerApiKey,
-    clearCustomerApiKey,
     addLog,
     onSaved,
   ]);
-
-  // Save is enabled when there is at least one valid change to commit.
-  const isUpdateKeysConfirmDisabled =
-    !merchantIdChanged && !customerKeyProvided;
 
   return {
     merchantIdInput,
     customerApiKeyInput,
     storedMerchantId,
+    merchantIdChanged,
+    customerKeyRequired,
     isUpdateKeysConfirmDisabled,
     hasStoredCustomerApiKey: isCustomerApiKeySet,
     handleMerchantIdInputChange,

@@ -65,12 +65,24 @@ export default function UpdateKeysScreen() {
     merchantIdInput,
     customerApiKeyInput,
     storedMerchantId,
+    merchantIdChanged,
+    customerKeyRequired,
     isUpdateKeysConfirmDisabled,
     hasStoredCustomerApiKey,
     handleMerchantIdInputChange,
     handleCustomerApiKeyInputChange,
     handleUpdateKeysConfirm,
   } = useMerchantFlow(leaveScreen);
+
+  // Show a masked stand-in so the user knows a key is already saved, until they
+  // start editing. The masking drops once the merchant ID changes (the old key
+  // no longer applies) so the now-required field reads as empty.
+  const [keyEditing, setKeyEditing] = useState(false);
+  const showMaskedKey =
+    hasStoredCustomerApiKey &&
+    !merchantIdChanged &&
+    !keyEditing &&
+    customerApiKeyInput.length === 0;
 
   // Apply the credentials handed back by the QR scanner, then clear the
   // hand-off. A setup QR carries both merchant ID and customer key.
@@ -160,7 +172,7 @@ export default function UpdateKeysScreen() {
               <TextInput
                 value={merchantIdInput}
                 onChangeText={handleMerchantIdInputChange}
-                placeholderTextColor={theme["text-tertiary"]}
+                placeholderTextColor={theme["text-secondary"]}
                 autoCapitalize="none"
                 autoCorrect={false}
                 style={inputStyle}
@@ -173,14 +185,21 @@ export default function UpdateKeysScreen() {
                 Customer API key
               </ThemedText>
               <TextInput
-                value={customerApiKeyInput}
-                onChangeText={handleCustomerApiKeyInputChange}
+                value={showMaskedKey ? "*********" : customerApiKeyInput}
+                onChangeText={(value) => {
+                  if (!keyEditing) setKeyEditing(true);
+                  handleCustomerApiKeyInputChange(value);
+                }}
+                onFocus={() => setKeyEditing(true)}
                 placeholder="wcp_…"
-                placeholderTextColor={theme["text-tertiary"]}
+                placeholderTextColor={theme["text-secondary"]}
                 autoCapitalize="none"
                 autoCorrect={false}
-                secureTextEntry
-                style={inputStyle}
+                secureTextEntry={!showMaskedKey}
+                style={[
+                  inputStyle,
+                  customerKeyRequired && { borderColor: theme["icon-error"] },
+                ]}
               />
             </View>
           </ScrollView>
