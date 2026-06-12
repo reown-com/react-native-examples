@@ -18,7 +18,6 @@ import {
 import { formatCountdown } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
-import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
@@ -32,10 +31,6 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
-  const [assets] = useAssets([
-    require("@/assets/images/wc_logo_dark.png"),
-    require("@/assets/images/nfc.png"),
-  ]);
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
@@ -223,7 +218,7 @@ export default function ScanScreen() {
           <View style={[styles.header, !showNfc && styles.headerCentered]}>
             {showNfc && (
               <Image
-                source={assets?.[1]}
+                source={require("@/assets/images/nfc.png")}
                 contentFit="contain"
                 style={[styles.nfcIcon, { tintColor: Theme["text-primary"] }]}
               />
@@ -252,7 +247,10 @@ export default function ScanScreen() {
               onPress={handleCopyPaymentUrl}
               testID="pos-qr-code"
             >
-              <Image source={assets?.[0]} style={styles.logo} />
+              <Image
+                source={require("@/assets/images/wc_logo_dark.png")}
+                style={styles.logo}
+              />
             </QRCode>
             <View
               aria-hidden={!isCountdownActive}

@@ -1,6 +1,5 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import React, { useEffect } from "react";
 import {
@@ -43,7 +42,6 @@ export function SettingsBottomSheet({
   const Theme = useTheme();
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
-  const [assets] = useAssets([require("@/assets/images/close.png")]);
 
   const translateY = useSharedValue(Platform.OS === "web" ? 300 : 0);
 
@@ -103,7 +101,7 @@ export function SettingsBottomSheet({
             ]}
           >
             <Image
-              source={assets?.[0]}
+              source={require("@/assets/images/close.png")}
               style={[styles.closeIcon, { tintColor: Theme["text-primary"] }]}
               tintColor={Theme["text-primary"]}
               cachePolicy="memory-disk"

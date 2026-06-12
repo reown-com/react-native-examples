@@ -2,7 +2,7 @@ name: release-ios-base
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 on:
   workflow_call:
@@ -58,6 +58,11 @@ on:
         required: false
         default: false
         type: boolean
+      eas-update-channel:
+        description: "EAS Update channel to embed in the native build (leave empty for non-OTA apps)"
+        required: false
+        default: ''
+        type: string
     secrets:
       sentry-file:
         required: true
@@ -121,6 +126,56 @@ jobs:
         run: |
           cd ${{ inputs.root-path }}
           npx expo prebuild --platform ios
+
+      - name: Save native fingerprint
+        if: ${{ inputs.eas-update-channel != '' }}
+        env:
+          CHANNEL: ${{ inputs.eas-update-channel }}
+        run: |
+          cd ${{ inputs.root-path }}
+          FINGERPRINT=$(npx expo-updates fingerprint:generate --platform ios 2>/dev/null | tail -1 | jq -r '.hash')
+          echo "Native fingerprint (iOS): $FINGERPRINT"
+
+          cd "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Android and iOS jobs push to the same branch concurrently, so re-base
+          # on the latest remote state and retry to avoid non-fast-forward failures.
+          pushed=false
+          for attempt in 1 2 3 4 5; do
+            git fetch origin fingerprints-dont-remove 2>/dev/null || true
+            if git show-ref --verify --quiet refs/remotes/origin/fingerprints-dont-remove; then
+              git checkout -B fingerprints-dont-remove origin/fingerprints-dont-remove
+            else
+              git checkout --orphan fingerprints-dont-remove
+              git rm -rf --cached . >/dev/null 2>&1 || true
+            fi
+
+            mkdir -p "native-fingerprints/$CHANNEL"
+            echo "$FINGERPRINT" > "native-fingerprints/$CHANNEL/ios.txt"
+            git add native-fingerprints/
+
+            if git diff --cached --quiet; then
+              echo "iOS fingerprint unchanged — nothing to push."
+              pushed=true
+              break
+            fi
+
+            git commit -m "Update iOS native fingerprint ($CHANNEL)"
+            if git push origin fingerprints-dont-remove; then
+              echo "Pushed iOS fingerprint (attempt $attempt)."
+              pushed=true
+              break
+            fi
+            echo "Push rejected (attempt $attempt) — retrying after rebase."
+            sleep $((attempt * 3))
+          done
+
+          if [ "$pushed" != "true" ]; then
+            echo "::error::Failed to push iOS native fingerprint after retries."
+            exit 1
+          fi
 
       - name: Set Xcode paths
         run: |

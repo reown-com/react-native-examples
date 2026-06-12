@@ -25,6 +25,7 @@ import {
 } from "@/utils/printer";
 import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
+import * as Updates from "expo-updates";
 import Constants from "expo-constants";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
@@ -347,6 +348,8 @@ export default function SettingsScreen() {
           style={styles.versionText}
         >
           Version {appVersion} ({buildVersion})
+          {Updates.updateId ? `\nUpdate: ${Updates.updateId.slice(0, 8)}` : ""}
+          {Updates.channel ? ` (${Updates.channel})` : ""}
         </ThemedText>
       </ScrollView>
 
