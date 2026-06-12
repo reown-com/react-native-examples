@@ -89,6 +89,7 @@ export function LoadingView({
               color="text-secondary"
               center
               style={styles.loadingNote}
+              testID="pay-loading-setup-note"
             >
               {note}
             </Text>

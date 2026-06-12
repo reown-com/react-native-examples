@@ -40,6 +40,15 @@ inputs:
   wallet-private-key:
     description: 'Test wallet private key (sets ENV_TEST_PRIVATE_KEY).'
     required: true
+  polygon-rpc-url:
+    description: |
+      Polygon RPC URL used by the Permit2 allowance-reset step. Defaults to the
+      public endpoint. USDT on Polygon is a plain ERC-20 (no EIP-3009/2612), so
+      WC Pay uses the Permit2 approve path — this lets the reset revoke that
+      allowance so each run re-exercises the approve step. Default avoids
+      polygon-rpc.com, which gates requests (HTTP 401 "tenant disabled") in CI.
+    required: false
+    default: 'https://polygon-bor-rpc.publicnode.com'
   merchant-api-key-single-nokyc:
     description: 'Partner API key for the single-option no-KYC merchant (WPAY_CUSTOMER_KEY_SINGLE_NOKYC).'
     required: true
@@ -399,9 +408,10 @@ runs:
         sudo udevadm trigger --name-match=kvm
 
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions master
+    # TEMP: pinned to the WalletConnect/actions PR #97 head (adds pay_usdt_polygon).
+    # Re-pin to the squash-merge commit on master once #97 lands.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@dd7c71c7292ed568c0ce6c4160ad3c04863db3a0
+      uses: WalletConnect/actions/maestro/pay-tests@d07c1f8a83dde5c52b7c8649a6814f98ba716b6b
 
     - name: Install Maestro
       uses: WalletConnect/actions/maestro/setup@dd7c71c7292ed568c0ce6c4160ad3c04863db3a0
@@ -561,6 +571,21 @@ runs:
         # against the first. Last-wins; combine with an out-of-action
         # download+rename step if both attempts' artifacts are needed.
         overwrite: true
+
+    # Reset the USDT Permit2 allowance back to 0 so the next pay_usdt_polygon run
+    # re-exercises the approve step. Runs even when the suite failed (if: always())
+    # so a mid-flow failure doesn't leave the allowance set. Uses the shared
+    # permit2-reset action (the private key goes via env, never the CLI).
+    # continue-on-error so a reset hiccup can't fail an otherwise-green run.
+    - name: Reset USDT Permit2 allowance (Polygon)
+      if: always() && contains(inputs.maestro-tags, 'pay')
+      continue-on-error: true
+      uses: WalletConnect/actions/maestro/permit2-reset@d07c1f8a83dde5c52b7c8649a6814f98ba716b6b
+      with:
+        chain-id: eip155:137
+        rpc-url: ${{ inputs.polygon-rpc-url }}
+        token-address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
+        private-key: ${{ inputs.wallet-private-key }}
 
     - name: Log Maestro outcome
       if: always()

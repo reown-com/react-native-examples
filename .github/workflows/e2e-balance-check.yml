@@ -15,6 +15,9 @@ env:
   BASE_RPC: 'https://mainnet.base.org'
   OP_USDC: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85'
   OP_RPC: 'https://mainnet.optimism.io'
+  POLYGON_USDT: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
+  # polygon-rpc.com gates requests (HTTP 401 "tenant disabled") in CI; use publicnode.
+  POLYGON_RPC: 'https://polygon-bor-rpc.publicnode.com'
 
 jobs:
   check-balance:
@@ -115,3 +118,95 @@ jobs:
           env.SLACK_FAUCETBOT_WEBHOOK_URL == ''
         run: |
           echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping Optimism USDC alert"
+
+      # USDT on Polygon funds the pay_usdt_polygon Permit2 flow (the actual payment).
+      - name: Check USDT balance on Polygon
+        id: poly_usdt_balance
+        run: |
+          BALANCE=$(cast call --rpc-url "$POLYGON_RPC" "$POLYGON_USDT" \
+            "balanceOf(address)(uint256)" \
+            "${{ vars.TEST_WALLET_ADDRESS }}" | sed 's/\[.*\]//' | tr -d '[:space:]')
+          echo "balance=$BALANCE" >> $GITHUB_OUTPUT
+          BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
+          echo "USDT0 on Polygon: $BALANCE_HUMAN ($BALANCE raw)"
+
+      - name: Prepare USDT on Polygon alert
+        id: poly_usdt_alert
+        run: |
+          BALANCE="${{ steps.poly_usdt_balance.outputs.balance }}"
+          THRESHOLD="${{ vars.USDT_POLYGON_THRESHOLD_UNITS || '1000000' }}"
+          if [ "$BALANCE" -lt "$THRESHOLD" ]; then
+            BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
+            THRESHOLD_HUMAN=$(echo "scale=2; $THRESHOLD / 1000000" | bc)
+            ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} USDT0 on Polygon in wallet: \
+              ${{ vars.TEST_WALLET_ADDRESS }}"
+            echo "should_alert=true" >> "$GITHUB_OUTPUT"
+            echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
+            echo "::warning::$ALERT_TEXT"
+          fi
+
+      - name: Send Slack alert (USDT on Polygon)
+        if: |
+          steps.poly_usdt_alert.outputs.should_alert == 'true' &&
+          env.SLACK_FAUCETBOT_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ env.SLACK_FAUCETBOT_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "${{ steps.poly_usdt_alert.outputs.text }}"
+            }
+
+      - name: Skip Slack alert (USDT on Polygon - no webhook)
+        if: |
+          steps.poly_usdt_alert.outputs.should_alert == 'true' &&
+          env.SLACK_FAUCETBOT_WEBHOOK_URL == ''
+        run: |
+          echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping Polygon USDT alert"
+
+      # Native POL gas on Polygon: needed for both the payment txs (approve + pay)
+      # and the post-test Permit2 allowance-reset tx.
+      - name: Check POL gas balance on Polygon
+        id: poly_pol_balance
+        run: |
+          BALANCE=$(cast balance --rpc-url "$POLYGON_RPC" "${{ vars.TEST_WALLET_ADDRESS }}" | tr -d '[:space:]')
+          echo "balance=$BALANCE" >> $GITHUB_OUTPUT
+          BALANCE_HUMAN=$(echo "scale=6; $BALANCE / 1000000000000000000" | bc)
+          echo "POL on Polygon: $BALANCE_HUMAN ($BALANCE wei)"
+
+      - name: Prepare Polygon POL gas alert
+        id: poly_pol_alert
+        run: |
+          BALANCE="${{ steps.poly_pol_balance.outputs.balance }}"
+          THRESHOLD="${{ vars.POLYGON_POL_THRESHOLD_WEI || '1000000000000000000' }}"
+          # Use bc for the comparison: wei values overflow shell arithmetic.
+          if [ "$(echo "$BALANCE < $THRESHOLD" | bc)" -eq 1 ]; then
+            BALANCE_HUMAN=$(echo "scale=6; $BALANCE / 1000000000000000000" | bc)
+            THRESHOLD_HUMAN=$(echo "scale=6; $THRESHOLD / 1000000000000000000" | bc)
+            ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} POL (gas) on Polygon in wallet: \
+              ${{ vars.TEST_WALLET_ADDRESS }} (currently ${BALANCE_HUMAN})"
+            echo "should_alert=true" >> "$GITHUB_OUTPUT"
+            echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
+            echo "::warning::$ALERT_TEXT"
+          fi
+
+      - name: Send Slack alert (Polygon POL gas)
+        if: |
+          steps.poly_pol_alert.outputs.should_alert == 'true' &&
+          env.SLACK_FAUCETBOT_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ env.SLACK_FAUCETBOT_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "${{ steps.poly_pol_alert.outputs.text }}"
+            }
+
+      - name: Skip Slack alert (Polygon POL gas - no webhook)
+        if: |
+          steps.poly_pol_alert.outputs.should_alert == 'true' &&
+          env.SLACK_FAUCETBOT_WEBHOOK_URL == ''
+        run: |
+          echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping Polygon POL gas alert"
