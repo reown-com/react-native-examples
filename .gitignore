@@ -35,3 +35,7 @@ fastlane/report.xml
 .maestro/pay_*.yaml
 .maestro/flows/pay_*.yaml
 .maestro/scripts/
+
+# Maestro local run artifacts
+*.mp4
+usdt-permit2-approve-setup.png
