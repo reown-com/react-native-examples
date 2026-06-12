@@ -39,3 +39,7 @@ fastlane/report.xml
 # Maestro local run artifacts
 *.mp4
 usdt-permit2-approve-setup.png
+
+# Downloaded by scripts/setup-maestro-pay-tests.sh from WalletConnect/actions
+# (canonical source: maestro/permit2-reset). Used locally via `yarn permit2:revoke`.
+wallets/rn_cli_wallet/scripts/revoke-permit2-approval.js
