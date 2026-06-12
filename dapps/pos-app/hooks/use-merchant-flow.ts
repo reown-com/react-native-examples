@@ -63,9 +63,11 @@ export function useMerchantFlow(onSaved?: () => void) {
 
       if (merchantIdChanged) {
         setMerchantId(trimmedMerchantId);
+        // Don't log the value — the merchant ID is an account identifier and
+        // logs are viewable/exportable from Settings.
         addLog(
           "info",
-          `Merchant ID updated to: ${trimmedMerchantId}`,
+          "Merchant ID updated",
           "settings",
           "handleUpdateKeysConfirm",
         );
