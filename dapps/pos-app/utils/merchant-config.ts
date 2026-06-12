@@ -7,4 +7,8 @@ export const MerchantConfig = {
   getDefaultCustomerApiKey: (): string | null => DEFAULT_CUSTOMER_API_KEY,
   hasEnvDefaults: (): boolean =>
     Boolean(DEFAULT_MERCHANT_ID && DEFAULT_CUSTOMER_API_KEY),
+  // True when the device is still on the bundled default credentials — there's
+  // nothing worth exporting to another device in that case.
+  isUsingDefaultKeys: (merchantId: string | null): boolean =>
+    DEFAULT_MERCHANT_ID !== null && merchantId === DEFAULT_MERCHANT_ID,
 };
