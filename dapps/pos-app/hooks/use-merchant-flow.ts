@@ -1,6 +1,6 @@
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { showErrorToast, showSuccessToast } from "@/utils/toast";
+import { showErrorToast, showInfoToast, showSuccessToast } from "@/utils/toast";
 import { useCallback, useEffect, useState } from "react";
 
 // The Update keys screen gates access with a PIN on entry (see usePinGate), so
@@ -11,6 +11,9 @@ export function useMerchantFlow(onSaved?: () => void) {
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);
   const setCustomerApiKey = useSettingsStore(
     (state) => state.setCustomerApiKey,
+  );
+  const clearCustomerApiKey = useSettingsStore(
+    (state) => state.clearCustomerApiKey,
   );
   const isCustomerApiKeySet = useSettingsStore(
     (state) => state.isCustomerApiKeySet,
@@ -50,6 +53,12 @@ export function useMerchantFlow(onSaved?: () => void) {
       return;
     }
 
+    // Changing the merchant without supplying a new key invalidates the stored
+    // one — it belongs to the old merchant. Clear it (and don't let someone
+    // swap the merchant ID to keep using/exporting the previous key).
+    const clearsStaleKey =
+      merchantIdChanged && !customerKeyProvided && isCustomerApiKeySet;
+
     try {
       const saved: string[] = [];
 
@@ -73,9 +82,23 @@ export function useMerchantFlow(onSaved?: () => void) {
           "handleUpdateKeysConfirm",
         );
         saved.push("Customer API key");
+      } else if (clearsStaleKey) {
+        await clearCustomerApiKey();
+        addLog(
+          "info",
+          "Customer API key cleared (merchant ID changed)",
+          "settings",
+          "handleUpdateKeysConfirm",
+        );
       }
 
       setCustomerApiKeyInput("");
+
+      if (clearsStaleKey) {
+        // Stay on the screen so the user can enter the new merchant's key.
+        showInfoToast("Merchant ID saved. Add the new customer API key.");
+        return;
+      }
 
       showSuccessToast(saved.length > 1 ? "Keys saved" : `${saved[0]} saved`);
 
@@ -91,10 +114,12 @@ export function useMerchantFlow(onSaved?: () => void) {
   }, [
     merchantIdChanged,
     customerKeyProvided,
+    isCustomerApiKeySet,
     trimmedMerchantId,
     trimmedApiKey,
     setMerchantId,
     setCustomerApiKey,
+    clearCustomerApiKey,
     addLog,
     onSaved,
   ]);
