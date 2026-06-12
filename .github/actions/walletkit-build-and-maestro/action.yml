@@ -414,7 +414,7 @@ runs:
       uses: WalletConnect/actions/maestro/pay-tests@3dd255782c09be1f9a0c2a8d8d6e9aa916ed4a5a
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@3a145abaa0dcf9f609fabe17f6e6722e0db49535
+      uses: WalletConnect/actions/maestro/setup@dd7c71c7292ed568c0ce6c4160ad3c04863db3a0
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
