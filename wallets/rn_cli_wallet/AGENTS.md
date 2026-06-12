@@ -206,7 +206,7 @@ When set, the wallet auto-loads this private key on startup (if no stored wallet
 `.github/workflows/ci_e2e_walletkit.yaml` runs Maestro tests on both iOS (simulator) and Android (emulator). Triggers on PRs/pushes to main when `wallets/rn_cli_wallet/` or `.maestro/` files change.
 
 ### Permit2 allowance reset (USDT)
-After the suite runs, the composite action (`.github/actions/walletkit-build-and-maestro`) runs `scripts/revoke-permit2-approval.js` (yarn `permit2:revoke`) to reset the USDT-on-Polygon Permit2 allowance back to 0, so `pay_usdt_polygon` always re-exercises the `approve` step. This is a Node step, not a Maestro `runScript` — Maestro's script sandbox cannot sign transactions. `.github/workflows/e2e-balance-check.yml` also monitors USDT + POL (gas) on Polygon and pings the faucet bot on Slack when low.
+After the suite runs, the composite action (`.github/actions/walletkit-build-and-maestro`) calls the shared `WalletConnect/actions/maestro/permit2-reset` action to reset the USDT-on-Polygon Permit2 allowance back to 0, so `pay_usdt_polygon` always re-exercises the `approve` step. It signs a transaction (so it's a Node step, not a Maestro `runScript`); the private key is passed via env, never the CLI. `.github/workflows/e2e-balance-check.yml` also monitors USDT + POL (gas) on Polygon and pings the faucet bot on Slack when low.
 
 ## Development
 

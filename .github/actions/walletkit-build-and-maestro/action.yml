@@ -411,7 +411,7 @@ runs:
     # TEMP: pinned to the WalletConnect/actions PR #97 head (adds pay_usdt_polygon).
     # Re-pin to the squash-merge commit on master once #97 lands.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@3dd255782c09be1f9a0c2a8d8d6e9aa916ed4a5a
+      uses: WalletConnect/actions/maestro/pay-tests@d07c1f8a83dde5c52b7c8649a6814f98ba716b6b
 
     - name: Install Maestro
       uses: WalletConnect/actions/maestro/setup@dd7c71c7292ed568c0ce6c4160ad3c04863db3a0
@@ -574,23 +574,18 @@ runs:
 
     # Reset the USDT Permit2 allowance back to 0 so the next pay_usdt_polygon run
     # re-exercises the approve step. Runs even when the suite failed (if: always())
-    # so a mid-flow failure doesn't leave the allowance set. Must be a Node step —
-    # Maestro's runScript sandbox can't sign transactions. Non-fatal: a reset hiccup
-    # shouldn't fail an otherwise-green run.
+    # so a mid-flow failure doesn't leave the allowance set. Uses the shared
+    # permit2-reset action (the private key goes via env, never the CLI).
+    # continue-on-error so a reset hiccup can't fail an otherwise-green run.
     - name: Reset USDT Permit2 allowance (Polygon)
       if: always() && contains(inputs.maestro-tags, 'pay')
-      shell: bash
-      working-directory: ${{ steps.paths.outputs.wallet_root }}
-      env:
-        WALLET_PRIVATE_KEY: ${{ inputs.wallet-private-key }}
-        POLYGON_RPC_URL: ${{ inputs.polygon-rpc-url }}
-      run: |
-        # walletAddress is derived from the private key (no separate var needed).
-        # Polygon (eip155:137) min priority fee defaults to 25 gwei in the script.
-        node ./scripts/revoke-permit2-approval.js \
-          --chainId eip155:137 \
-          --privateKey "$WALLET_PRIVATE_KEY" \
-          --rpcUrl "$POLYGON_RPC_URL" || echo "::warning::Permit2 allowance reset failed; next run may skip the approve step."
+      continue-on-error: true
+      uses: WalletConnect/actions/maestro/permit2-reset@d07c1f8a83dde5c52b7c8649a6814f98ba716b6b
+      with:
+        chain-id: eip155:137
+        rpc-url: ${{ inputs.polygon-rpc-url }}
+        token-address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
+        private-key: ${{ inputs.wallet-private-key }}
 
     - name: Log Maestro outcome
       if: always()
