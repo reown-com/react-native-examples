@@ -138,12 +138,17 @@ platform :ios do
       )
     end
 
-    # Install pods (skip repo_update if cache hit)
-    cocoapods(
-      clean_install: false,
-      repo_update: ENV['PODS_CACHE_HIT'] != 'true',
-      podfile: ENV['PODFILE_PATH']
-    )
+    # On an exact Pods cache hit the restored Pods/ matches Podfile.lock, so
+    # re-running pod install (~5 min) is redundant. Reinstall only on a miss.
+    if ENV['PODS_CACHE_HIT'] == 'true'
+      UI.message("✅ Pods cache hit — skipping pod install (Pods/ matches Podfile.lock)")
+    else
+      cocoapods(
+        clean_install: false,
+        repo_update: true,
+        podfile: ENV['PODFILE_PATH']
+      )
+    end
 
     # Use an absolute path — gym (xcodebuild) runs from repo root while Ruby Dir/File
     # operations use the fastlane/ directory as CWD, so relative paths diverge.
@@ -161,7 +166,6 @@ platform :ios do
       destination: "generic/platform=iOS Simulator",
       archive_path: archive_path,
       skip_package_ipa: true,
-      derived_data_path: "#{build_dir}/DerivedData",
     }
 
     if sign_build

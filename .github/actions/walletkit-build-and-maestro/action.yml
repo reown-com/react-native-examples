@@ -244,21 +244,10 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ steps.paths.outputs.wallet_root }}/ios/Pods
+        # No restore-keys: a prefix match restores a stale Pods/ on a Podfile.lock
+        # bump (hermes-engine podspec mismatch) and breaks `pod install`. Exact
+        # match only — also gates the Fastfile's pod-install skip (#515).
         key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/ios/Podfile.lock', steps.paths.outputs.wallet_root)) }}
-        restore-keys: |
-          ${{ runner.os }}-pods-${{ github.ref_name }}-
-
-    # Cache xcodebuild's compiled objects (Pods, Hermes, RN core) for incremental builds.
-    # The Pods cache above only covers source. Path matches the Fastfile's derived_data_path.
-    - name: Cache DerivedData
-      if: inputs.platform == 'ios'
-      uses: actions/cache@v4
-      with:
-        path: ${{ inputs.wallet-source-dir }}/build/DerivedData
-        key: ${{ runner.os }}-dd-${{ github.ref_name }}-${{ hashFiles(format('{0}/ios/Podfile.lock', steps.paths.outputs.wallet_root), format('{0}/yarn.lock', steps.paths.outputs.wallet_root)) }}
-        restore-keys: |
-          ${{ runner.os }}-dd-${{ github.ref_name }}-
-          ${{ runner.os }}-dd-
 
     - name: Build for Simulator
       if: inputs.platform == 'ios'
