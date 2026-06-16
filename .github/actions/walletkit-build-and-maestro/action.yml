@@ -244,9 +244,10 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ steps.paths.outputs.wallet_root }}/ios/Pods
+        # No restore-keys: a prefix match restores a stale Pods/ on a Podfile.lock
+        # bump (hermes-engine podspec mismatch) and breaks `pod install` (#515).
+        # Exact Podfile.lock match only; otherwise start clean and reinstall.
         key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/ios/Podfile.lock', steps.paths.outputs.wallet_root)) }}
-        restore-keys: |
-          ${{ runner.os }}-pods-${{ github.ref_name }}-
 
     - name: Build for Simulator
       if: inputs.platform == 'ios'
@@ -378,6 +379,8 @@ runs:
           ~/.gradle/caches
           ~/.gradle/wrapper
           ${{ steps.paths.outputs.wallet_root }}/android/.gradle
+          ${{ steps.paths.outputs.wallet_root }}/android/app/.cxx
+          ${{ steps.paths.outputs.wallet_root }}/android/app/build/generated
         key: ${{ runner.os }}-gradle-walletkit-${{ hashFiles(format('{0}/android/**/*.gradle*', steps.paths.outputs.wallet_root), format('{0}/android/**/gradle-wrapper.properties', steps.paths.outputs.wallet_root)) }}
         restore-keys: |
           ${{ runner.os }}-gradle-walletkit-
