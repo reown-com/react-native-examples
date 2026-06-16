@@ -150,6 +150,10 @@ platform :ios do
     build_dir   = File.expand_path("../build")
     archive_path = "#{build_dir}/wallet-simulator.xcarchive"
 
+    # Build only arm64 (the runner is Apple Silicon) instead of both sim slices, and skip
+    # the compiler index store CI never reads. Base string so the signing branch can append.
+    xcargs = "ARCHS=arm64 ONLY_ACTIVE_ARCH=YES COMPILER_INDEX_STORE_ENABLE=NO"
+
     gym_params = {
       workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
@@ -157,11 +161,14 @@ platform :ios do
       destination: "generic/platform=iOS Simulator",
       archive_path: archive_path,
       skip_package_ipa: true,
+      # Stable path so CI can cache compiled objects across runs (see Cache DerivedData step).
+      derived_data_path: "#{build_dir}/DerivedData",
     }
 
     if sign_build
-      gym_params[:xcargs] = "CODE_SIGNING_ALLOWED=YES"
+      gym_params[:xcargs] = "#{xcargs} CODE_SIGNING_ALLOWED=YES"
     else
+      gym_params[:xcargs] = xcargs
       gym_params[:skip_codesigning] = true
     end
 
