@@ -450,6 +450,14 @@ runs:
         WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
         WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
       run: |
+        # Pre-grant simulator privacy permissions. Maestro does this via the
+        # flows' `launchApp: permissions: all: allow`, but Ennio doesn't enforce
+        # it AND can't dismiss the system alert (it only sees the injected RN
+        # app's view tree, not the SpringBoard camera prompt). Without this, the
+        # scan screen's VisionCamera prompt freezes every flow on a clean sim.
+        # Harmless/redundant for the Maestro path.
+        xcrun simctl privacy "$DEVICE_ID" grant all "$APP_ID" 2>/dev/null || true
+        xcrun simctl privacy "$DEVICE_ID" grant camera "$APP_ID" 2>/dev/null || true
         xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
         mkdir -p maestro-artifacts
         # Snapshot the associated-domains verification state at run start — brackets the
