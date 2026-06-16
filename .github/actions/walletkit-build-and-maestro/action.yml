@@ -422,6 +422,17 @@ runs:
     - name: Install Maestro
       uses: WalletConnect/actions/maestro/setup@3fd66ca1de3848a089d8e3c628e6f54bfcfd999f
 
+    # EXPERIMENT: run the iOS suite under Ennio (RN-only fast runner) to measure
+    # CI wall-clock vs Maestro. Ships a prebuilt arm64 dylib (matches the
+    # macos arm64 runner); injects at app launch on the simulator. `ennio doctor`
+    # is best-effort visibility into the runner's Node/Xcode/dylib/sim state.
+    - name: Install Ennio (iOS experiment)
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: |
+        npm install -g @reactiive/ennio
+        ennio doctor || true
+
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
       id: maestro-ios
@@ -457,7 +468,12 @@ runs:
         # suite video). Per-flow retry (ATTEMPTS=2) still absorbs transient
         # cold-start flakes without rebuilding/rebooting. The shared runner is
         # copied into .maestro/scripts by the pay-tests action above.
-        PLATFORM=ios DEVICE_ID="$DEVICE_ID" RUNNER=maestro ATTEMPTS=2 \
+        # EXPERIMENT: RUNNER=ennio. Ennio has no tag filtering, so it runs the
+        # full .maestro/pay_*.yaml glob (all pay flows, incl. the deeplink/
+        # universal-link ones — the app is signed on CI so AASA routing works).
+        # MAESTRO_TAGS is ignored by the ennio path. ENNIO_UDID pins it to the
+        # E2E simulator. Switch back to RUNNER=maestro to restore the gate.
+        PLATFORM=ios DEVICE_ID="$DEVICE_ID" ENNIO_UDID="$DEVICE_ID" RUNNER=ennio ATTEMPTS=2 \
           FLOWS_DIR=.maestro OUT_DIR=maestro-artifacts \
           INCLUDE_TAGS="$MAESTRO_TAGS" EXCLUDE_TAGS="$MAESTRO_EXCLUDE_TAGS" \
           DEBUG_OUTPUT="${RUNNER_TEMP}/maestro-debug" \
@@ -527,28 +543,15 @@ runs:
         force-avd-creation: false
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
         disable-animations: true
+        # NOTE: android-emulator-runner executes each LINE of `script` as its own
+        # `sh -c`, so the per-flow run must be a single line — multi-line + `\`
+        # continuations break (the `\` runs as its own command → exit 127) and
+        # shell variables wouldn't persist across lines. Native recording (adb
+        # screenrecord, kept on failure) lives in the shared run-pay-flows.sh,
+        # copied into .maestro/scripts by the pay-tests action.
         script: |
           adb install "$APK_PATH"
-          mkdir -p maestro-artifacts maestro-artifacts/maestro-debug
-          adb logcat -c || true
-          adb logcat AndroidRuntime:E ActivityManager:W ReactNativeJS:E '*:F' > maestro-artifacts/android-logcat.log 2>&1 &
-          LOGCAT_PID=$!
-          set +e
-          # Per-flow run with native screen recording (adb screenrecord), kept
-          # only on failure. Shared runner copied into .maestro/scripts by the
-          # pay-tests action. screenrecord's 180s cap is safe per single flow.
-          PLATFORM=android RUNNER=maestro ATTEMPTS=2 \
-            FLOWS_DIR=.maestro OUT_DIR=maestro-artifacts \
-            INCLUDE_TAGS="$MAESTRO_TAGS" EXCLUDE_TAGS="$MAESTRO_EXCLUDE_TAGS" \
-            DEBUG_OUTPUT="${RUNNER_TEMP}/maestro-debug" \
-            bash .maestro/scripts/run-pay-flows.sh > maestro-output.log 2>&1
-          maestro_exit_code=$?
-          kill "$LOGCAT_PID" 2>/dev/null || true
-          wait "$LOGCAT_PID" 2>/dev/null || true
-          adb logcat -d -b crash > maestro-artifacts/android-logcat-crash.log 2>&1 || true
-          find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true
-          cat maestro-output.log
-          exit "$maestro_exit_code"
+          mkdir -p maestro-artifacts maestro-artifacts/maestro-debug; adb logcat -c || true; adb logcat AndroidRuntime:E ActivityManager:W ReactNativeJS:E '*:F' > maestro-artifacts/android-logcat.log 2>&1 & LOGCAT_PID=$!; set +e; PLATFORM=android RUNNER=maestro ATTEMPTS=2 FLOWS_DIR=.maestro OUT_DIR=maestro-artifacts INCLUDE_TAGS="$MAESTRO_TAGS" EXCLUDE_TAGS="$MAESTRO_EXCLUDE_TAGS" DEBUG_OUTPUT="${RUNNER_TEMP}/maestro-debug" bash .maestro/scripts/run-pay-flows.sh > maestro-output.log 2>&1; maestro_exit_code=$?; kill "$LOGCAT_PID" 2>/dev/null || true; wait "$LOGCAT_PID" 2>/dev/null || true; adb logcat -d -b crash > maestro-artifacts/android-logcat-crash.log 2>&1 || true; find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true; cat maestro-output.log; exit "$maestro_exit_code"
 
     - name: Upload Maestro artifacts (Android)
       if: always() && inputs.platform == 'android'
