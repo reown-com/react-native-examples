@@ -138,7 +138,10 @@ platform :ios do
       )
     end
 
-    # Install pods (skip repo_update if cache hit)
+    # Always run pod install: on New Arch it also runs RN codegen, writing
+    # ios/build/generated/**-generated.mm that the ReactCodegen Pods target
+    # compiles. That output isn't cached or committed, so it can't be skipped.
+    # Skip only repo_update on an exact cache hit (Podfile.lock unchanged).
     cocoapods(
       clean_install: false,
       repo_update: ENV['PODS_CACHE_HIT'] != 'true',
@@ -150,6 +153,10 @@ platform :ios do
     build_dir   = File.expand_path("../build")
     archive_path = "#{build_dir}/wallet-simulator.xcarchive"
 
+    # Build only arm64 (the runner is Apple Silicon) instead of both sim slices, and skip
+    # the compiler index store CI never reads. Base string so the signing branch can append.
+    xcargs = "ARCHS=arm64 ONLY_ACTIVE_ARCH=YES COMPILER_INDEX_STORE_ENABLE=NO"
+
     gym_params = {
       workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
@@ -160,8 +167,9 @@ platform :ios do
     }
 
     if sign_build
-      gym_params[:xcargs] = "CODE_SIGNING_ALLOWED=YES"
+      gym_params[:xcargs] = "#{xcargs} CODE_SIGNING_ALLOWED=YES"
     else
+      gym_params[:xcargs] = xcargs
       gym_params[:skip_codesigning] = true
     end
 
