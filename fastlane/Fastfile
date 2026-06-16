@@ -161,7 +161,6 @@ platform :ios do
       destination: "generic/platform=iOS Simulator",
       archive_path: archive_path,
       skip_package_ipa: true,
-      # Stable path so CI can cache compiled objects across runs (see Cache DerivedData step).
       derived_data_path: "#{build_dir}/DerivedData",
     }
 
