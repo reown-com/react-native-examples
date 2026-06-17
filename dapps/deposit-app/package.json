@@ -8,6 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "web:build": "npx expo export --platform web",
     "lint": "expo lint"
   },
   "dependencies": {
