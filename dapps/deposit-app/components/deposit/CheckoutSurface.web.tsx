@@ -50,7 +50,7 @@ export function CheckoutSurface({ layout }: { layout: 'desktop' | 'mobile' }) {
         <Text style={styles.heading}>Complete your payment</Text>
         <Text style={styles.desc}>
           Finish the deposit in the WalletConnect Pay tab that just opened. This window updates
-          automatically once it&apos;s confirmed.
+          automatically once it’s confirmed.
         </Text>
 
         {error ? (

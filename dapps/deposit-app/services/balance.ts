@@ -20,10 +20,21 @@ export interface Portfolio {
 export async function fetchPortfolio(address: string): Promise<Portfolio> {
   if (!PROJECT_ID) throw new Error("EXPO_PUBLIC_PROJECT_ID is not configured");
 
+  // Demo only — uses a fixed account; a real app must not expose user wallet
+  // addresses in URLs (they end up in server/CDN/proxy access logs).
   const url = `${RPC_URL}/account/${address}/balance?projectId=${PROJECT_ID}&currency=usd`;
-  const res = await fetch(url, {
-    headers: { "x-sdk-type": "appkit", "x-sdk-version": "secure-site" },
-  });
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: { "x-sdk-type": "appkit", "x-sdk-version": "secure-site" },
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
   if (!res.ok) throw new Error(`Balance request failed (status ${res.status})`);
 
   const data = (await res.json()) as { balances?: TokenBalance[] };

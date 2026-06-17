@@ -57,7 +57,11 @@ export class PayConfigError extends Error {}
 
 /** Convert a dollar string to integer cents (Stripe-style, avoids fp drift). */
 export function amountToCents(amount: string): number {
-  return Math.round(parseFloat(amount) * 100);
+  const cents = Math.round(parseFloat(amount) * 100);
+  if (!Number.isFinite(cents) || cents <= 0) {
+    throw new Error('Enter a valid deposit amount greater than 0');
+  }
+  return cents;
 }
 
 /** referenceId: a uuid-like hex string with no dashes, like the POS demo. */
@@ -74,6 +78,9 @@ function generateReferenceId(): string {
 
 function headers(): Record<string, string> {
   if (!API_URL) throw new PayConfigError('EXPO_PUBLIC_API_URL is not configured');
+  if (!API_URL.startsWith('https://')) {
+    throw new PayConfigError('EXPO_PUBLIC_API_URL must use HTTPS (the Api-Key is sent on every request)');
+  }
   if (!API_KEY) throw new PayConfigError('EXPO_PUBLIC_DEFAULT_CUSTOMER_API_KEY is not configured');
   if (!MERCHANT_ID) {
     throw new PayConfigError(

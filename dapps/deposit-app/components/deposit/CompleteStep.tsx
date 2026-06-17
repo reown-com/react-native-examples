@@ -12,10 +12,14 @@ import { useDepositStore } from '@/stores/use-deposit-store';
  * flow. Balance + activity were already updated by the store before this step.
  */
 export function CompleteStep({ layout }: { layout: 'desktop' | 'mobile' }) {
-  const { amount, closeDeposit } = useDepositStore();
+  const { amount, paymentId, closeDeposit } = useDepositStore();
   const target = parseFloat(amount) || 0;
   const [shown, setShown] = useState(0);
   const isMobile = layout === 'mobile';
+  const shortId =
+    paymentId && paymentId.length > 14
+      ? `${paymentId.slice(0, 8)}…${paymentId.slice(-4)}`
+      : paymentId;
 
   useEffect(() => {
     let frame: number;
@@ -43,9 +47,9 @@ export function CompleteStep({ layout }: { layout: 'desktop' | 'mobile' }) {
         <Text style={styles.via}>via WalletConnect Pay</Text>
 
         <Animated.View entering={FadeIn.delay(200)} style={styles.txCard}>
-          <Text style={styles.txLabel}>Transaction</Text>
+          <Text style={styles.txLabel}>Payment ID</Text>
           <View style={styles.txRow}>
-            <Text style={styles.txHash}>0x7a4F…b3e2</Text>
+            <Text style={styles.txHash}>{shortId ?? '—'}</Text>
             <View style={styles.txStatus}>
               <Check size={10} color={colors.success} />
               <Text style={styles.txStatusText}>Confirmed</Text>

@@ -70,6 +70,8 @@ export type DepositMethod = 'wallet' | 'bank';
 
 const isWeb = Platform.OS === 'web';
 const DEMO_ACCOUNT = process.env.EXPO_PUBLIC_DEMO_ACCOUNT ?? '';
+// Stop polling after this many consecutive status errors (~40s at 2s cadence).
+const MAX_POLL_ERRORS = 20;
 
 interface DepositState {
   // Account
@@ -121,6 +123,7 @@ export function DepositProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollErrorsRef = useRef(0);
   const creditedRef = useRef(false);
   // Sum of credited deposits, layered on top of the portfolio base.
   const depositedTotalRef = useRef(0);
@@ -226,6 +229,7 @@ export function DepositProvider({ children }: { children: React.ReactNode }) {
     async (id: string) => {
       try {
         const res = await getPaymentStatus(id);
+        pollErrorsRef.current = 0;
         setPaymentStatus(res.status);
         if (res.status === 'succeeded') {
           finalizedRef.current = true;
@@ -243,7 +247,14 @@ export function DepositProvider({ children }: { children: React.ReactNode }) {
         }
         pollTimer.current = setTimeout(() => poll(id), nextPollMs(res));
       } catch {
-        // Transient error — keep trying at the default cadence.
+        // Transient error — retry up to a cap, then give up so we don't hammer
+        // the status endpoint during a sustained outage.
+        pollErrorsRef.current += 1;
+        if (pollErrorsRef.current > MAX_POLL_ERRORS) {
+          stopPolling();
+          setError('Payment status unavailable — please try again');
+          return;
+        }
         pollTimer.current = setTimeout(() => poll(id), nextPollMs(null));
       }
     },
@@ -287,11 +298,15 @@ export function DepositProvider({ children }: { children: React.ReactNode }) {
     if (isCreating) return;
     setError(null);
     setIsCreating(true);
+    pollErrorsRef.current = 0;
 
     // On web, open the popup synchronously (inside the click handler) so it
     // isn't blocked; point it at the gatewayUrl once the payment is created.
+    // Detach the opener so the checkout page can't navigate us back
+    // (reverse tabnabbing) while we keep the handle to drive its location.
     if (isWeb) {
       popupRef.current = window.open('about:blank', '_blank');
+      if (popupRef.current) popupRef.current.opener = null;
     }
 
     try {
