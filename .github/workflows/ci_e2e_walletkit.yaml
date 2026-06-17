@@ -10,7 +10,8 @@ concurrency:
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # Every 6 hours, UTC
+    - cron: '0 */6 * * *' # Every 6 hours, UTC — cheap canary (Android + balance check)
+    - cron: '0 9 * * *' # Once daily, UTC — also runs the expensive iOS E2E
   pull_request:
     branches: [main]
     paths:
@@ -53,7 +54,11 @@ jobs:
 
   e2e-ios:
     needs: check-balance
-    if: always() && inputs.platform != 'android' # Balance alert should not block tests
+    # Balance alert should not block tests. On schedule, iOS (macOS, expensive)
+    # runs only on the once-daily cron; the 6h cadence stays Android-only.
+    if: >-
+      always() && inputs.platform != 'android'
+      && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
     name: E2E Tests - iOS
     runs-on: macos-latest-xlarge
     timeout-minutes: 60
