@@ -5,7 +5,7 @@ import { Building2, ChevronRight, Wallet, X } from '@/components/ui/icons';
 import { colors, fonts, radius } from '@/constants/theme';
 import { useDepositStore } from '@/stores/use-deposit-store';
 
-const PRESETS = [50, 100, 500, 1000];
+const PRESETS = ['0.01', '0.10', '1', '2', '5'];
 
 /**
  * Step 1 — amount entry. Method tabs (Wallet / Bank), a large amount input with
@@ -85,7 +85,7 @@ export function DepositAmountStep({ layout }: { layout: 'desktop' | 'mobile' }) 
         </View>
         <View style={styles.presets}>
           {PRESETS.map((v) => (
-            <Pressable key={v} onPress={() => setAmount(String(v))} style={styles.preset}>
+            <Pressable key={v} onPress={() => setAmount(v)} style={styles.preset}>
               <Text style={styles.presetText}>${v}</Text>
             </Pressable>
           ))}
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     minWidth: 120,
     padding: 0,
   },
-  presets: { flexDirection: 'row', gap: 8, marginTop: 16 },
+  presets: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 8, marginTop: 16 },
   preset: {
     paddingHorizontal: 14,
     paddingVertical: 6,
