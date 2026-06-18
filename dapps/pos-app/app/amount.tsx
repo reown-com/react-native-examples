@@ -11,7 +11,7 @@ import {
   getCurrency,
 } from "@/utils/currency";
 import { router } from "expo-router";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { Platform, StyleSheet, View } from "react-native";
 
 interface FormData {
@@ -42,14 +42,13 @@ export default function AmountScreen() {
   const {
     control,
     handleSubmit,
-    watch,
     formState: { isValid },
   } = useForm<FormData>({
     defaultValues: {
       amount: "",
     },
   });
-  const watchAmount = watch("amount");
+  const watchAmount = useWatch({ control, name: "amount" });
 
   const onSubmit = ({ amount }: FormData) => {
     const formattedAmount = formatAmount(amount);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { DesktopFrame } from "@/constants/desktop-frame";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -17,7 +17,9 @@ export function DesktopFrameWrapper({ children }: DesktopFrameWrapperProps) {
   const isDesktop = useIsDesktopWeb();
   const colorScheme = useColorScheme();
   const [scale, setScale] = useState(1);
-  const modalContainerRef = useRef<HTMLDivElement>(null);
+  const [modalContainer, setModalContainer] = useState<HTMLDivElement | null>(
+    null,
+  );
 
   const totalWidth = DesktopFrame.DEVICE_WIDTH + DesktopFrame.BEZEL_WIDTH * 2;
   const totalHeight = DesktopFrame.DEVICE_HEIGHT + DesktopFrame.BEZEL_WIDTH * 2;
@@ -90,7 +92,7 @@ export function DesktopFrameWrapper({ children }: DesktopFrameWrapperProps) {
           }}
         >
           <div
-            ref={modalContainerRef}
+            ref={setModalContainer}
             style={{
               position: "absolute",
               top: 0,
@@ -101,7 +103,7 @@ export function DesktopFrameWrapper({ children }: DesktopFrameWrapperProps) {
               flexDirection: "column",
             }}
           >
-            <ModalPortalProvider containerRef={modalContainerRef}>
+            <ModalPortalProvider container={modalContainer}>
               {children}
             </ModalPortalProvider>
           </div>

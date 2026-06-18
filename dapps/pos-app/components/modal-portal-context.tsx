@@ -1,11 +1,11 @@
-import React, { createContext, useContext, RefObject } from "react";
+import React, { createContext, useContext } from "react";
 
 interface ModalPortalContextValue {
-  containerRef: RefObject<HTMLDivElement | null> | null;
+  container: HTMLDivElement | null;
 }
 
 export const ModalPortalContext = createContext<ModalPortalContextValue>({
-  containerRef: null,
+  container: null,
 });
 
 export function useModalPortal() {
@@ -13,16 +13,16 @@ export function useModalPortal() {
 }
 
 interface ModalPortalProviderProps {
-  containerRef: RefObject<HTMLDivElement | null>;
+  container: HTMLDivElement | null;
   children: React.ReactNode;
 }
 
 export function ModalPortalProvider({
-  containerRef,
+  container,
   children,
 }: ModalPortalProviderProps) {
   return (
-    <ModalPortalContext.Provider value={{ containerRef }}>
+    <ModalPortalContext.Provider value={{ container }}>
       {children}
     </ModalPortalContext.Provider>
   );
