@@ -340,8 +340,12 @@ runs:
     - name: Install Android NDK 27.0.12077973
       if: inputs.platform == 'android'
       shell: bash
+      # Licenses are accepted by the previous step, so `sdkmanager` reads little
+      # stdin and `yes` takes SIGPIPE when it exits. Disable pipefail (the default
+      # shell runs with -e -o pipefail) so that broken pipe doesn't fail the step —
+      # `sdkmanager`'s own exit code (last in the pipe) is what governs.
       run: |
-        set -euo pipefail
+        set +o pipefail
         yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;27.0.12077973"
 
     - name: Add Secrets file
