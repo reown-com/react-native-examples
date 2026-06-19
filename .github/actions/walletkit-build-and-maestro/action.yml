@@ -601,7 +601,7 @@ runs:
     # (actions/runner#1457), so non-fatal behavior is enforced via fail-on-error.
     - name: Reset USDT Permit2 allowance (Polygon)
       if: always() && contains(inputs.maestro-tags, 'pay')
-      uses: WalletConnect/actions/maestro/permit2-reset@0bad13563193ae9b18e4659b248db62f17c66b1d
+      uses: WalletConnect/actions/maestro/permit2-reset@8a83c203760286acef29408833dbd0d075932932
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
