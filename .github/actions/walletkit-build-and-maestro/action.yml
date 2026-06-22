@@ -130,6 +130,26 @@ inputs:
       should seed an expired payment and pass its gateway URL here.
     required: false
     default: ''
+  binary-cache:
+    description: |
+      Prebuilt-binary cache mode (skips the slow app build by reusing a cached
+      APK / iOS .app):
+        off    - no caching; build every time (DEFAULT).
+        exact  - reuse only on an exact env + wallet-source-hash match, else
+                 rebuild and save.
+        latest - reuse the newest binary built with the same env (any source hash);
+                 build only when none is cached. Used by cross-repo callers (pay-core).
+      Stored via actions/cache (never publicly downloadable), NOT actions/upload-artifact.
+      HARD GUARD: forced to 'off' whenever this runs in any */react-native-examples repo
+      (see "Resolve binary-cache mode" step), so the PUBLIC sample repo and its forks /
+      fork-PRs can never cache the funded-test-key binary. Only private/internal
+      cross-repo callers (e.g. WalletConnect/pay-core) may cache.
+    required: false
+    default: 'off'
+  force-rebuild:
+    description: 'Bypass the binary cache and rebuild even when a cached binary exists (escape hatch).'
+    required: false
+    default: 'false'
 
 outputs:
   maestro-outcome:
@@ -157,6 +177,32 @@ runs:
         fi
         echo "wallet_root=$ROOT" >> "$GITHUB_OUTPUT"
         echo "Resolved wallet root - $ROOT"
+
+    - name: Resolve binary-cache mode
+      id: cache-mode
+      shell: bash
+      env:
+        REQUESTED: ${{ inputs.binary-cache }}
+        REPO: ${{ github.repository }}
+      run: |
+        set -euo pipefail
+        MODE="${REQUESTED:-off}"
+        # github.repository is the repo of the *workflow run* (the caller), not where
+        # this action is defined. For pull_request it is the BASE repo, so fork PRs to
+        # react-native-examples are caught here too. Match any */react-native-examples
+        # (public sample + forks + the WalletConnect mirror); allow everything else.
+        # The funded-test-key binary must never be written to / restored from a cache
+        # that the PUBLIC repo (or its forks) can reach.
+        case "$REPO" in
+          */react-native-examples)
+            if [ "$MODE" != "off" ]; then
+              echo "::notice::binary-cache='$MODE' ignored in '$REPO' (public repo); forcing 'off'."
+            fi
+            MODE="off"
+            ;;
+        esac
+        echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+        echo "Effective binary-cache mode: $MODE (requested='$REQUESTED', repo='$REPO')"
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -199,6 +245,81 @@ runs:
         } >> .env
         echo "Wrote $(pwd)/.env"
 
+    # --- Prebuilt-binary cache (skips the slow app build) ---
+    - name: Compute binary cache key
+      id: bin-key
+      if: steps.cache-mode.outputs.mode != 'off'
+      shell: bash
+      env:
+        SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+        PLATFORM: ${{ inputs.platform }}
+        WALLET_ROOT: ${{ steps.paths.outputs.wallet_root }}
+        OS: ${{ runner.os }}
+      run: |
+        set -euo pipefail
+        SOURCE_DIR="${SOURCE_DIR:-.}"
+        # Content-addressed hash of the build inputs, SCOPED to the wallet subtree.
+        # This repo is not a yarn workspace (no root package.json; each project is
+        # self-contained), so unrelated monorepo commits (e.g. dapps/*) must not
+        # invalidate the binary. `git rev-parse HEAD:<path>` is the tree/blob object
+        # hash for that path — it changes only when that path's content changes.
+        WALLET_TREE=$(git -C "$SOURCE_DIR" rev-parse "HEAD:wallets/rn_cli_wallet")
+        if [ "$PLATFORM" = "ios" ]; then
+          # iOS additionally builds via fastlane + bundler at the repo root.
+          FASTLANE_TREE=$(git -C "$SOURCE_DIR" rev-parse "HEAD:fastlane" 2>/dev/null || echo none)
+          GEMLOCK_BLOB=$(git -C "$SOURCE_DIR" rev-parse "HEAD:Gemfile.lock" 2>/dev/null || echo none)
+          SRC_HASH=$(printf '%s' "$WALLET_TREE$FASTLANE_TREE$GEMLOCK_BLOB" | sha256sum | cut -c1-16)
+        else
+          SRC_HASH=$(printf '%s' "$WALLET_TREE" | sha256sum | cut -c1-16)
+        fi
+        # ENV_HASH captures the build-time .env (test key / project id / pay-core URL),
+        # so a different env never reuses another env's binary. Safe to expose (hash).
+        ENV_HASH=$(sha256sum "$WALLET_ROOT/.env" | cut -c1-16)
+        # env-hash BEFORE source-hash so the env is the prefix-matchable part:
+        # `latest` callers (pay-core) match the prefix (newest same-env binary, any
+        # source hash); `exact` callers match the full key.
+        PREFIX="${OS}-walletbin-${PLATFORM}-${ENV_HASH}-"
+        echo "cache_key=${PREFIX}${SRC_HASH}" >> "$GITHUB_OUTPUT"
+        echo "cache_prefix=${PREFIX}" >> "$GITHUB_OUTPUT"
+        echo "Binary cache key: ${PREFIX}${SRC_HASH}"
+
+    - name: Restore prebuilt binary
+      id: binary-cache
+      if: steps.cache-mode.outputs.mode != 'off'
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ inputs.platform == 'ios' && format('{0}/build', inputs.wallet-source-dir) || format('{0}/android/app/build/outputs/apk/internal/app-internal.apk', steps.paths.outputs.wallet_root) }}
+        key: ${{ steps.bin-key.outputs.cache_key }}
+        # restore-keys (prefix fallback) ONLY for `latest` — `exact` must miss on a
+        # source change so it rebuilds rather than reusing a stale binary.
+        restore-keys: ${{ steps.cache-mode.outputs.mode == 'latest' && steps.bin-key.outputs.cache_prefix || '' }}
+
+    - name: Detect prebuilt binary
+      id: detect
+      if: steps.cache-mode.outputs.mode != 'off'
+      shell: bash
+      env:
+        SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+        PLATFORM: ${{ inputs.platform }}
+        APK_PATH: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
+      run: |
+        set -euo pipefail
+        SOURCE_DIR="${SOURCE_DIR:-.}"
+        # Gate the build on file PRESENCE, not cache-hit: a `latest` prefix restore
+        # reports cache-hit=false even though it restored a usable binary.
+        present=false
+        if [ "$PLATFORM" = "ios" ]; then
+          if [ -f "$SOURCE_DIR/build/app_path.txt" ] && ls -d "$SOURCE_DIR"/build/*.app >/dev/null 2>&1; then
+            present=true
+          fi
+        else
+          if [ -f "$APK_PATH" ]; then
+            present=true
+          fi
+        fi
+        echo "binary_present=$present" >> "$GITHUB_OUTPUT"
+        echo "binary_present=$present (platform=$PLATFORM)"
+
     # --- iOS leg ---
     - name: Select Xcode 26.2
       if: inputs.platform == 'ios'
@@ -214,13 +335,13 @@ runs:
         xcodebuild -version
 
     - name: Setup SSH for Match
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
       uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ inputs.match-ssh-key }}
 
     - name: Install Ruby
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.3.0
@@ -239,7 +360,7 @@ runs:
         echo "XCWORKSPACE_PATH=$XCWORKSPACE" >> "$GITHUB_ENV"
 
     - name: Cache Pods
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
       id: pods-cache
       uses: actions/cache@v4
       with:
@@ -250,7 +371,8 @@ runs:
         key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/ios/Podfile.lock', steps.paths.outputs.wallet_root)) }}
 
     - name: Build for Simulator
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
+      id: build-ios
       uses: maierj/fastlane-action@v3.0.0
       with:
         lane: build_for_simulator
@@ -272,14 +394,50 @@ runs:
         MATCH_GIT_URL: ${{ inputs.match-git-url }}
         MATCH_PASSWORD: ${{ inputs.match-password }}
 
+    - name: Stage iOS .app into the cached build dir
+      if: inputs.platform == 'ios' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
+      shell: bash
+      env:
+        SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+      run: |
+        set -euo pipefail
+        SOURCE_DIR="${SOURCE_DIR:-.}"
+        BUILD_DIR="$SOURCE_DIR/build"
+        SRC_APP=$(cat "$BUILD_DIR/app_path.txt")
+        APP_NAME=$(basename "$SRC_APP")
+        # fastlane may emit the .app in DerivedData (outside build/). Copy it into
+        # build/ so the cached artifact (path: <src>/build) is self-contained, then
+        # point app_path.txt at the in-cache copy.
+        if [ "$(cd "$(dirname "$SRC_APP")" && pwd)" != "$(cd "$BUILD_DIR" && pwd)" ]; then
+          rm -rf "${BUILD_DIR:?}/${APP_NAME}"
+          cp -R "$SRC_APP" "$BUILD_DIR/"
+        fi
+        echo "$(cd "$BUILD_DIR" && pwd)/${APP_NAME}" > "$BUILD_DIR/app_path.txt"
+        echo "Staged .app at $(cat "$BUILD_DIR/app_path.txt")"
+
+    - name: Save prebuilt binary (iOS)
+      if: inputs.platform == 'ios' && steps.cache-mode.outputs.mode != 'off' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ format('{0}/build', inputs.wallet-source-dir) }}
+        key: ${{ steps.bin-key.outputs.cache_key }}
+
     - name: Find .app path
       if: inputs.platform == 'ios'
       shell: bash
       env:
         SOURCE_DIR: ${{ inputs.wallet-source-dir }}
       run: |
+        set -euo pipefail
+        SOURCE_DIR="${SOURCE_DIR:-.}"
         APP_PATH=$(cat "$SOURCE_DIR/build/app_path.txt")
+        # On a cache restore the stored absolute path may not resolve; fall back to
+        # the .app staged inside the cached build/ dir.
+        if [ ! -e "$APP_PATH" ]; then
+          APP_PATH=$(ls -d "$SOURCE_DIR"/build/*.app | head -1)
+        fi
         echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
+        echo "APP_PATH=$APP_PATH"
 
     - name: Boot iOS Simulator
       if: inputs.platform == 'ios'
@@ -338,7 +496,7 @@ runs:
     # above) so the build finds it instead of trying — and failing — to fetch it.
     # Keep the version in lockstep with the wallet's build.gradle ndkVersion.
     - name: Install Android NDK 27.0.12077973
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
       shell: bash
       # Licenses are accepted by the previous step, so `sdkmanager` reads little
       # stdin and `yes` takes SIGPIPE when it exits. Disable pipefail (the default
@@ -349,7 +507,7 @@ runs:
         yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;27.0.12077973"
 
     - name: Add Secrets file
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       env:
@@ -362,7 +520,7 @@ runs:
         printf '%s\n' "$ANDROID_SECRETS_FILE" > android/secrets.properties
 
     - name: Add Keystore file
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       env:
@@ -376,7 +534,7 @@ runs:
         printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode >> "android/app/${ANDROID_KEYSTORE_NAME}.keystore"
 
     - name: Optimize Gradle for CI
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: |
@@ -388,7 +546,7 @@ runs:
         } >> android/gradle.properties
 
     - name: Cache Gradle
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
       uses: actions/cache@v4
       with:
         path: |
@@ -402,13 +560,20 @@ runs:
           ${{ runner.os }}-gradle-walletkit-
 
     - name: Build APK
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
       id: build
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: |
         export SENTRY_DISABLE_AUTO_UPLOAD=true
         yarn run android:build:internal
+
+    - name: Save prebuilt binary (Android)
+      if: inputs.platform == 'android' && steps.cache-mode.outputs.mode != 'off' && (steps.detect.outputs.binary_present != 'true' || inputs.force-rebuild == 'true')
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
+        key: ${{ steps.bin-key.outputs.cache_key }}
 
     - name: Free disk space
       if: inputs.platform == 'android'
