@@ -509,6 +509,7 @@ runs:
 
     - name: Upload Maestro artifacts (iOS)
       if: always() && inputs.platform == 'ios'
+      continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
         name: maestro-ios-artifacts
@@ -568,6 +569,7 @@ runs:
 
     - name: Upload Maestro artifacts (Android)
       if: always() && inputs.platform == 'android'
+      continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
         name: maestro-android-artifacts
