@@ -1,17 +1,13 @@
-import { Button } from "@/components/button";
 import { Card } from "@/components/card";
-import { PinModal } from "@/components/pin-modal";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { SettingsItem } from "@/components/settings-item";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { VariantList, VariantName, Variants } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
-import { useMerchantFlow } from "@/hooks/use-merchant-flow";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
-import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { ThemeMode } from "@/utils/types";
@@ -27,17 +23,11 @@ import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
 import { router } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
-import { Platform, StyleSheet, TextInput, View } from "react-native";
+import { useMemo, useState } from "react";
+import { Platform, StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-type ActiveSheet =
-  | "theme"
-  | "walletTheme"
-  | "currency"
-  | "merchantId"
-  | "customerApiKey"
-  | null;
+type ActiveSheet = "theme" | "walletTheme" | "currency" | null;
 
 const THEME_OPTIONS: RadioOption<ThemeMode>[] = [
   {
@@ -77,41 +67,16 @@ export default function SettingsScreen() {
   const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
   const nfcCapabilities = useNfcCapabilities();
   const addLog = useLogsStore((state) => state.addLog);
-  const theme = useTheme();
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
-  const [isEditingCustomerKey, setIsEditingCustomerKey] = useState(false);
 
-  // Custom hooks for biometrics and merchant flow
+  // Custom hook for biometrics
   const {
     biometricStatus,
     biometricEnabled,
-    biometricLabel,
-    canUseBiometric,
     shouldShowBiometricOption,
     handleBiometricToggle,
-    authenticate,
   } = useBiometricAuth();
-
-  const {
-    merchantIdInput,
-    customerApiKeyInput,
-    activeModal,
-    pinError,
-    isMerchantIdConfirmDisabled,
-    isCustomerApiKeyConfirmDisabled,
-    hasStoredCustomerApiKey,
-    handleMerchantIdInputChange,
-    handleCustomerApiKeyInputChange,
-    resetCustomerApiKeyInput,
-    handleMerchantIdConfirm,
-    handleCustomerApiKeyConfirm,
-    handlePinVerifyComplete,
-    handleBiometricAuthSuccess,
-    handleBiometricAuthFailure,
-    handlePinSetupComplete,
-    handleCancelSecurityFlow,
-  } = useMerchantFlow();
 
   const variantOptions: RadioOption<VariantName>[] = useMemo(
     () =>
@@ -146,11 +111,7 @@ export default function SettingsScreen() {
     variant !== "default" && !Variants[variant].allowThemeToggle;
 
   const closeSheet = () => {
-    if (activeSheet === "customerApiKey") {
-      resetCustomerApiKeyInput();
-    }
     setActiveSheet(null);
-    setIsEditingCustomerKey(false);
   };
 
   const handleThemeModeChange = (value: ThemeMode) => {
@@ -166,23 +127,6 @@ export default function SettingsScreen() {
   const handleCurrencyChange = (value: CurrencyCode) => {
     setCurrency(value);
     closeSheet();
-  };
-
-  const handleMerchantIdSave = () => {
-    closeSheet();
-    handleMerchantIdConfirm();
-  };
-
-  const handleCustomerApiKeySave = () => {
-    closeSheet();
-    handleCustomerApiKeyConfirm();
-  };
-
-  const handleCustomerKeyChange = (value: string) => {
-    if (!isEditingCustomerKey) {
-      setIsEditingCustomerKey(true);
-    }
-    handleCustomerApiKeyInputChange(value);
   };
 
   const showNfcToggle =
@@ -241,23 +185,6 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleBiometricAuth = useCallback(async () => {
-    const success = await authenticate(
-      `Use ${biometricLabel} to change merchant settings`,
-    );
-
-    if (success) {
-      handleBiometricAuthSuccess();
-    } else {
-      handleBiometricAuthFailure();
-    }
-  }, [
-    authenticate,
-    biometricLabel,
-    handleBiometricAuthSuccess,
-    handleBiometricAuthFailure,
-  ]);
-
   return (
     <View style={styles.container}>
       <ScrollView
@@ -284,15 +211,9 @@ export default function SettingsScreen() {
         />
 
         <SettingsItem
-          title="Merchant ID"
-          value={merchantIdInput || undefined}
-          onPress={() => setActiveSheet("merchantId")}
-        />
-
-        <SettingsItem
-          title="Customer API key"
-          value="**********"
-          onPress={() => setActiveSheet("customerApiKey")}
+          title="Update keys"
+          onPress={() => router.push("/update-keys")}
+          showCaret
         />
 
         {showNfcToggle && (
@@ -388,127 +309,6 @@ export default function SettingsScreen() {
           onChange={handleCurrencyChange}
         />
       </SettingsBottomSheet>
-
-      {/* Merchant ID Bottom Sheet */}
-      <SettingsBottomSheet
-        visible={activeSheet === "merchantId"}
-        title="Merchant ID"
-        onClose={closeSheet}
-      >
-        <View style={styles.inputContent}>
-          <TextInput
-            value={merchantIdInput}
-            onChangeText={handleMerchantIdInputChange}
-            placeholder="Enter merchant ID"
-            placeholderTextColor={theme["text-tertiary"]}
-            autoCapitalize="none"
-            autoCorrect={false}
-            style={[
-              styles.sheetInput,
-              {
-                borderColor: theme["border-primary"],
-                color: theme["text-primary"],
-                backgroundColor: theme["foreground-primary"],
-              },
-            ]}
-          />
-          <Button
-            onPress={handleMerchantIdSave}
-            disabled={isMerchantIdConfirmDisabled}
-            style={[
-              styles.saveButton,
-              {
-                backgroundColor: isMerchantIdConfirmDisabled
-                  ? theme["foreground-accent-primary-60"]
-                  : theme["bg-accent-primary"],
-              },
-            ]}
-          >
-            <ThemedText
-              fontSize={16}
-              lineHeight={18}
-              color="text-invert"
-              style={styles.saveButtonLabel}
-            >
-              Save
-            </ThemedText>
-          </Button>
-        </View>
-      </SettingsBottomSheet>
-
-      {/* Customer API Key Bottom Sheet */}
-      <SettingsBottomSheet
-        visible={activeSheet === "customerApiKey"}
-        title="Customer API key"
-        onClose={closeSheet}
-      >
-        <View style={styles.inputContent}>
-          <TextInput
-            value={
-              isEditingCustomerKey
-                ? customerApiKeyInput
-                : hasStoredCustomerApiKey
-                  ? "********"
-                  : ""
-            }
-            onChangeText={handleCustomerKeyChange}
-            placeholder="Enter customer API key"
-            placeholderTextColor={theme["text-tertiary"]}
-            autoCapitalize="none"
-            autoCorrect={false}
-            secureTextEntry={true}
-            style={[
-              styles.sheetInput,
-              {
-                borderColor: theme["border-primary"],
-                color: theme["text-primary"],
-                backgroundColor: theme["foreground-primary"],
-              },
-            ]}
-          />
-          <Button
-            onPress={handleCustomerApiKeySave}
-            disabled={isCustomerApiKeyConfirmDisabled}
-            style={[
-              styles.saveButton,
-              {
-                backgroundColor: isCustomerApiKeyConfirmDisabled
-                  ? theme["foreground-accent-primary-60"]
-                  : theme["bg-accent-primary"],
-              },
-            ]}
-          >
-            <ThemedText
-              fontSize={16}
-              lineHeight={18}
-              color="text-invert"
-              style={styles.saveButtonLabel}
-            >
-              Save
-            </ThemedText>
-          </Button>
-        </View>
-      </SettingsBottomSheet>
-
-      {/* PIN Modal */}
-      <PinModal
-        visible={activeModal !== "none"}
-        title={activeModal === "pin-verify" ? "Enter PIN" : "Create PIN"}
-        subtitle={
-          activeModal === "pin-verify"
-            ? "Enter your PIN to save these settings."
-            : "Set a 4-digit PIN to protect your settings."
-        }
-        onComplete={
-          activeModal === "pin-verify"
-            ? handlePinVerifyComplete
-            : handlePinSetupComplete
-        }
-        onCancel={handleCancelSecurityFlow}
-        error={pinError}
-        showBiometric={activeModal === "pin-verify" && !!canUseBiometric}
-        onBiometricPress={handleBiometricAuth}
-      />
     </View>
   );
 }
@@ -544,27 +344,5 @@ const styles = StyleSheet.create({
   },
   biometricLabel: {
     gap: Spacing["spacing-1"],
-  },
-  inputContent: {
-    gap: Spacing["spacing-3"],
-  },
-  sheetInput: {
-    borderWidth: 1,
-    borderRadius: BorderRadius["4"],
-    paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-4"],
-    fontSize: 16,
-    lineHeight: 18,
-    fontFamily: "KH Teka",
-    height: 60,
-  },
-  saveButton: {
-    borderRadius: BorderRadius["4"],
-    paddingVertical: Spacing["spacing-4"],
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  saveButtonLabel: {
-    textAlign: "center",
   },
 });

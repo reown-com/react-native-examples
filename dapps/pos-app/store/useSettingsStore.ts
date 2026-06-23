@@ -63,6 +63,11 @@ interface SettingsStore {
   merchantId: string | null;
   isCustomerApiKeySet: boolean;
 
+  // Transient hand-off from the QR scanner to the Update keys screen.
+  // Never persisted — it holds raw credentials scanned from a setup QR
+  // (see partialize).
+  scannedSetup: { merchantId?: string; customerApiKey?: string } | null;
+
   // Transaction filters
   transactionFilter: TransactionFilterType;
   dateRangeFilter: DateRangeFilterType;
@@ -84,6 +89,9 @@ interface SettingsStore {
   getVariantPrinterLogo: () => string;
   setCurrency: (currency: CurrencyCode) => void;
   setMerchantId: (merchantId: string | null) => void;
+  setScannedSetup: (
+    value: { merchantId?: string; customerApiKey?: string } | null,
+  ) => void;
   clearMerchantId: () => Promise<string | null>;
   setCustomerApiKey: (apiKey: string | null) => Promise<void>;
   clearCustomerApiKey: () => Promise<void>;
@@ -114,6 +122,7 @@ export const useSettingsStore = create<SettingsStore>()(
       _hasHydrated: false,
       merchantId: null,
       isCustomerApiKeySet: false,
+      scannedSetup: null,
       transactionFilter: "all",
       dateRangeFilter: "today",
       isPinHashSet: false,
@@ -134,6 +143,7 @@ export const useSettingsStore = create<SettingsStore>()(
       getVariantPrinterLogo: () =>
         Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64,
       setCurrency: (currency: CurrencyCode) => set({ currency }),
+      setScannedSetup: (value) => set({ scannedSetup: value }),
       setMerchantId: (merchantId: string | null) => {
         // If clearing, reset to env default (unless embedded — parent provides credentials)
         if (!merchantId || merchantId.trim() === "") {
@@ -281,6 +291,9 @@ export const useSettingsStore = create<SettingsStore>()(
       name: "settings",
       version: 16,
       storage,
+      // Never write the raw scanned credentials to MMKV; they are a transient
+      // hand-off that lives only in memory.
+      partialize: ({ scannedSetup: _scannedSetup, ...rest }) => rest,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
           return { variant: "default" };

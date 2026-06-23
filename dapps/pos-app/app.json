@@ -128,6 +128,12 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
       ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) needs camera access to scan QR codes."
+        }
+      ],
       "@sentry/react-native",
       "expo-image"
     ],
