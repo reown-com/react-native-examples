@@ -1,0 +1,10 @@
+{
+  "cli": {
+    "version": ">= 15.0.0"
+  },
+  "build": {
+    "production": {
+      "channel": "production"
+    }
+  }
+}

@@ -3,7 +3,7 @@ run-name: "Mobile POS - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 Androi
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 on:
   workflow_dispatch:
@@ -33,6 +33,7 @@ jobs:
       package-manager: 'npm'
       is-expo-project: true
       firebase-app-id: ${{ vars.POS_ANDROID_FIREBASE_APP_ID }}
+      eas-update-channel: 'production'
     secrets:
       env-file: ${{ secrets.POS_ENV_FILE }}
       sentry-file: ${{ secrets.POS_SENTRY_FILE }}
@@ -58,6 +59,7 @@ jobs:
       package-manager: 'npm'
       testflight-groups: 'External'
       is-expo-project: true
+      eas-update-channel: 'production'
     secrets:
       env-file: ${{ secrets.POS_ENV_FILE }}
       sentry-file: ${{ secrets.POS_SENTRY_FILE }}

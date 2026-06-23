@@ -2,7 +2,7 @@ name: release-android-base
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 on:
   workflow_call:
@@ -46,6 +46,11 @@ on:
         description: "Firebase App ID for distribution"
         required: true
         type: string
+      eas-update-channel:
+        description: "EAS Update channel to embed in the native build (leave empty for non-OTA apps)"
+        required: false
+        default: ''
+        type: string
     secrets:
       gsa-key:
         required: true
@@ -85,6 +90,56 @@ jobs:
         run: |
           cd ${{ inputs.root-path }}
           npx expo prebuild --platform android
+
+      - name: Save native fingerprint
+        if: ${{ inputs.eas-update-channel != '' }}
+        env:
+          CHANNEL: ${{ inputs.eas-update-channel }}
+        run: |
+          cd ${{ inputs.root-path }}
+          FINGERPRINT=$(npx expo-updates fingerprint:generate --platform android 2>/dev/null | tail -1 | jq -r '.hash')
+          echo "Native fingerprint (Android): $FINGERPRINT"
+
+          cd "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Android and iOS jobs push to the same branch concurrently, so re-base
+          # on the latest remote state and retry to avoid non-fast-forward failures.
+          pushed=false
+          for attempt in 1 2 3 4 5; do
+            git fetch origin fingerprints-dont-remove 2>/dev/null || true
+            if git show-ref --verify --quiet refs/remotes/origin/fingerprints-dont-remove; then
+              git checkout -B fingerprints-dont-remove origin/fingerprints-dont-remove
+            else
+              git checkout --orphan fingerprints-dont-remove
+              git rm -rf --cached . >/dev/null 2>&1 || true
+            fi
+
+            mkdir -p "native-fingerprints/$CHANNEL"
+            echo "$FINGERPRINT" > "native-fingerprints/$CHANNEL/android.txt"
+            git add native-fingerprints/
+
+            if git diff --cached --quiet; then
+              echo "Android fingerprint unchanged — nothing to push."
+              pushed=true
+              break
+            fi
+
+            git commit -m "Update Android native fingerprint ($CHANNEL)"
+            if git push origin fingerprints-dont-remove; then
+              echo "Pushed Android fingerprint (attempt $attempt)."
+              pushed=true
+              break
+            fi
+            echo "Push rejected (attempt $attempt) — retrying after rebase."
+            sleep $((attempt * 3))
+          done
+
+          if [ "$pushed" != "true" ]; then
+            echo "::error::Failed to push Android native fingerprint after retries."
+            exit 1
+          fi
 
       - name: Install Java 17
         uses: actions/setup-java@v3
