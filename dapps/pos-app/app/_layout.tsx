@@ -2,9 +2,10 @@ import "@/utils/polyfills";
 import {
   DarkTheme,
   DefaultTheme,
+  Stack,
   ThemeProvider,
-} from "@react-navigation/native";
-import { Stack, useNavigationContainerRef } from "expo-router";
+  useNavigationContainerRef,
+} from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
@@ -153,19 +154,40 @@ export default Sentry.wrap(function RootLayout() {
 
   if (!_hasHydrated || !fontsLoaded) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: Theme["bg-primary"],
+        }}
+      >
         <WalletConnectLoading size={180} />
       </View>
     );
   }
 
+  // Match the navigator's background (shown behind screens during transitions)
+  // to the app background so iOS native-stack push/pop doesn't flash the white
+  // window underneath. react-navigation's DarkTheme background is pure black
+  // (rgb(1,1,1)), not our bg-primary.
+  const baseNavTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
+  const navigationTheme = {
+    ...baseNavTheme,
+    colors: {
+      ...baseNavTheme.colors,
+      background: Theme["bg-primary"],
+      card: Theme["bg-primary"],
+    },
+  };
+
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView
+      style={{ flex: 1, backgroundColor: Theme["bg-primary"] }}
+    >
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
+          <ThemeProvider value={navigationTheme}>
             <Stack
               screenOptions={({ route }) => {
                 const centerTitle = shouldCenterHeaderTitle(route.name);
