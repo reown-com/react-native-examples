@@ -509,8 +509,6 @@ runs:
 
     - name: Upload Maestro artifacts (iOS)
       if: always() && inputs.platform == 'ios'
-      # Diagnostic-only artifacts: a transient upload failure (e.g. ENOTFOUND
-      # reaching GitHub's artifact backend) shouldn't fail the job after tests pass.
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
@@ -571,8 +569,6 @@ runs:
 
     - name: Upload Maestro artifacts (Android)
       if: always() && inputs.platform == 'android'
-      # Diagnostic-only artifacts: a transient upload failure (e.g. ENOTFOUND
-      # reaching GitHub's artifact backend) shouldn't fail the job after tests pass.
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
