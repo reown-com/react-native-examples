@@ -70,10 +70,10 @@ Add to `resolutions` in package.json:
 
 After adding overrides/resolutions, run `npm install` or `yarn install` in the specific project directory. Verify the lock file diff is small and targeted — if it shows thousands of changed lines, something went wrong. Do not commit large lock file diffs.
 
-To regenerate **only the lock file** (no `node_modules`, no postinstall/patch-package/native builds) while iterating on overrides:
-- npm: `npm install --package-lock-only --ignore-scripts`
-- yarn berry (3.x): `yarn install --mode=update-lockfile`
-- yarn classic (1.x): `yarn install --ignore-scripts`
+To update **only the changed lockfile entries** (this is NOT a full lockfile regeneration — see the warning above; it re-resolves just the dependencies your override touched and leaves the rest of the lock alone) while iterating on overrides:
+- npm: `npm install --package-lock-only --ignore-scripts` — writes `package-lock.json` only, does not create/modify `node_modules`.
+- yarn berry (3.x): `yarn install --mode=update-lockfile` — writes `yarn.lock` only, skips the fetch/link steps.
+- yarn classic (1.x): has **no** lockfile-only mode. `yarn install --ignore-scripts` still fetches and links `node_modules` (only the lifecycle/postinstall scripts are skipped); the `yarn.lock` diff stays small because only the re-resolved entries change. Always sanity-check the diff before committing.
 
 ### Upgrades that break things (learned the hard way)
 
