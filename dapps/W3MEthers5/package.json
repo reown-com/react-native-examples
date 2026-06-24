@@ -31,7 +31,7 @@
     "react-native-safe-area-context": "4.14.1"
   },
   "devDependencies": {
-    "@babel/core": "7.23.9",
+    "@babel/core": "7.29.6",
     "@babel/helpers": "7.26.10",
     "@babel/preset-env": "7.23.9",
     "@babel/runtime": "7.26.10",
