@@ -61,7 +61,7 @@
     "@babel/plugin-transform-modules-systemjs": "7.29.4",
     "image-size": "1.2.1",
     "cross-spawn": "7.0.6",
-    "ws": "8.21.0",
+    "ws": "8.18.1",
     "shell-quote": "1.8.4",
     "@babel/core": "7.29.6",
     "joi": "17.13.4",
