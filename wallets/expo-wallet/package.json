@@ -73,11 +73,16 @@
   },
   "overrides": {
     "node-forge": "1.4.0",
-    "js-yaml": "4.1.1",
+    "js-yaml": "4.2.0",
     "glob": "10.5.0",
     "h3": "1.15.9",
-    "undici": "6.24.1",
-    "tar": "7.5.11",
+    "undici": "6.27.0",
+    "tar": "7.5.16",
+    "shell-quote": "1.8.4",
+    "@babel/core": "7.29.6",
+    "tmp": "0.2.7",
+    "ws": "8.21.0",
+    "uuid": "11.1.1",
     "minimatch": "9.0.9",
     "fast-xml-parser": "5.7.0",
     "flatted": "3.4.2",
@@ -88,7 +93,7 @@
     "@xmldom/xmldom": "0.8.13",
     "cross-spawn": "7.0.6",
     "lodash": "4.18.1",
-    "hono": "4.12.14",
+    "hono": "4.12.25",
     "postcss": "8.5.10"
   },
   "private": true

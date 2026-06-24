@@ -76,12 +76,19 @@
     "typescript": "5.9.3"
   },
   "overrides": {
-    "hono": "4.12.14",
-    "tar": "7.5.11",
+    "hono": "4.12.25",
+    "tar": "7.5.16",
     "node-forge": "1.4.0",
     "glob": "10.5.0",
-    "js-yaml": "4.1.1",
-    "undici": "6.24.1",
+    "js-yaml": "4.2.0",
+    "undici": "6.27.0",
+    "shell-quote": "1.8.4",
+    "@babel/core": "7.29.6",
+    "tmp": "0.2.7",
+    "ws": "8.21.0",
+    "xcode": {
+      "uuid": "11.1.1"
+    },
     "h3": "1.15.9",
     "minimatch": "9.0.9",
     "fast-xml-parser": "5.7.0",
