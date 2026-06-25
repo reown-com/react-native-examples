@@ -159,22 +159,16 @@ jobs:
           echo "=== Effective gradle.properties ==="
           cat ${{ inputs.root-path }}/android/gradle.properties
 
-      - name: Setup Firebase
-        uses: w9jds/setup-firebase@main
-        with:
-          tools-version: 13.0.1
-          gcp_sa_key: ${{ secrets.gsa-key }}
-      
       - name: Upload APK to Firebase
         id: firebase-upload
         continue-on-error: false
-        env:
-          APP_ID: ${{ inputs.firebase-app-id }}
-        run: |
-          firebase appdistribution:distribute ${{ inputs.output-path }} \
-            --app $APP_ID \
-            --release-notes "${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }} - Branch: ${{ github.ref_name }}" \
-            --groups "flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers"
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ inputs.firebase-app-id }}
+          serviceCredentialsFileContent: ${{ secrets.gsa-key }}
+          groups: flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers
+          file: ${{ inputs.output-path }}
+          releaseNotes: "${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }} - Branch: ${{ github.ref_name }}"
     
       - name: Configure AWS credentials
         id: aws-creds
