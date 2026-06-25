@@ -32,13 +32,13 @@ inputs:
     default: ''
   reown-project-id:
     description: |
-      Reown project ID (written as ENV_PROJECT_ID into the wallet's .env).
+      Reown project ID (written as EXPO_PUBLIC_PROJECT_ID into the wallet's .env).
       Required when wallet-env-file is not set; when both are set, this value
       is appended last and wins (dotenv last-value-wins).
     required: false
     default: ''
   wallet-private-key:
-    description: 'Test wallet private key (sets ENV_TEST_PRIVATE_KEY).'
+    description: 'Test wallet private key (sets EXPO_PUBLIC_TEST_PRIVATE_KEY).'
     required: true
   polygon-rpc-url:
     description: |
@@ -189,12 +189,12 @@ runs:
           : > .env
         fi
         if [ -n "$REOWN_PROJECT_ID" ]; then
-          echo "ENV_PROJECT_ID=$REOWN_PROJECT_ID" >> .env
+          echo "EXPO_PUBLIC_PROJECT_ID=$REOWN_PROJECT_ID" >> .env
         fi
         {
-          echo "ENV_TEST_PRIVATE_KEY=$WALLET_PRIVATE_KEY"
-          echo "ENV_TEST_MODE=true"
-          echo "ENV_PAY_API_BASE_URL=$PAY_CORE_URL"
+          echo "EXPO_PUBLIC_TEST_PRIVATE_KEY=$WALLET_PRIVATE_KEY"
+          echo "EXPO_PUBLIC_TEST_MODE=true"
+          echo "EXPO_PUBLIC_PAY_API_BASE_URL=$PAY_CORE_URL"
           echo "SENTRY_DISABLE_AUTO_UPLOAD=true"
         } >> .env
         echo "Wrote $(pwd)/.env"

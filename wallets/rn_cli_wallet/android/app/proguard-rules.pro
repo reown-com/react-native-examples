@@ -8,6 +8,3 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
-
-# react-native-config
--keep class com.w3mwagmi.BuildConfig { *; }

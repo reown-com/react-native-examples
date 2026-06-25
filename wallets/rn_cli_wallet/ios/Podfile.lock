@@ -1594,10 +1594,6 @@ PODS:
     - ReactNativeDependencies
     - Yoga
     - YttriumWrapper (= 0.10.50)
-  - react-native-config (1.5.5):
-    - react-native-config/App (= 1.5.5)
-  - react-native-config/App (1.5.5):
-    - React-Core
   - react-native-get-random-values (1.11.0):
     - React-Core
   - react-native-keyboard-controller (1.21.4):
@@ -2592,7 +2588,6 @@ DEPENDENCIES:
   - React-mutationobservernativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver`)
   - react-native-bottom-tabs (from `../node_modules/react-native-bottom-tabs`)
   - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
-  - react-native-config (from `../node_modules/react-native-config`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
@@ -2769,8 +2764,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-bottom-tabs"
   react-native-compat:
     :path: "../node_modules/@walletconnect/react-native-compat"
-  react-native-config:
-    :path: "../node_modules/react-native-config"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-keyboard-controller:
@@ -2940,7 +2933,6 @@ SPEC CHECKSUMS:
   React-mutationobservernativemodule: a42d1626651ccd7d0dc02a56e69d4ec77c248893
   react-native-bottom-tabs: 9bc516e03f7bc2b9116e24b6d4dbc828d60ed9af
   react-native-compat: 15cc1497d6988a82f78c42a5fbf0440f98ad021d
-  react-native-config: 644074ab88db883fcfaa584f03520ec29589d7df
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-keyboard-controller: 72bc609e3e5a5a1efd8d5911d349670f562ab8ca
   react-native-mmkv: ffda49ce01998ce9c48f87cb8413f67300abc206

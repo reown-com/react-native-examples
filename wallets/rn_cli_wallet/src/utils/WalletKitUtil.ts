@@ -1,6 +1,6 @@
 import { WalletKit, IWalletKit, isPaymentLink } from '@reown/walletkit';
 import { Core } from '@walletconnect/core';
-import Config from 'react-native-config';
+import { ENV } from './env';
 import { getMetadata } from './misc';
 import { storage } from './storage';
 import LogStore, { serializeError } from '@/store/LogStore';
@@ -11,11 +11,11 @@ export let walletKit: IWalletKit;
 
 export async function createWalletKit(relayerRegionURL: string) {
   const core = new Core({
-    projectId: Config.ENV_PROJECT_ID,
+    projectId: ENV.PROJECT_ID,
     storage,
     relayUrl: relayerRegionURL || undefined,
   });
-  const payApiBaseUrl = Config.ENV_PAY_API_BASE_URL || undefined;
+  const payApiBaseUrl = ENV.PAY_API_BASE_URL || undefined;
   walletKit = await WalletKit.init({
     core,
     metadata: getMetadata(),

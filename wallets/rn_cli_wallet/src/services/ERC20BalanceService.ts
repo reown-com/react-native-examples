@@ -1,5 +1,5 @@
 import { Contract, providers, utils } from 'ethers';
-import Config from 'react-native-config';
+import { ENV } from '@/utils/env';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import LogStore, { serializeError } from '@/store/LogStore';
 
@@ -35,7 +35,7 @@ const ERC20_TOKENS: ERC20TokenConfig[] = [
 const RPC_BASE_URL = 'https://rpc.walletconnect.org/v1/';
 
 function getRpcUrl(chainId: string): string | null {
-  const projectId = Config.ENV_PROJECT_ID;
+  const projectId = ENV.PROJECT_ID;
   if (!projectId) {
     return null;
   }

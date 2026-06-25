@@ -164,14 +164,18 @@ Uses **Valtio** (proxy-based reactive state):
 
 ## Environment Variables
 
-Required in `.env`:
+Required in `.env`. The app uses Expo's `EXPO_PUBLIC_*` convention (auto-loaded
+by the Expo CLI and inlined into the JS bundle at build time — these are public,
+not secrets). Accessed via `import { ENV } from '@/utils/env'`.
 ```bash
-ENV_PROJECT_ID=""              # WalletConnect Project ID (required)
-ENV_SENTRY_DSN=""              # Sentry error tracking (optional)
-ENV_TON_CENTER_API_KEY=""      # TON blockchain API key (optional)
-ENV_BLOCKCHAIN_API_URL=""      # Blockchain API URL (to get wallet balances)
-ENV_TEST_PRIVATE_KEY=""        # Private key for funded test wallet (Maestro E2E only)
-SENTRY_DISABLE_AUTO_UPLOAD=true  # Disable Sentry auto upload for Android builds
+EXPO_PUBLIC_PROJECT_ID=""        # WalletConnect Project ID (required)
+EXPO_PUBLIC_SENTRY_DSN=""        # Sentry error tracking (optional)
+EXPO_PUBLIC_TON_CENTER_API_KEY="" # TON blockchain API key (optional)
+EXPO_PUBLIC_BLOCKCHAIN_API_URL="" # Blockchain API URL (to get wallet balances)
+EXPO_PUBLIC_TEST_PRIVATE_KEY=""  # Private key for funded test wallet (Maestro E2E only)
+EXPO_PUBLIC_TEST_MODE=""         # "true" shows test-only UI / disables pay animations
+EXPO_PUBLIC_PAY_API_BASE_URL=""  # Override WCPay API base URL (blank = walletkit default)
+SENTRY_DISABLE_AUTO_UPLOAD=true  # Build-time only: disable Sentry auto upload (Android)
 ```
 
 ## E2E Testing (Maestro)
@@ -199,8 +203,8 @@ maestro test --env APP_ID=com.walletconnect.web3wallet.rnsample.internal --env W
 ### Dynamic App ID
 Maestro tests use `${APP_ID}` env variable instead of hardcoded bundle IDs, enabling reuse across wallet platforms. Pass via `--env APP_ID=<bundle-id>` when running tests.
 
-### ENV_TEST_PRIVATE_KEY
-When set, the wallet auto-loads this private key on startup (if no stored wallet exists). Used in CI to ensure a funded wallet is available for payment tests. The key is NOT persisted to storage — Maestro's `clearState` wipes AsyncStorage, so the ENV key is used on every test run.
+### EXPO_PUBLIC_TEST_PRIVATE_KEY
+When set, the wallet auto-loads this private key on startup (if no stored wallet exists). Used in CI to ensure a funded wallet is available for payment tests. The key is NOT persisted to storage — Maestro's `clearState` wipes AsyncStorage, so the env key is used on every test run.
 
 ### CI Workflow
 `.github/workflows/ci_e2e_walletkit.yaml` runs Maestro tests on both iOS (simulator) and Android (emulator). Triggers on PRs/pushes to main when `wallets/rn_cli_wallet/` or `.maestro/` files change.
