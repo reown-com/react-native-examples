@@ -5644,6 +5644,7 @@ __metadata:
     eslint-plugin-ft-flow: ^2.0.1
     ethers: 5.8.0
     expo: 56.0.12
+    expo-system-ui: 56.0.5
     jest: ^29.2.1
     jest-expo: 56.0.5
     lottie-react-native: 7.3.5
@@ -8594,6 +8595,23 @@ __metadata:
   version: 56.0.5
   resolution: "expo-server@npm:56.0.5"
   checksum: 984b35a90d049f74c6d042a73a00eec5c1ad463ddad6362ee4ada9532010dcf9faf0212a7655a8010db5e95a8ecc66fc57a78f469993875d5df92077487816d7
+  languageName: node
+  linkType: hard
+
+"expo-system-ui@npm:56.0.5":
+  version: 56.0.5
+  resolution: "expo-system-ui@npm:56.0.5"
+  dependencies:
+    "@react-native/normalize-colors": 0.85.3
+    debug: ^4.3.2
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: c6e15fc7dc283ef223bea27385a5be3f7fe28a136967a4f2eff28c5b4c3dc0f760825f80ada0a6ea47bc4ebcda5edff36e4b0d08099facec537d1db31aa08275
   languageName: node
   linkType: hard
 
