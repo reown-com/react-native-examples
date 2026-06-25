@@ -81,6 +81,23 @@ fi
 
 APP_ID="${MAESTRO_APP_ID:-${APP_ID:-com.walletconnect.web3wallet.rnsample.internal}}"
 
+# Web target: a URL App ID (e.g. MAESTRO_APP_ID=http://localhost:8081). Maestro
+# web flows must use `url:` instead of `appId:` and run via plain `maestro test`
+# (auto-detects web, downloads/launches a managed Chromium). Rewrite the flows
+# into a temp copy and point MAESTRO_DIR at it.
+# NOTE: serve the web app over HTTP for Maestro — its managed Chromium does not
+# trust local mkcert certs (https fails: ERR_CERT_AUTHORITY_INVALID), so the
+# https-only IC/KYC callback leg can't complete under local Maestro web.
+if [[ "$APP_ID" == http://* || "$APP_ID" == https://* ]]; then
+  echo "Web target detected ($APP_ID) — rewriting flows to use 'url:'."
+  WEB_FLOWS_DIR="$(mktemp -d)"
+  trap 'rm -rf "$WEB_FLOWS_DIR"' EXIT
+  cp -R "$MAESTRO_DIR/." "$WEB_FLOWS_DIR/"
+  find "$WEB_FLOWS_DIR" -name '*.yaml' -print0 \
+    | xargs -0 perl -pi -e 's/^appId:(\s*\$\{APP_ID\})/url:$1/'
+  MAESTRO_DIR="$WEB_FLOWS_DIR"
+fi
+
 MAESTRO_ARGS=(
   --env "APP_ID=$APP_ID"
   --env "WPAY_CUSTOMER_KEY_SINGLE_NOKYC=$WPAY_CUSTOMER_KEY_SINGLE_NOKYC"
@@ -110,12 +127,4 @@ echo "Running Maestro Pay E2E tests..."
 echo "  App ID: $APP_ID"
 echo "  Args: ${RESOLVED_ARGS[*]}"
 
-# A URL App ID targets the web build. Run the web app over HTTPS first (e.g.
-# `yarn web` + an https proxy) and set MAESTRO_APP_ID=https://localhost:8443.
-# Web runs on the Chromium driver, so select the web platform + headless.
-if [[ "$APP_ID" == http://* || "$APP_ID" == https://* ]]; then
-  echo "  Platform: web (Chromium)"
-  maestro -p web test --headless "${MAESTRO_ARGS[@]}" "${RESOLVED_ARGS[@]}"
-else
-  maestro test "${MAESTRO_ARGS[@]}" "${RESOLVED_ARGS[@]}"
-fi
+maestro test "${MAESTRO_ARGS[@]}" "${RESOLVED_ARGS[@]}"
