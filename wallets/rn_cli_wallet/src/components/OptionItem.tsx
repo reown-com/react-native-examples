@@ -1,5 +1,5 @@
 import { Text } from './Text';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { Button } from './Button';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 import { formatAmount } from '@/modals/PaymentOptionsModal/utils';
@@ -108,8 +108,14 @@ export function OptionItem({
             <Shimmer width={70} height={16} borderRadius={BorderRadius['1']} />
           )}
           {renderIconRight && onIconRightPress && (
-            <Button
-              onPress={onIconRightPress}
+            // Pressable (not Button) so this stays a non-<button> on web — a
+            // <button> nested inside the row <button> is invalid HTML. Stop
+            // propagation so tapping the icon doesn't also select the option.
+            <Pressable
+              onPress={e => {
+                e?.stopPropagation?.();
+                onIconRightPress();
+              }}
               style={[
                 {
                   borderColor: Theme['border-secondary'],
@@ -118,7 +124,7 @@ export function OptionItem({
               ]}
             >
               {renderIconRight}
-            </Button>
+            </Pressable>
           )}
         </View>
       </View>
