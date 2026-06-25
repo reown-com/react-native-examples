@@ -4,6 +4,7 @@
 //   - process.version: some deps (hash-base -> readable-stream) call
 //     `process.version.slice(0, 5)` at module load.
 //   - Buffer: required by the web3 stack; browsers don't provide it.
+/* global globalThis */
 const g = globalThis;
 if (g.process == null) {
   g.process = {};
