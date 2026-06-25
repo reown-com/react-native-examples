@@ -30,11 +30,25 @@ import SettingsStore from '@/store/SettingsStore';
 // Marker query param identifying the IC callback popup (see index.web.js).
 export const PAY_IC_CALLBACK_PARAM = 'pay_ic_callback';
 
+type IcResult = {
+  source?: string;
+  status?: string;
+  code?: string;
+  message?: string;
+};
+
 // The RN TS lib doesn't type globalThis with DOM APIs; narrow to what we use.
 type PopupWindow = { close: () => void } | null;
+type EventListenerFn = (t: string, cb: (e: any) => void) => void;
 const webGlobal = globalThis as unknown as {
   location?: { origin: string };
-  open: (url: string, target?: string, features?: string) => PopupWindow;
+  open: (url: string, target?: string) => PopupWindow;
+  addEventListener: EventListenerFn;
+  removeEventListener: EventListenerFn;
+  BroadcastChannel?: new (name: string) => {
+    onmessage: ((e: { data: IcResult }) => void) | null;
+    close: () => void;
+  };
 };
 
 const PREFILL_DATA = {
@@ -78,42 +92,29 @@ export function CollectDataWebView({
   }, [url, themeMode]);
 
   const openForm = useCallback(() => {
-    // Must run from a user gesture or the browser blocks the popup.
-    const popup = webGlobal.open(collectUrl, '_blank', 'noopener=no,popup=yes');
-    if (!popup) {
+    // Must run from a user gesture or the browser blocks it. Opens a tab.
+    const tab = webGlobal.open(collectUrl, '_blank');
+    if (!tab) {
       onError('Pop-up blocked. Allow pop-ups for this site, then try again.');
       return;
     }
-    popupRef.current = popup;
+    popupRef.current = tab;
     setOpened(true);
   }, [collectUrl, onError]);
 
   useEffect(() => {
-    const target = globalThis as unknown as {
-      addEventListener: (t: string, cb: (e: MessageEvent) => void) => void;
-      removeEventListener: (t: string, cb: (e: MessageEvent) => void) => void;
-    };
-
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== webGlobal.location?.origin) {
-        return;
-      }
-      const data = event.data as {
-        source?: string;
-        status?: string;
-        code?: string;
-        message?: string;
-      };
+    // The IC tab visits pay.walletconnect.com, whose COOP severs window.opener,
+    // so we receive the result via same-origin BroadcastChannel (with a
+    // localStorage 'storage' fallback, and 'message' as a last resort).
+    const handleResult = (data: IcResult | undefined) => {
       if (data?.source !== 'pay-ic-callback') {
         return;
       }
-
-      LogStore.log('IC callback received', 'CollectDataWebView.web', 'message', {
+      LogStore.log('IC callback received', 'CollectDataWebView.web', 'result', {
         status: data.status,
         code: data.code,
       });
       popupRef.current?.close();
-
       if (data.status === 'success') {
         onComplete();
       } else {
@@ -121,8 +122,35 @@ export function CollectDataWebView({
       }
     };
 
-    target.addEventListener('message', handleMessage);
-    return () => target.removeEventListener('message', handleMessage);
+    const channel = webGlobal.BroadcastChannel
+      ? new webGlobal.BroadcastChannel('pay-ic-callback')
+      : null;
+    if (channel) {
+      channel.onmessage = e => handleResult(e.data);
+    }
+
+    const onStorage = (e: { key?: string; newValue?: string | null }) => {
+      if (e?.key !== 'pay_ic_callback_result' || !e.newValue) {
+        return;
+      }
+      try {
+        handleResult(JSON.parse(e.newValue) as IcResult);
+      } catch {}
+    };
+    const onMessage = (e: { origin?: string; data?: IcResult }) => {
+      if (e?.origin && e.origin !== webGlobal.location?.origin) {
+        return;
+      }
+      handleResult(e?.data);
+    };
+
+    webGlobal.addEventListener('storage', onStorage);
+    webGlobal.addEventListener('message', onMessage);
+    return () => {
+      channel?.close();
+      webGlobal.removeEventListener('storage', onStorage);
+      webGlobal.removeEventListener('message', onMessage);
+    };
   }, [onComplete, onError]);
 
   return (
