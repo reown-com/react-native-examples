@@ -29,7 +29,6 @@ module.exports = ({ config }) => {
     process.env.APP_VARIANT in VARIANT_ID_SUFFIX
       ? process.env.APP_VARIANT
       : 'production';
-  const appId = `${BASE_APP_ID}${VARIANT_ID_SUFFIX[variant]}`;
   const iconDir = `./assets/icons/${variant}`;
 
   return {
@@ -37,11 +36,15 @@ module.exports = ({ config }) => {
     icon: `${iconDir}/icon.png`,
     ios: {
       ...config.ios,
-      bundleIdentifier: appId,
+      // iOS variants = per-variant prebuild driven by APP_VARIANT.
+      bundleIdentifier: `${BASE_APP_ID}${VARIANT_ID_SUFFIX[variant]}`,
     },
     android: {
       ...config.android,
-      package: appId,
+      // Android keeps the base id here; the `.internal` suffix is applied by the
+      // Gradle `internal` buildType (plugins/withAndroidVariants.js) so the
+      // existing assembleInternal/assembleRelease CI flow works unchanged.
+      package: BASE_APP_ID,
       adaptiveIcon: {
         foregroundImage: `${iconDir}/adaptive-foreground.png`,
         backgroundImage: `${iconDir}/adaptive-background.png`,

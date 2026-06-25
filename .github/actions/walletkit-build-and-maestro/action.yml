@@ -227,6 +227,15 @@ runs:
         bundler-cache: true
         working-directory: ${{ inputs.wallet-source-dir }}
 
+    - name: Expo Prebuild (iOS)
+      if: inputs.platform == 'ios'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      # ios/ is generated (Continuous Native Generation). APP_VARIANT=internal so
+      # app.config.js sets the .internal bundle id; pods are installed by the
+      # fastlane lane (honoring the Pods cache below), hence --no-install.
+      run: APP_VARIANT=internal npx expo prebuild --platform ios --no-install
+
     - name: Set Xcode paths
       if: inputs.platform == 'ios'
       shell: bash
@@ -256,7 +265,7 @@ runs:
         lane: build_for_simulator
         subdirectory: ${{ inputs.wallet-source-dir }}
       env:
-        SCHEME: RNWallet-Internal
+        SCHEME: ReactNWallet
         BUNDLE_ID: com.walletconnect.web3wallet.rnsample.internal
         PODFILE_PATH: ${{ steps.paths.outputs.wallet_root }}/ios/Podfile
         XCWORKSPACE_PATH: ${{ env.XCWORKSPACE_PATH }}
@@ -347,6 +356,16 @@ runs:
       run: |
         set +o pipefail
         yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;27.0.12077973"
+
+    - name: Expo Prebuild (Android)
+      if: inputs.platform == 'android'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      # android/ is generated (Continuous Native Generation). Production prebuild;
+      # the internal variant comes from the `internal` Gradle buildType
+      # (plugins/withAndroidVariants.js) via assembleInternal. --no-install: deps
+      # already installed by yarn above.
+      run: npx expo prebuild --platform android --no-install
 
     - name: Add Secrets file
       if: inputs.platform == 'android'
