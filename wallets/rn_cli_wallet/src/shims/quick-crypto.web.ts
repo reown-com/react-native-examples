@@ -6,7 +6,6 @@
 // subtle), so here we only need a no-op install() and to pass through the
 // browser crypto. The web3 stack on web uses pure-JS hashing (@noble, ethers)
 // and globalThis.crypto for randomness, so it doesn't need Node's `crypto` API.
-/* eslint-disable no-undef */
 const webCrypto: Crypto | undefined =
   typeof globalThis !== 'undefined' ? globalThis.crypto : undefined;
 

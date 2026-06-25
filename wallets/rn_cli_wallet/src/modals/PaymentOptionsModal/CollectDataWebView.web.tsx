@@ -1,52 +1,58 @@
-// Web variant of CollectDataWebView. react-native-webview is native-only, so on
-// web we embed the identity-collection (IC / KYC) form in an <iframe>
-// (react-native-web renders to the DOM, so a raw iframe element works here).
+// Web variant of CollectDataWebView.
 //
-// Native uses WebView.onMessage (window.ReactNativeWebView.postMessage); on web
-// the page reports completion via window.postMessage to the parent, which we
-// receive through a 'message' event listener. The payload shape is the same:
-//   { type: 'IC_COMPLETE' | 'IC_ERROR', success: boolean, error?: string }
+// The identity-collection (IC / KYC) form at pay.walletconnect.com sends
+// `X-Frame-Options: DENY`, so it CANNOT be embedded in an <iframe> on web.
+// Instead we open it in a new tab/window (a top-level context, which the form
+// allows) and pass a `callbackUrl` query param. On completion the form
+// redirects the popup to:
+//   {callbackUrl}?status=success&paymentId=...           (success)
+//   {callbackUrl}?status=error&code=...&message=...       (error)
+//
+// We set callbackUrl to our own web origin + a marker (?pay_ic_callback=1).
+// index.web.js detects that marker in the popup, relays the result to
+// window.opener via postMessage, and closes the popup. Here (the opener / wallet
+// tab) we listen for that message and call onComplete / onError.
+//
+// NOTE: the form requires callbackUrl to be HTTPS (or a custom deeplink scheme)
+// — plain http://localhost is rejected, so the return leg only works when the
+// web app is served over HTTPS (production, a tunnel, or `--https`).
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSnapshot } from 'valtio';
 
 import { useTheme } from '@/hooks/useTheme';
-import { WalletConnectLoading } from '@/components/WalletConnectLoading';
+import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
+import { Spacing } from '@/utils/ThemeUtil';
 import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 
-function getBaseUrl(urlString: string): string {
-  try {
-    const urlObj = new URL(urlString);
-    return `${urlObj.protocol}//${urlObj.host}`;
-  } catch {
-    return urlString;
-  }
-}
+// Marker query param identifying the IC callback popup (see index.web.js).
+export const PAY_IC_CALLBACK_PARAM = 'pay_ic_callback';
 
-// This is the data that will be prefilled in the form
+// The RN TS lib doesn't type globalThis with DOM APIs; narrow to what we use.
+type PopupWindow = { close: () => void } | null;
+const webGlobal = globalThis as unknown as {
+  location?: { origin: string };
+  open: (url: string, target?: string, features?: string) => PopupWindow;
+};
+
 const PREFILL_DATA = {
   fullName: 'John Doe',
   dob: '1990-06-15',
   pobAddress: 'Buenos Aires',
 };
 
-function buildUrlWithPrefill(
+function buildCollectUrl(
   baseUrl: string,
   themeMode: 'light' | 'dark',
+  callbackUrl: string,
 ): string {
-  const prefillBase64 = globalThis.btoa(JSON.stringify(PREFILL_DATA));
-
-  let result = baseUrl;
-  if (result.includes('prefill=')) {
-    result = result.replace(/prefill=([^&]*)/, `prefill=${prefillBase64}`);
-  } else {
-    const separator = result.includes('?') ? '&' : '?';
-    result = `${result}${separator}prefill=${prefillBase64}`;
-  }
-
-  result += `&theme=${themeMode === 'dark' ? 'dark' : 'light'}`;
-  return result;
+  const url = new URL(baseUrl);
+  url.searchParams.set('prefill', globalThis.btoa(JSON.stringify(PREFILL_DATA)));
+  url.searchParams.set('theme', themeMode === 'dark' ? 'dark' : 'light');
+  url.searchParams.set('callbackUrl', callbackUrl);
+  return url.toString();
 }
 
 interface CollectDataWebViewProps {
@@ -62,86 +68,82 @@ export function CollectDataWebView({
 }: CollectDataWebViewProps) {
   const Theme = useTheme();
   const { themeMode } = useSnapshot(SettingsStore.state);
-  const [isLoading, setIsLoading] = useState(true);
-  const isMountedRef = useRef(true);
+  const popupRef = useRef<PopupWindow>(null);
+  const [opened, setOpened] = useState(false);
 
-  const finalUrl = useMemo(
-    () => buildUrlWithPrefill(url, themeMode),
-    [url, themeMode],
-  );
-  const allowedOrigin = useMemo(() => getBaseUrl(url), [url]);
+  const collectUrl = useMemo(() => {
+    const origin = webGlobal.location?.origin ?? '';
+    const callbackUrl = `${origin}/?${PAY_IC_CALLBACK_PARAM}=1`;
+    return buildCollectUrl(url, themeMode, callbackUrl);
+  }, [url, themeMode]);
 
-  const handleMessage = useCallback(
-    (event: MessageEvent) => {
-      if (!isMountedRef.current) {
-        return;
-      }
-      // Only trust messages from the IC form's origin.
-      if (event.origin !== allowedOrigin) {
-        return;
-      }
-
-      try {
-        const message = (
-          typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-        ) as { type?: string; success?: boolean; error?: string };
-
-        LogStore.log(
-          'iframe message received',
-          'CollectDataWebView.web',
-          'handleMessage',
-          { message },
-        );
-
-        if (message.type === 'IC_COMPLETE' && message.success) {
-          onComplete();
-        } else if (message.type === 'IC_ERROR' || message.success === false) {
-          onError(message.error || 'Form submission failed');
-        }
-      } catch {
-        // Ignore non-JSON / unrelated messages.
-      }
-    },
-    [allowedOrigin, onComplete, onError],
-  );
+  const openForm = useCallback(() => {
+    // Must run from a user gesture or the browser blocks the popup.
+    const popup = webGlobal.open(collectUrl, '_blank', 'noopener=no,popup=yes');
+    if (!popup) {
+      onError('Pop-up blocked. Allow pop-ups for this site, then try again.');
+      return;
+    }
+    popupRef.current = popup;
+    setOpened(true);
+  }, [collectUrl, onError]);
 
   useEffect(() => {
-    isMountedRef.current = true;
-    // The RN TS lib doesn't type globalThis with DOM events; cast for the listener.
     const target = globalThis as unknown as {
       addEventListener: (t: string, cb: (e: MessageEvent) => void) => void;
       removeEventListener: (t: string, cb: (e: MessageEvent) => void) => void;
     };
-    target.addEventListener('message', handleMessage);
-    return () => {
-      isMountedRef.current = false;
-      target.removeEventListener('message', handleMessage);
+
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== webGlobal.location?.origin) {
+        return;
+      }
+      const data = event.data as {
+        source?: string;
+        status?: string;
+        code?: string;
+        message?: string;
+      };
+      if (data?.source !== 'pay-ic-callback') {
+        return;
+      }
+
+      LogStore.log('IC callback received', 'CollectDataWebView.web', 'message', {
+        status: data.status,
+        code: data.code,
+      });
+      popupRef.current?.close();
+
+      if (data.status === 'success') {
+        onComplete();
+      } else {
+        onError(data.message || data.code || 'Form submission failed');
+      }
     };
-  }, [handleMessage]);
+
+    target.addEventListener('message', handleMessage);
+    return () => target.removeEventListener('message', handleMessage);
+  }, [onComplete, onError]);
 
   return (
-    <View style={styles.container}>
-      {isLoading && (
-        <View
-          style={[
-            styles.loadingOverlay,
-            { backgroundColor: Theme['bg-primary'] },
-          ]}>
-          <WalletConnectLoading size={120} />
-        </View>
-      )}
-      <iframe
-        title="Identity collection form"
-        src={finalUrl}
-        onLoad={() => setIsLoading(false)}
-        allow="camera; clipboard-write"
-        style={{
-          border: 'none',
-          width: '100%',
-          height: '100%',
-          backgroundColor: Theme['bg-primary'],
-        }}
-      />
+    <View
+      style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
+      <Text variant="lg-500" color="text-primary" style={styles.title}>
+        Identity verification
+      </Text>
+      <Text variant="sm-400" color="text-secondary" style={styles.subtitle}>
+        {opened
+          ? 'Complete the form in the new window. This screen updates automatically when you finish.'
+          : 'A new window will open to collect a few details. Pop-ups must be allowed.'}
+      </Text>
+      <Button
+        testID="pay-ic-open-form"
+        onPress={openForm}
+        style={[styles.button, { backgroundColor: Theme['bg-accent-primary'] }]}>
+        <Text variant="md-500" color="text-invert">
+          {opened ? 'Reopen verification' : 'Continue'}
+        </Text>
+      </Button>
     </View>
   );
 }
@@ -149,11 +151,22 @@ export function CollectDataWebView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFill,
-    justifyContent: 'center',
+    padding: Spacing[4],
     alignItems: 'center',
-    zIndex: 1,
+    justifyContent: 'center',
+    gap: Spacing[3],
+  },
+  title: {
+    textAlign: 'center',
+  },
+  subtitle: {
+    textAlign: 'center',
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing[3],
+    paddingHorizontal: Spacing[6],
+    borderRadius: 16,
   },
 });
