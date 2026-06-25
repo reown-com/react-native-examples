@@ -4,16 +4,17 @@
 //   APP_VARIANT=internal             -> ...rnsample.internal   (CI distribution)
 //   APP_VARIANT=debug                -> ...rnsample.debug       (local dev)
 //
-// Expo loads the static config from app.json and passes it here as `config`;
-// this function only overrides the per-variant native identifiers. It is
-// consumed by `expo prebuild` / `expo run` to set the iOS bundleIdentifier and
-// Android applicationId.
+// Per variant this overrides the native applicationId / bundleIdentifier and
+// the app icon (reusing the icons extracted from the committed native projects
+// into assets/icons/<variant>/). Expo loads the static config from app.json and
+// passes it here as `config`.
+//
+// Splash screen is handled separately by the react-native-bootsplash plugin
+// (assets/bootsplash/), configured in app.json.
 //
 // NOTE: while the committed ios/ and android/ projects are still authoritative
-// (pre-prebuild), today's builds continue to use the Xcode schemes / Gradle
+// (pre-prebuild), today's builds keep using the Xcode schemes / Gradle
 // buildTypes; this file only takes effect once we switch to `expo prebuild`.
-// TODO (icon assets step): give internal/debug their own AppIcon-Internal /
-// AppIcon-Debug equivalents via per-variant `icon`.
 
 const BASE_APP_ID = 'com.walletconnect.web3wallet.rnsample';
 
@@ -24,12 +25,16 @@ const VARIANT_ID_SUFFIX = {
 };
 
 module.exports = ({ config }) => {
-  const variant = process.env.APP_VARIANT || 'production';
-  const idSuffix = VARIANT_ID_SUFFIX[variant] ?? '';
-  const appId = `${BASE_APP_ID}${idSuffix}`;
+  const variant =
+    process.env.APP_VARIANT in VARIANT_ID_SUFFIX
+      ? process.env.APP_VARIANT
+      : 'production';
+  const appId = `${BASE_APP_ID}${VARIANT_ID_SUFFIX[variant]}`;
+  const iconDir = `./assets/icons/${variant}`;
 
   return {
     ...config,
+    icon: `${iconDir}/icon.png`,
     ios: {
       ...config.ios,
       bundleIdentifier: appId,
@@ -37,6 +42,11 @@ module.exports = ({ config }) => {
     android: {
       ...config.android,
       package: appId,
+      adaptiveIcon: {
+        foregroundImage: `${iconDir}/adaptive-foreground.png`,
+        backgroundImage: `${iconDir}/adaptive-background.png`,
+        monochromeImage: `${iconDir}/adaptive-monochrome.png`,
+      },
     },
   };
 };
