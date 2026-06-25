@@ -7,6 +7,7 @@ import {useSocketStatus} from '@/hooks/useSocketStatus';
 import {LogList} from '@/screens/LogList';
 import {useLogs} from '@/hooks/useLogs';
 import { AppKitLogList } from '@/screens/AppKitLogList';
+import NetworkSettingsScreen from '@/screens/NetworkSettings';
 
 const StackNavigator = createNativeStackNavigator<RootStackParamList>();
 
@@ -52,6 +53,16 @@ export function RootStackNavigator() {
           headerShown: true,
           headerBackButtonDisplayMode: 'minimal',
           title: 'AppKit Logs',
+        }}
+      />
+      <StackNavigator.Screen
+        name="NetworkSettings"
+        component={NetworkSettingsScreen}
+        options={{
+          headerShown: true,
+          headerBackButtonDisplayMode: 'minimal',
+          title: 'AppKit settings & networks',
+          headerTintColor: Theme['fg-100'],
         }}
       />
     </StackNavigator.Navigator>

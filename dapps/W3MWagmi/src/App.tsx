@@ -4,16 +4,10 @@ import '@walletconnect/react-native-compat';
 import React, {useEffect} from 'react';
 import {Linking, Platform} from 'react-native';
 import BootSplash from 'react-native-bootsplash';
-import {createAppKit, AppKit, AppKitProvider, solana, bitcoin} from '@reown/appkit-react-native';
-import {WagmiAdapter} from '@reown/appkit-wagmi-react-native';
-import {PhantomConnector, SolanaAdapter, SolflareConnector} from '@reown/appkit-solana-react-native';
-import {BitcoinAdapter} from '@reown/appkit-bitcoin-react-native';
-import {CoinbaseConnector} from '@reown/appkit-coinbase-react-native';
+import {createAppKit, AppKit, AppKitProvider, ReownAuthentication} from '@reown/appkit-react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {handleResponse} from '@coinbase/wallet-mobile-sdk';
 import { WagmiProvider } from 'wagmi';
-import { Chain } from 'viem';
-import { MMKV } from 'react-native-mmkv';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import Toast from 'react-native-toast-message';
@@ -25,8 +19,9 @@ import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
 import {getMetadata, getEnvironment} from '@/utils/misc';
 import {RootStackNavigator} from '@/navigators/RootStackNavigator';
-import {chains} from '@/utils/WagmiUtils';
+import {buildNetworkConfig} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
+import AppKitConfigStore from '@/stores/AppKitConfigStore';
 import { storage } from './utils/StorageUtil';
 
 Sentry.init({
@@ -64,14 +59,13 @@ const clipboardClient = {
   },
 };
 
-const wagmiAdapter = new WagmiAdapter({
+// Build adapters/networks from the user's persisted per-chain selection.
+// AppKit is a singleton, so this is applied once at launch (see NetworkSettings
+// screen — changing the selection requires an app reload to take effect).
+const {wagmiAdapter, adapters, networks, extraConnectors} = buildNetworkConfig(
   projectId,
-  networks: chains as [Chain, ...Chain[]],
-});
-
-const adapters = [wagmiAdapter, new SolanaAdapter(), new BitcoinAdapter()];
-
-const networks = [...chains, solana, bitcoin];
+  AppKitConfigStore.getEnabledNetworkIds(),
+);
 
 // 3. Create modal
 const appKit = createAppKit({
@@ -79,11 +73,13 @@ const appKit = createAppKit({
   adapters,
   metadata,
   networks,
-  // siwx: new ReownAuthentication(),
+  // SIWX (Sign In With X) is toggleable from the AppKit settings screen and
+  // applied at launch (createAppKit is a singleton).
+  ...(AppKitConfigStore.getSiwxEnabled() ? {siwx: new ReownAuthentication()} : {}),
   clipboardClient,
   debug: true,
   storage,
-  extraConnectors: [new PhantomConnector(), new CoinbaseConnector({ storage: new MMKV()}), new SolflareConnector()],
+  extraConnectors,
 });
 
 const queryClient = new QueryClient();

@@ -6,6 +6,7 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
+		<string>applinks:appkit-lab.reown.com</string>
 		<string>applinks:lab.reown.com</string>
 		<string>applinks:pay.walletconnect.com</string>
 		<string>applinks:staging.pay.walletconnect.com</string>
