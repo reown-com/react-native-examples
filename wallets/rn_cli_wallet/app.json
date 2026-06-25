@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "RNWeb3Wallet",
+    "name": "React N. Wallet",
     "slug": "rn-web3wallet",
     "version": "1.0.0",
     "scheme": "rn-web3wallet",
@@ -9,6 +9,7 @@
     "newArchEnabled": true,
     "ios": {
       "bundleIdentifier": "com.walletconnect.web3wallet.rnsample",
+      "buildNumber": "16",
       "supportsTablet": true,
       "associatedDomains": [
         "applinks:appkit-lab.reown.com",
@@ -18,12 +19,12 @@
         "applinks:dev.pay.walletconnect.com"
       ],
       "infoPlist": {
-        "CFBundleDisplayName": "React N. Wallet",
         "NSLocationWhenInUseUsageDescription": "Our app does not request this permission or utilize this functionality but it is included in our info.plist since our app utilizes the react-native-permissions library."
       }
     },
     "android": {
       "package": "com.walletconnect.web3wallet.rnsample",
+      "versionCode": 73,
       "permissions": ["android.permission.POST_NOTIFICATIONS"],
       "intentFilters": [
         {
