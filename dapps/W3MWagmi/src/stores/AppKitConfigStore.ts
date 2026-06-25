@@ -19,16 +19,27 @@ const mmkv = new MMKV();
 
 function loadEnabledNetworkIds(): string[] {
   const raw = mmkv.getString(NETWORKS_KEY);
-  if (!raw) {
-    return [...ALL_NETWORK_IDS];
-  }
-  try {
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) {
-      return parsed.filter(id => typeof id === 'string');
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        // Keep only known ids and drop duplicates — stored values can be stale
+        // (e.g. a network removed from the registry) and NETWORK_GROUPS only
+        // renders known ids, so unknown/duplicate entries would be unremovable
+        // and would skew the settings screen's dirty-check.
+        const known = new Set(ALL_NETWORK_IDS);
+        const sanitized = [
+          ...new Set(
+            parsed.filter(id => typeof id === 'string' && known.has(id)),
+          ),
+        ];
+        if (sanitized.length > 0) {
+          return sanitized;
+        }
+      }
+    } catch {
+      // ignore malformed value and fall back to defaults
     }
-  } catch {
-    // ignore malformed value and fall back to defaults
   }
   return [...ALL_NETWORK_IDS];
 }
