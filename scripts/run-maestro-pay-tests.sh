@@ -110,4 +110,12 @@ echo "Running Maestro Pay E2E tests..."
 echo "  App ID: $APP_ID"
 echo "  Args: ${RESOLVED_ARGS[*]}"
 
-maestro test "${MAESTRO_ARGS[@]}" "${RESOLVED_ARGS[@]}"
+# A URL App ID targets the web build. Run the web app over HTTPS first (e.g.
+# `yarn web` + an https proxy) and set MAESTRO_APP_ID=https://localhost:8443.
+# Web runs on the Chromium driver, so select the web platform + headless.
+if [[ "$APP_ID" == http://* || "$APP_ID" == https://* ]]; then
+  echo "  Platform: web (Chromium)"
+  maestro -p web test --headless "${MAESTRO_ARGS[@]}" "${RESOLVED_ARGS[@]}"
+else
+  maestro test "${MAESTRO_ARGS[@]}" "${RESOLVED_ARGS[@]}"
+fi
