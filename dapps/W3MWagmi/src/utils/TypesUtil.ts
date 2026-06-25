@@ -69,6 +69,7 @@ export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeTabParamList>; // Nested Navigator
   Logs: undefined;
   AppKitLogs: undefined;
+  NetworkSettings: undefined;
 };
 
 export type HomeTabParamList = {
