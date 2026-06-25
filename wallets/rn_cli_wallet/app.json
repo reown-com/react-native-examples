@@ -53,6 +53,10 @@
         }
       ]
     },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
     "plugins": [
       [
         "react-native-bootsplash",
