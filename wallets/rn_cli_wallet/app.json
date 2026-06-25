@@ -1,3 +1,18 @@
 {
-  "name": "RNWeb3Wallet"
+  "expo": {
+    "name": "RNWeb3Wallet",
+    "slug": "rn-web3wallet",
+    "version": "1.0.0",
+    "scheme": "rn-web3wallet",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "com.walletconnect.web3wallet.rnsample",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.walletconnect.web3wallet.rnsample"
+    }
+  }
 }

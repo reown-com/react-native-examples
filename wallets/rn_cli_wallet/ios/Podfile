@@ -9,10 +9,11 @@ end
 
 # Use it to require both react-native's and this package's scripts:
 node_require('react-native/scripts/react_native_pods.rb')
+node_require('expo/scripts/autolinking.rb')
 
 source 'https://github.com/CocoaPods/Specs.git'
 
-platform :ios, min_ios_version_supported
+platform :ios, '16.4'
 prepare_react_native_project!
 
 
@@ -23,8 +24,26 @@ if linkage != nil
 end
 
 abstract_target 'App' do
-  config = use_native_modules!
-  
+  use_expo_modules!
+
+  if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
+    config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
+  else
+    config_command = [
+      'node',
+      '--no-warnings',
+      '--eval',
+      'require(\'expo/bin/autolinking\')',
+      'expo-modules-autolinking',
+      'react-native-config',
+      '--json',
+      '--platform',
+      'ios'
+    ]
+  end
+
+  config = use_native_modules!(config_command)
+
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
