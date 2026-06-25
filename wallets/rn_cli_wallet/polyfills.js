@@ -6,6 +6,9 @@
 // hash-base -> readable-stream) call `process.version.slice(0, 5)` at
 // module-evaluation time. Without this, that throws "Cannot read property
 // 'slice' of undefined" and crashes the app before React mounts.
+//
+// On web we skip @walletconnect/react-native-compat (native-only), so this also
+// provides the global Buffer the web3 stack expects (on native, compat sets it).
 /* eslint-disable no-undef */
 (function () {
   var g = typeof globalThis !== 'undefined' ? globalThis : global;
@@ -17,5 +20,8 @@
   }
   if (g.process.browser == null) {
     g.process.browser = false;
+  }
+  if (g.Buffer == null) {
+    g.Buffer = require('buffer').Buffer;
   }
 })();

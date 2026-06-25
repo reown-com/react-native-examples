@@ -1,6 +1,20 @@
+const path = require('path');
 const { getSentryExpoConfig } = require("@sentry/react-native/metro");
 
 const config = getSentryExpoConfig(__dirname);
+
+// Web-only module redirects (react-native-mmkv has no web support -> localStorage shim).
+const WEB_MODULE_ALIASES = {
+  'react-native-mmkv': path.resolve(__dirname, 'src/shims/mmkv.web.ts'),
+  // @craftzdog/react-native-buffer uses native base64; on web use plain `buffer`.
+  '@craftzdog/react-native-buffer': 'buffer',
+  // react-native-quick-crypto is native JSI; on web defer to browser Web Crypto.
+  // (The babel `crypto` alias points at react-native-quick-crypto too.)
+  'react-native-quick-crypto': path.resolve(
+    __dirname,
+    'src/shims/quick-crypto.web.ts',
+  ),
+};
 
 // Prevent ws (Node.js websocket) from being bundled - React Native has native WebSocket.
 // The web3 stack (e.g. @solana/web3.js via rpc-websockets) pulls in Node's `ws`,
@@ -13,6 +27,14 @@ config.resolver = {
       return {
         type: 'empty',
       };
+    }
+
+    if (platform === 'web' && WEB_MODULE_ALIASES[moduleName]) {
+      return context.resolveRequest(
+        context,
+        WEB_MODULE_ALIASES[moduleName],
+        platform,
+      );
     }
 
     return context.resolveRequest(context, moduleName, platform);

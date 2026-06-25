@@ -2,7 +2,7 @@
   "name": "RNWeb3Wallet",
   "version": "1.0.0",
   "private": true,
-  "main": "index.js",
+  "main": "index",
   "scripts": {
     "postinstall": "./scripts/copy-sample-files.sh",
     "prebuild": "expo prebuild",
