@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "./scripts/copy-sample-files.sh",
+    "postprebuild": "node scripts/setup-secrets.js",
     "android": "expo run:android --variant debug --app-id com.walletconnect.web3wallet.rnsample.debug",
     "android:internal": "expo run:android --variant internal --app-id com.walletconnect.web3wallet.rnsample.internal",
     "android:build": "cd android && ./gradlew app:assembleRelease",

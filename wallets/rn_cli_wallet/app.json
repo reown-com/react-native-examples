@@ -86,7 +86,8 @@
           "organization": "walletconnect",
           "project": "w3w-react-native"
         }
-      ]
+      ],
+      "./plugins/withAndroidReleaseSigning.js"
     ]
   }
 }
