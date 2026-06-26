@@ -93,8 +93,12 @@ if [[ "$APP_ID" == http://* || "$APP_ID" == https://* ]]; then
   WEB_FLOWS_DIR="$(mktemp -d)"
   trap 'rm -rf "$WEB_FLOWS_DIR"' EXIT
   cp -R "$MAESTRO_DIR/." "$WEB_FLOWS_DIR/"
+  # appId: -> url: so Maestro targets the browser. Also strip startRecording/
+  # stopRecording: Maestro's web driver doesn't support screen recording and the
+  # command fails the flow (~2s in). Native CI keeps recording (source is intact;
+  # we only edit this throwaway copy).
   find "$WEB_FLOWS_DIR" -name '*.yaml' -print0 \
-    | xargs -0 perl -pi -e 's/^appId:(\s*\$\{APP_ID\})/url:$1/'
+    | xargs -0 perl -ni -e 'next if /^\s*-?\s*(start|stop)Recording\b/; s/^appId:(\s*\$\{APP_ID\})/url:$1/; print'
   MAESTRO_DIR="$WEB_FLOWS_DIR"
 fi
 
