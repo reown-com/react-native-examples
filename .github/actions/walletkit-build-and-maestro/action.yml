@@ -499,10 +499,10 @@ runs:
     # IC form, plus the pay-onchain tags the web leg's parallel/serial split
     # relies on). NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@a6aadaec06e01e58aa1549d51a90bae13790ba2f
+      uses: WalletConnect/actions/maestro/pay-tests@cbc50e7497cd37a66d5ed251315ec1efbc9f8c34
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@a6aadaec06e01e58aa1549d51a90bae13790ba2f
+      uses: WalletConnect/actions/maestro/setup@cbc50e7497cd37a66d5ed251315ec1efbc9f8c34
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -707,7 +707,7 @@ runs:
         # Per-slice output dir, debug dir and log so concurrent groups (below)
         # don't clobber each other. NOTE: Maestro web treats the browser as a
         # single "device", so --shard-split can't parallelise one process; we
-        # parallelise at the process level instead (two run_maestro calls).
+        # parallelise at the process level instead (the run_maestro calls below).
         run_maestro() {
           local label="$1"; shift
           local exit_code=0
@@ -740,29 +740,34 @@ runs:
           return "$exit_code"
         }
 
-        # Two nonce-independent groups:
+        # Three nonce-independent groups, run as concurrent maestro processes:
         #   read-only — cancel/insufficient/expired/cancelled flows; no tx.
-        #   on-chain  — pay-onchain tag; every flow spends from the one funded
-        #               test wallet, so they MUST stay serial (sequential nonce).
-        # The groups share no on-chain state, so run them as two concurrent
-        # maestro processes (each serial internally) — overlapping the read-only
-        # group with the longer on-chain group roughly halves the wall time.
+        #   base      — pay-chain-base flows (single / double-scan / KYC web).
+        #   polygon   — pay-chain-polygon flows (multi no-KYC / USDT-Polygon).
+        # The Ethereum nonce is per (wallet, chain), so flows on the SAME chain
+        # must stay serial (one bucket = one process, serial internally), but
+        # different chains are independent and overlap. Read-only broadcasts
+        # nothing, so it overlaps both. Base (3 flows) is the critical path.
         # Set WEB_PARALLEL=0 for the safe serial fallback.
         run_readonly() { run_maestro readonly --include-tags "${MAESTRO_TAGS},pay-web" --exclude-tags pay-onchain; }
-        run_onchain()  { run_maestro onchain  --include-tags pay-onchain; }
+        run_base()     { run_maestro base     --include-tags pay-chain-base; }
+        run_polygon()  { run_maestro polygon  --include-tags pay-chain-polygon; }
 
         if [ "${WEB_PARALLEL:-1}" = "1" ]; then
           run_readonly & ro_pid=$!
-          run_onchain  & oc_pid=$!
-          wait "$ro_pid"; readonly_exit=$?
-          wait "$oc_pid"; onchain_exit=$?
+          run_base     & base_pid=$!
+          run_polygon  & poly_pid=$!
+          wait "$ro_pid";   readonly_exit=$?
+          wait "$base_pid"; base_exit=$?
+          wait "$poly_pid"; polygon_exit=$?
         else
           run_readonly; readonly_exit=$?
-          run_onchain;  onchain_exit=$?
+          run_base;     base_exit=$?
+          run_polygon;  polygon_exit=$?
         fi
 
-        # Surface the first non-zero exit (read-only takes precedence).
-        maestro_exit_code=$(( readonly_exit != 0 ? readonly_exit : onchain_exit ))
+        # Surface the first non-zero exit (read-only, then base, then polygon).
+        maestro_exit_code=$(( readonly_exit != 0 ? readonly_exit : (base_exit != 0 ? base_exit : polygon_exit) ))
 
         for f in maestro-output-web-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
         find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true
@@ -802,7 +807,7 @@ runs:
       # Pinned to WalletConnect/actions#105 (a6aadae — clears the leaked tx.wait
       # timeout that kept the reset step alive ~2min after a successful revoke).
       # NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
-      uses: WalletConnect/actions/maestro/permit2-reset@a6aadaec06e01e58aa1549d51a90bae13790ba2f
+      uses: WalletConnect/actions/maestro/permit2-reset@cbc50e7497cd37a66d5ed251315ec1efbc9f8c34
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
