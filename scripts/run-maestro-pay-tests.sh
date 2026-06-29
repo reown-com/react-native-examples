@@ -81,6 +81,11 @@ fi
 
 APP_ID="${MAESTRO_APP_ID:-${APP_ID:-com.walletconnect.web3wallet.rnsample.internal}}"
 
+# Tags included on a default (no-args) run. Web adds `pay-web` — flows that only
+# run in a browser (e.g. the in-app KYC form, which replaces the hosted webview
+# on web). Native runs use `pay` only, so they never pick up `pay-web` flows.
+INCLUDE_TAGS="pay"
+
 # Web target: a URL App ID (e.g. MAESTRO_APP_ID=http://localhost:8081). Maestro
 # web flows must use `url:` instead of `appId:` and run via plain `maestro test`
 # (auto-detects web, downloads/launches a managed Chromium). Rewrite the flows
@@ -109,10 +114,16 @@ if [[ "$APP_ID" == http://* || "$APP_ID" == https://* ]]; then
   #     callback is HTTPS-only — the form leg can't complete under local web.
   #   - deeplink/universal-link: `openLink` of the wallet's custom scheme/universal
   #     link isn't handled by the web build.
+  # KYC-webview flows are replaced on web by in-app-form variants tagged
+  # `pay-web` (pay_kyc_web, pay_cancel_from_kyc_web). The multi-option no-KYC
+  # flow correlates option->review via the option's accessibilityLabel (network
+  # name), which Maestro web can't read; pay_multiple_options_nokyc_web covers
+  # the rest. The deeplink flow opens a universal link the web build won't handle.
   WEB_SKIP_FLOWS=(
     pay_kyc_back_navigation.yaml      # asserts KYC webview back/close (mobile-only)
-    pay_cancel_from_kyc.yaml          # cancels from KYC webview
-    pay_multiple_options_kyc.yaml     # requires completing the KYC webview
+    pay_cancel_from_kyc.yaml          # hosted KYC webview -> see pay_cancel_from_kyc_web
+    pay_multiple_options_kyc.yaml     # hosted KYC webview -> see pay_kyc_web
+    pay_multiple_options_nokyc.yaml   # aria-label correlation -> see pay_multiple_options_nokyc_web
     pay_single_option_nokyc_deeplink.yaml  # opens a universal link / deeplink
   )
   for flow in "${WEB_SKIP_FLOWS[@]}"; do
@@ -122,6 +133,7 @@ if [[ "$APP_ID" == http://* || "$APP_ID" == https://* ]]; then
   done
 
   MAESTRO_DIR="$WEB_FLOWS_DIR"
+  INCLUDE_TAGS="pay,pay-web"
 fi
 
 MAESTRO_ARGS=(
@@ -135,7 +147,7 @@ MAESTRO_ARGS=(
 )
 
 if [ $# -eq 0 ]; then
-  set -- --include-tags pay "$MAESTRO_DIR"
+  set -- --include-tags "$INCLUDE_TAGS" "$MAESTRO_DIR"
 fi
 
 RESOLVED_ARGS=()
