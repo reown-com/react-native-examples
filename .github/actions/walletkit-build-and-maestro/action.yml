@@ -675,6 +675,7 @@ runs:
       env:
         APP_URL: http://localhost:8081
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
+        MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
         WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
         WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
@@ -749,9 +750,12 @@ runs:
         # different chains are independent and overlap. Read-only broadcasts
         # nothing, so it overlaps both. Base (3 flows) is the critical path.
         # Set WEB_PARALLEL=0 for the safe serial fallback.
-        run_readonly() { run_maestro readonly --include-tags "${MAESTRO_TAGS},pay-web" --exclude-tags pay-onchain; }
-        run_base()     { run_maestro base     --include-tags pay-chain-base; }
-        run_polygon()  { run_maestro polygon  --include-tags pay-chain-polygon; }
+        # Each bucket also honors the caller's MAESTRO_EXCLUDE_TAGS (as iOS/Android
+        # do) — e.g. a cross-repo caller passing pay-needs-kyc-backend to skip the
+        # KYC flow. Read-only folds it into its existing pay-onchain exclude.
+        run_readonly() { run_maestro readonly --include-tags "${MAESTRO_TAGS},pay-web" --exclude-tags "pay-onchain${MAESTRO_EXCLUDE_TAGS:+,$MAESTRO_EXCLUDE_TAGS}"; }
+        run_base()     { run_maestro base     --include-tags pay-chain-base    ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"}; }
+        run_polygon()  { run_maestro polygon  --include-tags pay-chain-polygon ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"}; }
 
         if [ "${WEB_PARALLEL:-1}" = "1" ]; then
           run_readonly & ro_pid=$!
