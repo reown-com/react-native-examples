@@ -5468,26 +5468,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/pay@npm:1.0.8":
-  version: 1.0.8
-  resolution: "@walletconnect/pay@npm:1.0.8"
+"@walletconnect/pay@npm:1.0.9":
+  version: 1.0.9
+  resolution: "@walletconnect/pay@npm:1.0.9"
   dependencies:
     "@walletconnect/logger": 3.0.2
-    "@walletconnect/types": 2.23.9
-    "@walletconnect/utils": 2.23.9
-    brotli: ^1.3.3
+    "@walletconnect/types": 2.23.10
+    "@walletconnect/utils": 2.23.10
+    brotli: 1.3.3
   peerDependencies:
     react-native: ">=0.64.0"
   peerDependenciesMeta:
     react-native:
       optional: true
-  checksum: ab658e4a85fa6ab9214bdf1bc56de9c36342172d656768225311c8997540bb634a9d74e98dce5fd5db07b14505c1722e83f617fcdcedda8bc3e64f598f3489ad
+  checksum: 3dea99c432866e23c270068dfff6b4ece79e84d34ced8f5dd79db7305329a2102a54151f9f58ad208ad1cc11af9b0badab1885941ef147902c8695f3f78c2297
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.23.9":
-  version: 2.23.9
-  resolution: "@walletconnect/react-native-compat@npm:2.23.9"
+"@walletconnect/react-native-compat@npm:2.23.10":
+  version: 2.23.10
+  resolution: "@walletconnect/react-native-compat@npm:2.23.10"
   dependencies:
     events: 3.3.0
     fast-text-encoding: 1.0.6
@@ -5501,7 +5501,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: 22be5eebdfc2fdeb4faaeee6efbc7a0b05b6b1f55cf0f4213284e7908c8e6165727d72fecf1b38ffd17b866d38c496927f625b8988dcc84b2ce0fffeee45cbac
+  checksum: e313e3d48e434de30c122cdb7e656c72ccefe5503d37587c50fb4b0190da00d77e75413a2a617c3ebb76ec9822b4b844e933393373515b30a2a03a08610fd3d6
   languageName: node
   linkType: hard
 
@@ -5562,6 +5562,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@walletconnect/types@npm:2.23.10":
+  version: 2.23.10
+  resolution: "@walletconnect/types@npm:2.23.10"
+  dependencies:
+    "@walletconnect/events": 1.0.1
+    "@walletconnect/heartbeat": 1.2.2
+    "@walletconnect/jsonrpc-types": 1.0.4
+    "@walletconnect/keyvaluestorage": 1.1.1
+    "@walletconnect/logger": 3.0.2
+    events: 3.3.0
+  checksum: d1c80b0b3cd479ce4af481131a35cba74daca9628238fca1b4c8fcc2c8a2f7176640c7fee03aaef4c469b8fd7ec1adbe433c2086a48453da3f9e182b0da57383
+  languageName: node
+  linkType: hard
+
 "@walletconnect/types@npm:2.23.9":
   version: 2.23.9
   resolution: "@walletconnect/types@npm:2.23.9"
@@ -5573,6 +5587,33 @@ __metadata:
     "@walletconnect/logger": 3.0.2
     events: 3.3.0
   checksum: 3eafbf03fea56264d4ed39295c541147345f5a476360a799af8d1d0141ef5977963062911eb992bc42fbcd39612fa920938dd8dc97c18db68e99c1bf10b7d8cb
+  languageName: node
+  linkType: hard
+
+"@walletconnect/utils@npm:2.23.10":
+  version: 2.23.10
+  resolution: "@walletconnect/utils@npm:2.23.10"
+  dependencies:
+    "@msgpack/msgpack": 3.1.3
+    "@noble/ciphers": 1.3.0
+    "@noble/curves": 1.9.7
+    "@noble/hashes": 1.8.0
+    "@scure/base": 1.2.6
+    "@walletconnect/jsonrpc-utils": 1.0.8
+    "@walletconnect/keyvaluestorage": 1.1.1
+    "@walletconnect/logger": 3.0.2
+    "@walletconnect/relay-api": 1.0.11
+    "@walletconnect/relay-auth": 1.1.0
+    "@walletconnect/safe-json": 1.0.2
+    "@walletconnect/time": 1.0.2
+    "@walletconnect/types": 2.23.10
+    "@walletconnect/window-getters": 1.0.1
+    "@walletconnect/window-metadata": 1.0.1
+    blakejs: 1.2.1
+    detect-browser: 5.3.0
+    ox: 0.9.3
+    uint8arrays: 3.1.1
+  checksum: e6184814390d6590e5a8f400d41b926c44172463b3c13b4c08bc02d3e2b53b8ee15e7be314bdd7e59338fe21c4c6935268568307ff997254ece1c66e3dfbc703
   languageName: node
   linkType: hard
 
@@ -5680,7 +5721,7 @@ __metadata:
     "@types/lodash.clonedeep": ^4.5.9
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
-    "@walletconnect/react-native-compat": 2.23.9
+    "@walletconnect/react-native-compat": 2.23.10
     "@zoontek/react-native-navigation-bar": 1.1.0
     babel-plugin-module-resolver: ^5.0.0
     babel-preset-expo: 56.0.15
@@ -6617,7 +6658,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"brotli@npm:^1.3.3":
+"brotli@npm:1.3.3":
   version: 1.3.3
   resolution: "brotli@npm:1.3.3"
   dependencies:

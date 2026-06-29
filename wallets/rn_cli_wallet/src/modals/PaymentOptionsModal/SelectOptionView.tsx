@@ -98,12 +98,12 @@ export function SelectOptionView({
                   }
                   testID={`pay-option-${index}`}
                   renderIconRight={
-                    <Info
-                      testID="pay-option-info-required"
-                      height={20}
-                      width={20}
-                      fill={Theme['icon-invert']}
-                    />
+                    // testID on a wrapping View (not the <Info> svg): Maestro's
+                    // web driver skips svg/img tags, so a testID on the icon
+                    // itself would be unreachable. Native is unaffected.
+                    <View testID="pay-option-info-required">
+                      <Info height={20} width={20} fill={Theme['icon-invert']} />
+                    </View>
                   }
                   onIconRightPress={hasCollectData ? onInfoPress : undefined}
                   onPress={() => onOptionPress(option)}

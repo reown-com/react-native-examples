@@ -5,7 +5,11 @@ import { useNavigation } from '@react-navigation/native';
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import PaymentStore from '@/store/PaymentStore';
-import type { PaymentOption } from '@walletconnect/pay';
+import type {
+  CollectDataField,
+  CollectDataFieldResult,
+  PaymentOption,
+} from '@walletconnect/pay';
 import type { PaymentOptionWithCollectData } from '@/utils/TypesUtil';
 
 import { LoadingView } from './LoadingView';
@@ -24,9 +28,11 @@ export default function PaymentOptionsModal() {
   const snap = useSnapshot(PaymentStore.state);
   const navigation = useNavigation();
 
-  const selectedOptionCollectDataUrl = (
+  const selectedOptionCollectData = (
     snap.selectedOption as PaymentOptionWithCollectData | null
-  )?.collectData?.url;
+  )?.collectData;
+  const selectedOptionCollectDataUrl = selectedOptionCollectData?.url;
+  const selectedOptionCollectDataFields = selectedOptionCollectData?.fields;
 
   useEffect(() => {
     let isActive = true;
@@ -49,6 +55,25 @@ export default function PaymentOptionsModal() {
       }
 
       if (!snap.paymentOptions) {
+        return;
+      }
+
+      // A terminal payment (cancelled/expired/failed) comes back with its status
+      // in `info` and empty options. Surface that status instead of treating the
+      // empty options as "insufficient funds". (getPaymentOptions used to throw
+      // for these — masking it as an error string — but pay >=1.0.9 returns
+      // `options: []`, so we must read the status explicitly.)
+      const paymentStatus = snap.paymentOptions.info?.status;
+      if (paymentStatus === 'cancelled' || paymentStatus === 'expired') {
+        PaymentStore.setResult({ status: 'error', errorType: paymentStatus });
+        return;
+      }
+      // Only 'requires_action' is payable. Any other terminal/in-flight status
+      // (succeeded / processing / failed — e.g. re-scanning an already-completed
+      // payment) can't be paid, so show a generic error rather than falling
+      // through to the empty-options "insufficient funds" path.
+      if (paymentStatus && paymentStatus !== 'requires_action') {
+        PaymentStore.setResult({ status: 'error', errorType: 'generic' });
         return;
       }
 
@@ -143,13 +168,21 @@ export default function PaymentOptionsModal() {
     };
   }, [snap.step, snap.paymentOptions, snap.errorMessage]);
 
-  const handleWebViewComplete = useCallback(() => {
-    const { selectedOption } = PaymentStore.state;
-    if (selectedOption) {
-      PaymentStore.markCollectDataCompleted(selectedOption.id);
-    }
-    PaymentStore.setStep('review');
-  }, []);
+  const handleWebViewComplete = useCallback(
+    (collectedData?: CollectDataFieldResult[]) => {
+      const { selectedOption } = PaymentStore.state;
+      if (selectedOption) {
+        PaymentStore.markCollectDataCompleted(selectedOption.id);
+        // Web's in-app form returns the values; native's hosted webview submits
+        // server-side and passes nothing, so confirmPayment omits collectedData.
+        if (collectedData?.length) {
+          PaymentStore.setCollectedData(selectedOption.id, collectedData);
+        }
+      }
+      PaymentStore.setStep('review');
+    },
+    [],
+  );
 
   const handleWebViewError = useCallback((error: string) => {
     const errorType = detectErrorType(error);
@@ -293,6 +326,7 @@ export default function PaymentOptionsModal() {
         return (
           <CollectDataWebView
             url={selectedOptionCollectDataUrl!}
+            fields={selectedOptionCollectDataFields as CollectDataField[]}
             onComplete={handleWebViewComplete}
             onError={handleWebViewError}
           />
@@ -387,6 +421,7 @@ export default function PaymentOptionsModal() {
     snap.collectDataCompletedIds,
     snap.expiresAt,
     selectedOptionCollectDataUrl,
+    selectedOptionCollectDataFields,
     handleWebViewComplete,
     handleWebViewError,
     handleSelectOption,
