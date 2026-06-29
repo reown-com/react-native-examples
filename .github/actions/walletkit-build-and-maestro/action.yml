@@ -499,10 +499,10 @@ runs:
     # IC form, plus the pay-onchain tags the web leg's parallel/serial split
     # relies on). NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@cbc50e7497cd37a66d5ed251315ec1efbc9f8c34
+      uses: WalletConnect/actions/maestro/pay-tests@d291974ab5546e76effe98934c146c523e57f9b1
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@cbc50e7497cd37a66d5ed251315ec1efbc9f8c34
+      uses: WalletConnect/actions/maestro/setup@d291974ab5546e76effe98934c146c523e57f9b1
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -811,7 +811,7 @@ runs:
       # Pinned to WalletConnect/actions#105 (a6aadae — clears the leaked tx.wait
       # timeout that kept the reset step alive ~2min after a successful revoke).
       # NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
-      uses: WalletConnect/actions/maestro/permit2-reset@cbc50e7497cd37a66d5ed251315ec1efbc9f8c34
+      uses: WalletConnect/actions/maestro/permit2-reset@d291974ab5546e76effe98934c146c523e57f9b1
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
