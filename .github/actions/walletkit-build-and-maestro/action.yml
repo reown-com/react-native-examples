@@ -495,14 +495,14 @@ runs:
         curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
 
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions#105 (db6e8b7 — web-only pay flows: in-app
-    # IC form). Builds on master tip; adds the `pay-web`-tagged flows the web leg
-    # runs. NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
+    # Pinned to WalletConnect/actions#105 (a6aadae — web-only pay flows: in-app
+    # IC form, plus the pay-onchain tags the web leg's parallel/serial split
+    # relies on). NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@db6e8b7398add58e0602688aa98622728066b7ee
+      uses: WalletConnect/actions/maestro/pay-tests@a6aadaec06e01e58aa1549d51a90bae13790ba2f
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@db6e8b7398add58e0602688aa98622728066b7ee
+      uses: WalletConnect/actions/maestro/setup@a6aadaec06e01e58aa1549d51a90bae13790ba2f
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -700,35 +700,71 @@ runs:
         done
         mkdir -p maestro-artifacts maestro-artifacts/maestro-debug
         set +e
-        maestro_exit_code=0
-        rm -f maestro-output-attempt-*.log
-        for attempt in 1 2; do
-          echo "=== Maestro attempt $attempt/2 (web) ==="
-          # xvfb-run gives the managed Chromium a display on the headless runner.
-          xvfb-run -a "$HOME/.maestro/bin/maestro" test \
-            --include-tags "${MAESTRO_TAGS},pay-web" \
-            --env APP_ID="$APP_URL" \
-            --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
-            --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
-            --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
-            --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
-            --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
-            --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
-            --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
-            --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
-            --test-output-dir maestro-artifacts \
-            --debug-output "${RUNNER_TEMP}/maestro-debug" \
-            "$WEB_FLOWS_DIR" >"maestro-output-attempt-${attempt}.log" 2>&1
-          maestro_exit_code=$?
-          [ "$maestro_exit_code" -eq 0 ] && break
-          # >128 means killed by a signal (e.g. workflow cancel) — don't retry.
-          if [ "$maestro_exit_code" -gt 128 ]; then
-            echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"
-            break
-          fi
-          echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"
-        done
-        for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
+        rm -f maestro-output-web-*.log
+
+        # run_maestro <label> <extra maestro args...>: runs the web suite slice
+        # selected by the extra args, with the same 2-attempt retry as before.
+        # Per-slice output dir, debug dir and log so concurrent groups (below)
+        # don't clobber each other. NOTE: Maestro web treats the browser as a
+        # single "device", so --shard-split can't parallelise one process; we
+        # parallelise at the process level instead (two run_maestro calls).
+        run_maestro() {
+          local label="$1"; shift
+          local exit_code=0
+          for attempt in 1 2; do
+            echo "=== Maestro attempt $attempt/2 (web ${label}) ==="
+            # xvfb-run gives the managed Chromium a display on the headless runner.
+            xvfb-run -a "$HOME/.maestro/bin/maestro" test \
+              "$@" \
+              --env APP_ID="$APP_URL" \
+              --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
+              --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
+              --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
+              --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
+              --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
+              --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
+              --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
+              --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
+              --test-output-dir "maestro-artifacts/${label}" \
+              --debug-output "${RUNNER_TEMP}/maestro-debug/${label}" \
+              "$WEB_FLOWS_DIR" >"maestro-output-web-${label}-attempt-${attempt}.log" 2>&1
+            exit_code=$?
+            [ "$exit_code" -eq 0 ] && break
+            # >128 means killed by a signal (e.g. workflow cancel) — don't retry.
+            if [ "$exit_code" -gt 128 ]; then
+              echo "Maestro killed by signal (exit $exit_code) — not retrying"
+              break
+            fi
+            echo "Maestro attempt $attempt failed (exit $exit_code)"
+          done
+          return "$exit_code"
+        }
+
+        # Two nonce-independent groups:
+        #   read-only — cancel/insufficient/expired/cancelled flows; no tx.
+        #   on-chain  — pay-onchain tag; every flow spends from the one funded
+        #               test wallet, so they MUST stay serial (sequential nonce).
+        # The groups share no on-chain state, so run them as two concurrent
+        # maestro processes (each serial internally) — overlapping the read-only
+        # group with the longer on-chain group roughly halves the wall time.
+        # Set WEB_PARALLEL=0 for the safe serial fallback.
+        run_readonly() { run_maestro readonly --include-tags "${MAESTRO_TAGS},pay-web" --exclude-tags pay-onchain; }
+        run_onchain()  { run_maestro onchain  --include-tags pay-onchain; }
+
+        if [ "${WEB_PARALLEL:-1}" = "1" ]; then
+          run_readonly & ro_pid=$!
+          run_onchain  & oc_pid=$!
+          wait "$ro_pid"; readonly_exit=$?
+          wait "$oc_pid"; onchain_exit=$?
+        else
+          run_readonly; readonly_exit=$?
+          run_onchain;  onchain_exit=$?
+        fi
+
+        # Surface the first non-zero exit (read-only takes precedence).
+        maestro_exit_code=$(( readonly_exit != 0 ? readonly_exit : onchain_exit ))
+
+        for f in maestro-output-web-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
         find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true
         cp "${RUNNER_TEMP}/web-serve.log" maestro-artifacts/ 2>/dev/null || true
         cat maestro-output.log
@@ -763,10 +799,10 @@ runs:
       # !cancelled() not always(): skip the on-chain reset on cancel so the
       # runner stops promptly; still resets after a real success/failure.
       if: ${{ !cancelled() && contains(inputs.maestro-tags, 'pay') }}
-      # Pinned to WalletConnect/actions#105 (44057b3 — clears the leaked tx.wait
+      # Pinned to WalletConnect/actions#105 (a6aadae — clears the leaked tx.wait
       # timeout that kept the reset step alive ~2min after a successful revoke).
       # NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
-      uses: WalletConnect/actions/maestro/permit2-reset@44057b33dbc0de46bae7e3aee91b423babf7a924
+      uses: WalletConnect/actions/maestro/permit2-reset@a6aadaec06e01e58aa1549d51a90bae13790ba2f
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
