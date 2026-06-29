@@ -763,7 +763,10 @@ runs:
       # !cancelled() not always(): skip the on-chain reset on cancel so the
       # runner stops promptly; still resets after a real success/failure.
       if: ${{ !cancelled() && contains(inputs.maestro-tags, 'pay') }}
-      uses: WalletConnect/actions/maestro/permit2-reset@8a83c203760286acef29408833dbd0d075932932
+      # Pinned to WalletConnect/actions#105 (44057b3 — clears the leaked tx.wait
+      # timeout that kept the reset step alive ~2min after a successful revoke).
+      # NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
+      uses: WalletConnect/actions/maestro/permit2-reset@44057b33dbc0de46bae7e3aee91b423babf7a924
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}

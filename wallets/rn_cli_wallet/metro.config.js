@@ -51,4 +51,13 @@ config.serializer.getPolyfills = options => [
   require.resolve('./polyfills.js'),
 ];
 
+// Pin Metro's transform cache to a repo-local dir instead of the default
+// os.tmpdir()/metro-cache. CI caches node_modules/.cache across runs (see
+// .github/actions/walletkit-build-and-maestro), so warming this cuts most of
+// `expo export`'s transform time; the tmpdir default never persisted between
+// runners. FileStore is injected by Metro, so we don't resolve metro-cache here.
+config.cacheStores = ({ FileStore }) => [
+  new FileStore({ root: path.join(__dirname, 'node_modules/.cache/metro') }),
+];
+
 module.exports = config;
