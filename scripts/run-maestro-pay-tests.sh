@@ -99,6 +99,28 @@ if [[ "$APP_ID" == http://* || "$APP_ID" == https://* ]]; then
   # we only edit this throwaway copy).
   find "$WEB_FLOWS_DIR" -name '*.yaml' -print0 \
     | xargs -0 perl -ni -e 'next if /^\s*-?\s*(start|stop)Recording\b/; s/^appId:(\s*\$\{APP_ID\})/url:$1/; print'
+
+  # Skip flows that can't run in a browser (mobile-only). We remove them from the
+  # throwaway copy rather than tag them, because the flows are downloaded from the
+  # actions repo (a tag added here is overwritten on re-download). The durable fix
+  # is a `mobile-only` tag upstream + `--exclude-tags mobile-only` here.
+  #   - KYC webview flows: the identity-collection form sends X-Frame-Options DENY,
+  #     so on web it opens in a NEW TAB (Maestro drives a single tab) and its
+  #     callback is HTTPS-only — the form leg can't complete under local web.
+  #   - deeplink/universal-link: `openLink` of the wallet's custom scheme/universal
+  #     link isn't handled by the web build.
+  WEB_SKIP_FLOWS=(
+    pay_kyc_back_navigation.yaml      # asserts KYC webview back/close (mobile-only)
+    pay_cancel_from_kyc.yaml          # cancels from KYC webview
+    pay_multiple_options_kyc.yaml     # requires completing the KYC webview
+    pay_single_option_nokyc_deeplink.yaml  # opens a universal link / deeplink
+  )
+  for flow in "${WEB_SKIP_FLOWS[@]}"; do
+    if rm -f "$WEB_FLOWS_DIR/$flow" 2>/dev/null && [ ! -e "$WEB_FLOWS_DIR/$flow" ]; then
+      echo "  web-skip: $flow (mobile-only — not runnable in a browser)"
+    fi
+  done
+
   MAESTRO_DIR="$WEB_FLOWS_DIR"
 fi
 
