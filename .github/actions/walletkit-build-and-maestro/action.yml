@@ -561,6 +561,11 @@ runs:
             .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1
           maestro_exit_code=$?
           [ "$maestro_exit_code" -eq 0 ] && break
+          # >128 means killed by a signal (e.g. workflow cancel) — don't retry.
+          if [ "$maestro_exit_code" -gt 128 ]; then
+            echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"
+            break
+          fi
           echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"
         done
         # Join per-attempt logs so the uploaded artifact keeps attempt 1's output
@@ -576,7 +581,8 @@ runs:
         exit "$maestro_exit_code"
 
     - name: Upload Maestro artifacts (iOS)
-      if: always() && inputs.platform == 'ios'
+      # !cancelled() not always(): runs on success/failure, skipped on cancel.
+      if: ${{ !cancelled() && inputs.platform == 'ios' }}
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
@@ -633,10 +639,10 @@ runs:
         disable-animations: true
         script: |
           adb install "$APK_PATH"
-          mkdir -p maestro-artifacts maestro-artifacts/maestro-debug; adb logcat -c || true; adb logcat AndroidRuntime:E ActivityManager:W ReactNativeJS:E '*:F' > maestro-artifacts/android-logcat.log 2>&1 & LOGCAT_PID=$!; set +e; maestro_exit_code=0; rm -f maestro-output-attempt-*.log; for attempt in 1 2; do echo "=== Maestro attempt $attempt/2 (Android) ==="; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1; maestro_exit_code=$?; [ "$maestro_exit_code" -eq 0 ] && break; echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"; done; for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log; kill "$LOGCAT_PID" 2>/dev/null || true; wait "$LOGCAT_PID" 2>/dev/null || true; adb logcat -d -b crash > maestro-artifacts/android-logcat-crash.log 2>&1 || true; find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true; cat maestro-output.log; exit "$maestro_exit_code"
+          mkdir -p maestro-artifacts maestro-artifacts/maestro-debug; adb logcat -c || true; adb logcat AndroidRuntime:E ActivityManager:W ReactNativeJS:E '*:F' > maestro-artifacts/android-logcat.log 2>&1 & LOGCAT_PID=$!; set +e; maestro_exit_code=0; rm -f maestro-output-attempt-*.log; for attempt in 1 2; do echo "=== Maestro attempt $attempt/2 (Android) ==="; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1; maestro_exit_code=$?; [ "$maestro_exit_code" -eq 0 ] && break; if [ "$maestro_exit_code" -gt 128 ]; then echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"; break; fi; echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"; done; for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log; kill "$LOGCAT_PID" 2>/dev/null || true; wait "$LOGCAT_PID" 2>/dev/null || true; adb logcat -d -b crash > maestro-artifacts/android-logcat-crash.log 2>&1 || true; find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true; cat maestro-output.log; exit "$maestro_exit_code"
 
     - name: Upload Maestro artifacts (Android)
-      if: always() && inputs.platform == 'android'
+      if: ${{ !cancelled() && inputs.platform == 'android' }}
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
@@ -715,6 +721,11 @@ runs:
             "$WEB_FLOWS_DIR" >"maestro-output-attempt-${attempt}.log" 2>&1
           maestro_exit_code=$?
           [ "$maestro_exit_code" -eq 0 ] && break
+          # >128 means killed by a signal (e.g. workflow cancel) — don't retry.
+          if [ "$maestro_exit_code" -gt 128 ]; then
+            echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"
+            break
+          fi
           echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"
         done
         for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
@@ -724,7 +735,7 @@ runs:
         exit "$maestro_exit_code"
 
     - name: Upload Maestro artifacts (web)
-      if: always() && inputs.platform == 'web'
+      if: ${{ !cancelled() && inputs.platform == 'web' }}
       continue-on-error: true
       uses: actions/upload-artifact@v4
       with:
@@ -749,7 +760,9 @@ runs:
     # `continue-on-error` is ignored on a step that `uses:` a composite action
     # (actions/runner#1457), so non-fatal behavior is enforced via fail-on-error.
     - name: Reset USDT Permit2 allowance (Polygon)
-      if: always() && contains(inputs.maestro-tags, 'pay')
+      # !cancelled() not always(): skip the on-chain reset on cancel so the
+      # runner stops promptly; still resets after a real success/failure.
+      if: ${{ !cancelled() && contains(inputs.maestro-tags, 'pay') }}
       uses: WalletConnect/actions/maestro/permit2-reset@8a83c203760286acef29408833dbd0d075932932
       with:
         chain-id: eip155:137
@@ -759,7 +772,7 @@ runs:
         fail-on-error: 'false'
 
     - name: Log Maestro outcome
-      if: always()
+      if: ${{ !cancelled() }}
       shell: bash
       env:
         IOS_OUTCOME: ${{ steps.maestro-ios.outcome }}
