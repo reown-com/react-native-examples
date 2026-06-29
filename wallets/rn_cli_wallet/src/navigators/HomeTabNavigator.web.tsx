@@ -28,6 +28,7 @@ export function HomeTabNavigator() {
 
   return (
     <TabNav.Navigator
+      sceneContainerStyle={{ backgroundColor: Theme['bg-primary'] }}
       screenOptions={{
         headerShown: false,
         tabBarStyle: { backgroundColor: Theme['bg-primary'] },

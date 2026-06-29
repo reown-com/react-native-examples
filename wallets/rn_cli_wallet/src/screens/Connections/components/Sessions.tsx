@@ -39,7 +39,7 @@ function Sessions() {
   return (
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
-      style={styles.scrollView}
+      style={[styles.scrollView, { backgroundColor: Theme['bg-primary'] }]}
       contentContainerStyle={styles.scrollViewContainer}
       data={sessions}
       renderItem={({ item }) => {
@@ -63,6 +63,7 @@ export default Sessions;
 
 const styles = StyleSheet.create({
   scrollView: {
+    flex: 1,
     paddingTop: Spacing[3],
   },
   scrollViewContainer: {
