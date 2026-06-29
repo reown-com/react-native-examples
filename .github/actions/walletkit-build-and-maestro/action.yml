@@ -427,14 +427,13 @@ runs:
         sudo udevadm trigger --name-match=kvm
 
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions master tip (3fd66ca = squash-merge of #97).
-    # Includes #96's launchApp retry-on-attach-failure block in pay_open_and_paste_url.yaml
-    # plus #97's USDT-on-Polygon flow + permit2-reset action.
+    # Provisionally pinned to WalletConnect/actions#106 branch tip (KYC /collect IC
+    # redesign). Re-pin to the merged-master SHA before this PR leaves draft.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@3fd66ca1de3848a089d8e3c628e6f54bfcfd999f
+      uses: WalletConnect/actions/maestro/pay-tests@a6436dfbb6404e7c086b24054821eb8efcc41b22 # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@3fd66ca1de3848a089d8e3c628e6f54bfcfd999f
+      uses: WalletConnect/actions/maestro/setup@a6436dfbb6404e7c086b24054821eb8efcc41b22 # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -603,7 +602,7 @@ runs:
     # (actions/runner#1457), so non-fatal behavior is enforced via fail-on-error.
     - name: Reset USDT Permit2 allowance (Polygon)
       if: always() && contains(inputs.maestro-tags, 'pay')
-      uses: WalletConnect/actions/maestro/permit2-reset@8a83c203760286acef29408833dbd0d075932932
+      uses: WalletConnect/actions/maestro/permit2-reset@a6436dfbb6404e7c086b24054821eb8efcc41b22 # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
