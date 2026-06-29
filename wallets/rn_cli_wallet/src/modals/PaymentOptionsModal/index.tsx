@@ -33,6 +33,7 @@ export default function PaymentOptionsModal() {
   )?.collectData;
   const selectedOptionCollectDataUrl = selectedOptionCollectData?.url;
   const selectedOptionCollectDataFields = selectedOptionCollectData?.fields;
+  const selectedOptionCollectDataSchema = selectedOptionCollectData?.schema;
 
   useEffect(() => {
     let isActive = true;
@@ -327,6 +328,7 @@ export default function PaymentOptionsModal() {
           <CollectDataWebView
             url={selectedOptionCollectDataUrl!}
             fields={selectedOptionCollectDataFields as CollectDataField[]}
+            schema={selectedOptionCollectDataSchema}
             onComplete={handleWebViewComplete}
             onError={handleWebViewError}
           />
@@ -422,6 +424,7 @@ export default function PaymentOptionsModal() {
     snap.expiresAt,
     selectedOptionCollectDataUrl,
     selectedOptionCollectDataFields,
+    selectedOptionCollectDataSchema,
     handleWebViewComplete,
     handleWebViewError,
     handleSelectOption,

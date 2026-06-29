@@ -96,8 +96,9 @@ function buildUrlWithPrefill(
 interface CollectDataWebViewProps {
   url: string;
   // Present so the props match the web variant (which renders an in-app form
-  // from these fields). Native uses the hosted webview and ignores them.
+  // from these fields/schema). Native uses the hosted webview and ignores them.
   fields?: CollectDataField[];
+  schema?: string;
   onComplete: (collectedData?: CollectDataFieldResult[]) => void;
   onError: (error: string) => void;
 }
