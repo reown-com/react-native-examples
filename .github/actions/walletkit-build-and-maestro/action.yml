@@ -7,7 +7,7 @@ description: |
 
 inputs:
   platform:
-    description: 'ios or android'
+    description: 'ios, android, or web'
     required: true
   pay-core-url:
     description: |
@@ -134,7 +134,7 @@ inputs:
 outputs:
   maestro-outcome:
     description: 'success | failure | cancelled — outcome of the Maestro run step.'
-    value: ${{ steps.maestro-ios.outcome || steps.maestro-android.outcome }}
+    value: ${{ steps.maestro-ios.outcome || steps.maestro-android.outcome || steps.maestro-web.outcome }}
 
 runs:
   using: composite
@@ -445,15 +445,43 @@ runs:
         sudo udevadm control --reload-rules
         sudo udevadm trigger --name-match=kvm
 
+    # --- Web leg ---
+    # react-native-web via Expo: no native build — serve the Metro web bundle and
+    # point Maestro (managed Chromium, under xvfb on the headless runner) at it.
+    # The IC/KYC form is rendered in-app on web, so plain http is sufficient (no
+    # HTTPS callback leg).
+    - name: Install xvfb (web)
+      if: inputs.platform == 'web'
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y xvfb
+
+    - name: Start Expo web server
+      if: inputs.platform == 'web'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      run: |
+        # EXPO_PUBLIC_TEST_MODE=true (from the .env above) keeps the paste-URL
+        # test input and disables the last-paid-token shortcut on web.
+        npx expo start --web --port 8081 > "${RUNNER_TEMP}/expo-web.log" 2>&1 &
+        for i in $(seq 1 150); do
+          curl -fsS -o /dev/null http://localhost:8081 && { echo "Expo web server up"; break; }
+          sleep 2
+        done
+        if ! curl -fsS -o /dev/null http://localhost:8081; then
+          echo "Expo web server failed to start:"; cat "${RUNNER_TEMP}/expo-web.log"; exit 1
+        fi
+        # Warm the web bundle (first request compiles the full app, which is slow).
+        curl -fsS -o /dev/null "http://localhost:8081/index.bundle?platform=web&dev=true" || true
+
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions master tip (3fd66ca = squash-merge of #97).
-    # Includes #96's launchApp retry-on-attach-failure block in pay_open_and_paste_url.yaml
-    # plus #97's USDT-on-Polygon flow + permit2-reset action.
+    # Pinned to WalletConnect/actions#105 (db6e8b7 — web-only pay flows: in-app
+    # IC form). Builds on master tip; adds the `pay-web`-tagged flows the web leg
+    # runs. NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@3fd66ca1de3848a089d8e3c628e6f54bfcfd999f
+      uses: WalletConnect/actions/maestro/pay-tests@db6e8b7398add58e0602688aa98622728066b7ee
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@3fd66ca1de3848a089d8e3c628e6f54bfcfd999f
+      uses: WalletConnect/actions/maestro/setup@db6e8b7398add58e0602688aa98622728066b7ee
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -613,6 +641,85 @@ runs:
         # download+rename step if both attempts' artifacts are needed.
         overwrite: true
 
+    - name: Run Maestro tests (web)
+      if: inputs.platform == 'web'
+      id: maestro-web
+      shell: bash
+      env:
+        APP_URL: http://localhost:8081
+        MAESTRO_TAGS: ${{ inputs.maestro-tags }}
+        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
+        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
+        WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
+        WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
+        WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
+      run: |
+        # Rewrite the shared flows for web: appId:->url: (Maestro targets the
+        # browser via the URL), strip start/stopRecording (unsupported on web),
+        # and drop the flows that can't run in a browser — hosted-KYC-webview
+        # flows (replaced by pay_*_web), the deeplink flow, and the multi-option
+        # no-KYC flow whose option->review correlation reads accessibilityLabel
+        # (Maestro web can't), replaced by pay_multiple_options_nokyc_web.
+        WEB_FLOWS_DIR="$(mktemp -d)"
+        cp -R .maestro/. "$WEB_FLOWS_DIR/"
+        find "$WEB_FLOWS_DIR" -name '*.yaml' -print0 \
+          | xargs -0 perl -ni -e 'next if /^\s*-?\s*(start|stop)Recording\b/; s/^appId:(\s*\$\{APP_ID\})/url:$1/; print'
+        for f in pay_kyc_back_navigation pay_cancel_from_kyc pay_multiple_options_kyc \
+                 pay_multiple_options_nokyc pay_single_option_nokyc_deeplink; do
+          rm -f "$WEB_FLOWS_DIR/$f.yaml"
+        done
+        mkdir -p maestro-artifacts maestro-artifacts/maestro-debug
+        set +e
+        maestro_exit_code=0
+        rm -f maestro-output-attempt-*.log
+        for attempt in 1 2; do
+          echo "=== Maestro attempt $attempt/2 (web) ==="
+          # xvfb-run gives the managed Chromium a display on the headless runner.
+          xvfb-run -a "$HOME/.maestro/bin/maestro" test \
+            --include-tags "${MAESTRO_TAGS},pay-web" \
+            --env APP_ID="$APP_URL" \
+            --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
+            --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
+            --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
+            --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
+            --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
+            --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
+            --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
+            --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
+            --test-output-dir maestro-artifacts \
+            --debug-output "${RUNNER_TEMP}/maestro-debug" \
+            "$WEB_FLOWS_DIR" >"maestro-output-attempt-${attempt}.log" 2>&1
+          maestro_exit_code=$?
+          [ "$maestro_exit_code" -eq 0 ] && break
+          echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"
+        done
+        for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
+        find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true
+        cp "${RUNNER_TEMP}/expo-web.log" maestro-artifacts/ 2>/dev/null || true
+        cat maestro-output.log
+        exit "$maestro_exit_code"
+
+    - name: Upload Maestro artifacts (web)
+      if: always() && inputs.platform == 'web'
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-web-artifacts
+        path: |
+          maestro-artifacts/**/*.png
+          maestro-artifacts/**/*.jpg
+          maestro-artifacts/**/*.jpeg
+          maestro-artifacts/maestro-debug/**/*.png
+          maestro-artifacts/maestro-debug/**/*.jpg
+          maestro-artifacts/expo-web.log
+          maestro-output.log
+        if-no-files-found: warn
+        retention-days: 14
+        overwrite: true
+
     # Reset the USDT Permit2 allowance back to 0 so the next pay_usdt_polygon run
     # re-exercises the approve step. Runs even when the suite failed (if: always())
     # so a mid-flow failure doesn't leave the allowance set. Uses the shared
@@ -636,5 +743,6 @@ runs:
       env:
         IOS_OUTCOME: ${{ steps.maestro-ios.outcome }}
         ANDROID_OUTCOME: ${{ steps.maestro-android.outcome }}
+        WEB_OUTCOME: ${{ steps.maestro-web.outcome }}
       run: |
-        echo "Maestro outcome - ios=${IOS_OUTCOME:-skipped} android=${ANDROID_OUTCOME:-skipped}"
+        echo "Maestro outcome - ios=${IOS_OUTCOME:-skipped} android=${ANDROID_OUTCOME:-skipped} web=${WEB_OUTCOME:-skipped}"

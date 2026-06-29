@@ -1,5 +1,5 @@
 name: CI E2E WalletKit
-run-name: "E2E WalletKit - ${{ inputs.platform || 'both' }} - Tags: ${{ inputs.maestro-tags || 'pay' }}"
+run-name: "E2E WalletKit - Tags: ${{ inputs.maestro-tags || 'pay' }}"
 
 permissions:
   contents: read
@@ -33,15 +33,24 @@ on:
         required: false
         default: 'pay'
         type: string
-      platform:
-        description: 'Platform to run tests on'
+      # Boolean inputs render as checkboxes in the dispatch UI. On non-dispatch
+      # triggers (schedule/pr/push) inputs are unset, so the job `if:`s gate on
+      # the event type instead (see each job).
+      android:
+        description: 'Run Android E2E'
         required: false
-        default: 'both'
-        type: choice
-        options:
-          - both
-          - ios
-          - android
+        default: true
+        type: boolean
+      ios:
+        description: 'Run iOS E2E'
+        required: false
+        default: true
+        type: boolean
+      web:
+        description: 'Run Web E2E'
+        required: false
+        default: true
+        type: boolean
 
 env:
   MAESTRO_TAGS: ${{ inputs.maestro-tags || 'pay' }}
@@ -55,9 +64,11 @@ jobs:
   e2e-ios:
     needs: check-balance
     # Balance alert should not block tests. On schedule, iOS (macOS, expensive)
-    # runs only on the once-daily cron; the 6h cadence stays Android-only.
+    # runs only on the once-daily cron; the 6h cadence stays Android-only. On
+    # dispatch, gated by the `ios` checkbox.
     if: >-
-      always() && inputs.platform != 'android'
+      always()
+      && (github.event_name != 'workflow_dispatch' || inputs.ios)
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
     name: E2E Tests - iOS
     runs-on: macos-latest-xlarge
@@ -138,7 +149,9 @@ jobs:
 
   e2e-android:
     needs: check-balance
-    if: always() && inputs.platform != 'ios' # Balance alert should not block tests
+    # Balance alert should not block tests. Android runs on every trigger (it's
+    # the cheap 6h canary); on dispatch, gated by the `android` checkbox.
+    if: always() && (github.event_name != 'workflow_dispatch' || inputs.android)
     name: E2E Tests - Android
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -184,6 +197,86 @@ jobs:
                   "fields": [
                     { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
                     { "type": "mrkdwn", "text": "*Platform:*\n`Android`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.walletkit.outputs.maestro-outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "Download Artifacts" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts"
+                    }
+                  ]
+                }
+              ]
+            }
+
+  e2e-web:
+    needs: check-balance
+    # Web (react-native-web) runs on pr/push + the daily cron + dispatch (if the
+    # `web` checkbox is set). Cheap (ubuntu), so kept off the 6h Android canary
+    # for parity with iOS's daily-only schedule gate.
+    if: >-
+      always()
+      && (github.event_name != 'workflow_dispatch' || inputs.web)
+      && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
+    name: E2E Tests - Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build wallet and run Maestro tests (Web)
+        id: walletkit
+        uses: ./.github/actions/walletkit-build-and-maestro
+        with:
+          platform: web
+          pay-core-url: https://api.pay.walletconnect.com
+          wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
+          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
+          merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
+          merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
+          merchant-id-multi-nokyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_NOKYC }}
+          merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
+          merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
+          maestro-tags: ${{ env.MAESTRO_TAGS }}
+
+      - name: Send Slack notification
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "E2E Test Report - Web - WalletKit",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🧪 E2E Test Report - Web (${{ env.MAESTRO_TAGS }})" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
+                    { "type": "mrkdwn", "text": "*Platform:*\n`Web`" },
                     { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
                     { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
                   ]
