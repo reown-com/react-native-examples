@@ -1,4 +1,4 @@
-import { providers } from 'ethers';
+import { JsonRpcProvider } from 'ethers';
 import { formatJsonRpcError, formatJsonRpcResult } from '@json-rpc-tools/utils';
 import { SignClientTypes } from '@walletconnect/types';
 import { getSdkError } from '@walletconnect/utils';
@@ -23,8 +23,22 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
     eip155Wallets[getWalletAddressFromParams(eip155Addresses, params)];
 
   switch (request.method) {
-    case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
+    // eth_sign is disabled: it signs arbitrary opaque bytes (no
+    // "\x19Ethereum Signed Message" prefix), which is a well-known phishing
+    // vector that can be tricked into signing transaction hashes. Reject it and
+    // steer dApps to personal_sign.
     case EIP155_SIGNING_METHODS.ETH_SIGN:
+      LogStore.warn(
+        'Rejected eth_sign request (disabled for security)',
+        'EIP155RequestHandler',
+        'ethSign',
+      );
+      return formatJsonRpcError(
+        id,
+        'eth_sign is disabled for security reasons. Use personal_sign instead.',
+      );
+
+    case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
       try {
         const message = getSignParamsMessage(request.params);
 
@@ -63,7 +77,7 @@ export async function approveEIP155Request(requestEvent: RequestEventArgs) {
     case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
       try {
         const chainData = PresetsUtil.getChainDataById(chainId);
-        const provider = new providers.JsonRpcProvider(chainData?.rpcUrl);
+        const provider = new JsonRpcProvider(chainData?.rpcUrl);
         const sendTransaction = request.params[0];
         const connectedWallet = wallet.connect(provider);
         const { hash } = await connectedWallet.sendTransaction(sendTransaction);

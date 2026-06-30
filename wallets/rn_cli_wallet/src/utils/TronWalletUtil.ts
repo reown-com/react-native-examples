@@ -1,6 +1,8 @@
 import TronLib from '../lib/TronLib';
-import { storage } from './storage';
+import { secureStorage } from './secure-storage';
 import SettingsStore from '@/store/SettingsStore';
+
+const TRON_PRIVATE_KEY_KEY = 'TRON_PrivateKey_1';
 
 export let tronWeb1: TronLib;
 export let tronWallets: Record<string, TronLib>;
@@ -12,15 +14,17 @@ let address1: string;
  * Utilities
  */
 export async function createOrRestoreTronWallet() {
-  const privateKey1 = await storage.getItem('TRON_PrivateKey_1');
+  // Migrate any legacy plaintext-MMKV key material into the secure enclave.
+  await secureStorage.migrateSecret(TRON_PRIVATE_KEY_KEY);
+
+  const privateKey1 = await secureStorage.getSecret(TRON_PRIVATE_KEY_KEY);
 
   if (privateKey1) {
     tronWeb1 = await TronLib.init({ privateKey: privateKey1 });
   } else {
     tronWeb1 = await TronLib.init({ privateKey: '' });
 
-    // Don't store privateKey in local storage in a production project!
-    storage.setItem('TRON_PrivateKey_1', tronWeb1.privateKey);
+    await secureStorage.setSecret(TRON_PRIVATE_KEY_KEY, tronWeb1.privateKey);
   }
 
   address1 = tronWeb1.getAddress() as string;
@@ -64,13 +68,8 @@ export async function loadTronWallet(input: string): Promise<{
   tronWallets = { [newAddress]: newWallet };
   tronAddresses = [newAddress];
 
-  // Persist to storage
-  storage.setItem('TRON_PrivateKey_1', trimmedInput);
-  if (__DEV__) {
-    console.warn(
-      '[SECURITY] TRON private key stored unencrypted. Use secure enclave in production.',
-    );
-  }
+  // Persist to secure storage
+  await secureStorage.setSecret(TRON_PRIVATE_KEY_KEY, trimmedInput);
 
   // Update store
   SettingsStore.setTronAddress(newAddress);

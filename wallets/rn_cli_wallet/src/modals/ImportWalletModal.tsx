@@ -82,7 +82,7 @@ export default function ImportWalletModal() {
 
       switch (selectedChain) {
         case 'Ethereum': {
-          const result = loadEIP155Wallet(sanitizedInput);
+          const result = await loadEIP155Wallet(sanitizedInput);
           address = result.address;
           // Refetch balances with the new EVM address
           WalletStore.fetchBalances(

@@ -2,7 +2,7 @@ import * as bip39 from 'bip39';
 import bs58 from 'bs58';
 
 import SolanaLib from '../lib/SolanaLib';
-import { storage } from './storage';
+import { secureStorage } from './secure-storage';
 import SettingsStore from '@/store/SettingsStore';
 
 const SOLANA_MNEMONIC_KEY = 'SOLANA_MNEMONIC_1';
@@ -35,8 +35,12 @@ function tryDecodeSecretKey(input: string): Uint8Array | null {
  * Utilities
  */
 export async function createOrRestoreSolanaWallet() {
-  const mnemonic1 = await storage.getItem<string>(SOLANA_MNEMONIC_KEY);
-  const secretKey1 = await storage.getItem<string>(SOLANA_SECRET_KEY_KEY);
+  // Migrate any legacy plaintext-MMKV key material into the secure enclave.
+  await secureStorage.migrateSecret(SOLANA_MNEMONIC_KEY);
+  await secureStorage.migrateSecret(SOLANA_SECRET_KEY_KEY);
+
+  const mnemonic1 = await secureStorage.getSecret(SOLANA_MNEMONIC_KEY);
+  const secretKey1 = await secureStorage.getSecret(SOLANA_SECRET_KEY_KEY);
 
   if (mnemonic1) {
     wallet1 = await SolanaLib.init({ mnemonic: mnemonic1 });
@@ -48,8 +52,7 @@ export async function createOrRestoreSolanaWallet() {
     wallet1 = await SolanaLib.init({ secretKey: decoded });
   } else {
     wallet1 = await SolanaLib.init({});
-    // Don't store private keys in local storage in a production project!
-    await storage.setItem(SOLANA_MNEMONIC_KEY, wallet1.getMnemonic());
+    await secureStorage.setSecret(SOLANA_MNEMONIC_KEY, wallet1.getMnemonic());
   }
 
   solanaAddresses = [wallet1.getAddress()];
@@ -74,8 +77,8 @@ export async function loadSolanaWallet(input: string): Promise<{
   let newWallet: SolanaLib;
   if (isMnemonic(trimmedInput)) {
     newWallet = await SolanaLib.init({ mnemonic: trimmedInput });
-    await storage.setItem(SOLANA_MNEMONIC_KEY, trimmedInput);
-    await storage.removeItem(SOLANA_SECRET_KEY_KEY);
+    await secureStorage.setSecret(SOLANA_MNEMONIC_KEY, trimmedInput);
+    await secureStorage.removeSecret(SOLANA_SECRET_KEY_KEY);
   } else {
     const decoded = tryDecodeSecretKey(trimmedInput);
     if (!decoded) {
@@ -84,8 +87,8 @@ export async function loadSolanaWallet(input: string): Promise<{
       );
     }
     newWallet = await SolanaLib.init({ secretKey: decoded });
-    await storage.setItem(SOLANA_SECRET_KEY_KEY, trimmedInput);
-    await storage.removeItem(SOLANA_MNEMONIC_KEY);
+    await secureStorage.setSecret(SOLANA_SECRET_KEY_KEY, trimmedInput);
+    await secureStorage.removeSecret(SOLANA_MNEMONIC_KEY);
   }
 
   const newAddress = newWallet.getAddress();
@@ -93,12 +96,6 @@ export async function loadSolanaWallet(input: string): Promise<{
   // Update module-level exports
   wallet1 = newWallet;
   solanaAddresses = [newAddress];
-
-  if (__DEV__) {
-    console.warn(
-      '[SECURITY] Solana key material stored unencrypted. Use secure enclave in production.',
-    );
-  }
 
   // Update store
   SettingsStore.setSolanaAddress(newAddress);

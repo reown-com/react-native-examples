@@ -8,7 +8,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.walletconnect.web3wallet.rnsample",
-      "buildNumber": "155",
+      "buildNumber": "158",
       "appleTeamId": "W5R8AG9K22",
       "config": {
         "usesNonExemptEncryption": false
@@ -88,6 +88,7 @@
         { "enforceContrast": false }
       ],
       "react-native-bottom-tabs",
+      "expo-secure-store",
       [
         "@sentry/react-native/expo",
         {

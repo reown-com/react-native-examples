@@ -1,10 +1,13 @@
-import { utils } from 'ethers';
+import { Mnemonic } from 'ethers';
 
 import { ENV } from './env';
 
 import EIP155Lib from '../lib/EIP155Lib';
-import { storage } from './storage';
+import { secureStorage } from './secure-storage';
 import SettingsStore from '@/store/SettingsStore';
+
+const EIP155_MNEMONIC_KEY = 'EIP155_MNEMONIC_1';
+const EIP155_PRIVATE_KEY_KEY = 'EIP155_PRIVATE_KEY_1';
 
 export let wallet1: EIP155Lib;
 export let eip155Wallets: Record<string, EIP155Lib>;
@@ -13,8 +16,12 @@ export let eip155Addresses: string[];
 let address1: string;
 
 export async function createOrRestoreEIP155Wallet() {
-  const mnemonic1 = await storage.getItem('EIP155_MNEMONIC_1');
-  const privateKey1 = await storage.getItem('EIP155_PRIVATE_KEY_1');
+  // Migrate any legacy plaintext-MMKV key material into the secure enclave.
+  await secureStorage.migrateSecret(EIP155_MNEMONIC_KEY);
+  await secureStorage.migrateSecret(EIP155_PRIVATE_KEY_KEY);
+
+  const mnemonic1 = await secureStorage.getSecret(EIP155_MNEMONIC_KEY);
+  const privateKey1 = await secureStorage.getSecret(EIP155_PRIVATE_KEY_KEY);
 
   if (mnemonic1) {
     wallet1 = EIP155Lib.init({ mnemonic: mnemonic1 });
@@ -24,7 +31,7 @@ export async function createOrRestoreEIP155Wallet() {
     wallet1 = EIP155Lib.init({ privateKey: ENV.TEST_PRIVATE_KEY });
   } else {
     wallet1 = EIP155Lib.init({});
-    storage.setItem('EIP155_MNEMONIC_1', wallet1.getMnemonic());
+    await secureStorage.setSecret(EIP155_MNEMONIC_KEY, wallet1.getMnemonic());
   }
 
   address1 = wallet1.getAddress();
@@ -40,10 +47,10 @@ export async function createOrRestoreEIP155Wallet() {
   };
 }
 
-export function loadEIP155Wallet(input: string): {
+export async function loadEIP155Wallet(input: string): Promise<{
   address: string;
   wallet: EIP155Lib;
-} {
+}> {
   const trimmedInput = input.trim();
 
   // Validate input and determine type
@@ -68,7 +75,7 @@ export function loadEIP155Wallet(input: string): {
         `Mnemonic must be 12, 15, 18, 21, or 24 words (got ${words.length})`,
       );
     }
-    if (!utils.isValidMnemonic(trimmedInput)) {
+    if (!Mnemonic.isValidMnemonic(trimmedInput)) {
       throw new Error('Invalid mnemonic phrase');
     }
   }
@@ -90,13 +97,16 @@ export function loadEIP155Wallet(input: string): {
   eip155Wallets = { [newAddress]: newWallet };
   eip155Addresses = [newAddress];
 
-  // Persist to storage
+  // Persist to secure storage
   if (newWallet.hasMnemonic()) {
-    storage.setItem('EIP155_MNEMONIC_1', newWallet.getMnemonic());
-    storage.removeItem('EIP155_PRIVATE_KEY_1');
+    await secureStorage.setSecret(EIP155_MNEMONIC_KEY, newWallet.getMnemonic());
+    await secureStorage.removeSecret(EIP155_PRIVATE_KEY_KEY);
   } else {
-    storage.setItem('EIP155_PRIVATE_KEY_1', newWallet.getPrivateKey());
-    storage.removeItem('EIP155_MNEMONIC_1');
+    await secureStorage.setSecret(
+      EIP155_PRIVATE_KEY_KEY,
+      newWallet.getPrivateKey(),
+    );
+    await secureStorage.removeSecret(EIP155_MNEMONIC_KEY);
   }
 
   // Update store
