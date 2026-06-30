@@ -6,7 +6,6 @@
     "scheme": "rn-web3wallet",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "bundleIdentifier": "com.walletconnect.web3wallet.rnsample",
       "buildNumber": "155",

@@ -10,7 +10,7 @@ import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import BarcodeSvg from '@/assets/Barcode';
 import PasteSvg from '@/assets/Paste';
-import Clipboard from '@react-native-clipboard/clipboard';
+import { getClipboardString } from '@/utils/ClipboardUtil';
 import { usePairing } from '@/hooks/usePairing';
 import Toast from 'react-native-toast-message';
 import { Button } from '@/components/Button';
@@ -42,7 +42,7 @@ export default function ScannerOptionsModal() {
   };
 
   const onPastePress = () => {
-    Clipboard.getString()
+    getClipboardString()
       .then(url => {
         if (!url.trim()) {
           Toast.show({

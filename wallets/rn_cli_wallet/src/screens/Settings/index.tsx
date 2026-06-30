@@ -1,11 +1,11 @@
 import { useSnapshot } from 'valtio';
 import { useEffect, useState } from 'react';
 import { View, Switch, StyleSheet, Platform } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { getVersion, getBuildNumber } from 'react-native-device-info';
-import { getEnvironmentLabel } from '@/utils/misc';
+import { getVersion, getBuildNumber } from '@/utils/AppInfo';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
+import { getEnvironmentLabel } from '@/utils/misc';
+import { setClipboardString } from '@/utils/ClipboardUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
 import { Card } from '@/components/Card';
@@ -35,7 +35,7 @@ export default function Settings() {
   }, []);
 
   const copyToClipboard = (value: string, label: string = 'Value') => {
-    Clipboard.setString(value);
+    setClipboardString(value);
     Toast.show({
       type: 'info',
       text1: `${label} copied`,

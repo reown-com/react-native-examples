@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-message';
 
+import { setClipboardString } from '@/utils/ClipboardUtil';
 import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
@@ -47,7 +47,7 @@ export const TokenBalanceCard = React.memo(function TokenBalanceCard({
   const chainName = chainData?.name || balance.name;
 
   const copyToClipboard = () => {
-    Clipboard.setString(walletAddress);
+    setClipboardString(walletAddress);
     haptics.copyAddress();
     Toast.show({
       type: 'info',
