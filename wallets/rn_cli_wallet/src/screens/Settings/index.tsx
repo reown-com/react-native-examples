@@ -24,6 +24,19 @@ export default function Settings() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const Theme = useTheme();
 
+  // react-native-web paints the Switch "on" state via activeTrackColor/
+  // activeThumbColor (not React Native's trackColor/thumbColor, which only
+  // cover native). These props aren't in RN's Switch types, so pass them
+  // only on web.
+  const webAccentSwitchProps = (
+    Platform.OS === 'web'
+      ? {
+          activeTrackColor: Theme['bg-accent-primary'],
+          activeThumbColor: Theme.white,
+        }
+      : {}
+  ) as object;
+
   useEffect(() => {
     async function getAsyncData() {
       const _clientId = await storage.getItem('WALLETCONNECT_CLIENT_ID');
@@ -79,6 +92,7 @@ export default function Settings() {
                 },
               })}
               thumbColor={Platform.select({ android: Theme.white })}
+              {...webAccentSwitchProps}
             />
           </View>
         </Button>
