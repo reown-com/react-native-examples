@@ -2,7 +2,7 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkInfoCard } from '@/components/NetworkInfoCard';
@@ -58,7 +58,7 @@ export default function SessionTonSendMessageModal() {
     const effect = async () => {
       const validationResult = await validateTonRequest(requestEvent);
       if (validationResult) {
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t validate request',
           text2: validationResult.error.message,
@@ -128,7 +128,7 @@ export default function SessionTonSendMessageModal() {
           'SessionTonSendMessageModal',
           'onApprove',
         );
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t send message',
           text2: (e as Error).message,
@@ -162,7 +162,7 @@ export default function SessionTonSendMessageModal() {
           'SessionTonSendMessageModal',
           'onReject',
         );
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t reject request',
           text2: (e as Error).message,

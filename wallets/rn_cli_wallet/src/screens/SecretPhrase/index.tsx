@@ -1,7 +1,7 @@
 import { useSnapshot } from 'valtio';
 import { View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import { setClipboardString } from '@/utils/ClipboardUtil';
 import SettingsStore from '@/store/SettingsStore';
@@ -30,7 +30,7 @@ function SecretSection({
   const copySecret = () => {
     if (secret) {
       setClipboardString(secret);
-      Toast.show({
+      showToast({
         type: 'info',
         text1: `${title} secret copied`,
       });

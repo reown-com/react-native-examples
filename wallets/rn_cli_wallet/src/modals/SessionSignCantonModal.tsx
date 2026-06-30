@@ -13,7 +13,7 @@ import { StyleSheet, View } from 'react-native';
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkInfoCard } from '@/components/NetworkInfoCard';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 import { Spacing } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { haptics } from '@/utils/haptics';
@@ -60,7 +60,7 @@ export default function SessionSignCantonModal() {
         'SessionSignCantonModal',
         'onApprove',
       );
-      Toast.show({
+      showToast({
         text1: (e as Error).message,
         type: 'error',
       });
@@ -88,7 +88,7 @@ export default function SessionSignCantonModal() {
         'SessionSignCantonModal',
         'onReject',
       );
-      Toast.show({
+      showToast({
         type: 'error',
         text1: 'Couldn’t reject request',
         text2: (e as Error).message,

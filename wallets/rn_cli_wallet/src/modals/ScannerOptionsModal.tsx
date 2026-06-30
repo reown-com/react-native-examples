@@ -12,7 +12,7 @@ import BarcodeSvg from '@/assets/Barcode';
 import PasteSvg from '@/assets/Paste';
 import { getClipboardString } from '@/utils/ClipboardUtil';
 import { usePairing } from '@/hooks/usePairing';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 import { Button } from '@/components/Button';
 
 const showTestInput = ENV.TEST_MODE === 'true';
@@ -45,7 +45,7 @@ export default function ScannerOptionsModal() {
     getClipboardString()
       .then(url => {
         if (!url.trim()) {
-          Toast.show({
+          showToast({
             type: 'info',
             text1: 'No URL in your clipboard',
             text2: 'Copy a payment URL, then try again.',
@@ -60,7 +60,7 @@ export default function ScannerOptionsModal() {
       })
       .catch(() => {
         ModalStore.close();
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t read your clipboard',
           text2: 'Check app permissions, then try again.',

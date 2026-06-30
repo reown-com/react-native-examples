@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
@@ -249,7 +249,7 @@ export default function SessionProposalModal() {
           'SessionProposalModal',
           'onApprove',
         );
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Connection failed',
           text2: (e as Error).message,
@@ -287,7 +287,7 @@ export default function SessionProposalModal() {
           'SessionProposalModal',
           'onReject',
         );
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t reject request',
           text2: (e as Error).message,

@@ -14,7 +14,7 @@ import { Text } from '@/components/Text';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 import { RootStackParamList } from '@/utils/TypesUtil';
 import { Button } from '@/components/Button';
 
@@ -36,7 +36,7 @@ export default function Settings() {
 
   const copyToClipboard = (value: string, label: string = 'Value') => {
     setClipboardString(value);
-    Toast.show({
+    showToast({
       type: 'info',
       text1: `${label} copied`,
     });

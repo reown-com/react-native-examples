@@ -2,7 +2,7 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
@@ -64,7 +64,7 @@ export default function SessionSignTypedDataModal() {
           'SessionSignTypedDataModal',
           'onApprove',
         );
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t sign typed data',
           text2: (e as Error).message,
@@ -93,7 +93,7 @@ export default function SessionSignTypedDataModal() {
           'SessionSignTypedDataModal',
           'onReject',
         );
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t reject request',
           text2: (e as Error).message,
