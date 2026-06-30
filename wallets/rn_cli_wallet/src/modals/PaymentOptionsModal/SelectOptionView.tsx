@@ -98,19 +98,12 @@ export function SelectOptionView({
                   }
                   testID={`pay-option-${index}`}
                   renderIconRight={
-                    // testID on a wrapping View (not the <Info> svg): Maestro's
-                    // web driver skips svg/img tags, so a testID on the icon
-                    // itself would be unreachable. collapsable={false} + accessible
-                    // keep the wrapper in the iOS native tree — Fabric flattens
-                    // bare style-less Views, dropping the accessibilityIdentifier,
-                    // which made Maestro's id lookup flaky on iOS.
-                    <View
-                      testID="pay-option-info-required"
-                      accessible
-                      collapsable={false}>
-                      <Info height={20} width={20} fill={Theme['icon-invert']} />
-                    </View>
+                    <Info height={20} width={20} fill={Theme['icon-invert']} />
                   }
+                  // testID goes on OptionItem's icon-right Pressable (a sibling of
+                  // the option Button), so it's a standalone a11y element Maestro
+                  // can find on iOS — not merged into the labeled option Button.
+                  iconRightTestID="pay-option-info-required"
                   onIconRightPress={hasCollectData ? onInfoPress : undefined}
                   onPress={() => onOptionPress(option)}
                 />
