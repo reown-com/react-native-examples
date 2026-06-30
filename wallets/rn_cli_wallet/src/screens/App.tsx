@@ -208,7 +208,8 @@ const App = () => {
     <GestureHandlerRootView style={rootStyle}>
       <SafeAreaProvider>
         <KeyboardProvider>
-          <NavigationContainer>
+          <NavigationContainer
+            documentTitle={{ formatter: () => 'React N. Wallet' }}>
             <StatusBar
               translucent
               backgroundColor="transparent"
