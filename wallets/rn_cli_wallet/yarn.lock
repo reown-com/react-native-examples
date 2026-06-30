@@ -5610,16 +5610,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zoontek/react-native-navigation-bar@npm:1.1.0":
-  version: 1.1.0
-  resolution: "@zoontek/react-native-navigation-bar@npm:1.1.0"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 65e290a1acf40157d95d75abc8bed2cd13fd0e193510d30b5c2f3ac07606b46323defc65071f10ed6dbb644bd13183804d9e2c9fa71f472523c8c9950372c8d8
-  languageName: node
-  linkType: hard
-
 "RNWeb3Wallet@workspace:.":
   version: 0.0.0-use.local
   resolution: "RNWeb3Wallet@workspace:."
@@ -5661,7 +5651,6 @@ __metadata:
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
     "@walletconnect/react-native-compat": 2.23.10
-    "@zoontek/react-native-navigation-bar": 1.1.0
     babel-plugin-module-resolver: ^5.0.0
     babel-preset-expo: 56.0.15
     bip39: 3.1.0
@@ -5675,6 +5664,7 @@ __metadata:
     expo: 56.0.12
     expo-application: ~56.0.3
     expo-clipboard: ~56.0.4
+    expo-navigation-bar: ~56.0.3
     expo-system-ui: 56.0.5
     jest: ^29.2.1
     jest-expo: 56.0.5
@@ -8658,6 +8648,19 @@ __metadata:
   peerDependencies:
     react-native: "*"
   checksum: 332b944b5d9f18652154953a012122afe8e9a14824ee72eb5fb36cb306145179f958257f48a5bac8338a68f1322f55198c9dc05dd022ca6c86a270079280e3e9
+  languageName: node
+  linkType: hard
+
+"expo-navigation-bar@npm:~56.0.3":
+  version: 56.0.3
+  resolution: "expo-navigation-bar@npm:56.0.3"
+  dependencies:
+    debug: ^4.3.2
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: f8f730e011b54e6b8ffa3a2ce07d4f071d28ac8417d3e2c5178bb66be6a491837d15da13bb45763588cc0019441a4f83b6d3d918369cde2a027fe8bea43e87e8
   languageName: node
   linkType: hard
 

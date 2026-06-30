@@ -84,8 +84,8 @@
         }
       ],
       [
-        "@zoontek/react-native-navigation-bar",
-        { "android": { "enforceNavigationBarContrast": false } }
+        "expo-navigation-bar",
+        { "enforceContrast": false }
       ],
       "react-native-bottom-tabs",
       [
