@@ -9,8 +9,11 @@
     "newArchEnabled": true,
     "ios": {
       "bundleIdentifier": "com.walletconnect.web3wallet.rnsample",
-      "buildNumber": "16",
+      "buildNumber": "155",
       "appleTeamId": "W5R8AG9K22",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "supportsTablet": true,
       "associatedDomains": [
         "applinks:appkit-lab.reown.com",
@@ -78,7 +81,7 @@
         "react-native-nfc-manager",
         {
           "nfcPermission": "This app requires NFC to send messages",
-          "includeNdefEntitlement": true
+          "includeNdefEntitlement": false
         }
       ],
       [
@@ -94,7 +97,8 @@
           "project": "w3w-react-native"
         }
       ],
-      "./plugins/withAndroidVariants.js"
+      "./plugins/withAndroidVariants.js",
+      "./plugins/withAndroidVariantIcons.js"
     ]
   }
 }

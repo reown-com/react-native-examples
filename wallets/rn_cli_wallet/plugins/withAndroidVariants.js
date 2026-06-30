@@ -75,6 +75,14 @@ function addAndroidVariants(buildGradle) {
     '$1signingConfig signingConfigs.release',
   );
 
+  // 5. Give the debug buildType a .debug applicationId so it can coexist with
+  // release + internal (Expo's default debug has no suffix → collides with
+  // release). `signingConfig signingConfigs.debug` is unique to this block.
+  buildGradle = buildGradle.replace(
+    /(\n(\s*)signingConfig\s+signingConfigs\.debug\b)/,
+    '\n$2applicationIdSuffix ".debug"\n$2versionNameSuffix "-debug"$1',
+  );
+
   return buildGradle;
 }
 
