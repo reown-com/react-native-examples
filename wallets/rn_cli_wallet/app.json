@@ -10,6 +10,7 @@
     "ios": {
       "bundleIdentifier": "com.walletconnect.web3wallet.rnsample",
       "buildNumber": "16",
+      "appleTeamId": "W5R8AG9K22",
       "supportsTablet": true,
       "associatedDomains": [
         "applinks:appkit-lab.reown.com",
