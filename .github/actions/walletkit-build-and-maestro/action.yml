@@ -297,9 +297,21 @@ runs:
       if: inputs.platform == 'ios'
       shell: bash
       run: |
-        DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "iPhone 16" 2>/dev/null || \
+        # Don't hardcode a model — Xcode/runner image bumps drop old devices
+        # (e.g. the Xcode 26 image ships iPhone 17-series, no iPhone 16). Create a
+        # fresh device from whatever iPhone device type exists, falling back to any
+        # already-available iPhone simulator. Mirrors reown-swift#322.
+        DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
+          jq -r '.devicetypes[] | select(.productFamily == "iPhone") | .identifier' | tail -1)
+        DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>/dev/null || \
           xcrun simctl list devices available -j | \
-          jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name == "iPhone 16") | .udid' | head -1)
+          jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
+        if [ -z "$DEVICE_ID" ]; then
+          echo "ERROR: no available iPhone simulator found"
+          xcrun simctl list devices available
+          exit 1
+        fi
+        echo "Using simulator device type: ${DEVICE_TYPE:-<fallback>}, id: $DEVICE_ID"
         xcrun simctl boot "$DEVICE_ID" || true
         # Wait for full boot so the steps below don't race a not-ready simulator
         xcrun simctl bootstatus "$DEVICE_ID" -b

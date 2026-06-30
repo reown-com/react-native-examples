@@ -100,8 +100,14 @@ export function SelectOptionView({
                   renderIconRight={
                     // testID on a wrapping View (not the <Info> svg): Maestro's
                     // web driver skips svg/img tags, so a testID on the icon
-                    // itself would be unreachable. Native is unaffected.
-                    <View testID="pay-option-info-required">
+                    // itself would be unreachable. collapsable={false} + accessible
+                    // keep the wrapper in the iOS native tree — Fabric flattens
+                    // bare style-less Views, dropping the accessibilityIdentifier,
+                    // which made Maestro's id lookup flaky on iOS.
+                    <View
+                      testID="pay-option-info-required"
+                      accessible
+                      collapsable={false}>
                       <Info height={20} width={20} fill={Theme['icon-invert']} />
                     </View>
                   }
