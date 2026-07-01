@@ -1,7 +1,10 @@
 name: CI E2E WalletKit
-# The " (Draft)" suffix is consumed by the E2E KPI metrics job (WalletConnect/actions)
-# to exclude draft-PR runs from the P95 feedback stat. Don't change/remove it.
-run-name: "E2E WalletKit - Tags: ${{ inputs.maestro-tags || 'pay' }}${{ github.event.pull_request.draft && ' (Draft)' || '' }}"
+# The "(skip-metrics)" suffix is consumed by the E2E KPI metrics job (WalletConnect/actions)
+# to exclude those runs from stats. Don't change/remove it.
+# The platform label mirrors which jobs actually run (see each job's `if:`):
+# dispatch = the selected checkboxes ("All" if all three); 6h cron = Android
+# only; PR/push/daily = All.
+run-name: "E2E WalletKit -${{ github.event_name == 'workflow_dispatch' && (inputs.android && inputs.ios && inputs.web && ' All' || format('{0}{1}{2}', inputs.android && ' Android' || '', inputs.ios && ' iOS' || '', inputs.web && ' Web' || '')) || (github.event_name == 'schedule' && github.event.schedule == '0 */6 * * *' && ' Android' || ' All') }} - Tags: ${{ inputs.maestro-tags || 'pay' }}${{ ((github.event_name == 'pull_request' && github.event.pull_request.draft) || (github.event_name == 'workflow_dispatch' && github.ref_name != 'main')) && ' (skip-metrics)' || '' }}"
 
 permissions:
   contents: read
