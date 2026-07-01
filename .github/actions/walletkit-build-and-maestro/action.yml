@@ -507,14 +507,14 @@ runs:
         curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
 
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions#105 (a6aadae — web-only pay flows: in-app
+    # Pinned to WalletConnect/actions#105 (30fd566 — web-only pay flows: in-app
     # IC form, plus the pay-onchain tags the web leg's parallel/serial split
     # relies on). NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@d291974ab5546e76effe98934c146c523e57f9b1
+      uses: WalletConnect/actions/maestro/pay-tests@30fd5666325425f3a01e596e882625c7e96df540
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@d291974ab5546e76effe98934c146c523e57f9b1
+      uses: WalletConnect/actions/maestro/setup@30fd5666325425f3a01e596e882625c7e96df540
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -818,7 +818,7 @@ runs:
       # cancel. Skip too when pay-usdt-polygon didn't run (untagged or excluded).
       if: ${{ !cancelled() && contains(inputs.maestro-tags, 'pay') && !contains(inputs.maestro-exclude-tags, 'pay-usdt-polygon') }}
       # Pinned to WalletConnect/actions#105 (still open) — re-pin to the merged SHA.
-      uses: WalletConnect/actions/maestro/permit2-reset@d291974ab5546e76effe98934c146c523e57f9b1
+      uses: WalletConnect/actions/maestro/permit2-reset@30fd5666325425f3a01e596e882625c7e96df540
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
