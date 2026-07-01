@@ -16,6 +16,10 @@ on:
     - cron: '0 9 * * *' # Once daily, UTC — also runs the expensive iOS E2E
   pull_request:
     branches: [main]
+    # Include the defaults (opened/synchronize/reopened) plus ready_for_review so
+    # E2E auto-runs when a draft PR is promoted to ready (the draft-PR `if:` guards
+    # on each job skip runs while it's still a draft).
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'wallets/rn_cli_wallet/**'
       - '.maestro/**'
