@@ -480,10 +480,17 @@ runs:
       with:
         # find-cache-dir default (babel-loader / metro transform cache). Warming
         # this across runs cuts most of the `expo export` transform time.
+        #
+        # The key hashes the written .env too: Expo inlines EXPO_PUBLIC_* into
+        # the bundle at Babel transform time, and Metro's transform cache is NOT
+        # keyed on env values — so reusing a cache built with different
+        # EXPO_PUBLIC_* (e.g. a caller injecting per-run ephemeral creds) bakes
+        # stale key/creds into the bundle. No restore-keys: any prefix fallback
+        # would span different .env values and re-introduce that poisoning.
+        # Stable-creds callers still get a full hit (identical .env => identical
+        # key); per-run-creds callers cold-build each run, which is correct.
         path: ${{ steps.paths.outputs.wallet_root }}/node_modules/.cache
-        key: ${{ runner.os }}-web-metro-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root)) }}
-        restore-keys: |
-          ${{ runner.os }}-web-metro-
+        key: ${{ runner.os }}-web-metro-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root), format('{0}/.env', steps.paths.outputs.wallet_root)) }}
 
     - name: Export web build
       if: inputs.platform == 'web'
@@ -507,14 +514,14 @@ runs:
         curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
 
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions#105 (a6aadae — web-only pay flows: in-app
-    # IC form, plus the pay-onchain tags the web leg's parallel/serial split
-    # relies on). NOTE: #105 is still open — re-pin to the squash-merge SHA once merged.
+    # Pinned to the WalletConnect/actions#105 squash-merge SHA (4cec02a on
+    # master — web-only pay flows: in-app IC form, plus the pay-onchain tags the
+    # web leg's parallel/serial split relies on).
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@d291974ab5546e76effe98934c146c523e57f9b1
+      uses: WalletConnect/actions/maestro/pay-tests@4cec02a4c535c254581471df287099a26d5eeffb
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@d291974ab5546e76effe98934c146c523e57f9b1
+      uses: WalletConnect/actions/maestro/setup@4cec02a4c535c254581471df287099a26d5eeffb
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -817,8 +824,8 @@ runs:
       # !cancelled() (not always()): still reset after success/failure, but skip on
       # cancel. Skip too when pay-usdt-polygon didn't run (untagged or excluded).
       if: ${{ !cancelled() && contains(inputs.maestro-tags, 'pay') && !contains(inputs.maestro-exclude-tags, 'pay-usdt-polygon') }}
-      # Pinned to WalletConnect/actions#105 (still open) — re-pin to the merged SHA.
-      uses: WalletConnect/actions/maestro/permit2-reset@d291974ab5546e76effe98934c146c523e57f9b1
+      # Pinned to the WalletConnect/actions#105 squash-merge SHA (4cec02a on master).
+      uses: WalletConnect/actions/maestro/permit2-reset@4cec02a4c535c254581471df287099a26d5eeffb
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
