@@ -480,10 +480,17 @@ runs:
       with:
         # find-cache-dir default (babel-loader / metro transform cache). Warming
         # this across runs cuts most of the `expo export` transform time.
+        #
+        # The key hashes the written .env too: Expo inlines EXPO_PUBLIC_* into
+        # the bundle at Babel transform time, and Metro's transform cache is NOT
+        # keyed on env values — so reusing a cache built with different
+        # EXPO_PUBLIC_* (e.g. a caller injecting per-run ephemeral creds) bakes
+        # stale key/creds into the bundle. No restore-keys: any prefix fallback
+        # would span different .env values and re-introduce that poisoning.
+        # Stable-creds callers still get a full hit (identical .env => identical
+        # key); per-run-creds callers cold-build each run, which is correct.
         path: ${{ steps.paths.outputs.wallet_root }}/node_modules/.cache
-        key: ${{ runner.os }}-web-metro-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root)) }}
-        restore-keys: |
-          ${{ runner.os }}-web-metro-
+        key: ${{ runner.os }}-web-metro-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root), format('{0}/.env', steps.paths.outputs.wallet_root)) }}
 
     - name: Export web build
       if: inputs.platform == 'web'
