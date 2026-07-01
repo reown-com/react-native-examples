@@ -58,6 +58,11 @@ on:
         required: false
         default: false
         type: boolean
+      app-variant:
+        description: "APP_VARIANT for expo prebuild (e.g. production/internal). Selects the iOS bundle id/icon via app.config.js."
+        required: false
+        default: 'production'
+        type: string
     secrets:
       sentry-file:
         required: true
@@ -120,7 +125,7 @@ jobs:
         if: ${{ inputs.is-expo-project == true }}
         run: |
           cd ${{ inputs.root-path }}
-          npx expo prebuild --platform ios
+          APP_VARIANT=${{ inputs.app-variant }} npx expo prebuild --platform ios
 
       - name: Set Xcode paths
         run: |

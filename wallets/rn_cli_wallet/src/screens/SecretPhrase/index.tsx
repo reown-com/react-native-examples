@@ -1,9 +1,9 @@
 import { useSnapshot } from 'valtio';
 import { View, StyleSheet } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
 import { ScrollView } from 'react-native-gesture-handler';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
+import { setClipboardString } from '@/utils/ClipboardUtil';
 import SettingsStore from '@/store/SettingsStore';
 import { eip155Wallets } from '@/utils/EIP155WalletUtil';
 import { useTheme } from '@/hooks/useTheme';
@@ -29,8 +29,8 @@ function SecretSection({
 
   const copySecret = () => {
     if (secret) {
-      Clipboard.setString(secret);
-      Toast.show({
+      setClipboardString(secret);
+      showToast({
         type: 'info',
         text1: `${title} secret copied`,
       });

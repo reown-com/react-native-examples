@@ -1,5 +1,5 @@
-import Config from 'react-native-config';
-import DeviceInfo from 'react-native-device-info';
+import { ENV } from '@/utils/env';
+import { getBundleId } from '@/utils/AppInfo';
 import { TokenBalance, BalanceResponse } from '@/utils/BalanceTypes';
 import LogStore, { serializeError } from '@/store/LogStore';
 
@@ -15,9 +15,9 @@ async function fetchBalanceForChain(
   address: string,
   chainId: string,
 ): Promise<TokenBalance[]> {
-  const baseUrl = Config.ENV_BLOCKCHAIN_API_URL;
-  const projectId = Config.ENV_PROJECT_ID;
-  const origin = DeviceInfo.getBundleId();
+  const baseUrl = ENV.BLOCKCHAIN_API_URL;
+  const projectId = ENV.PROJECT_ID;
+  const origin = getBundleId();
 
   LogStore.log(
     'fetchBalanceForChain called',

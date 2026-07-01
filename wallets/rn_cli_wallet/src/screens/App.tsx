@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import Config from 'react-native-config';
+import { ENV } from '@/utils/env';
 import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
-import { NavigationBar } from '@zoontek/react-native-navigation-bar';
+import { NavigationBar } from 'expo-navigation-bar';
 import { useSnapshot } from 'valtio';
 import { NavigationContainer } from '@react-navigation/native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -27,8 +27,8 @@ import { toastConfig } from '@/components/ToastConfig';
 import { DarkTheme, LightTheme } from '@/utils/ThemeUtil';
 
 Sentry.init({
-  enabled: !__DEV__ && !!Config.ENV_SENTRY_DSN,
-  dsn: Config.ENV_SENTRY_DSN,
+  enabled: !__DEV__ && !!ENV.SENTRY_DSN,
+  dsn: ENV.SENTRY_DSN,
   environment: getEnvironment(),
   sendDefaultPii: false,
   // Enable Logs
@@ -208,15 +208,14 @@ const App = () => {
     <GestureHandlerRootView style={rootStyle}>
       <SafeAreaProvider>
         <KeyboardProvider>
-          <NavigationContainer>
+          <NavigationContainer
+            documentTitle={{ formatter: () => 'React N. Wallet' }}>
             <StatusBar
               translucent
               backgroundColor="transparent"
               barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
             />
-            <NavigationBar
-              barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
-            />
+            <NavigationBar style={themeMode === 'dark' ? 'light' : 'dark'} />
             <RootStackNavigator />
             <Modal />
           </NavigationContainer>

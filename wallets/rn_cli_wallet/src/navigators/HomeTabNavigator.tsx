@@ -40,6 +40,7 @@ export function HomeTabNavigator() {
     <TabNav.Navigator
       hapticFeedbackEnabled
       translucent={false}
+      activeIndicatorColor={Theme['foreground-accent-primary-10-solid']}
       tabBarStyle={{ backgroundColor: Theme['bg-primary'] }}
     >
       <TabNav.Screen

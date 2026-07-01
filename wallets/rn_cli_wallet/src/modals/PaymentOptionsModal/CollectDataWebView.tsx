@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { View, StyleSheet, Linking } from 'react-native';
+import type { CollectDataField, CollectDataFieldResult } from '@walletconnect/pay';
 import { WebView, WebViewNavigation } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { btoa } from 'react-native-quick-base64';
@@ -94,7 +95,11 @@ function buildUrlWithPrefill(
 
 interface CollectDataWebViewProps {
   url: string;
-  onComplete: () => void;
+  // Present so the props match the web variant (which renders an in-app form
+  // from these fields/schema). Native uses the hosted webview and ignores them.
+  fields?: CollectDataField[];
+  schema?: string;
+  onComplete: (collectedData?: CollectDataFieldResult[]) => void;
   onError: (error: string) => void;
 }
 

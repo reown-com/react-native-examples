@@ -25,36 +25,36 @@ const getResultButtonTestId = (
 ) =>
   `pay-button-result-action-${isSuccess ? 'success' : errorType || 'generic'}`;
 
+// The testID is placed on a wrapping <View> rather than directly on the icon.
+// On web, react-native-svg renders an <svg> and Lottie a <canvas>; Maestro's web
+// driver skips svg/img tags entirely, so a testID on the icon itself would be
+// unreachable. A wrapping View renders as a <div>, which Maestro can find (and
+// native testID lookup works on the View just the same).
 const renderIcon = (icon: ResultIcon, testID: string) => {
   switch (icon) {
     case 'success':
       return (
-        <LottieView
-          source={require('@/assets/lottie/Success.json')}
-          autoPlay={arePayModalAnimationsEnabled}
-          loop={false}
-          progress={arePayModalAnimationsEnabled ? undefined : 1}
-          style={styles.successAnimation}
-          testID={testID}
-        />
+        <View testID={testID}>
+          <LottieView
+            source={require('@/assets/lottie/Success.json')}
+            autoPlay={arePayModalAnimationsEnabled}
+            loop={false}
+            progress={arePayModalAnimationsEnabled ? undefined : 1}
+            style={styles.successAnimation}
+          />
+        </View>
       );
     case 'coins':
       return (
-        <CoinStack
-          width={40}
-          height={40}
-          fill={ERROR_ICON_COLOR}
-          testID={testID}
-        />
+        <View testID={testID}>
+          <CoinStack width={40} height={40} fill={ERROR_ICON_COLOR} />
+        </View>
       );
     case 'warning':
       return (
-        <WarningCircle
-          width={40}
-          height={40}
-          fill={ERROR_ICON_COLOR}
-          testID={testID}
-        />
+        <View testID={testID}>
+          <WarningCircle width={40} height={40} fill={ERROR_ICON_COLOR} />
+        </View>
       );
   }
 };

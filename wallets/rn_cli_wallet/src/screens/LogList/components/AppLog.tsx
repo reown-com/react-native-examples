@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
 
+import { setClipboardString } from '@/utils/ClipboardUtil';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
@@ -24,7 +24,7 @@ export function AppLog({ entry }: AppLogProps) {
   const Theme = useTheme();
 
   const copyToClipboard = () => {
-    Clipboard.setString(JSON.stringify(entry, null, 2));
+    setClipboardString(JSON.stringify(entry, null, 2));
   };
 
   const formatTime = (timestamp: number) => {

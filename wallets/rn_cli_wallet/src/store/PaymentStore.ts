@@ -1,12 +1,15 @@
 import { proxy, ref } from 'valtio';
 import type {
   Action,
+  CollectDataFieldResult,
   ConfirmPaymentResponse,
   PaymentOptionsResponse,
   PaymentOption,
 } from '@walletconnect/pay';
 import { providers } from 'ethers';
+import { Platform } from 'react-native';
 
+import { ENV } from '@/utils/env';
 import LogStore, { serializeError } from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
@@ -42,6 +45,10 @@ interface PaymentState {
   optionFeeEstimatesById: Record<string, TransactionFeeEstimate | null>;
   optionFeeEstimateStatusById: Record<string, OptionFeeEstimateStatus>;
   collectDataCompletedIds: string[];
+  // Identity-collection field values gathered in-app (web native form), keyed by
+  // option id. Passed to confirmPayment as `collectedData`. On native the hosted
+  // webview submits server-side, so this stays empty there.
+  collectedDataByOptionId: Record<string, CollectDataFieldResult[]>;
   expiresAt: number | null;
 }
 
@@ -63,6 +70,7 @@ function createInitialState(): PaymentState {
     optionFeeEstimatesById: {},
     optionFeeEstimateStatusById: {},
     collectDataCompletedIds: [],
+    collectedDataByOptionId: {},
     expiresAt: null,
   };
 }
@@ -235,6 +243,10 @@ const PaymentStore = {
     }
   },
 
+  setCollectedData(optionId: string, data: CollectDataFieldResult[]) {
+    state.collectedDataByOptionId[optionId] = data;
+  },
+
   isCollectDataCompleted(optionId: string): boolean {
     return state.collectDataCompletedIds.includes(optionId);
   },
@@ -248,6 +260,14 @@ const PaymentStore = {
   },
 
   async loadLastPaidTokenUnit(): Promise<string | undefined> {
+    // In E2E on web, Maestro's clearState doesn't clear localStorage (our MMKV
+    // shim), so a token remembered from a prior flow would make multi-option
+    // payments skip the select screen and break flows that assert it. Ignore it
+    // there so each flow starts clean — matching native, where clearState wipes
+    // MMKV. Real web users keep the "remember last token" convenience.
+    if (ENV.TEST_MODE === 'true' && Platform.OS === 'web') {
+      return undefined;
+    }
     return storage.getItem<string>(PAY_LAST_TOKEN_UNIT_KEY);
   },
 
@@ -736,10 +756,16 @@ const PaymentStore = {
         signaturesCount: signatures.length,
       });
 
+      // Identity-collection values gathered by the in-app form (web). Omitted
+      // (undefined) when there are none — e.g. native, where the hosted webview
+      // already submitted them server-side, or options that need no collection.
+      const collectedData = state.collectedDataByOptionId[selectedOption.id];
+
       const confirmResult = await payClient.confirmPayment({
         paymentId: paymentOptions.paymentId,
         optionId: selectedOption.id,
         signatures,
+        collectedData: collectedData?.length ? collectedData : undefined,
       });
 
       LogStore.log(

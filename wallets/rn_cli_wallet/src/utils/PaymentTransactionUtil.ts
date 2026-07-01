@@ -1,6 +1,6 @@
 import type { Action } from '@walletconnect/pay';
 import { BigNumber, providers, utils } from 'ethers';
-import Config from 'react-native-config';
+import { ENV } from './env';
 
 import LogStore, { serializeError } from '@/store/LogStore';
 import { PresetsUtil } from '@/utils/PresetsUtil';
@@ -99,7 +99,7 @@ export function parseWalletRpcParams(params: unknown): unknown[] | null {
 }
 
 function getWalletConnectRpcUrl(chainId: string): string | null {
-  const projectId = Config.ENV_PROJECT_ID?.trim();
+  const projectId = ENV.PROJECT_ID?.trim();
   if (!projectId) {
     return null;
   }
@@ -146,7 +146,7 @@ async function fetchNativeTokenPrice({
   chainId: string;
   currency?: string;
 }): Promise<{ price: number; currency: string } | null> {
-  const projectId = Config.ENV_PROJECT_ID?.trim();
+  const projectId = ENV.PROJECT_ID?.trim();
   if (!projectId) {
     return null;
   }

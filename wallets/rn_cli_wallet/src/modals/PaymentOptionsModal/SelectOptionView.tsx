@@ -98,13 +98,12 @@ export function SelectOptionView({
                   }
                   testID={`pay-option-${index}`}
                   renderIconRight={
-                    <Info
-                      testID="pay-option-info-required"
-                      height={20}
-                      width={20}
-                      fill={Theme['icon-invert']}
-                    />
+                    <Info height={20} width={20} fill={Theme['icon-invert']} />
                   }
+                  // testID goes on OptionItem's icon-right Pressable (a sibling of
+                  // the option Button), so it's a standalone a11y element Maestro
+                  // can find on iOS — not merged into the labeled option Button.
+                  iconRightTestID="pay-option-info-required"
                   onIconRightPress={hasCollectData ? onInfoPress : undefined}
                   onPress={() => onOptionPress(option)}
                 />

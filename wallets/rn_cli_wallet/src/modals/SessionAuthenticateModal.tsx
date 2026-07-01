@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes, AuthTypes } from '@walletconnect/types';
 import { buildAuthObject, populateAuthPayload } from '@walletconnect/utils';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
@@ -98,7 +98,7 @@ export default function SessionAuthenticateModal() {
           'SessionAuthenticateModal',
           'onApprove',
         );
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t authenticate',
           text2: (e as Error).message,
@@ -135,7 +135,7 @@ export default function SessionAuthenticateModal() {
           'SessionAuthenticateModal',
           'onReject',
         );
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t reject request',
           text2: (e as Error).message,
