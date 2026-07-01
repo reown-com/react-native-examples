@@ -12,16 +12,37 @@
 // Splash screen is handled separately by the react-native-bootsplash plugin
 // (assets/bootsplash/), configured in app.json.
 //
-// NOTE: while the committed ios/ and android/ projects are still authoritative
-// (pre-prebuild), today's builds keep using the Xcode schemes / Gradle
-// buildTypes; this file only takes effect once we switch to `expo prebuild`.
+// Deep-link schemes are variant-specific and MUST be registered natively here,
+// otherwise the OS has no app to open when a dApp deep-links back to an
+// internal/debug build. src/utils/misc.ts advertises these exact schemes as the
+// WalletConnect redirect (rn-web3wallet-internal:// etc.), so app.json's single
+// base `scheme` is not enough once we prebuild — each variant registers its own.
 
 const BASE_APP_ID = 'com.walletconnect.web3wallet.rnsample';
+const BASE_SCHEME = 'rn-web3wallet';
+const WALLETKIT_PATH = '/rn_walletkit';
 
 const VARIANT_ID_SUFFIX = {
   production: '',
   internal: '.internal',
   debug: '.debug',
+};
+
+// Native custom-scheme suffix advertised as the WalletConnect redirect
+// (see src/utils/misc.ts ENV_CONFIG.native).
+const VARIANT_SCHEME_SUFFIX = {
+  production: '',
+  internal: '-internal',
+  debug: '-debug',
+};
+
+// Universal-link path suffix (see src/utils/misc.ts ENV_CONFIG.universal).
+// Applied to Android intent filters; iOS path matching is server-side via the
+// apple-app-site-association file, so associatedDomains stay variant-agnostic.
+const VARIANT_LINK_SUFFIX = {
+  production: '',
+  internal: '_internal',
+  debug: '_debug',
 };
 
 module.exports = ({ config }) => {
@@ -30,10 +51,15 @@ module.exports = ({ config }) => {
       ? process.env.APP_VARIANT
       : 'production';
   const iconDir = `./assets/icons/${variant}`;
+  const variantScheme = `${BASE_SCHEME}${VARIANT_SCHEME_SUFFIX[variant]}`;
+  const variantWalletkitPath = `${WALLETKIT_PATH}${VARIANT_LINK_SUFFIX[variant]}`;
 
   return {
     ...config,
     icon: `${iconDir}/icon.png`,
+    // Register the variant-specific redirect scheme so deep-link-back works
+    // (rn-web3wallet-internal:// for internal, rn-web3wallet-debug:// for debug).
+    scheme: variantScheme,
     ios: {
       ...config.ios,
       // iOS variants = per-variant prebuild driven by APP_VARIANT.
@@ -50,6 +76,17 @@ module.exports = ({ config }) => {
         backgroundImage: `${iconDir}/adaptive-background.png`,
         monochromeImage: `${iconDir}/adaptive-monochrome.png`,
       },
+      // Rewrite the /rn_walletkit universal-link path prefix to the variant path
+      // so internal/debug App Links (…/rn_walletkit_internal) resolve. No-op for
+      // production (empty suffix).
+      intentFilters: config.android.intentFilters?.map(filter => ({
+        ...filter,
+        data: filter.data?.map(entry =>
+          entry.pathPrefix === WALLETKIT_PATH
+            ? { ...entry, pathPrefix: variantWalletkitPath }
+            : entry,
+        ),
+      })),
     },
   };
 };
