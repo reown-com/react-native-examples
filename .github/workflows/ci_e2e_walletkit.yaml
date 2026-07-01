@@ -66,6 +66,9 @@ env:
 
 jobs:
   check-balance:
+    # Skip the faucet/balance check on draft PRs too — the E2E jobs that need it
+    # are skipped while a PR is a draft, so there's nothing to check for.
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     uses: ./.github/workflows/e2e-balance-check.yml
     secrets:
       SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
