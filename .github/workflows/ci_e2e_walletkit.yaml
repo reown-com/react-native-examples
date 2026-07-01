@@ -1,5 +1,7 @@
 name: CI E2E WalletKit
-run-name: "E2E WalletKit - ${{ inputs.platform || 'both' }} - Tags: ${{ inputs.maestro-tags || 'pay' }}"
+# The " (Draft)" suffix is consumed by the E2E KPI metrics job (WalletConnect/actions)
+# to exclude draft-PR runs from the P95 feedback stat. Don't change/remove it.
+run-name: "E2E WalletKit - ${{ inputs.platform || 'both' }} - Tags: ${{ inputs.maestro-tags || 'pay' }}${{ github.event.pull_request.draft && ' (Draft)' || '' }}"
 
 permissions:
   contents: read
@@ -59,6 +61,7 @@ jobs:
     if: >-
       always() && inputs.platform != 'android'
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
+      && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - iOS
     runs-on: macos-latest-xlarge
     timeout-minutes: 60
@@ -138,7 +141,10 @@ jobs:
 
   e2e-android:
     needs: check-balance
-    if: always() && inputs.platform != 'ios' # Balance alert should not block tests
+    # Balance alert should not block tests
+    if: >-
+      always() && inputs.platform != 'ios'
+      && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - Android
     runs-on: ubuntu-latest
     timeout-minutes: 60
