@@ -1,8 +1,6 @@
 import TonLib from '../lib/TonLib';
-import { secureStorage } from './secure-storage';
+import { storage } from './storage';
 import SettingsStore from '@/store/SettingsStore';
-
-const TON_SECRET_KEY_KEY = 'TON_SECRET_KEY_1';
 
 export let wallet1: TonLib;
 export let wallet2: TonLib;
@@ -15,16 +13,14 @@ let address1: string;
  * Utilities
  */
 export async function createOrRestoreTonWallet() {
-  // Migrate any legacy plaintext-MMKV key material into the secure enclave.
-  await secureStorage.migrateSecret(TON_SECRET_KEY_KEY);
-
-  const secretKey1 = await secureStorage.getSecret(TON_SECRET_KEY_KEY);
+  const secretKey1 = await storage.getItem('TON_SECRET_KEY_1');
 
   if (secretKey1) {
     wallet1 = await TonLib.init({ secretKey: secretKey1 });
   } else {
     wallet1 = await TonLib.init({});
-    await secureStorage.setSecret(TON_SECRET_KEY_KEY, wallet1.getSecretKey());
+    // Don't store secretKey in local storage in a production project!
+    await storage.setItem('TON_SECRET_KEY_1', wallet1.getSecretKey());
   }
 
   address1 = await wallet1.getAddress();
@@ -79,8 +75,13 @@ export async function loadTonWallet(input: string): Promise<{
   tonWallets = { [newAddress]: newWallet };
   tonAddresses = [newAddress];
 
-  // Persist to secure storage (always store the secret key for consistency)
-  await secureStorage.setSecret(TON_SECRET_KEY_KEY, newWallet.getSecretKey());
+  // Persist to storage (always store the secret key for consistency)
+  await storage.setItem('TON_SECRET_KEY_1', newWallet.getSecretKey());
+  if (__DEV__) {
+    console.warn(
+      '[SECURITY] TON secret key stored unencrypted. Use secure enclave in production.',
+    );
+  }
 
   // Update store
   SettingsStore.setTonAddress(newAddress);

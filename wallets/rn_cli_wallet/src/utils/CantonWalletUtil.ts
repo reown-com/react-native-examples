@@ -1,8 +1,6 @@
 import CantonLib from '../lib/CantonLib';
-import { secureStorage } from './secure-storage';
+import { storage } from './storage';
 import SettingsStore from '@/store/SettingsStore';
-
-const CANTON_SECRET_KEY_KEY = 'CANTON_SECRET_KEY_1';
 
 export let wallet1: CantonLib | undefined;
 export let cantonWallets: Record<string, CantonLib>;
@@ -14,16 +12,14 @@ let address1: string;
  * Utilities
  */
 export async function createOrRestoreCantonWallet() {
-  // Migrate any legacy plaintext-MMKV key material into the secure enclave.
-  await secureStorage.migrateSecret(CANTON_SECRET_KEY_KEY);
-
-  const secretKey1 = await secureStorage.getSecret(CANTON_SECRET_KEY_KEY);
+  const secretKey1 = await storage.getItem('CANTON_SECRET_KEY_1');
 
   if (secretKey1) {
     wallet1 = CantonLib.init({ secretKey: secretKey1 });
   } else {
     wallet1 = CantonLib.init();
-    await secureStorage.setSecret(CANTON_SECRET_KEY_KEY, wallet1.getSecretKey());
+    // Don't store secretKey in local storage in a production project!
+    await storage.setItem('CANTON_SECRET_KEY_1', wallet1.getSecretKey());
   }
 
   address1 = wallet1.getEncodedPartyId();
@@ -72,8 +68,13 @@ export async function loadCantonWallet(input: string): Promise<{
   cantonWallets = { [newAddress]: newWallet };
   cantonAddresses = [newAddress];
 
-  // Persist to secure storage
-  await secureStorage.setSecret(CANTON_SECRET_KEY_KEY, newWallet.getSecretKey());
+  // Persist to storage
+  await storage.setItem('CANTON_SECRET_KEY_1', newWallet.getSecretKey());
+  if (__DEV__) {
+    console.warn(
+      '[SECURITY] Canton secret key stored unencrypted. Use secure enclave in production.',
+    );
+  }
 
   // Update store
   SettingsStore.setCantonAddress(newAddress);

@@ -1,9 +1,4 @@
-import {
-  HDNodeWallet,
-  JsonRpcProvider,
-  TransactionRequest,
-  Wallet,
-} from 'ethers';
+import { providers, Wallet } from 'ethers';
 
 /**
  * Types
@@ -17,19 +12,19 @@ interface IInitArgs {
  * Library
  */
 export default class EIP155Lib {
-  wallet: Wallet | HDNodeWallet;
+  wallet: Wallet;
 
-  constructor(wallet: Wallet | HDNodeWallet) {
+  constructor(wallet: Wallet) {
     this.wallet = wallet;
   }
 
   static init({ mnemonic, privateKey }: IInitArgs) {
-    let wallet: Wallet | HDNodeWallet;
+    let wallet: Wallet;
 
     if (privateKey) {
       wallet = new Wallet(privateKey);
     } else if (mnemonic) {
-      wallet = HDNodeWallet.fromPhrase(mnemonic);
+      wallet = Wallet.fromMnemonic(mnemonic);
     } else {
       wallet = Wallet.createRandom();
     }
@@ -38,7 +33,7 @@ export default class EIP155Lib {
   }
 
   getMnemonic() {
-    return 'mnemonic' in this.wallet ? this.wallet.mnemonic?.phrase ?? '' : '';
+    return this.wallet.mnemonic?.phrase ?? '';
   }
 
   getPrivateKey() {
@@ -46,7 +41,7 @@ export default class EIP155Lib {
   }
 
   hasMnemonic() {
-    return 'mnemonic' in this.wallet && !!this.wallet.mnemonic?.phrase;
+    return !!this.wallet.mnemonic?.phrase;
   }
 
   getAddress() {
@@ -58,14 +53,14 @@ export default class EIP155Lib {
   }
 
   _signTypedData(domain: any, types: any, data: any) {
-    return this.wallet.signTypedData(domain, types, data);
+    return this.wallet._signTypedData(domain, types, data);
   }
 
-  connect(provider: JsonRpcProvider) {
+  connect(provider: providers.JsonRpcProvider) {
     return this.wallet.connect(provider);
   }
 
-  signTransaction(transaction: TransactionRequest) {
+  signTransaction(transaction: providers.TransactionRequest) {
     return this.wallet.signTransaction(transaction);
   }
 }

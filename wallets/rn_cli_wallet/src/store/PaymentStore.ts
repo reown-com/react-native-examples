@@ -6,7 +6,7 @@ import type {
   PaymentOptionsResponse,
   PaymentOption,
 } from '@walletconnect/pay';
-import type { TransactionRequest } from 'ethers';
+import { providers } from 'ethers';
 import { Platform } from 'react-native';
 
 import { ENV } from '@/utils/env';
@@ -620,7 +620,7 @@ const PaymentStore = {
 
             const tx = await sendTransactionWithFreshFees({
               chainId,
-              baseTx: { ...(txPayload as TransactionRequest) },
+              baseTx: { ...(txPayload as providers.TransactionRequest) },
               wallet: evmWallet,
               logContext: 'approvePayment',
             });

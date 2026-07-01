@@ -1,18 +1,11 @@
 import type { Action } from '@walletconnect/pay';
-import { JsonRpcProvider, Network, formatEther } from 'ethers';
-import type {
-  Block,
-  FeeData,
-  JsonRpcSigner,
-  TransactionRequest,
-  TransactionResponse,
-} from 'ethers';
+import { BigNumber, providers, utils } from 'ethers';
 import { ENV } from './env';
 
 import LogStore, { serializeError } from '@/store/LogStore';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 
-const POLYGON_MIN_PRIORITY_FEE_WEI = 30000000000n; // 30 gwei
+const POLYGON_MIN_PRIORITY_FEE_WEI = BigNumber.from('30000000000'); // 30 gwei
 const WALLETCONNECT_RPC_BASE_URL = 'https://rpc.walletconnect.org/v1/';
 const WALLETCONNECT_FUNGIBLE_PRICE_URL =
   'https://rpc.walletconnect.org/v1/fungible/price';
@@ -79,12 +72,12 @@ export type TransactionFeeEstimate = {
 };
 
 export type TransactionWallet = {
-  connect: (provider: JsonRpcProvider) =>
-    | JsonRpcSigner
+  connect: (provider: providers.JsonRpcProvider) =>
+    | providers.JsonRpcSigner
     | {
         sendTransaction: (
-          tx: TransactionRequest,
-        ) => Promise<TransactionResponse>;
+          tx: providers.TransactionRequest,
+        ) => Promise<providers.TransactionResponse>;
       };
 };
 
@@ -116,19 +109,19 @@ function getWalletConnectRpcUrl(chainId: string): string | null {
   )}&projectId=${encodeURIComponent(projectId)}`;
 }
 
-function getHighestBigInt(
-  values: Array<bigint | null | undefined>,
-): bigint | null {
-  return values.reduce<bigint | null>((max, v) => {
-    if (v == null) return max;
-    return max == null || v > max ? v : max;
+function getHighestBigNumber(
+  values: Array<BigNumber | null | undefined>,
+): BigNumber | null {
+  return values.reduce<BigNumber | null>((max, v) => {
+    if (!v) return max;
+    return !max || v.gt(max) ? v : max;
   }, null);
 }
 
-function toBigInt(value: unknown): bigint | null {
+function toBigNumber(value: unknown): BigNumber | null {
   if (value == null) return null;
   try {
-    return BigInt(value as string | number | bigint);
+    return BigNumber.from(value as string | number);
   } catch {
     return null;
   }
@@ -236,7 +229,9 @@ async function fetchNativeTokenPrice({
   });
 }
 
-export function createPayRpcProvider(chainId: string): JsonRpcProvider {
+export function createPayRpcProvider(
+  chainId: string,
+): providers.StaticJsonRpcProvider {
   const chainData = PresetsUtil.getChainDataById(chainId);
   if (!chainData) {
     throw new Error(`Missing chain metadata for ${chainId}`);
@@ -250,16 +245,14 @@ export function createPayRpcProvider(chainId: string): JsonRpcProvider {
   }
 
   const parsedChainId = Number(chainData.chainId);
-  // v6 replaces StaticJsonRpcProvider with the `staticNetwork` option, which
-  // skips the initial eth_chainId detection round-trip.
   const network =
     Number.isFinite(parsedChainId) && parsedChainId > 0
-      ? new Network(chainData.name || chainId, parsedChainId)
+      ? { chainId: parsedChainId, name: chainData.name || chainId }
       : undefined;
 
   return network
-    ? new JsonRpcProvider(rpcUrl, network, { staticNetwork: network })
-    : new JsonRpcProvider(rpcUrl);
+    ? new providers.StaticJsonRpcProvider(rpcUrl, network)
+    : new providers.StaticJsonRpcProvider(rpcUrl);
 }
 
 export function buildFreshTxRequest({
@@ -269,28 +262,28 @@ export function buildFreshTxRequest({
   latestBlock,
 }: {
   chainId: string;
-  baseTx: TransactionRequest;
-  feeData: FeeData;
-  latestBlock: Block;
-}): TransactionRequest {
+  baseTx: providers.TransactionRequest;
+  feeData: providers.FeeData;
+  latestBlock: providers.Block;
+}): providers.TransactionRequest {
   const chainFloor =
     chainId === 'eip155:137' ? POLYGON_MIN_PRIORITY_FEE_WEI : null;
-  const priorityFee = getHighestBigInt([
+  const priorityFee = getHighestBigNumber([
     chainFloor,
     feeData.maxPriorityFeePerGas || null,
   ]);
 
   const maxFee = priorityFee
-    ? getHighestBigInt([
+    ? getHighestBigNumber([
         latestBlock.baseFeePerGas
-          ? latestBlock.baseFeePerGas * 2n + priorityFee
+          ? latestBlock.baseFeePerGas.mul(2).add(priorityFee)
           : null,
         feeData.maxFeePerGas || null,
         priorityFee,
       ])
     : null;
 
-  const request: TransactionRequest = { ...baseTx };
+  const request: providers.TransactionRequest = { ...baseTx };
 
   if (priorityFee) {
     request.maxPriorityFeePerGas = priorityFee;
@@ -309,7 +302,7 @@ export function buildFreshTxRequest({
     !request.maxFeePerGas &&
     feeData.gasPrice
   ) {
-    const gasPrice = getHighestBigInt([feeData.gasPrice, chainFloor]);
+    const gasPrice = getHighestBigNumber([feeData.gasPrice, chainFloor]);
     if (gasPrice) {
       request.gasPrice = gasPrice;
     }
@@ -320,10 +313,10 @@ export function buildFreshTxRequest({
   return request;
 }
 
-function serializeTxRequestForLog(tx: TransactionRequest) {
+function serializeTxRequestForLog(tx: providers.TransactionRequest) {
   const asString = (value: unknown): string | number | null => {
     if (value == null) return null;
-    if (typeof value === 'bigint') return value.toString();
+    if (BigNumber.isBigNumber(value)) return value.toString();
     if (typeof value === 'number' || typeof value === 'string') return value;
     if (typeof value === 'object' && value && 'toString' in value) {
       try {
@@ -356,14 +349,14 @@ function formatNativeGasEstimate({
   totalFeeWei,
   chainId,
 }: {
-  totalFeeWei: bigint;
+  totalFeeWei: BigNumber;
   chainId: string;
 }): string {
   const symbol = NATIVE_SYMBOL_BY_CHAIN_ID[chainId] || 'ETH';
-  const feeValue = Number(formatEther(totalFeeWei));
+  const feeValue = Number(utils.formatEther(totalFeeWei));
 
   if (!Number.isFinite(feeValue) || feeValue <= 0) {
-    return `~${formatEther(totalFeeWei)} ${symbol}`;
+    return `~${utils.formatEther(totalFeeWei)} ${symbol}`;
   }
 
   if (feeValue >= 0.01) {
@@ -398,13 +391,13 @@ function buildGasEstimate({
   chainId,
   nativeTokenPrice,
 }: {
-  totalFeeWei: bigint;
+  totalFeeWei: BigNumber;
   chainId: string;
   nativeTokenPrice: { price: number; currency: string } | null;
 }): TransactionFeeEstimate {
   const nativeSymbol = NATIVE_SYMBOL_BY_CHAIN_ID[chainId] || 'ETH';
   const nativeDisplay = formatNativeGasEstimate({ totalFeeWei, chainId });
-  const nativeValue = Number(formatEther(totalFeeWei));
+  const nativeValue = Number(utils.formatEther(totalFeeWei));
   const fiatCurrency = nativeTokenPrice?.currency ?? null;
   const fiatValue =
     nativeTokenPrice && Number.isFinite(nativeValue) && nativeValue > 0
@@ -461,15 +454,15 @@ export async function estimateTransactionFee(
     return null;
   }
 
-  let provider: JsonRpcProvider;
+  let provider: providers.StaticJsonRpcProvider;
   try {
     provider = createPayRpcProvider(walletRpc.chainId);
   } catch {
     return null;
   }
 
-  const baseTx: TransactionRequest = {
-    ...(parsedParams[0] as TransactionRequest),
+  const baseTx: providers.TransactionRequest = {
+    ...(parsedParams[0] as providers.TransactionRequest),
   };
 
   const [gasLimit, feeData, latestBlock] = await Promise.all([
@@ -490,10 +483,6 @@ export async function estimateTransactionFee(
     ),
   ]);
 
-  if (!latestBlock) {
-    return null;
-  }
-
   const txWithFreshFees = buildFreshTxRequest({
     chainId: walletRpc.chainId,
     baseTx,
@@ -501,17 +490,17 @@ export async function estimateTransactionFee(
     latestBlock,
   });
 
-  const feePerGas = toBigInt(
+  const feePerGas = toBigNumber(
     txWithFreshFees.maxFeePerGas ??
       txWithFreshFees.gasPrice ??
       feeData.maxFeePerGas ??
       feeData.gasPrice,
   );
-  if (feePerGas == null) {
+  if (!feePerGas) {
     return null;
   }
 
-  const totalFeeWei = gasLimit * feePerGas;
+  const totalFeeWei = gasLimit.mul(feePerGas);
   const nativeTokenPrice = await fetchNativeTokenPrice({
     chainId: walletRpc.chainId,
     currency: options.currency,
@@ -531,27 +520,25 @@ export async function sendTransactionWithFreshFees({
   logContext,
 }: {
   chainId: string;
-  baseTx: TransactionRequest;
+  baseTx: providers.TransactionRequest;
   wallet: TransactionWallet;
   logContext: string;
-}): Promise<TransactionResponse> {
+}): Promise<providers.TransactionResponse> {
   const provider = createPayRpcProvider(chainId);
   const connectedWallet = wallet.connect(provider);
 
-  let txRequest: TransactionRequest = { ...baseTx };
+  let txRequest: providers.TransactionRequest = { ...baseTx };
   try {
     const [feeData, latestBlock] = await Promise.all([
       provider.getFeeData(),
       provider.getBlock('latest'),
     ]);
-    if (latestBlock) {
-      txRequest = buildFreshTxRequest({
-        chainId,
-        baseTx,
-        feeData,
-        latestBlock,
-      });
-    }
+    txRequest = buildFreshTxRequest({
+      chainId,
+      baseTx,
+      feeData,
+      latestBlock,
+    });
   } catch (error) {
     LogStore.warn(
       'Failed to fetch initial fee data',
@@ -584,7 +571,7 @@ export async function sendTransactionWithFreshFees({
 }
 
 export async function waitForTransactionConfirmation(
-  tx: TransactionResponse,
+  tx: providers.TransactionResponse,
   timeoutMs: number = TX_CONFIRMATION_TIMEOUT_MS,
 ) {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;

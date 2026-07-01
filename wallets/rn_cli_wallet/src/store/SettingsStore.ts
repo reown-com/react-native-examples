@@ -1,4 +1,4 @@
-import { proxy, ref } from 'valtio';
+import { proxy } from 'valtio';
 import { Appearance } from 'react-native';
 import { Verify, SessionTypes } from '@walletconnect/types';
 
@@ -99,12 +99,7 @@ const SettingsStore = {
   },
 
   setWallet(wallet: EIP155Lib) {
-    // ref(): keep wallet instances out of valtio's proxy. ethers v6 wallets use
-    // a private #signingKey field that throws when accessed through a Proxy, and
-    // valtio also rewrites nested object props on the target — which would
-    // corrupt the same instance held in the eip155Wallets map. (ethers v5 used
-    // plain fields, so this wasn't needed before the v6 migration.)
-    state.wallet = ref(wallet);
+    state.wallet = wallet;
   },
 
   setActiveChainId(value: string) {
@@ -151,7 +146,7 @@ const SettingsStore = {
   },
 
   setSuiWallet(suiWallet: SuiLib) {
-    state.suiWallet = ref(suiWallet);
+    state.suiWallet = suiWallet;
   },
 
   setTonAddress(tonAddress: string) {
@@ -159,7 +154,7 @@ const SettingsStore = {
   },
 
   setTonWallet(tonWallet: TonLib) {
-    state.tonWallet = ref(tonWallet);
+    state.tonWallet = tonWallet;
   },
 
   setTronAddress(tronAddress: string) {
@@ -167,7 +162,7 @@ const SettingsStore = {
   },
 
   setTronWallet(tronWallet: TronLib) {
-    state.tronWallet = ref(tronWallet);
+    state.tronWallet = tronWallet;
   },
 
   setCantonAddress(cantonAddress: string) {
@@ -175,7 +170,7 @@ const SettingsStore = {
   },
 
   setCantonWallet(cantonWallet: CantonLib) {
-    state.cantonWallet = ref(cantonWallet);
+    state.cantonWallet = cantonWallet;
   },
 
   setSolanaAddress(solanaAddress: string) {
@@ -183,7 +178,7 @@ const SettingsStore = {
   },
 
   setSolanaWallet(solanaWallet: SolanaLib) {
-    state.solanaWallet = ref(solanaWallet);
+    state.solanaWallet = solanaWallet;
   },
 
   setThemeMode(value: 'light' | 'dark') {

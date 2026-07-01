@@ -1,10 +1,8 @@
 import * as bip39 from 'bip39';
 
 import SuiLib from '../lib/SuiLib';
-import { secureStorage } from './secure-storage';
+import { storage } from './storage';
 import SettingsStore from '@/store/SettingsStore';
-
-const SUI_MNEMONIC_KEY = 'SUI_MNEMONIC_1';
 
 export let wallet1: SuiLib;
 export let suiAddresses: string[];
@@ -13,16 +11,14 @@ export let suiAddresses: string[];
  * Utilities
  */
 export async function createOrRestoreSuiWallet() {
-  // Migrate any legacy plaintext-MMKV key material into the secure enclave.
-  await secureStorage.migrateSecret(SUI_MNEMONIC_KEY);
-
-  const mnemonic1 = await secureStorage.getSecret(SUI_MNEMONIC_KEY);
+  const mnemonic1 = await storage.getItem('SUI_MNEMONIC_1');
 
   if (mnemonic1) {
     wallet1 = await SuiLib.init({ mnemonic: mnemonic1 });
   } else {
     wallet1 = await SuiLib.init({});
-    await secureStorage.setSecret(SUI_MNEMONIC_KEY, wallet1.getMnemonic());
+    // Don't store private keys in local storage in a production project!
+    await storage.setItem('SUI_MNEMONIC_1', wallet1.getMnemonic());
   }
 
   suiAddresses = [wallet1.getAddress()];
@@ -64,8 +60,13 @@ export async function loadSuiWallet(input: string): Promise<{
   wallet1 = newWallet;
   suiAddresses = [newAddress];
 
-  // Persist to secure storage
-  await secureStorage.setSecret(SUI_MNEMONIC_KEY, trimmedInput);
+  // Persist to storage
+  await storage.setItem('SUI_MNEMONIC_1', trimmedInput);
+  if (__DEV__) {
+    console.warn(
+      '[SECURITY] SUI mnemonic stored unencrypted. Use secure enclave in production.',
+    );
+  }
 
   // Update store
   SettingsStore.setSuiAddress(newAddress);

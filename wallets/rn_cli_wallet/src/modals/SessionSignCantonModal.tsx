@@ -7,7 +7,6 @@ import {
   rejectCantonRequest,
 } from '@/utils/CantonRequestHandlerUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
-import { handleRedirect } from '@/utils/LinkingUtils';
 import { RequestModal } from './RequestModal';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -45,10 +44,6 @@ export default function SessionSignCantonModal() {
         response,
       });
       haptics.requestResponse();
-      handleRedirect({
-        peerRedirect: requestSession?.peer?.metadata?.redirect,
-        isLinkMode,
-      });
     } catch (e) {
       // Respond with JSON-RPC error so the dapp doesn't hang
       try {
@@ -73,7 +68,7 @@ export default function SessionSignCantonModal() {
       setIsLoadingApprove(false);
       ModalStore.close();
     }
-  }, [requestEvent, topic, requestSession, isLinkMode]);
+  }, [requestEvent, topic]);
 
   const onReject = useCallback(async () => {
     if (!requestEvent) {
