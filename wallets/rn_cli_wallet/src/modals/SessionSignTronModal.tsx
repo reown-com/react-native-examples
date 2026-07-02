@@ -9,6 +9,7 @@ import {
   rejectTronRequest,
 } from '@/utils/TronRequestHandlerUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
+import { handleRedirect } from '@/utils/LinkingUtils';
 import { RequestModal } from './RequestModal';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -54,6 +55,10 @@ export default function SessionSignTronModal() {
           response,
         });
         haptics.requestResponse();
+        handleRedirect({
+          peerRedirect: requestSession?.peer?.metadata?.redirect,
+          isLinkMode,
+        });
       }
     } catch (e) {
       LogStore.error((e as Error).message, 'SessionSignTronModal', 'onApprove');
@@ -65,7 +70,7 @@ export default function SessionSignTronModal() {
       setIsLoadingApprove(false);
       ModalStore.close();
     }
-  }, [requestEvent, topic]);
+  }, [requestEvent, topic, requestSession, isLinkMode]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
