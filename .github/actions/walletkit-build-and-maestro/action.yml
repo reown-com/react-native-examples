@@ -517,10 +517,10 @@ runs:
     # Provisionally pinned to WalletConnect/actions#106 branch tip (KYC /collect IC
     # redesign). Re-pin to the merged-master SHA before this PR leaves draft.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@bb4ed7054daa7810f387bf307b42c5d4a1efb2da # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
+      uses: WalletConnect/actions/maestro/pay-tests@bb0d5b1f7acf76a8681444f5ccb094730a1912b2 # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@bb4ed7054daa7810f387bf307b42c5d4a1efb2da # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
+      uses: WalletConnect/actions/maestro/setup@bb0d5b1f7acf76a8681444f5ccb094730a1912b2 # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -821,7 +821,7 @@ runs:
     # steps — actions/runner#1457).
     - name: Reset USDT Permit2 allowance (Polygon)
       if: always() && contains(inputs.maestro-tags, 'pay')
-      uses: WalletConnect/actions/maestro/permit2-reset@bb4ed7054daa7810f387bf307b42c5d4a1efb2da # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
+      uses: WalletConnect/actions/maestro/permit2-reset@bb0d5b1f7acf76a8681444f5ccb094730a1912b2 # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
