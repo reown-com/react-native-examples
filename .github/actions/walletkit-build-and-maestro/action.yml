@@ -514,14 +514,13 @@ runs:
         curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
 
     # --- Common: Maestro setup + run ---
-    # Pinned to the WalletConnect/actions#105 squash-merge SHA (4cec02a on
-    # master — web-only pay flows: in-app IC form, plus the pay-onchain tags the
-    # web leg's parallel/serial split relies on).
+    # Pinned to WalletConnect/actions master (ddc7c0f = merge of #106, the
+    # redesigned /collect inline IC flow).
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@4cec02a4c535c254581471df287099a26d5eeffb
+      uses: WalletConnect/actions/maestro/pay-tests@ddc7c0f9acd8b1576e9a78f0ef67f4b8fbb36db2
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@4cec02a4c535c254581471df287099a26d5eeffb
+      uses: WalletConnect/actions/maestro/setup@ddc7c0f9acd8b1576e9a78f0ef67f4b8fbb36db2
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -821,11 +820,8 @@ runs:
     # must not fail a green run; `continue-on-error` is ignored on composite-action
     # steps — actions/runner#1457).
     - name: Reset USDT Permit2 allowance (Polygon)
-      # !cancelled() (not always()): still reset after success/failure, but skip on
-      # cancel. Skip too when pay-usdt-polygon didn't run (untagged or excluded).
-      if: ${{ !cancelled() && contains(inputs.maestro-tags, 'pay') && !contains(inputs.maestro-exclude-tags, 'pay-usdt-polygon') }}
-      # Pinned to the WalletConnect/actions#105 squash-merge SHA (4cec02a on master).
-      uses: WalletConnect/actions/maestro/permit2-reset@4cec02a4c535c254581471df287099a26d5eeffb
+      if: always() && contains(inputs.maestro-tags, 'pay')
+      uses: WalletConnect/actions/maestro/permit2-reset@ddc7c0f9acd8b1576e9a78f0ef67f4b8fbb36db2
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
