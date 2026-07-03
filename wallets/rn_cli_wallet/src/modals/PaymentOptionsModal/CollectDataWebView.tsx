@@ -37,7 +37,7 @@ const PRELOAD_VIEWPORT_JS = `
         style = document.createElement('style');
         style.id = 'rn-webview-fit-style';
         style.textContent =
-          'html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow: hidden !important; overscroll-behavior: none !important; }';
+          'html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; overflow-y: auto !important; overscroll-behavior: none !important; }';
         head.appendChild(style);
       }
     }
@@ -259,8 +259,8 @@ export function CollectDataWebView({
         javaScriptEnabled
         domStorageEnabled
         startInLoadingState
-        scrollEnabled={false}
-        nestedScrollEnabled={false}
+        scrollEnabled={true}
+        nestedScrollEnabled={true}
         bounces={false}
         overScrollMode="never"
         setBuiltInZoomControls={false}
