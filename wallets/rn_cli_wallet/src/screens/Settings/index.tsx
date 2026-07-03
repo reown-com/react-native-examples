@@ -35,7 +35,7 @@ export default function Settings() {
           activeThumbColor: Theme.white,
         }
       : {}
-  ) as object;
+  ) as { activeTrackColor?: string; activeThumbColor?: string };
 
   useEffect(() => {
     async function getAsyncData() {
