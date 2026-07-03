@@ -276,7 +276,7 @@ export function buildFreshTxRequest({
     chainId === 'eip155:137' ? POLYGON_MIN_PRIORITY_FEE_WEI : null;
   const priorityFee = getHighestBigInt([
     chainFloor,
-    feeData.maxPriorityFeePerGas || null,
+    feeData.maxPriorityFeePerGas ?? null,
   ]);
 
   const maxFee = priorityFee
@@ -284,7 +284,7 @@ export function buildFreshTxRequest({
         latestBlock.baseFeePerGas
           ? latestBlock.baseFeePerGas * 2n + priorityFee
           : null,
-        feeData.maxFeePerGas || null,
+        feeData.maxFeePerGas ?? null,
         priorityFee,
       ])
     : null;
