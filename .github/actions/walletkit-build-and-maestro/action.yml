@@ -514,13 +514,13 @@ runs:
         curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
 
     # --- Common: Maestro setup + run ---
-    # Provisionally pinned to WalletConnect/actions#106 branch tip (KYC /collect IC
-    # redesign). Re-pin to the merged-master SHA before this PR leaves draft.
+    # Pinned to WalletConnect/actions master (ddc7c0f = merge of #106, the
+    # redesigned /collect inline IC flow).
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@bf68e7debde224f0a53427515414265d0ba42a0f # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
+      uses: WalletConnect/actions/maestro/pay-tests@ddc7c0f9acd8b1576e9a78f0ef67f4b8fbb36db2
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@bf68e7debde224f0a53427515414265d0ba42a0f # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
+      uses: WalletConnect/actions/maestro/setup@ddc7c0f9acd8b1576e9a78f0ef67f4b8fbb36db2
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -821,7 +821,7 @@ runs:
     # steps — actions/runner#1457).
     - name: Reset USDT Permit2 allowance (Polygon)
       if: always() && contains(inputs.maestro-tags, 'pay')
-      uses: WalletConnect/actions/maestro/permit2-reset@bf68e7debde224f0a53427515414265d0ba42a0f # provisional — re-pin to merged-master SHA of WalletConnect/actions#106 before merge
+      uses: WalletConnect/actions/maestro/permit2-reset@ddc7c0f9acd8b1576e9a78f0ef67f4b8fbb36db2
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
