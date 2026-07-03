@@ -121,7 +121,8 @@ const styles = StyleSheet.create({
   },
   // On web, constrain the sheet to the desktop frame width and center it so it
   // doesn't stretch full-viewport. Self-adjusts: fills the width on narrow
-  // screens, caps + centers on wide desktop. Backdrop still dims the full page.
+  // screens, caps + centers on wide desktop. With coverScreen=false the backdrop
+  // dims only the frame area (its parent), not the full page.
   modalWeb: {
     width: '100%',
     maxWidth: DesktopFrame.DEVICE_WIDTH,

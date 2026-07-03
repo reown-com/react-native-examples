@@ -14,8 +14,9 @@ import { DesktopFrame } from '@/constants/DesktopFrame';
  * full-bleed, unchanged.
  *
  * Unlike the pos-app frame this deliberately avoids `transform: scale()` and a
- * modal portal: rn_cli_wallet's <Modal /> and <Toast /> render as fixed
- * full-viewport overlays and would fight a scaled frame. Those stay untouched.
+ * modal portal. On web the <Modal /> renders inline (coverScreen=false) so it
+ * stays inside this frame and is clipped by `overflow: hidden`; <Toast /> still
+ * renders as a fixed full-viewport overlay and is left untouched.
  */
 const RESIZE_DEBOUNCE_MS = 150;
 
