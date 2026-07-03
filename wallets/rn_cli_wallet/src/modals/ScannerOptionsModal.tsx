@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Config from 'react-native-config';
+import { ENV } from '@/utils/env';
 
 import { useTheme } from '@/hooks/useTheme';
 import ModalStore from '@/store/ModalStore';
@@ -10,12 +10,12 @@ import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import BarcodeSvg from '@/assets/Barcode';
 import PasteSvg from '@/assets/Paste';
-import Clipboard from '@react-native-clipboard/clipboard';
+import { getClipboardString } from '@/utils/ClipboardUtil';
 import { usePairing } from '@/hooks/usePairing';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 import { Button } from '@/components/Button';
 
-const showTestInput = Config.ENV_TEST_MODE === 'true';
+const showTestInput = ENV.TEST_MODE === 'true';
 
 export default function ScannerOptionsModal() {
   const Theme = useTheme();
@@ -42,10 +42,10 @@ export default function ScannerOptionsModal() {
   };
 
   const onPastePress = () => {
-    Clipboard.getString()
+    getClipboardString()
       .then(url => {
         if (!url.trim()) {
-          Toast.show({
+          showToast({
             type: 'info',
             text1: 'No URL in your clipboard',
             text2: 'Copy a payment URL, then try again.',
@@ -60,7 +60,7 @@ export default function ScannerOptionsModal() {
       })
       .catch(() => {
         ModalStore.close();
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t read your clipboard',
           text2: 'Check app permissions, then try again.',

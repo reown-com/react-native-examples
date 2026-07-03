@@ -1,6 +1,6 @@
-import Config from 'react-native-config';
+import { ENV } from '@/utils/env';
 
-export const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
+export const arePayModalAnimationsEnabled = ENV.TEST_MODE !== 'true';
 
 // The Loading.json / Success.json artwork has inner padding inside its
 // 1080×1080 canvas, so the visible glyph is smaller than the container.

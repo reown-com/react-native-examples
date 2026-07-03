@@ -15,7 +15,7 @@ import { StyleSheet, View } from 'react-native';
 import { Message } from '@/components/Modal/Message';
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkInfoCard } from '@/components/NetworkInfoCard';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 import { haptics } from '@/utils/haptics';
@@ -57,7 +57,7 @@ export default function SessionSignTronModal() {
       }
     } catch (e) {
       LogStore.error((e as Error).message, 'SessionSignTronModal', 'onApprove');
-      Toast.show({
+      showToast({
         text1: (e as Error).message,
         type: 'error',
       });
@@ -84,7 +84,7 @@ export default function SessionSignTronModal() {
           'SessionSignTronModal',
           'onReject',
         );
-        Toast.show({
+        showToast({
           type: 'error',
           text1: 'Couldn’t reject request',
           text2: (e as Error).message,

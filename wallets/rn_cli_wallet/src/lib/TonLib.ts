@@ -18,7 +18,7 @@ import {
   loadStateInit,
 } from '@ton/ton';
 import { TON_MAINNET_CHAINS, TON_TEST_CHAINS } from '@/constants/Ton';
-import Config from 'react-native-config';
+import { ENV } from '@/utils/env';
 import { sha256 } from '@noble/hashes/sha2';
 import crc32 from 'crc-32';
 
@@ -565,7 +565,7 @@ export default class TonLib {
 
     return new TonClient({
       endpoint: rpc,
-      apiKey: Config.ENV_TON_CENTER_API_KEY,
+      apiKey: ENV.TON_CENTER_API_KEY,
     });
   }
 

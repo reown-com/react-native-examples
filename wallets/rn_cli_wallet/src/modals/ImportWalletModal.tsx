@@ -5,7 +5,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
 } from 'react-native';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import { useTheme } from '@/hooks/useTheme';
 import LogStore from '@/store/LogStore';
@@ -69,7 +69,7 @@ export default function ImportWalletModal() {
     const sanitizedInput = input.trim().replace(/\s+/g, ' ');
 
     if (!sanitizedInput) {
-      Toast.show({
+      showToast({
         type: 'error',
         text1: EMPTY_INPUT_ERROR[selectedChain],
       });
@@ -173,7 +173,7 @@ export default function ImportWalletModal() {
             'ImportWalletModal',
             'handleImport',
           );
-          Toast.show({
+          showToast({
             type: 'error',
             text1: 'Couldn’t import wallet',
             text2: `Unsupported chain: ${unsupportedChain}`,
@@ -193,7 +193,7 @@ export default function ImportWalletModal() {
         );
       }
 
-      Toast.show({
+      showToast({
         type: 'success',
         text1: `${selectedChain} wallet added`,
         text2: `New address: ${address}`,
@@ -201,7 +201,7 @@ export default function ImportWalletModal() {
       ModalStore.close();
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Invalid input';
-      Toast.show({
+      showToast({
         type: 'error',
         text1: 'Couldn’t import wallet',
         text2: message,

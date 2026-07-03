@@ -1,10 +1,10 @@
-import DeviceInfo from 'react-native-device-info';
+import { getBundleId } from '@/utils/AppInfo';
 
 type Environment = 'debug' | 'internal' | 'production';
 
 export function getEnvironment(): Environment {
   try {
-    const bundleId = DeviceInfo.getBundleId();
+    const bundleId = getBundleId();
     if (!bundleId || typeof bundleId !== 'string') {
       console.warn('Invalid bundle ID detected:', bundleId);
       return 'production';

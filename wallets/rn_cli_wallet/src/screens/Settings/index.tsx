@@ -1,11 +1,11 @@
 import { useSnapshot } from 'valtio';
 import { useEffect, useState } from 'react';
 import { View, Switch, StyleSheet, Platform } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { getVersion, getBuildNumber } from 'react-native-device-info';
-import { getEnvironmentLabel } from '@/utils/misc';
+import { getVersion, getBuildNumber } from '@/utils/AppInfo';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
+import { getEnvironmentLabel } from '@/utils/misc';
+import { setClipboardString } from '@/utils/ClipboardUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
 import { Card } from '@/components/Card';
@@ -14,7 +14,7 @@ import { Text } from '@/components/Text';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 import { RootStackParamList } from '@/utils/TypesUtil';
 import { Button } from '@/components/Button';
 
@@ -23,6 +23,19 @@ export default function Settings() {
   const [clientId, setClientId] = useState('');
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const Theme = useTheme();
+
+  // react-native-web paints the Switch "on" state via activeTrackColor/
+  // activeThumbColor (not React Native's trackColor/thumbColor, which only
+  // cover native). These props aren't in RN's Switch types, so pass them
+  // only on web.
+  const webAccentSwitchProps = (
+    Platform.OS === 'web'
+      ? {
+          activeTrackColor: Theme['bg-accent-primary'],
+          activeThumbColor: Theme.white,
+        }
+      : {}
+  ) as object;
 
   useEffect(() => {
     async function getAsyncData() {
@@ -35,8 +48,8 @@ export default function Settings() {
   }, []);
 
   const copyToClipboard = (value: string, label: string = 'Value') => {
-    Clipboard.setString(value);
-    Toast.show({
+    setClipboardString(value);
+    showToast({
       type: 'info',
       text1: `${label} copied`,
     });
@@ -79,6 +92,7 @@ export default function Settings() {
                 },
               })}
               thumbColor={Platform.select({ android: Theme.white })}
+              {...webAccentSwitchProps}
             />
           </View>
         </Button>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { SignClientTypes } from '@walletconnect/types';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import { formatJsonRpcError } from '@json-rpc-tools/utils';
 import { getSdkError } from '@walletconnect/utils';
@@ -151,7 +151,7 @@ export default function useWalletKitEventsManager(initialized: boolean) {
               'WalletKitEvents',
               'onSessionRequest:cantonAutoApprove',
             );
-            Toast.show({
+            showToast({
               type: 'error',
               text1: 'Canton request failed',
               text2: (e as Error).message,
@@ -239,7 +239,7 @@ export default function useWalletKitEventsManager(initialized: boolean) {
           'session_ping',
           { topic: data.topic },
         );
-        Toast.show({
+        showToast({
           type: 'info',
           text1: 'Session ping received',
         });
