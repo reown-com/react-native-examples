@@ -53,7 +53,12 @@ export function Header() {
       style={[
         styles.container,
         {
-          paddingTop: Platform.OS === 'ios' ? top : top + Spacing[2],
+          paddingTop:
+            Platform.OS === 'ios'
+              ? top
+              : Platform.OS === 'web'
+                ? Spacing[8]
+                : top + Spacing[2],
           backgroundColor: Theme['bg-primary'],
         },
       ]}

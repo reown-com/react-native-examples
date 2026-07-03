@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ModalStore from '@/store/ModalStore';
 import { Spacing } from '@/utils/ThemeUtil';
+import { DesktopFrame } from '@/constants/DesktopFrame';
 import SessionProposalModal from '@/modals/SessionProposalModal';
 import SessionSignModal from '@/modals/SessionSignModal';
 import SessionSendTransactionModal from '@/modals/SessionSendTransactionModal';
@@ -100,7 +101,11 @@ export default function Modal() {
       statusBarTranslucent
       propagateSwipe
       onBackdropPress={onClose}
-      style={styles.modal}
+      style={[styles.modal, Platform.OS === 'web' ? styles.modalWeb : null]}
+      // On web, render inline (not via the full-screen portal) so the sheet +
+      // backdrop stay inside the desktop frame and get clipped to its rounded
+      // bottom corners instead of overflowing to the viewport edge.
+      coverScreen={Platform.OS !== 'web'}
       isVisible={open}
     >
       <GestureHandlerRootView style={gestureRootStyle}>
@@ -113,6 +118,14 @@ export default function Modal() {
 const styles = StyleSheet.create({
   modal: {
     margin: Spacing[0],
+  },
+  // On web, constrain the sheet to the desktop frame width and center it so it
+  // doesn't stretch full-viewport. Self-adjusts: fills the width on narrow
+  // screens, caps + centers on wide desktop. Backdrop still dims the full page.
+  modalWeb: {
+    width: '100%',
+    maxWidth: DesktopFrame.DEVICE_WIDTH,
+    alignSelf: 'center',
   },
   gestureRoot: {
     flex: 1,

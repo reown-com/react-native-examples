@@ -81,19 +81,24 @@ export default function Settings() {
             <Text variant="md-500" color="text-primary">
               Dark mode
             </Text>
-            <Switch
-              value={themeMode === 'dark'}
-              style={styles.switch}
-              onValueChange={toggleDarkMode}
-              trackColor={Platform.select({
-                android: {
-                  false: Theme['foreground-tertiary'],
-                  true: Theme['bg-accent-primary'],
-                },
-              })}
-              thumbColor={Platform.select({ android: Theme.white })}
-              {...webAccentSwitchProps}
-            />
+            {/* Display-only: the whole card (PressableScale) owns the toggle.
+                pointerEvents="none" lets a tap on the switch pass through to the
+                card's onPress, so it toggles exactly once. Without this, on web
+                the switch's own click also bubbles to the card and toggles twice
+                (net no change). */}
+            <View pointerEvents="none" style={styles.switch}>
+              <Switch
+                value={themeMode === 'dark'}
+                trackColor={Platform.select({
+                  android: {
+                    false: Theme['foreground-tertiary'],
+                    true: Theme['bg-accent-primary'],
+                  },
+                })}
+                thumbColor={Platform.select({ android: Theme.white })}
+                {...webAccentSwitchProps}
+              />
+            </View>
           </View>
         </Button>
         <Card
