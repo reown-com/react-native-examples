@@ -213,8 +213,11 @@ runs:
         sudo xcode-select -s "$XCODE_PATH"
         xcodebuild -version
 
+    # Only when a match SSH key is actually provided. The Maestro simulator build
+    # is unsigned by default (no match), and webfactory/ssh-agent errors on an
+    # empty ssh-private-key — so skip the step unless a signing caller passes one.
     - name: Setup SSH for Match
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && inputs.match-ssh-key != ''
       uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ inputs.match-ssh-key }}
@@ -315,11 +318,6 @@ runs:
         xcrun simctl boot "$DEVICE_ID" || true
         # Wait for full boot so the steps below don't race a not-ready simulator
         xcrun simctl bootstatus "$DEVICE_ID" -b
-        # Clear stale Shared Web Credentials / associated-domains state on the fresh
-        # boot BEFORE the app is installed, so the install-time applinks binding isn't
-        # wiped by a later reset (which would force a racy AASA re-fetch and leave the
-        # Universal Link unresolved → openurl falls back to Safari).
-        xcrun simctl spawn "$DEVICE_ID" swcutil reset || true
         # Disable UIKit animations to reduce Maestro timing flakiness
         xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
         echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
@@ -328,20 +326,6 @@ runs:
       if: inputs.platform == 'ios'
       shell: bash
       run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
-
-    - name: Prime Universal Link AASA cache
-      if: inputs.platform == 'ios'
-      shell: bash
-      run: |
-        for domain in pay.walletconnect.com staging.pay.walletconnect.com dev.pay.walletconnect.com lab.reown.com; do
-          xcrun simctl spawn "$DEVICE_ID" swcutil dl -d "$domain" || true
-        done
-        sleep 3
-        # Dump the FULL association table (not grep-filtered): swcd's per-app/domain
-        # verdict is what tells us whether the Universal Link will resolve, so it must
-        # be visible in CI logs when the deeplink flow flakes.
-        echo "=== swcutil show (associated-domains state after install + priming) ==="
-        xcrun simctl spawn "$DEVICE_ID" swcutil show 2>/dev/null || true
 
     # --- Android leg ---
     - name: Install Java 17
@@ -514,13 +498,13 @@ runs:
         curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
 
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions master (ddc7c0f = merge of #106, the
-    # redesigned /collect inline IC flow).
+    # Pinned to WalletConnect/actions #109 (28181b5 = removal of the Universal Link
+    # / deeplink pay flow), so pay_single_option_nokyc_deeplink is no longer copied.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@ddc7c0f9acd8b1576e9a78f0ef67f4b8fbb36db2
+      uses: WalletConnect/actions/maestro/pay-tests@28181b5f133836380d2d9bb8ff06af5c3234fb9d
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@ddc7c0f9acd8b1576e9a78f0ef67f4b8fbb36db2
+      uses: WalletConnect/actions/maestro/setup@28181b5f133836380d2d9bb8ff06af5c3234fb9d
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -541,14 +525,10 @@ runs:
       run: |
         xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
         mkdir -p maestro-artifacts
-        # Snapshot the associated-domains verification state at run start — brackets the
-        # post-install dump above and shows swcd's verdict closer to the deeplink flow.
-        echo "=== swcutil show (Maestro run start) ==="
-        xcrun simctl spawn "$DEVICE_ID" swcutil show 2>/dev/null || true
         xcrun simctl spawn "$DEVICE_ID" log stream \
           --level=debug \
           --style=compact \
-          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\" OR process CONTAINS \"maestro\" OR process == \"xctest\" OR process == \"testmanagerd\" OR process == \"tccd\" OR process == \"SpringBoard\" OR process == \"swcd\" OR process == \"swcagent\"" \
+          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\" OR process CONTAINS \"maestro\" OR process == \"xctest\" OR process == \"testmanagerd\" OR process == \"tccd\" OR process == \"SpringBoard\"" \
           > maestro-artifacts/ios-syslog.log 2>&1 &
         SYSLOG_PID=$!
         set +e
@@ -706,15 +686,15 @@ runs:
         # Rewrite the shared flows for web: appId:->url: (Maestro targets the
         # browser via the URL), strip start/stopRecording (unsupported on web),
         # and drop the flows that can't run in a browser — hosted-KYC-webview
-        # flows (replaced by pay_*_web), the deeplink flow, and the multi-option
-        # no-KYC flow whose option->review correlation reads accessibilityLabel
-        # (Maestro web can't), replaced by pay_multiple_options_nokyc_web.
+        # flows (replaced by pay_*_web) and the multi-option no-KYC flow whose
+        # option->review correlation reads accessibilityLabel (Maestro web can't),
+        # replaced by pay_multiple_options_nokyc_web.
         WEB_FLOWS_DIR="$(mktemp -d)"
         cp -R .maestro/. "$WEB_FLOWS_DIR/"
         find "$WEB_FLOWS_DIR" -name '*.yaml' -print0 \
           | xargs -0 perl -ni -e 'next if /^\s*-?\s*(start|stop)Recording\b/; s/^appId:(\s*\$\{APP_ID\})/url:$1/; print'
         for f in pay_kyc_back_navigation pay_cancel_from_kyc pay_multiple_options_kyc \
-                 pay_multiple_options_nokyc pay_single_option_nokyc_deeplink; do
+                 pay_multiple_options_nokyc; do
           rm -f "$WEB_FLOWS_DIR/$f.yaml"
         done
         mkdir -p maestro-artifacts maestro-artifacts/maestro-debug
@@ -821,7 +801,7 @@ runs:
     # steps — actions/runner#1457).
     - name: Reset USDT Permit2 allowance (Polygon)
       if: always() && contains(inputs.maestro-tags, 'pay')
-      uses: WalletConnect/actions/maestro/permit2-reset@ddc7c0f9acd8b1576e9a78f0ef67f4b8fbb36db2
+      uses: WalletConnect/actions/maestro/permit2-reset@28181b5f133836380d2d9bb8ff06af5c3234fb9d
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
