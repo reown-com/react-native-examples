@@ -279,37 +279,38 @@ export function buildFreshTxRequest({
     feeData.maxPriorityFeePerGas ?? null,
   ]);
 
-  const maxFee = priorityFee
-    ? getHighestBigInt([
-        latestBlock.baseFeePerGas
-          ? latestBlock.baseFeePerGas * 2n + priorityFee
-          : null,
-        feeData.maxFeePerGas ?? null,
-        priorityFee,
-      ])
-    : null;
+  const maxFee =
+    priorityFee != null
+      ? getHighestBigInt([
+          latestBlock.baseFeePerGas != null
+            ? latestBlock.baseFeePerGas * 2n + priorityFee
+            : null,
+          feeData.maxFeePerGas ?? null,
+          priorityFee,
+        ])
+      : null;
 
   const request: TransactionRequest = { ...baseTx };
 
-  if (priorityFee) {
+  if (priorityFee != null) {
     request.maxPriorityFeePerGas = priorityFee;
   } else {
     delete request.maxPriorityFeePerGas;
   }
 
-  if (maxFee) {
+  if (maxFee != null) {
     request.maxFeePerGas = maxFee;
   } else {
     delete request.maxFeePerGas;
   }
 
   if (
-    !request.maxPriorityFeePerGas &&
-    !request.maxFeePerGas &&
-    feeData.gasPrice
+    request.maxPriorityFeePerGas == null &&
+    request.maxFeePerGas == null &&
+    feeData.gasPrice != null
   ) {
     const gasPrice = getHighestBigInt([feeData.gasPrice, chainFloor]);
-    if (gasPrice) {
+    if (gasPrice != null) {
       request.gasPrice = gasPrice;
     }
   } else {
