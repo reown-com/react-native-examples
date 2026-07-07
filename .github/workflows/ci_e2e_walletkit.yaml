@@ -105,12 +105,6 @@ jobs:
           merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
           merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
           maestro-tags: ${{ env.MAESTRO_TAGS }}
-          apple-key-id: ${{ secrets.APPLE_KEY_ID }}
-          apple-key-content: ${{ secrets.APPLE_KEY_CONTENT }}
-          apple-issuer-id: ${{ secrets.APPLE_ISSUER_ID }}
-          match-git-url: ${{ secrets.MATCH_GIT_URL }}
-          match-password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
 
       - name: Send Slack notification
         if: failure()
