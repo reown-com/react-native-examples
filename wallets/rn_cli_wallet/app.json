@@ -16,10 +16,7 @@
       "supportsTablet": true,
       "associatedDomains": [
         "applinks:appkit-lab.reown.com",
-        "applinks:lab.reown.com",
-        "applinks:pay.walletconnect.com",
-        "applinks:staging.pay.walletconnect.com",
-        "applinks:dev.pay.walletconnect.com"
+        "applinks:lab.reown.com"
       ],
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Our app does not request this permission or utilize this functionality but it is included in our info.plist since our app utilizes the react-native-permissions library."
@@ -42,16 +39,6 @@
           "data": [
             { "scheme": "https", "host": "appkit-lab.reown.com", "pathPrefix": "/rn_walletkit" },
             { "scheme": "https", "host": "lab.reown.com", "pathPrefix": "/rn_walletkit" }
-          ]
-        },
-        {
-          "action": "VIEW",
-          "autoVerify": true,
-          "category": ["DEFAULT", "BROWSABLE"],
-          "data": [
-            { "scheme": "https", "host": "pay.walletconnect.com" },
-            { "scheme": "https", "host": "staging.pay.walletconnect.com" },
-            { "scheme": "https", "host": "dev.pay.walletconnect.com" }
           ]
         }
       ]

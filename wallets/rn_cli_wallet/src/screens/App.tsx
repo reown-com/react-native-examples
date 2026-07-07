@@ -116,7 +116,9 @@ const App = () => {
         return;
       }
 
-      // 2. Payment link from NFC tag or App Link (pay.walletconnect.com)
+      // 2. Payment link from NFC tag (pay.walletconnect.com). Universal-link
+      // registration for these hosts was removed from app.json, so on native
+      // these URLs now arrive via NFC rather than a tapped App Link.
       try {
         const { hostname } = new URL(url);
         if (

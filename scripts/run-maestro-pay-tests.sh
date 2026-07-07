@@ -112,19 +112,16 @@ if [[ "$APP_ID" == http://* || "$APP_ID" == https://* ]]; then
   #   - KYC webview flows: the identity-collection form sends X-Frame-Options DENY,
   #     so on web it opens in a NEW TAB (Maestro drives a single tab) and its
   #     callback is HTTPS-only — the form leg can't complete under local web.
-  #   - deeplink/universal-link: `openLink` of the wallet's custom scheme/universal
-  #     link isn't handled by the web build.
   # KYC-webview flows are replaced on web by in-app-form variants tagged
   # `pay-web` (pay_kyc_web, pay_cancel_from_kyc_web). The multi-option no-KYC
   # flow correlates option->review via the option's accessibilityLabel (network
   # name), which Maestro web can't read; pay_multiple_options_nokyc_web covers
-  # the rest. The deeplink flow opens a universal link the web build won't handle.
+  # the rest.
   WEB_SKIP_FLOWS=(
     pay_kyc_back_navigation.yaml      # asserts KYC webview back/close (mobile-only)
     pay_cancel_from_kyc.yaml          # hosted KYC webview -> see pay_cancel_from_kyc_web
     pay_multiple_options_kyc.yaml     # hosted KYC webview -> see pay_kyc_web
     pay_multiple_options_nokyc.yaml   # aria-label correlation -> see pay_multiple_options_nokyc_web
-    pay_single_option_nokyc_deeplink.yaml  # opens a universal link / deeplink
   )
   for flow in "${WEB_SKIP_FLOWS[@]}"; do
     if rm -f "$WEB_FLOWS_DIR/$flow" 2>/dev/null && [ ! -e "$WEB_FLOWS_DIR/$flow" ]; then
