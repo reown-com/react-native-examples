@@ -64,10 +64,24 @@ async function fetchBalanceForChain(
 
   if (!response.ok) {
     const errorText = await response.text();
-    LogStore.error('Error response', 'BalanceService', 'fetchBalanceForChain', {
-      status: response.status,
-      body: errorText,
-    });
+    // A 400 means the balance API doesn't support this chain/address format
+    // (e.g. bip122/Bitcoin, sui) — this is expected and handled by the caller
+    // (fails silently per-chain), so log it as a warning rather than an error.
+    if (response.status === 400) {
+      LogStore.warn(
+        'Chain not supported by balance API',
+        'BalanceService',
+        'fetchBalanceForChain',
+        { chainId, status: response.status, body: errorText },
+      );
+    } else {
+      LogStore.error(
+        'Error response',
+        'BalanceService',
+        'fetchBalanceForChain',
+        { chainId, status: response.status, body: errorText },
+      );
+    }
     throw new Error(
       `Failed to fetch balance for ${chainId}: ${response.status}`,
     );
@@ -131,14 +145,27 @@ export async function fetchBalancesForChains(
       );
       allBalances.push(...result.value);
     } else {
-      LogStore.error(
-        `Chain ${chainId} failed`,
-        'BalanceService',
-        'fetchBalancesForChains',
-        {
-          error: serializeError(result.reason),
-        },
-      );
+      // Unsupported chains reject with a ": 400" suffix (see fetchBalanceForChain).
+      // Those are expected and already warned about; only genuine failures
+      // (network/5xx) should log at error level here.
+      const reasonMessage =
+        result.reason instanceof Error ? result.reason.message : '';
+      const isUnsupportedChain = reasonMessage.endsWith(': 400');
+      if (isUnsupportedChain) {
+        LogStore.warn(
+          `Chain ${chainId} not supported by balance API`,
+          'BalanceService',
+          'fetchBalancesForChains',
+          { error: serializeError(result.reason) },
+        );
+      } else {
+        LogStore.error(
+          `Chain ${chainId} failed`,
+          'BalanceService',
+          'fetchBalancesForChains',
+          { error: serializeError(result.reason) },
+        );
+      }
     }
   });
 

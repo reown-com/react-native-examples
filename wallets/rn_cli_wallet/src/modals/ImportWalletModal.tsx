@@ -19,21 +19,43 @@ import { loadTronWallet } from '@/utils/TronWalletUtil';
 import { loadSuiWallet } from '@/utils/SuiWalletUtil';
 import { loadCantonWallet } from '@/utils/CantonWalletUtil';
 import { loadSolanaWallet } from '@/utils/SolanaWalletUtil';
+import { loadBitcoinWallet } from '@/utils/BitcoinWalletUtil';
 import { Text } from '@/components/Text';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
-import { SegmentedControl } from '@/components/SegmentedControl';
+import {
+  NetworkDropdown,
+  NetworkDropdownOption,
+} from '@/components/NetworkDropdown';
 import { Spacing, BorderRadius, FontFamily } from '@/utils/ThemeUtil';
 import { ActionButton } from '@/components/ActionButton';
+import { TON_CHAINS } from '@/constants/Ton';
+import { TRON_CHAINS } from '@/constants/Tron';
+import { SUI_MAINNET_CAIP2 } from '@/constants/Sui';
+import { CANTON_CHAINS } from '@/constants/Canton';
+import { SOLANA_MAINNET_CAIP2 } from '@/constants/Solana';
+import { BIP122_MAINNET_CAIP2 } from '@/constants/Bitcoin';
 
-const CHAIN_OPTIONS = [
-  'Ethereum',
-  'Ton',
-  'Tron',
-  'Sui',
-  'Canton',
-  'Solana',
+type ChainOption =
+  | 'Ethereum'
+  | 'Ton'
+  | 'Tron'
+  | 'Sui'
+  | 'Canton'
+  | 'Solana'
+  | 'Bitcoin';
+
+// Representative chainId per option, used to render the network icon in the
+// dropdown. Derived from each namespace's chain map so it stays correct if the
+// underlying CAIP-2 ids change.
+const CHAIN_OPTIONS: readonly NetworkDropdownOption<ChainOption>[] = [
+  { label: 'Ethereum', chainId: 'eip155:1' },
+  { label: 'Ton', chainId: Object.keys(TON_CHAINS)[0] },
+  { label: 'Tron', chainId: Object.keys(TRON_CHAINS)[0] },
+  { label: 'Sui', chainId: SUI_MAINNET_CAIP2 },
+  { label: 'Canton', chainId: Object.keys(CANTON_CHAINS)[0] },
+  { label: 'Solana', chainId: SOLANA_MAINNET_CAIP2 },
+  { label: 'Bitcoin', chainId: BIP122_MAINNET_CAIP2 },
 ] as const;
-type ChainOption = (typeof CHAIN_OPTIONS)[number];
 
 const PLACEHOLDER_TEXT: Record<ChainOption, string> = {
   Ethereum: 'Mnemonic or private key (0x…)',
@@ -42,6 +64,7 @@ const PLACEHOLDER_TEXT: Record<ChainOption, string> = {
   Sui: 'Mnemonic phrase (12–24 words)',
   Canton: 'Secret key (128 hex chars)',
   Solana: 'Mnemonic (12–24 words) or base58 secret key',
+  Bitcoin: 'Mnemonic phrase (12–24 words)',
 };
 
 const EMPTY_INPUT_ERROR: Record<ChainOption, string> = {
@@ -51,6 +74,7 @@ const EMPTY_INPUT_ERROR: Record<ChainOption, string> = {
   Sui: 'Enter a mnemonic phrase.',
   Canton: 'Enter an Ed25519 secret key.',
   Solana: 'Enter a mnemonic or base58 secret key.',
+  Bitcoin: 'Enter a mnemonic phrase.',
 };
 
 export default function ImportWalletModal() {
@@ -58,6 +82,7 @@ export default function ImportWalletModal() {
   const [selectedChain, setSelectedChain] = useState<ChainOption>('Ethereum');
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isNetworkDropdownOpen, setIsNetworkDropdownOpen] = useState(false);
 
   const handleChainChange = (chain: ChainOption) => {
     setSelectedChain(chain);
@@ -150,6 +175,11 @@ export default function ImportWalletModal() {
           address = result.address;
           break;
         }
+        case 'Bitcoin': {
+          const result = await loadBitcoinWallet(sanitizedInput);
+          address = result.address;
+          break;
+        }
         case 'Solana': {
           const result = await loadSolanaWallet(sanitizedInput);
           address = result.address;
@@ -225,10 +255,12 @@ export default function ImportWalletModal() {
         </Text>
 
         <View style={styles.segmentContainer}>
-          <SegmentedControl
+          <NetworkDropdown
             options={CHAIN_OPTIONS}
-            selectedOption={selectedChain}
+            selected={selectedChain}
             onSelect={handleChainChange}
+            isOpen={isNetworkDropdownOpen}
+            onOpenChange={setIsNetworkDropdownOpen}
           />
         </View>
 
@@ -245,6 +277,7 @@ export default function ImportWalletModal() {
           placeholderTextColor={Theme['text-secondary']}
           value={input}
           onChangeText={setInput}
+          onFocus={() => setIsNetworkDropdownOpen(false)}
           multiline
           numberOfLines={4}
           autoCapitalize="none"

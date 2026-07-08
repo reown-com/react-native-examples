@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 import { getBundleId } from '@/utils/AppInfo';
 
 type Environment = 'debug' | 'internal' | 'production';
@@ -6,7 +8,12 @@ export function getEnvironment(): Environment {
   try {
     const bundleId = getBundleId();
     if (!bundleId || typeof bundleId !== 'string') {
-      console.warn('Invalid bundle ID detected:', bundleId);
+      // On web there's no native bundle ID (expo-application returns null), so
+      // an empty value is expected — only warn on native, where it's a real
+      // signal that something is misconfigured.
+      if (Platform.OS !== 'web') {
+        console.warn('Invalid bundle ID detected:', bundleId);
+      }
       return 'production';
     }
     if (bundleId.endsWith('.debug')) return 'debug';
