@@ -431,7 +431,9 @@ export default class BitcoinLib {
     }
 
     psbt.signAllInputs(keyPair);
-    psbt.validateSignaturesOfInput(0, validator);
+    // All inputs are signed with our key, so validate every one (not just
+    // index 0) before finalizing.
+    psbt.validateSignaturesOfAllInputs(validator);
     psbt.finalizeAllInputs();
 
     const tx = psbt.extractTransaction();
