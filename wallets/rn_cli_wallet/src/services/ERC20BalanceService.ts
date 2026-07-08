@@ -1,4 +1,4 @@
-import { Contract, providers, utils } from 'ethers';
+import { Contract, JsonRpcProvider, formatUnits } from 'ethers';
 import { ENV } from '@/utils/env';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import LogStore, { serializeError } from '@/store/LogStore';
@@ -58,14 +58,14 @@ async function fetchSingleERC20Balance(
   }
 
   try {
-    const provider = new providers.JsonRpcProvider(rpcUrl);
+    const provider = new JsonRpcProvider(rpcUrl);
     const contract = new Contract(
       token.address,
       ERC20_BALANCE_OF_ABI,
       provider,
     );
     const rawBalance = await contract.balanceOf(walletAddress);
-    const numeric = utils.formatUnits(rawBalance, token.decimals);
+    const numeric = formatUnits(rawBalance, token.decimals);
 
     return {
       name: token.name,
