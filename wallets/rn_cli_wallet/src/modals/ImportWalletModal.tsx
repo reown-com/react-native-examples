@@ -178,6 +178,18 @@ export default function ImportWalletModal() {
         case 'Bitcoin': {
           const result = await loadBitcoinWallet(sanitizedInput);
           address = result.address;
+          // Refetch balances with the new Bitcoin address
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+              bitcoinAddress: address,
+            },
+            { force: true },
+          );
           break;
         }
         case 'Solana': {

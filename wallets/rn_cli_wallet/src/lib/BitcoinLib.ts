@@ -139,10 +139,6 @@ export default class BitcoinLib {
     return this.mnemonic;
   }
 
-  public getPrivateKey() {
-    return this.mnemonic;
-  }
-
   public getAddresses(chainId: IBip122ChainId, intentions?: string[]) {
     if (intentions && intentions[0] === 'ordinal') {
       return this.ordinals[chainId];
@@ -218,13 +214,16 @@ export default class BitcoinLib {
 
     let utxosValue = 0;
     const utxosToSpend: IUTXO[] = [];
-    utxos.forEach(utxo => {
+    // Greedily select UTXOs until the target amount is covered. A `return`
+    // inside forEach only skips to the next item (not break), which would spend
+    // every UTXO — use for...of + break so we stop once we have enough.
+    for (const utxo of utxos) {
       utxosValue += utxo.value;
       utxosToSpend.push(utxo);
       if (utxosValue >= satoshis) {
-        return;
+        break;
       }
-    });
+    }
 
     const keyData = this.keys[chainId].get(account)!;
     const transaction = await this.createTransaction({
@@ -264,7 +263,11 @@ export default class BitcoinLib {
       }
       transaction.signInput(index, keyPairToSignWith, sighashTypes);
     });
-    transaction.validateSignaturesOfInput(0, validator);
+    // Validate the inputs we actually signed. Hardcoding index 0 would throw
+    // when the dApp asks to sign inputs that don't include index 0.
+    signInputs.forEach(({ index }) => {
+      transaction.validateSignaturesOfInput(index, validator);
+    });
     transaction.finalizeAllInputs();
 
     if (!broadcast) {
