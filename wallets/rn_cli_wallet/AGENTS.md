@@ -226,6 +226,26 @@ from `app.json` / `app.config.js` / `plugins/` / `assets/`. `yarn ios` / `yarn a
 run prebuild automatically when the folders are missing. Never hand-edit `ios/`
 or `android/`; change the Expo config or a config plugin and re-run prebuild.
 
+### Android NDK version — re-check on every RN/Expo upgrade
+The Android NDK version is pinned in `app.json` via `plugins/withAndroidNdkVersion.js`
+(a plugin arg: `["./plugins/withAndroidNdkVersion.js", { "ndkVersion": "…" }]`). This
+one value is the single source of truth: the plugin injects it into the generated
+`android/build.gradle`, and the E2E workflow
+(`.github/actions/walletkit-build-and-maestro`) reads the same `app.json` entry to
+pre-install that exact NDK via `sdkmanager`. The pre-install exists because RN
+otherwise fetches the NDK on the fly at build time, and that download intermittently
+lands corrupted on CI runners (`Archive is not a ZIP archive` →
+`InstallFailedException`) — failing the build but passing on rerun.
+
+**On any `react-native` / `expo` bump, verify this value still matches Expo's default
+NDK and update it if not.** Expo owns the default (`ExpoRootProjectPlugin`:
+`setIfNotExist("ndkVersion") { … }`) and bumps it across SDK versions. If our pin
+drifts below what the new build wants, the pre-install seeds the wrong NDK, Gradle
+re-fetches the right one at build time, and the corrupt-download flake returns. To
+confirm the current default: run `yarn prebuild` and check the `ndkVersion` line in
+`android/build.gradle`, or read the default in
+`node_modules/expo-modules-autolinking/.../ExpoRootProjectPlugin.kt`.
+
 ### Setup
 ```bash
 yarn install

@@ -340,21 +340,49 @@ runs:
       if: inputs.platform == 'android'
       uses: SimonMarquis/android-accept-licenses@8d8deab5b7ab2aaea9ed69f0b802e53173f21fd1 # v1
 
-    # Gradle/AGP auto-installs the build.gradle-requested NDK at build time, and
-    # that download fails on the CI runner (InstallFailedException: ndk;27.0.12077973).
-    # Pre-install it explicitly via the cmdline-tools sdkmanager (licenses accepted
-    # above) so the build finds it instead of trying — and failing — to fetch it.
-    # Keep the version in lockstep with the wallet's build.gradle ndkVersion.
-    - name: Install Android NDK 27.0.12077973
+    # RN/AGP auto-installs the build-requested NDK at build time, and that
+    # on-the-fly download intermittently lands corrupted on CI runners
+    # ("Archive is not a ZIP archive" -> InstallFailedException), failing the
+    # build but passing on rerun. Pre-install it via the cmdline-tools sdkmanager
+    # (licenses accepted above) so the build finds it locally instead of fetching.
+    #
+    # The version is pinned once, in the wallet's app.json via the
+    # withAndroidNdkVersion config plugin. That single source of truth drives
+    # both the native build (the plugin injects ext.ndkVersion into the generated
+    # android/build.gradle at prebuild) and this pre-install (read below), so the
+    # installed NDK can't drift from the one the build wants — the drift that
+    # broke CI when the version was hardcoded separately here. Retry the install
+    # so a corrupted archive self-heals instead of failing the run.
+    - name: Install Android NDK
       if: inputs.platform == 'android'
       shell: bash
-      # Licenses are accepted by the previous step, so `sdkmanager` reads little
-      # stdin and `yes` takes SIGPIPE when it exits. Disable pipefail (the default
-      # shell runs with -e -o pipefail) so that broken pipe doesn't fail the step —
-      # `sdkmanager`'s own exit code (last in the pipe) is what governs.
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: |
-        set +o pipefail
-        yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;27.0.12077973"
+        set -euo pipefail
+        # Read ndkVersion from the withAndroidNdkVersion plugin entry in app.json
+        # (the same value the plugin applies to the build).
+        NDK_VERSION="$(node -e "const p=(require('./app.json').expo.plugins||[]).find(x=>Array.isArray(x)&&x[0]==='./plugins/withAndroidNdkVersion.js');process.stdout.write((p&&p[1]&&p[1].ndkVersion)||'')")"
+        if [ -z "${NDK_VERSION:-}" ]; then
+          echo "Error: ndkVersion not set via ./plugins/withAndroidNdkVersion.js in app.json"
+          exit 1
+        fi
+        echo "Resolved ndkVersion=$NDK_VERSION (from app.json withAndroidNdkVersion plugin)"
+        SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+        status=1
+        for attempt in 1 2 3; do
+          echo "=== sdkmanager NDK install attempt $attempt/3 (ndk;$NDK_VERSION) ==="
+          # Licenses accepted above, so `sdkmanager` reads little stdin and `yes`
+          # takes SIGPIPE when it exits — disable pipefail so that broken pipe
+          # doesn't mask sdkmanager's own (last-in-pipe) exit code.
+          set +o pipefail
+          yes | "$SDKMANAGER" --install "ndk;$NDK_VERSION"
+          status=$?
+          set -o pipefail
+          [ "$status" -eq 0 ] && break
+          echo "NDK install attempt $attempt failed (exit $status); clearing partial download and retrying"
+          rm -rf "$ANDROID_HOME/ndk/$NDK_VERSION"
+        done
+        [ "$status" -eq 0 ] || { echo "Error: NDK install failed after 3 attempts"; exit 1; }
 
     - name: Expo Prebuild (Android)
       if: inputs.platform == 'android'
