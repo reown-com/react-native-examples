@@ -9,6 +9,7 @@ import Wallets from '@/screens/Wallets';
 import Connections from '@/screens/Connections';
 import Settings from '@/screens/Settings';
 import { useTheme } from '@/hooks/useTheme';
+import { Spacing } from '@/utils/ThemeUtil';
 
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
@@ -31,7 +32,15 @@ export function HomeTabNavigator() {
       screenOptions={{
         headerShown: false,
         sceneStyle: { backgroundColor: Theme['bg-primary'] },
-        tabBarStyle: { backgroundColor: Theme['bg-primary'] },
+        tabBarStyle: {
+          backgroundColor: Theme['bg-primary'],
+          // Softer, lighter top divider than the react-navigation default
+          borderTopColor: Theme['border-secondary'],
+          // Extra height + bottom padding so labels aren't clipped in the desktop frame
+          height: 72,
+          paddingBottom: Spacing[4],
+          paddingTop: Spacing[1],
+        },
       }}>
       <TabNav.Screen
         name="Wallets"

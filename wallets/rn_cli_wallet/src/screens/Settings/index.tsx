@@ -35,7 +35,7 @@ export default function Settings() {
           activeThumbColor: Theme.white,
         }
       : {}
-  ) as object;
+  ) as { activeTrackColor?: string; activeThumbColor?: string };
 
   useEffect(() => {
     async function getAsyncData() {
@@ -81,19 +81,30 @@ export default function Settings() {
             <Text variant="md-500" color="text-primary">
               Dark mode
             </Text>
-            <Switch
-              value={themeMode === 'dark'}
-              style={styles.switch}
-              onValueChange={toggleDarkMode}
-              trackColor={Platform.select({
-                android: {
-                  false: Theme['foreground-tertiary'],
-                  true: Theme['bg-accent-primary'],
-                },
-              })}
-              thumbColor={Platform.select({ android: Theme.white })}
-              {...webAccentSwitchProps}
-            />
+            {/* On web the whole card (PressableScale) owns the toggle: a tap on
+                the switch bubbles up to the card, so if the Switch also fired
+                onValueChange it would toggle twice (net no change). Render it
+                display-only with pointerEvents="none" so the tap passes through.
+                On native there's no double-toggle, so keep the Switch fully
+                interactive (and accessible) with its own onValueChange. */}
+            {Platform.OS === 'web' ? (
+              <View pointerEvents="none" style={styles.switch}>
+                <Switch value={themeMode === 'dark'} {...webAccentSwitchProps} />
+              </View>
+            ) : (
+              <Switch
+                value={themeMode === 'dark'}
+                style={styles.switch}
+                onValueChange={toggleDarkMode}
+                trackColor={Platform.select({
+                  android: {
+                    false: Theme['foreground-tertiary'],
+                    true: Theme['bg-accent-primary'],
+                  },
+                })}
+                thumbColor={Platform.select({ android: Theme.white })}
+              />
+            )}
           </View>
         </Button>
         <Card
