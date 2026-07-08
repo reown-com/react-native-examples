@@ -343,7 +343,11 @@ export default class BitcoinLib {
     change?: boolean;
     taproot?: boolean;
   }) {
-    const path = `m/84'/${coinType}'/0'/${change ? 1 : 0}/${index}`;
+    // BIP86 (m/86') is the standard derivation for single-key P2TR (taproot/
+    // ordinals); BIP84 (m/84') is for P2WPKH. Using the right purpose per
+    // address type keeps addresses interoperable with other BIP86/BIP84 wallets.
+    const purpose = taproot ? 86 : 84;
+    const path = `m/${purpose}'/${coinType}'/0'/${change ? 1 : 0}/${index}`;
     const child = this.account.derivePath(path);
     let address: string;
     if (taproot) {
