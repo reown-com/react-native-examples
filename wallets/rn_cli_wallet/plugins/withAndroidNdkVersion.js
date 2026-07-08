@@ -45,9 +45,16 @@ const withAndroidNdkVersion = (config, { ndkVersion } = {}) => {
     );
   }
   return withProjectBuildGradle(config, cfg => {
-    if (cfg.modResults.language === 'groovy') {
-      cfg.modResults.contents = setNdkVersion(cfg.modResults.contents, ndkVersion);
+    // Throw rather than silently no-op: if a future Expo SDK generates a Kotlin
+    // DSL (build.gradle.kts) root project, skipping would leave the NDK unpinned
+    // and quietly reintroduce the corrupt-download flake this plugin prevents.
+    if (cfg.modResults.language !== 'groovy') {
+      throw new Error(
+        `withAndroidNdkVersion: expected a groovy build.gradle, got '${cfg.modResults.language}'. ` +
+          'Update this plugin to support Kotlin DSL (build.gradle.kts).',
+      );
     }
+    cfg.modResults.contents = setNdkVersion(cfg.modResults.contents, ndkVersion);
     return cfg;
   });
 };
