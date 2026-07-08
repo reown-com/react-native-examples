@@ -373,10 +373,15 @@ runs:
           echo "=== sdkmanager NDK install attempt $attempt/3 (ndk;$NDK_VERSION) ==="
           # Licenses accepted above, so `sdkmanager` reads little stdin and `yes`
           # takes SIGPIPE when it exits — disable pipefail so that broken pipe
-          # doesn't mask sdkmanager's own (last-in-pipe) exit code.
+          # doesn't mask sdkmanager's own (last-in-pipe) exit code. The `if`
+          # condition is also exempt from `set -e`, so a failed install is
+          # captured and retried instead of aborting the step.
           set +o pipefail
-          yes | "$SDKMANAGER" --install "ndk;$NDK_VERSION"
-          status=$?
+          if yes | "$SDKMANAGER" --install "ndk;$NDK_VERSION"; then
+            status=0
+          else
+            status=$?
+          fi
           set -o pipefail
           [ "$status" -eq 0 ] && break
           echo "NDK install attempt $attempt failed (exit $status); clearing partial download and retrying"
