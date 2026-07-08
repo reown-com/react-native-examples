@@ -26,7 +26,7 @@ This is a production-ready reference implementation for developers building wall
 - **@walletconnect/pay**: WalletConnect Pay integration
 
 ### Blockchain Libraries
-- **ethers** (5.8.0): Ethereum/EVM interactions
+- **ethers** (6.13.5): Ethereum/EVM interactions
 - **@mysten/sui**: Sui blockchain support
 - **@ton/core**, **@ton/crypto**, **@ton/ton**: TON blockchain
 - **tronweb**: Tron blockchain
