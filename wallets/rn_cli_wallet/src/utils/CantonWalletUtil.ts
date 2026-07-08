@@ -72,7 +72,7 @@ export async function loadCantonWallet(input: string): Promise<{
   await storage.setItem('CANTON_SECRET_KEY_1', newWallet.getSecretKey());
   if (__DEV__) {
     console.warn(
-      '[SECURITY] Canton secret key stored unencrypted. Use secure enclave in production.',
+      '[SECURITY] Canton secret key stored in encrypted MMKV on native (key in Keychain/Keystore); unencrypted localStorage on web.',
     );
   }
 
