@@ -1,0 +1,118 @@
+{
+  "expo": {
+    "name": "RN AppKit",
+    "slug": "appkit-wagmi",
+    "version": "1.1",
+    "scheme": "w3mwagmisample",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "bundleIdentifier": "com.walletconnect.web3modal.rnsample",
+      "buildNumber": "115",
+      "appleTeamId": "W5R8AG9K22",
+      "supportsTablet": true,
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "associatedDomains": ["applinks:lab.reown.com"],
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "",
+        "LSApplicationQueriesSchemes": [
+          "metamask",
+          "trust",
+          "safe",
+          "rainbow",
+          "uniswap",
+          "zerion",
+          "imtokenv2",
+          "spot",
+          "omni",
+          "dfw",
+          "tpoutside",
+          "robinhood-wallet",
+          "frontier",
+          "blockchain-wallet",
+          "safepalwallet",
+          "bitkeep",
+          "oneinch",
+          "exodus",
+          "bnc",
+          "ledgerlive",
+          "mewwallet",
+          "awallet",
+          "keyring",
+          "lobstr",
+          "ontoprovider",
+          "mathwallet",
+          "unstoppabledomains",
+          "obvious",
+          "fireblocks-wc",
+          "ambire",
+          "internetmoney",
+          "walletnow",
+          "bitcoincom",
+          "coin98",
+          "arculuswc",
+          "cryptobrowser",
+          "chainapp",
+          "huddln",
+          "verso",
+          "haha",
+          "modularwallet",
+          "coinomi",
+          "cbwallet",
+          "phantom",
+          "solflare"
+        ]
+      }
+    },
+    "android": {
+      "package": "com.walletconnect.web3modal.rnsample",
+      "versionCode": 209,
+      "permissions": ["android.permission.INTERNET"],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundImage": "./assets/adaptive-background.png",
+        "monochromeImage": "./assets/adaptive-monochrome.png"
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "category": ["DEFAULT", "BROWSABLE"],
+          "data": [{ "scheme": "w3mwagmisample" }]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "category": ["DEFAULT", "BROWSABLE"],
+          "data": [
+            { "scheme": "https", "host": "lab.reown.com", "pathPrefix": "/rn_appkit" }
+          ]
+        }
+      ]
+    },
+    "plugins": [
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "note": "Use SENTRY_AUTH_TOKEN env to authenticate with Sentry.",
+          "project": "appkit-wagmi",
+          "organization": "walletconnect"
+        }
+      ],
+      [
+        "react-native-bootsplash",
+        {
+          "assetsDir": "assets/bootsplash",
+          "android": { "parentTheme": "EdgeToEdge", "darkContentBarsStyle": false }
+        }
+      ],
+      "expo-system-ui",
+      "./plugins/withAndroidVariants.js",
+      "./plugins/withAndroidWalletQueries.js",
+      "./plugins/withAndroidVariantIcons.js"
+    ]
+  }
+}
