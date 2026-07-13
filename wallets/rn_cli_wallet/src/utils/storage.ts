@@ -19,16 +19,12 @@ function getStore(): Promise<MMKV> {
     mmkvPromise = (async () => {
       const key = await getEncryptionKey();
 
+      // No key on web (SecureStore unavailable) — fall back to the unencrypted
+      // localStorage shim, which is best-effort by design.
       if (!key) {
-        if (__DEV__) {
-          console.log('[storage] secure MMKV opened UNENCRYPTED (web / no key)');
-        }
         return new MMKV({ id: SECURE_STORE_ID });
       }
 
-      if (__DEV__) {
-        console.log('[storage] secure MMKV opened ENCRYPTED (key from SecureStore)');
-      }
       return new MMKV({ id: SECURE_STORE_ID, encryptionKey: key });
     })();
   }
