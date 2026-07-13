@@ -92,3 +92,5 @@ sentry.properties
 # committed. Source of truth: app.json / app.config.js / plugins / assets.
 /ios/
 /android/
+
+.env.local
