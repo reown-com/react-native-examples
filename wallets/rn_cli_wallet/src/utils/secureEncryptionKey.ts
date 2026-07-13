@@ -7,44 +7,38 @@ import * as SecureStore from 'expo-secure-store';
 //
 // Native-only: SecureStore is unavailable on web, and the react-native-mmkv web
 // shim (localStorage) ignores encryption anyway — so on web we return undefined
-// and storage stays best-effort/unencrypted by design.
+// and the secure store stays best-effort/unencrypted by design.
 
 const SECURE_STORE_KEY = 'mmkv_encryption_key';
 
-// MMKV's encryption key cannot exceed 16 bytes, so we generate 8 random bytes
-// and hex-encode them into a 16-character key.
+// MMKV's encryption key cannot exceed 16 bytes. We generate 12 random bytes and
+// base64-encode them into a 16-character (16-byte) key — 96 bits of entropy,
+// the most that fits within MMKV's limit.
 function generateKey(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(8));
-  return Array.from(bytes)
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
+  const bytes = crypto.getRandomValues(new Uint8Array(12));
+  // Buffer is polyfilled globally by '@walletconnect/react-native-compat'.
+  return Buffer.from(bytes).toString('base64');
 }
 
-export interface EncryptionKeyResult {
-  // The MMKV encryption key, or undefined on web (no encryption available).
-  key: string | undefined;
-  // True when the key was just generated this launch — meaning an existing
-  // unencrypted MMKV store may need to be recrypted in place before use.
-  isNew: boolean;
-}
+let keyPromise: Promise<string | undefined> | undefined;
 
-let keyPromise: Promise<EncryptionKeyResult> | undefined;
-
-export function getEncryptionKey(): Promise<EncryptionKeyResult> {
+// Resolves the MMKV encryption key, generating and persisting it on first use.
+// Returns undefined on web (no native secure storage available).
+export function getEncryptionKey(): Promise<string | undefined> {
   if (!keyPromise) {
     keyPromise = (async () => {
       if (Platform.OS === 'web') {
-        return { key: undefined, isNew: false };
+        return undefined;
       }
 
       const existing = await SecureStore.getItemAsync(SECURE_STORE_KEY);
       if (existing) {
-        return { key: existing, isNew: false };
+        return existing;
       }
 
       const key = generateKey();
       await SecureStore.setItemAsync(SECURE_STORE_KEY, key);
-      return { key, isNew: true };
+      return key;
     })();
   }
   return keyPromise;

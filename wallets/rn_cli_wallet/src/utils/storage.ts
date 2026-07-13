@@ -2,42 +2,34 @@ import { MMKV } from 'react-native-mmkv';
 import { safeJsonParse, safeJsonStringify } from '@walletconnect/safe-json';
 import { getEncryptionKey } from './secureEncryptionKey';
 
-// The MMKV instance is created lazily because the encryption key must be
-// fetched from the OS Keychain/Keystore first (async). On native the store is
-// encrypted at rest; on web (no key) it falls back to the localStorage shim,
-// which is unencrypted by design.
+// Wallet secrets (mnemonics/private keys) and WalletConnect Core data are kept
+// in a DEDICATED, encrypted MMKV instance — never the default store. Other
+// modules (SettingsStore, WalletStore, LogStore) open the default `new MMKV()`
+// without a key; if this data shared that instance, encrypting it would make
+// their reads/writes fail. Isolating it under its own id avoids that conflict.
+const SECURE_STORE_ID = 'wallet-secure';
+
+// Created lazily because the encryption key must be fetched from the OS
+// Keychain/Keystore first (async). On native the store is encrypted at rest; on
+// web (no key) it falls back to the localStorage shim, unencrypted by design.
 let mmkvPromise: Promise<MMKV> | undefined;
 
 function getStore(): Promise<MMKV> {
   if (!mmkvPromise) {
     mmkvPromise = (async () => {
-      const { key, isNew } = await getEncryptionKey();
+      const key = await getEncryptionKey();
 
       if (!key) {
         if (__DEV__) {
-          console.log('[storage] MMKV opened UNENCRYPTED (web / no key available)');
+          console.log('[storage] secure MMKV opened UNENCRYPTED (web / no key)');
         }
-        return new MMKV();
-      }
-
-      if (isNew) {
-        // Existing installs have an unencrypted default store on disk. Open it
-        // in plaintext, then encrypt it in place so previously stored wallet
-        // secrets survive the upgrade instead of appearing reset.
-        const instance = new MMKV();
-        instance.recrypt(key);
-        if (__DEV__) {
-          console.log(
-            '[storage] MMKV recrypted in place with new key (first run / plaintext→encrypted migration)',
-          );
-        }
-        return instance;
+        return new MMKV({ id: SECURE_STORE_ID });
       }
 
       if (__DEV__) {
-        console.log('[storage] MMKV opened ENCRYPTED with existing key from SecureStore');
+        console.log('[storage] secure MMKV opened ENCRYPTED (key from SecureStore)');
       }
-      return new MMKV({ encryptionKey: key });
+      return new MMKV({ id: SECURE_STORE_ID, encryptionKey: key });
     })();
   }
   return mmkvPromise;
