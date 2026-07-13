@@ -5,6 +5,19 @@ import LogStore, { serializeError } from '@/store/LogStore';
 
 const BALANCE_API_PATH = '/v1/account';
 
+// Thrown when the balance API returns a non-OK HTTP status. Carries the status
+// so callers can branch on it (e.g. 400 = chain/address unsupported) without
+// parsing the error message. Failures already logged here at the appropriate
+// level, so the aggregator doesn't re-log them.
+class BalanceFetchError extends Error {
+  status: number;
+  constructor(chainId: string, status: number) {
+    super(`Failed to fetch balance for ${chainId}: ${status}`);
+    this.name = 'BalanceFetchError';
+    this.status = status;
+  }
+}
+
 /**
  * Fetches token balances for a single chain
  * @param address - Wallet address
@@ -64,13 +77,25 @@ async function fetchBalanceForChain(
 
   if (!response.ok) {
     const errorText = await response.text();
-    LogStore.error('Error response', 'BalanceService', 'fetchBalanceForChain', {
-      status: response.status,
-      body: errorText,
-    });
-    throw new Error(
-      `Failed to fetch balance for ${chainId}: ${response.status}`,
-    );
+    // A 400 means the balance API doesn't support this chain/address format
+    // (e.g. bip122/Bitcoin, sui) — this is expected and handled by the caller
+    // (fails silently per-chain), so log it as a warning rather than an error.
+    if (response.status === 400) {
+      LogStore.warn(
+        'Chain not supported by balance API',
+        'BalanceService',
+        'fetchBalanceForChain',
+        { chainId, status: response.status, body: errorText },
+      );
+    } else {
+      LogStore.error(
+        'Error response',
+        'BalanceService',
+        'fetchBalanceForChain',
+        { chainId, status: response.status, body: errorText },
+      );
+    }
+    throw new BalanceFetchError(chainId, response.status);
   }
 
   const data: BalanceResponse = await response.json();
@@ -130,14 +155,15 @@ export async function fetchBalancesForChains(
         },
       );
       allBalances.push(...result.value);
-    } else {
+    } else if (!(result.reason instanceof BalanceFetchError)) {
+      // HTTP failures are already logged (at the right level) by
+      // fetchBalanceForChain; only surface unexpected errors here, e.g. a
+      // network failure that threw before a response was received.
       LogStore.error(
         `Chain ${chainId} failed`,
         'BalanceService',
         'fetchBalancesForChains',
-        {
-          error: serializeError(result.reason),
-        },
+        { error: serializeError(result.reason) },
       );
     }
   });

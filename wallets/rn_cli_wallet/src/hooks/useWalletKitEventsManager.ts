@@ -16,6 +16,7 @@ import { TRON_SIGNING_METHODS } from '@/constants/Tron';
 import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
 import { approveCantonRequest } from '@/utils/CantonRequestHandlerUtil';
 import { SOLANA_SIGNING_METHODS } from '@/constants/Solana';
+import { BIP122_SIGNING_METHODS } from '@/constants/Bitcoin';
 
 export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -180,6 +181,22 @@ export default function useWalletKitEventsManager(initialized: boolean) {
         case SOLANA_SIGNING_METHODS.SOLANA_SIGN_ALL_TRANSACTIONS:
         case SOLANA_SIGNING_METHODS.SOLANA_SIGN_AND_SEND_TRANSACTION:
           return ModalStore.open('SessionSolanaSignTransactionModal', {
+            requestEvent,
+            requestSession,
+          });
+        case BIP122_SIGNING_METHODS.BIP122_SIGN_MESSAGE:
+          return ModalStore.open('SessionBitcoinSignMessageModal', {
+            requestEvent,
+            requestSession,
+          });
+        case BIP122_SIGNING_METHODS.BIP122_GET_ACCOUNT_ADDRESSES:
+          return ModalStore.open('SessionBitcoinGetAddressesModal', {
+            requestEvent,
+            requestSession,
+          });
+        case BIP122_SIGNING_METHODS.BIP122_SEND_TRANSACTION:
+        case BIP122_SIGNING_METHODS.BIP122_SIGN_PSBT:
+          return ModalStore.open('SessionBitcoinSendTransactionModal', {
             requestEvent,
             requestSession,
           });
