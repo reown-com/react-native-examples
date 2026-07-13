@@ -32,6 +32,12 @@ import {
   SOLANA_EVENTS,
   SOLANA_SIGNING_METHODS,
 } from '@/constants/Solana';
+import { bitcoinAddresses } from '@/utils/BitcoinWalletUtil';
+import {
+  BIP122_CHAINS,
+  BIP122_EVENTS,
+  BIP122_SIGNING_METHODS,
+} from '@/constants/Bitcoin';
 import { AccordionCard } from '@/components/AccordionCard';
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkSelector } from '@/components/NetworkSelector';
@@ -90,6 +96,10 @@ export default function SessionProposalModal() {
     const solanaMethods = Object.values(SOLANA_SIGNING_METHODS);
     const solanaEvents = Object.values(SOLANA_EVENTS);
 
+    const bip122Chains = Object.keys(BIP122_CHAINS);
+    const bip122Methods = Object.values(BIP122_SIGNING_METHODS);
+    const bip122Events = Object.values(BIP122_EVENTS);
+
     return {
       eip155: {
         chains: eip155Chains,
@@ -133,6 +143,17 @@ export default function SessionProposalModal() {
         events: solanaEvents,
         accounts: solanaAddresses?.[0]
           ? solanaChains.map(chain => `${chain}:${solanaAddresses[0]}`)
+          : [],
+      },
+      bip122: {
+        chains: bip122Chains,
+        methods: bip122Methods,
+        events: bip122Events,
+        // Expose both the payment (P2WPKH) and ordinals (P2TR) addresses.
+        accounts: bitcoinAddresses?.[0]
+          ? bip122Chains.flatMap(chain =>
+              bitcoinAddresses.map(address => `${chain}:${address}`),
+            )
           : [],
       },
     };
