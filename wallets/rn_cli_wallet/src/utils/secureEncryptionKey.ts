@@ -31,14 +31,27 @@ export function getEncryptionKey(): Promise<string | undefined> {
         return undefined;
       }
 
-      const existing = await SecureStore.getItemAsync(SECURE_STORE_KEY);
-      if (existing) {
-        return existing;
-      }
+      try {
+        const existing = await SecureStore.getItemAsync(SECURE_STORE_KEY);
+        if (existing) {
+          return existing;
+        }
 
-      const key = generateKey();
-      await SecureStore.setItemAsync(SECURE_STORE_KEY, key);
-      return key;
+        const key = generateKey();
+        await SecureStore.setItemAsync(SECURE_STORE_KEY, key);
+        return key;
+      } catch (err) {
+        // The Keychain/Keystore can be unavailable — e.g. an UNSIGNED iOS build
+        // (our E2E simulator archive is built with CODE_SIGNING_ALLOWED=NO) has
+        // no application-identifier entitlement, so Keychain access fails. Fall
+        // back to an unencrypted store so the app still initializes instead of
+        // hanging; encryption stays active on real signed builds.
+        console.warn(
+          '[secureEncryptionKey] Keychain/Keystore unavailable; wallet storage will be unencrypted on this build:',
+          err,
+        );
+        return undefined;
+      }
     })();
   }
   return keyPromise;
