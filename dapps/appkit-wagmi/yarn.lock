@@ -4805,29 +4805,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129":
-  version: 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129"
+"@reown/appkit-bitcoin-react-native@npm:0.0.0-canary-20260714141141":
+  version: 0.0.0-canary-20260714141141
+  resolution: "@reown/appkit-bitcoin-react-native@npm:0.0.0-canary-20260714141141"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
+    "@reown/appkit-common-react-native": 0.0.0-canary-20260714141141
   peerDependencies:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: f8b3d887b01ee044cd0feb6c7a5425471ea9f6a0139ce63ea2e4ee116d0a3b8b26ef5418f13cd59cc7bea73b73bbd664ce4ee87327e002001076204b61c22247
+  checksum: efa41a9e68b85a88bf4c7ff6831a43d65f257701d67e5562654ba52620b8e2707955e4558d61bf5f7b57487eebadb943f4f2ff340f3bf8a1707ded808e412655
   languageName: node
   linkType: hard
 
-"@reown/appkit-common-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129":
-  version: 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-  resolution: "@reown/appkit-common-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129"
+"@reown/appkit-common-react-native@npm:0.0.0-canary-20260714141141":
+  version: 0.0.0-canary-20260714141141
+  resolution: "@reown/appkit-common-react-native@npm:0.0.0-canary-20260714141141"
   dependencies:
     bignumber.js: 9.1.2
     dayjs: 1.11.10
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 051e9f4866f3b0e5343ee7f61dfb9850d23be935441eb3b4ca5cd77205605a3daa3a000cd7c5702f056d4c2f3d945b26704660a338d0800c210b971df936f2c2
+  checksum: 8103de5486c2ffb7eb0a37bda90f91454c5ff04df5e65c349ada160ae773d58a62d4e39995639caf358c16c031005c2c72d2edee9664fb581cbda40f2829977b
   languageName: node
   linkType: hard
 
@@ -4855,11 +4855,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-core-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129":
-  version: 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-  resolution: "@reown/appkit-core-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129"
+"@reown/appkit-core-react-native@npm:0.0.0-canary-20260714141141":
+  version: 0.0.0-canary-20260714141141
+  resolution: "@reown/appkit-core-react-native@npm:0.0.0-canary-20260714141141"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
+    "@reown/appkit-common-react-native": 0.0.0-canary-20260714141141
     countries-and-timezones: 3.7.2
     derive-valtio: 0.2.0
     valtio: 2.1.8
@@ -4867,7 +4867,7 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: 1e7f941d6022d184d3b39c7de0a210d258c170dc06ad17122c7597fccda67dc8e2e476b822735e6b6b3e8f1db798086b29f0976c075750d7fde2979b40a0e373
+  checksum: 70084b93d5fd95d8b32df88289f6c6b72dab6b59f63963b8c368625e52c368f5117efa4b577a25b43fa09830afebe10df77bd6d2e5dc664891f4c9e86e5de2a4
   languageName: node
   linkType: hard
 
@@ -4894,13 +4894,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129":
-  version: 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-  resolution: "@reown/appkit-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129"
+"@reown/appkit-react-native@npm:0.0.0-canary-20260714141141":
+  version: 0.0.0-canary-20260714141141
+  resolution: "@reown/appkit-react-native@npm:0.0.0-canary-20260714141141"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-    "@reown/appkit-core-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-    "@reown/appkit-ui-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
+    "@reown/appkit-common-react-native": 0.0.0-canary-20260714141141
+    "@reown/appkit-core-react-native": 0.0.0-canary-20260714141141
+    "@reown/appkit-ui-react-native": 0.0.0-canary-20260714141141
     "@walletconnect/universal-provider": 2.21.10
     valtio: 2.1.8
   peerDependencies:
@@ -4910,7 +4910,7 @@ __metadata:
     react-native: ">=0.72"
     react-native-safe-area-context: ">=4.4.0"
     react-native-svg: ">=13.10"
-  checksum: 5e49705d32224158ab784bb76e40646710fa096a466d970bd5080c9f2069856da86b6c7e7d973be54dde3bff5a168848da12497f0fd4cecec86da22b190cae8f
+  checksum: 49bd3a4cedaf8dca8ff1b0d9afc7ee87bee11d96b2790c500404a6ca3a2bf191debab9cb694aacc90efdf5ac500187a2ba505322835a0b3f65a233b32a902fb0
   languageName: node
   linkType: hard
 
@@ -4928,11 +4928,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-solana-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129":
-  version: 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129"
+"@reown/appkit-solana-react-native@npm:0.0.0-canary-20260714141141":
+  version: 0.0.0-canary-20260714141141
+  resolution: "@reown/appkit-solana-react-native@npm:0.0.0-canary-20260714141141"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
+    "@reown/appkit-common-react-native": 0.0.0-canary-20260714141141
     "@solana/spl-token": 0.4.13
     "@solana/web3.js": 1.98.2
     bs58: 6.0.0
@@ -4941,22 +4941,22 @@ __metadata:
     "@walletconnect/react-native-compat": ">=2.16.1"
     react: ">=18"
     react-native: ">=0.72"
-  checksum: ab19de3b99950ee343da0a201c5471f2286e37cb31fd279bfb8b5308c423ebcc2037934f64669f5a78fd96d85b4364f203b52461e45d4e02205fd14b655f6589
+  checksum: 60c432a9532bc30aa685f10993e2cabab81025f1e7c84076da136abce9bcbf80ad7e3d153c6b73bc4f4f20f035171ac683c2a84ec3cd20098404bf88053b0f75
   languageName: node
   linkType: hard
 
-"@reown/appkit-ui-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129":
-  version: 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129"
+"@reown/appkit-ui-react-native@npm:0.0.0-canary-20260714141141":
+  version: 0.0.0-canary-20260714141141
+  resolution: "@reown/appkit-ui-react-native@npm:0.0.0-canary-20260714141141"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
+    "@reown/appkit-common-react-native": 0.0.0-canary-20260714141141
     polished: 4.3.1
     qrcode: 1.5.3
   peerDependencies:
     react: ">=18"
     react-native: ">=0.72"
     react-native-svg: ">=13.10"
-  checksum: e7c19f09fa922eca4c5f52cc36e886fa20c6cf228cf581fb90aaf954e0c76c377f8a6a97ed515f388056fbe6474ca9543d252b060a4ae31013ff15762c2f9ffa
+  checksum: 595b1d20c8cb3024f4d8ca44b25b4611fe2f653d5102979715bfc9123cc24ebfa5ed7662c0ff56c7c871bc2aafe6dd3af088a73d818af5a56f66aaa035d6ba80
   languageName: node
   linkType: hard
 
@@ -4993,12 +4993,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/appkit-wagmi-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129":
-  version: 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129"
+"@reown/appkit-wagmi-react-native@npm:0.0.0-canary-20260714141141":
+  version: 0.0.0-canary-20260714141141
+  resolution: "@reown/appkit-wagmi-react-native@npm:0.0.0-canary-20260714141141"
   dependencies:
-    "@reown/appkit-common-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-    "@reown/appkit-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
+    "@reown/appkit-common-react-native": 0.0.0-canary-20260714141141
+    "@reown/appkit-react-native": 0.0.0-canary-20260714141141
   peerDependencies:
     "@react-native-community/netinfo": ">=11.0.0"
     "@walletconnect/react-native-compat": ">=2.16.1"
@@ -5007,7 +5007,7 @@ __metadata:
     react-native-get-random-values: ">=1.11.0"
     viem: ">=2 <3.0.0"
     wagmi: ">=2 <3.0.0"
-  checksum: fd3fb24a055f7bcfbc24da8ff44bf8efb2503329111385aa5770ff5bed21356e5d4e760d89a30d5ec47363598d02dcf39c5d5861c94ac824e1d190ee9c938244
+  checksum: 999c68e6ee0f4d4315b774fd026a18752c40f223d8ebf36bd3418ae63b391797fb8b567649d4e880c7b801a9998c4c0bf66ad0ea7e14bce527de2a2f7976d753
   languageName: node
   linkType: hard
 
@@ -6744,10 +6744,10 @@ __metadata:
     "@react-navigation/bottom-tabs": 7.7.0
     "@react-navigation/native": 7.1.19
     "@react-navigation/native-stack": 7.6.1
-    "@reown/appkit-bitcoin-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-    "@reown/appkit-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-    "@reown/appkit-solana-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
-    "@reown/appkit-wagmi-react-native": 0.0.0-fix-fetch-image-blob-arraybuffer-20260708174129
+    "@reown/appkit-bitcoin-react-native": 0.0.0-canary-20260714141141
+    "@reown/appkit-react-native": 0.0.0-canary-20260714141141
+    "@reown/appkit-solana-react-native": 0.0.0-canary-20260714141141
+    "@reown/appkit-wagmi-react-native": 0.0.0-canary-20260714141141
     "@sentry/react-native": ~7.11.0
     "@solana/web3.js": 1.98.2
     "@tanstack/react-query": 5.62.2
