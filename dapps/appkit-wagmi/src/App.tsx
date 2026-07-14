@@ -29,11 +29,13 @@ Sentry.init({
   enabled: !__DEV__ && !!process.env.EXPO_PUBLIC_SENTRY_DSN,
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   environment: getEnvironment(),
-  sendDefaultPii: true,
+  sendDefaultPii: false,
   // Enable Logs
-  enableLogs: true,
+  enableLogs: __DEV__,
 
-  // Temporarily disable native for Android, not sure why it's not working
+  // Native Sentry is disabled on Android pending investigation into an init
+  // failure with the Expo SDK 56 / expo-modules-core@56 setup. Tracked upstream;
+  // iOS native crash reporting is unaffected.
   enableNative: Platform.OS === 'ios',
 
   // Configure Session Replay
@@ -42,7 +44,12 @@ Sentry.init({
 
   tracesSampleRate: 0.5,
   profilesSampleRate: 1.0,
-  integrations: [Sentry.mobileReplayIntegration()],
+  integrations: [
+    Sentry.mobileReplayIntegration({
+      maskAllText: true,
+      maskAllImages: true,
+    }),
+  ],
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,
@@ -78,7 +85,7 @@ const appKit = createAppKit({
   // applied at launch (createAppKit is a singleton).
   ...(AppKitConfigStore.getSiwxEnabled() ? {siwx: new ReownAuthentication()} : {}),
   clipboardClient,
-  debug: true,
+  debug: __DEV__,
   storage,
   extraConnectors,
 });

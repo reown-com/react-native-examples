@@ -63,6 +63,23 @@ ${appLinkData}
 `;
 }
 
+// Like String.replace, but throws if the pattern didn't match anything. The
+// replacements below are tied to Expo's default build.gradle template; a silent
+// no-match would leave signing/variant config absent and ship a release APK
+// signed with the debug keystore. Fail the prebuild loudly instead — most likely
+// cause is an Expo SDK bump changing the template (update the pattern to match).
+function replaceOrThrow(source, pattern, replacement, step) {
+  const result = source.replace(pattern, replacement);
+  if (result === source) {
+    throw new Error(
+      `[withAndroidVariants] Step ${step}: pattern ${pattern} not found in ` +
+        `android/app/build.gradle. The Expo template likely changed — update ` +
+        `the plugin to match.`,
+    );
+  }
+  return result;
+}
+
 function addAndroidVariants(buildGradle) {
   // Idempotent — prebuild regenerates build.gradle, but guard double application.
   if (buildGradle.includes('def secretsProperties = new Properties()')) {
@@ -78,9 +95,11 @@ function addAndroidVariants(buildGradle) {
     }
 
     `;
-  buildGradle = buildGradle.replace(
+  buildGradle = replaceOrThrow(
+    buildGradle,
     /(\n\s*signingConfigs\s*\{)/,
     `${loadSecrets}$1`,
+    1,
   );
 
   // 2. Add internal + release signing configs after the default `debug` one.
@@ -100,9 +119,11 @@ function addAndroidVariants(buildGradle) {
                 keyPassword secretsProperties['WC_KEY_PASSWORD_UPLOAD']
             }
         }`;
-  buildGradle = buildGradle.replace(
+  buildGradle = replaceOrThrow(
+    buildGradle,
     /(signingConfigs\s*\{[^}]*debug\s*\{[^}]*\})\s*(\n\s*\})/s,
     `$1\n${signingConfigs}\n    $2`,
+    2,
   );
 
   // 3. Add the `internal` buildType at the top of the buildTypes block.
@@ -112,23 +133,29 @@ function addAndroidVariants(buildGradle) {
             signingConfig signingConfigs.internal
             matchingFallbacks = ['release']
         }`;
-  buildGradle = buildGradle.replace(
+  buildGradle = replaceOrThrow(
+    buildGradle,
     /(\n\s*buildTypes\s*\{)/,
     `$1\n${internalBuildType}`,
+    3,
   );
 
   // 4. Point the release buildType at signingConfigs.release (Expo defaults to .debug).
-  buildGradle = buildGradle.replace(
+  buildGradle = replaceOrThrow(
+    buildGradle,
     /(release\s*\{[^}]*?)signingConfig\s+signingConfigs\.debug/s,
     '$1signingConfig signingConfigs.release',
+    4,
   );
 
   // 5. Give the debug buildType a .debug applicationId so it can coexist with
   // release + internal (Expo's default debug has no suffix → collides with
   // release). `signingConfig signingConfigs.debug` is unique to this block.
-  buildGradle = buildGradle.replace(
+  buildGradle = replaceOrThrow(
+    buildGradle,
     /(\n(\s*)signingConfig\s+signingConfigs\.debug\b)/,
     '\n$2applicationIdSuffix ".debug"\n$2versionNameSuffix "-debug"$1',
+    5,
   );
 
   return buildGradle;
