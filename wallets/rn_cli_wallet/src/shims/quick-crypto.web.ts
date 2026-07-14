@@ -25,11 +25,11 @@ export function getRandomValues<T extends ArrayBufferView | null>(array: T): T {
 export const subtle = webCrypto?.subtle;
 
 // Node's `crypto.pbkdf2Sync`, implemented in pure JS via @noble/hashes. The
-// `@ethersproject/pbkdf2` patch aliases its `pbkdf2` export to
-// `crypto.pbkdf2Sync` (the fast native path via quick-crypto on device); on web
-// we provide it here so ethers' `Wallet.fromMnemonic` (mnemonic -> seed
-// derivation) works instead of throwing
-// "_ethersprojectPbkdf.pbkdf2 is not a function".
+// `bip39` patch aliases its seed derivation (`mnemonicToSeedSync`) to
+// `crypto.pbkdf2Sync` — the fast native path via quick-crypto on device; on web
+// we provide it here so bip39-based mnemonic -> seed derivation (Solana, Sui,
+// Ton) works instead of throwing "pbkdf2 is not a function". (ethers v6 derives
+// its own seed via @noble/hashes and no longer routes through `crypto`.)
 type Hashish = typeof sha512;
 const HASHES: Record<string, Hashish> = {sha512, sha256, sha1};
 

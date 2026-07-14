@@ -1,4 +1,4 @@
-import { utils } from 'ethers';
+import { Mnemonic } from 'ethers';
 
 import { ENV } from './env';
 
@@ -68,7 +68,7 @@ export function loadEIP155Wallet(input: string): {
         `Mnemonic must be 12, 15, 18, 21, or 24 words (got ${words.length})`,
       );
     }
-    if (!utils.isValidMnemonic(trimmedInput)) {
+    if (!Mnemonic.isValidMnemonic(trimmedInput)) {
       throw new Error('Invalid mnemonic phrase');
     }
   }

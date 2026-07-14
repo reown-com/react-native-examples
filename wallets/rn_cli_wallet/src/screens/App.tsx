@@ -14,6 +14,7 @@ import { RELAYER_EVENTS } from '@walletconnect/core';
 
 import { RootStackNavigator } from '@/navigators/RootStackNavigator';
 import Modal from '@/components/Modal';
+import { DesktopFrameWrapper } from '@/components/DesktopFrameWrapper';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
 import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
 import { usePairing } from '@/hooks/usePairing';
@@ -115,7 +116,9 @@ const App = () => {
         return;
       }
 
-      // 2. Payment link from NFC tag or App Link (pay.walletconnect.com)
+      // 2. Payment link from NFC tag (pay.walletconnect.com). Universal-link
+      // registration for these hosts was removed from app.json, so on native
+      // these URLs now arrive via NFC rather than a tapped App Link.
       try {
         const { hostname } = new URL(url);
         if (
@@ -205,24 +208,26 @@ const App = () => {
   );
 
   return (
-    <GestureHandlerRootView style={rootStyle}>
-      <SafeAreaProvider>
-        <KeyboardProvider>
-          <NavigationContainer
-            documentTitle={{ formatter: () => 'React N. Wallet' }}>
-            <StatusBar
-              translucent
-              backgroundColor="transparent"
-              barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
-            />
-            <NavigationBar style={themeMode === 'dark' ? 'light' : 'dark'} />
-            <RootStackNavigator />
-            <Modal />
-          </NavigationContainer>
-          <Toast config={toastConfig} position="top" topOffset={0} />
-        </KeyboardProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <DesktopFrameWrapper>
+      <GestureHandlerRootView style={rootStyle}>
+        <SafeAreaProvider>
+          <KeyboardProvider>
+            <NavigationContainer
+              documentTitle={{ formatter: () => 'React N. Wallet' }}>
+              <StatusBar
+                translucent
+                backgroundColor="transparent"
+                barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
+              />
+              <NavigationBar style={themeMode === 'dark' ? 'light' : 'dark'} />
+              <RootStackNavigator />
+              <Modal />
+            </NavigationContainer>
+            <Toast config={toastConfig} position="top" topOffset={0} />
+          </KeyboardProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </DesktopFrameWrapper>
   );
 };
 
