@@ -71,6 +71,8 @@ export type RootStackParamList = {
   AppKitLogs: undefined;
   NetworkSettings: undefined;
   PayWebView: {url: string};
+  Omen: undefined;
+  OmenDepositWebView: {url: string};
 };
 
 export type HomeTabParamList = {

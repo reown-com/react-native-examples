@@ -9,6 +9,8 @@ import {useLogs} from '@/hooks/useLogs';
 import { AppKitLogList } from '@/screens/AppKitLogList';
 import NetworkSettingsScreen from '@/screens/NetworkSettings';
 import PayWebView from '@/screens/PayWebView';
+import OmenScreen from '@/screens/Omen';
+import OmenDepositWebView from '@/screens/Omen/OmenDepositWebView';
 
 const StackNavigator = createNativeStackNavigator<RootStackParamList>();
 
@@ -73,6 +75,26 @@ export function RootStackNavigator() {
           headerShown: true,
           headerBackButtonDisplayMode: 'minimal',
           title: 'Payment',
+          headerTintColor: Theme['fg-100'],
+        }}
+      />
+      <StackNavigator.Screen
+        name="Omen"
+        component={OmenScreen}
+        options={{
+          headerShown: true,
+          headerBackButtonDisplayMode: 'minimal',
+          title: 'Omen',
+          headerTintColor: Theme['fg-100'],
+        }}
+      />
+      <StackNavigator.Screen
+        name="OmenDepositWebView"
+        component={OmenDepositWebView}
+        options={{
+          headerShown: true,
+          headerBackButtonDisplayMode: 'minimal',
+          title: 'Add money',
           headerTintColor: Theme['fg-100'],
         }}
       />
