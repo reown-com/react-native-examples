@@ -8,6 +8,7 @@ import {LogList} from '@/screens/LogList';
 import {useLogs} from '@/hooks/useLogs';
 import { AppKitLogList } from '@/screens/AppKitLogList';
 import NetworkSettingsScreen from '@/screens/NetworkSettings';
+import PayWebView from '@/screens/PayWebView';
 
 const StackNavigator = createNativeStackNavigator<RootStackParamList>();
 
@@ -62,6 +63,16 @@ export function RootStackNavigator() {
           headerShown: true,
           headerBackButtonDisplayMode: 'minimal',
           title: 'AppKit settings & networks',
+          headerTintColor: Theme['fg-100'],
+        }}
+      />
+      <StackNavigator.Screen
+        name="PayWebView"
+        component={PayWebView}
+        options={{
+          headerShown: true,
+          headerBackButtonDisplayMode: 'minimal',
+          title: 'Payment',
           headerTintColor: Theme['fg-100'],
         }}
       />

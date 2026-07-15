@@ -6777,6 +6777,7 @@ __metadata:
     react-native-screens: 4.25.2
     react-native-svg: 15.15.4
     react-native-toast-message: 2.3.3
+    react-native-webview: 13.16.1
     react-native-worklets: 0.8.3
     react-test-renderer: 19.2.3
     stream-browserify: 3.0.0
@@ -10992,7 +10993,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"invariant@npm:^2.2.4":
+"invariant@npm:2.2.4, invariant@npm:^2.2.4":
   version: 2.2.4
   resolution: "invariant@npm:2.2.4"
   dependencies:
@@ -14920,6 +14921,19 @@ __metadata:
   peerDependencies:
     react-native: "*"
   checksum: 1a2e1030a62fd093764b5330ce0ff34d72246e581dd2892cddc347d8621931aeb2c9ea3e054960484a1259230e8461e569e1890f1ff452d3c5c0adef70190fc3
+  languageName: node
+  linkType: hard
+
+"react-native-webview@npm:13.16.1":
+  version: 13.16.1
+  resolution: "react-native-webview@npm:13.16.1"
+  dependencies:
+    escape-string-regexp: ^4.0.0
+    invariant: 2.2.4
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: c202500df090114877d7a92549dbac1c36bdcc2010d50ddffb57aedcec81870d9695f1e4e3ef852cbe02a8ef952ef8626b120b774813c396a32b4fdc5838a4a5
   languageName: node
   linkType: hard
 
