@@ -13,14 +13,20 @@ import {getMetadata} from '@/utils/misc';
 //   signing (BX maps it to the WC session's metadata.redirect).
 // - preferUniversalLinks: opens wallets via universal links
 //   (AppKit experimental_preferUniversalLinks).
-function buildPayUrl(rawUrl: string): string {
+// Returns null for anything that isn't a valid https URL — plaintext clipboard
+// content, or non-https schemes (javascript:/file:/http:) that would either
+// fail to load or leak the payment session over an insecure transport.
+function buildPayUrl(rawUrl: string): string | null {
   try {
     const parsed = new URL(rawUrl);
+    if (parsed.protocol !== 'https:') {
+      return null;
+    }
     parsed.searchParams.set('returnUrl', getMetadata().redirect.native);
     parsed.searchParams.set('preferUniversalLinks', '1');
     return parsed.toString();
   } catch {
-    return rawUrl;
+    return null;
   }
 }
 
@@ -39,7 +45,15 @@ export function PasteUrlButton() {
         );
         return;
       }
-      navigation.navigate('PayWebView', {url: buildPayUrl(url)});
+      const payUrl = buildPayUrl(url);
+      if (!payUrl) {
+        ToastUtils.showErrorToast(
+          'Invalid payment URL',
+          'Copy a valid https:// payment URL, then try again.',
+        );
+        return;
+      }
+      navigation.navigate('PayWebView', {url: payUrl});
     } catch {
       ToastUtils.showErrorToast(
         "Couldn't read clipboard",

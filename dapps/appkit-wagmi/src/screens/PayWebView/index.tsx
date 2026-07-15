@@ -55,8 +55,16 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
 
   // Some pages open the wallet via window.open() (a new window) rather than a
   // same-frame navigation, which routes here instead of onShouldStartLoadWithRequest.
+  // Only hand wallet deeplinks off to the OS — ignore any other window.open()
+  // target so a page can't drive Linking.openURL to arbitrary native schemes
+  // (tel:/sms:/intent:...). This mirrors the isWalletDeeplink gate above, which
+  // also matches https universal links (they carry the same `uri=wc:` param),
+  // so preferUniversalLinks wallets keep working.
   const onOpenWindow = useCallback((event: WebViewOpenWindowEvent) => {
     const {targetUrl} = event.nativeEvent;
+    if (!isWalletDeeplink(targetUrl)) {
+      return;
+    }
     Linking.openURL(targetUrl).catch(() => {
       ToastUtils.showErrorToast(
         "Couldn't open wallet",
@@ -92,6 +100,18 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
     [navigation],
   );
 
+  // A failed main-frame load (network error, DNS failure, unreachable host)
+  // otherwise leaves the user stranded on a blank/default error page. Surface
+  // it and back out. onHttpError is intentionally not wired: it can fire for
+  // sub-resources (e.g. a 404 tracking pixel) and would eject a valid session.
+  const onLoadError = useCallback(() => {
+    ToastUtils.showErrorToast(
+      'Failed to load payment page',
+      'Check your connection and try again.',
+    );
+    navigation.goBack();
+  }, [navigation]);
+
   if (successMessage !== null) {
     return (
       <PaySuccessView
@@ -112,6 +132,7 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
       onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
       onOpenWindow={onOpenWindow}
       onMessage={onMessage}
+      onError={onLoadError}
     />
   );
 }
