@@ -30,7 +30,6 @@ Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   environment: getEnvironment(),
   sendDefaultPii: false,
-  // Enable Logs
   enableLogs: __DEV__,
 
   // Native Sentry is disabled on Android pending investigation into an init
@@ -38,7 +37,6 @@ Sentry.init({
   // iOS native crash reporting is unaffected.
   enableNative: Platform.OS === 'ios',
 
-  // Configure Session Replay
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1,
 
@@ -81,8 +79,6 @@ const appKit = createAppKit({
   adapters,
   metadata,
   networks,
-  // SIWX (Sign In With X) is toggleable from the AppKit settings screen and
-  // applied at launch (createAppKit is a singleton).
   ...(AppKitConfigStore.getSiwxEnabled() ? {siwx: new ReownAuthentication()} : {}),
   clipboardClient,
   debug: __DEV__,

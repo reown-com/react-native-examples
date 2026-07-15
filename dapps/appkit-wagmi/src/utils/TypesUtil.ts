@@ -70,6 +70,7 @@ export type RootStackParamList = {
   Logs: undefined;
   AppKitLogs: undefined;
   NetworkSettings: undefined;
+  PayWebView: {url: string};
 };
 
 export type HomeTabParamList = {
