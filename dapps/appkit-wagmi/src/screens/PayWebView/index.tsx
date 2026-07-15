@@ -2,8 +2,7 @@ import React, {useCallback} from 'react';
 import {Linking, StyleSheet} from 'react-native';
 import {
   WebView,
-  WebViewMessageEvent,
-  WebViewNavigation,
+  WebViewMessageEvent
 } from 'react-native-webview';
 import type {
   ShouldStartLoadRequest,
@@ -12,13 +11,8 @@ import type {
 import {RootStackScreenProps} from '@/utils/TypesUtil';
 import {ToastUtils} from '@/utils/ToastUtils';
 
-// The hosted Pay page reports the flow outcome by calling
-// `window.ReactNativeWebView.postMessage(JSON.stringify({ type, ... }))`,
-// mirroring the IC_COMPLETE / IC_ERROR contract in the wallet sample's
-// CollectDataWebView. Names confirmed against the buyer-experience PR
-// (PAY_SUCCESS / PAY_FAILURE). Raw payload is logged for reference.
 type PayMessage = {
-  type?: string;
+  type?: 'PAY_SUCCESS' | 'PAY_FAILURE';
   success?: boolean;
   error?: string;
 };
@@ -36,11 +30,8 @@ function isWalletDeeplink(url: string): boolean {
 function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
   const {url} = route.params;
 
-  // Open wallet deeplinks with the COMPLETE url (including the `pay=` param).
-  // Everything else loads in the WebView unchanged.
   const onShouldStartLoadWithRequest = useCallback(
     (request: ShouldStartLoadRequest): boolean => {
-      console.log('[PayWebView] should start load:', request.url);
       if (isWalletDeeplink(request.url)) {
         Linking.openURL(request.url).catch(() => {
           ToastUtils.showErrorToast(
@@ -59,7 +50,6 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
   // same-frame navigation, which routes here instead of onShouldStartLoadWithRequest.
   const onOpenWindow = useCallback((event: WebViewOpenWindowEvent) => {
     const {targetUrl} = event.nativeEvent;
-    console.log('[PayWebView] open window:', targetUrl);
     Linking.openURL(targetUrl).catch(() => {
       ToastUtils.showErrorToast(
         "Couldn't open wallet",
@@ -68,14 +58,9 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
     });
   }, []);
 
-  const onNavigationStateChange = useCallback((navState: WebViewNavigation) => {
-    console.log('[PayWebView] url changed:', navState.url);
-  }, []);
-
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
       const raw = event.nativeEvent.data;
-      console.log('[PayWebView] message:', raw);
 
       let message: PayMessage;
       try {
@@ -111,7 +96,6 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
       setSupportMultipleWindows
       onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
       onOpenWindow={onOpenWindow}
-      onNavigationStateChange={onNavigationStateChange}
       onMessage={onMessage}
     />
   );
