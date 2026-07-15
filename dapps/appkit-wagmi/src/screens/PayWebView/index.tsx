@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Linking, StyleSheet} from 'react-native';
 import {
   WebView,
@@ -10,11 +10,14 @@ import type {
 } from 'react-native-webview/lib/WebViewTypes';
 import {RootStackScreenProps} from '@/utils/TypesUtil';
 import {ToastUtils} from '@/utils/ToastUtils';
+import {PaySuccessView} from './PaySuccessView';
 
 type PayMessage = {
   type?: 'PAY_SUCCESS' | 'PAY_FAILURE';
   success?: boolean;
   error?: string;
+  // Optional success summary shown as the result title.
+  message?: string;
 };
 
 // A wallet-connect deeplink carries the WC pairing URI in its `uri` query param.
@@ -29,6 +32,10 @@ function isWalletDeeplink(url: string): boolean {
 
 function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
   const {url} = route.params;
+
+  // Once the Pay page reports success we swap the WebView for the success
+  // result screen (Lottie checkmark), mirroring the wallet sample's Pay flow.
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const onShouldStartLoadWithRequest = useCallback(
     (request: ShouldStartLoadRequest): boolean => {
@@ -76,8 +83,7 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
         message.type === 'PAY_FAILURE' || message.success === false;
 
       if (isSuccess) {
-        ToastUtils.showSuccessToast('Payment successful');
-        navigation.goBack();
+        setSuccessMessage(message.message ?? '');
       } else if (isFailure) {
         ToastUtils.showErrorToast('Payment failed', message.error);
         navigation.goBack();
@@ -85,6 +91,15 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
     },
     [navigation],
   );
+
+  if (successMessage !== null) {
+    return (
+      <PaySuccessView
+        message={successMessage || undefined}
+        onDone={() => navigation.goBack()}
+      />
+    );
+  }
 
   return (
     <WebView
