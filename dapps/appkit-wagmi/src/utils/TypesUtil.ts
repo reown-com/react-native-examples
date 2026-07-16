@@ -73,6 +73,7 @@ export type RootStackParamList = {
   PayWebView: {url: string};
   Omen: undefined;
   OmenDepositWebView: {url: string};
+  GoodDepositConfirm: {to?: string; app?: string; amount?: number};
 };
 
 export type HomeTabParamList = {

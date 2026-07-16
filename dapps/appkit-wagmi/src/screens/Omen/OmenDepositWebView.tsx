@@ -106,6 +106,27 @@ function isWalletDeeplink(url: string): boolean {
   }
 }
 
+// Custom scheme the BX deposit page uses to hand off to our in-app "GoodWallet" demo wallet. It
+// never reaches the OS — we intercept it in the WebView and navigate to the GoodDepositConfirm
+// modal, so the deposit stays inside this app (no context switch, no native scheme registration).
+const GOOD_DEPOSIT_SCHEME = 'gooddeposit://';
+
+function parseGoodDeposit(url: string): {to?: string; app?: string; amount?: number} {
+  try {
+    const u = new URL(url);
+    const amountRaw = u.searchParams.get('amount');
+    const amount = amountRaw ? Number(amountRaw) : undefined;
+
+    return {
+      to: u.searchParams.get('to') ?? undefined,
+      app: u.searchParams.get('app') ?? undefined,
+      amount: amount && amount > 0 ? amount : undefined,
+    };
+  } catch {
+    return {};
+  }
+}
+
 function formatUsd(n: number): string {
   return `$${n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/, ',')}`;
 }
@@ -158,6 +179,12 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
   // else loads in the WebView.
   const onShouldStartLoadWithRequest = useCallback(
     (request: ShouldStartLoadRequest): boolean => {
+      // In-app GoodWallet handoff — navigate to the confirm modal, never leave the app.
+      if (request.url.startsWith(GOOD_DEPOSIT_SCHEME)) {
+        log('nav', 'gooddeposit handoff →', request.url);
+        navigation.navigate('GoodDepositConfirm', parseGoodDeposit(request.url));
+        return false;
+      }
       const wallet = isWalletDeeplink(request.url);
       log('nav', `shouldStart (wallet=${wallet}) →`, request.url);
       if (wallet) {
@@ -166,7 +193,7 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
       }
       return true;
     },
-    [log, openWallet],
+    [log, openWallet, navigation],
   );
 
   // window.open() targets route here instead. Only hand wallet deeplinks off to the OS so a page
@@ -174,13 +201,18 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
   const onOpenWindow = useCallback(
     (event: WebViewOpenWindowEvent) => {
       const {targetUrl} = event.nativeEvent;
+      if (targetUrl.startsWith(GOOD_DEPOSIT_SCHEME)) {
+        log('open', 'gooddeposit handoff (window.open) →', targetUrl);
+        navigation.navigate('GoodDepositConfirm', parseGoodDeposit(targetUrl));
+        return;
+      }
       const wallet = isWalletDeeplink(targetUrl);
       log('open', `openWindow (wallet=${wallet}) →`, targetUrl);
       if (wallet) {
         openWallet(targetUrl);
       }
     },
-    [log, openWallet],
+    [log, openWallet, navigation],
   );
 
   const onMessage = useCallback(

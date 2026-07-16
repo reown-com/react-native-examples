@@ -11,6 +11,7 @@ import NetworkSettingsScreen from '@/screens/NetworkSettings';
 import PayWebView from '@/screens/PayWebView';
 import OmenScreen from '@/screens/Omen';
 import OmenDepositWebView from '@/screens/Omen/OmenDepositWebView';
+import GoodDepositConfirm from '@/screens/GoodWallet';
 
 const StackNavigator = createNativeStackNavigator<RootStackParamList>();
 
@@ -93,6 +94,17 @@ export function RootStackNavigator() {
           // wraps it in a dark SafeAreaView — so the native header would just be a redundant
           // light bar. Hide it for a seamless "inside the app" surface.
           headerShown: false,
+        }}
+      />
+      <StackNavigator.Screen
+        name="GoodDepositConfirm"
+        component={GoodDepositConfirm}
+        options={{
+          // Presented as a full-screen modal that slides up — the "a separate wallet opened over
+          // the app" feel. Its own in-screen branded header, so no native header.
+          headerShown: false,
+          presentation: 'fullScreenModal',
+          animation: 'slide_from_bottom',
         }}
       />
     </StackNavigator.Navigator>
