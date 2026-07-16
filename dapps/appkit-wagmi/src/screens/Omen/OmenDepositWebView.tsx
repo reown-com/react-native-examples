@@ -1,5 +1,6 @@
 import React, {useCallback, useState} from 'react';
-import {Linking, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, Linking, StyleSheet, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {WebView, WebViewMessageEvent} from 'react-native-webview';
 import type {
   ShouldStartLoadRequest,
@@ -15,6 +16,7 @@ import {PaySuccessView} from '@/screens/PayWebView/PaySuccessView';
 
 import {useWebViewDebugLog} from './useWebViewDebugLog';
 import WebViewDebugOverlay from './WebViewDebugOverlay';
+import {OMEN_COLORS} from './theme';
 
 // On-screen debug overlay for the deposit WebView. We have no JS console on-device, so this
 // surfaces the navigation / handoff / forwarded BX-console trail. Flip to false to strip it.
@@ -116,6 +118,8 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
   // Once the deposit page reports completion we swap the WebView for the success result screen
   // (reuses PayWebView's Lottie checkmark view).
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  // Dark loading cover over the WebView until the page paints — kills the white flash on open.
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
   const openWallet = useCallback(
     async (target: string) => {
@@ -235,11 +239,12 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <WebView
         source={{uri: url}}
         style={styles.webview}
-        startInLoadingState
+        // Match the Omen host bg while the page loads so there's no white flash.
+        containerStyle={styles.webview}
         javaScriptEnabled
         domStorageEnabled
         setSupportMultipleWindows
@@ -249,9 +254,15 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
         onMessage={onMessage}
         onError={onError}
         onHttpError={onHttpError}
+        onLoadEnd={() => setIsPageLoading(false)}
       />
+      {isPageLoading ? (
+        <View style={styles.loading}>
+          <ActivityIndicator color={OMEN_COLORS.accent} />
+        </View>
+      ) : null}
       {DEBUG ? <WebViewDebugOverlay entries={debug.entries} onClear={debug.clear} /> : null}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -260,8 +271,16 @@ export default OmenDepositWebView;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: OMEN_COLORS.bg,
   },
   webview: {
     flex: 1,
+    backgroundColor: OMEN_COLORS.bg,
+  },
+  loading: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: OMEN_COLORS.bg,
   },
 });

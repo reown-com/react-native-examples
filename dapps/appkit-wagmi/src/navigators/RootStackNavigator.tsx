@@ -89,10 +89,10 @@ export function RootStackNavigator() {
         name="OmenDepositWebView"
         component={OmenDepositWebView}
         options={{
-          headerShown: true,
-          headerBackButtonDisplayMode: 'minimal',
-          title: 'Add money',
-          headerTintColor: Theme['fg-100'],
+          // BX renders its own "Add money" header (+ close) inside the webview, and the screen
+          // wraps it in a dark SafeAreaView — so the native header would just be a redundant
+          // light bar. Hide it for a seamless "inside the app" surface.
+          headerShown: false,
         }}
       />
     </StackNavigator.Navigator>

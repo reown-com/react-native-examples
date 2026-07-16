@@ -24,6 +24,8 @@ export function buildOmenDepositUrl(opts: {amount?: number} = {}): string {
   url.searchParams.set('app', 'Omen');
   url.searchParams.set('returnUrl', getMetadata().redirect.native);
   url.searchParams.set('preferUniversalLinks', '1');
+  // Render BX in dark mode so the deposit surface matches the Omen host bg (no light flash).
+  url.searchParams.set('theme', 'dark');
   if (opts.amount && opts.amount > 0) {
     url.searchParams.set('amount', String(opts.amount));
   }
