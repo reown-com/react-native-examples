@@ -123,12 +123,8 @@ async function resolveSuiTransaction(request: WcRequest): Promise<string> {
 function renderBitcoinAddresses(request: WcRequest): string {
   const intentions = request.params?.intentions as string[] | undefined;
   const isOrdinal = intentions && intentions[0] === 'ordinal';
-  const list = bitcoinAddresses
-    ? isOrdinal
-      ? [bitcoinAddresses[1]]
-      : [bitcoinAddresses[0]]
-    : [];
-  return list.join('\n');
+  const candidate = isOrdinal ? bitcoinAddresses?.[1] : bitcoinAddresses?.[0];
+  return candidate ?? '';
 }
 
 export const REQUEST_CONFIG: Record<string, RequestConfig> = {

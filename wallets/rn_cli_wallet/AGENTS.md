@@ -55,16 +55,15 @@ rn_cli_wallet/
 │   │   ├── Settings/            # Wallet & chain settings
 │   │   └── LogList/             # Event logging
 │   ├── modals/
-│   │   ├── SessionSignModal.tsx
-│   │   ├── SessionSendTransactionModal.tsx
+│   │   ├── requestConfig.ts          # RPC-method → config map
+│   │   ├── SessionRequestModal.tsx   # Generic config-driven request modal
+│   │   ├── SessionProposalModal.tsx
 │   │   ├── SessionAuthenticateModal.tsx
+│   │   ├── SessionTonSignDataModal.tsx    # bespoke (custom UI/lifecycle)
+│   │   ├── SessionTonSendMessageModal.tsx # bespoke (custom UI/lifecycle)
 │   │   ├── ImportWalletModal.tsx
-│   │   ├── SessionSuiSignAndExecuteTransactionModal.tsx
-│   │   ├── SessionTonSignDataModal.tsx
-│   │   ├── SessionTonSendMessageModal.tsx
-│   │   ├── SessionSignTronModal.tsx
 │   │   ├── PaymentOptionsModal/  # WalletConnect Pay
-│   │   └── RequestModal.tsx
+│   │   └── RequestModal.tsx      # Shared header/footer wrapper
 │   ├── navigators/
 │   │   ├── RootStackNavigator.tsx
 │   │   ├── HomeTabNavigator.tsx

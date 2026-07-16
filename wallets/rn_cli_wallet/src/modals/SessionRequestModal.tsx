@@ -40,8 +40,10 @@ export default function SessionRequestModal() {
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 
-  const { topic, params } = requestEvent!;
-  const { request } = params;
+  // Optional access — runs before the guard below; never assert requestEvent
+  // here, it can be undefined during modal open/close.
+  const request = requestEvent?.params?.request;
+  const topic = requestEvent?.topic ?? '';
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
 
   const validation = currentRequestVerifyContext?.verified?.validation;
@@ -50,7 +52,7 @@ export default function SessionRequestModal() {
   const config = getRequestConfig(request?.method);
 
   const intention = useMemo(() => {
-    if (!config) return undefined;
+    if (!config || !request) return undefined;
     return typeof config.intention === 'function'
       ? config.intention(request)
       : config.intention;
@@ -60,7 +62,7 @@ export default function SessionRequestModal() {
   // resolved here; synchronous ones are computed inline below.
   const [resolvedPayload, setResolvedPayload] = useState<string | null>(null);
   useEffect(() => {
-    if (!config?.resolvePayload) return;
+    if (!config?.resolvePayload || !request) return;
     let cancelled = false;
     config
       .resolvePayload(request)
@@ -72,7 +74,7 @@ export default function SessionRequestModal() {
   }, [config, request]);
 
   const payload = useMemo(() => {
-    if (!config) return '';
+    if (!config || !request) return '';
     if (config.resolvePayload) return resolvedPayload ?? '';
     try {
       return config.renderPayload?.(request) ?? '';
@@ -182,7 +184,7 @@ export default function SessionRequestModal() {
           validation={validation}
           isScam={isScam}
         />
-        <NetworkInfoCard chainId={params.chainId} />
+        <NetworkInfoCard chainId={requestEvent.params.chainId} />
         <Message message={payload} />
       </View>
     </RequestModal>
