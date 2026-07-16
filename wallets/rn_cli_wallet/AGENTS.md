@@ -155,12 +155,65 @@ Uses **Valtio** (proxy-based reactive state):
 - EIP-4361 (Sign-In with Ethereum) verification
 
 ### Request Handling Modals
-- `SessionSignModal`: Message signing
-- `SessionSendTransactionModal`: EVM transactions
-- `SessionAuthenticateModal`: SIWE authentication
-- `SessionSuiSignAndExecuteTransactionModal`: Sui transactions
-- `SessionTonSignDataModal` / `SessionTonSendMessageModal`: TON
-- `SessionSignTronModal`: Tron signing
+
+Most approve/reject signing requests are rendered by **one generic modal**,
+`modals/SessionRequestModal.tsx`, driven by a config map in
+`modals/requestConfig.ts` keyed by RPC method. All EIP155, Solana, Sui,
+Bitcoin (BIP122), Tron and Canton signing methods go through it — there is no
+per-method modal file for them.
+
+`hooks/useWalletKitEventsManager.ts` dispatches by looking the method up in
+the config first (`getRequestConfig(method)`); if found it opens
+`SessionRequestModal`. The `switch` that follows only handles requests that
+need bespoke behavior.
+
+Modals that are intentionally NOT config-driven (they have custom UI and/or
+lifecycle, so they keep dedicated components):
+- `SessionProposalModal`: connection approval (namespace/account selection)
+- `SessionAuthenticateModal`: SIWE / one-click auth
+- `SessionTonSignDataModal` / `SessionTonSendMessageModal`: TON (on-mount
+  `validateTonRequest` auto-reject, "Signing address" card, two-arg
+  `approveTonRequest(event, session)`, custom payload formatting)
+
+#### Adding a new request type / method
+
+For a signing method whose modal is just header + `AppInfoCard` +
+`NetworkInfoCard` + payload + approve/reject (i.e. the common case), do NOT
+create a new modal file. Instead:
+
+1. Add the method constant to the chain's `constants/<Chain>.ts`.
+2. Add a `case` to the chain's `utils/<Chain>RequestHandlerUtil.ts` so
+   `approve<Chain>Request` knows how to sign/execute it.
+3. Add one entry to `REQUEST_CONFIG` in `modals/requestConfig.ts`, keyed by
+   the method string:
+   ```ts
+   [MY_CHAIN_METHODS.MY_METHOD]: {
+     approve: approveMyChainRequest,
+     reject: rejectMyChainRequest,
+     intention: 'Sign a message for',        // header text (string or fn)
+     approveLabel: 'Sign',                     // primary button label
+     renderPayload: req => getSignParamsMessage(req.params), // sync payload
+     approveErrorTitle: 'Couldn’t sign message',
+     rejectRedirectError: 'User rejected signature request', // optional
+     logScope: 'SessionRequestModal:my_method',
+   },
+   ```
+
+That's it — no `ModalStore` view union edit, no `Modal.tsx` case, no
+event-manager `case`. For a brand-new chain, also add its
+`utils/<Chain>WalletUtil.ts` + `utils/<Chain>RequestHandlerUtil.ts` and register
+its namespace/accounts (see `SessionProposalModal` + `HelperUtil`).
+
+Config knobs for the less-common cases:
+- `resolvePayload(req): Promise<string>` — async payload (e.g. Sui decodes a
+  BCS transaction via the wallet); takes precedence over `renderPayload`.
+- `respondErrorOnApproveFailure: true` — on approve failure, also send the
+  reject response so the dapp doesn't hang (Canton relies on this).
+
+If a request needs custom UI or modal-lifecycle behavior (an extra section, a
+validation-on-mount step, a multi-arg handler), it does NOT belong in the
+config — give it a dedicated modal like the TON ones and add a `case` in the
+event manager + `Modal.tsx` + the `ModalStore` view union.
 
 ## Environment Variables
 
@@ -282,6 +335,10 @@ export async function approveEIP155Request(
   // Handle different methods: personal_sign, eth_sendTransaction, etc.
 }
 ```
+
+The UI side of a request is data-driven — see **Request Handling Modals →
+Adding a new request type / method** for how a method maps to the generic
+`SessionRequestModal` via `modals/requestConfig.ts`.
 
 ### Chain-Specific Libraries
 
