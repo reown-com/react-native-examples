@@ -1,15 +1,15 @@
 import React from 'react';
-import {Linking, ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Button, FlexView, Text} from '@reown/appkit-ui-react-native';
+import {Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {useSnapshot} from 'valtio';
 
 import {RootStackParamList} from '@/utils/TypesUtil';
-import {useTheme} from '@/hooks/useTheme';
 import OmenStore from '@/stores/OmenStore';
 
 import {buildOmenDepositUrl} from './depositUrl';
+import OmenLogo from './OmenLogo';
+import {OMEN_COLORS} from './theme';
 
 function formatUsd(n: number): string {
   const sign = n < 0 ? '-' : '';
@@ -23,12 +23,12 @@ function formatDate(ts: number): string {
 }
 
 /**
- * Omen — a mock "funded account" host screen. Shows a balance + activity and opens the
+ * Omen — a mock "funded account" host screen wearing the Omen brand skin (dark, violet accent),
+ * mirroring the web demo (apps/deposit-demo). Shows a balance + activity and opens the
  * WalletConnect Pay deposit flow in an in-app WebView (OmenDepositWebView), which credits the
  * balance from the result posted back over the RN bridge. No context switch, no redirect.
  */
 function OmenScreen() {
-  const Theme = useTheme();
   const {balance, activity} = useSnapshot(OmenStore.state);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -37,109 +37,235 @@ function OmenScreen() {
   };
 
   return (
-    <ScrollView
-      style={{backgroundColor: Theme['bg-100']}}
-      contentContainerStyle={styles.content}>
-      <FlexView alignItems="center" style={styles.balanceBlock}>
-        <Text variant="small-400" style={{color: Theme['fg-200']}}>
-          Account balance
-        </Text>
-        <Text variant="large-600" style={styles.balance}>
-          {formatUsd(balance)}
-        </Text>
-      </FlexView>
-
-      <View style={styles.actions}>
-        <Button testID="omen-deposit-button" onPress={onDeposit}>
-          + Deposit crypto
-        </Button>
+    <View style={styles.root}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
+          <Text style={styles.chevron}>‹</Text>
+        </TouchableOpacity>
+        <OmenLogo />
+        <Text style={styles.signOut}>Sign out</Text>
       </View>
 
-      <Text variant="small-600" style={[styles.sectionLabel, {color: Theme['fg-200']}]}>
-        Activity
-      </Text>
+      <View style={styles.banner}>
+        <Text style={styles.bannerText}>Welcome Offer: Deposit $5, get $200</Text>
+      </View>
 
-      <View>
-        {activity.map(tx => (
-          <View
-            key={tx.id}
-            style={[styles.row, {borderBottomColor: Theme['gray-glass-010']}]}>
-            <FlexView flexDirection="row" alignItems="center" style={styles.rowLeft}>
-              <Text style={[styles.rowIcon, {color: Theme['fg-200']}]}>
-                {tx.amount > 0 ? '↓' : '↑'}
-              </Text>
-              <FlexView style={styles.rowText}>
-                <Text variant="small-600">{tx.label}</Text>
-                <Text variant="small-400" style={{color: Theme['fg-250']}}>
-                  {formatDate(tx.ts)}
-                </Text>
-                {tx.txHash ? (
-                  <TouchableOpacity
-                    onPress={() => Linking.openURL(`https://basescan.org/tx/${tx.txHash}`)}>
-                    <Text variant="small-400" style={{color: Theme['accent-100']}}>
-                      View on explorer
-                    </Text>
-                  </TouchableOpacity>
-                ) : null}
-              </FlexView>
-            </FlexView>
-            <Text
-              variant="small-600"
-              style={{color: tx.amount > 0 ? Theme['success-100'] : Theme['fg-100']}}>
-              {tx.amount > 0 ? '+' : ''}
-              {formatUsd(tx.amount)}
-            </Text>
+      <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.balanceBlock}>
+          <Text style={styles.balanceLabel}>Account balance</Text>
+          <Text style={styles.balance}>{formatUsd(balance)}</Text>
+        </View>
+
+        <View style={styles.actions}>
+          <TouchableOpacity
+            testID="omen-deposit-button"
+            onPress={onDeposit}
+            activeOpacity={0.85}
+            style={[styles.pill, styles.pillPrimary]}>
+            <Text style={styles.pillPrimaryText}>+ Deposit crypto</Text>
+          </TouchableOpacity>
+          <View style={[styles.pill, styles.pillDisabled]}>
+            <Text style={styles.pillDisabledText}>Withdraw</Text>
           </View>
-        ))}
-      </View>
+        </View>
 
-      <Text center variant="small-400" style={[styles.footer, {color: Theme['fg-250']}]}>
-        Deposits powered by WalletConnect
-      </Text>
-    </ScrollView>
+        <View style={styles.activity}>
+          <Text style={styles.sectionLabel}>Activity</Text>
+          {activity.map(tx => {
+            const isCredit = tx.amount > 0;
+            return (
+              <View key={tx.id} style={styles.row}>
+                <View
+                  style={[
+                    styles.rowBadge,
+                    {backgroundColor: isCredit ? OMEN_COLORS.creditTint : OMEN_COLORS.surfaceRaised},
+                  ]}>
+                  <Text
+                    style={[
+                      styles.rowBadgeGlyph,
+                      {color: isCredit ? OMEN_COLORS.credit : OMEN_COLORS.textSecondary},
+                    ]}>
+                    {isCredit ? '↓' : '↑'}
+                  </Text>
+                </View>
+                <View style={styles.rowText}>
+                  <Text style={styles.rowLabel}>{tx.label}</Text>
+                  <View style={styles.rowMeta}>
+                    <Text style={styles.rowDate}>{formatDate(tx.ts)}</Text>
+                    {tx.txHash ? (
+                      <>
+                        <Text style={styles.rowDate}> · </Text>
+                        <TouchableOpacity
+                          onPress={() =>
+                            Linking.openURL(`https://basescan.org/tx/${tx.txHash}`)
+                          }>
+                          <Text style={styles.rowLink}>View on explorer</Text>
+                        </TouchableOpacity>
+                      </>
+                    ) : null}
+                  </View>
+                </View>
+                <Text
+                  style={[
+                    styles.rowAmount,
+                    {color: isCredit ? OMEN_COLORS.credit : OMEN_COLORS.textPrimary},
+                  ]}>
+                  {isCredit ? '+' : ''}
+                  {formatUsd(tx.amount)}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
+
+        <Text style={styles.footer}>Deposits powered by WalletConnect</Text>
+      </ScrollView>
+    </View>
   );
 }
 
 export default OmenScreen;
 
 const styles = StyleSheet.create({
-  content: {
-    padding: 20,
-    gap: 24,
+  root: {
+    flex: 1,
+    backgroundColor: OMEN_COLORS.bg,
   },
-  balanceBlock: {
-    gap: 6,
-    paddingVertical: 16,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 56,
+    paddingBottom: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: OMEN_COLORS.border,
   },
-  balance: {
-    fontSize: 42,
+  chevron: {
+    color: OMEN_COLORS.textSecondary,
+    fontSize: 30,
+    lineHeight: 30,
+    width: 24,
   },
-  actions: {
+  signOut: {
+    color: OMEN_COLORS.textSecondary,
+    fontSize: 14,
+  },
+  banner: {
+    backgroundColor: OMEN_COLORS.accent,
+    paddingVertical: 10,
     alignItems: 'center',
   },
+  bannerText: {
+    color: OMEN_COLORS.textPrimary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  content: {
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    gap: 32,
+  },
+  balanceBlock: {
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 8,
+  },
+  balanceLabel: {
+    color: OMEN_COLORS.textSecondary,
+    fontSize: 14,
+  },
+  balance: {
+    color: OMEN_COLORS.textPrimary,
+    fontSize: 44,
+    fontWeight: '600',
+    letterSpacing: -1,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  pill: {
+    borderRadius: 999,
+    paddingHorizontal: 24,
+    paddingVertical: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pillPrimary: {
+    backgroundColor: OMEN_COLORS.accent,
+  },
+  pillPrimaryText: {
+    color: OMEN_COLORS.textPrimary,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  pillDisabled: {
+    backgroundColor: OMEN_COLORS.surfaceRaised,
+  },
+  pillDisabledText: {
+    color: OMEN_COLORS.textMuted,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  activity: {
+    gap: 4,
+  },
   sectionLabel: {
-    marginBottom: -8,
+    color: OMEN_COLORS.textSecondary,
+    fontSize: 14,
+    fontWeight: '500',
+    paddingHorizontal: 4,
+    marginBottom: 4,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 12,
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: OMEN_COLORS.surface,
   },
-  rowLeft: {
-    flex: 1,
-    gap: 12,
+  rowBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  rowIcon: {
-    fontSize: 18,
-    width: 24,
-    textAlign: 'center',
+  rowBadgeGlyph: {
+    fontSize: 16,
   },
   rowText: {
     flex: 1,
+    gap: 2,
+  },
+  rowLabel: {
+    color: OMEN_COLORS.textPrimary,
+    fontSize: 14,
+  },
+  rowMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rowDate: {
+    color: OMEN_COLORS.textMuted,
+    fontSize: 12,
+  },
+  rowLink: {
+    color: OMEN_COLORS.accentSoft,
+    fontSize: 12,
+  },
+  rowAmount: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   footer: {
-    marginTop: 8,
+    color: OMEN_COLORS.textFaint,
+    fontSize: 12,
+    textAlign: 'center',
   },
 });

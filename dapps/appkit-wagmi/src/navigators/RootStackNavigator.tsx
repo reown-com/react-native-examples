@@ -82,10 +82,7 @@ export function RootStackNavigator() {
         name="Omen"
         component={OmenScreen}
         options={{
-          headerShown: true,
-          headerBackButtonDisplayMode: 'minimal',
-          title: 'Omen',
-          headerTintColor: Theme['fg-100'],
+          headerShown: false,
         }}
       />
       <StackNavigator.Screen
