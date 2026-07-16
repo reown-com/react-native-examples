@@ -26,10 +26,13 @@ const DEBUG = true;
 // buyer-experience src/lib/webview-bridge.ts. This is the deposit contract, distinct from the
 // PAY_SUCCESS/PAY_FAILURE contract PayWebView handles, so this screen owns its own onMessage.
 type DepositMessage = {
-  type?: 'DEPOSIT_COMPLETE' | 'DEPOSIT_CANCELLED';
+  type?: 'DEPOSIT_COMPLETE' | 'DEPOSIT_CANCELLED' | 'DEPOSIT_OPEN_WALLET';
   source?: 'wallet' | 'exchange' | 'direct';
   txHash?: string;
   amount?: number;
+  // DEPOSIT_OPEN_WALLET only: hand off to our in-app GoodWallet screen.
+  to?: string;
+  app?: string;
 };
 
 // A debug line forwarded from inside the BX page by the injected console/error hook below. Marked
@@ -106,27 +109,6 @@ function isWalletDeeplink(url: string): boolean {
   }
 }
 
-// Custom scheme the BX deposit page uses to hand off to our in-app "GoodWallet" demo wallet. It
-// never reaches the OS — we intercept it in the WebView and navigate to the GoodDepositConfirm
-// modal, so the deposit stays inside this app (no context switch, no native scheme registration).
-const GOOD_DEPOSIT_SCHEME = 'gooddeposit://';
-
-function parseGoodDeposit(url: string): {to?: string; app?: string; amount?: number} {
-  try {
-    const u = new URL(url);
-    const amountRaw = u.searchParams.get('amount');
-    const amount = amountRaw ? Number(amountRaw) : undefined;
-
-    return {
-      to: u.searchParams.get('to') ?? undefined,
-      app: u.searchParams.get('app') ?? undefined,
-      amount: amount && amount > 0 ? amount : undefined,
-    };
-  } catch {
-    return {};
-  }
-}
-
 function formatUsd(n: number): string {
   return `$${n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/, ',')}`;
 }
@@ -179,12 +161,6 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
   // else loads in the WebView.
   const onShouldStartLoadWithRequest = useCallback(
     (request: ShouldStartLoadRequest): boolean => {
-      // In-app GoodWallet handoff — navigate to the confirm modal, never leave the app.
-      if (request.url.startsWith(GOOD_DEPOSIT_SCHEME)) {
-        log('nav', 'gooddeposit handoff →', request.url);
-        navigation.navigate('GoodDepositConfirm', parseGoodDeposit(request.url));
-        return false;
-      }
       const wallet = isWalletDeeplink(request.url);
       log('nav', `shouldStart (wallet=${wallet}) →`, request.url);
       if (wallet) {
@@ -193,7 +169,7 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
       }
       return true;
     },
-    [log, openWallet, navigation],
+    [log, openWallet],
   );
 
   // window.open() targets route here instead. Only hand wallet deeplinks off to the OS so a page
@@ -201,18 +177,13 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
   const onOpenWindow = useCallback(
     (event: WebViewOpenWindowEvent) => {
       const {targetUrl} = event.nativeEvent;
-      if (targetUrl.startsWith(GOOD_DEPOSIT_SCHEME)) {
-        log('open', 'gooddeposit handoff (window.open) →', targetUrl);
-        navigation.navigate('GoodDepositConfirm', parseGoodDeposit(targetUrl));
-        return;
-      }
       const wallet = isWalletDeeplink(targetUrl);
       log('open', `openWindow (wallet=${wallet}) →`, targetUrl);
       if (wallet) {
         openWallet(targetUrl);
       }
     },
-    [log, openWallet, navigation],
+    [log, openWallet],
   );
 
   const onMessage = useCallback(
@@ -236,6 +207,16 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
 
       const message = parsed as DepositMessage;
       log('msg', `onMessage ${message.type ?? '(no type)'}`, raw.slice(0, 500));
+
+      if (message.type === 'DEPOSIT_OPEN_WALLET') {
+        // Open our in-app "GoodWallet" — the demo of the ideal native-deposit UX.
+        navigation.navigate('GoodDepositConfirm', {
+          to: message.to,
+          app: message.app,
+          amount: message.amount,
+        });
+        return;
+      }
 
       if (message.type === 'DEPOSIT_COMPLETE') {
         const credited = OmenStore.credit({
