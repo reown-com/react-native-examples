@@ -46,10 +46,12 @@ function mockTxHash(): string {
  * the balance credited. All mocked — no real tx.
  */
 function GoodDepositConfirm({route, navigation}: RootStackScreenProps<'GoodDepositConfirm'>) {
-  const {to, app, amount: amountParam} = route.params;
+  const {to, app, amount: amountParam, network, token} = route.params;
   const appName = app || 'the app';
 
-  const [selected, setSelected] = useState<Token>(TOKENS[0]);
+  // Preselect the token the host pre-picked (still changeable), else the first holding.
+  const preselected = TOKENS.find(t => t.symbol === token) ?? TOKENS[0];
+  const [selected, setSelected] = useState<Token>(preselected);
   const [amountStr, setAmountStr] = useState(
     amountParam && amountParam > 0 ? String(amountParam) : '',
   );
@@ -111,26 +113,27 @@ function GoodDepositConfirm({route, navigation}: RootStackScreenProps<'GoodDepos
         <View style={styles.requestCard}>
           <Text style={styles.requestLabel}>Deposit request</Text>
           <Text style={styles.requestApp}>{appName}</Text>
+          {network ? <Text style={styles.requestAddr}>Network · {network}</Text> : null}
           {to ? <Text style={styles.requestAddr}>To {shortAddr(to)}</Text> : null}
         </View>
 
         <Text style={styles.sectionLabel}>Pay with</Text>
         <View style={styles.tokenList}>
-          {TOKENS.map(token => {
-            const isSel = token.symbol === selected.symbol;
+          {TOKENS.map(tok => {
+            const isSel = tok.symbol === selected.symbol;
             return (
               <TouchableOpacity
-                key={token.symbol}
+                key={tok.symbol}
                 activeOpacity={0.7}
-                onPress={() => setSelected(token)}
+                onPress={() => setSelected(tok)}
                 style={[styles.tokenRow, isSel && styles.tokenRowSelected]}>
-                <View style={[styles.tokenBadge, {backgroundColor: token.color}]}>
-                  <Text style={styles.tokenBadgeText}>{token.symbol.slice(0, 1)}</Text>
+                <View style={[styles.tokenBadge, {backgroundColor: tok.color}]}>
+                  <Text style={styles.tokenBadgeText}>{tok.symbol.slice(0, 1)}</Text>
                 </View>
                 <View style={styles.tokenText}>
-                  <Text style={styles.tokenName}>{token.name}</Text>
+                  <Text style={styles.tokenName}>{tok.name}</Text>
                   <Text style={styles.tokenBal}>
-                    {fmtToken(token.balance)} {token.symbol}
+                    {fmtToken(tok.balance)} {tok.symbol}
                   </Text>
                 </View>
                 <View style={[styles.radio, isSel && styles.radioSelected]}>

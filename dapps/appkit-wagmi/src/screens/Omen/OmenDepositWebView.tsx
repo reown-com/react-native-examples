@@ -33,6 +33,8 @@ type DepositMessage = {
   // DEPOSIT_OPEN_WALLET only: hand off to our in-app GoodWallet screen.
   to?: string;
   app?: string;
+  network?: string;
+  token?: string;
 };
 
 // A debug line forwarded from inside the BX page by the injected console/error hook below. Marked
@@ -214,6 +216,8 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
           to: message.to,
           app: message.app,
           amount: message.amount,
+          network: message.network,
+          token: message.token,
         });
         return;
       }
