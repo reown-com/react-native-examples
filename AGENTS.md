@@ -21,7 +21,7 @@ This repository contains sample React Native applications demonstrating WalletCo
 | pos-app | Point of Sale application | [View](dapps/pos-app/AGENTS.md) |
 | W3MEthers | AppKit with Ethers.js | - |
 | W3MEthers5 | AppKit with Ethers.js v5 | - |
-| W3MWagmi | AppKit with Wagmi | [View](dapps/W3MWagmi/AGENTS.md) |
+| appkit-wagmi | AppKit with Wagmi | [View](dapps/appkit-wagmi/AGENTS.md) |
 
 ### Wallets
 

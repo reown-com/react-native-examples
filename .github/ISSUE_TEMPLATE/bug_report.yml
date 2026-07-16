@@ -23,7 +23,7 @@ body:
       options:
         - label: dapps/W3MEthers
         - label: dapps/W3MEthers5
-        - label: dapps/W3MWagmi
+        - label: dapps/appkit-wagmi
         - label: wallets/rn_cli_wallet
         - label: wallets/rn_cli_wallet_068_5
         - label: In my own code
