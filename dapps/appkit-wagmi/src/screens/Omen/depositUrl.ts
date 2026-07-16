@@ -7,8 +7,8 @@ import {getMetadata} from '@/utils/misc';
 const BX_DEPOSIT_URL =
   'https://tomiir-bx-deposit-flow-poc-wc-pay-buyer-experience-dev.walletconnect-v1-bridge.workers.dev/deposit';
 
-/** Omen's mock treasury (deposit destination). Burn address for the POC — no real funds implied. */
-const OMEN_TREASURY = '0x000000000000000000000000000000000000dEaD';
+/** Omen's deposit destination (demo treasury). */
+const OMEN_TREASURY = '0x13302Eb0aD9Af2F847119dC4Ac632fFe196d0B0f';
 
 /**
  * Build the deposit URL for the in-app WebView. Mirrors PasteUrlButton.buildPayUrl:

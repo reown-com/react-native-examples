@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {ActivityIndicator, Linking, StyleSheet, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {WebView, WebViewMessageEvent} from 'react-native-webview';
@@ -120,6 +120,17 @@ function OmenDepositWebView({route, navigation}: RootStackScreenProps<'OmenDepos
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   // Dark loading cover over the WebView until the page paints — kills the white flash on open.
   const [isPageLoading, setIsPageLoading] = useState(true);
+
+  // After a successful deposit, show the confirmation briefly then close the deposit flow and
+  // return to the Omen home — which now reflects the new balance + activity row.
+  useEffect(() => {
+    if (successMessage === null) {
+      return;
+    }
+    const timer = setTimeout(() => navigation.goBack(), 2000);
+
+    return () => clearTimeout(timer);
+  }, [successMessage, navigation]);
 
   const openWallet = useCallback(
     async (target: string) => {
