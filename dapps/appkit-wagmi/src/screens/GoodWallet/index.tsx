@@ -1,6 +1,8 @@
 import React, {useMemo, useState} from 'react';
 import {
   ActivityIndicator,
+  Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,14 +10,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 import {RootStackScreenProps} from '@/utils/TypesUtil';
 import OmenStore from '@/stores/OmenStore';
 
 import GoodWalletLogo from './GoodWalletLogo';
 import {GOODWALLET_COLORS as C} from './theme';
-import {TOKENS, Token, usdValue} from './tokens';
+import {
+  WALLET_NETWORKS,
+  WalletNetwork,
+  WalletToken,
+  networkImageUrl,
+  usdValue,
+} from './tokens';
 
 type Phase = 'select' | 'sending' | 'success';
 
@@ -38,35 +46,62 @@ function mockTxHash(): string {
   return `0x${Date.now().toString(16).padStart(64, '0')}`;
 }
 
+/** A network logo from the WC assets CDN, with a neutral fallback if it fails to load. */
+function NetworkImage({caip2, size}: {caip2: string; size: number}) {
+  const [ok, setOk] = useState(true);
+  const style = {width: size, height: size, borderRadius: size / 2};
+  if (!ok) {
+    return <View style={[style, {backgroundColor: C.surfaceAlt}]} />;
+  }
+  return (
+    <Image
+      source={{uri: networkImageUrl(caip2)}}
+      style={style}
+      onError={() => setOk(false)}
+    />
+  );
+}
+
 /**
  * GoodWallet — a mock wallet's native "deposit intent" screen. Reached when the BX deposit page
- * hands off via `gooddeposit://` (intercepted in OmenDepositWebView) and presented as a full-screen
- * modal so it reads as a separate wallet. Lists the tokens you hold, lets you pick one + set the
- * amount, shows the destination + requesting app, and on Confirm "sends" and returns to Omen with
- * the balance credited. All mocked — no real tx.
+ * hands off `DEPOSIT_OPEN_WALLET` (via OmenDepositWebView) and presented as a full-screen modal so
+ * it reads as a separate wallet. Pick a network → a token you hold → an amount, see the destination
+ * + requesting app, Confirm; the tx is mocked, credits Omen, and returns. Network/token arrive
+ * pre-selected from BX but stay changeable.
  */
 function GoodDepositConfirm({route, navigation}: RootStackScreenProps<'GoodDepositConfirm'>) {
+  const insets = useSafeAreaInsets();
   const {to, app, amount: amountParam, network, token} = route.params;
   const appName = app || 'the app';
 
-  // Preselect the token the host pre-picked (still changeable), else the first holding.
-  const preselected = TOKENS.find(t => t.symbol === token) ?? TOKENS[0];
-  const [selected, setSelected] = useState<Token>(preselected);
+  const initialNetwork =
+    WALLET_NETWORKS.find(n => n.name === network) ?? WALLET_NETWORKS[0];
+  const initialToken =
+    initialNetwork.tokens.find(t => t.symbol === token) ?? initialNetwork.tokens[0];
+
+  const [selectedNetwork, setSelectedNetwork] = useState<WalletNetwork>(initialNetwork);
+  const [selectedToken, setSelectedToken] = useState<WalletToken>(initialToken);
   const [amountStr, setAmountStr] = useState(
     amountParam && amountParam > 0 ? String(amountParam) : '',
   );
   const [phase, setPhase] = useState<Phase>('select');
 
   const amount = Number.parseFloat(amountStr) || 0;
-  const isValid = amount > 0 && amount <= selected.balance;
-  const credited = useMemo(() => usdValue(selected, amount), [selected, amount]);
+  const isValid = amount > 0 && amount <= selectedToken.balance;
+  const credited = useMemo(() => usdValue(selectedToken, amount), [selectedToken, amount]);
+
+  function pickNetwork(n: WalletNetwork) {
+    setSelectedNetwork(n);
+    // Keep the token symbol if the new network holds it, else its first holding.
+    setSelectedToken(n.tokens.find(t => t.symbol === selectedToken.symbol) ?? n.tokens[0]);
+    setAmountStr('');
+  }
 
   function handleConfirm() {
     if (!isValid) {
       return;
     }
     setPhase('sending');
-    // Mock the on-chain send: brief pending, then credit Omen and bounce back to it.
     setTimeout(() => {
       OmenStore.credit({amount: credited, source: 'wallet', txHash: mockTxHash()});
       setPhase('success');
@@ -76,68 +111,105 @@ function GoodDepositConfirm({route, navigation}: RootStackScreenProps<'GoodDepos
 
   if (phase !== 'select') {
     return (
-      <SafeAreaView style={styles.root}>
-        <View style={styles.centered}>
-          {phase === 'sending' ? (
-            <>
-              <ActivityIndicator size="large" color={C.accent} />
-              <Text style={styles.centerTitle}>Sending…</Text>
-              <Text style={styles.centerSub}>
-                {fmtToken(amount)} {selected.symbol} to {appName}
-              </Text>
-            </>
-          ) : (
-            <>
-              <View style={styles.successBadge}>
-                <Text style={styles.successGlyph}>✓</Text>
-              </View>
-              <Text style={styles.centerTitle}>{fmtUsd(credited)} sent</Text>
-              <Text style={styles.centerSub}>Returning to {appName}…</Text>
-            </>
-          )}
-        </View>
-      </SafeAreaView>
+      <View style={[styles.root, styles.centered]}>
+        {phase === 'sending' ? (
+          <>
+            <ActivityIndicator size="large" color={C.accent} />
+            <Text style={styles.centerTitle}>Sending…</Text>
+            <Text style={styles.centerSub}>
+              {fmtToken(amount)} {selectedToken.symbol} on {selectedNetwork.name}
+            </Text>
+          </>
+        ) : (
+          <>
+            <View style={styles.successBadge}>
+              <Text style={styles.successGlyph}>✓</Text>
+            </View>
+            <Text style={styles.centerTitle}>{fmtUsd(credited)} sent</Text>
+            <Text style={styles.centerSub}>Returning to {appName}…</Text>
+          </>
+        )}
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.root}>
-      <View style={styles.header}>
+    <View style={styles.root}>
+      <View style={[styles.header, {paddingTop: insets.top + 8}]}>
         <GoodWalletLogo />
-        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={hitSlop}>
-          <Text style={styles.cancel}>Cancel</Text>
-        </TouchableOpacity>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          hitSlop={12}
+          style={({pressed}) => [styles.closeBtn, pressed && styles.closeBtnPressed]}>
+          <Text style={styles.closeGlyph}>✕</Text>
+        </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={[styles.content, {paddingBottom: insets.bottom + 100}]}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.requestCard}>
-          <Text style={styles.requestLabel}>Deposit request</Text>
-          <Text style={styles.requestApp}>{appName}</Text>
-          {network ? <Text style={styles.requestAddr}>Network · {network}</Text> : null}
-          {to ? <Text style={styles.requestAddr}>To {shortAddr(to)}</Text> : null}
+          <View style={styles.appAvatar}>
+            <Text style={styles.appAvatarText}>{appName.slice(0, 1).toUpperCase()}</Text>
+          </View>
+          <View style={styles.requestText}>
+            <Text style={styles.requestLabel}>Deposit to</Text>
+            <Text style={styles.requestApp}>{appName}</Text>
+            {to ? <Text style={styles.requestAddr}>{shortAddr(to)}</Text> : null}
+          </View>
         </View>
 
-        <Text style={styles.sectionLabel}>Pay with</Text>
+        <Text style={styles.sectionLabel}>Network</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipRow}>
+          {WALLET_NETWORKS.map(n => {
+            const isSel = n.name === selectedNetwork.name;
+            return (
+              <TouchableOpacity
+                key={n.name}
+                activeOpacity={0.7}
+                onPress={() => pickNetwork(n)}
+                style={[styles.chip, isSel && styles.chipSelected]}>
+                <NetworkImage caip2={n.caip2} size={18} />
+                <Text style={[styles.chipText, isSel && styles.chipTextSelected]}>{n.name}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        <Text style={styles.sectionLabel}>Asset</Text>
         <View style={styles.tokenList}>
-          {TOKENS.map(tok => {
-            const isSel = tok.symbol === selected.symbol;
+          {selectedNetwork.tokens.map((tok, i) => {
+            const isSel = tok.symbol === selectedToken.symbol;
             return (
               <TouchableOpacity
                 key={tok.symbol}
                 activeOpacity={0.7}
-                onPress={() => setSelected(tok)}
-                style={[styles.tokenRow, isSel && styles.tokenRowSelected]}>
+                onPress={() => {
+                  setSelectedToken(tok);
+                  setAmountStr('');
+                }}
+                style={[
+                  styles.tokenRow,
+                  i > 0 && styles.tokenRowDivider,
+                  isSel && styles.tokenRowSelected,
+                ]}>
                 <View style={[styles.tokenBadge, {backgroundColor: tok.color}]}>
                   <Text style={styles.tokenBadgeText}>{tok.symbol.slice(0, 1)}</Text>
                 </View>
                 <View style={styles.tokenText}>
                   <Text style={styles.tokenName}>{tok.name}</Text>
-                  <Text style={styles.tokenBal}>
+                  <Text style={styles.tokenSub}>
                     {fmtToken(tok.balance)} {tok.symbol}
                   </Text>
                 </View>
-                <View style={[styles.radio, isSel && styles.radioSelected]}>
-                  {isSel ? <View style={styles.radioDot} /> : null}
+                <View style={styles.tokenRight}>
+                  <Text style={styles.tokenUsd}>{fmtUsd(tok.balance * tok.priceUsd)}</Text>
+                  <View style={[styles.radio, isSel && styles.radioSelected]}>
+                    {isSel ? <View style={styles.radioDot} /> : null}
+                  </View>
                 </View>
               </TouchableOpacity>
             );
@@ -145,43 +217,47 @@ function GoodDepositConfirm({route, navigation}: RootStackScreenProps<'GoodDepos
         </View>
 
         <Text style={styles.sectionLabel}>Amount</Text>
-        <View style={styles.amountRow}>
-          <TextInput
-            value={amountStr}
-            onChangeText={t => setAmountStr(t.replace(/[^0-9.]/g, ''))}
-            keyboardType="decimal-pad"
-            placeholder="0"
-            placeholderTextColor={C.textMuted}
-            style={styles.amountInput}
-          />
-          <Text style={styles.amountSymbol}>{selected.symbol}</Text>
-          <TouchableOpacity
-            onPress={() => setAmountStr(String(selected.balance))}
-            style={styles.maxBtn}>
-            <Text style={styles.maxText}>Max</Text>
-          </TouchableOpacity>
+        <View style={styles.amountCard}>
+          <View style={styles.amountRow}>
+            <TextInput
+              value={amountStr}
+              onChangeText={t => setAmountStr(t.replace(/[^0-9.]/g, ''))}
+              keyboardType="decimal-pad"
+              placeholder="0"
+              placeholderTextColor={C.textMuted}
+              style={styles.amountInput}
+            />
+            <Text style={styles.amountSymbol}>{selectedToken.symbol}</Text>
+            <TouchableOpacity
+              onPress={() => setAmountStr(String(selectedToken.balance))}
+              style={styles.maxBtn}>
+              <Text style={styles.maxText}>Max</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.amountHint}>
+            {amount > 0
+              ? `≈ ${fmtUsd(credited)}`
+              : `Balance ${fmtToken(selectedToken.balance)} ${selectedToken.symbol}`}
+          </Text>
         </View>
-        <Text style={styles.amountHint}>
-          {amount > 0 ? `≈ ${fmtUsd(credited)}` : `Balance ${fmtToken(selected.balance)} ${selected.symbol}`}
-        </Text>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, {paddingBottom: insets.bottom + 12}]}>
         <TouchableOpacity
           activeOpacity={0.85}
           disabled={!isValid}
           onPress={handleConfirm}
           style={[styles.confirm, !isValid && styles.confirmDisabled]}>
-          <Text style={styles.confirmText}>Confirm deposit</Text>
+          <Text style={styles.confirmText}>
+            {amount > 0 ? `Deposit ${fmtUsd(credited)}` : 'Enter an amount'}
+          </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 export default GoodDepositConfirm;
-
-const hitSlop = {top: 10, bottom: 10, left: 10, right: 10};
 
 const styles = StyleSheet.create({
   root: {
@@ -192,29 +268,59 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingHorizontal: 16,
+    paddingBottom: 14,
+    backgroundColor: C.surface,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: C.border,
-    backgroundColor: C.surface,
   },
-  cancel: {
+  closeBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: C.surfaceAlt,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeBtnPressed: {
+    opacity: 0.6,
+  },
+  closeGlyph: {
     color: C.textSecondary,
-    fontSize: 15,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '600',
+    lineHeight: 18,
   },
   content: {
-    padding: 20,
-    gap: 10,
+    padding: 16,
+    gap: 8,
   },
   requestCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     backgroundColor: C.surface,
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: C.border,
     padding: 16,
-    gap: 2,
-    marginBottom: 8,
+    marginBottom: 6,
+  },
+  appAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: C.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  appAvatarText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  requestText: {
+    flex: 1,
   },
   requestLabel: {
     color: C.textMuted,
@@ -225,22 +331,52 @@ const styles = StyleSheet.create({
   },
   requestApp: {
     color: C.textPrimary,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
   },
   requestAddr: {
     color: C.textSecondary,
     fontSize: 13,
+    marginTop: 1,
   },
   sectionLabel: {
     color: C.textSecondary,
     fontSize: 13,
     fontWeight: '600',
-    marginTop: 6,
+    marginTop: 8,
+    marginBottom: 2,
+  },
+  chipRow: {
+    gap: 8,
+    paddingVertical: 2,
+    paddingRight: 4,
+  },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: C.border,
+    backgroundColor: C.surface,
+  },
+  chipSelected: {
+    borderColor: C.accent,
+    backgroundColor: C.accentTint,
+  },
+  chipText: {
+    color: C.textSecondary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  chipTextSelected: {
+    color: C.textPrimary,
   },
   tokenList: {
     backgroundColor: C.surface,
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: C.border,
     overflow: 'hidden',
@@ -251,22 +387,24 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 14,
     paddingVertical: 13,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: C.border,
+  },
+  tokenRowDivider: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: C.border,
   },
   tokenRowSelected: {
     backgroundColor: C.accentTint,
   },
   tokenBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tokenBadgeText: {
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
   },
   tokenText: {
@@ -277,9 +415,19 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
-  tokenBal: {
+  tokenSub: {
     color: C.textSecondary,
     fontSize: 13,
+  },
+  tokenRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  tokenUsd: {
+    color: C.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
   },
   radio: {
     width: 20,
@@ -299,28 +447,31 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: C.accent,
   },
-  amountRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  amountCard: {
     backgroundColor: C.surface,
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: C.border,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
+    gap: 6,
+  },
+  amountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   amountInput: {
     flex: 1,
     color: C.textPrimary,
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '700',
     padding: 0,
   },
   amountSymbol: {
     color: C.textSecondary,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   maxBtn: {
     backgroundColor: C.accentTint,
@@ -336,23 +487,23 @@ const styles = StyleSheet.create({
   amountHint: {
     color: C.textMuted,
     fontSize: 13,
-    paddingLeft: 4,
   },
   footer: {
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: C.border,
     backgroundColor: C.surface,
   },
   confirm: {
     backgroundColor: C.accent,
-    borderRadius: 14,
-    paddingVertical: 16,
+    borderRadius: 16,
+    paddingVertical: 17,
     alignItems: 'center',
   },
   confirmDisabled: {
     backgroundColor: C.textMuted,
-    opacity: 0.5,
+    opacity: 0.4,
   },
   confirmText: {
     color: '#FFFFFF',
@@ -360,7 +511,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   centered: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
