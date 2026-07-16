@@ -59,29 +59,39 @@ export default function SessionRequestModal() {
   }, [config, request]);
 
   // Payloads that need async work (e.g. decoding a Sui BCS transaction) are
-  // resolved here; synchronous ones are computed inline below.
-  const [resolvedPayload, setResolvedPayload] = useState<string | null>(null);
+  // resolved here; synchronous ones are computed inline below. The result is
+  // tagged with the request id so a new request never briefly shows the
+  // previous request's resolved payload while its own is still resolving.
+  const [resolvedPayload, setResolvedPayload] = useState<{
+    id: number;
+    value: string;
+  } | null>(null);
   useEffect(() => {
-    if (!config?.resolvePayload || !request) return;
+    if (!config?.resolvePayload || !request || !requestEvent) return;
+    const { id } = requestEvent;
     let cancelled = false;
     config
       .resolvePayload(request)
-      .then(p => !cancelled && setResolvedPayload(p))
-      .catch(() => !cancelled && setResolvedPayload(''));
+      .then(value => !cancelled && setResolvedPayload({ id, value }))
+      .catch(() => !cancelled && setResolvedPayload({ id, value: '' }));
     return () => {
       cancelled = true;
     };
-  }, [config, request]);
+  }, [config, request, requestEvent]);
 
   const payload = useMemo(() => {
     if (!config || !request) return '';
-    if (config.resolvePayload) return resolvedPayload ?? '';
+    if (config.resolvePayload) {
+      return resolvedPayload?.id === requestEvent?.id
+        ? resolvedPayload.value
+        : '';
+    }
     try {
       return config.renderPayload?.(request) ?? '';
     } catch {
       return String(request?.params);
     }
-  }, [config, request, resolvedPayload]);
+  }, [config, request, resolvedPayload, requestEvent]);
 
   const onApprove = useCallback(async () => {
     if (!requestEvent || !config) return;

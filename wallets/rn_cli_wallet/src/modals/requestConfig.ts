@@ -184,12 +184,12 @@ export const REQUEST_CONFIG: Record<string, RequestConfig> = {
     logScope: 'SessionRequestModal:eth_sendTransaction',
   },
   [EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION]: {
+    // Signs only (does not broadcast), so it reads "Sign", unlike eth_sendTransaction.
     approve: approveEIP155Request,
     reject: rejectEIP155Request,
-    intention: 'Send a transaction for',
-    approveLabel: 'Send',
+    intention: 'Sign a transaction for',
     renderPayload: request => JSON.stringify(request.params[0], null, 2),
-    approveErrorTitle: 'Couldn’t send transaction',
+    approveErrorTitle: 'Couldn’t sign transaction',
     logScope: 'SessionRequestModal:eth_signTransaction',
   },
 
@@ -300,8 +300,6 @@ export const REQUEST_CONFIG: Record<string, RequestConfig> = {
   },
 
   // ── Tron ──────────────────────────────────────────────────────────────────
-  // Note: the original single Tron modal used the "Sign a message for"
-  // intention for all three methods; preserved here to avoid a copy change.
   [TRON_SIGNING_METHODS.TRON_SIGN_MESSAGE]: {
     approve: approveTronRequest,
     reject: rejectTronRequest,
@@ -312,14 +310,15 @@ export const REQUEST_CONFIG: Record<string, RequestConfig> = {
   [TRON_SIGNING_METHODS.TRON_SIGN_TRANSACTION]: {
     approve: approveTronRequest,
     reject: rejectTronRequest,
-    intention: 'Sign a message for',
+    intention: 'Sign a transaction for',
     renderPayload: request => JSON.stringify(request.params, null, 2),
     logScope: 'SessionRequestModal:tron_signTransaction',
   },
   [TRON_SIGNING_METHODS.TRON_SEND_TRANSACTION]: {
+    // Signs and broadcasts.
     approve: approveTronRequest,
     reject: rejectTronRequest,
-    intention: 'Sign a message for',
+    intention: 'Sign & send a transaction for',
     renderPayload: request => JSON.stringify(request.params, null, 2),
     logScope: 'SessionRequestModal:tron_sendTransaction',
   },
