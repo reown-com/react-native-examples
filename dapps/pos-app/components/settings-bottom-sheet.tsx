@@ -7,7 +7,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -40,6 +42,7 @@ export function SettingsBottomSheet({
 }: SettingsBottomSheetProps) {
   const Theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions();
   const [assets] = useAssets([require("@/assets/images/close.png")]);
 
   const translateY = useSharedValue(Platform.OS === "web" ? 300 : 0);
@@ -67,7 +70,10 @@ export function SettingsBottomSheet({
     <Animated.View
       style={[
         styles.sheet,
-        { backgroundColor: Theme["bg-primary"] },
+        {
+          backgroundColor: Theme["bg-primary"],
+          maxHeight: windowHeight * 0.85,
+        },
         sheetAnimatedStyle,
       ]}
     >
@@ -104,7 +110,14 @@ export function SettingsBottomSheet({
             />
           </Button>
         </View>
-        {children}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {children}
+        </ScrollView>
       </View>
     </Animated.View>
   );
@@ -145,7 +158,15 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   sheetContent: {
-    padding: Spacing["spacing-5"],
+    paddingHorizontal: Spacing["spacing-5"],
+    paddingTop: Spacing["spacing-5"],
+    gap: Spacing["spacing-7"],
+    flexShrink: 1,
+  },
+  scroll: {
+    flexShrink: 1,
+  },
+  scrollContent: {
     gap: Spacing["spacing-7"],
   },
   header: {

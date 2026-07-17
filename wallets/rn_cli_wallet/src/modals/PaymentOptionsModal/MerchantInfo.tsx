@@ -45,6 +45,7 @@ export function MerchantInfo({ info }: MerchantInfoProps) {
             numberOfLines={1}
             ellipsizeMode="tail"
             center
+            testID="pay-merchant-info"
           >
             Pay {currencySymbol}
             {amount} to {info.merchant.name}

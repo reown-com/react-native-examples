@@ -10,9 +10,12 @@ import {
 } from "@/utils/secure-storage";
 import { isEmbedded } from "@/utils/is-embedded";
 import { storage } from "@/utils/storage";
-import { ThemeMode, TransactionFilterType } from "@/utils/types";
+import {
+  DateRangeFilterType,
+  ThemeMode,
+  TransactionFilterType,
+} from "@/utils/types";
 import * as Crypto from "expo-crypto";
-import { Appearance } from "react-native";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useLogsStore } from "./useLogsStore";
@@ -60,8 +63,9 @@ interface SettingsStore {
   merchantId: string | null;
   isCustomerApiKeySet: boolean;
 
-  // Transaction filter
+  // Transaction filters
   transactionFilter: TransactionFilterType;
+  dateRangeFilter: DateRangeFilterType;
 
   // PIN protection
   isPinHashSet: boolean;
@@ -69,11 +73,15 @@ interface SettingsStore {
   pinLockoutUntil: number | null;
   biometricEnabled: boolean;
 
+  // NFC
+  nfcEnabled: boolean;
+
   // Actions
   setThemeMode: (themeMode: ThemeMode) => void;
   setDeviceId: (deviceId: string) => void;
   setHasHydrated: (state: boolean) => void;
   setVariant: (variant: VariantName) => void;
+  getVariantPrinterLogo: () => string;
   setCurrency: (currency: CurrencyCode) => void;
   setMerchantId: (merchantId: string | null) => void;
   clearMerchantId: () => Promise<string | null>;
@@ -89,12 +97,11 @@ interface SettingsStore {
   getLockoutRemainingSeconds: () => number;
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
+  setNfcEnabled: (enabled: boolean) => void;
 
-  // Transaction filter
+  // Transaction filters
   setTransactionFilter: (filter: TransactionFilterType) => void;
-
-  // Others
-  getVariantPrinterLogo: () => string;
+  setDateRangeFilter: (filter: DateRangeFilterType) => void;
 }
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -108,10 +115,12 @@ export const useSettingsStore = create<SettingsStore>()(
       merchantId: null,
       isCustomerApiKeySet: false,
       transactionFilter: "all",
+      dateRangeFilter: "today",
       isPinHashSet: false,
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
+      nfcEnabled: true,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
@@ -122,6 +131,8 @@ export const useSettingsStore = create<SettingsStore>()(
           set({ themeMode: variantData.defaultTheme });
         }
       },
+      getVariantPrinterLogo: () =>
+        Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64,
       setCurrency: (currency: CurrencyCode) => set({ currency }),
       setMerchantId: (merchantId: string | null) => {
         // If clearing, reset to env default (unless embedded — parent provides credentials)
@@ -259,17 +270,16 @@ export const useSettingsStore = create<SettingsStore>()(
         set({ pinFailedAttempts: 0, pinLockoutUntil: null }),
       setBiometricEnabled: (enabled: boolean) =>
         set({ biometricEnabled: enabled }),
+      setNfcEnabled: (enabled: boolean) => set({ nfcEnabled: enabled }),
 
       setTransactionFilter: (filter: TransactionFilterType) =>
         set({ transactionFilter: filter }),
-
-      getVariantPrinterLogo: () => {
-        return Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64;
-      },
+      setDateRangeFilter: (filter: DateRangeFilterType) =>
+        set({ dateRangeFilter: filter }),
     }),
     {
       name: "settings",
-      version: 14,
+      version: 16,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -319,6 +329,20 @@ export const useSettingsStore = create<SettingsStore>()(
         }
         if (version < 14) {
           persistedState.isPinHashSet = false;
+        }
+
+        if (version < 14) {
+          persistedState.dateRangeFilter = "today";
+        }
+
+        if (version < 15) {
+          persistedState.nfcEnabled = persistedState.nfcEnabled ?? false;
+        }
+
+        if (version < 16) {
+          // nfcEnabled now means "show NFC UI" (HCE always runs when supported).
+          // Preserve any user-set value; only fresh installs get the new default of true.
+          persistedState.nfcEnabled = persistedState.nfcEnabled ?? true;
         }
 
         return persistedState;

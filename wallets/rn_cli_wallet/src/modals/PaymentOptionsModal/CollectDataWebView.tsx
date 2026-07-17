@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { View, StyleSheet, Linking } from 'react-native';
+import type { CollectDataField, CollectDataFieldResult } from '@walletconnect/pay';
 import { WebView, WebViewNavigation } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { btoa } from 'react-native-quick-base64';
@@ -36,7 +37,7 @@ const PRELOAD_VIEWPORT_JS = `
         style = document.createElement('style');
         style.id = 'rn-webview-fit-style';
         style.textContent =
-          'html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow: hidden !important; overscroll-behavior: none !important; }';
+          'html, body { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; overflow-y: auto !important; overscroll-behavior: none !important; }';
         head.appendChild(style);
       }
     }
@@ -66,6 +67,7 @@ function getBaseUrl(urlString: string): string {
 const PREFILL_DATA = {
   fullName: 'John Doe',
   dob: '1990-06-15',
+  pobAddress: 'Buenos Aires',
 };
 
 function buildUrlWithPrefill(
@@ -93,7 +95,11 @@ function buildUrlWithPrefill(
 
 interface CollectDataWebViewProps {
   url: string;
-  onComplete: () => void;
+  // Present so the props match the web variant (which renders an in-app form
+  // from these fields/schema). Native uses the hosted webview and ignores them.
+  fields?: CollectDataField[];
+  schema?: string;
+  onComplete: (collectedData?: CollectDataFieldResult[]) => void;
   onError: (error: string) => void;
 }
 
@@ -147,7 +153,10 @@ export function CollectDataWebView({
       LogStore.error('WebView error', 'CollectDataWebView', 'handleError', {
         error: description,
       });
-      onError(description || 'Failed to load the form');
+      onError(
+        description ||
+          'Couldn’t load the form. Check your connection, then try again.',
+      );
     },
     [onError],
   );
@@ -250,8 +259,8 @@ export function CollectDataWebView({
         javaScriptEnabled
         domStorageEnabled
         startInLoadingState
-        scrollEnabled={false}
-        nestedScrollEnabled={false}
+        scrollEnabled={true}
+        nestedScrollEnabled={true}
         bounces={false}
         overScrollMode="never"
         setBuiltInZoomControls={false}

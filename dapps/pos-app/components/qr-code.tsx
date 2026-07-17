@@ -66,6 +66,7 @@ function QrCode_({
         style,
       ]}
       testID={testID}
+      nativeID={testID}
     >
       <QRCodeSkia
         value={uri}

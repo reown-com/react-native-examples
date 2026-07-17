@@ -64,7 +64,9 @@ export function useNfc() {
       });
   }, []);
 
-  const scanNfcTag = useCallback(async (): Promise<string | null | undefined> => {
+  const scanNfcTag = useCallback(async (): Promise<
+    string | null | undefined
+  > => {
     pauseForegroundDispatch();
     try {
       await NfcManager.unregisterTagEvent().catch(() => {});
@@ -282,7 +284,7 @@ export function useNfcForegroundDispatch(onUri: (uri: string) => void) {
 
 function extractUri(record: {
   tnf: number;
-  type: number[];
+  type: string | number[];
   payload: number[];
 }): string | null {
   // TNF 3 = Absolute URI — the type field IS the URI
@@ -321,7 +323,10 @@ function extractUri(record: {
   return null;
 }
 
-function bytesToString(bytes: number[]): string {
+function bytesToString(bytes: string | number[]): string {
+  if (typeof bytes === 'string') {
+    return bytes;
+  }
   let result = '';
   for (const byte of bytes) {
     result += String.fromCharCode(byte);

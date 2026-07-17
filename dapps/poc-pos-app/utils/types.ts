@@ -12,6 +12,11 @@ export interface StartPaymentRequest {
 
 export interface StartPaymentResponse {
   paymentId: string;
+  gatewayUrl: string;
+  isFinal: boolean;
+  expiresAt: number;
+  status: PaymentStatus;
+  pollInMs: number;
 }
 
 export interface PaymentStatusResponse {

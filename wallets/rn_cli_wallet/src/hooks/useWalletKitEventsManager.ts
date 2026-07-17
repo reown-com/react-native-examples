@@ -1,16 +1,19 @@
 import { useCallback, useEffect } from 'react';
 import { SignClientTypes } from '@walletconnect/types';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
+import { formatJsonRpcError } from '@json-rpc-tools/utils';
+import { getSdkError } from '@walletconnect/utils';
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { getSupportedChains } from '@/utils/HelperUtil';
-import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
-import { SUI_SIGNING_METHODS } from '@/constants/Sui';
+import { EIP155_CHAINS } from '@/constants/Eip155';
 import { TON_SIGNING_METHODS } from '@/constants/Ton';
-import { TRON_SIGNING_METHODS } from '@/constants/Tron';
+import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
+import { approveCantonRequest } from '@/utils/CantonRequestHandlerUtil';
+import { getRequestConfig } from '@/modals/requestConfig';
 
 export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -36,7 +39,11 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       );
 
       if (chains.length === 0) {
-        ModalStore.open('LoadingModal', { errorMessage: 'Unsupported chains' });
+        ModalStore.open('LoadingModal', {
+          errorTitle: "These networks aren’t supported",
+          errorMessage:
+            'This wallet doesn’t support any of the networks this app requested. Try connecting to a different app.',
+        });
       } else {
         ModalStore.open('SessionProposalModal', { proposal });
       }
@@ -65,48 +72,47 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(verifyContext);
 
+      // Config-driven dispatch: methods are described in requestConfig.ts
+      if (getRequestConfig(request.method)) {
+        return ModalStore.open('SessionRequestModal', {
+          requestEvent,
+          requestSession,
+        });
+      }
+
       switch (request.method) {
-        case EIP155_SIGNING_METHODS.ETH_SIGN:
-        case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-          return ModalStore.open('SessionSignModal', {
-            requestEvent,
-            requestSession,
-          });
-
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
-          return ModalStore.open('SessionSignTypedDataModal', {
-            requestEvent,
-            requestSession,
-          });
-
-        case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
-          return ModalStore.open('SessionSendTransactionModal', {
-            requestEvent,
-            requestSession,
-          });
-        case SUI_SIGNING_METHODS.SUI_SIGN_TRANSACTION:
-          return ModalStore.open('SessionSuiSignTransactionModal', {
-            requestEvent,
-            requestSession,
-          });
-        case SUI_SIGNING_METHODS.SUI_SIGN_PERSONAL_MESSAGE:
-          LogStore.log(
-            'Opening Sui personal message modal',
-            'WalletKitEvents',
-            'onSessionRequest',
-          );
-          return ModalStore.open('SessionSuiSignPersonalMessageModal', {
-            requestEvent,
-            requestSession,
-          });
-        case SUI_SIGNING_METHODS.SUI_SIGN_AND_EXECUTE_TRANSACTION:
-          return ModalStore.open('SessionSuiSignAndExecuteTransactionModal', {
-            requestEvent,
-            requestSession,
-          });
+        // Canton auto-approve (read-only methods)
+        case CANTON_SIGNING_METHODS.LIST_ACCOUNTS:
+        case CANTON_SIGNING_METHODS.GET_PRIMARY_ACCOUNT:
+        case CANTON_SIGNING_METHODS.GET_ACTIVE_NETWORK:
+        case CANTON_SIGNING_METHODS.STATUS:
+        case CANTON_SIGNING_METHODS.LEDGER_API:
+          try {
+            const cantonResponse = await approveCantonRequest(requestEvent);
+            return walletKit.respondSessionRequest({
+              topic,
+              response: cantonResponse,
+            });
+          } catch (e) {
+            LogStore.error(
+              (e as Error).message,
+              'WalletKitEvents',
+              'onSessionRequest:cantonAutoApprove',
+            );
+            showToast({
+              type: 'error',
+              text1: 'Canton request failed',
+              text2: (e as Error).message,
+            });
+            return walletKit.respondSessionRequest({
+              topic,
+              response: formatJsonRpcError(
+                requestEvent.id,
+                getSdkError('INVALID_METHOD').message,
+              ),
+            });
+          }
+        // Custom TON modals (bespoke validation + rendering)
         case TON_SIGNING_METHODS.SIGN_DATA:
           return ModalStore.open('SessionTonSignDataModal', {
             requestEvent,
@@ -114,13 +120,6 @@ export default function useWalletKitEventsManager(initialized: boolean) {
           });
         case TON_SIGNING_METHODS.SEND_MESSAGE:
           return ModalStore.open('SessionTonSendMessageModal', {
-            requestEvent,
-            requestSession,
-          });
-        case TRON_SIGNING_METHODS.TRON_SIGN_MESSAGE:
-        case TRON_SIGNING_METHODS.TRON_SIGN_TRANSACTION:
-        case TRON_SIGNING_METHODS.TRON_SEND_TRANSACTION:
-          return ModalStore.open('SessionSignTronModal', {
             requestEvent,
             requestSession,
           });
@@ -146,11 +145,15 @@ export default function useWalletKitEventsManager(initialized: boolean) {
         },
       );
       const chains = authRequest.params.authPayload.chains.filter(
-        chain => !!EIP155_CHAINS[chain.split(':')[1]],
+        chain => !!EIP155_CHAINS[chain],
       );
 
       if (chains.length === 0) {
-        ModalStore.open('LoadingModal', { errorMessage: 'Unsupported chains' });
+        ModalStore.open('LoadingModal', {
+          errorTitle: "These networks aren’t supported",
+          errorMessage:
+            'This wallet doesn’t support any of the networks this app requested. Try connecting to a different app.',
+        });
       } else {
         ModalStore.open('SessionAuthenticateModal', { authRequest });
       }
@@ -176,7 +179,7 @@ export default function useWalletKitEventsManager(initialized: boolean) {
           'session_ping',
           { topic: data.topic },
         );
-        Toast.show({
+        showToast({
           type: 'info',
           text1: 'Session ping received',
         });

@@ -17,12 +17,15 @@ export default function HomeScreen() {
   ]);
 
   const Theme = useTheme();
-  const { merchantId, isCustomerApiKeySet } = useSettingsStore();
+  const merchantId = useSettingsStore((state) => state.merchantId);
+  const isCustomerApiKeySet = useSettingsStore(
+    (state) => state.isCustomerApiKeySet,
+  );
 
   const handleStartPayment = () => {
     if (!merchantId || !isCustomerApiKeySet) {
       router.push("/settings");
-      showErrorToast("Merchant information not configured");
+      showErrorToast("Finish setup in Settings before starting a payment.");
       return;
     }
 
@@ -53,7 +56,7 @@ export default function HomeScreen() {
           cachePolicy="memory-disk"
           priority="high"
         />
-        <ThemedText fontSize={18}>New sale</ThemedText>
+        <ThemedText fontSize={18}>Start payment</ThemedText>
       </Button>
       <Button
         onPress={handleActivityPress}

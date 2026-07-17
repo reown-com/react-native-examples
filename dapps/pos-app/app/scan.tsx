@@ -1,9 +1,10 @@
-import { CloseButton } from "@/components/close-button";
+import { Button } from "@/components/button";
 import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
-import { Spacing } from "@/constants/spacing";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
@@ -31,23 +32,44 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
-  const [assets] = useAssets([require("@/assets/images/wc_logo_dark.png")]);
+  const [assets] = useAssets([
+    require("@/assets/images/wc_logo_dark.png"),
+    require("@/assets/images/nfc.png"),
+  ]);
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const hasNavigatedRef = useRef(false);
 
-  const {
-    deviceId,
-    merchantId,
-    currency: currencyCode,
-  } = useSettingsStore((state) => state);
+  const deviceId = useSettingsStore((state) => state.deviceId);
+  const merchantId = useSettingsStore((state) => state.merchantId);
+  const currencyCode = useSettingsStore((state) => state.currency);
+  const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
   const { amount } = params;
+
+  const { nfcMode } = useNfcPayment({
+    paymentUrl: qrUri,
+    // HCE runs whenever the device supports it; `nfcEnabled` only controls UI visibility below.
+    enabled: true,
+    onNfcReady: () => {
+      addLog("info", "NFC HCE activated", "scan", "useNfcPayment", {
+        paymentId,
+      });
+    },
+    onNfcError: (error) => {
+      addLog("error", error.message, "scan", "useNfcPayment");
+    },
+    onTap: () => {
+      addLog("info", "NFC tag read by wallet", "scan", "useNfcPayment", {
+        paymentId,
+      });
+    },
+  });
 
   const onSuccess = useCallback(() => {
     if (hasNavigatedRef.current) return;
@@ -85,7 +107,7 @@ export default function ScanScreen() {
           paymentId,
           error,
         });
-        showErrorToast("Failed to cancel payment");
+        showErrorToast("We couldn't cancel this payment. Try again.");
       });
     }
     resetNavigation("/amount");
@@ -93,7 +115,7 @@ export default function ScanScreen() {
 
   const handleCopyPaymentUrl = async () => {
     await Clipboard.setStringAsync(qrUri);
-    showSuccessToast("Payment URL copied");
+    showSuccessToast("Payment link copied");
   };
 
   useEffect(() => {
@@ -107,7 +129,9 @@ export default function ScanScreen() {
           "scan",
           "initiatePayment",
         );
-        showErrorToast("Merchant ID is not configured");
+        showErrorToast(
+          "Add a merchant ID in Settings before starting a payment.",
+        );
         return;
       }
 
@@ -170,28 +194,40 @@ export default function ScanScreen() {
   });
 
   const isProcessing = paymentStatusData?.status === "processing";
+  const showNfc = nfcEnabled && nfcMode === "hce";
 
   return (
     <View style={styles.container}>
       {isProcessing ? (
         <View style={styles.loadingContainer}>
           <WalletConnectLoading size={180} />
-          <ThemedText
-            style={[styles.amountText, { color: Theme["text-primary"] }]}
-            fontSize={16}
-            lineHeight={18}
-          >
-            Waiting for payment confirmation…
-          </ThemedText>
+          <View style={styles.loadingTextContainer}>
+            <ThemedText
+              style={{ color: Theme["text-primary"] }}
+              fontSize={18}
+              lineHeight={22}
+            >
+              Waiting for confirmation
+            </ThemedText>
+            <ThemedText
+              style={{ color: Theme["text-secondary"] }}
+              fontSize={14}
+              lineHeight={18}
+            >
+              This usually takes a few seconds.
+            </ThemedText>
+          </View>
         </View>
       ) : (
         <View style={styles.scanContainer}>
-          <View style={styles.amountContainer}>
-            <ThemedText
-              style={[styles.amountText, { color: Theme["text-tertiary"] }]}
-            >
-              Scan to pay
-            </ThemedText>
+          <View style={[styles.header, !showNfc && styles.headerCentered]}>
+            {showNfc && (
+              <Image
+                source={assets?.[1]}
+                contentFit="contain"
+                style={[styles.nfcIcon, { tintColor: Theme["text-primary"] }]}
+              />
+            )}
             <ThemedText
               style={[
                 styles.amountValue,
@@ -201,12 +237,20 @@ export default function ScanScreen() {
               {formatAmountWithSymbol(amount, currency)}
             </ThemedText>
           </View>
+
+          <ThemedText
+            style={[styles.instructionText, { color: Theme["text-secondary"] }]}
+          >
+            {showNfc ? "Scan or tap to pay" : "Scan to pay"}
+          </ThemedText>
+
           <View style={styles.qrSection}>
             <QRCode
               size={300}
               uri={qrUri}
               logoBorderRadius={100}
               onPress={handleCopyPaymentUrl}
+              testID="pos-qr-code"
             >
               <Image source={assets?.[0]} style={styles.logo} />
             </QRCode>
@@ -230,7 +274,23 @@ export default function ScanScreen() {
           <View style={{ flex: 1 }} />
         </View>
       )}
-      <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
+      {!isProcessing && (
+        <Button
+          onPress={handleOnClosePress}
+          style={[
+            styles.closeButton,
+            { backgroundColor: Theme["foreground-primary"] },
+          ]}
+        >
+          <ThemedText
+            style={{ color: Theme["text-primary"] }}
+            fontSize={16}
+            lineHeight={18}
+          >
+            Cancel
+          </ThemedText>
+        </Button>
+      )}
     </View>
   );
 }
@@ -251,17 +311,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
     alignItems: "center",
-    justifyContent: "space-between",
-  },
-  amountContainer: {
-    width: "100%",
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     gap: Spacing["spacing-4"],
   },
-  amountText: {
-    fontSize: 16,
+  header: {
+    width: "100%",
+    alignItems: "center",
+    gap: Spacing["spacing-3"],
+  },
+  headerCentered: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  loadingTextContainer: {
+    alignItems: "center",
+    gap: Spacing["spacing-2"],
+  },
+  instructionText: {
+    fontSize: 18,
     textAlign: "center",
   },
   amountValue: {
@@ -286,7 +352,20 @@ const styles = StyleSheet.create({
     gap: Spacing["spacing-1"],
   },
   closeButton: {
-    position: "absolute",
-    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: BorderRadius["4"],
+    marginHorizontal: Spacing["spacing-5"],
+    height: 48,
+  },
+  nfcIcon: {
+    // The artwork is not centered within its bounding box (the hand holding the
+    // card sits to the right), so the unbalanced marginLeft nudges it back to
+    // optically align with the amount text below it. Intentional — do not add a
+    // matching marginRight.
+    marginLeft: Spacing["spacing-5"],
+    width: 80,
+    height: 60,
+    marginBottom: Spacing["spacing-3"],
   },
 });

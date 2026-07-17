@@ -33,7 +33,10 @@ function TransactionCardBase({
     >
       <View style={styles.leftContent}>
         <ThemedText fontSize={16} lineHeight={20} color="text-primary">
-          {formatFiatAmount(payment.fiat_amount, payment.fiat_currency)}
+          {formatFiatAmount(
+            payment.fiatAmount?.value,
+            payment.fiatAmount?.unit,
+          )}
         </ThemedText>
         <ThemedText
           fontSize={14}
@@ -41,7 +44,7 @@ function TransactionCardBase({
           color="text-secondary"
           style={styles.date}
         >
-          {formatShortDate(payment.created_at)}
+          {formatShortDate(payment.createdAt)}
         </ThemedText>
       </View>
       <StatusBadge status={payment.status} />

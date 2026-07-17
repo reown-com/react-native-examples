@@ -48,5 +48,11 @@ ios/*
 android/*
 .vercel
 
+# Expo local module build outputs
+modules/*/android/build/
+modules/*/android/.cxx/
+modules/*/android/.gradle/
+modules/*/ios/build/
+
 PLAN.md
 TESTING_PLAN.md

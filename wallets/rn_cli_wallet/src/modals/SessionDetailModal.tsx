@@ -124,7 +124,7 @@ export default function SessionDetailModal() {
           )}
           <View style={styles.appInfoText}>
             <Text variant="lg-500" color="text-primary">
-              {metadata?.name || 'Unknown'}
+              {metadata?.name || 'Unnamed app'}
             </Text>
             <Text
               variant="sm-400"
@@ -132,7 +132,7 @@ export default function SessionDetailModal() {
               numberOfLines={1}
               ellipsizeMode="middle"
             >
-              {metadata?.url || 'Unknown URL'}
+              {metadata?.url || 'No URL provided'}
             </Text>
           </View>
           <ChainIcons chainIds={chainIds} size={24} overlap={8} />

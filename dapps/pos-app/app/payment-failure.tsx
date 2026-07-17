@@ -30,7 +30,11 @@ export default function PaymentFailureScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View
+        testID="pos-payment-failure"
+        nativeID="pos-payment-failure"
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
         <Image
           source={assets?.[0]}
           style={[
@@ -67,7 +71,7 @@ export default function PaymentFailureScreen() {
             lineHeight={18}
             style={{ color: Theme["text-invert"] }}
           >
-            New payment
+            Start payment
           </ThemedText>
           <Image
             source={require("@/assets/images/plus.png")}

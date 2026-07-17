@@ -1,11 +1,11 @@
 import { useSnapshot } from 'valtio';
 import { useEffect, useState } from 'react';
 import { View, Switch, StyleSheet, Platform } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
-import { getVersion, getBuildNumber } from 'react-native-device-info';
-import { getEnvironmentLabel } from '@/utils/misc';
+import { getVersion, getBuildNumber } from '@/utils/AppInfo';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
+import { getEnvironmentLabel } from '@/utils/misc';
+import { setClipboardString } from '@/utils/ClipboardUtil';
 import SettingsStore from '@/store/SettingsStore';
 import ModalStore from '@/store/ModalStore';
 import { Card } from '@/components/Card';
@@ -14,7 +14,7 @@ import { Text } from '@/components/Text';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 import { RootStackParamList } from '@/utils/TypesUtil';
 import { Button } from '@/components/Button';
 
@@ -23,6 +23,19 @@ export default function Settings() {
   const [clientId, setClientId] = useState('');
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const Theme = useTheme();
+
+  // react-native-web paints the Switch "on" state via activeTrackColor/
+  // activeThumbColor (not React Native's trackColor/thumbColor, which only
+  // cover native). These props aren't in RN's Switch types, so pass them
+  // only on web.
+  const webAccentSwitchProps = (
+    Platform.OS === 'web'
+      ? {
+          activeTrackColor: Theme['bg-accent-primary'],
+          activeThumbColor: Theme.white,
+        }
+      : {}
+  ) as { activeTrackColor?: string; activeThumbColor?: string };
 
   useEffect(() => {
     async function getAsyncData() {
@@ -34,11 +47,11 @@ export default function Settings() {
     getAsyncData();
   }, []);
 
-  const copyToClipboard = (value: string) => {
-    Clipboard.setString(value);
-    Toast.show({
+  const copyToClipboard = (value: string, label: string = 'Value') => {
+    setClipboardString(value);
+    showToast({
       type: 'info',
-      text1: 'Value copied to clipboard',
+      text1: `${label} copied`,
     });
   };
 
@@ -68,26 +81,38 @@ export default function Settings() {
             <Text variant="md-500" color="text-primary">
               Dark mode
             </Text>
-            <Switch
-              value={themeMode === 'dark'}
-              style={styles.switch}
-              onValueChange={toggleDarkMode}
-              trackColor={Platform.select({
-                android: {
-                  false: Theme['foreground-tertiary'],
-                  true: Theme['bg-accent-primary'],
-                },
-              })}
-              thumbColor={Platform.select({ android: Theme.white })}
-            />
+            {/* On web the whole card (PressableScale) owns the toggle: a tap on
+                the switch bubbles up to the card, so if the Switch also fired
+                onValueChange it would toggle twice (net no change). Render it
+                display-only with pointerEvents="none" so the tap passes through.
+                On native there's no double-toggle, so keep the Switch fully
+                interactive (and accessible) with its own onValueChange. */}
+            {Platform.OS === 'web' ? (
+              <View pointerEvents="none" style={styles.switch}>
+                <Switch value={themeMode === 'dark'} {...webAccentSwitchProps} />
+              </View>
+            ) : (
+              <Switch
+                value={themeMode === 'dark'}
+                style={styles.switch}
+                onValueChange={toggleDarkMode}
+                trackColor={Platform.select({
+                  android: {
+                    false: Theme['foreground-tertiary'],
+                    true: Theme['bg-accent-primary'],
+                  },
+                })}
+                thumbColor={Platform.select({ android: Theme.white })}
+              />
+            )}
           </View>
         </Button>
         <Card
-          title="Secret Keys & Phrases"
+          title="Secret keys & phrases"
           onPress={() => navigation.navigate('SecretPhrase')}
         />
         <Card
-          title="Import Wallet"
+          title="Import wallet"
           onPress={() => ModalStore.open('ImportWalletModal', {})}
         />
       </View>
@@ -97,18 +122,17 @@ export default function Settings() {
       <View style={styles.sectionContainer}>
         <Card
           title="Client ID"
-          value={clientId ? `${clientId.slice(0, 8)}..${clientId.slice(-8)}` : ''}
-          onPress={() => copyToClipboard(clientId)}
+          value={
+            clientId ? `${clientId.slice(0, 8)}..${clientId.slice(-8)}` : ''
+          }
+          onPress={() => copyToClipboard(clientId, 'Client ID')}
         />
         <Card
           title="App version"
           value={`${getVersion()} (${getBuildNumber()}) - ${getEnvironmentLabel()}`}
         />
         <Card title="Socket status" value={socketStatus} />
-        <Card
-          title="Read logs"
-          onPress={() => navigation.navigate('Logs')}
-        />
+        <Card title="Read logs" onPress={() => navigation.navigate('Logs')} />
       </View>
     </ScrollView>
   );

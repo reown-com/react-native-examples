@@ -10,6 +10,9 @@ export interface TokenBalance {
     numeric: string;
   };
   iconUrl?: string;
+  // True when the balance API request for this chain failed, so the amount is
+  // unknown (shown as "~") rather than a confirmed 0.
+  balanceUnavailable?: boolean;
 }
 
 export interface BalanceResponse {

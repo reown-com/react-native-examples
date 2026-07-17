@@ -35,10 +35,11 @@ jobs:
     uses: ./.github/workflows/release-android-base.yaml
     with:
       name: AppKit React Native
-      root-path: 'dapps/W3MWagmi'
+      root-path: 'dapps/appkit-wagmi'
       release-type: ${{ inputs.release-type }}
       project-type: 'dapp'
-      output-path: ${{ inputs.release-type == 'internal' && 'dapps/W3MWagmi/android/app/build/outputs/apk/internal/app-internal.apk' || 'dapps/W3MWagmi/android/app/build/outputs/apk/release/app-release.apk' }}
+      is-expo-project: true
+      output-path: ${{ inputs.release-type == 'internal' && 'dapps/appkit-wagmi/android/app/build/outputs/apk/internal/app-internal.apk' || 'dapps/appkit-wagmi/android/app/build/outputs/apk/release/app-release.apk' }}
       upload-to-bucket: ${{ inputs.e2e-build }}
       firebase-app-id: ${{ inputs.release-type == 'internal' && vars.APPKIT_ANDROID_INTERNAL_FIREBASE_APP_ID || vars.APPKIT_ANDROID_PROD_FIREBASE_APP_ID }}
     secrets:
@@ -57,9 +58,11 @@ jobs:
     uses: ./.github/workflows/release-ios-base.yaml
     with:
       name: AppKit React Native
-      root-path: 'dapps/W3MWagmi'
+      root-path: 'dapps/appkit-wagmi'
       release-type: ${{ inputs.release-type }}
-      scheme-name: ${{ inputs.release-type == 'internal' && 'W3MWagmi Internal' || 'W3MWagmi' }}
+      is-expo-project: true
+      app-variant: ${{ inputs.release-type == 'internal' && 'internal' || 'production' }}
+      scheme-name: 'RNAppKit'
       bundle-id: ${{ inputs.release-type == 'internal' && 'com.walletconnect.web3modal.rnsample.internal' || 'com.walletconnect.web3modal.rnsample' }}
       apple-id: ${{ inputs.release-type == 'internal' && '6479817037' || '6446700301' }}
       project-type: 'dapp'

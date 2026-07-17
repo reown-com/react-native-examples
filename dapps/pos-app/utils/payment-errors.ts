@@ -4,26 +4,24 @@ interface PaymentErrorMessage {
 }
 
 const DEFAULT_ERROR: PaymentErrorMessage = {
-  title: "Payment can't be completed",
+  title: "This payment didn't go through",
   subtitle:
-    "We're unable to complete this payment at this time. Please generate a new payment and try again.",
+    "No funds were moved. Start a new payment, or check your connection and try again.",
 };
 
 const ERROR_MESSAGES: Record<string, PaymentErrorMessage> = {
   expired: {
-    title: "Your payment has expired",
-    subtitle:
-      "This payment request has expired. Please generate a new payment and try again.",
+    title: "This payment expired",
+    subtitle: "No funds were moved. Start a new payment.",
   },
   cancelled: {
-    title: "Payment was cancelled",
-    subtitle:
-      "This payment was cancelled. Please generate a new payment and try again.",
+    title: "Payment cancelled",
+    subtitle: "No funds were moved. Start a new payment when you're ready.",
   },
   invalid_api_key: {
-    title: "Payment can't be completed",
+    title: "This payment didn't go through",
     subtitle:
-      "The API key is invalid. Please check your credentials and try again.",
+      "Your API key is invalid. No funds were moved. Check your credentials in Settings and try again.",
   },
 };
 

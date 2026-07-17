@@ -9,6 +9,7 @@ interface ButtonProps {
   disabled?: boolean;
   hitSlop?: number | Insets;
   testID?: string;
+  accessibilityLabel?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -18,6 +19,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   hitSlop,
   testID,
+  accessibilityLabel,
 }) => {
   return (
     <PressableScale
@@ -26,6 +28,7 @@ export const Button: React.FC<ButtonProps> = ({
       enabled={!disabled}
       hitSlop={hitSlop}
       testID={testID}
+      accessibilityLabel={accessibilityLabel}
     >
       {children}
     </PressableScale>

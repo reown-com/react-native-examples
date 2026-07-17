@@ -38,6 +38,7 @@ jobs:
       root-path: 'wallets/rn_cli_wallet'
       release-type: ${{ inputs.release-type }}
       project-type: 'wallet'
+      is-expo-project: true
       output-path: ${{ inputs.release-type == 'internal' && 'wallets/rn_cli_wallet/android/app/build/outputs/apk/internal/app-internal.apk' || 'wallets/rn_cli_wallet/android/app/build/outputs/apk/release/app-release.apk' }}
       upload-to-bucket: ${{ inputs.e2e-build }}
       firebase-app-id: ${{ inputs.release-type == 'internal' && vars.WALLETKIT_ANDROID_INTERNAL_FIREBASE_APP_ID || vars.WALLETKIT_ANDROID_PROD_FIREBASE_APP_ID }}
@@ -59,7 +60,9 @@ jobs:
       name: WalletKit React Native
       root-path: 'wallets/rn_cli_wallet'
       release-type: ${{ inputs.release-type }}
-      scheme-name: ${{ inputs.release-type == 'internal' && 'RNWallet-Internal' || 'RNWallet' }}
+      is-expo-project: true
+      app-variant: ${{ inputs.release-type == 'internal' && 'internal' || 'production' }}
+      scheme-name: 'ReactNWallet'
       bundle-id: ${{ inputs.release-type == 'internal' && 'com.walletconnect.web3wallet.rnsample.internal' || 'com.walletconnect.web3wallet.rnsample' }}
       apple-id: ${{ inputs.release-type == 'internal' && '6499165794' || '6449264964' }}
       project-type: 'wallet'

@@ -84,15 +84,17 @@ export function extractCurrencyCode(currency?: string): string {
 
 /**
  * Format fiat amount from cents to display string
- * @param amount - Amount in cents (e.g., 1000 = $10.00)
+ * @param amount - Amount in cents as a string (e.g., "1000" = $10.00)
  * @param currency - Currency in CAIP format (e.g., "iso4217/USD")
  * @returns Formatted string (e.g., "$10.00" for USD, "10.00€" for EUR)
  */
-export function formatFiatAmount(amount?: number, currency?: string): string {
-  if (amount === undefined) return "-";
+export function formatFiatAmount(amount?: string, currency?: string): string {
+  if (!amount) return "-";
+  const parsed = parseInt(amount, 10);
+  if (isNaN(parsed)) return "-";
 
   // Convert cents to dollars
-  const value = amount / 100;
+  const value = parsed / 100;
   const currencyCode = extractCurrencyCode(currency);
   const currencyData = getCurrency(currencyCode);
 
@@ -102,4 +104,28 @@ export function formatFiatAmount(amount?: number, currency?: string): string {
   });
 
   return formatAmountWithSymbol(formattedValue, currencyData);
+}
+
+const MAX_TOKEN_DECIMALS = 8;
+
+/**
+ * Formats a raw token amount (in smallest units) to a human-readable string.
+ * @param rawAmount - Token amount in smallest unit (e.g., "100000" for 0.0001 SOL).
+ * @param decimals - Token decimals (e.g., 9 for SOL, 6 for USDC).
+ * @returns Formatted amount string (e.g., "0.0001"). Caps at 8 decimal places.
+ */
+export function formatTokenAmount(rawAmount: string, decimals: number): string {
+  if (!rawAmount || decimals === 0) return rawAmount;
+
+  const padded = rawAmount.padStart(decimals + 1, "0");
+  const integerPart = padded.slice(0, -decimals) || "0";
+  const decimalPart = padded.slice(-decimals);
+
+  let trimmedDecimal = decimalPart.replace(/0+$/, "").padEnd(2, "0");
+
+  if (trimmedDecimal.length > MAX_TOKEN_DECIMALS) {
+    trimmedDecimal = trimmedDecimal.slice(0, MAX_TOKEN_DECIMALS);
+  }
+
+  return `${integerPart}.${trimmedDecimal}`;
 }

@@ -1,5 +1,5 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
-import { StackScreenProps } from '@react-navigation/stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
@@ -76,7 +76,7 @@ export type HomeTabParamList = {
 
 // Define screen props types
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
-  StackScreenProps<RootStackParamList, T>;
+  NativeStackScreenProps<RootStackParamList, T>;
 
 export type HomeTabScreenProps<T extends keyof HomeTabParamList> =
   CompositeScreenProps<
@@ -96,6 +96,7 @@ export type Step =
   | 'loading'
   | 'selectOption'
   | 'infoExplainer'
+  | 'gasFee'
   | 'collectData'
   | 'review'
   | 'confirming'
@@ -107,3 +108,5 @@ import type { PaymentOption, CollectDataAction } from '@walletconnect/pay';
 export interface PaymentOptionWithCollectData extends PaymentOption {
   collectData?: CollectDataAction;
 }
+
+export type OptionFeeEstimateStatus = 'idle' | 'loading' | 'ready' | 'error';

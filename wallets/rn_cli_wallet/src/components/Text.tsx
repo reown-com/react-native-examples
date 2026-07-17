@@ -239,6 +239,8 @@ export interface TextProps extends RNTextProps {
   color?: ThemeKeys;
   /** Center align the text */
   center?: boolean;
+  /** Underline the text */
+  underline?: boolean;
   /** Children content */
   children?: React.ReactNode;
 }
@@ -247,6 +249,7 @@ export function Text({
   variant = 'lg-400',
   color = 'text-primary',
   center,
+  underline,
   style,
   children,
   ...props
@@ -268,6 +271,7 @@ export function Text({
           color: textColor,
         },
         center && styles.center,
+        underline && styles.underline,
         style,
       ]}
       {...props}
@@ -283,5 +287,8 @@ const styles = StyleSheet.create({
   },
   center: {
     textAlign: 'center',
+  },
+  underline: {
+    textDecorationLine: 'underline',
   },
 });

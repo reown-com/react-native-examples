@@ -2,7 +2,7 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkInfoCard } from '@/components/NetworkInfoCard';
@@ -58,9 +58,9 @@ export default function SessionTonSendMessageModal() {
     const effect = async () => {
       const validationResult = await validateTonRequest(requestEvent);
       if (validationResult) {
-        Toast.show({
+        showToast({
           type: 'error',
-          text1: 'Validation failed',
+          text1: 'Couldn’t validate request',
           text2: validationResult.error.message,
         });
         await walletKit.respondSessionRequest({
@@ -128,9 +128,9 @@ export default function SessionTonSendMessageModal() {
           'SessionTonSendMessageModal',
           'onApprove',
         );
-        Toast.show({
+        showToast({
           type: 'error',
-          text1: 'Send message failed',
+          text1: 'Couldn’t send message',
           text2: (e as Error).message,
         });
       } finally {
@@ -162,9 +162,9 @@ export default function SessionTonSendMessageModal() {
           'SessionTonSendMessageModal',
           'onReject',
         );
-        Toast.show({
+        showToast({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {
@@ -214,7 +214,7 @@ export default function SessionTonSendMessageModal() {
             color="text-tertiary"
             style={styles.sectionTitle}
           >
-            Sign with Address
+            Signing address
           </Text>
           <Text variant="md-400" color="text-primary">
             {tonAddresses[0]}
@@ -224,7 +224,7 @@ export default function SessionTonSendMessageModal() {
         {/* Transaction Details */}
         <Message
           message={formatTransactionDetails()}
-          title="Transaction Details"
+          title="Transaction details"
           style={styles.transactionDetails}
         />
       </View>

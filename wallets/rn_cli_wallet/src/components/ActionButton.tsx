@@ -25,6 +25,7 @@ export interface ActionButtonProps {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   testID?: string;
+  accessibilityLabel?: string;
 }
 
 export function ActionButton({
@@ -38,6 +39,7 @@ export function ActionButton({
   style,
   textStyle,
   testID,
+  accessibilityLabel,
 }: ActionButtonProps) {
   const Theme = useTheme();
 
@@ -71,6 +73,7 @@ export function ActionButton({
       onPress={onPress}
       testID={testID}
       disabled={disabled || loading || silentDisabled}
+      accessibilityLabel={accessibilityLabel}
       style={[
         styles.container,
         { backgroundColor, borderColor },
@@ -79,9 +82,19 @@ export function ActionButton({
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={loaderColor} />
+        // No label while loading; keep the testID reachable on the spinner.
+        <ActivityIndicator color={loaderColor} testID={testID} />
       ) : (
-        <Text variant="lg-400" style={[{ color: textColor }, textStyle]}>
+        // testID lives on the label <Text>, not the touchable: Maestro's web
+        // driver reads an element's text only from its direct child text nodes,
+        // so copyTextFrom on the wrapping <button> would return "". The <Text>
+        // holds the label as a direct text node. tapOn/assertVisible still work
+        // (the label sits inside the touchable), and native behaves the same.
+        <Text
+          variant="lg-400"
+          testID={testID}
+          style={[{ color: textColor }, textStyle]}
+        >
           {children}
         </Text>
       )}

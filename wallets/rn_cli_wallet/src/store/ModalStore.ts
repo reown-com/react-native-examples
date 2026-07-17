@@ -11,6 +11,7 @@ interface ModalData {
   requestSession?: SessionTypes.Struct;
   authRequest?: SignClientTypes.EventArguments['session_authenticate'];
   loadingMessage?: string;
+  errorTitle?: string;
   errorMessage?: string;
   session?: SessionTypes.Struct;
 }
@@ -19,18 +20,12 @@ interface State {
   open: boolean;
   view?:
     | 'SessionProposalModal'
-    | 'SessionSignModal'
-    | 'SessionSignTypedDataModal'
-    | 'SessionSendTransactionModal'
+    | 'SessionRequestModal'
     | 'SessionUnsuportedMethodModal'
     | 'AuthRequestModal'
     | 'SessionAuthenticateModal'
     | 'LoadingModal'
-    | 'SessionSuiSignTransactionModal'
-    | 'SessionSuiSignPersonalMessageModal'
-    | 'SessionSuiSignAndExecuteTransactionModal'
     | 'SessionTonSendMessageModal'
-    | 'SessionSignTronModal'
     | 'SessionTonSignDataModal'
     | 'PaymentOptionsModal'
     | 'ImportWalletModal'

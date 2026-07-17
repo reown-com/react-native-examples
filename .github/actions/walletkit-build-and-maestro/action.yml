@@ -1,0 +1,821 @@
+name: WalletKit Build and Maestro
+description: |
+  Build wallets/rn_cli_wallet for the requested platform and run Maestro tests
+  against a configurable pay-core URL. Used by the wallet's own CI and by pay-core
+  for cross-repo Maestro coverage (PR-time against local pay-core, CD against
+  deployed staging/prod).
+
+inputs:
+  platform:
+    description: 'ios, android, or web'
+    required: true
+  pay-core-url:
+    description: |
+      Pay-core base URL the wallet should hit. http://localhost:3080 for iOS
+      Simulator on the same runner; http://10.0.2.2:3080 for Android emulator on
+      the same runner; deployed URL for CD.
+    required: true
+  wallet-source-dir:
+    description: |
+      Path (relative to the workspace root) where reown-com/react-native-examples
+      is checked out. Defaults to '.', i.e. the workspace root, which is the case for
+      the wallet team's own CI. Cross-repo callers (e.g. pay-core) should checkout
+      react-native-examples to a subdir and pass it here (e.g. 'rn-wallet').
+    required: false
+    default: '.'
+  wallet-env-file:
+    description: |
+      Full .env contents to seed the wallet (e.g. WALLETKIT_ENV_FILE secret used by
+      ci_e2e_walletkit.yaml). When omitted, a minimal .env is written from
+      reown-project-id alone — sufficient for pay-only flows.
+    required: false
+    default: ''
+  reown-project-id:
+    description: |
+      Reown project ID (written as EXPO_PUBLIC_PROJECT_ID into the wallet's .env).
+      Required when wallet-env-file is not set; when both are set, this value
+      is appended last and wins (dotenv last-value-wins).
+    required: false
+    default: ''
+  wallet-private-key:
+    description: 'Test wallet private key (sets EXPO_PUBLIC_TEST_PRIVATE_KEY).'
+    required: true
+  polygon-rpc-url:
+    description: |
+      Polygon RPC URL used by the Permit2 allowance-reset step. Defaults to the
+      public endpoint. USDT on Polygon is a plain ERC-20 (no EIP-3009/2612), so
+      WC Pay uses the Permit2 approve path — this lets the reset revoke that
+      allowance so each run re-exercises the approve step. Default avoids
+      polygon-rpc.com, which gates requests (HTTP 401 "tenant disabled") in CI.
+    required: false
+    default: 'https://polygon-bor-rpc.publicnode.com'
+  merchant-api-key-single-nokyc:
+    description: 'Partner API key for the single-option no-KYC merchant (WPAY_CUSTOMER_KEY_SINGLE_NOKYC).'
+    required: true
+  merchant-id-single-nokyc:
+    description: 'Merchant id for the single-option no-KYC merchant (WPAY_MERCHANT_ID_SINGLE_NOKYC).'
+    required: true
+  merchant-api-key-multi-nokyc:
+    description: 'Partner API key for the multi-option no-KYC merchant (WPAY_CUSTOMER_KEY_MULTI_NOKYC).'
+    required: true
+  merchant-id-multi-nokyc:
+    description: 'Merchant id for the multi-option no-KYC merchant (WPAY_MERCHANT_ID_MULTI_NOKYC).'
+    required: true
+  merchant-api-key-multi-kyc:
+    description: 'Partner API key for the multi-option KYC merchant (WPAY_CUSTOMER_KEY_MULTI_KYC).'
+    required: true
+  merchant-id-multi-kyc:
+    description: 'Merchant id for the multi-option KYC merchant (WPAY_MERCHANT_ID_MULTI_KYC).'
+    required: true
+  maestro-tags:
+    description: 'Maestro test tags to run (comma-separated).'
+    required: false
+    default: 'pay-single-nokyc'
+  maestro-exclude-tags:
+    description: |
+      Maestro test tags to exclude (comma-separated). Useful for cross-repo
+      callers running against a local pay-core that can't satisfy certain
+      flows (e.g. pay-needs-kyc-backend skips the two flows that submit
+      personal-details data through the prod KYC webview).
+    required: false
+    default: ''
+  apple-key-id:
+    description: 'Apple App Store Connect API key id (iOS only).'
+    required: false
+    default: ''
+  apple-key-content:
+    description: 'Apple App Store Connect API key content (iOS only).'
+    required: false
+    default: ''
+  apple-issuer-id:
+    description: 'Apple App Store Connect issuer id (iOS only).'
+    required: false
+    default: ''
+  match-git-url:
+    description: 'fastlane match git URL (iOS only).'
+    required: false
+    default: ''
+  match-password:
+    description: 'fastlane match keychain password (iOS only).'
+    required: false
+    default: ''
+  match-ssh-key:
+    description: 'SSH key for fastlane match repo (iOS only).'
+    required: false
+    default: ''
+  android-secrets-file:
+    description: 'Contents of android/secrets.properties (Android only).'
+    required: false
+    default: ''
+  android-keystore-base64:
+    description: 'Base64-encoded keystore file (Android only).'
+    required: false
+    default: ''
+  android-keystore-name:
+    description: 'Filename (without .keystore) used by the wallet build (Android only).'
+    required: false
+    default: 'WalletConnect-Internal'
+  pay-api-url:
+    description: |
+      Base URL the Maestro test scripts (create-payment.js, cancel-payment.js)
+      use when calling the WalletConnect Pay API. Defaults to prod
+      (https://api.pay.walletconnect.com). Cross-repo callers running against a
+      local pay-core on the runner should pass http://localhost:3080.
+    required: false
+    default: ''
+  expired-gateway-url:
+    description: |
+      Pre-expired payment gateway URL used by pay_expired_link.yaml. When unset,
+      the flow falls back to a hardcoded prod-expired link. Local pay-core CI
+      should seed an expired payment and pass its gateway URL here.
+    required: false
+    default: ''
+
+outputs:
+  maestro-outcome:
+    description: 'success | failure | cancelled — outcome of the Maestro run step.'
+    value: ${{ steps.maestro-ios.outcome || steps.maestro-android.outcome || steps.maestro-web.outcome }}
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve wallet root
+      id: paths
+      shell: bash
+      env:
+        SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+      run: |
+        set -euo pipefail
+        if [ "$SOURCE_DIR" = "." ] || [ -z "$SOURCE_DIR" ]; then
+          ROOT="wallets/rn_cli_wallet"
+        else
+          ROOT="${SOURCE_DIR%/}/wallets/rn_cli_wallet"
+        fi
+        if [ ! -d "$ROOT" ]; then
+          echo "Error: wallet root not found at '$ROOT'. Did you forget to checkout react-native-examples?"
+          exit 1
+        fi
+        echo "wallet_root=$ROOT" >> "$GITHUB_OUTPUT"
+        echo "Resolved wallet root - $ROOT"
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: yarn
+        cache-dependency-path: ${{ steps.paths.outputs.wallet_root }}/yarn.lock
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      run: yarn install --immutable
+
+    - name: Write wallet .env
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      env:
+        WALLET_ENV_FILE: ${{ inputs.wallet-env-file }}
+        REOWN_PROJECT_ID: ${{ inputs.reown-project-id }}
+        WALLET_PRIVATE_KEY: ${{ inputs.wallet-private-key }}
+        PAY_CORE_URL: ${{ inputs.pay-core-url }}
+      run: |
+        set -euo pipefail
+        if [ -n "$WALLET_ENV_FILE" ]; then
+          printf '%s\n' "$WALLET_ENV_FILE" > .env
+        elif [ -z "$REOWN_PROJECT_ID" ]; then
+          echo "Error: either wallet-env-file or reown-project-id must be provided"
+          exit 1
+        else
+          : > .env
+        fi
+        if [ -n "$REOWN_PROJECT_ID" ]; then
+          echo "EXPO_PUBLIC_PROJECT_ID=$REOWN_PROJECT_ID" >> .env
+        fi
+        {
+          echo "EXPO_PUBLIC_TEST_PRIVATE_KEY=$WALLET_PRIVATE_KEY"
+          echo "EXPO_PUBLIC_TEST_MODE=true"
+          echo "EXPO_PUBLIC_PAY_API_BASE_URL=$PAY_CORE_URL"
+          echo "SENTRY_DISABLE_AUTO_UPLOAD=true"
+        } >> .env
+        echo "Wrote $(pwd)/.env"
+
+    # --- iOS leg ---
+    - name: Select Xcode 26.2
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: |
+        XCODE_PATH=/Applications/Xcode_26.2.app/Contents/Developer
+        if [ ! -d "$XCODE_PATH" ]; then
+          echo "Available Xcode versions:"
+          ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
+          exit 1
+        fi
+        sudo xcode-select -s "$XCODE_PATH"
+        xcodebuild -version
+
+    # Only when a match SSH key is actually provided. The Maestro simulator build
+    # is unsigned by default (no match), and webfactory/ssh-agent errors on an
+    # empty ssh-private-key — so skip the step unless a signing caller passes one.
+    - name: Setup SSH for Match
+      if: inputs.platform == 'ios' && inputs.match-ssh-key != ''
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ inputs.match-ssh-key }}
+
+    - name: Install Ruby
+      if: inputs.platform == 'ios'
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.3.0
+        bundler-cache: true
+        working-directory: ${{ inputs.wallet-source-dir }}
+
+    - name: Expo Prebuild (iOS)
+      if: inputs.platform == 'ios'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      # ios/ is generated (Continuous Native Generation). APP_VARIANT=internal so
+      # app.config.js sets the .internal bundle id; pods are installed by the
+      # fastlane lane (honoring the Pods cache below), hence --no-install.
+      run: APP_VARIANT=internal npx expo prebuild --platform ios --no-install
+
+    - name: Set Xcode paths
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        WALLET_ROOT: ${{ steps.paths.outputs.wallet_root }}
+      run: |
+        XCODEPROJ=$(find "$WALLET_ROOT/ios" -maxdepth 1 -name "*.xcodeproj" -print -quit)
+        # The .xcworkspace is generated by `pod install`, which runs later inside the
+        # fastlane lane — so it doesn't exist yet at detection time and `find` returns
+        # empty (#failure). The scheme is hardcoded ReactNWallet, so derive the path
+        # deterministically instead of searching for the not-yet-created file.
+        echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
+        echo "XCWORKSPACE_PATH=$WALLET_ROOT/ios/ReactNWallet.xcworkspace" >> "$GITHUB_ENV"
+
+    - name: Cache Pods
+      if: inputs.platform == 'ios'
+      id: pods-cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.paths.outputs.wallet_root }}/ios/Pods
+        # No restore-keys: a prefix match restores a stale Pods/ on a Podfile.lock
+        # bump (hermes-engine podspec mismatch) and breaks `pod install` (#515).
+        # Exact Podfile.lock match only; otherwise start clean and reinstall.
+        key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/ios/Podfile.lock', steps.paths.outputs.wallet_root)) }}
+
+    - name: Build for Simulator
+      if: inputs.platform == 'ios'
+      uses: maierj/fastlane-action@v3.0.0
+      with:
+        lane: build_for_simulator
+        subdirectory: ${{ inputs.wallet-source-dir }}
+      env:
+        SCHEME: ReactNWallet
+        BUNDLE_ID: com.walletconnect.web3wallet.rnsample.internal
+        PODFILE_PATH: ${{ steps.paths.outputs.wallet_root }}/ios/Podfile
+        XCWORKSPACE_PATH: ${{ env.XCWORKSPACE_PATH }}
+        XCODE_PROJECT_PATH: ${{ env.XCODE_PROJECT_PATH }}
+        PROJECT_TYPE: wallet
+        RELEASE_TYPE: internal
+        BUILD_FOR_SIMULATOR: true
+        PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
+        SENTRY_DISABLE_AUTO_UPLOAD: true
+        APPLE_KEY_ID: ${{ inputs.apple-key-id }}
+        APPLE_KEY_CONTENT: ${{ inputs.apple-key-content }}
+        APPLE_ISSUER_ID: ${{ inputs.apple-issuer-id }}
+        MATCH_GIT_URL: ${{ inputs.match-git-url }}
+        MATCH_PASSWORD: ${{ inputs.match-password }}
+
+    - name: Find .app path
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+      run: |
+        APP_PATH=$(cat "$SOURCE_DIR/build/app_path.txt")
+        echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
+
+    - name: Boot iOS Simulator
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: |
+        # Don't hardcode a model — Xcode/runner image bumps drop old devices
+        # (e.g. the Xcode 26 image ships iPhone 17-series, no iPhone 16). Create a
+        # fresh device from whatever iPhone device type exists, falling back to any
+        # already-available iPhone simulator. Mirrors reown-swift#322.
+        DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
+          jq -r '.devicetypes[] | select(.productFamily == "iPhone") | .identifier' | tail -1)
+        DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>/dev/null || \
+          xcrun simctl list devices available -j | \
+          jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
+        if [ -z "$DEVICE_ID" ]; then
+          echo "ERROR: no available iPhone simulator found"
+          xcrun simctl list devices available
+          exit 1
+        fi
+        echo "Using simulator device type: ${DEVICE_TYPE:-<fallback>}, id: $DEVICE_ID"
+        xcrun simctl boot "$DEVICE_ID" || true
+        # Wait for full boot so the steps below don't race a not-ready simulator
+        xcrun simctl bootstatus "$DEVICE_ID" -b
+        # Disable UIKit animations to reduce Maestro timing flakiness
+        xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
+        echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+
+    - name: Install app on Simulator
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+
+    # --- Android leg ---
+    - name: Install Java 17
+      if: inputs.platform == 'android'
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        architecture: x86_64
+
+    - name: Accept Android Licenses
+      if: inputs.platform == 'android'
+      uses: SimonMarquis/android-accept-licenses@8d8deab5b7ab2aaea9ed69f0b802e53173f21fd1 # v1
+
+    # Gradle/AGP auto-installs the build.gradle-requested NDK at build time, and
+    # that download fails on the CI runner (InstallFailedException: ndk;27.0.12077973).
+    # Pre-install it explicitly via the cmdline-tools sdkmanager (licenses accepted
+    # above) so the build finds it instead of trying — and failing — to fetch it.
+    # Keep the version in lockstep with the wallet's build.gradle ndkVersion.
+    - name: Install Android NDK 27.0.12077973
+      if: inputs.platform == 'android'
+      shell: bash
+      # Licenses are accepted by the previous step, so `sdkmanager` reads little
+      # stdin and `yes` takes SIGPIPE when it exits. Disable pipefail (the default
+      # shell runs with -e -o pipefail) so that broken pipe doesn't fail the step —
+      # `sdkmanager`'s own exit code (last in the pipe) is what governs.
+      run: |
+        set +o pipefail
+        yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;27.0.12077973"
+
+    - name: Expo Prebuild (Android)
+      if: inputs.platform == 'android'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      # android/ is generated (Continuous Native Generation). Production prebuild;
+      # the internal variant comes from the `internal` Gradle buildType
+      # (plugins/withAndroidVariants.js) via assembleInternal. --no-install: deps
+      # already installed by yarn above.
+      run: npx expo prebuild --platform android --no-install
+
+    - name: Add Secrets file
+      if: inputs.platform == 'android'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      env:
+        ANDROID_SECRETS_FILE: ${{ inputs.android-secrets-file }}
+      run: |
+        if [ -z "$ANDROID_SECRETS_FILE" ]; then
+          echo "Error: android-secrets-file input is empty"
+          exit 1
+        fi
+        printf '%s\n' "$ANDROID_SECRETS_FILE" > android/secrets.properties
+
+    - name: Add Keystore file
+      if: inputs.platform == 'android'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      env:
+        ANDROID_KEYSTORE_BASE64: ${{ inputs.android-keystore-base64 }}
+        ANDROID_KEYSTORE_NAME: ${{ inputs.android-keystore-name }}
+      run: |
+        if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
+          echo "Error: android-keystore-base64 input is empty"
+          exit 1
+        fi
+        printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode >> "android/app/${ANDROID_KEYSTORE_NAME}.keystore"
+
+    - name: Optimize Gradle for CI
+      if: inputs.platform == 'android'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      run: |
+        {
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
+          echo "org.gradle.parallel=true"
+          echo "org.gradle.caching=true"
+          echo "reactNativeArchitectures=x86_64"
+        } >> android/gradle.properties
+
+    - name: Cache Gradle
+      if: inputs.platform == 'android'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+          ${{ steps.paths.outputs.wallet_root }}/android/.gradle
+          ${{ steps.paths.outputs.wallet_root }}/android/app/.cxx
+          ${{ steps.paths.outputs.wallet_root }}/android/app/build/generated
+        key: ${{ runner.os }}-gradle-walletkit-${{ hashFiles(format('{0}/android/**/*.gradle*', steps.paths.outputs.wallet_root), format('{0}/android/**/gradle-wrapper.properties', steps.paths.outputs.wallet_root)) }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-walletkit-
+
+    - name: Build APK
+      if: inputs.platform == 'android'
+      id: build
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      run: |
+        export SENTRY_DISABLE_AUTO_UPLOAD=true
+        yarn run android:build:internal
+
+    - name: Free disk space
+      if: inputs.platform == 'android'
+      shell: bash
+      run: |
+        sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/ndk /opt/ghc /usr/local/share/boost
+        sudo apt-get clean
+        df -h
+
+    - name: Enable KVM
+      if: inputs.platform == 'android'
+      shell: bash
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    # --- Web leg ---
+    # react-native-web via Expo. We EXPORT a static production SPA (dist/) and
+    # serve it statically, rather than running the Metro dev server: the dev
+    # server compiles the full bundle on first request (slow + racy in CI),
+    # whereas a static export builds once and every Maestro page load is then
+    # instant. Maestro drives the managed Chromium under xvfb on the headless
+    # runner. The IC/KYC form is in-app on web, so plain http is sufficient (no
+    # HTTPS callback leg). EXPO_PUBLIC_* (project id, TEST_MODE) are inlined at
+    # export time from the .env written above — same as the native builds.
+    - name: Install xvfb (web)
+      if: inputs.platform == 'web'
+      shell: bash
+      run: sudo apt-get update && sudo apt-get install -y xvfb
+
+    - name: Cache Metro web build cache
+      if: inputs.platform == 'web'
+      uses: actions/cache@v4
+      with:
+        # find-cache-dir default (babel-loader / metro transform cache). Warming
+        # this across runs cuts most of the `expo export` transform time.
+        #
+        # The key hashes the written .env too: Expo inlines EXPO_PUBLIC_* into
+        # the bundle at Babel transform time, and Metro's transform cache is NOT
+        # keyed on env values — so reusing a cache built with different
+        # EXPO_PUBLIC_* (e.g. a caller injecting per-run ephemeral creds) bakes
+        # stale key/creds into the bundle. No restore-keys: any prefix fallback
+        # would span different .env values and re-introduce that poisoning.
+        # Stable-creds callers still get a full hit (identical .env => identical
+        # key); per-run-creds callers cold-build each run, which is correct.
+        path: ${{ steps.paths.outputs.wallet_root }}/node_modules/.cache
+        key: ${{ runner.os }}-web-metro-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root), format('{0}/.env', steps.paths.outputs.wallet_root)) }}
+
+    - name: Export web build
+      if: inputs.platform == 'web'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      # Static SPA (app.json web.output: single) -> dist/. TEST_MODE (from .env)
+      # keeps the paste-URL test input and disables the last-paid-token shortcut.
+      run: npx expo export --platform web --output-dir dist
+
+    - name: Serve web build
+      if: inputs.platform == 'web'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      run: |
+        # `serve -s` does SPA fallback to index.html. Background; wait until ready.
+        npx --yes serve -s dist -l 8081 > "${RUNNER_TEMP}/web-serve.log" 2>&1 &
+        for i in $(seq 1 60); do
+          curl -fsS -o /dev/null http://localhost:8081 && { echo "Web server up"; break; }
+          sleep 1
+        done
+        curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
+
+    # --- Common: Maestro setup + run ---
+    # Pinned to WalletConnect/actions master (4be7c01 = merge of #109, which removes
+    # the Universal Link / deeplink pay flow), so pay_single_option_nokyc_deeplink is
+    # no longer copied.
+    - name: Copy shared Pay test flows
+      uses: WalletConnect/actions/maestro/pay-tests@4be7c0112f9651fc63b18c137650b75d2fc9b200
+
+    - name: Install Maestro
+      uses: WalletConnect/actions/maestro/setup@4be7c0112f9651fc63b18c137650b75d2fc9b200
+
+    - name: Run Maestro tests (iOS)
+      if: inputs.platform == 'ios'
+      id: maestro-ios
+      shell: bash
+      env:
+        APP_ID: com.walletconnect.web3wallet.rnsample.internal
+        MAESTRO_TAGS: ${{ inputs.maestro-tags }}
+        MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
+        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
+        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
+        WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
+        WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
+        WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
+      run: |
+        xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
+        mkdir -p maestro-artifacts
+        xcrun simctl spawn "$DEVICE_ID" log stream \
+          --level=debug \
+          --style=compact \
+          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\" OR process CONTAINS \"maestro\" OR process == \"xctest\" OR process == \"testmanagerd\" OR process == \"tccd\" OR process == \"SpringBoard\"" \
+          > maestro-artifacts/ios-syslog.log 2>&1 &
+        SYSLOG_PID=$!
+        set +e
+        # Retry the suite once on failure to absorb transient cold-start flakes
+        # (e.g. an app process that fails to launch/attach) without rebuilding the
+        # app or rebooting the simulator. A genuine failure fails every attempt, so
+        # this does not mask regressions. The syslog stream above keeps capturing
+        # across both attempts.
+        maestro_exit_code=0
+        # Clear any stale per-attempt logs (composite may be invoked twice per job).
+        rm -f maestro-output-attempt-*.log
+        for attempt in 1 2; do
+          echo "=== Maestro attempt $attempt/2 (iOS) ==="
+          $HOME/.maestro/bin/maestro test \
+            --env APP_ID="$APP_ID" \
+            --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
+            --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
+            --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
+            --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
+            --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
+            --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
+            --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
+            --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
+            --include-tags "$MAESTRO_TAGS" \
+            ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} \
+            --test-output-dir maestro-artifacts \
+            --debug-output "${RUNNER_TEMP}/maestro-debug" \
+            .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1
+          maestro_exit_code=$?
+          [ "$maestro_exit_code" -eq 0 ] && break
+          # >128 means killed by a signal (e.g. workflow cancel) — don't retry.
+          if [ "$maestro_exit_code" -gt 128 ]; then
+            echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"
+            break
+          fi
+          echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"
+        done
+        # Join per-attempt logs so the uploaded artifact keeps attempt 1's output
+        # on a double failure (otherwise attempt 2 would have overwritten it).
+        for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
+        kill "$SYSLOG_PID" 2>/dev/null || true
+        wait "$SYSLOG_PID" 2>/dev/null || true
+        mkdir -p maestro-artifacts/ios-crash-reports
+        cp -R "$HOME/Library/Logs/DiagnosticReports/." maestro-artifacts/ios-crash-reports/ 2>/dev/null || true
+        mkdir -p maestro-artifacts/maestro-debug
+        find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true
+        cat maestro-output.log
+        exit "$maestro_exit_code"
+
+    - name: Upload Maestro artifacts (iOS)
+      # !cancelled() not always(): runs on success/failure, skipped on cancel.
+      if: ${{ !cancelled() && inputs.platform == 'ios' }}
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-ios-artifacts
+        path: |
+          maestro-artifacts/**/*.png
+          maestro-artifacts/**/*.jpg
+          maestro-artifacts/**/*.jpeg
+          maestro-artifacts/**/*.mp4
+          maestro-artifacts/**/*.mov
+          maestro-artifacts/**/*.webm
+          maestro-artifacts/**/*.gif
+          maestro-artifacts/ios-syslog.log
+          maestro-artifacts/ios-crash-reports/**
+          maestro-artifacts/maestro-debug/**/*.png
+          maestro-artifacts/maestro-debug/**/*.jpg
+          maestro-output.log
+        if-no-files-found: warn
+        retention-days: 14
+        # Allow callers to invoke this composite twice in the same run
+        # (e.g. a retry wrapper) without the second upload 409'ing
+        # against the first. Last-wins; combine with an out-of-action
+        # download+rename step if both attempts' artifacts are needed.
+        overwrite: true
+
+    - name: Run Maestro tests (Android)
+      if: inputs.platform == 'android'
+      id: maestro-android
+      uses: reactivecircus/android-emulator-runner@70f4dee990796918b78d040e3278474bdbd348a7 # v2
+      env:
+        APP_ID: com.walletconnect.web3wallet.rnsample.internal
+        MAESTRO_TAGS: ${{ inputs.maestro-tags }}
+        MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
+        APK_PATH: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
+        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
+        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
+        WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
+        WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
+        WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
+      with:
+        api-level: 34
+        arch: x86_64
+        target: default
+        avd-name: test_device
+        ram-size: 4096M
+        disk-size: 4096M
+        heap-size: 576M
+        emulator-boot-timeout: 900
+        force-avd-creation: false
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
+        disable-animations: true
+        script: |
+          adb install "$APK_PATH"
+          mkdir -p maestro-artifacts maestro-artifacts/maestro-debug; adb logcat -c || true; adb logcat AndroidRuntime:E ActivityManager:W ReactNativeJS:E '*:F' > maestro-artifacts/android-logcat.log 2>&1 & LOGCAT_PID=$!; set +e; maestro_exit_code=0; rm -f maestro-output-attempt-*.log; for attempt in 1 2; do echo "=== Maestro attempt $attempt/2 (Android) ==="; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1; maestro_exit_code=$?; [ "$maestro_exit_code" -eq 0 ] && break; if [ "$maestro_exit_code" -gt 128 ]; then echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"; break; fi; echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"; done; for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log; kill "$LOGCAT_PID" 2>/dev/null || true; wait "$LOGCAT_PID" 2>/dev/null || true; adb logcat -d -b crash > maestro-artifacts/android-logcat-crash.log 2>&1 || true; find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true; cat maestro-output.log; exit "$maestro_exit_code"
+
+    - name: Upload Maestro artifacts (Android)
+      if: ${{ !cancelled() && inputs.platform == 'android' }}
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-android-artifacts
+        path: |
+          maestro-artifacts/**/*.png
+          maestro-artifacts/**/*.jpg
+          maestro-artifacts/**/*.jpeg
+          maestro-artifacts/**/*.mp4
+          maestro-artifacts/**/*.mov
+          maestro-artifacts/**/*.webm
+          maestro-artifacts/**/*.gif
+          maestro-artifacts/android-logcat.log
+          maestro-artifacts/android-logcat-crash.log
+          maestro-artifacts/maestro-debug/**/*.png
+          maestro-artifacts/maestro-debug/**/*.jpg
+          maestro-output.log
+        if-no-files-found: warn
+        retention-days: 14
+        # Allow callers to invoke this composite twice in the same run
+        # (e.g. a retry wrapper) without the second upload 409'ing
+        # against the first. Last-wins; combine with an out-of-action
+        # download+rename step if both attempts' artifacts are needed.
+        overwrite: true
+
+    - name: Run Maestro tests (web)
+      if: inputs.platform == 'web'
+      id: maestro-web
+      shell: bash
+      env:
+        APP_URL: http://localhost:8081
+        MAESTRO_TAGS: ${{ inputs.maestro-tags }}
+        MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
+        WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
+        WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
+        WPAY_MERCHANT_ID_MULTI_NOKYC: ${{ inputs.merchant-id-multi-nokyc }}
+        WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
+        WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
+        WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
+      run: |
+        # Rewrite the shared flows for web: appId:->url: (Maestro targets the
+        # browser via the URL), strip start/stopRecording (unsupported on web),
+        # and drop the flows that can't run in a browser — hosted-KYC-webview
+        # flows (replaced by pay_*_web) and the multi-option no-KYC flow whose
+        # option->review correlation reads accessibilityLabel (Maestro web can't),
+        # replaced by pay_multiple_options_nokyc_web.
+        WEB_FLOWS_DIR="$(mktemp -d)"
+        cp -R .maestro/. "$WEB_FLOWS_DIR/"
+        find "$WEB_FLOWS_DIR" -name '*.yaml' -print0 \
+          | xargs -0 perl -ni -e 'next if /^\s*-?\s*(start|stop)Recording\b/; s/^appId:(\s*\$\{APP_ID\})/url:$1/; print'
+        for f in pay_kyc_back_navigation pay_cancel_from_kyc pay_multiple_options_kyc \
+                 pay_multiple_options_nokyc; do
+          rm -f "$WEB_FLOWS_DIR/$f.yaml"
+        done
+        mkdir -p maestro-artifacts maestro-artifacts/maestro-debug
+        set +e
+        rm -f maestro-output-web-*.log
+
+        # run_maestro <label> <extra maestro args...>: runs the web suite slice
+        # selected by the extra args, with the same 2-attempt retry as before.
+        # Per-slice output dir, debug dir and log so concurrent groups (below)
+        # don't clobber each other. NOTE: Maestro web treats the browser as a
+        # single "device", so --shard-split can't parallelise one process; we
+        # parallelise at the process level instead (the run_maestro calls below).
+        run_maestro() {
+          local label="$1"; shift
+          local exit_code=0
+          for attempt in 1 2; do
+            echo "=== Maestro attempt $attempt/2 (web ${label}) ==="
+            # xvfb-run gives the managed Chromium a display on the headless runner.
+            xvfb-run -a "$HOME/.maestro/bin/maestro" test \
+              "$@" \
+              --env APP_ID="$APP_URL" \
+              --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
+              --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
+              --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
+              --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
+              --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
+              --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
+              --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
+              --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
+              --test-output-dir "maestro-artifacts/${label}" \
+              --debug-output "${RUNNER_TEMP}/maestro-debug/${label}" \
+              "$WEB_FLOWS_DIR" >"maestro-output-web-${label}-attempt-${attempt}.log" 2>&1
+            exit_code=$?
+            [ "$exit_code" -eq 0 ] && break
+            # >128 means killed by a signal (e.g. workflow cancel) — don't retry.
+            if [ "$exit_code" -gt 128 ]; then
+              echo "Maestro killed by signal (exit $exit_code) — not retrying"
+              break
+            fi
+            echo "Maestro attempt $attempt failed (exit $exit_code)"
+          done
+          return "$exit_code"
+        }
+
+        # Three nonce-independent groups, run as concurrent maestro processes:
+        #   read-only — cancel/insufficient/expired/cancelled flows; no tx.
+        #   base      — pay-chain-base flows (single / double-scan / KYC web).
+        #   polygon   — pay-chain-polygon flows (multi no-KYC / USDT-Polygon).
+        # The Ethereum nonce is per (wallet, chain), so flows on the SAME chain
+        # must stay serial (one bucket = one process, serial internally), but
+        # different chains are independent and overlap. Read-only broadcasts
+        # nothing, so it overlaps both. Base (3 flows) is the critical path.
+        # Set WEB_PARALLEL=0 for the safe serial fallback.
+        # Each bucket also honors the caller's MAESTRO_EXCLUDE_TAGS (as iOS/Android
+        # do) — e.g. a cross-repo caller passing pay-needs-kyc-backend to skip the
+        # KYC flow. Read-only folds it into its existing pay-onchain exclude.
+        run_readonly() { run_maestro readonly --include-tags "${MAESTRO_TAGS},pay-web" --exclude-tags "pay-onchain${MAESTRO_EXCLUDE_TAGS:+,$MAESTRO_EXCLUDE_TAGS}"; }
+        run_base()     { run_maestro base     --include-tags pay-chain-base    ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"}; }
+        run_polygon()  { run_maestro polygon  --include-tags pay-chain-polygon ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"}; }
+
+        if [ "${WEB_PARALLEL:-1}" = "1" ]; then
+          run_readonly & ro_pid=$!
+          run_base     & base_pid=$!
+          run_polygon  & poly_pid=$!
+          wait "$ro_pid";   readonly_exit=$?
+          wait "$base_pid"; base_exit=$?
+          wait "$poly_pid"; polygon_exit=$?
+        else
+          run_readonly; readonly_exit=$?
+          run_base;     base_exit=$?
+          run_polygon;  polygon_exit=$?
+        fi
+
+        # Surface the first non-zero exit (read-only, then base, then polygon).
+        maestro_exit_code=$(( readonly_exit != 0 ? readonly_exit : (base_exit != 0 ? base_exit : polygon_exit) ))
+
+        for f in maestro-output-web-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
+        find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true
+        cp "${RUNNER_TEMP}/web-serve.log" maestro-artifacts/ 2>/dev/null || true
+        cat maestro-output.log
+        exit "$maestro_exit_code"
+
+    - name: Upload Maestro artifacts (web)
+      if: ${{ !cancelled() && inputs.platform == 'web' }}
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-web-artifacts
+        path: |
+          maestro-artifacts/**/*.png
+          maestro-artifacts/**/*.jpg
+          maestro-artifacts/**/*.jpeg
+          maestro-artifacts/maestro-debug/**/*.png
+          maestro-artifacts/maestro-debug/**/*.jpg
+          maestro-artifacts/web-serve.log
+          maestro-output.log
+        if-no-files-found: warn
+        retention-days: 14
+        overwrite: true
+
+    # Reset the USDT Permit2 allowance to 0 so the next pay_usdt_polygon run
+    # re-exercises the approve step. Best-effort via fail-on-error (a reset hiccup
+    # must not fail a green run; `continue-on-error` is ignored on composite-action
+    # steps — actions/runner#1457).
+    - name: Reset USDT Permit2 allowance (Polygon)
+      if: always() && contains(inputs.maestro-tags, 'pay')
+      uses: WalletConnect/actions/maestro/permit2-reset@4be7c0112f9651fc63b18c137650b75d2fc9b200
+      with:
+        chain-id: eip155:137
+        rpc-url: ${{ inputs.polygon-rpc-url }}
+        token-address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
+        private-key: ${{ inputs.wallet-private-key }}
+        fail-on-error: 'false'
+
+    - name: Log Maestro outcome
+      if: ${{ !cancelled() }}
+      shell: bash
+      env:
+        IOS_OUTCOME: ${{ steps.maestro-ios.outcome }}
+        ANDROID_OUTCOME: ${{ steps.maestro-android.outcome }}
+        WEB_OUTCOME: ${{ steps.maestro-web.outcome }}
+      run: |
+        echo "Maestro outcome - ios=${IOS_OUTCOME:-skipped} android=${ANDROID_OUTCOME:-skipped} web=${WEB_OUTCOME:-skipped}"

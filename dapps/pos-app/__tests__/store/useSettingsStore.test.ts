@@ -1,4 +1,8 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  DEFAULT_LOGO_BASE64,
+  MONEY2020_LOGO_BASE64,
+} from "@/constants/printer-logos";
 import { resetSettingsStore } from "../utils/store-helpers";
 
 // Get the mocked secure store
@@ -124,6 +128,39 @@ describe("useSettingsStore", () => {
         useSettingsStore.getState().setVariant(variantName);
         expect(useSettingsStore.getState().variant).toBe(variantName);
       });
+    });
+  });
+
+  describe("getVariantPrinterLogo", () => {
+    it("should return the default logo for variants without a printerLogo", () => {
+      useSettingsStore.getState().setVariant("default");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        DEFAULT_LOGO_BASE64,
+      );
+
+      useSettingsStore.getState().setVariant("solflare");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        DEFAULT_LOGO_BASE64,
+      );
+    });
+
+    it("should return the variant's printerLogo when set", () => {
+      useSettingsStore.getState().setVariant("money2020");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        MONEY2020_LOGO_BASE64,
+      );
+    });
+
+    it("should reflect the current variant when it changes", () => {
+      useSettingsStore.getState().setVariant("money2020");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        MONEY2020_LOGO_BASE64,
+      );
+
+      useSettingsStore.getState().setVariant("default");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        DEFAULT_LOGO_BASE64,
+      );
     });
   });
 
@@ -474,26 +511,6 @@ describe("useSettingsStore", () => {
     });
   });
 
-  describe("getVariantPrinterLogo", () => {
-    it("should return default logo for default variant", () => {
-      useSettingsStore.setState({ variant: "default" });
-
-      const logo = useSettingsStore.getState().getVariantPrinterLogo();
-
-      expect(logo).toBeDefined();
-      expect(typeof logo).toBe("string");
-    });
-
-    it("should return variant-specific logo", () => {
-      useSettingsStore.setState({ variant: "solflare" });
-
-      const logo = useSettingsStore.getState().getVariantPrinterLogo();
-
-      expect(logo).toBeDefined();
-      expect(typeof logo).toBe("string");
-    });
-  });
-
   describe("setHasHydrated", () => {
     it("should set hydration state to true", () => {
       useSettingsStore.getState().setHasHydrated(true);
@@ -581,7 +598,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(14);
+      expect(persistOptions?.version).toBe(16);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();
