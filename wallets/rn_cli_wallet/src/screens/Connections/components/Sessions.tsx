@@ -1,21 +1,37 @@
-import {View, Text, StyleSheet, FlatList} from 'react-native';
-import {useSnapshot} from 'valtio';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { useSnapshot } from 'valtio';
+import { SessionTypes } from '@walletconnect/types';
 
 import SettingsStore from '@/store/SettingsStore';
-import ConnectTemplateSvg from '@/assets/ConnectTemplate';
+import ModalStore from '@/store/ModalStore';
 import IndividualSession from './IndividualSession';
+import { Text } from '@/components/Text';
+import { ActionButton } from '@/components/ActionButton';
+import { Spacing } from '@/utils/ThemeUtil';
+import { useTheme } from '@/hooks/useTheme';
 
 function Sessions() {
-  const {sessions} = useSnapshot(SettingsStore.state);
+  const Theme = useTheme();
+  const { sessions } = useSnapshot(SettingsStore.state);
 
   if (!sessions?.length) {
     return (
-      <View style={styles.container}>
-        <ConnectTemplateSvg height={37} width={33} />
-        <Text style={styles.greyText}>
-          Apps you connect with will appear here. To connect scan or paste the
-          code that is displayed in the app.
+      <View
+        style={[styles.container, styles.emptyStateContainer, { backgroundColor: Theme['bg-primary'] }]}
+      >
+        <Text variant="h6-400" color="text-primary">
+          No connected apps yet
         </Text>
+        <Text variant="lg-400" color="text-secondary" center>
+          Apps you connect will show up here. Scan a QR code to add your first one.
+        </Text>
+        <ActionButton
+          style={styles.emptyStateButton}
+          fullWidth
+          onPress={() => ModalStore.open('ScannerOptionsModal', {})}
+        >
+          Scan QR code
+        </ActionButton>
       </View>
     );
   }
@@ -23,10 +39,11 @@ function Sessions() {
   return (
     <FlatList
       contentInsetAdjustmentBehavior="automatic"
+      style={[styles.scrollView, { backgroundColor: Theme['bg-primary'] }]}
       contentContainerStyle={styles.scrollViewContainer}
       data={sessions}
-      renderItem={({item}) => {
-        const {name, icons, url} = item?.peer.metadata;
+      renderItem={({ item }) => {
+        const { name, icons, url } = item?.peer.metadata;
         return (
           <IndividualSession
             key={item.topic}
@@ -34,6 +51,7 @@ function Sessions() {
             name={name}
             url={url}
             topic={item.topic}
+            session={item as SessionTypes.Struct}
           />
         );
       }}
@@ -44,20 +62,25 @@ function Sessions() {
 export default Sessions;
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+    paddingTop: Spacing[3],
+  },
   scrollViewContainer: {
-    marginTop: 8,
-    paddingHorizontal: 16,
+    marginTop: Spacing[2],
+    paddingHorizontal: Spacing[4],
   },
   container: {
     flex: 1,
-    paddingTop: 16,
-    paddingHorizontal: 60,
+    gap: Spacing[2],
+    paddingTop: Spacing[4],
     justifyContent: 'center',
     alignItems: 'center',
   },
-  greyText: {
-    fontSize: 14,
-    color: '#798686',
-    textAlign: 'center',
+  emptyStateContainer: {
+    paddingHorizontal: Spacing[6],
+  },
+  emptyStateButton: {
+    marginTop: Spacing[4],
   },
 });

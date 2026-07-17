@@ -1,17 +1,50 @@
+import { useLogsStore } from "@/store/useLogsStore";
+import { getDateRange } from "@/utils/date-range";
 import {
+  DateRangeFilterType,
+  PaymentRecord,
   PaymentStatus,
   PaymentStatusResponse,
   StartPaymentRequest,
   StartPaymentResponse,
+  TransactionFilterType,
+  TransactionsResponse,
 } from "@/utils/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
-import { getPaymentStatus, startPayment } from "./payment";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useRef } from "react";
+import { cancelPayment, getPaymentStatus, startPayment } from "./payment";
+import { getTransactions } from "./transactions";
+
+const KNOWN_STATUSES: string[] = [
+  "requires_action",
+  "processing",
+  "succeeded",
+  "failed",
+  "expired",
+  "cancelled",
+];
 
 /**
- * Terminal payment statuses that indicate polling should stop
+ * Normalizes a payment status response from the API.
+ * Unknown statuses are mapped to "failed" with isFinal: true so the app
+ * stops polling and routes through the existing failure path.
  */
-const TERMINAL_STATUSES: PaymentStatus[] = ["succeeded", "failed", "expired"];
+export function normalizePaymentStatus(
+  data: PaymentStatusResponse,
+): PaymentStatusResponse {
+  if (!KNOWN_STATUSES.includes(data.status as string)) {
+    const addLog = useLogsStore.getState().addLog;
+    addLog(
+      "error",
+      `Unknown payment status "${data.status}" — treating as failed`,
+      "payment",
+      "normalizePaymentStatus",
+      { originalStatus: data.status, isFinal: data.isFinal },
+    );
+    return { ...data, status: "failed", isFinal: true };
+  }
+  return data;
+}
 
 /**
  * Hook to start a payment
@@ -23,40 +56,42 @@ export function useStartPayment() {
   });
 }
 
+/**
+ * Hook to cancel a payment
+ * @returns Mutation hook for cancelling payments
+ */
+export function useCancelPayment() {
+  return useMutation<void, Error, string>({
+    mutationFn: cancelPayment,
+  });
+}
+
 interface UsePaymentStatusOptions {
-  /**
-   * Polling interval in milliseconds
-   * @default 2000 (2 seconds)
-   */
-  pollingInterval?: number;
   /**
    * Whether to enable the query
    * @default true
    */
   enabled?: boolean;
   /**
-   * Callback when payment reaches a terminal state
+   * Callback when payment reaches a final state (succeeded, failed, expired,
+   * cancelled, or unknown status normalized to failed)
    */
   onTerminalState?: (data: PaymentStatusResponse) => void;
 }
 
 /**
- * Hook to get payment status with automatic polling
- * Polls until payment reaches a terminal state (completed or failed)
+ * Hook to get payment status with automatic polling.
+ * Polls until payment reaches a final state (isFinal === true).
+ * Unknown statuses from the API are normalized to "failed".
  * @param paymentId - The payment ID to check status for
- * @param options - Query options including polling interval
+ * @param options - Query options
  * @returns Query result with payment status data
  */
 export function usePaymentStatus(
   paymentId: string | null | undefined,
   options: UsePaymentStatusOptions = {},
 ) {
-  const {
-    pollingInterval = 2000,
-    enabled = true,
-    onTerminalState,
-    ...queryOptions
-  } = options;
+  const { enabled = true, onTerminalState } = options;
 
   const hasCalledCallback = useRef(false);
   const callbackRef = useRef(onTerminalState);
@@ -77,9 +112,10 @@ export function usePaymentStatus(
 
   const query = useQuery<PaymentStatusResponse, Error>({
     queryKey: ["paymentStatus", paymentId],
-    queryFn: () => {
+    queryFn: async () => {
       if (!paymentId) throw new Error("Payment ID required");
-      return getPaymentStatus(paymentId);
+      const data = await getPaymentStatus(paymentId);
+      return normalizePaymentStatus(data);
     },
     enabled: enabled && !!paymentId,
     refetchOnWindowFocus: false,
@@ -87,31 +123,136 @@ export function usePaymentStatus(
     refetchOnReconnect: false,
     refetchInterval: (query) => {
       const data = query.state.data;
-      // Stop polling if payment has reached a terminal state
-      if (data && TERMINAL_STATUSES.includes(data.status)) {
+      if (data?.isFinal) {
         return false;
       }
-      return pollingInterval;
+      const pollInMs = data?.pollInMs;
+      if (
+        typeof pollInMs !== "number" ||
+        !Number.isFinite(pollInMs) ||
+        pollInMs <= 0
+      ) {
+        return 2000;
+      }
+      return pollInMs;
     },
 
     // Let failed requests retry naturally
     retry: 3,
-    ...queryOptions,
   });
 
   // Handle terminal state callback
   useEffect(() => {
     const data = query.data;
-    if (
-      data &&
-      TERMINAL_STATUSES.includes(data.status) &&
-      !hasCalledCallback.current &&
-      callbackRef.current
-    ) {
+    if (data?.isFinal && !hasCalledCallback.current && callbackRef.current) {
       hasCalledCallback.current = true;
       callbackRef.current(data);
     }
   }, [query.data]);
 
   return query;
+}
+
+interface UseTransactionsOptions {
+  /**
+   * Whether to enable the query
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Filter transactions by UI filter type
+   * @default "all"
+   */
+  filter?: TransactionFilterType;
+  /**
+   * Filter transactions by date range
+   * @default "today"
+   */
+  dateRangeFilter?: DateRangeFilterType;
+  /**
+   * Additional query options for the API
+   */
+}
+
+/**
+ * Maps UI filter type to API status values
+ */
+function filterToStatusArray(
+  filter: TransactionFilterType,
+): string[] | undefined {
+  switch (filter) {
+    case "pending":
+      return ["requires_action", "processing"];
+    case "completed":
+      return ["succeeded"];
+    case "failed":
+      return ["failed"];
+    case "expired":
+      return ["expired"];
+    case "cancelled":
+      return ["cancelled"];
+    case "all":
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Hook to fetch merchant transactions with filtering and infinite scrolling
+ * @param options - Query options including filter type
+ * @returns Infinite query result with paginated transactions
+ */
+export function useTransactions(options: UseTransactionsOptions = {}) {
+  const { enabled = true, filter = "all", dateRangeFilter = "today" } = options;
+
+  const addLog = useLogsStore.getState().addLog;
+
+  // Compute date range once per filter change so toDate stays stable across paginated fetches
+  const { startTs, endTs } = useMemo(
+    () => getDateRange(dateRangeFilter),
+    [dateRangeFilter],
+  );
+
+  const query = useInfiniteQuery<TransactionsResponse, Error>({
+    queryKey: ["transactions", filter, dateRangeFilter],
+    queryFn: ({ pageParam }) => {
+      const statusFilter = filterToStatusArray(filter);
+      return getTransactions({
+        status: statusFilter,
+        startTs,
+        endTs,
+        sortBy: "date",
+        sortDir: "desc",
+        limit: 20,
+        cursor: pageParam as string | undefined,
+      });
+    },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes (formerly cacheTime)
+    retry: 2,
+    retryDelay: 1000,
+  });
+
+  // Log errors when they occur
+  useEffect(() => {
+    if (query.error) {
+      addLog(
+        "error",
+        `Failed to fetch transactions: ${query.error.message}`,
+        "transactions",
+        "useTransactions",
+      );
+    }
+  }, [query.error, addLog]);
+
+  // Flatten all pages into a single array
+  const transactions = query.data?.pages.flatMap((page) => page.data) ?? [];
+
+  return {
+    ...query,
+    transactions,
+  };
 }

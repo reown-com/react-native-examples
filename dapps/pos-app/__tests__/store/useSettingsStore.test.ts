@@ -1,4 +1,8 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  DEFAULT_LOGO_BASE64,
+  MONEY2020_LOGO_BASE64,
+} from "@/constants/printer-logos";
 import { resetSettingsStore } from "../utils/store-helpers";
 
 // Get the mocked secure store
@@ -16,7 +20,7 @@ describe("useSettingsStore", () => {
   describe("initial state", () => {
     it("should have default theme mode", () => {
       const { themeMode } = useSettingsStore.getState();
-      expect(themeMode).toBe("light");
+      expect(themeMode).toBe("system");
     });
 
     it("should have empty device ID", () => {
@@ -34,9 +38,9 @@ describe("useSettingsStore", () => {
       expect(merchantId).toBeNull();
     });
 
-    it("should have isMerchantApiKeySet as false", () => {
-      const { isMerchantApiKeySet } = useSettingsStore.getState();
-      expect(isMerchantApiKeySet).toBe(false);
+    it("should have isCustomerApiKeySet as false", () => {
+      const { isCustomerApiKeySet } = useSettingsStore.getState();
+      expect(isCustomerApiKeySet).toBe(false);
     });
 
     it("should have zero failed PIN attempts", () => {
@@ -116,12 +120,47 @@ describe("useSettingsStore", () => {
         "binance",
         "phantom",
         "solana",
+        "trezor",
+        "ledger",
       ] as const;
 
       variants.forEach((variantName) => {
         useSettingsStore.getState().setVariant(variantName);
         expect(useSettingsStore.getState().variant).toBe(variantName);
       });
+    });
+  });
+
+  describe("getVariantPrinterLogo", () => {
+    it("should return the default logo for variants without a printerLogo", () => {
+      useSettingsStore.getState().setVariant("default");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        DEFAULT_LOGO_BASE64,
+      );
+
+      useSettingsStore.getState().setVariant("solflare");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        DEFAULT_LOGO_BASE64,
+      );
+    });
+
+    it("should return the variant's printerLogo when set", () => {
+      useSettingsStore.getState().setVariant("money2020");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        MONEY2020_LOGO_BASE64,
+      );
+    });
+
+    it("should reflect the current variant when it changes", () => {
+      useSettingsStore.getState().setVariant("money2020");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        MONEY2020_LOGO_BASE64,
+      );
+
+      useSettingsStore.getState().setVariant("default");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        DEFAULT_LOGO_BASE64,
+      );
     });
   });
 
@@ -155,57 +194,57 @@ describe("useSettingsStore", () => {
     });
   });
 
-  describe("setMerchantApiKey / clearMerchantApiKey / getMerchantApiKey", () => {
+  describe("setCustomerApiKey / clearCustomerApiKey / getCustomerApiKey", () => {
     it("should store API key in secure storage", async () => {
-      const { setMerchantApiKey } = useSettingsStore.getState();
+      const { setCustomerApiKey } = useSettingsStore.getState();
 
-      await setMerchantApiKey("api-key-123");
+      await setCustomerApiKey("api-key-123");
 
-      expect(useSettingsStore.getState().isMerchantApiKeySet).toBe(true);
+      expect(useSettingsStore.getState().isCustomerApiKeySet).toBe(true);
       expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
-        "merchant_api_key",
+        "customer_api_key",
         "api-key-123",
       );
     });
 
     it("should retrieve API key from secure storage", async () => {
       // First store the key
-      await useSettingsStore.getState().setMerchantApiKey("api-key-456");
+      await useSettingsStore.getState().setCustomerApiKey("api-key-456");
 
       // Then retrieve it
-      const apiKey = await useSettingsStore.getState().getMerchantApiKey();
+      const apiKey = await useSettingsStore.getState().getCustomerApiKey();
 
       expect(apiKey).toBe("api-key-456");
     });
 
     it("should clear API key from secure storage", async () => {
       // First store a key
-      await useSettingsStore.getState().setMerchantApiKey("api-key-789");
-      expect(useSettingsStore.getState().isMerchantApiKeySet).toBe(true);
+      await useSettingsStore.getState().setCustomerApiKey("api-key-789");
+      expect(useSettingsStore.getState().isCustomerApiKeySet).toBe(true);
 
       // Clear it
-      await useSettingsStore.getState().clearMerchantApiKey();
+      await useSettingsStore.getState().clearCustomerApiKey();
 
-      expect(useSettingsStore.getState().isMerchantApiKeySet).toBe(false);
+      expect(useSettingsStore.getState().isCustomerApiKeySet).toBe(false);
       expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
-        "merchant_api_key",
+        "customer_api_key",
       );
     });
 
     it("should remove API key when setting null", async () => {
       // First store a key
-      await useSettingsStore.getState().setMerchantApiKey("api-key-to-remove");
+      await useSettingsStore.getState().setCustomerApiKey("api-key-to-remove");
 
       // Set to null
-      await useSettingsStore.getState().setMerchantApiKey(null);
+      await useSettingsStore.getState().setCustomerApiKey(null);
 
       expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
-        "merchant_api_key",
+        "customer_api_key",
       );
     });
 
     it("should return null when no API key is stored", async () => {
-      const apiKey = await useSettingsStore.getState().getMerchantApiKey();
+      const apiKey = await useSettingsStore.getState().getCustomerApiKey();
       expect(apiKey).toBeNull();
     });
   });
@@ -362,15 +401,15 @@ describe("useSettingsStore", () => {
     });
 
     describe("isPinSet", () => {
-      it("should return false when no PIN is set", async () => {
-        const result = await useSettingsStore.getState().isPinSet();
+      it("should return false when no PIN is set", () => {
+        const result = useSettingsStore.getState().isPinSet();
         expect(result).toBe(false);
       });
 
       it("should return true when PIN is set", async () => {
         await useSettingsStore.getState().setPin("1234");
 
-        const result = await useSettingsStore.getState().isPinSet();
+        const result = useSettingsStore.getState().isPinSet();
         expect(result).toBe(true);
       });
     });
@@ -472,26 +511,6 @@ describe("useSettingsStore", () => {
     });
   });
 
-  describe("getVariantPrinterLogo", () => {
-    it("should return default logo for default variant", () => {
-      useSettingsStore.setState({ variant: "default" });
-
-      const logo = useSettingsStore.getState().getVariantPrinterLogo();
-
-      expect(logo).toBeDefined();
-      expect(typeof logo).toBe("string");
-    });
-
-    it("should return variant-specific logo", () => {
-      useSettingsStore.setState({ variant: "solflare" });
-
-      const logo = useSettingsStore.getState().getVariantPrinterLogo();
-
-      expect(logo).toBeDefined();
-      expect(typeof logo).toBe("string");
-    });
-  });
-
   describe("setHasHydrated", () => {
     it("should set hydration state to true", () => {
       useSettingsStore.getState().setHasHydrated(true);
@@ -558,7 +577,7 @@ describe("useSettingsStore", () => {
 
       // PIN state should be preserved
       expect(useSettingsStore.getState().pinFailedAttempts).toBe(2);
-      const isPinSet = await useSettingsStore.getState().isPinSet();
+      const isPinSet = useSettingsStore.getState().isPinSet();
       expect(isPinSet).toBe(true);
     });
 
@@ -579,7 +598,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(9);
+      expect(persistOptions?.version).toBe(16);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();

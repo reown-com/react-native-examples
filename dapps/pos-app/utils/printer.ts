@@ -5,6 +5,11 @@ import {
   ReactNativePosPrinter,
   TextOptions,
 } from "react-native-thermal-pos-printer";
+import {
+  Currency,
+  formatAmountWithSymbol,
+  formatTokenAmount,
+} from "./currency";
 import { getDate } from "./misc";
 
 export const requestBluetoothPermission = async () => {
@@ -27,12 +32,12 @@ export const connectPrinter = async (): Promise<{
     }
 
     // Connect to first device
-    const printer = devices[0].getDevice(); // { name, address, vendorId, productId, ... }
-    await ReactNativePosPrinter.connectPrinter(printer.address); // e.g., 'USB' or mac address
+    const device = devices[0].getDevice(); // { name, address, vendorId, productId, ... }
+    await ReactNativePosPrinter.connectPrinter(device.address); // e.g., 'USB' or mac address
     useLogsStore
       .getState()
       .addLog("info", "Printer connected", "printer", "connectPrinter", {
-        printer,
+        printer: device,
       });
     return { connected: true };
   } catch (error) {
@@ -62,28 +67,10 @@ export const connectPrinter = async (): Promise<{
   }
 };
 
-/**
- * Formats a raw token amount (in smallest units) to a human-readable string
- * @param rawAmount - Token amount in smallest unit (e.g., "100000" for 0.0001 SOL)
- * @param decimals - Token decimals (e.g., 9 for SOL, 6 for USDC)
- * @returns Formatted amount string (e.g., "0.0001")
- */
-const formatTokenAmount = (rawAmount: string, decimals: number): string => {
-  if (!rawAmount || decimals === 0) return rawAmount;
-
-  const padded = rawAmount.padStart(decimals + 1, "0");
-  const integerPart = padded.slice(0, -decimals) || "0";
-  const decimalPart = padded.slice(-decimals);
-
-  // Trim trailing zeros but keep at least 2 decimal places for readability
-  const trimmedDecimal = decimalPart.replace(/0+$/, "").padEnd(2, "0");
-
-  return `${integerPart}.${trimmedDecimal}`;
-};
-
 interface PrintReceiptProps {
   txnId: string;
-  amountUsd: number;
+  amountFiat: number;
+  currency: Currency;
   tokenSymbol?: string;
   tokenAmount?: string;
   tokenDecimals?: number;
@@ -94,7 +81,8 @@ interface PrintReceiptProps {
 
 export const printReceipt = async ({
   txnId,
-  amountUsd,
+  amountFiat,
+  currency,
   tokenSymbol,
   tokenAmount,
   tokenDecimals,
@@ -129,9 +117,13 @@ export const printReceipt = async ({
     await ReactNativePosPrinter.printText("METHOD    ", normal);
     await ReactNativePosPrinter.printText("WalletConnect Pay\n", bold);
 
-    if (amountUsd) {
+    if (amountFiat) {
       await ReactNativePosPrinter.printText("AMOUNT    ", normal);
-      await ReactNativePosPrinter.printText(`$${amountUsd.toFixed(2)}\n`, bold);
+      const formattedAmount = formatAmountWithSymbol(
+        amountFiat.toFixed(2),
+        currency,
+      );
+      await ReactNativePosPrinter.printText(`${formattedAmount}\n`, bold);
     }
 
     if (tokenSymbol && tokenAmount && tokenDecimals) {
@@ -164,5 +156,6 @@ export const printReceipt = async ({
     useLogsStore
       .getState()
       .addLog("error", errorMessage, "printer", "printReceipt");
+    throw error;
   }
 };

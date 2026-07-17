@@ -1,5 +1,5 @@
 // SUI
-import Sui from '@/assets/chains/sui.webp';
+import Sui from '@/assets/chains/sui.jpeg';
 import { Chain } from '@/utils/TypesUtil';
 /**
  * Methods

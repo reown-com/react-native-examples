@@ -1,11 +1,18 @@
+import { BigAmountInput } from "@/components/big-amount-input";
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  exceedsU64Max,
+  formatAmountWithSymbol,
+  getCurrency,
+} from "@/utils/currency";
 import { router } from "expo-router";
-import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, View } from "react-native";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { Platform, StyleSheet, View } from "react-native";
 
 interface FormData {
   amount: string;
@@ -30,17 +37,18 @@ const formatAmount = (amount: string) => {
 
 export default function AmountScreen() {
   const Theme = useTheme();
+  const currencyCode = useSettingsStore((state) => state.currency);
+  const currency = getCurrency(currencyCode);
   const {
     control,
     handleSubmit,
-    watch,
     formState: { isValid },
   } = useForm<FormData>({
     defaultValues: {
       amount: "",
     },
   });
-  const watchAmount = watch("amount");
+  const watchAmount = useWatch({ control, name: "amount" });
 
   const onSubmit = ({ amount }: FormData) => {
     const formattedAmount = formatAmount(amount);
@@ -61,20 +69,11 @@ export default function AmountScreen() {
           { borderColor: Theme["border-primary"] },
         ]}
       >
-        <ThemedText
-          numberOfLines={1}
-          style={[
-            styles.amountText,
-            {
-              color:
-                watchAmount === ""
-                  ? Theme["text-secondary"]
-                  : Theme["text-primary"],
-            },
-          ]}
-        >
-          ${watchAmount || "0.00"}
-        </ThemedText>
+        <BigAmountInput
+          value={watchAmount}
+          currency={currency.symbol}
+          symbolPosition={currency.symbolPosition}
+        />
       </View>
       <Controller
         control={control}
@@ -100,7 +99,7 @@ export default function AmountScreen() {
                 newDisplay = prev?.slice(0, -1) || "";
                 onChange?.(newDisplay);
               } else if (key === ".") {
-                if (prev.includes(".")) return; // Don't add multiple commas
+                if (prev.includes(".")) return; // Don't add multiple decimal separators
                 if (prev === "") {
                   newDisplay = "0.";
                 } else {
@@ -108,7 +107,13 @@ export default function AmountScreen() {
                 }
                 onChange?.(newDisplay);
               } else {
+                // Limit to 2 decimal places
+                if (prev.includes(".")) {
+                  const decimalPart = prev.split(".")[1] || "";
+                  if (decimalPart.length >= 2) return;
+                }
                 const newDisplay = prev === "0" ? key : prev + key;
+                if (exceedsU64Max(newDisplay)) return;
                 onChange?.(newDisplay);
               }
             }}
@@ -116,7 +121,6 @@ export default function AmountScreen() {
         )}
       />
       <Button
-        testID="charge-button"
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid}
         style={[
@@ -128,11 +132,13 @@ export default function AmountScreen() {
         ]}
       >
         <ThemedText
-          fontSize={18}
-          lineHeight={20}
+          fontSize={16}
+          lineHeight={18}
           style={{ color: Theme["text-invert"] }}
         >
-          {isValid ? `Charge $${formatAmount(watchAmount)}` : "Enter amount"}
+          {isValid
+            ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
+            : "Enter amount"}
         </ThemedText>
       </Button>
     </View>
@@ -145,7 +151,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-5"],
+    paddingTop: Spacing["spacing-5"],
+    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
   amountContainer: {
     flex: 1,
@@ -154,11 +161,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingTop: Spacing["spacing-4"],
     paddingHorizontal: Spacing["spacing-5"],
-  },
-  amountText: {
-    fontSize: 50,
-    textAlign: "center",
-    lineHeight: 50,
   },
   button: {
     width: "100%",

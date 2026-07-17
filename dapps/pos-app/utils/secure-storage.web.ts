@@ -78,6 +78,42 @@ export const secureStorage = {
 };
 
 export const SECURE_STORAGE_KEYS = {
-  MERCHANT_API_KEY: "merchant_api_key",
+  CUSTOMER_API_KEY: "customer_api_key",
   PIN_HASH: "pin_hash",
 } as const;
+
+const CUSTOMER_API_KEY_MIGRATION_KEY = "migration_customer_api_key_completed";
+
+/**
+ * Migrates customer API key from old storage keys to new one.
+ * Handles both legacy key names: "merchant_api_key" and "partner_api_key".
+ * Tracks completion to avoid running on every app start.
+ * @returns true if migration was performed, false if skipped
+ */
+export async function migrateCustomerApiKey(): Promise<boolean> {
+  const storage = getStorage();
+  if (!storage) return false;
+
+  const migrationCompleted = storage.getItem(CUSTOMER_API_KEY_MIGRATION_KEY);
+  if (migrationCompleted === "true") return false;
+
+  const OLD_KEYS = [getKey("merchant_api_key"), getKey("partner_api_key")];
+  const NEW_KEY = getKey("customer_api_key");
+
+  let migrated = false;
+  const existingNewValue = storage.getItem(NEW_KEY);
+
+  for (const oldKey of OLD_KEYS) {
+    const oldValue = storage.getItem(oldKey);
+    if (oldValue) {
+      if (!existingNewValue && !migrated) {
+        storage.setItem(NEW_KEY, oldValue);
+        migrated = true;
+      }
+      storage.removeItem(oldKey);
+    }
+  }
+
+  storage.setItem(CUSTOMER_API_KEY_MIGRATION_KEY, "true");
+  return migrated;
+}

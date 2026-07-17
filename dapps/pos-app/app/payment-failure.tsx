@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
@@ -22,29 +22,38 @@ export default function PaymentFailureScreen() {
   const params = useLocalSearchParams<ScreenParams>();
   const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
 
+  const { title, subtitle } = getPaymentErrorMessage(params.errorCode);
+
   const handleRetry = () => {
     router.dismissTo("/amount");
   };
 
   return (
     <View style={[styles.container, { paddingTop: top }]}>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View
+        testID="pos-payment-failure"
+        nativeID="pos-payment-failure"
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
         <Image
           source={assets?.[0]}
-          style={[styles.warningCircle, { tintColor: Theme["icon-error"] }]}
+          style={[
+            styles.warningCircle,
+            { tintColor: Theme["bg-accent-primary"] },
+          ]}
           cachePolicy="memory-disk"
-          tintColor={Theme["icon-error"]}
+          tintColor={Theme["bg-accent-primary"]}
           priority="high"
         />
         <ThemedText
           style={[styles.failedText, { color: Theme["text-primary"] }]}
         >
-          Payment failed
+          {title}
         </ThemedText>
         <ThemedText
-          style={[styles.failedDescription, { color: Theme["text-secondary"] }]}
+          style={[styles.failedDescription, { color: Theme["text-tertiary"] }]}
         >
-          {getPaymentErrorMessage(params.errorCode)}
+          {subtitle}
         </ThemedText>
       </View>
       <View style={styles.buttonContainer}>
@@ -58,10 +67,17 @@ export default function PaymentFailureScreen() {
           ]}
         >
           <ThemedText
-            style={[styles.buttonText, { color: Theme["text-invert"] }]}
+            fontSize={16}
+            lineHeight={18}
+            style={{ color: Theme["text-invert"] }}
           >
-            Try again
+            Start payment
           </ThemedText>
+          <Image
+            source={require("@/assets/images/plus.png")}
+            style={styles.plusIcon}
+            tintColor={Theme["text-invert"]}
+          />
         </Button>
       </View>
     </View>
@@ -72,11 +88,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
-    paddingBottom: Spacing["spacing-5"],
+    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
   failedText: {
-    fontSize: 26,
-    lineHeight: 28,
+    fontSize: 20,
+    lineHeight: 20,
     textAlign: "center",
     marginBottom: Spacing["spacing-3"],
   },
@@ -102,9 +118,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
     borderRadius: BorderRadius["5"],
+    gap: Spacing["spacing-2"],
   },
-  buttonText: {
-    fontSize: 18,
-    lineHeight: 20,
+  plusIcon: {
+    width: 12.5,
+    height: 12.5,
   },
 });

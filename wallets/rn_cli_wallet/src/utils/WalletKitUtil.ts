@@ -1,31 +1,42 @@
-import {WalletKit, IWalletKit} from '@reown/walletkit';
-import {Core} from '@walletconnect/core';
-import Config from 'react-native-config';
-import {getMetadata} from './misc';
+import { WalletKit, IWalletKit, isPaymentLink } from '@reown/walletkit';
+import { Core } from '@walletconnect/core';
+import { ENV } from './env';
+import { getMetadata } from './misc';
 import { storage } from './storage';
+import LogStore, { serializeError } from '@/store/LogStore';
+
+export { isPaymentLink };
 
 export let walletKit: IWalletKit;
 
 export async function createWalletKit(relayerRegionURL: string) {
   const core = new Core({
-    projectId: Config.ENV_PROJECT_ID,
+    projectId: ENV.PROJECT_ID,
     storage,
-    relayUrl: relayerRegionURL ?? Config.ENV_RELAY_URL,
+    relayUrl: relayerRegionURL || undefined,
   });
+  const payApiBaseUrl = ENV.PAY_API_BASE_URL || undefined;
   walletKit = await WalletKit.init({
     core,
     metadata: getMetadata(),
+    ...(payApiBaseUrl ? { payConfig: { baseUrl: payApiBaseUrl } } : {}),
   });
 
   try {
     const clientId =
       await walletKit.engine.signClient.core.crypto.getClientId();
-    console.log('WalletConnect ClientID: ', clientId);
+    LogStore.log('WalletConnect ClientID', 'WalletKitUtil', 'createWalletKit', {
+      clientId,
+    });
     storage.setItem('WALLETCONNECT_CLIENT_ID', clientId);
   } catch (error) {
-    console.error(
-      'Failed to set WalletConnect clientId in localStorage: ',
-      error,
+    LogStore.error(
+      'Failed to set WalletConnect clientId in localStorage',
+      'WalletKitUtil',
+      'createWalletKit',
+      {
+        error: serializeError(error),
+      },
     );
   }
 }
@@ -86,4 +97,11 @@ export async function updateSignClientChainId(
     await walletKit.emitSessionEvent(chainChanged);
     await walletKit.emitSessionEvent(accountsChanged);
   });
+}
+
+export function formatDomain(url: string | undefined): string {
+  if (!url) {
+    return 'unknown domain';
+  }
+  return url.replace(/^https?:\/\//, '').replace(/^www\./, '');
 }

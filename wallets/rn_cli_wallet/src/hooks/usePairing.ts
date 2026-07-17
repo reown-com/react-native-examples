@@ -1,0 +1,98 @@
+import { useCallback } from 'react';
+
+import { walletKit, isPaymentLink } from '@/utils/WalletKitUtil';
+import LogStore from '@/store/LogStore';
+import ModalStore from '@/store/ModalStore';
+import SettingsStore from '@/store/SettingsStore';
+import PaymentStore from '@/store/PaymentStore';
+import { EIP155_CHAINS } from '@/constants/Eip155';
+import { SOLANA_CHAINS } from '@/constants/Solana';
+
+export { isPaymentLink };
+
+export function usePairing() {
+  const handlePaymentLink = useCallback(async (paymentLink: string) => {
+    PaymentStore.startPayment();
+    ModalStore.open('PaymentOptionsModal');
+
+    await SettingsStore.state.initPromise;
+
+    const payClient = walletKit?.pay;
+    if (!payClient) {
+      PaymentStore.setError('Pay SDK not initialized. Please restart the app.');
+      return;
+    }
+
+    try {
+      const eip155Address = SettingsStore.state.eip155Address;
+      const solanaAddress = SettingsStore.state.solanaAddress;
+      const accounts = [
+        ...(eip155Address
+          ? Object.keys(EIP155_CHAINS).map(
+              chainKey => `${chainKey}:${eip155Address}`,
+            )
+          : []),
+        ...(solanaAddress
+          ? Object.keys(SOLANA_CHAINS).map(
+              chainKey => `${chainKey}:${solanaAddress}`,
+            )
+          : []),
+      ];
+
+      const paymentOptions = await payClient.getPaymentOptions({
+        paymentLink,
+        accounts,
+        includePaymentInfo: true,
+      });
+      LogStore.log('paymentOptions', 'usePairing', 'handlePaymentLink', {
+        paymentOptions: JSON.stringify(paymentOptions),
+      });
+
+      LogStore.log(
+        'getPaymentOptions response',
+        'usePairing',
+        'handlePaymentLink',
+        { paymentOptions },
+      );
+
+      PaymentStore.setPaymentOptions(paymentOptions);
+    } catch (error: any) {
+      PaymentStore.setError(
+        error?.message || 'Failed to fetch payment options',
+      );
+    }
+  }, []);
+
+  const pair = useCallback(async (uri: string) => {
+    ModalStore.open('LoadingModal', {
+      loadingMessage: 'Preparing connection...',
+    });
+    await SettingsStore.state.initPromise;
+
+    try {
+      await walletKit.pair({ uri });
+    } catch (error: any) {
+      ModalStore.open('LoadingModal', {
+        errorMessage: error?.message || 'There was an error pairing',
+      });
+    }
+  }, []);
+
+  const handleUriOrPaymentLink = useCallback(
+    async (uri: string) => {
+      if (isPaymentLink(uri)) {
+        await handlePaymentLink(uri);
+      } else {
+        await pair(uri);
+      }
+    },
+    [handlePaymentLink, pair],
+  );
+
+  return {
+    pair,
+    handlePaymentLink,
+    handleUriOrPaymentLink,
+    isPaymentLink,
+  };
+}

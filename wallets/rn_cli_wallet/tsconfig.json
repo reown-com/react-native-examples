@@ -3,7 +3,6 @@
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["**/node_modules", "**/Pods"],
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@/assets/*": ["./src/assets/*"],
       "@/components/*": ["./src/components/*"],
@@ -17,7 +16,9 @@
       "@/modals/*": ["./src/modals/*"],
       "@/utils/*": ["./src/utils/*"],
       "@/provider/*": ["./src/provider/*"],
-      "@/store/*": ["./src/store/*"]
+      "@/store/*": ["./src/store/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/services/*": ["./src/services/*"]
     }
   }
 }

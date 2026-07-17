@@ -5,9 +5,8 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/app_icons/icon.png",
-    "scheme": "WPay",
+    "scheme": "wpay",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.reown.mobilepos",
@@ -21,9 +20,7 @@
         "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts"
       },
       "entitlements": {
-        "com.apple.developer.nfc.readersession.formats": [
-          "TAG"
-        ]
+        "com.apple.developer.nfc.readersession.formats": ["TAG"]
       }
     },
     "android": {
@@ -33,7 +30,6 @@
         "backgroundImage": "./assets/app_icons/android_icon_background.png",
         "monochromeImage": "./assets/app_icons/android_icon_monochrome.png"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.reown.mobilepos",
       "permissions": [
@@ -45,7 +41,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 16
+      "versionCode": 27
     },
     "web": {
       "output": "static",
@@ -72,6 +68,7 @@
         }
       ],
       "./scripts/withAndroidReleaseSigningConfig.js",
+      "./plugins/withHceNfc.js",
       [
         "expo-font",
         {
@@ -121,9 +118,7 @@
       [
         "react-native-permissions",
         {
-          "iosPermissions": [
-            "Bluetooth"
-          ]
+          "iosPermissions": ["Bluetooth"]
         }
       ],
       [
@@ -132,7 +127,10 @@
           "configureAndroidBackup": true,
           "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
-      ]
+      ],
+      "@sentry/react-native",
+      "expo-image",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true,

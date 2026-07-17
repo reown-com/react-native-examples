@@ -1,0 +1,22 @@
+diff --git a/node_modules/react-native-thermal-pos-printer/ios/PosPrinter.m b/node_modules/react-native-thermal-pos-printer/ios/PosPrinter.m
+index bdbd51d..54c3117 100644
+--- a/node_modules/react-native-thermal-pos-printer/ios/PosPrinter.m
++++ b/node_modules/react-native-thermal-pos-printer/ios/PosPrinter.m
+@@ -345,7 +345,7 @@ - (NSArray *)breakTextIntoLines:(NSString *)text maxLineWidth:(NSInteger)maxLine
+     return lines;
+ }
+ 
+- (NSData *)printTextAsBitmap:(NSString *)text
++ - (NSData *)printTextAsBitmap:(NSString *)text
+                                          fontSize:(CGFloat)fontSize
+                                      fontFamily:(NSString *)fontFamily
+                                              isBold:(BOOL)isBold
+@@ -691,7 +691,7 @@ - (UIImage *)convertToWhiteBackground:(UIImage *)image {
+     resolve(@YES);
+ }
+ 
+- (BOOL)writeDataToPrinter:(NSData *)data {
++ - (BOOL)writeDataToPrinter:(NSData *)data {
+     if (self.writeCharacteristic && self.connectedPeripheral && data && data.length > 0) {
+         NSUInteger total = data.length;
+         NSUInteger offset = 0;

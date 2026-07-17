@@ -1,25 +1,33 @@
-import {useSnapshot} from 'valtio';
-import {useCallback, useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import {SignClientTypes} from '@walletconnect/types';
+import { useSnapshot } from 'valtio';
+import { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { SignClientTypes } from '@walletconnect/types';
+import { showToast } from '@/utils/ToastUtil';
 
-import {Methods} from '@/components/Modal/Methods';
+import { AppInfoCard } from '@/components/AppInfoCard';
+import { NetworkInfoCard } from '@/components/NetworkInfoCard';
+import { Message } from '@/components/Modal/Message';
 import {
   approveTonRequest,
   rejectTonRequest,
+  validateTonRequest,
 } from '@/utils/TonRequestHandlerUtil';
-import {walletKit} from '@/utils/WalletKitUtil';
-import {handleRedirect} from '@/utils/LinkingUtils';
+import { walletKit } from '@/utils/WalletKitUtil';
+import { handleRedirect } from '@/utils/LinkingUtils';
+import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
-import {RequestModal} from './RequestModal';
-import {Chains} from '@/components/Modal/Chains';
-import {PresetsUtil} from '@/utils/PresetsUtil';
-import {tonAddresses} from '@/utils/TonWalletUtil';
-import {useTheme} from '@/hooks/useTheme';
+import SettingsStore from '@/store/SettingsStore';
+import { RequestModal } from './RequestModal';
+import { tonAddresses } from '@/utils/TonWalletUtil';
+import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
+import { haptics } from '@/utils/haptics';
 
 export default function SessionTonSendMessageModal() {
   // Get request and wallet data from store
-  const {data} = useSnapshot(ModalStore.state);
+  const { data } = useSnapshot(ModalStore.state);
+  const { currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
   const requestEvent = data?.requestEvent;
   const session = data?.requestSession;
   const isLinkMode = session?.transportType === 'link_mode';
@@ -27,20 +35,43 @@ export default function SessionTonSendMessageModal() {
   const [isLoadingApprove, setIsLoadingApprove] = useState(false);
   const [isLoadingReject, setIsLoadingReject] = useState(false);
 
+  const { validation, isScam } = currentRequestVerifyContext?.verified || {};
+
   const Theme = useTheme();
 
   // Get required request data
-  const {topic, params} = requestEvent!;
-  const {request, chainId} = params;
-  const chain = PresetsUtil.getChainData(chainId);
+  const { topic, params } = requestEvent!;
+  const { request } = params;
   const peerMetadata = session?.peer?.metadata as SignClientTypes.Metadata;
-  const method = requestEvent?.params?.request?.method!;
 
   // Extract message details for display (SendMessage spec)
   const tx = Array.isArray(request.params)
     ? request.params[0]
     : request.params || {};
   const messages = Array.isArray(tx.messages) ? tx.messages : [];
+
+  // Validate request on mount
+  useEffect(() => {
+    if (!requestEvent) {
+      return;
+    }
+    const effect = async () => {
+      const validationResult = await validateTonRequest(requestEvent);
+      if (validationResult) {
+        showToast({
+          type: 'error',
+          text1: 'Couldn’t validate request',
+          text2: validationResult.error.message,
+        });
+        await walletKit.respondSessionRequest({
+          topic,
+          response: validationResult,
+        });
+        ModalStore.close();
+      }
+    };
+    effect();
+  }, [requestEvent, topic]);
 
   // Format transaction details
   const formatTransactionDetails = () => {
@@ -50,7 +81,9 @@ export default function SessionTonSendMessageModal() {
 
     return messages
       .map((m: any, idx: number) => {
-        let details = `Message ${idx + 1}:\nTo: ${m.address}\nAmount: ${m.amount} nanotons`;
+        let details = `Message ${idx + 1}:\nTo: ${m.address}\nAmount: ${
+          m.amount
+        } nanotons`;
         if (m.payload) {
           details += `\nPayload: ${m.payload}`;
         }
@@ -64,93 +97,136 @@ export default function SessionTonSendMessageModal() {
 
   // Handle approve action
   const onApprove = useCallback(async () => {
-    try {
-      if (requestEvent) {
-        setIsLoadingApprove(true);
-        const response = await approveTonRequest(requestEvent);
-        console.log('response', response);
+    if (requestEvent && session) {
+      setIsLoadingApprove(true);
+      try {
+        // Cast session to mutable type for approveTonRequest
+        const response = await approveTonRequest(
+          requestEvent,
+          session as unknown as Parameters<typeof approveTonRequest>[1],
+        );
+        LogStore.log(
+          'Ton send message response received',
+          'SessionTonSendMessageModal',
+          'onApprove',
+        );
 
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
+        haptics.requestResponse();
 
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'error' in response ? response.error.message : undefined,
         });
+      } catch (e) {
+        LogStore.error(
+          (e as Error).message,
+          'SessionTonSendMessageModal',
+          'onApprove',
+        );
+        showToast({
+          type: 'error',
+          text1: 'Couldn’t send message',
+          text2: (e as Error).message,
+        });
+      } finally {
+        setIsLoadingApprove(false);
+        ModalStore.close();
       }
-    } catch (e) {
-      console.log((e as Error).message, 'error');
-    } finally {
-      setIsLoadingApprove(false);
-      ModalStore.close();
     }
-  }, [requestEvent, peerMetadata, topic, isLinkMode]);
+  }, [requestEvent, session, peerMetadata, topic, isLinkMode]);
 
   // Handle reject action
   const onReject = useCallback(async () => {
     if (requestEvent) {
       setIsLoadingReject(true);
-      const response = rejectTonRequest(requestEvent);
       try {
+        const response = rejectTonRequest(requestEvent);
         await walletKit.respondSessionRequest({
           topic,
           response,
         });
+        haptics.requestResponse();
         handleRedirect({
           peerRedirect: peerMetadata?.redirect,
           isLinkMode: isLinkMode,
           error: 'User rejected request',
         });
       } catch (e) {
+        LogStore.error(
+          (e as Error).message,
+          'SessionTonSendMessageModal',
+          'onReject',
+        );
+        showToast({
+          type: 'error',
+          text1: 'Couldn’t reject request',
+          text2: (e as Error).message,
+        });
+      } finally {
         setIsLoadingReject(false);
-        console.log((e as Error).message, 'error');
-        return;
+        ModalStore.close();
       }
-      setIsLoadingReject(false);
-      ModalStore.close();
     }
   }, [requestEvent, topic, peerMetadata, isLinkMode]);
 
   // Ensure request and wallet are defined
   if (!requestEvent || !session) {
-    return <Text>Missing request data</Text>;
+    return (
+      <Text variant="md-400" color="text-error">
+        Missing request data
+      </Text>
+    );
   }
 
   return (
     <RequestModal
-      intention="sign a transaction"
+      intention="Send a message for"
       metadata={peerMetadata}
       onApprove={onApprove}
       onReject={onReject}
       isLinkMode={isLinkMode}
       approveLoader={isLoadingApprove}
-      rejectLoader={isLoadingReject}>
+      rejectLoader={isLoadingReject}
+      approveLabel="Send"
+    >
       <View style={styles.container}>
-        {chain ? <Chains chains={[chain]} /> : null}
-        <Methods methods={[method]} />
+        <AppInfoCard
+          url={peerMetadata?.url}
+          validation={validation}
+          isScam={isScam}
+        />
+        <NetworkInfoCard chainId={params.chainId} />
 
         {/* Sign with Address */}
-        <View style={[styles.section, {backgroundColor: Theme['bg-150']}]}>
-          <Text style={[styles.sectionTitle, {color: Theme['fg-150']}]}>
-            Sign with Address
+        <View
+          style={[
+            styles.section,
+            { backgroundColor: Theme['foreground-primary'] },
+          ]}
+        >
+          <Text
+            variant="lg-400"
+            color="text-tertiary"
+            style={styles.sectionTitle}
+          >
+            Signing address
           </Text>
-          <Text style={[styles.sectionContent, {color: Theme['fg-175']}]}>
+          <Text variant="md-400" color="text-primary">
             {tonAddresses[0]}
           </Text>
         </View>
 
         {/* Transaction Details */}
-        <View style={[styles.section, {backgroundColor: Theme['bg-150']}]}>
-          <Text style={[styles.sectionTitle, {color: Theme['fg-150']}]}>
-            Transaction Details
-          </Text>
-          <Text style={[styles.sectionContent, {color: Theme['fg-175']}]}>
-            {formatTransactionDetails()}
-          </Text>
-        </View>
+        <Message
+          message={formatTransactionDetails()}
+          title="Transaction details"
+          style={styles.transactionDetails}
+        />
       </View>
     </RequestModal>
   );
@@ -159,23 +235,19 @@ export default function SessionTonSendMessageModal() {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginVertical: 8,
-    paddingHorizontal: 16,
-    rowGap: 8,
+    marginVertical: Spacing[2],
+    paddingHorizontal: Spacing[4],
+    rowGap: Spacing[2],
   },
   section: {
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    borderRadius: BorderRadius[4],
+    rowGap: Spacing[2],
+    padding: Spacing[5],
   },
   sectionTitle: {
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: Spacing[1],
   },
-  sectionContent: {
-    fontSize: 12,
-    lineHeight: 18,
+  transactionDetails: {
+    maxHeight: 200,
   },
 });

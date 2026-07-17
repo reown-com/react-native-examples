@@ -1,4 +1,5 @@
 import { useLogsStore } from "@/store/useLogsStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { ApiError } from "@/utils/types";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -156,3 +157,34 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);
+
+const MERCHANT_API_BASE_URL =
+  process.env.EXPO_PUBLIC_MERCHANT_DEV_API_URL || API_BASE_URL;
+export const merchantApiClient = new ApiClient(MERCHANT_API_BASE_URL);
+
+/**
+ * Get API headers for authenticated requests
+ * @returns Headers object with Api-Key, Merchant-Id, and SDK headers
+ * @throws Error if customer API key or merchant ID is missing
+ */
+export async function getApiHeaders(): Promise<Record<string, string>> {
+  const merchantId = useSettingsStore.getState().merchantId;
+  const customerApiKey = await useSettingsStore.getState().getCustomerApiKey();
+
+  if (!merchantId || merchantId.trim().length === 0) {
+    throw new Error("Merchant ID is not configured");
+  }
+
+  if (!customerApiKey || customerApiKey.trim().length === 0) {
+    throw new Error("Customer API key is not configured");
+  }
+
+  return {
+    "Api-Key": customerApiKey,
+    "Merchant-Id": merchantId,
+    "WCP-Version": "2026-02-19.preview",
+    "Sdk-Name": "pos-device",
+    "Sdk-Version": "1.0.0",
+    "Sdk-Platform": "react-native",
+  };
+}

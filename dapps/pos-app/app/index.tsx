@@ -7,25 +7,33 @@ import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   const [assets] = useAssets([
     require("@/assets/images/plus.png"),
+    require("@/assets/images/clock.png"),
     require("@/assets/images/gear.png"),
   ]);
 
   const Theme = useTheme();
-  const { merchantId, isMerchantApiKeySet } = useSettingsStore();
+  const merchantId = useSettingsStore((state) => state.merchantId);
+  const isCustomerApiKeySet = useSettingsStore(
+    (state) => state.isCustomerApiKeySet,
+  );
 
   const handleStartPayment = () => {
-    if (!merchantId || !isMerchantApiKeySet) {
+    if (!merchantId || !isCustomerApiKeySet) {
       router.push("/settings");
-      showErrorToast("Merchant information not configured");
+      showErrorToast("Finish setup in Settings before starting a payment.");
       return;
     }
 
     router.push("/amount");
+  };
+
+  const handleActivityPress = () => {
+    router.push("/activity");
   };
 
   const handleSettingsPress = () => {
@@ -35,7 +43,6 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Button
-        testID="new-sale-button"
         onPress={handleStartPayment}
         style={[
           styles.actionButton,
@@ -45,14 +52,14 @@ export default function HomeScreen() {
         <Image
           source={assets?.[0]}
           style={styles.actionButtonImage}
+          tintColor={Theme["icon-default"]}
           cachePolicy="memory-disk"
           priority="high"
         />
-        <ThemedText fontSize={18}>New sale</ThemedText>
+        <ThemedText fontSize={18}>Start payment</ThemedText>
       </Button>
       <Button
-        testID="settings-button"
-        onPress={handleSettingsPress}
+        onPress={handleActivityPress}
         style={[
           styles.actionButton,
           { backgroundColor: Theme["foreground-primary"] },
@@ -61,6 +68,23 @@ export default function HomeScreen() {
         <Image
           source={assets?.[1]}
           style={styles.actionButtonImage}
+          tintColor={Theme["icon-default"]}
+          cachePolicy="memory-disk"
+          priority="high"
+        />
+        <ThemedText fontSize={18}>Activity</ThemedText>
+      </Button>
+      <Button
+        onPress={handleSettingsPress}
+        style={[
+          styles.actionButton,
+          { backgroundColor: Theme["foreground-primary"] },
+        ]}
+      >
+        <Image
+          source={assets?.[2]}
+          style={styles.actionButtonImage}
+          tintColor={Theme["icon-default"]}
           cachePolicy="memory-disk"
           priority="high"
         />
@@ -75,7 +99,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
     paddingTop: Spacing["spacing-2"],
-    paddingBottom: Spacing["spacing-7"],
+    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-7"],
     justifyContent: "center",
     alignItems: "center",
     gap: Spacing["spacing-3"],

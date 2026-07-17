@@ -1,39 +1,9 @@
-import { useSettingsStore } from "@/store/useSettingsStore";
-import { SECURE_STORAGE_KEYS, secureStorage } from "@/utils/secure-storage";
 import {
   PaymentStatusResponse,
   StartPaymentRequest,
   StartPaymentResponse,
 } from "@/utils/types";
-import { apiClient } from "./client";
-
-/**
- * Get merchant API headers for authenticated requests
- * @returns Headers object with Api-Key, Merchant-Id, and SDK headers
- * @throws Error if API key or merchant ID is missing
- */
-async function getApiHeaders(): Promise<Record<string, string>> {
-  const merchantId = useSettingsStore.getState().merchantId;
-  const merchantApiKey = await secureStorage.getItem(
-    SECURE_STORAGE_KEYS.MERCHANT_API_KEY,
-  );
-
-  if (!merchantId || merchantId.trim().length === 0) {
-    throw new Error("Merchant ID is not configured");
-  }
-
-  if (!merchantApiKey || merchantApiKey.trim().length === 0) {
-    throw new Error("Merchant API key is not configured");
-  }
-
-  return {
-    "Api-Key": merchantApiKey,
-    "Merchant-Id": merchantId,
-    "Sdk-Name": "pos-device",
-    "Sdk-Version": "1.0.0",
-    "Sdk-Platform": "react-native",
-  };
-}
+import { apiClient, getApiHeaders } from "./client";
 
 /**
  * Start a new payment
@@ -65,4 +35,17 @@ export async function getPaymentStatus(
     `/merchant/payment/${paymentId}/status`,
     { headers },
   );
+}
+
+/**
+ * Cancel a payment by payment ID
+ * Only works for payments in requires_action state; returns 400 otherwise.
+ * @param paymentId - The payment ID to cancel
+ */
+export async function cancelPayment(paymentId: string): Promise<void> {
+  if (!paymentId?.trim()) {
+    throw new Error("paymentId is required");
+  }
+  const headers = await getApiHeaders();
+  await apiClient.post(`/payments/${paymentId}/cancel`, {}, { headers });
 }

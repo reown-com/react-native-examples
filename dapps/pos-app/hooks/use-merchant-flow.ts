@@ -4,12 +4,11 @@ import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useCallback, useEffect, useState } from "react";
 
 type ModalType = "none" | "pin-verify" | "pin-setup";
-type PendingAction = "merchant-id" | "merchant-api-key" | null;
+type PendingAction = "merchant-id" | "customer-api-key" | null;
 
 interface MerchantFlowState {
   merchantIdInput: string;
-  merchantApiKeyInput: string;
-  storedMerchantApiKey: string | null;
+  customerApiKeyInput: string;
   activeModal: ModalType;
   pinError: string | null;
   pendingValue: string | null;
@@ -18,8 +17,7 @@ interface MerchantFlowState {
 
 const initialState: MerchantFlowState = {
   merchantIdInput: "",
-  merchantApiKeyInput: "",
-  storedMerchantApiKey: null,
+  customerApiKeyInput: "",
   activeModal: "none",
   pinError: null,
   pendingValue: null,
@@ -29,11 +27,12 @@ const initialState: MerchantFlowState = {
 export function useMerchantFlow() {
   const storedMerchantId = useSettingsStore((state) => state.merchantId);
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);
-  const getMerchantApiKey = useSettingsStore(
-    (state) => state.getMerchantApiKey,
+  const clearMerchantId = useSettingsStore((state) => state.clearMerchantId);
+  const setCustomerApiKey = useSettingsStore(
+    (state) => state.setCustomerApiKey,
   );
-  const setMerchantApiKey = useSettingsStore(
-    (state) => state.setMerchantApiKey,
+  const isCustomerApiKeySet = useSettingsStore(
+    (state) => state.isCustomerApiKeySet,
   );
   const isPinSet = useSettingsStore((state) => state.isPinSet);
   const verifyPin = useSettingsStore((state) => state.verifyPin);
@@ -60,18 +59,6 @@ export function useMerchantFlow() {
     }));
   }, [storedMerchantId]);
 
-  // Load merchant API key from secure storage (only store internally, don't show in input)
-  useEffect(() => {
-    const loadApiKey = async () => {
-      const apiKey = await getMerchantApiKey();
-      setState((prev) => ({
-        ...prev,
-        storedMerchantApiKey: apiKey,
-      }));
-    };
-    loadApiKey();
-  }, [getMerchantApiKey]);
-
   const formatLockoutMessage = useCallback(() => {
     const remaining = getLockoutRemainingSeconds();
     const minutes = Math.floor(remaining / 60);
@@ -86,88 +73,101 @@ export function useMerchantFlow() {
     }));
   }, []);
 
-  const handleMerchantApiKeyInputChange = useCallback((value: string) => {
+  const handleCustomerApiKeyInputChange = useCallback((value: string) => {
     setState((prev) => ({
       ...prev,
-      merchantApiKeyInput: value,
+      customerApiKeyInput: value,
+    }));
+  }, []);
+
+  const resetCustomerApiKeyInput = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      customerApiKeyInput: "",
     }));
   }, []);
 
   const initiateSave = useCallback(
-    async (value: string, action: PendingAction) => {
+    (value: string, action: PendingAction) => {
       // Check if locked out
       if (isLockedOut()) {
         showErrorToast(formatLockoutMessage());
         return;
       }
 
+      const pinExists = isPinSet();
+
       setState((prev) => ({
         ...prev,
         pendingValue: value,
         pendingAction: action,
+        activeModal: pinExists ? "pin-verify" : "pin-setup",
       }));
-
-      // Check if PIN is set
-      const pinExists = await isPinSet();
-
-      if (pinExists) {
-        // PIN exists, show verification modal
-        setState((prev) => ({ ...prev, activeModal: "pin-verify" }));
-      } else {
-        // No PIN, show setup modal
-        setState((prev) => ({ ...prev, activeModal: "pin-setup" }));
-      }
     },
     [isLockedOut, formatLockoutMessage, isPinSet],
   );
 
-  const handleMerchantIdConfirm = useCallback(async () => {
+  const handleMerchantIdConfirm = useCallback(() => {
     const trimmedMerchantId = state.merchantIdInput.trim();
-    if (!trimmedMerchantId) {
-      return;
-    }
 
     // Check if value changed
     if (trimmedMerchantId === storedMerchantId) {
       return;
     }
 
-    await initiateSave(trimmedMerchantId, "merchant-id");
+    // Pass empty string to indicate clearing (will reset to default)
+    initiateSave(trimmedMerchantId || "", "merchant-id");
   }, [state.merchantIdInput, storedMerchantId, initiateSave]);
 
-  const handleMerchantApiKeyConfirm = useCallback(async () => {
-    const trimmedApiKey = state.merchantApiKeyInput.trim();
+  const handleCustomerApiKeyConfirm = useCallback(() => {
+    const trimmedApiKey = state.customerApiKeyInput.trim();
     if (!trimmedApiKey) {
       return;
     }
 
-    await initiateSave(trimmedApiKey, "merchant-api-key");
-  }, [state.merchantApiKeyInput, initiateSave]);
+    initiateSave(trimmedApiKey, "customer-api-key");
+  }, [state.customerApiKeyInput, initiateSave]);
 
   const completeSave = useCallback(async () => {
-    if (!state.pendingValue || !state.pendingAction) {
+    if (state.pendingValue === null || !state.pendingAction) {
       return;
     }
 
     try {
       if (state.pendingAction === "merchant-id") {
-        setMerchantId(state.pendingValue);
-        showSuccessToast("Merchant ID saved successfully");
-        addLog(
-          "info",
-          `Merchant ID updated to: ${state.pendingValue}`,
-          "settings",
-          "completeSave",
-        );
-      } else if (state.pendingAction === "merchant-api-key") {
-        await setMerchantApiKey(state.pendingValue);
+        if (state.pendingValue === "") {
+          // Clear merchant ID and API key (resets both to env defaults)
+          const newMerchantId = await clearMerchantId();
+          // Sync local input with the new default value
+          setState((prev) => ({
+            ...prev,
+            merchantIdInput: newMerchantId ?? "",
+          }));
+          showSuccessToast("Merchant credentials reset to default");
+          addLog(
+            "info",
+            "Merchant credentials reset to default",
+            "settings",
+            "completeSave",
+          );
+        } else {
+          setMerchantId(state.pendingValue);
+          showSuccessToast("Merchant ID saved successfully");
+          addLog(
+            "info",
+            `Merchant ID updated to: ${state.pendingValue}`,
+            "settings",
+            "completeSave",
+          );
+        }
+      } else if (state.pendingAction === "customer-api-key") {
+        await setCustomerApiKey(state.pendingValue);
         setState((prev) => ({
           ...prev,
-          storedMerchantApiKey: state.pendingValue,
-          merchantApiKeyInput: "", // Clear input after saving
+          customerApiKeyInput: "", // Clear input after saving
         }));
-        showSuccessToast("Merchant API key saved successfully");
-        addLog("info", "Merchant API key updated", "settings", "completeSave");
+        showSuccessToast("Customer API key saved successfully");
+        addLog("info", "Customer API key updated", "settings", "completeSave");
       }
 
       setState((prev) => ({
@@ -186,7 +186,8 @@ export function useMerchantFlow() {
     state.pendingValue,
     state.pendingAction,
     setMerchantId,
-    setMerchantApiKey,
+    clearMerchantId,
+    setCustomerApiKey,
     addLog,
   ]);
 
@@ -232,7 +233,7 @@ export function useMerchantFlow() {
   const handleBiometricAuthFailure = useCallback(() => {
     setState((prev) => ({
       ...prev,
-      pinError: "Biometric authentication failed. Please use PIN.",
+      pinError: "Biometric check failed. Use your PIN instead.",
     }));
   }, []);
 
@@ -253,35 +254,36 @@ export function useMerchantFlow() {
       pendingValue: null,
       pendingAction: null,
       merchantIdInput: storedMerchantId ?? "",
-      merchantApiKeyInput: "", // Clear input on cancel
+      customerApiKeyInput: "", // Clear input on cancel
     }));
   }, [storedMerchantId]);
 
+  // Enable save when value has changed (including clearing to reset to default)
   const isMerchantIdConfirmDisabled =
-    state.merchantIdInput.trim().length === 0 ||
-    state.merchantIdInput.trim() === storedMerchantId;
+    state.merchantIdInput.trim() === (storedMerchantId ?? "");
 
-  const isMerchantApiKeyConfirmDisabled =
-    state.merchantApiKeyInput.trim().length === 0;
+  const isCustomerApiKeyConfirmDisabled =
+    state.customerApiKeyInput.trim().length === 0;
 
-  const hasStoredMerchantApiKey = state.storedMerchantApiKey !== null;
+  const hasStoredCustomerApiKey = isCustomerApiKeySet;
 
   return {
     // State
     merchantIdInput: state.merchantIdInput,
-    merchantApiKeyInput: state.merchantApiKeyInput,
+    customerApiKeyInput: state.customerApiKeyInput,
     activeModal: state.activeModal,
     pinError: state.pinError,
     storedMerchantId,
     isMerchantIdConfirmDisabled,
-    isMerchantApiKeyConfirmDisabled,
-    hasStoredMerchantApiKey,
+    isCustomerApiKeyConfirmDisabled,
+    hasStoredCustomerApiKey,
 
     // Handlers
     handleMerchantIdInputChange,
-    handleMerchantApiKeyInputChange,
+    handleCustomerApiKeyInputChange,
+    resetCustomerApiKeyInput,
     handleMerchantIdConfirm,
-    handleMerchantApiKeyConfirm,
+    handleCustomerApiKeyConfirm,
     handlePinVerifyComplete,
     handleBiometricAuthSuccess,
     handleBiometricAuthFailure,

@@ -1,60 +1,53 @@
 import React from 'react';
-import {
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  StyleProp,
-  ViewStyle,
-  View,
-} from 'react-native';
-import {Icon, IconProps} from '@reown/appkit-ui-react-native';
+import { StyleSheet, StyleProp, ViewStyle, View } from 'react-native';
 
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+import { Icon, IconName } from '@/components/Icon';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
+import { Button } from '@/components/Button';
 
 export interface CardProps {
   title: string;
   value?: string;
   onPress?: () => void;
-  icon?: IconProps['name'];
+  icon?: IconName;
   style?: StyleProp<ViewStyle>;
 }
 
-export function Card({title, value, onPress, icon, style}: CardProps) {
+export function Card({ title, value, onPress, icon, style }: CardProps) {
   const Theme = useTheme();
-  const backgroundColor = Theme['bg-175'];
+  const backgroundColor = Theme['foreground-primary'];
 
   return (
-    <TouchableOpacity
+    <Button
       disabled={!onPress}
-      style={[styles.container, {backgroundColor}, style]}
-      onPress={onPress}>
+      style={[styles.container, { backgroundColor }, style]}
+      onPress={onPress ?? (() => {})}
+    >
       <View>
-        <Text style={[styles.title, {color: Theme['fg-100']}]}>{title}</Text>
+        <Text variant="md-500" color="text-primary">
+          {title}
+        </Text>
         {value && (
-          <Text style={[styles.value, {color: Theme['fg-150']}]}>{value}</Text>
+          <Text variant="md-400" color="text-secondary" numberOfLines={1}>
+            {value}
+          </Text>
         )}
       </View>
-      {icon && <Icon name={icon} size="sm" color={'fg-100'} />}
-    </TouchableOpacity>
+      {icon && <Icon name={icon} size="sm" color="text-primary" />}
+    </Button>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    rowGap: 4,
+    borderRadius: BorderRadius[4],
+    height: 76,
+    paddingHorizontal: Spacing[6],
+    rowGap: Spacing[1],
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  value: {
-    fontSize: 14,
-    fontWeight: '500',
   },
 });

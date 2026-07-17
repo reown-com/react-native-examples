@@ -12,6 +12,7 @@ secrets.properties
 .env.*
 *.env
 !.env.example
+!.env.maestro.example
 
 # Sentry
 sentry.properties
@@ -29,3 +30,16 @@ fastlane/report.xml
 .expo
 .vercel
 .env*.local
+
+# Maestro Pay test flows (downloaded from WalletConnect/actions via scripts/setup-maestro-pay-tests.sh)
+.maestro/pay_*.yaml
+.maestro/flows/pay_*.yaml
+.maestro/scripts/
+
+# Maestro local run artifacts
+*.mp4
+usdt-permit2-approve-setup.png
+
+# Downloaded by scripts/setup-maestro-pay-tests.sh from WalletConnect/actions
+# (canonical source: maestro/permit2-reset). Used locally via `yarn permit2:revoke`.
+wallets/rn_cli_wallet/scripts/revoke-permit2-approval.js

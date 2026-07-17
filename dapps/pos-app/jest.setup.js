@@ -33,7 +33,7 @@ console.error = (...args) => {
 jest.mock("react-native", () => {
   // Use react-native preset's mock instead of requiring actual module
   // This avoids native module dependencies
-  const RN = require("react-native/jest/mock");
+  const RN = require("@react-native/jest-preset/jest/mock");
   return {
     ...RN,
     Appearance: {
@@ -280,7 +280,6 @@ global.fetch = jest.fn();
 // Using .invalid TLD per RFC 2606 to ensure these can never resolve
 process.env.EXPO_PUBLIC_API_URL = "https://api.test.example.com";
 process.env.EXPO_PUBLIC_PROJECT_ID = "test-project-id";
-process.env.EXPO_PUBLIC_GATEWAY_URL = "https://gateway.test.example.com";
 
 // Cleanup function to reset mocks between tests
 afterEach(() => {

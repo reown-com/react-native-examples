@@ -1,14 +1,22 @@
-import {ScrollView, StyleProp, StyleSheet, Text, ViewStyle} from 'react-native';
+import { ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
-import {useTheme} from '@/hooks/useTheme';
+import { useTheme } from '@/hooks/useTheme';
+import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
+import { Text } from '@/components/Text';
 
 interface IMessageProps {
   message: string;
   style?: StyleProp<ViewStyle>;
   showTitle?: boolean;
+  title?: string;
 }
 
-export function Message({message, style, showTitle = true}: IMessageProps) {
+export function Message({
+  message,
+  style,
+  showTitle = true,
+  title = 'Message',
+}: IMessageProps) {
   const Theme = useTheme();
 
   if (!message) {
@@ -18,41 +26,37 @@ export function Message({message, style, showTitle = true}: IMessageProps) {
   return (
     <ScrollView
       bounces={false}
-      style={[styles.container, {backgroundColor: Theme['bg-150']}, style]}
-      contentContainerStyle={styles.content}>
+      style={[
+        styles.container,
+        { backgroundColor: Theme['foreground-primary'] },
+        style,
+      ]}
+      contentContainerStyle={styles.content}
+    >
       {showTitle && (
-        <Text style={[styles.title, {color: Theme['fg-150']}]}>Message</Text>
+        <Text variant="lg-400" color="text-tertiary" style={styles.title}>
+          {title}
+        </Text>
       )}
-      <Text style={[styles.message, {color: Theme['fg-175']}]}>{message}</Text>
+      <Text variant="md-400" color="text-primary">
+        {message}
+      </Text>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 20,
+    borderRadius: BorderRadius[4],
     maxHeight: 120,
   },
   content: {
+    rowGap: Spacing[2],
     alignItems: 'flex-start',
     flexWrap: 'wrap',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    padding: Spacing[5],
   },
   title: {
-    fontSize: 12,
-    lineHeight: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  message: {
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  row: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    marginBottom: Spacing[1],
   },
 });

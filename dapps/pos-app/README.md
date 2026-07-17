@@ -5,6 +5,7 @@
 Before you begin, make sure you have set up your React Native development environment. This includes installing Node, Android Studio (for Android), and Xcode (for iOS on macOS).
 
 Follow the official React Native documentation to set up your environment:
+
 - [React Native Environment Setup](https://reactnative.dev/docs/set-up-your-environment?platform=android)
 
 ## Get started
@@ -52,6 +53,7 @@ Follow the official React Native documentation to set up your environment:
 For production Android releases, you'll need the actual `secrets.properties` file and `wc_rn_upload.keystore`. Get these from the mobile team or 1Password.
 
 **Required file locations:**
+
 - Place `secrets.properties` in the `android/` directory
 - Place `wc_rn_upload.keystore` in the `android/app/` directory
 
@@ -79,7 +81,7 @@ The release APK will be generated at `android/app/build/outputs/apk/release/app-
    ```bash
    adb devices
    ```
-   
+
    Example output: `V510BAC07114B000171`
 
 2. Build the release APK:
@@ -101,30 +103,18 @@ The release APK will be generated at `android/app/build/outputs/apk/release/app-
 To create a branded variant for a specific client:
 
 1. **Create a new branch**
+
    ```bash
    git checkout -b variant/<client-name>
    ```
 
 2. **Add the variant logo**
-   - Add the client's logo to `assets/images/variants/<client-name>_brand.png`
+   - Add the client's logo (variant mark only — no WPay wordmark, no "+") to `assets/images/variants/<client-name>_brand.png`
    - **Requirements**: PNG format
+   - The header composes three separate images at runtime: `assets/images/brand.png` (WPay) + `assets/images/plus.png` (+) + your variant logo
+   - The thermal printer receipt always uses the default WPay logo, so no base64 conversion is needed
 
-3. **Add the printer logo** in `constants/printer-logos.ts`
-   - Convert the client's logo to base64 using https://base64.guru/converter/encode/image/png
-   - Add the base64 string as a new constant:
-     ```typescript
-     export const <CLIENT_NAME>_LOGO_BASE64 =
-       "data:image/png;base64,<base64-string>";
-     ```
-
-4. **Define the variant** in `constants/variants.ts`
-   - Import the printer logo at the top of the file:
-     ```typescript
-     import {
-       // ... existing imports ...
-       <CLIENT_NAME>_LOGO_BASE64,
-     } from "./printer-logos";
-     ```
+3. **Define the variant** in `constants/variants.ts`
    - Add the variant name to the `VariantName` type:
      ```typescript
      export type VariantName =
@@ -139,8 +129,7 @@ To create a branded variant for a specific client:
      ```typescript
      <client-name>: {
        name: "<Client Name>",
-       brandLogo: require("@/assets/images/variants/<client-name>_brand.png"),
-       printerLogo: <CLIENT_NAME>_LOGO_BASE64,
+       variantLogo: require("@/assets/images/variants/<client-name>_brand.png"),
        defaultTheme: "light", // or "dark"
        colors: {
          light: {
@@ -157,11 +146,11 @@ To create a branded variant for a specific client:
      },
      ```
 
-
-5. **Update Android version code** in `app.json`
+4. **Update Android version code** in `app.json`
    - Increment `expo.android.versionCode`
 
-6. **Commit, push, and create a release tag (Devin only)**
+5. **Commit, push, and create a release tag (Devin only)**
+
    ```bash
    git add .
    git commit -m "feat: add <client-name> variant"
@@ -169,9 +158,10 @@ To create a branded variant for a specific client:
    git tag variant-<client-name>
    git push origin variant-<client-name>
    ```
+
    The tag will trigger the release workflow automatically.
 
-7. **Verify the release**
+6. **Verify the release**
    - Check the build status and Firebase link in the `#system-releases-react-native` Slack channel
 
 **Manual release**: If you need to trigger the release manually instead of using a tag, go to GitHub Actions and run the `release-android-mobilepos` workflow.

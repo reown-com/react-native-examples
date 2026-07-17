@@ -27,10 +27,6 @@ on:
         description: 'Path to get the APK file'
         required: true
         type: string
-      env-file-path:
-        description: "Path + name of the env file"
-        required: false
-        type: string
       upload-to-bucket:
         description: "Upload to S3"
         required: false
@@ -46,19 +42,13 @@ on:
         required: false
         default: false
         type: boolean
-    secrets:
-      project-id:
-        description: 'Reown Cloud ID'
-        required: true
       firebase-app-id:
+        description: "Firebase App ID for distribution"
         required: true
+        type: string
+    secrets:
       gsa-key:
         required: true
-      relay-url:
-        description: 'Relay URL'
-        required: false
-      sentry-dsn:
-        required: false
       sentry-file:
         required: true
       secrets-file:
@@ -67,8 +57,6 @@ on:
         required: true
       keystore:
         required: true
-      google-services-file:
-        required: false
       aws-account-id:
         required: false
       slack-webhook-url:
@@ -84,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./.github/actions/ci-setup
@@ -108,13 +96,18 @@ jobs:
       # Create env file
       - name: Create env file
         run: |
-          ENV_FILE_CONTENT="${{ secrets.env-file }}"
-          ENV_FILE_PATH="${{ inputs.env-file-path }}"
-          if [ -n "$ENV_FILE_CONTENT" ] && [ -n "$ENV_FILE_PATH" ]; then
-            echo "$ENV_FILE_CONTENT" > "$ENV_FILE_PATH"
-          else
-            touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
-            echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+          if [ -z "${{ secrets.env-file }}" ]; then
+            echo "Error: env-file secret is empty or not set"
+            exit 1
+          fi
+          echo "${{ secrets.env-file }}" > ${{ inputs.root-path }}/.env
+
+      - name: Copy variant files
+        run: |
+          cd ${{ inputs.root-path }}
+          if [ -f "./scripts/copy-variant-files.sh" ]; then
+            chmod +x ./scripts/copy-variant-files.sh
+            ./scripts/copy-variant-files.sh ${{ inputs.release-type }}
           fi
       
       - name: Add Sentry file
@@ -126,18 +119,14 @@ jobs:
       - name: Add Keystore file
         run: echo ${{ secrets.keystore }} | base64 --decode >> ${{ inputs.root-path }}/android/app/${{ secrets.keystore-name }}.keystore
 
-      # Add Google Services file -> to create it run: base64 -i path/to/GoogleService-Info.plist
-      - name: Add Google Services file
-        env:
-          google-services-file: ${{ secrets.google-services-file }}
-        if: ${{ env.google-services-file != '' }}
-        run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/android/app/google-services.json
-
       - name: Optimize Gradle for CI
         run: |
-          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m" >> ${{ inputs.root-path }}/android/gradle.properties
-          echo "org.gradle.parallel=true" >> ${{ inputs.root-path }}/android/gradle.properties
-          echo "org.gradle.caching=true" >> ${{ inputs.root-path }}/android/gradle.properties
+          printf '\norg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m\norg.gradle.parallel=true\norg.gradle.caching=true\n' >> ${{ inputs.root-path }}/android/gradle.properties
+
+      - name: Configure ABI for internal builds
+        if: ${{ inputs.release-type == 'internal' }}
+        run: |
+          printf 'reactNativeArchitectures=arm64-v8a,armeabi-v7a\n' >> ${{ inputs.root-path }}/android/gradle.properties
 
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -154,27 +143,32 @@ jobs:
         id: build
         run: |
           if [ ${{ inputs.release-type }} = 'internal' ]; then
-            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} install && ${{ inputs.package-manager }} run android:build:internal
+            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} run android:build:internal
           else
-            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} install && ${{ inputs.package-manager }} run android:build
+            cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} run android:build
           fi
   
-      - name: Setup Firebase
-        uses: w9jds/setup-firebase@main
-        with:
-          tools-version: 13.0.1
-          gcp_sa_key: ${{ secrets.gsa-key }}
-      
+      - name: Debug - Dump APK theme resources
+        if: ${{ inputs.release-type == 'internal' }}
+        run: |
+          APK_PATH="${{ inputs.output-path }}"
+          echo "=== APK theme resources ==="
+          $ANDROID_HOME/build-tools/36.0.0/aapt2 dump resources "$APK_PATH" 2>&1 | grep -A15 "style/AppTheme\|style/BootTheme" || true
+          echo "=== AndroidManifest theme ==="
+          $ANDROID_HOME/build-tools/36.0.0/aapt2 dump xmltree "$APK_PATH" --file AndroidManifest.xml 2>&1 | grep -i "theme" || true
+          echo "=== Effective gradle.properties ==="
+          cat ${{ inputs.root-path }}/android/gradle.properties
+
       - name: Upload APK to Firebase
         id: firebase-upload
         continue-on-error: false
-        env:
-          APP_ID: ${{ secrets.firebase-app-id }}
-        run: |
-          firebase appdistribution:distribute ${{ inputs.output-path }} \
-            --app $APP_ID \
-            --release-notes "${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }} - Branch: ${{ github.ref_name }}" \
-            --groups "flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers"
+        uses: wzieba/Firebase-Distribution-Github-Action@bd494989dd4bec0343f78adee87fe66e48279ad6 # v1
+        with:
+          appId: ${{ inputs.firebase-app-id }}
+          serviceCredentialsFileContent: ${{ secrets.gsa-key }}
+          groups: flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers
+          file: ${{ inputs.output-path }}
+          releaseNotes: "${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }} - Branch: ${{ github.ref_name }}"
     
       - name: Configure AWS credentials
         id: aws-creds

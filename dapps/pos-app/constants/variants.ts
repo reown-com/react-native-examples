@@ -1,10 +1,4 @@
-import {
-  BINANCE_LOGO_BASE64,
-  DEFAULT_LOGO_BASE64,
-  PHANTOM_LOGO_BASE64,
-  SOLANA_LOGO_BASE64,
-  SOLFLARE_LOGO_BASE64,
-} from "./printer-logos";
+import { MONEY2020_LOGO_BASE64 } from "./printer-logos";
 import { Colors } from "./theme";
 
 export type VariantName =
@@ -12,16 +6,21 @@ export type VariantName =
   | "solflare"
   | "binance"
   | "phantom"
-  | "solana";
+  | "solana"
+  | "trezor"
+  | "ledger"
+  | "imin"
+  | "money2020"
+  | "xmoney";
 
 type VariantColorOverrides = Partial<typeof Colors.light>;
 
 interface Variant {
   name: string;
-  brandLogo: ReturnType<typeof require>; // require() asset
-  brandLogoWidth?: number;
-  printerLogo: string; // base64 string
+  variantLogo?: ReturnType<typeof require>; // require() asset, omitted for default
+  printerLogo?: string; // base64 PNG printed on the receipt; falls back to default when omitted
   defaultTheme?: "light" | "dark";
+  allowThemeToggle?: boolean; // let users switch theme manually even on a branded variant
   colors: {
     light: VariantColorOverrides;
     dark: VariantColorOverrides;
@@ -30,10 +29,7 @@ interface Variant {
 
 export const Variants: Record<VariantName, Variant> = {
   default: {
-    name: "Default",
-    brandLogo: require("@/assets/images/brand.png"),
-    brandLogoWidth: 60,
-    printerLogo: DEFAULT_LOGO_BASE64,
+    name: "None",
     colors: {
       light: {},
       dark: {},
@@ -41,8 +37,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   solflare: {
     name: "Solflare",
-    brandLogo: require("@/assets/images/variants/solflare_brand.png"),
-    printerLogo: SOLFLARE_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/solflare_brand.png"),
     defaultTheme: "dark",
     colors: {
       light: {
@@ -64,8 +59,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   binance: {
     name: "Binance",
-    brandLogo: require("@/assets/images/variants/binance_brand.png"),
-    printerLogo: BINANCE_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/binance_brand.png"),
     defaultTheme: "light",
     colors: {
       light: {
@@ -87,8 +81,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   phantom: {
     name: "Phantom",
-    brandLogo: require("@/assets/images/variants/phantom_brand.png"),
-    printerLogo: PHANTOM_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/phantom_brand.png"),
     defaultTheme: "light",
     colors: {
       light: {
@@ -109,8 +102,7 @@ export const Variants: Record<VariantName, Variant> = {
   },
   solana: {
     name: "Solana",
-    brandLogo: require("@/assets/images/variants/solana_brand.png"),
-    printerLogo: SOLANA_LOGO_BASE64,
+    variantLogo: require("@/assets/images/variants/solana_brand.png"),
     defaultTheme: "dark",
     colors: {
       light: {
@@ -128,6 +120,91 @@ export const Variants: Record<VariantName, Variant> = {
         "border-payment-success": "#FFFFFF",
         "text-invert": "#FFFFFF", // Used in button text. Default one doesnt work with purple
       },
+    },
+  },
+  trezor: {
+    name: "Trezor",
+    variantLogo: require("@/assets/images/variants/trezor_brand.png"),
+    defaultTheme: "light",
+    colors: {
+      light: {
+        "icon-accent-primary": "#60E198",
+        "bg-accent-primary": "#60E198",
+        "bg-payment-success": "#60E198",
+        "text-payment-success": "#1F1F1F",
+        "border-payment-success": "#363636",
+        "text-invert": "#1F1F1F",
+      },
+      dark: {
+        "icon-accent-primary": "#60E198",
+        "bg-accent-primary": "#60E198",
+        "bg-payment-success": "#60E198",
+        "text-payment-success": "#1F1F1F",
+        "border-payment-success": "#363636",
+      },
+    },
+  },
+  ledger: {
+    name: "Ledger",
+    variantLogo: require("@/assets/images/variants/ledger_brand.png"),
+    defaultTheme: "light",
+    colors: {
+      light: {
+        "icon-accent-primary": "#000000",
+        "bg-accent-primary": "#000000",
+        "bg-payment-success": "#000000",
+        "text-payment-success": "#FFFFFF",
+        "border-payment-success": "#E9E9E9",
+      },
+      dark: {
+        "icon-accent-primary": "#000000",
+        "bg-accent-primary": "#000000",
+        "bg-payment-success": "#000000",
+        "text-payment-success": "#FFFFFF",
+        "border-payment-success": "#E9E9E9",
+      },
+    },
+  },
+  imin: {
+    name: "iMin",
+    variantLogo: require("@/assets/images/variants/imin_brand.png"),
+    defaultTheme: "light",
+    colors: {
+      light: {
+        "icon-accent-primary": "#3E4D59",
+        "bg-accent-primary": "#3E4D59",
+        "bg-payment-success": "#000000",
+        "text-payment-success": "#FFFFFF",
+        "border-payment-success": "#E9E9E9",
+      },
+      dark: {
+        "icon-accent-primary": "#3E4D59",
+        "bg-accent-primary": "#3E4D59",
+        "bg-payment-success": "#000000",
+        "text-payment-success": "#FFFFFF",
+        "border-payment-success": "#E9E9E9",
+      },
+    },
+  },
+  money2020: {
+    name: "Money 20/20",
+    variantLogo: require("@/assets/images/variants/money2020_brand.png"),
+    printerLogo: MONEY2020_LOGO_BASE64,
+    defaultTheme: "light",
+    allowThemeToggle: true,
+    colors: {
+      light: {},
+      dark: {},
+    },
+  },
+  xmoney: {
+    name: "xMoney",
+    variantLogo: require("@/assets/images/variants/xmoney_brand.png"),
+    defaultTheme: "light",
+    allowThemeToggle: true,
+    colors: {
+      light: {},
+      dark: {},
     },
   },
 };

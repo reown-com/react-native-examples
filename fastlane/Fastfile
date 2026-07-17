@@ -57,10 +57,10 @@ platform :ios do
       profile_name: "match AppStore #{ENV['BUNDLE_ID']}"
     )
 
-    # Install pods
+    # Install pods (skip repo_update if cache hit)
     cocoapods(
       clean_install: false,
-      repo_update: true,
+      repo_update: ENV['PODS_CACHE_HIT'] != 'true',
       podfile: ENV['PODFILE_PATH']
     )
 
@@ -86,20 +86,26 @@ platform :ios do
       output_name: "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
     )
 
+    # Don't pass `changelog` with `skip_waiting_for_build_processing: true` —
+    # fastlane then waits for the build to appear in App Store Connect and hangs
+    # forever if processing stalls/rejects.
     testflight_params = {
       apple_id: ENV["APPLE_ID"],
       app_identifier: ENV["BUNDLE_ID"],
-      changelog: "#{project_type} build from branch: #{branch_name}",
       skip_waiting_for_build_processing: true
     }
-    
+
     if ENV['TESTFLIGHT_GROUPS'] && !ENV['TESTFLIGHT_GROUPS'].empty?
+      # External distribution must wait for processing; bound it so a stuck/
+      # rejected build fails fast instead of hanging. Changelog only here.
+      testflight_params[:skip_waiting_for_build_processing] = false
+      testflight_params[:wait_processing_timeout_duration] = 1800
+      testflight_params[:changelog] = "#{project_type} build from branch: #{branch_name}"
       testflight_params[:distribute_external] = true
       testflight_params[:notify_external_testers] = true
       testflight_params[:groups] = ENV['TESTFLIGHT_GROUPS'].split(',').map(&:strip)
     end
 
-    # Upload to TestFlight
     upload_to_testflight(testflight_params)
 
     # Only clean artifacts when running locally (not in CI)
@@ -107,62 +113,81 @@ platform :ios do
   end
 
   lane :build_for_simulator do |options|
-   
-    project_type = ENV['PROJECT_TYPE'] || ENV['SCHEME']
-    
-    # Install pods
+    sign_build = ENV['MATCH_GIT_URL'] && !ENV['MATCH_GIT_URL'].empty?
+
+    if sign_build
+      UI.message("🔑 Signing enabled — setting up Match development profile")
+      setup_ci()
+
+      api_key = app_store_connect_api_key(
+        key_id: ENV["APPLE_KEY_ID"],
+        issuer_id: ENV["APPLE_ISSUER_ID"],
+        key_content: ENV["APPLE_KEY_CONTENT"],
+        duration: 1200,
+        in_house: false,
+      )
+
+      match(
+        readonly: true,
+        type: "development",
+        app_identifier: ENV['BUNDLE_ID'],
+        git_url: ENV['MATCH_GIT_URL'],
+        api_key: api_key,
+      )
+
+      update_code_signing_settings(
+        use_automatic_signing: false,
+        path: ENV['XCODE_PROJECT_PATH'],
+        bundle_identifier: ENV['BUNDLE_ID'],
+        code_sign_identity: "Apple Development",
+        profile_name: "match Development #{ENV['BUNDLE_ID']}"
+      )
+    end
+
+    # Always run pod install: on New Arch it also runs RN codegen, writing
+    # ios/build/generated/**-generated.mm that the ReactCodegen Pods target
+    # compiles. That output isn't cached or committed, so it can't be skipped.
+    # Skip only repo_update on an exact cache hit (Podfile.lock unchanged).
     cocoapods(
       clean_install: false,
-      repo_update: true,
+      repo_update: ENV['PODS_CACHE_HIT'] != 'true',
       podfile: ENV['PODFILE_PATH']
     )
 
-    # Build for simulator without code signing
-    archive_path = "./build/#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.xcarchive"
+    # Use an absolute path — gym (xcodebuild) runs from repo root while Ruby Dir/File
+    # operations use the fastlane/ directory as CWD, so relative paths diverge.
+    build_dir   = File.expand_path("../build")
+    archive_path = "#{build_dir}/wallet-simulator.xcarchive"
 
-    gym(
+    # Build only arm64 (the runner is Apple Silicon) instead of both sim slices, and skip
+    # the compiler index store CI never reads. Base string so the signing branch can append.
+    xcargs = "ARCHS=arm64 ONLY_ACTIVE_ARCH=YES COMPILER_INDEX_STORE_ENABLE=NO"
+
+    gym_params = {
       workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
       configuration: "Release",
       destination: "generic/platform=iOS Simulator",
       archive_path: archive_path,
-      skip_codesigning: true,
       skip_package_ipa: true,
-    )
+    }
 
-    # Find the .app in the archive
-    products_path = ".#{archive_path}/Products/Applications"
-    app_paths = Dir.glob("#{products_path}/*.app")  
-    app_path = app_paths.first
-    
-    if app_path     
-      output_name = "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
-      build_dir = File.expand_path('../build')
-      
-      # Ensure build directory exists
-      sh("mkdir -p #{build_dir}")
-      
-      # Create Payload directory structure
-      payload_dir = "#{build_dir}/Payload"
-      sh("rm -rf '#{payload_dir}'")  # Clean any existing Payload
-      sh("mkdir -p '#{payload_dir}'")
-      
-      # Copy .app into Payload
-      sh("cp -r '#{app_path}' '#{payload_dir}/'")
-      
-      # Create IPA by zipping Payload directory
-      sh("cd '#{build_dir}' && zip -r '#{output_name}' Payload")
-      
-      # Clean up Payload directory
-      sh("rm -rf '#{payload_dir}'")
-      
-      UI.success("✅ Created simulator build: #{build_dir}/#{output_name}")
+    if sign_build
+      gym_params[:xcargs] = "#{xcargs} CODE_SIGNING_ALLOWED=YES"
     else
-      UI.user_error!("Could not find .app bundle in #{products_path}")
+      gym_params[:xcargs] = xcargs
+      gym_params[:skip_codesigning] = true
     end
-    
-    # Only clean artifacts when running locally (not in CI)
-    clean_build_artifacts() unless ENV['CI']
+
+    gym(gym_params)
+
+    # Find the .app directly inside the xcarchive — no IPA needed for simulator install
+    app_path = Dir.glob("#{archive_path}/Products/Applications/*.app").first
+    UI.user_error!("Could not find .app in #{archive_path}/Products/Applications/") unless app_path
+
+    FileUtils.mkdir_p(build_dir)
+    File.write("#{build_dir}/app_path.txt", app_path)
+    UI.success("✅ Simulator .app: #{app_path}")
   end
 
   lane :test_code_signing do

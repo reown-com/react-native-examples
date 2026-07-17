@@ -39,10 +39,6 @@ on:
         required: false
         default: false
         type: boolean
-      env-file-path:
-        description: "Path + name of the env file"
-        required: false
-        type: string
       upload-to-bucket:
         description: "Upload to S3"
         required: false
@@ -62,15 +58,12 @@ on:
         required: false
         default: false
         type: boolean
+      app-variant:
+        description: "APP_VARIANT for expo prebuild (e.g. production/internal). Selects the iOS bundle id/icon via app.config.js."
+        required: false
+        default: 'production'
+        type: string
     secrets:
-      project-id:
-        description: "WalletConnect Cloud ID"
-        required: true
-      relay-url:
-        description: "WalletConnect Relay URL"
-        required: false
-      sentry-dsn:
-        required: false
       sentry-file:
         required: true
       apple-username:
@@ -89,8 +82,6 @@ on:
         required: true
       match-ssh-key:
         required: true
-      google-services-file:
-        required: false
       aws-account-id:
         required: false
       slack-webhook-url:
@@ -106,7 +97,18 @@ jobs:
     runs-on: macos-latest-xlarge
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 26 (iOS 26 SDK)
+        run: |
+          XCODE_PATH=/Applications/Xcode_26.2.app/Contents/Developer
+          if [ ! -d "$XCODE_PATH" ]; then
+            echo "Available Xcode versions:"
+            ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
+            exit 1
+          fi
+          sudo xcode-select -s "$XCODE_PATH"
+          xcodebuild -version
 
       - name: webfactory/ssh-agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -123,7 +125,7 @@ jobs:
         if: ${{ inputs.is-expo-project == true }}
         run: |
           cd ${{ inputs.root-path }}
-          npx expo prebuild --platform ios
+          APP_VARIANT=${{ inputs.app-variant }} npx expo prebuild --platform ios
 
       - name: Set Xcode paths
         run: |
@@ -152,40 +154,38 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ inputs.root-path }}/ios/Pods
+          # No restore-keys fallback on purpose: a prefix match would restore a
+          # stale Pods/ whenever Podfile.lock changes (e.g. a dependency bump),
+          # and its Pods/Local Podspecs no longer match the resolved podspecs
+          # (notably hermes-engine), breaking `pod install`. Only an exact
+          # Podfile.lock match restores; otherwise we start clean and reinstall.
           key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(env.podfile_path) }}
-          restore-keys: |
-            ${{ runner.os }}-pods-${{ github.ref_name }}-
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.0
-          bundler-cache: false
-
-      - name: Install Gems
-        run: bundle install
+          bundler-cache: true
 
       # Create env file
       - name: Create env file
         run: |
-          ENV_FILE_CONTENT="${{ secrets.env-file }}"
-          ENV_FILE_PATH="${{ inputs.env-file-path }}"
-          if [ -n "$ENV_FILE_CONTENT" ] && [ -n "$ENV_FILE_PATH" ]; then
-            echo "$ENV_FILE_CONTENT" > "$ENV_FILE_PATH"
-          else
-            touch ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
-            echo -e "ENV_PROJECT_ID=${{ secrets.project-id }}\nENV_RELAY_URL=${{ secrets.relay-url }}\nENV_SENTRY_DSN=${{ secrets.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+          if [ -z "${{ secrets.env-file }}" ]; then
+            echo "Error: env-file secret is empty or not set"
+            exit 1
+          fi
+          echo "${{ secrets.env-file }}" > ${{ inputs.root-path }}/.env
+
+      - name: Copy variant files
+        run: |
+          cd ${{ inputs.root-path }}
+          if [ -f "./scripts/copy-variant-files.sh" ]; then
+            chmod +x ./scripts/copy-variant-files.sh
+            ./scripts/copy-variant-files.sh ${{ inputs.release-type }}
           fi
 
       # Create sentry file
       - run: touch ${{ inputs.root-path }}/ios/sentry.properties && echo "${{ secrets.sentry-file }}" >> ${{ inputs.root-path }}/ios/sentry.properties
-
-      # Add Google Services file -> to create it run: base64 -i path/to/GoogleService-Info.plist
-      - name: Create Google Services file
-        env:
-          google-services-file: ${{ secrets.google-services-file }}
-        if: ${{ env.google-services-file != '' }}
-        run: echo ${{ env.google-services-file }} | base64 --decode >> ${{ inputs.root-path }}/ios/GoogleService-Info.plist
 
       - name: ${{ inputs.build-for-simulator && 'Build for simulator' || 'Build and Upload to TestFlight' }}
         id: build
@@ -211,6 +211,7 @@ jobs:
           BRANCH_NAME: ${{ github.ref_name }}
           BUILD_FOR_SIMULATOR: ${{ inputs.build-for-simulator }}
           TESTFLIGHT_GROUPS: ${{ inputs.testflight-groups }}
+          PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
 
       - name: Configure AWS credentials
         id: aws-creds

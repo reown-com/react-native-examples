@@ -5,11 +5,13 @@ import {
   Animated,
   Easing,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemedText } from "./themed-text";
 
 const PIN_LENGTH = 4;
@@ -38,12 +40,24 @@ function PinModalBase({
   const theme = useTheme();
   const [pin, setPin] = useState("");
   const [shakeAnimation] = useState(new Animated.Value(0));
+  const [prevVisible, setPrevVisible] = useState(visible);
+  const [prevError, setPrevError] = useState(error);
 
-  useEffect(() => {
+  // Clear the entered PIN when the modal is hidden or a new error arrives.
+  // Adjusting state during render is the recommended React pattern for
+  // resetting state in response to prop changes (avoids setState-in-effect).
+  if (prevVisible !== visible) {
+    setPrevVisible(visible);
     if (!visible) {
       setPin("");
     }
-  }, [visible]);
+  }
+  if (prevError !== error) {
+    setPrevError(error);
+    if (error) {
+      setPin("");
+    }
+  }
 
   useEffect(() => {
     if (error) {
@@ -74,7 +88,6 @@ function PinModalBase({
           useNativeDriver: true,
         }),
       ]).start();
-      setPin("");
     }
   }, [error, shakeAnimation]);
 
@@ -100,146 +113,157 @@ function PinModalBase({
     [showBiometric ? "biometric" : "", "0", "erase"],
   ];
 
-  return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onCancel}
-    >
-      <Pressable style={styles.overlay} onPress={onCancel}>
-        <Pressable
-          style={[styles.container, { backgroundColor: theme["bg-primary"] }]}
-          onPress={(e) => e.stopPropagation()}
+  const content = (
+    <View style={styles.overlay}>
+      <Pressable style={StyleSheet.absoluteFill} onPress={onCancel} />
+      <View
+        style={[styles.container, { backgroundColor: theme["bg-primary"] }]}
+      >
+        <ThemedText
+          fontSize={20}
+          lineHeight={24}
+          color="text-primary"
+          style={styles.title}
         >
+          {title}
+        </ThemedText>
+
+        {subtitle && (
           <ThemedText
-            fontSize={20}
-            lineHeight={24}
-            color="text-primary"
-            style={styles.title}
+            fontSize={14}
+            lineHeight={18}
+            color="text-secondary"
+            style={styles.subtitle}
           >
-            {title}
+            {subtitle}
           </ThemedText>
+        )}
 
-          {subtitle && (
-            <ThemedText
-              fontSize={14}
-              lineHeight={18}
-              color="text-secondary"
-              style={styles.subtitle}
-            >
-              {subtitle}
-            </ThemedText>
-          )}
+        <Animated.View
+          style={[
+            styles.dotsContainer,
+            { transform: [{ translateX: shakeAnimation }] },
+          ]}
+        >
+          {Array.from({ length: PIN_LENGTH }).map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.dot,
+                {
+                  backgroundColor:
+                    index < pin.length
+                      ? error
+                        ? theme["icon-error"]
+                        : theme["bg-accent-primary"]
+                      : theme["foreground-tertiary"],
+                },
+              ]}
+            />
+          ))}
+        </Animated.View>
 
-          <Animated.View
-            style={[
-              styles.dotsContainer,
-              { transform: [{ translateX: shakeAnimation }] },
-            ]}
+        {error && (
+          <ThemedText
+            fontSize={12}
+            lineHeight={14}
+            style={[styles.errorText, { color: theme["icon-error"] }]}
           >
-            {Array.from({ length: PIN_LENGTH }).map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  {
-                    backgroundColor:
-                      index < pin.length
-                        ? error
-                          ? theme["icon-error"]
-                          : theme["bg-accent-primary"]
-                        : theme["foreground-tertiary"],
-                  },
-                ]}
-              />
-            ))}
-          </Animated.View>
+            {error}
+          </ThemedText>
+        )}
 
-          {error && (
-            <ThemedText
-              fontSize={12}
-              lineHeight={14}
-              style={[styles.errorText, { color: theme["icon-error"] }]}
-            >
-              {error}
-            </ThemedText>
-          )}
+        <View style={styles.keyboard}>
+          {keys.map((row, rowIndex) => (
+            <View key={`row-${rowIndex}`} style={styles.row}>
+              {row.map((key) => {
+                if (key === "") {
+                  return <View key="empty" style={styles.key} />;
+                }
 
-          <View style={styles.keyboard}>
-            {keys.map((row, rowIndex) => (
-              <View key={`row-${rowIndex}`} style={styles.row}>
-                {row.map((key) => {
-                  if (key === "") {
-                    return <View key="empty" style={styles.key} />;
-                  }
-
-                  if (key === "biometric") {
-                    return (
-                      <TouchableOpacity
-                        key={key}
-                        onPress={onBiometricPress ?? (() => {})}
-                        activeOpacity={0.7}
-                        style={[
-                          styles.key,
-                          { backgroundColor: theme["foreground-primary"] },
-                        ]}
-                      >
-                        <ThemedText fontSize={16}>🔐</ThemedText>
-                      </TouchableOpacity>
-                    );
-                  }
-
+                if (key === "biometric") {
                   return (
                     <TouchableOpacity
                       key={key}
-                      onPress={() => handleKeyPress(key)}
+                      onPress={onBiometricPress ?? (() => {})}
                       activeOpacity={0.7}
                       style={[
                         styles.key,
                         { backgroundColor: theme["foreground-primary"] },
                       ]}
                     >
-                      {key === "erase" ? (
-                        <ThemedText
-                          style={[
-                            styles.keyText,
-                            { color: theme["text-primary"] },
-                          ]}
-                        >
-                          ⌫
-                        </ThemedText>
-                      ) : (
-                        <ThemedText
-                          style={[
-                            styles.keyText,
-                            { color: theme["text-primary"] },
-                          ]}
-                        >
-                          {key}
-                        </ThemedText>
-                      )}
+                      <ThemedText fontSize={16}>🔐</ThemedText>
                     </TouchableOpacity>
                   );
-                })}
-              </View>
-            ))}
-          </View>
+                }
 
-          <TouchableOpacity
-            onPress={onCancel}
-            activeOpacity={0.7}
-            style={[
-              styles.cancelButton,
-              { backgroundColor: theme["foreground-secondary"] },
-            ]}
-          >
-            <ThemedText fontSize={16} lineHeight={18} color="text-primary">
-              Cancel
-            </ThemedText>
-          </TouchableOpacity>
-        </Pressable>
-      </Pressable>
+                return (
+                  <TouchableOpacity
+                    key={key}
+                    onPress={() => handleKeyPress(key)}
+                    activeOpacity={0.7}
+                    style={[
+                      styles.key,
+                      { backgroundColor: theme["foreground-primary"] },
+                    ]}
+                  >
+                    {key === "erase" ? (
+                      <ThemedText
+                        style={[
+                          styles.keyText,
+                          { color: theme["text-primary"] },
+                        ]}
+                      >
+                        ⌫
+                      </ThemedText>
+                    ) : (
+                      <ThemedText
+                        style={[
+                          styles.keyText,
+                          { color: theme["text-primary"] },
+                        ]}
+                      >
+                        {key}
+                      </ThemedText>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ))}
+        </View>
+
+        <TouchableOpacity
+          onPress={onCancel}
+          activeOpacity={0.7}
+          style={[
+            styles.cancelButton,
+            { backgroundColor: theme["foreground-secondary"] },
+          ]}
+        >
+          <ThemedText fontSize={16} lineHeight={18} color="text-primary">
+            Cancel
+          </ThemedText>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      statusBarTranslucent
+      onRequestClose={onCancel}
+    >
+      {Platform.OS === "android" ? (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          {content}
+        </GestureHandlerRootView>
+      ) : (
+        content
+      )}
     </Modal>
   );
 }
