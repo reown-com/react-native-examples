@@ -153,9 +153,16 @@ jobs:
         run: |
           set -euo pipefail
           ANDROID_DIR="${{ inputs.root-path }}/android"
+          # Extraction must not abort the step: grep exits non-zero when nothing
+          # matches (apps that don't pin a literal ndkVersion, or a missing
+          # android/build.gradle), and under `set -e -o pipefail` that would kill
+          # the step before the skip check below. Disable pipefail and `|| true`
+          # so an empty result flows through to the graceful skip.
+          set +o pipefail
           NDK_VERSION="$(grep -rhoE 'ndkVersion[^"]*"[0-9][0-9.]+"' \
             "$ANDROID_DIR/build.gradle" "$ANDROID_DIR/app/build.gradle" 2>/dev/null \
-            | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+            | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
+          set -o pipefail
           if [ -z "${NDK_VERSION:-}" ]; then
             echo "No pinned ndkVersion found under $ANDROID_DIR — skipping NDK pre-install."
             exit 0
