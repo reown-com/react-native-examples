@@ -139,6 +139,58 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-${{ inputs.name }}-
 
+      # RN/AGP fetches the build-requested NDK on the fly during Build APK, and
+      # that download intermittently lands corrupted on CI runners
+      # ("Archive is not a ZIP archive" -> InstallFailedException) — failing the
+      # build but passing on rerun. Pre-install it via sdkmanager so the build
+      # finds it locally. The version is read from the generated
+      # android/build.gradle — the exact one the build resolves (Expo apps: pinned
+      # by plugins/withAndroidNdkVersion.js; committed-native apps: their
+      # buildscript ext) — so it can't drift. Apps that don't pin it are skipped
+      # (no regression). Retry so a corrupted archive self-heals. Mirrors the
+      # E2E action's Install Android NDK step.
+      - name: Pre-install Android NDK
+        run: |
+          set -euo pipefail
+          ANDROID_DIR="${{ inputs.root-path }}/android"
+          # Extraction must not abort the step: grep exits non-zero when nothing
+          # matches (apps that don't pin a literal ndkVersion, or a missing
+          # android/build.gradle), and under `set -e -o pipefail` that would kill
+          # the step before the skip check below. Disable pipefail and `|| true`
+          # so an empty result flows through to the graceful skip.
+          set +o pipefail
+          NDK_VERSION="$(grep -rhoE 'ndkVersion[^"]*"[0-9][0-9.]+"' \
+            "$ANDROID_DIR/build.gradle" "$ANDROID_DIR/app/build.gradle" 2>/dev/null \
+            | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
+          set -o pipefail
+          if [ -z "${NDK_VERSION:-}" ]; then
+            echo "No pinned ndkVersion found under $ANDROID_DIR — skipping NDK pre-install."
+            exit 0
+          fi
+          echo "Resolved ndkVersion=$NDK_VERSION (from generated android/build.gradle)"
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          # Accept licenses so the install runs unattended; `yes` feeds the prompts
+          # (and takes SIGPIPE on exit, hence `|| true`).
+          yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+          status=1
+          for attempt in 1 2 3; do
+            echo "=== sdkmanager NDK install attempt $attempt/3 (ndk;$NDK_VERSION) ==="
+            # pipefail off: `yes` takes SIGPIPE when sdkmanager exits, which would
+            # otherwise mask sdkmanager's exit code. The `if` is exempt from set -e,
+            # so a failed install is captured and retried instead of aborting.
+            set +o pipefail
+            if yes | "$SDKMANAGER" --install "ndk;$NDK_VERSION"; then
+              status=0
+            else
+              status=$?
+            fi
+            set -o pipefail
+            [ "$status" -eq 0 ] && break
+            echo "NDK install attempt $attempt failed (exit $status); clearing partial download and retrying"
+            rm -rf "$ANDROID_HOME/ndk/$NDK_VERSION"
+          done
+          [ "$status" -eq 0 ] || { echo "Error: NDK install failed after 3 attempts"; exit 1; }
+
       - name: Build APK
         id: build
         run: |
