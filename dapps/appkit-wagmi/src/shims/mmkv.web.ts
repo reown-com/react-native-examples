@@ -5,7 +5,12 @@ export class MMKV {
   private prefix: string;
 
   constructor(config?: {id?: string}) {
-    this.prefix = config?.id ? `mmkv.${config.id}.` : 'mmkv.';
+    // "mmkv.default" mirrors real MMKV's default instance id. Namespacing the
+    // default keeps prefixes disjoint: a bare "mmkv." prefix would match every
+    // custom instance's "mmkv.<id>." keys, so getAllKeys()/clearAll() on the
+    // default instance would read/wipe other instances (native MMKV instances
+    // are fully isolated).
+    this.prefix = `mmkv.${config?.id ?? 'default'}.`;
   }
 
   private key(k: string): string {
