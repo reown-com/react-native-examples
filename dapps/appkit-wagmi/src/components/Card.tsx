@@ -22,7 +22,7 @@ export function Card({title, value, onPress, icon, style}: CardProps) {
       style={[styles.container, {backgroundColor}, style]}
       bounceScale={0.98}
       onPress={onPress}>
-      <View>
+      <View style={styles.textColumn}>
         <Text variant="small-600" style={{color: Theme['fg-100']}}>
           {title}
         </Text>
@@ -46,5 +46,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  // Bound the text column so long unbroken values (e.g. the did:key Client ID)
+  // wrap within the card instead of overflowing. minWidth:0 lets the flex item
+  // shrink below its content width on web (default is min-width:auto).
+  textColumn: {
+    flex: 1,
+    minWidth: 0,
   },
 });

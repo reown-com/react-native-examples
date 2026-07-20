@@ -1,5 +1,4 @@
 import 'text-encoding';
-import '@walletconnect/react-native-compat';
 
 import React, {useEffect} from 'react';
 import {Linking, Platform} from 'react-native';
@@ -23,6 +22,7 @@ import {RootStackNavigator} from '@/navigators/RootStackNavigator';
 import {buildNetworkConfig} from '@/utils/WagmiUtils';
 import SettingsStore from '@/stores/SettingsStore';
 import AppKitConfigStore from '@/stores/AppKitConfigStore';
+import {DesktopFrameWrapper} from '@/components/DesktopFrameWrapper';
 import { storage } from './utils/StorageUtil';
 
 Sentry.init({
@@ -103,8 +103,10 @@ function App(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    // Hide splashscreen
-    BootSplash.hide({fade: true});
+    // Hide splashscreen (native-only; no bootsplash on web)
+    if (Platform.OS !== 'web') {
+      BootSplash.hide({fade: true});
+    }
 
     // Check if app was opened from a link-mode response
     async function checkInitialUrl() {
@@ -118,21 +120,24 @@ function App(): JSX.Element {
   }, []);
 
   return (
-    <SafeAreaProvider>
-      <GestureHandlerRootView style={{flex: 1}}>
-        <NavigationContainer>
-          <WagmiProvider config={wagmiAdapter.wagmiConfig}>
-            <AppKitProvider instance={appKit}>
-              <QueryClientProvider client={queryClient}>
-                <RootStackNavigator />
-                <Toast />
-                <AppKit />
-              </QueryClientProvider>
-            </AppKitProvider>
-          </WagmiProvider>
-        </NavigationContainer>
-      </GestureHandlerRootView>
-    </SafeAreaProvider>
+    <DesktopFrameWrapper>
+      <SafeAreaProvider>
+        <GestureHandlerRootView style={{flex: 1}}>
+          <NavigationContainer
+          documentTitle={{formatter: () => 'RN AppKit'}}>
+            <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+              <AppKitProvider instance={appKit}>
+                <QueryClientProvider client={queryClient}>
+                  <RootStackNavigator />
+                  <Toast />
+                  <AppKit />
+                </QueryClientProvider>
+              </AppKitProvider>
+            </WagmiProvider>
+          </NavigationContainer>
+        </GestureHandlerRootView>
+      </SafeAreaProvider>
+    </DesktopFrameWrapper>
   );
 }
 
