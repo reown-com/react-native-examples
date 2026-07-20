@@ -4,15 +4,18 @@ permissions:
   contents: read
 
 on:
-  # We don't build in CI — Vercel builds the POS preview (project "pos-demo",
-  # root dapps/pos-app) for every commit and reports it back as a GitHub
-  # deployment status. We run when that status turns successful and test the
-  # reported URL directly. The Vercel deployment serves the app's /api/*
-  # serverless functions (the payment proxy in dapps/pos-app/api/), which a
-  # static build does not — so this covers ALL flows, including the payment
-  # ones. Fork PRs Vercel doesn't deploy simply never trigger this workflow.
-  deployment_status:
-  # Manual run against an explicit preview URL.
+  # Run on the PR. We don't build in CI — Vercel builds the POS preview (project
+  # "pos-demo", root dapps/pos-app) for the branch, reachable at the stable
+  # branch alias pos-demo-git-<branch>-reown-com.vercel.app. That deployment
+  # serves the app's /api/* serverless functions (the payment proxy in
+  # dapps/pos-app/api/), which a static build does not — so this covers ALL
+  # flows, including the payment ones.
+  pull_request:
+    paths:
+      - 'dapps/pos-app/**'
+      - '.github/workflows/ci_e2e_tests_pos_web.yaml'
+  # Manual run against an explicit preview URL (e.g. a specific deployment, or a
+  # branch whose alias is truncated — see the length guard below).
   workflow_dispatch:
     inputs:
       preview_url:
@@ -21,48 +24,62 @@ on:
         type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.deployment.ref || github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   e2e:
     name: Maestro E2E Tests (Web · preview)
-    # Every Vercel project in the monorepo emits deployment_status events, across
-    # its Preview/Production/dev environments. Only act on a successful pos-demo
-    # *Preview* deployment (env is "Preview – pos-demo") so we test PR preview
-    # links and never run the payment flows against Production/dev.
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.deployment_status.state == 'success' &&
-       contains(github.event.deployment_status.environment, 'Preview') &&
-       contains(github.event.deployment_status.environment_url, 'pos-demo'))
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Resolve POS preview URL
         id: target
         env:
+          EVENT: ${{ github.event_name }}
           DISPATCH_URL: ${{ inputs.preview_url }}
-          DEPLOY_URL: ${{ github.event.deployment_status.environment_url }}
+          HEAD_REF: ${{ github.head_ref }}
         run: |
           set -euo pipefail
-          base="${DISPATCH_URL:-$DEPLOY_URL}"
-          base="${base%/}"
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            base="${DISPATCH_URL%/}"
+          else
+            # Vercel's git branch alias: lowercase the branch, replace runs of
+            # non-alphanumerics with "-", trim. e.g. feature/e2e-maestro-tests ->
+            # pos-demo-git-feature-e2e-maestro-tests-reown-com.vercel.app
+            slug="$(printf '%s' "$HEAD_REF" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//')"
+            label="pos-demo-git-${slug}-reown-com"
+            # A DNS label maxes at 63 chars; past that Vercel truncates and adds a
+            # hash, so the name-based alias no longer matches. Fail loud and point
+            # at workflow_dispatch rather than test the wrong URL.
+            if [ "${#label}" -gt 63 ]; then
+              echo "Vercel alias label >63 chars ('$label'); branch-name construction won't match. Re-run via workflow_dispatch with the exact preview_url." >&2
+              exit 1
+            fi
+            base="https://${label}.vercel.app"
+          fi
           echo "app_url=$base" >> "$GITHUB_OUTPUT"
           echo "Testing against: $base"
 
-      - name: Checkout flows (matching the deployed commit)
+      - name: Checkout flows (matching the PR commit)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.deployment.sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Install xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
-      - name: Check preview is reachable
+      - name: Wait for preview to be reachable
         env:
           APP_URL: ${{ steps.target.outputs.app_url }}
-        run: curl -fsS --retry 5 --retry-delay 3 --retry-all-errors -o /dev/null "$APP_URL"
+        run: |
+          # The branch alias serves the latest ready deployment for the branch;
+          # give Vercel time to finish building this push.
+          for i in $(seq 1 60); do
+            curl -fsS -o /dev/null "$APP_URL" && { echo "Preview reachable"; exit 0; }
+            echo "  ...waiting for preview ($i/60)"; sleep 10
+          done
+          echo "Preview not reachable after ~10m: $APP_URL"; exit 1
 
       - name: Install Maestro
         run: |
@@ -142,7 +159,7 @@ jobs:
                 {
                   "type": "section",
                   "fields": [
-                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.event.deployment.ref || github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.head_ref || github.ref_name }}`" },
                     { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
                   ]
                 },

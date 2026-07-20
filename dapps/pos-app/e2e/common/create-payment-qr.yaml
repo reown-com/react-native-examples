@@ -5,7 +5,11 @@
 # baked into the deployment from the Vercel pos-demo project env) and network
 # so the gateway returns a real payment QR. Without a merchant, "Start payment"
 # redirects to Settings instead of the amount screen.
-
+#
+# Maestro requires every flow file (incl. runFlow subflows) to open with a
+# config section; the url is inherited from the calling flow at runtime.
+url: ${APP_URL}
+---
 # Home -> start a new sale
 - tapOn:
     id: "start-payment-button"
