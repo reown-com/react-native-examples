@@ -11,6 +11,9 @@ on:
   # dapps/pos-app/api/), which a static build does not — so this covers ALL
   # flows, including the payment ones.
   pull_request:
+    # Include ready_for_review so the run fires when a draft PR is promoted to
+    # ready (the job `if:` below skips runs while it's still a draft).
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - 'dapps/pos-app/**'
       - '.github/workflows/ci_e2e_tests_pos_web.yaml'
@@ -30,6 +33,9 @@ concurrency:
 jobs:
   e2e:
     name: Maestro POS App E2E Tests (Web · preview)
+    # Skip while the PR is a draft; runs once it's marked ready for review.
+    # workflow_dispatch is unaffected.
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
