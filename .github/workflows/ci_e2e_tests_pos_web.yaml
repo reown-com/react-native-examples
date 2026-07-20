@@ -1,4 +1,4 @@
-name: e2e-tests-pos-web
+name: 🧪 POS - E2E Tests
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   e2e:
-    name: Maestro E2E Tests (Web · preview)
+    name: Maestro POS App E2E Tests (Web · preview)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

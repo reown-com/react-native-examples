@@ -1,4 +1,4 @@
-name: Release AppKit
+name: 🚀 Release AppKit
 run-name: "AppKit - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 Android' || inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }} (${{ inputs.release-type }})"
 
 permissions:
