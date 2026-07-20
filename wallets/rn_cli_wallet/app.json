@@ -83,6 +83,10 @@
           "project": "w3w-react-native"
         }
       ],
+      [
+        "./plugins/withAndroidNdkVersion.js",
+        { "ndkVersion": "27.1.12297006" }
+      ],
       "./plugins/withAndroidVariants.js",
       "./plugins/withAndroidVariantIcons.js"
     ]
