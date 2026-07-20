@@ -152,7 +152,13 @@ const SettingsStore = {
     state.pickerConsentAsked = true;
     const mmkv = new MMKV();
     mmkv.set('PICKER_AUTO_CONNECT', granted);
-    mmkv.set('PICKER_CONSENT_ASKED', true);
+    if (granted) {
+      mmkv.set('PICKER_CONSENT_ASKED', true);
+    } else {
+      // "Not now" applies to the current app run only — the consent
+      // alert shows again on next app start.
+      mmkv.delete('PICKER_CONSENT_ASKED');
+    }
   },
 
   togglePickerHeadless() {
