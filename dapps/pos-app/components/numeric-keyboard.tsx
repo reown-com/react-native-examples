@@ -55,7 +55,10 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                 />
               ) : (
                 <ThemedText
-                  testID={`key-${key}`}
+                  // The "." key gets a dedicated id ("key-decimal") instead of
+                  // "key-." because Maestro treats id selectors as regex, where
+                  // "." is a wildcard that would match any "key-X".
+                  testID={key === "." ? "key-decimal" : `key-${key}`}
                   style={[styles.keyText, { color: Theme["text-primary"] }]}
                 >
                   {key}

@@ -101,7 +101,10 @@ export default function ScanScreen() {
   );
 
   const handleOnClosePress = () => {
-    if (paymentId && paymentStatusData?.status === "requires_action") {
+    // Before the first status poll resolves, `paymentStatusData` is undefined
+    // but the payment is already open at the gateway — cancel it then too.
+    const status = paymentStatusData?.status;
+    if (paymentId && (status === undefined || status === "requires_action")) {
       cancelPayment(paymentId).catch((error) => {
         addLog("error", "Failed to cancel payment", "scan", "cancelPayment", {
           paymentId,
@@ -276,6 +279,7 @@ export default function ScanScreen() {
       )}
       {!isProcessing && (
         <Button
+          testID="cancel-button"
           onPress={handleOnClosePress}
           style={[
             styles.closeButton,

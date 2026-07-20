@@ -1,0 +1,33 @@
+# Subflow (not run standalone — lives under common/ so the CI *.yaml glob and
+# `maestro test e2e/` skip it): from the Home screen, start a $0.01 sale and
+# wait for the payment gateway QR. Needs a valid merchant
+# (EXPO_PUBLIC_DEFAULT_MERCHANT_ID + EXPO_PUBLIC_DEFAULT_CUSTOMER_API_KEY,
+# baked into the deployment from the Vercel pos-demo project env) and network
+# so the gateway returns a real payment QR. Without a merchant, "Start payment"
+# redirects to Settings instead of the amount screen.
+
+# Home -> start a new sale
+- tapOn:
+    id: "start-payment-button"
+
+# Enter $0.01 on the keypad
+- tapOn:
+    id: "key-0"
+- tapOn:
+    id: "key-decimal"
+- tapOn:
+    id: "key-0"
+- tapOn:
+    id: "key-1"
+
+# The charge button reflects the amount and is enabled
+- assertVisible:
+    text: "Charge \\$0.01"
+- tapOn:
+    id: "charge-button"
+
+# Wait for the payment gateway QR (backend round-trip)
+- extendedWaitUntil:
+    visible:
+      id: "pos-qr-code"
+    timeout: 20000

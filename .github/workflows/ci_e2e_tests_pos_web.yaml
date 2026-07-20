@@ -1,0 +1,167 @@
+name: e2e-tests-pos-web
+
+permissions:
+  contents: read
+
+on:
+  # We don't build in CI — Vercel builds the POS preview (project "pos-demo",
+  # root dapps/pos-app) for every commit and reports it back as a GitHub
+  # deployment status. We run when that status turns successful and test the
+  # reported URL directly. The Vercel deployment serves the app's /api/*
+  # serverless functions (the payment proxy in dapps/pos-app/api/), which a
+  # static build does not — so this covers ALL flows, including the payment
+  # ones. Fork PRs Vercel doesn't deploy simply never trigger this workflow.
+  deployment_status:
+  # Manual run against an explicit preview URL.
+  workflow_dispatch:
+    inputs:
+      preview_url:
+        description: 'Preview URL (e.g. https://pos-demo-git-<branch>-reown-com.vercel.app)'
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.deployment.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Maestro E2E Tests (Web · preview)
+    # Every Vercel project in the monorepo emits deployment_status events, across
+    # its Preview/Production/dev environments. Only act on a successful pos-demo
+    # *Preview* deployment (env is "Preview – pos-demo") so we test PR preview
+    # links and never run the payment flows against Production/dev.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       contains(github.event.deployment_status.environment, 'Preview') &&
+       contains(github.event.deployment_status.environment_url, 'pos-demo'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Resolve POS preview URL
+        id: target
+        env:
+          DISPATCH_URL: ${{ inputs.preview_url }}
+          DEPLOY_URL: ${{ github.event.deployment_status.environment_url }}
+        run: |
+          set -euo pipefail
+          base="${DISPATCH_URL:-$DEPLOY_URL}"
+          base="${base%/}"
+          echo "app_url=$base" >> "$GITHUB_OUTPUT"
+          echo "Testing against: $base"
+
+      - name: Checkout flows (matching the deployed commit)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha || github.sha }}
+
+      - name: Install xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Check preview is reachable
+        env:
+          APP_URL: ${{ steps.target.outputs.app_url }}
+        run: curl -fsS --retry 5 --retry-delay 3 --retry-all-errors -o /dev/null "$APP_URL"
+
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Run Maestro E2E Tests (Web)
+        id: maestro
+        env:
+          APP_URL: ${{ steps.target.outputs.app_url }}
+        run: |
+          mkdir -p maestro-artifacts maestro-artifacts/reports
+          set +e
+          # Run each flow in its OWN maestro process. Maestro web treats the
+          # browser as a single "device" and reuses it (plus localStorage) across
+          # flows within one `maestro test <dir>` call, so a flow that mutates
+          # persisted state leaks into later flows. A process per flow gives each
+          # a fresh browser and full isolation. Each flow retries once to absorb
+          # transient cold-start flakes.
+          overall_exit=0
+          : > maestro-output.log
+          for flow in dapps/pos-app/e2e/*.yaml; do
+            name="$(basename "$flow" .yaml)"
+            flow_exit=0
+            for attempt in 1 2; do
+              echo "=== ${name}: attempt ${attempt}/2 (web) ===" | tee -a maestro-output.log
+              xvfb-run -a "$HOME/.maestro/bin/maestro" test \
+                --headless \
+                --env APP_URL="$APP_URL" \
+                --format junit \
+                --output "maestro-artifacts/reports/${name}.xml" \
+                --test-output-dir "maestro-artifacts/${name}" \
+                --debug-output "${RUNNER_TEMP}/maestro-debug/${name}" \
+                "$flow" >"${RUNNER_TEMP}/${name}-attempt-${attempt}.log" 2>&1
+              flow_exit=$?
+              cat "${RUNNER_TEMP}/${name}-attempt-${attempt}.log" >> maestro-output.log
+              [ "$flow_exit" -eq 0 ] && break
+              if [ "$flow_exit" -gt 128 ]; then
+                echo "${name} killed by signal (exit $flow_exit) — not retrying" | tee -a maestro-output.log
+                break
+              fi
+              echo "${name} attempt ${attempt} failed (exit $flow_exit)" | tee -a maestro-output.log
+            done
+            [ "$flow_exit" -ne 0 ] && overall_exit="$flow_exit"
+          done
+          find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/ \; 2>/dev/null || true
+          echo "=== Overall Maestro exit: ${overall_exit} ==="
+          exit "$overall_exit"
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-web-test-results
+          path: |
+            maestro-artifacts/reports/*.xml
+            maestro-output.log
+            maestro-artifacts/**/*.png
+            maestro-artifacts/**/*.jpg
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Send Slack notification
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "POS App E2E Test Report (Web · preview)",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🧪 POS App E2E Test Report (Web · preview)" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.event.deployment.ref || github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*E2E Tests:*\n`${{ steps.maestro.outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }

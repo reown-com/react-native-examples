@@ -70,6 +70,7 @@ export default function AmountScreen() {
         ]}
       >
         <BigAmountInput
+          testID="amount-display"
           value={watchAmount}
           currency={currency.symbol}
           symbolPosition={currency.symbolPosition}
@@ -121,6 +122,7 @@ export default function AmountScreen() {
         )}
       />
       <Button
+        testID="charge-button"
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid}
         style={[
