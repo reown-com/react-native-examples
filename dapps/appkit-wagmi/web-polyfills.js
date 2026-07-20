@@ -14,9 +14,10 @@ if (g.process == null) {
 if (g.process.version == null) {
   g.process.version = '';
 }
-if (g.process.browser == null) {
-  g.process.browser = false;
-}
+// We are in a browser: force `true`, overriding the `false` that the Metro
+// polyfill (polyfills.js, which runs on all platforms) already set. Some web3
+// deps (readable-stream, stream-browserify) branch on `process.browser`.
+g.process.browser = true;
 if (g.Buffer == null) {
   g.Buffer = require('buffer').Buffer;
 }
