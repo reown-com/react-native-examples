@@ -58,6 +58,10 @@ interface State {
   logs: string[];
   isLinkModeRequest: boolean;
   themeMode: 'light' | 'dark';
+  // Dapp Picker POC
+  pickerAutoConnect: boolean;
+  pickerConsentAsked: boolean;
+  pickerHeadless: boolean;
 }
 
 /**
@@ -87,6 +91,9 @@ const state = proxy<State>({
   logs: [],
   isLinkModeRequest: false,
   themeMode: getInitialThemeMode(),
+  pickerAutoConnect: new MMKV().getBoolean('PICKER_AUTO_CONNECT') ?? false,
+  pickerConsentAsked: new MMKV().getBoolean('PICKER_CONSENT_ASKED') ?? false,
+  pickerHeadless: new MMKV().getBoolean('PICKER_HEADLESS') ?? true,
 });
 
 /**
@@ -138,6 +145,19 @@ const SettingsStore = {
 
   setIsLinkModeRequest(value: State['isLinkModeRequest']) {
     state.isLinkModeRequest = value;
+  },
+
+  setPickerConsent(granted: boolean) {
+    state.pickerAutoConnect = granted;
+    state.pickerConsentAsked = true;
+    const mmkv = new MMKV();
+    mmkv.set('PICKER_AUTO_CONNECT', granted);
+    mmkv.set('PICKER_CONSENT_ASKED', true);
+  },
+
+  togglePickerHeadless() {
+    state.pickerHeadless = !state.pickerHeadless;
+    new MMKV().set('PICKER_HEADLESS', state.pickerHeadless);
   },
 
   toggleTestNets() {

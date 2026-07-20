@@ -14,10 +14,11 @@ import { handleRedirect } from '@/utils/LinkingUtils';
 import { RequestModal } from './RequestModal';
 import { getSupportedChains } from '@/utils/HelperUtil';
 import { suiAddresses } from '@/utils/SuiWalletUtil';
+import { buildSessionProperties } from '@/utils/PickerUtil';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SUI_CHAINS, SUI_EVENTS, SUI_SIGNING_METHODS } from '@/constants/Sui';
 import { TON_CHAINS, TON_SIGNING_METHODS } from '@/constants/Ton';
-import { getWallet, tonAddresses } from '@/utils/TonWalletUtil';
+import { tonAddresses } from '@/utils/TonWalletUtil';
 import { tronAddresses } from '@/utils/TronWalletUtil';
 import { TRON_CHAINS, TRON_SIGNING_METHODS } from '@/constants/Tron';
 import {
@@ -240,22 +241,13 @@ export default function SessionProposalModal() {
       });
 
       try {
-        // Build session properties for TON
-        const sessionProperties: Record<string, string> = {};
-
-        if (namespaces.ton) {
-          const tonWallet = await getWallet();
-          sessionProperties.ton_getPublicKey = tonWallet.getPublicKey();
-          sessionProperties.ton_getStateInit = tonWallet.getStateInit();
-        }
+        // TON props + wc_feeTerms (Session Fees / Dapp Picker POC)
+        const sessionProperties = await buildSessionProperties(namespaces);
 
         const session = await walletKit.approveSession({
           id: proposal.id,
           namespaces,
-          sessionProperties:
-            Object.keys(sessionProperties).length > 0
-              ? sessionProperties
-              : undefined,
+          sessionProperties,
         });
         haptics.requestResponse();
         SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));

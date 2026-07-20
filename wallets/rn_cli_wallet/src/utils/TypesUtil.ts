@@ -66,11 +66,13 @@ export type RootStackParamList = {
   Scan: undefined;
   Logs: undefined;
   SecretPhrase: undefined;
+  DappBrowser: { url: string; name: string };
 };
 
 export type HomeTabParamList = {
   Wallets: undefined;
   Connections?: { uri: string };
+  Explore: undefined;
   Settings: undefined;
 };
 

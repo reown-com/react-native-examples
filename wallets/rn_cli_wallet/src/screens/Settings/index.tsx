@@ -19,7 +19,9 @@ import { RootStackParamList } from '@/utils/TypesUtil';
 import { Button } from '@/components/Button';
 
 export default function Settings() {
-  const { socketStatus, themeMode } = useSnapshot(SettingsStore.state);
+  const { socketStatus, themeMode, pickerHeadless } = useSnapshot(
+    SettingsStore.state,
+  );
   const [clientId, setClientId] = useState('');
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const Theme = useTheme();
@@ -96,6 +98,37 @@ export default function Settings() {
                 value={themeMode === 'dark'}
                 style={styles.switch}
                 onValueChange={toggleDarkMode}
+                trackColor={Platform.select({
+                  android: {
+                    false: Theme['foreground-tertiary'],
+                    true: Theme['bg-accent-primary'],
+                  },
+                })}
+                thumbColor={Platform.select({ android: Theme.white })}
+              />
+            )}
+          </View>
+        </Button>
+        <Button
+          onPress={() => SettingsStore.togglePickerHeadless()}
+          style={[
+            styles.switchCard,
+            { backgroundColor: Theme['foreground-primary'] },
+          ]}
+        >
+          <View style={styles.switchCardContent}>
+            <Text variant="md-500" color="text-primary">
+              Explore: headless connect
+            </Text>
+            {Platform.OS === 'web' ? (
+              <View pointerEvents="none" style={styles.switch}>
+                <Switch value={pickerHeadless} {...webAccentSwitchProps} />
+              </View>
+            ) : (
+              <Switch
+                value={pickerHeadless}
+                style={styles.switch}
+                onValueChange={() => SettingsStore.togglePickerHeadless()}
                 trackColor={Platform.select({
                   android: {
                     false: Theme['foreground-tertiary'],
