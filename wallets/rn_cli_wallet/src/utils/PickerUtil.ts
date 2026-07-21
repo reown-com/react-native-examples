@@ -50,7 +50,7 @@ const FEE_BPS = Number(ENV.FEE_BPS || 50);
 
 const PICKER_DAPP_BASE_URL =
   ENV.PICKER_DAPP_URL ||
-  'https://react-dapp-v2-git-dapp-picker-poc-reown-com.vercel.app';
+  'https://react-dapp-v2-git-session-fees-poc-reown-com.vercel.app';
 
 /**
  * Explore tile data — shaped like a future registry entry: a fee-honoring

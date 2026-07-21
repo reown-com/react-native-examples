@@ -4,7 +4,7 @@ The wallet ships an **Explore** tab: a curated directory of fee-honoring
 dapps. Tapping a tile opens the dapp in a webview with a **monetized
 WalletConnect session pre-established** — the user lands already connected,
 `wc_feeTerms` attached, and every swap pays the wallet via the session-fees
-mechanism (see `web-examples` branch `dapp-picker-poc`, PR #1042 lineage).
+mechanism (see `web-examples` branch `session-fees-poc`, PR #1042).
 
 ## How it works
 
@@ -44,7 +44,7 @@ yarn ios                     # or: yarn android
 
 Env (all optional, hardcoded demo defaults): `EXPO_PUBLIC_FEE_RECIPIENT_SOLANA`,
 `EXPO_PUBLIC_FEE_RECIPIENT_EVM`, `EXPO_PUBLIC_FEE_BPS`,
-`EXPO_PUBLIC_PICKER_DAPP_URL` (defaults to the `dapp-picker-poc` Vercel
+`EXPO_PUBLIC_PICKER_DAPP_URL` (defaults to the `session-fees-poc` Vercel
 preview of react-dapp-v2).
 
 Machine gotchas found while building this POC:
