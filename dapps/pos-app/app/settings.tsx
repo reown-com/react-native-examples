@@ -265,6 +265,7 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <SettingsItem
+          testID="settings-theme"
           title="Theme"
           value={THEME_LABELS[themeMode]}
           onPress={() => setActiveSheet("theme")}
@@ -272,24 +273,28 @@ export default function SettingsScreen() {
         />
 
         <SettingsItem
+          testID="settings-wallet-theme"
           title="Wallet theme"
           value={currentVariant?.name ?? "None"}
           onPress={() => setActiveSheet("walletTheme")}
         />
 
         <SettingsItem
+          testID="settings-currency"
           title="Currency"
           value={`${currentCurrency.name} (${currentCurrency.symbol})`}
           onPress={() => setActiveSheet("currency")}
         />
 
         <SettingsItem
+          testID="settings-merchant-id"
           title="Merchant ID"
           value={merchantIdInput || undefined}
           onPress={() => setActiveSheet("merchantId")}
         />
 
         <SettingsItem
+          testID="settings-customer-api-key"
           title="Customer API key"
           value="**********"
           onPress={() => setActiveSheet("customerApiKey")}
@@ -336,9 +341,17 @@ export default function SettingsScreen() {
           </Card>
         )}
 
-        <SettingsItem title="Test printer" onPress={handleTestPrinterPress} />
+        <SettingsItem
+          testID="settings-test-printer"
+          title="Test printer"
+          onPress={handleTestPrinterPress}
+        />
 
-        <SettingsItem title="View logs" onPress={() => router.push("/logs")} />
+        <SettingsItem
+          testID="settings-view-logs"
+          title="View logs"
+          onPress={() => router.push("/logs")}
+        />
 
         <ThemedText
           fontSize={12}
@@ -413,6 +426,7 @@ export default function SettingsScreen() {
             ]}
           />
           <Button
+            testID="settings-merchant-save"
             onPress={handleMerchantIdSave}
             disabled={isMerchantIdConfirmDisabled}
             style={[
@@ -467,6 +481,7 @@ export default function SettingsScreen() {
             ]}
           />
           <Button
+            testID="settings-customer-save"
             onPress={handleCustomerApiKeySave}
             disabled={isCustomerApiKeyConfirmDisabled}
             style={[

@@ -1,0 +1,190 @@
+name: 🧪 POS - E2E Tests
+
+permissions:
+  contents: read
+
+on:
+  # Run on the PR. We don't build in CI — Vercel builds the POS preview (project
+  # "pos-demo", root dapps/pos-app) for the branch, reachable at the stable
+  # branch alias pos-demo-git-<branch>-reown-com.vercel.app. That deployment
+  # serves the app's /api/* serverless functions (the payment proxy in
+  # dapps/pos-app/api/), which a static build does not — so this covers ALL
+  # flows, including the payment ones.
+  pull_request:
+    # Include ready_for_review so the run fires when a draft PR is promoted to
+    # ready (the job `if:` below skips runs while it's still a draft).
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'dapps/pos-app/**'
+      - '.github/workflows/ci_e2e_tests_pos_web.yaml'
+  # Manual run against an explicit preview URL (e.g. a specific deployment, or a
+  # branch whose alias is truncated — see the length guard below).
+  workflow_dispatch:
+    inputs:
+      preview_url:
+        description: 'Preview URL (e.g. https://pos-demo-git-<branch>-reown-com.vercel.app)'
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Maestro POS App E2E Tests (Web · preview)
+    # Skip while the PR is a draft; runs once it's marked ready for review.
+    # workflow_dispatch is unaffected.
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Resolve POS preview URL
+        id: target
+        env:
+          EVENT: ${{ github.event_name }}
+          DISPATCH_URL: ${{ inputs.preview_url }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            base="${DISPATCH_URL%/}"
+          else
+            # Vercel's git branch alias: lowercase the branch, replace runs of
+            # non-alphanumerics with "-", trim. e.g. feature/e2e-maestro-tests ->
+            # pos-demo-git-feature-e2e-maestro-tests-reown-com.vercel.app
+            slug="$(printf '%s' "$HEAD_REF" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//')"
+            label="pos-demo-git-${slug}-reown-com"
+            # A DNS label maxes at 63 chars; past that Vercel truncates and adds a
+            # hash, so the name-based alias no longer matches. Fail loud and point
+            # at workflow_dispatch rather than test the wrong URL.
+            if [ "${#label}" -gt 63 ]; then
+              echo "Vercel alias label >63 chars ('$label'); branch-name construction won't match. Re-run via workflow_dispatch with the exact preview_url." >&2
+              exit 1
+            fi
+            base="https://${label}.vercel.app"
+          fi
+          echo "app_url=$base" >> "$GITHUB_OUTPUT"
+          echo "Testing against: $base"
+
+      - name: Checkout flows (matching the PR commit)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Install xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Wait for preview to be reachable
+        env:
+          APP_URL: ${{ steps.target.outputs.app_url }}
+        run: |
+          # The branch alias serves the latest ready deployment for the branch;
+          # give Vercel time to finish building this push.
+          for i in $(seq 1 60); do
+            curl -fsS -o /dev/null "$APP_URL" && { echo "Preview reachable"; exit 0; }
+            echo "  ...waiting for preview ($i/60)"; sleep 10
+          done
+          echo "Preview not reachable after ~10m: $APP_URL"; exit 1
+
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Run Maestro E2E Tests (Web)
+        id: maestro
+        env:
+          APP_URL: ${{ steps.target.outputs.app_url }}
+        run: |
+          mkdir -p maestro-artifacts maestro-artifacts/reports
+          set +e
+          # Run each flow in its OWN maestro process. Maestro web treats the
+          # browser as a single "device" and reuses it (plus localStorage) across
+          # flows within one `maestro test <dir>` call, so a flow that mutates
+          # persisted state leaks into later flows. A process per flow gives each
+          # a fresh browser and full isolation. Each flow retries once to absorb
+          # transient cold-start flakes.
+          overall_exit=0
+          : > maestro-output.log
+          for flow in dapps/pos-app/e2e/*.yaml; do
+            name="$(basename "$flow" .yaml)"
+            flow_exit=0
+            for attempt in 1 2; do
+              echo "=== ${name}: attempt ${attempt}/2 (web) ===" | tee -a maestro-output.log
+              xvfb-run -a "$HOME/.maestro/bin/maestro" test \
+                --headless \
+                --env APP_URL="$APP_URL" \
+                --format junit \
+                --output "maestro-artifacts/reports/${name}.xml" \
+                --test-output-dir "maestro-artifacts/${name}" \
+                --debug-output "${RUNNER_TEMP}/maestro-debug/${name}" \
+                "$flow" >"${RUNNER_TEMP}/${name}-attempt-${attempt}.log" 2>&1
+              flow_exit=$?
+              cat "${RUNNER_TEMP}/${name}-attempt-${attempt}.log" >> maestro-output.log
+              [ "$flow_exit" -eq 0 ] && break
+              if [ "$flow_exit" -gt 128 ]; then
+                echo "${name} killed by signal (exit $flow_exit) — not retrying" | tee -a maestro-output.log
+                break
+              fi
+              echo "${name} attempt ${attempt} failed (exit $flow_exit)" | tee -a maestro-output.log
+            done
+            [ "$flow_exit" -ne 0 ] && overall_exit="$flow_exit"
+          done
+          find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/ \; 2>/dev/null || true
+          echo "=== Overall Maestro exit: ${overall_exit} ==="
+          exit "$overall_exit"
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-web-test-results
+          path: |
+            maestro-artifacts/reports/*.xml
+            maestro-output.log
+            maestro-artifacts/**/*.png
+            maestro-artifacts/**/*.jpg
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Send Slack notification
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "POS App E2E Test Report (Web · preview)",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🧪 POS App E2E Test Report (Web · preview)" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.head_ref || github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*E2E Tests:*\n`${{ steps.maestro.outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }

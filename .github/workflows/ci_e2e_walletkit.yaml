@@ -1,4 +1,4 @@
-name: CI E2E WalletKit
+name: 🧪 WalletKit - E2E Tests
 # The "(skip-metrics)" suffix is consumed by the E2E KPI metrics job (WalletConnect/actions)
 # to exclude those runs from stats. Don't change/remove it.
 # The platform label mirrors which jobs actually run (see each job's `if:`):

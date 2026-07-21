@@ -1,4 +1,4 @@
-name: Release WalletKit
+name: 🚀 Release WalletKit
 run-name: "WalletKit - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 Android' || inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }} (${{ inputs.release-type }})"
 
 permissions:
