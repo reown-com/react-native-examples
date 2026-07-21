@@ -68,7 +68,11 @@ jobs:
   check-balance:
     # Skip the faucet/balance check on draft PRs too — the E2E jobs that need it
     # are skipped while a PR is a draft, so there's nothing to check for.
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    # Dependabot PRs can't read repo secrets (wallet env, faucet webhook), so the
+    # E2E jobs would always fail — skip the whole workflow for them.
+    if: >-
+      github.actor != 'dependabot[bot]'
+      && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     uses: ./.github/workflows/e2e-balance-check.yml
     secrets:
       SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
@@ -80,6 +84,7 @@ jobs:
     # dispatch, gated by the `ios` checkbox.
     if: >-
       always()
+      && github.actor != 'dependabot[bot]'
       && (github.event_name != 'workflow_dispatch' || inputs.ios)
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
@@ -159,7 +164,8 @@ jobs:
     # Balance alert should not block tests. Android runs on every trigger (it's
     # the cheap 6h canary); on dispatch, gated by the `android` checkbox.
     if: >-
-      always() && (github.event_name != 'workflow_dispatch' || inputs.android)
+      always() && github.actor != 'dependabot[bot]'
+      && (github.event_name != 'workflow_dispatch' || inputs.android)
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - Android
     runs-on: ubuntu-latest
@@ -242,6 +248,7 @@ jobs:
     # for parity with iOS's daily-only schedule gate.
     if: >-
       always()
+      && github.actor != 'dependabot[bot]'
       && (github.event_name != 'workflow_dispatch' || inputs.web)
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)

@@ -34,8 +34,11 @@ jobs:
   e2e:
     name: Maestro POS App E2E Tests (Web · preview)
     # Skip while the PR is a draft; runs once it's marked ready for review.
-    # workflow_dispatch is unaffected.
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    # workflow_dispatch is unaffected. Dependabot PRs can't read repo secrets
+    # (Slack webhook), so skip them entirely.
+    if: >-
+      github.actor != 'dependabot[bot]'
+      && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
