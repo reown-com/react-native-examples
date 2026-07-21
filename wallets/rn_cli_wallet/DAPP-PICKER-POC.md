@@ -71,6 +71,50 @@ Machine gotchas found while building this POC:
 Tap count to connected: **1 tap** (tile) after the one-time consent —
 the H2b claim holds.
 
+## Integration steps — for a wallet adopting this
+
+Generalized from this POC (≈300 lines in rn_cli_wallet; the five touched
+files below are the map):
+
+1. **Attach fee terms at session approval** — add `wc_feeTerms` (JSON
+   string: `{version, feeRecipient, feeRecipientEip155, feeBps}`) to
+   `sessionProperties` in your `approveSession` call, for every session.
+   (Target architecture: skip this — terms live in the WCN registry, zero
+   wallet code; see web-examples `docs/session-fees/fee-splitter.md`.)
+   *Here: `src/utils/PickerUtil.ts` (`buildSessionProperties`) +
+   `src/modals/SessionProposalModal.tsx`.*
+2. **Ship the directory UI** — a screen listing fee-honoring dapps. Each
+   entry needs only `{name, icon, url}` where `url` carries the contract
+   (`?wc_auto=1&connect=…` + dapp-specific presets). Hardcode for a pilot;
+   fetch from a registry later — the entry shape is registry-ready.
+   *Here: `src/screens/Explore/index.tsx`.*
+3. **Webview host** — open the tile URL in a webview with two hooks:
+   `onMessage` parsing `{type:'wc_session_offer', uri}`, and
+   `onShouldStartLoadWithRequest` intercepting `wc:` URLs (return false) as
+   the fallback channel. On either: **record the pairing topic** (parse
+   `wc:<topic>@`) as picker-initiated, then `walletKit.pair({ uri })`
+   silently. *Here: `src/screens/DappBrowser/index.tsx`.*
+4. **Scoped auto-approval** — in your `session_proposal` handler, if
+   `proposal.params.pairingTopic` is in the picker set AND the user granted
+   consent: approve directly with your full supported namespaces + the fee
+   terms; on any error fall back to your normal approval modal. **Never
+   auto-approve proposals from other sources** (QR, deep links). *Here:
+   `src/hooks/useWalletKitEventsManager.ts` + `PickerUtil.ts`
+   (`autoApprovePickerProposal`, `isPickerPairing`).*
+5. **Consent UX** — a one-time "Auto-connect to dapps opened from Explore?"
+   prompt before the first auto-approval, persisted only when granted
+   ("Not now" re-asks next app start), plus a settings switch to
+   grant/revoke any time. Transactions keep the normal sign flow — consent
+   covers connections only. *Here: `Explore/index.tsx` (alert),
+   `src/store/SettingsStore.ts`, `src/screens/Settings/index.tsx`.*
+6. **Leave signing untouched** — session requests arrive on the same
+   session events as always; your existing sign sheets render over the
+   webview.
+
+Security invariants to preserve when adapting: auto-approval keyed strictly
+to pairing topics your own webview created; consent explicit and revocable;
+fallback to the manual modal on every error path.
+
 ## Corners cut (POC)
 
 - Explore tiles are a hardcoded array, not a registry; icons are colored
