@@ -1,9 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import {Linking, StyleSheet} from 'react-native';
-import {
-  WebView,
-  WebViewMessageEvent
-} from 'react-native-webview';
+import {WebView} from 'react-native-webview';
+import type {WebViewMessageEvent} from 'react-native-webview';
 import type {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import {RootStackScreenProps} from '@/utils/TypesUtil';
 import {ToastUtils} from '@/utils/ToastUtils';
