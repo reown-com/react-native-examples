@@ -96,7 +96,7 @@ export async function loadSolanaWallet(input: string): Promise<{
 
   if (__DEV__) {
     console.warn(
-      '[SECURITY] Solana key material stored unencrypted. Use secure enclave in production.',
+      '[SECURITY] Solana key material stored in encrypted MMKV on native (key in Keychain/Keystore); unencrypted localStorage on web.',
     );
   }
 

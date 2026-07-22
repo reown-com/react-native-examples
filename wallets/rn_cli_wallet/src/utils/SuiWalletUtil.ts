@@ -64,7 +64,7 @@ export async function loadSuiWallet(input: string): Promise<{
   await storage.setItem('SUI_MNEMONIC_1', trimmedInput);
   if (__DEV__) {
     console.warn(
-      '[SECURITY] SUI mnemonic stored unencrypted. Use secure enclave in production.',
+      '[SECURITY] SUI mnemonic stored in encrypted MMKV on native (key in Keychain/Keystore); unencrypted localStorage on web.',
     );
   }
 
