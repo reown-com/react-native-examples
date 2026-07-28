@@ -1,0 +1,33 @@
+# Flow 2 — sign a message: dapp requests personal_sign, wallet approves.
+appId: ${APP_ID}
+tags:
+  - relay-walletkit
+  - sign
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- runFlow: _connect_walletkit.yaml
+# In the dapp (browser), trigger personal_sign ("Hello AppKit!").
+- tapOn:
+    id: 'sign-message-button'
+# The request arrives in the wallet over the relay; foreground it to approve.
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: 'approve-button'
+    timeout: 30000
+- tapOn:
+    id: 'approve-button'
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - back
+# Dapp shows the persistent, testID'd result.
+- extendedWaitUntil:
+    visible:
+      id: 'sign-result'
+    timeout: 30000
+- assertVisible: 'Sign success'

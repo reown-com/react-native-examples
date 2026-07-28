@@ -1,0 +1,50 @@
+# Mirror-suite connect handshake — native appkit-wagmi dapp (app under test) <->
+# web wallet (counterparty). Untagged; pulled in via runFlow by the mirror flows.
+#
+# There is NO deep link from a native dapp to a web wallet, so we bridge via the
+# OS clipboard (shared between the app and the device browser on a simulator /
+# emulator): AppKit's QR view has a "copy to clipboard" button for the wc: URI —
+# we copy it, open the web wallet, and paste it into the paste-URI screen. No
+# dapp code change needed (the URI never has to be surfaced as readable text).
+#
+# Env:
+#   APP_ID      native appkit-wagmi bundle id (app under test)
+#   WALLET_URL  deployed web wallet base URL (counterparty)
+#
+# The wallet reads the OS clipboard itself via its "Paste a URL" button
+# (ScannerOptionsModal -> button-paste-url -> getClipboardString ->
+# handleUriOrPaymentLink, which pairs on a wc: URI). We deliberately do NOT use
+# Maestro's `pasteText`: that only replays what a prior `copyTextFrom` captured
+# into Maestro's own buffer — it does not read the OS clipboard, so it would be
+# empty here (the URI was copied by AppKit's button, not by Maestro).
+#
+# LIVE-TUNING (needs a device run to confirm):
+#   - AppKit "Connect Wallet" label + the QR-view copy-to-clipboard button label
+#     (guessed "Copy link" below).
+#   - Web clipboard READ permission: expo-clipboard's getStringAsync ->
+#     navigator.clipboard.readText() needs a secure context + clipboard-read
+#     permission; the managed Chromium may prompt/deny. May need a browser flag.
+appId: ${APP_ID}
+---
+# Open the AppKit modal (QR view) and copy the wc: URI to the OS clipboard.
+- tapOn: 'Connect Wallet'
+- tapOn: 'Copy link'
+# Open the web wallet in the device browser; its paste button reads the clipboard.
+- openLink:
+    link: ${WALLET_URL}
+    browser: true
+- extendedWaitUntil:
+    visible:
+      id: 'button-scan'
+    timeout: 30000
+- tapOn:
+    id: 'button-scan'
+- tapOn:
+    id: 'button-paste-url'
+# Approve the proposal in the web wallet.
+- extendedWaitUntil:
+    visible:
+      id: 'approve-button'
+    timeout: 30000
+- tapOn:
+    id: 'approve-button'

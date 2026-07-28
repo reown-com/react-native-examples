@@ -1,0 +1,18 @@
+# Mirror Flow 1 — connect: native appkit dapp initiates, web wallet approves.
+# App under test: native appkit-wagmi. Counterparty: deployed web wallet.
+appId: ${APP_ID}
+tags:
+  - relay-appkit
+  - connect
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- runFlow: _connect_appkit.yaml
+# Foreground the native dapp and confirm it reflects the connected account.
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: 'dapp-connected'
+    timeout: 30000

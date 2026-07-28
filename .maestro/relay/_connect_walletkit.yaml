@@ -1,0 +1,39 @@
+# Reusable connect handshake — NOT a standalone test.
+# It is untagged on purpose: the CI runs the suite with `--include-tags relay-walletkit`,
+# so tag filtering never picks this up directly; the tagged flows below pull it
+# in via `runFlow`. It opens the AppKit web dapp in the device browser, starts a
+# WalletConnect connection, approves the proposal in the native wallet, and
+# returns to the browser — leaving a live session with the dapp foregrounded.
+#
+# Env:
+#   APP_ID    native wallet bundle id (the app under test)
+#   DAPP_URL  appkit-wagmi web dapp base URL (deployed counterparty)
+#
+# LIVE-TUNING NOTES (need a device run to confirm):
+#   - AppKitButton renders "Connect Wallet" when disconnected.
+#   - The dapp must surface "React Native Sample Wallet" in the AppKit wallet
+#     list so tapping it deep-links to the native wallet. If it doesn't, switch
+#     to the QR/copy-URI path instead.
+#   - Post-approve foregrounding differs per platform; the iOS `back` returns to
+#     Safari. Android usually redirects back to Chrome automatically.
+appId: ${APP_ID}
+---
+- openLink:
+    link: ${DAPP_URL}
+    browser: true
+- extendedWaitUntil:
+    visible: 'AppKit + Multichain'
+    timeout: 30000
+- tapOn: 'Connect Wallet'
+- tapOn: 'React Native Sample Wallet'
+- extendedWaitUntil:
+    visible:
+      id: 'approve-button'
+    timeout: 30000
+- tapOn:
+    id: 'approve-button'
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - back

@@ -39,6 +39,7 @@ const IndividualSession = ({
 
   return (
     <Button
+      testID="session-item"
       style={[
         styles.container,
         { backgroundColor: Theme['foreground-primary'] },

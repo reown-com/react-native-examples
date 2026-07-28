@@ -1,0 +1,14 @@
+# Maestro config for the relay (dapp <-> wallet) E2E suite.
+#
+# Named by the SDK under test:
+#   maestro test --include-tags relay-walletkit .maestro/relay   # native wallet vs web dapp
+#   maestro test --include-tags relay-appkit    .maestro/relay   # native appkit vs web wallet
+# Tag filtering keeps the untagged `_connect_*.yaml` subflows from running as
+# standalone tests; they are only pulled in via `runFlow`.
+#
+# Suite is intentionally separate from the WC Pay suite (shared flows copied in
+# by ci_e2e_walletkit.yaml) and from the legacy .maestro/native + .maestro/web
+# flows.
+baselineBranch: main
+flows:
+  - '*.yaml'

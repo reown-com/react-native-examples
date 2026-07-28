@@ -1,0 +1,38 @@
+# Mirror Flow 2 — sign a message: native appkit requests personal_sign, the web
+# wallet approves.
+#
+# App switching: after connect the browser wallet is foreground. We foreground
+# the native dapp to trigger the sign, then re-open the wallet URL to bring the
+# browser back (the relay re-delivers the queued session_request after the page
+# reconnects), approve there, then return to the dapp to assert the result.
+appId: ${APP_ID}
+tags:
+  - relay-appkit
+  - sign
+---
+- launchApp:
+    clearState: true
+    permissions:
+      all: allow
+- runFlow: _connect_appkit.yaml
+# Trigger personal_sign on the native dapp.
+- launchApp
+- tapOn:
+    id: 'sign-message-button'
+# Bring the web wallet forward and approve the request.
+- openLink:
+    link: ${WALLET_URL}
+    browser: true
+- extendedWaitUntil:
+    visible:
+      id: 'approve-button'
+    timeout: 30000
+- tapOn:
+    id: 'approve-button'
+# Back to the dapp: persistent, testID'd result.
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: 'sign-result'
+    timeout: 30000
+- assertVisible: 'Sign success'
