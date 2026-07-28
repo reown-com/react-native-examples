@@ -184,16 +184,11 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
           disable-animations: true
+          # Single line: the android-emulator-runner `script` does not honor
+          # backslash line-continuations (they leak a literal "\" as an arg →
+          # "Flow path does not exist"). Mirrors the walletkit composite.
           script: |
-            adb install "$APK_PATH"
-            mkdir -p maestro-artifacts
-            "$HOME/.maestro/bin/maestro" test \
-              --env APP_ID="$APP_ID" \
-              --env DAPP_URL="$DAPP_URL" \
-              --include-tags relay-walletkit \
-              --test-output-dir maestro-artifacts \
-              --debug-output "${RUNNER_TEMP}/maestro-debug" \
-              .maestro/relay
+            adb install "$APK_PATH"; mkdir -p maestro-artifacts; "$HOME/.maestro/bin/maestro" test --env APP_ID="$APP_ID" --env DAPP_URL="$DAPP_URL" --include-tags relay-walletkit --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/relay
 
       - name: Upload Maestro artifacts (Android)
         if: ${{ !cancelled() }}
@@ -429,10 +424,12 @@ jobs:
             ${{ runner.os }}-gradle-relay-appkit-
 
       - name: Build APK
-        working-directory: ${{ env.APP_ROOT }}
+        working-directory: ${{ env.APP_ROOT }}/android
+        # --stacktrace to surface the failing config-time `node` exec (the
+        # default lifecycle log swallows the subprocess stderr).
         run: |
           export SENTRY_DISABLE_AUTO_UPLOAD=true
-          yarn run android:build:internal
+          ./gradlew app:assembleInternal --stacktrace
 
       - name: Free disk space
         run: |
@@ -466,16 +463,10 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
           disable-animations: true
+          # Single line (see walletkit note): the android-emulator-runner script
+          # does not honor backslash line-continuations.
           script: |
-            adb install "$APK_PATH"
-            mkdir -p maestro-artifacts
-            "$HOME/.maestro/bin/maestro" test \
-              --env APP_ID="$APP_ID" \
-              --env WALLET_URL="$WALLET_URL" \
-              --include-tags relay-appkit \
-              --test-output-dir maestro-artifacts \
-              --debug-output "${RUNNER_TEMP}/maestro-debug" \
-              .maestro/relay
+            adb install "$APK_PATH"; mkdir -p maestro-artifacts; "$HOME/.maestro/bin/maestro" test --env APP_ID="$APP_ID" --env WALLET_URL="$WALLET_URL" --include-tags relay-appkit --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/relay
 
       - name: Upload Maestro artifacts (Android)
         if: ${{ !cancelled() }}
