@@ -1,30 +1,24 @@
 # Flow 5 — disconnect from the dapp side: dapp tears down the session; the
-# wallet receives session_delete and drops it.
+# wallet receives session_delete and drops it. Uses the dapp's TEST_MODE
+# "Disconnect (E2E)" button (the AppKit account button isn't text-matchable on web).
 appId: ${APP_ID}
 tags:
   - relay-walletkit
   - disconnect-dapp
 ---
-- launchApp:
-    clearState: true
-    permissions:
-      all: allow
 - runFlow: _connect_walletkit.yaml
 - extendedWaitUntil:
-    visible:
-      id: 'dapp-connected'
-    timeout: 30000
-# Open the AppKit account view (AppKitButton now shows the account) and disconnect.
-# LIVE-TUNING: confirm the account-modal open target and the "Disconnect" label
-# come from the AppKit account view.
-- tapOn:
-    id: 'dapp-connected'
-- tapOn: 'Disconnect'
+    visible: 'Connected to'
+    timeout: 60000
+# Disconnect from the dapp.
+- tapOn: 'Disconnect (E2E)'
 - extendedWaitUntil:
-    notVisible:
-      id: 'dapp-connected'
+    notVisible: 'Connected to'
     timeout: 30000
-# Wallet side dropped the session too.
-- launchApp
+# Wallet side dropped the session too (session_delete over the relay).
+- launchApp:
+    appId: ${APP_ID}
 - tapOn: 'Connected apps'
-- assertVisible: 'No connected apps yet'
+- extendedWaitUntil:
+    visible: 'No connected apps yet'
+    timeout: 30000

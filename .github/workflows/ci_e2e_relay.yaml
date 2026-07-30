@@ -1,16 +1,15 @@
 name: CI E2E Relay
 # Cross-app WalletConnect *relay* E2E (connect / sign / switch-chain / disconnect /
-# restore), named by the SDK under test:
-#   relay-walletkit — native rn_cli_wallet (under test) vs deployed appkit web dapp
-#   relay-appkit    — native appkit-wagmi (under test) vs deployed rn_cli_wallet web
-# In each, Maestro drives the native app + its web counterparty in the device
-# browser (one device, one flow). Separate from the WC Pay E2E
-# (ci_e2e_walletkit.yaml). See .context/RELAY_E2E_PLAN.md.
+# restore): the native rn_cli_wallet (app under test) drives the appkit-wagmi WEB
+# dapp (served from source in the device browser) via Maestro, one device, one
+# flow. Separate from the WC Pay E2E (ci_e2e_walletkit.yaml). See
+# .context/RELAY_E2E_PLAN.md.
 #
-# Flows live in .maestro/relay/ (tags: relay-walletkit / relay-appkit). Build
-# steps mirror the proven walletkit-build-and-maestro composite; kept
-# self-contained here so the relay path carries no pay-core / merchant / permit2
-# baggage.
+# Both apps are built/served from the PR's source: the wallet natively (simulator/
+# emulator) and the dapp as a static web export served on the runner. Flows live
+# in .maestro/relay/ (tag: relay-walletkit). Wallet build steps mirror the proven
+# walletkit-build-and-maestro composite (kept self-contained, no pay baggage);
+# the dapp web export mirrors that composite's web leg.
 
 permissions:
   contents: read
@@ -21,7 +20,7 @@ concurrency:
 
 on:
   schedule:
-    - cron: '0 9 * * *' # Daily canary: wallet (main) native vs deployed appkit web.
+    - cron: '0 9 * * *' # Daily canary.
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
@@ -35,31 +34,183 @@ on:
       platform:
         description: 'Platform to run'
         required: false
-        default: both
+        default: ios
         type: choice
-        options: [both, android, ios]
-      dapp-url:
-        description: 'appkit-wagmi web dapp base URL (defaults to vars.RELAY_DAPP_URL)'
-        required: false
-        default: ''
-        type: string
+        options: [ios, android]
 
 env:
-  # Deployed web counterparties (tracking main). Must be https URLs reachable from
-  # the emulator/simulator AND allowlisted on the reown projectId.
-  #   DAPP_URL   — appkit-wagmi web dapp (counterparty for the relay-walletkit suite)
-  #   WALLET_URL — rn_cli_wallet web       (counterparty for the relay-appkit suite)
-  # DAPP_URL override precedence: dispatch input > RELAY_DAPP_URL repo var > default.
-  DAPP_URL: ${{ inputs.dapp-url != '' && inputs.dapp-url || vars.RELAY_DAPP_URL || 'https://react-native-appkit.vercel.app' }}
-  WALLET_URL: ${{ vars.RELAY_WALLET_URL || 'https://react-native-walletkit.vercel.app' }}
   APP_ID: com.walletconnect.web3wallet.rnsample.internal
   WALLET_ROOT: wallets/rn_cli_wallet
+  DAPP_ROOT: dapps/appkit-wagmi
 
 jobs:
-  e2e-relay-walletkit-android:
+  e2e-relay-walletkit-ios:
+    # macOS is expensive but it's the validated platform (the Home->browser resume
+    # is proven on the iOS simulator). Runs on PR / daily cron / dispatch.
     if: >-
-      github.event_name != 'workflow_dispatch' || inputs.platform == 'both' || inputs.platform == 'android'
-    name: E2E Relay WalletKit - Android
+      (github.event_name == 'schedule')
+      || (github.event_name == 'workflow_dispatch' && inputs.platform == 'ios')
+      || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
+    name: E2E Relay WalletKit - iOS
+    runs-on: macos-latest-xlarge
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # --- Wallet (native, app under test) ---
+      - name: Install wallet dependencies
+        working-directory: ${{ env.WALLET_ROOT }}
+        run: yarn install --immutable
+
+      - name: Write wallet .env
+        working-directory: ${{ env.WALLET_ROOT }}
+        env:
+          WALLET_ENV_FILE: ${{ secrets.WALLETKIT_ENV_FILE }}
+          WALLET_PRIVATE_KEY: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$WALLET_ENV_FILE" > .env
+          {
+            echo "EXPO_PUBLIC_TEST_PRIVATE_KEY=$WALLET_PRIVATE_KEY"
+            echo "EXPO_PUBLIC_TEST_MODE=true"
+            echo "SENTRY_DISABLE_AUTO_UPLOAD=true"
+          } >> .env
+
+      - name: Select Xcode 26.2
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.2.app/Contents/Developer
+          xcodebuild -version
+
+      - name: Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.3.0
+          bundler-cache: true
+          working-directory: ${{ env.WALLET_ROOT }}
+
+      - name: Expo Prebuild (iOS)
+        working-directory: ${{ env.WALLET_ROOT }}
+        run: APP_VARIANT=internal npx expo prebuild --platform ios --no-install
+
+      - name: Set Xcode paths
+        run: |
+          XCODEPROJ=$(find "$WALLET_ROOT/ios" -maxdepth 1 -name "*.xcodeproj" -print -quit)
+          echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
+          echo "XCWORKSPACE_PATH=$WALLET_ROOT/ios/ReactNWallet.xcworkspace" >> "$GITHUB_ENV"
+
+      - name: Cache Pods
+        id: pods-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WALLET_ROOT }}/ios/Pods
+          key: ${{ runner.os }}-pods-relay-${{ hashFiles(format('{0}/ios/Podfile.lock', env.WALLET_ROOT)) }}
+
+      - name: Build wallet for Simulator
+        uses: maierj/fastlane-action@v3.0.0
+        with:
+          lane: build_for_simulator
+        env:
+          SCHEME: ReactNWallet
+          BUNDLE_ID: com.walletconnect.web3wallet.rnsample.internal
+          PODFILE_PATH: ${{ env.WALLET_ROOT }}/ios/Podfile
+          XCWORKSPACE_PATH: ${{ env.XCWORKSPACE_PATH }}
+          XCODE_PROJECT_PATH: ${{ env.XCODE_PROJECT_PATH }}
+          PROJECT_TYPE: wallet
+          RELEASE_TYPE: internal
+          BUILD_FOR_SIMULATOR: true
+          PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
+          SENTRY_DISABLE_AUTO_UPLOAD: true
+
+      - name: Find .app path
+        run: echo "APP_PATH=$(cat build/app_path.txt)" >> "$GITHUB_ENV"
+
+      - name: Boot iOS Simulator
+        run: |
+          DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
+            jq -r '.devicetypes[] | select(.productFamily == "iPhone") | .identifier' | tail -1)
+          DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>/dev/null || \
+            xcrun simctl list devices available -j | \
+            jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
+          xcrun simctl boot "$DEVICE_ID" || true
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+          xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
+          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+
+      - name: Install app on Simulator
+        run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+
+      # --- Dapp (web, counterparty) — static export served on the runner ---
+      - name: Install dapp dependencies
+        working-directory: ${{ env.DAPP_ROOT }}
+        run: yarn install --immutable
+
+      - name: Write dapp .env
+        working-directory: ${{ env.DAPP_ROOT }}
+        env:
+          APPKIT_ENV_FILE: ${{ secrets.APPKIT_ENV_FILE }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$APPKIT_ENV_FILE" > .env
+          {
+            echo "EXPO_PUBLIC_TEST_MODE=true"
+            echo "SENTRY_DISABLE_AUTO_UPLOAD=true"
+          } >> .env
+
+      - name: Export + serve dapp (web)
+        working-directory: ${{ env.DAPP_ROOT }}
+        run: |
+          set -euo pipefail
+          npx expo export --platform web --output-dir dist
+          # `serve -s` does SPA fallback; background and wait until ready. The iOS
+          # simulator reaches the runner's localhost directly.
+          npx --yes serve -s dist -l 8081 > "${RUNNER_TEMP}/dapp-serve.log" 2>&1 &
+          for i in $(seq 1 60); do
+            curl -fsS -o /dev/null http://localhost:8081 && { echo "dapp up"; break; }
+            sleep 1
+          done
+          curl -fsS -o /dev/null http://localhost:8081 || { echo "dapp serve failed:"; cat "${RUNNER_TEMP}/dapp-serve.log"; exit 1; }
+
+      - name: Install Maestro
+        uses: WalletConnect/actions/maestro/setup@4be7c0112f9651fc63b18c137650b75d2fc9b200
+
+      - name: Run Maestro relay tests (iOS)
+        id: maestro
+        run: |
+          xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
+          mkdir -p maestro-artifacts
+          "$HOME/.maestro/bin/maestro" test \
+            --env APP_ID="$APP_ID" \
+            --env DAPP_URL="http://localhost:8081" \
+            --include-tags relay-walletkit \
+            --test-output-dir maestro-artifacts \
+            --debug-output "${RUNNER_TEMP}/maestro-debug" \
+            .maestro/relay
+
+      - name: Upload Maestro artifacts (iOS)
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-relay-walletkit-ios-artifacts
+          path: |
+            maestro-artifacts/**
+            ${{ runner.temp }}/dapp-serve.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  e2e-relay-walletkit-android:
+    # UNVERIFIED on Android: the browser is Chrome (not Safari) and the emulator
+    # reaches the runner via 10.0.2.2 — the _focus_browser return step and DAPP_URL
+    # need validating on the emulator. Dispatch-only so it can't red-flag PRs until
+    # proven; promote to PR/schedule once green.
+    if: github.event_name == 'workflow_dispatch' && inputs.platform == 'android'
+    name: E2E Relay WalletKit - Android (unverified)
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -70,10 +221,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
-          cache-dependency-path: ${{ env.WALLET_ROOT }}/yarn.lock
 
-      - name: Install dependencies
+      - name: Install wallet dependencies
         working-directory: ${{ env.WALLET_ROOT }}
         run: yarn install --immutable
 
@@ -146,7 +295,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-relay-
 
-      - name: Build APK
+      - name: Build wallet APK
         working-directory: ${{ env.WALLET_ROOT }}
         run: |
           export SENTRY_DISABLE_AUTO_UPLOAD=true
@@ -163,6 +312,35 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+
+      # --- Dapp (web, counterparty) — served on the runner; emulator uses 10.0.2.2 ---
+      - name: Install dapp dependencies
+        working-directory: ${{ env.DAPP_ROOT }}
+        run: yarn install --immutable
+
+      - name: Write dapp .env
+        working-directory: ${{ env.DAPP_ROOT }}
+        env:
+          APPKIT_ENV_FILE: ${{ secrets.APPKIT_ENV_FILE }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$APPKIT_ENV_FILE" > .env
+          {
+            echo "EXPO_PUBLIC_TEST_MODE=true"
+            echo "SENTRY_DISABLE_AUTO_UPLOAD=true"
+          } >> .env
+
+      - name: Export + serve dapp (web)
+        working-directory: ${{ env.DAPP_ROOT }}
+        run: |
+          set -euo pipefail
+          npx expo export --platform web --output-dir dist
+          npx --yes serve -s dist -l 8081 > "${RUNNER_TEMP}/dapp-serve.log" 2>&1 &
+          for i in $(seq 1 60); do
+            curl -fsS -o /dev/null http://localhost:8081 && { echo "dapp up"; break; }
+            sleep 1
+          done
+          curl -fsS -o /dev/null http://localhost:8081 || { echo "dapp serve failed:"; cat "${RUNNER_TEMP}/dapp-serve.log"; exit 1; }
 
       - name: Install Maestro
         uses: WalletConnect/actions/maestro/setup@4be7c0112f9651fc63b18c137650b75d2fc9b200
@@ -184,11 +362,9 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
           disable-animations: true
-          # Single line: the android-emulator-runner `script` does not honor
-          # backslash line-continuations (they leak a literal "\" as an arg →
-          # "Flow path does not exist"). Mirrors the walletkit composite.
+          # 10.0.2.2 = the host's localhost from inside the Android emulator.
           script: |
-            adb install "$APK_PATH"; mkdir -p maestro-artifacts; "$HOME/.maestro/bin/maestro" test --env APP_ID="$APP_ID" --env DAPP_URL="$DAPP_URL" --include-tags relay-walletkit --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/relay
+            adb install "$APK_PATH"; mkdir -p maestro-artifacts; "$HOME/.maestro/bin/maestro" test --env APP_ID="$APP_ID" --env DAPP_URL="http://10.0.2.2:8081" --include-tags relay-walletkit --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/relay
 
       - name: Upload Maestro artifacts (Android)
         if: ${{ !cancelled() }}
@@ -198,407 +374,6 @@ jobs:
           name: maestro-relay-walletkit-android-artifacts
           path: |
             maestro-artifacts/**
-          if-no-files-found: warn
-          retention-days: 14
-
-  e2e-relay-walletkit-ios:
-    # macOS is expensive: only the daily cron and explicit dispatch run iOS.
-    if: >-
-      (github.event_name == 'schedule')
-      || (github.event_name == 'workflow_dispatch' && (inputs.platform == 'both' || inputs.platform == 'ios'))
-      || (github.event_name == 'pull_request' && github.event.pull_request.draft == false)
-    name: E2E Relay WalletKit - iOS
-    runs-on: macos-latest-xlarge
-    timeout-minutes: 60
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-          cache-dependency-path: ${{ env.WALLET_ROOT }}/yarn.lock
-
-      - name: Install dependencies
-        working-directory: ${{ env.WALLET_ROOT }}
-        run: yarn install --immutable
-
-      - name: Write wallet .env
-        working-directory: ${{ env.WALLET_ROOT }}
-        env:
-          WALLET_ENV_FILE: ${{ secrets.WALLETKIT_ENV_FILE }}
-          WALLET_PRIVATE_KEY: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
-        run: |
-          set -euo pipefail
-          printf '%s\n' "$WALLET_ENV_FILE" > .env
-          {
-            echo "EXPO_PUBLIC_TEST_PRIVATE_KEY=$WALLET_PRIVATE_KEY"
-            echo "EXPO_PUBLIC_TEST_MODE=true"
-            echo "SENTRY_DISABLE_AUTO_UPLOAD=true"
-          } >> .env
-
-      - name: Select Xcode 26.2
-        run: |
-          XCODE_PATH=/Applications/Xcode_26.2.app/Contents/Developer
-          sudo xcode-select -s "$XCODE_PATH"
-          xcodebuild -version
-
-      - name: Install Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.3.0
-          bundler-cache: true
-
-      - name: Expo Prebuild (iOS)
-        working-directory: ${{ env.WALLET_ROOT }}
-        run: APP_VARIANT=internal npx expo prebuild --platform ios --no-install
-
-      - name: Set Xcode paths
-        run: |
-          XCODEPROJ=$(find "$WALLET_ROOT/ios" -maxdepth 1 -name "*.xcodeproj" -print -quit)
-          echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
-          echo "XCWORKSPACE_PATH=$WALLET_ROOT/ios/ReactNWallet.xcworkspace" >> "$GITHUB_ENV"
-
-      - name: Cache Pods
-        id: pods-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.WALLET_ROOT }}/ios/Pods
-          key: ${{ runner.os }}-pods-relay-${{ hashFiles(format('{0}/ios/Podfile.lock', env.WALLET_ROOT)) }}
-
-      - name: Build for Simulator
-        uses: maierj/fastlane-action@v3.0.0
-        with:
-          lane: build_for_simulator
-        env:
-          SCHEME: ReactNWallet
-          BUNDLE_ID: com.walletconnect.web3wallet.rnsample.internal
-          PODFILE_PATH: ${{ env.WALLET_ROOT }}/ios/Podfile
-          XCWORKSPACE_PATH: ${{ env.XCWORKSPACE_PATH }}
-          XCODE_PROJECT_PATH: ${{ env.XCODE_PROJECT_PATH }}
-          PROJECT_TYPE: wallet
-          RELEASE_TYPE: internal
-          BUILD_FOR_SIMULATOR: true
-          PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
-          SENTRY_DISABLE_AUTO_UPLOAD: true
-
-      - name: Find .app path
-        run: echo "APP_PATH=$(cat build/app_path.txt)" >> "$GITHUB_ENV"
-
-      - name: Boot iOS Simulator
-        run: |
-          DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
-            jq -r '.devicetypes[] | select(.productFamily == "iPhone") | .identifier' | tail -1)
-          DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>/dev/null || \
-            xcrun simctl list devices available -j | \
-            jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
-          xcrun simctl boot "$DEVICE_ID" || true
-          xcrun simctl bootstatus "$DEVICE_ID" -b
-          xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
-          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
-
-      - name: Install app on Simulator
-        run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
-
-      - name: Install Maestro
-        uses: WalletConnect/actions/maestro/setup@4be7c0112f9651fc63b18c137650b75d2fc9b200
-
-      - name: Run Maestro relay tests (iOS)
-        id: maestro
-        run: |
-          xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
-          mkdir -p maestro-artifacts
-          "$HOME/.maestro/bin/maestro" test \
-            --env APP_ID="$APP_ID" \
-            --env DAPP_URL="$DAPP_URL" \
-            --include-tags relay-walletkit \
-            --test-output-dir maestro-artifacts \
-            --debug-output "${RUNNER_TEMP}/maestro-debug" \
-            .maestro/relay
-
-      - name: Upload Maestro artifacts (iOS)
-        if: ${{ !cancelled() }}
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: maestro-relay-walletkit-ios-artifacts
-          path: |
-            maestro-artifacts/**
-          if-no-files-found: warn
-          retention-days: 14
-
-  # ---------------------------------------------------------------------------
-  # MIRROR suite — native appkit-wagmi (app under test) vs deployed web wallet.
-  # Secondary to the wallet-under-test suite; reuses the same shared signing
-  # secrets as the appkit release (ANDROID_SECRETS_FILE / WC_INTERNAL_KEYSTORE)
-  # plus APPKIT_ENV_FILE. Runs `--include-tags relay-appkit`.
-  # ---------------------------------------------------------------------------
-  e2e-relay-appkit-android:
-    if: >-
-      github.event_name != 'workflow_dispatch' || inputs.platform == 'both' || inputs.platform == 'android'
-    name: E2E Relay AppKit - Android
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    env:
-      APP_ID: com.walletconnect.web3modal.rnsample.internal
-      APP_ROOT: dapps/appkit-wagmi
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-          cache-dependency-path: ${{ env.APP_ROOT }}/yarn.lock
-
-      - name: Install dependencies
-        working-directory: ${{ env.APP_ROOT }}
-        run: yarn install --immutable
-
-      - name: Write dapp .env
-        working-directory: ${{ env.APP_ROOT }}
-        env:
-          APPKIT_ENV_FILE: ${{ secrets.APPKIT_ENV_FILE }}
-        run: |
-          set -euo pipefail
-          printf '%s\n' "$APPKIT_ENV_FILE" > .env
-          echo "SENTRY_DISABLE_AUTO_UPLOAD=true" >> .env
-
-      - name: Install Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-          architecture: x86_64
-
-      - name: Accept Android Licenses
-        uses: SimonMarquis/android-accept-licenses@8d8deab5b7ab2aaea9ed69f0b802e53173f21fd1 # v1
-
-      - name: Install Android NDK 27.0.12077973
-        run: |
-          set +o pipefail
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;27.0.12077973"
-
-      - name: Expo Prebuild (Android)
-        working-directory: ${{ env.APP_ROOT }}
-        run: npx expo prebuild --platform android --no-install
-
-      - name: Add Secrets file
-        working-directory: ${{ env.APP_ROOT }}
-        env:
-          ANDROID_SECRETS_FILE: ${{ secrets.ANDROID_SECRETS_FILE }}
-        run: printf '%s\n' "$ANDROID_SECRETS_FILE" > android/secrets.properties
-
-      - name: Add Keystore file
-        working-directory: ${{ env.APP_ROOT }}
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.WC_INTERNAL_KEYSTORE }}
-          ANDROID_KEYSTORE_NAME: ${{ vars.WC_INTERNAL_KEYSTORE_NAME }}
-        run: printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode >> "android/app/${ANDROID_KEYSTORE_NAME}.keystore"
-
-      - name: Optimize Gradle for CI
-        working-directory: ${{ env.APP_ROOT }}
-        run: |
-          {
-            echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
-            echo "org.gradle.parallel=true"
-            echo "org.gradle.caching=true"
-            echo "reactNativeArchitectures=x86_64"
-          } >> android/gradle.properties
-
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            ${{ env.APP_ROOT }}/android/.gradle
-            ${{ env.APP_ROOT }}/android/app/.cxx
-            ${{ env.APP_ROOT }}/android/app/build/generated
-          key: ${{ runner.os }}-gradle-relay-appkit-${{ hashFiles(format('{0}/android/**/*.gradle*', env.APP_ROOT), format('{0}/android/**/gradle-wrapper.properties', env.APP_ROOT)) }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-relay-appkit-
-
-      - name: Build APK
-        working-directory: ${{ env.APP_ROOT }}/android
-        # --stacktrace to surface the failing config-time `node` exec (the
-        # default lifecycle log swallows the subprocess stderr).
-        run: |
-          export SENTRY_DISABLE_AUTO_UPLOAD=true
-          ./gradlew app:assembleInternal --stacktrace
-
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/ndk /opt/ghc /usr/local/share/boost
-          sudo apt-get clean
-          df -h
-
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-
-      - name: Install Maestro
-        uses: WalletConnect/actions/maestro/setup@4be7c0112f9651fc63b18c137650b75d2fc9b200
-
-      - name: Run Maestro relay-appkit tests (Android)
-        id: maestro
-        uses: reactivecircus/android-emulator-runner@70f4dee990796918b78d040e3278474bdbd348a7 # v2
-        env:
-          APK_PATH: ${{ env.APP_ROOT }}/android/app/build/outputs/apk/internal/app-internal.apk
-        with:
-          api-level: 34
-          arch: x86_64
-          target: default
-          avd-name: test_device
-          ram-size: 4096M
-          disk-size: 4096M
-          heap-size: 576M
-          emulator-boot-timeout: 900
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
-          disable-animations: true
-          # Single line (see walletkit note): the android-emulator-runner script
-          # does not honor backslash line-continuations.
-          script: |
-            adb install "$APK_PATH"; mkdir -p maestro-artifacts; "$HOME/.maestro/bin/maestro" test --env APP_ID="$APP_ID" --env WALLET_URL="$WALLET_URL" --include-tags relay-appkit --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/relay
-
-      - name: Upload Maestro artifacts (Android)
-        if: ${{ !cancelled() }}
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: maestro-relay-appkit-android-artifacts
-          path: |
-            maestro-artifacts/**
-          if-no-files-found: warn
-          retention-days: 14
-
-  e2e-relay-appkit-ios:
-    # UNVERIFIED: the dapp's fastlane simulator build (scheme RNAppKit, workspace
-    # path, PROJECT_TYPE, app_path.txt location) hasn't been run yet. Gated to
-    # explicit dispatch so it can't destabilize PR/scheduled signal until proven.
-    if: github.event_name == 'workflow_dispatch' && inputs.platform == 'ios'
-    name: E2E Relay AppKit - iOS
-    runs-on: macos-latest-xlarge
-    timeout-minutes: 60
-    env:
-      APP_ID: com.walletconnect.web3modal.rnsample.internal
-      APP_ROOT: dapps/appkit-wagmi
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: yarn
-          cache-dependency-path: ${{ env.APP_ROOT }}/yarn.lock
-
-      - name: Install dependencies
-        working-directory: ${{ env.APP_ROOT }}
-        run: yarn install --immutable
-
-      - name: Write dapp .env
-        working-directory: ${{ env.APP_ROOT }}
-        env:
-          APPKIT_ENV_FILE: ${{ secrets.APPKIT_ENV_FILE }}
-        run: |
-          set -euo pipefail
-          printf '%s\n' "$APPKIT_ENV_FILE" > .env
-          echo "SENTRY_DISABLE_AUTO_UPLOAD=true" >> .env
-
-      - name: Select Xcode 26.2
-        run: |
-          sudo xcode-select -s /Applications/Xcode_26.2.app/Contents/Developer
-          xcodebuild -version
-
-      - name: Install Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.3.0
-          bundler-cache: true
-
-      - name: Expo Prebuild (iOS)
-        working-directory: ${{ env.APP_ROOT }}
-        run: APP_VARIANT=internal npx expo prebuild --platform ios --no-install
-
-      - name: Set Xcode paths
-        run: |
-          XCODEPROJ=$(find "$APP_ROOT/ios" -maxdepth 1 -name "*.xcodeproj" -print -quit)
-          echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
-          echo "XCWORKSPACE_PATH=$APP_ROOT/ios/RNAppKit.xcworkspace" >> "$GITHUB_ENV"
-
-      - name: Cache Pods
-        id: pods-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.APP_ROOT }}/ios/Pods
-          key: ${{ runner.os }}-pods-relay-appkit-${{ hashFiles(format('{0}/ios/Podfile.lock', env.APP_ROOT)) }}
-
-      - name: Build for Simulator
-        uses: maierj/fastlane-action@v3.0.0
-        with:
-          lane: build_for_simulator
-        env:
-          SCHEME: RNAppKit
-          BUNDLE_ID: com.walletconnect.web3modal.rnsample.internal
-          PODFILE_PATH: ${{ env.APP_ROOT }}/ios/Podfile
-          XCWORKSPACE_PATH: ${{ env.XCWORKSPACE_PATH }}
-          XCODE_PROJECT_PATH: ${{ env.XCODE_PROJECT_PATH }}
-          PROJECT_TYPE: dapp
-          RELEASE_TYPE: internal
-          BUILD_FOR_SIMULATOR: true
-          PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
-          SENTRY_DISABLE_AUTO_UPLOAD: true
-
-      - name: Find .app path
-        run: echo "APP_PATH=$(cat build/app_path.txt)" >> "$GITHUB_ENV"
-
-      - name: Boot iOS Simulator
-        run: |
-          DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
-            jq -r '.devicetypes[] | select(.productFamily == "iPhone") | .identifier' | tail -1)
-          DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>/dev/null || \
-            xcrun simctl list devices available -j | \
-            jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
-          xcrun simctl boot "$DEVICE_ID" || true
-          xcrun simctl bootstatus "$DEVICE_ID" -b
-          xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
-          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
-
-      - name: Install app on Simulator
-        run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
-
-      - name: Install Maestro
-        uses: WalletConnect/actions/maestro/setup@4be7c0112f9651fc63b18c137650b75d2fc9b200
-
-      - name: Run Maestro relay-appkit tests (iOS)
-        id: maestro
-        run: |
-          xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
-          mkdir -p maestro-artifacts
-          "$HOME/.maestro/bin/maestro" test \
-            --env APP_ID="$APP_ID" \
-            --env WALLET_URL="$WALLET_URL" \
-            --include-tags relay-appkit \
-            --test-output-dir maestro-artifacts \
-            --debug-output "${RUNNER_TEMP}/maestro-debug" \
-            .maestro/relay
-
-      - name: Upload Maestro artifacts (iOS)
-        if: ${{ !cancelled() }}
-        continue-on-error: true
-        uses: actions/upload-artifact@v4
-        with:
-          name: maestro-relay-appkit-ios-artifacts
-          path: |
-            maestro-artifacts/**
+            ${{ runner.temp }}/dapp-serve.log
           if-no-files-found: warn
           retention-days: 14

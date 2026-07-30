@@ -1,33 +1,29 @@
 # Flow 2 — sign a message: dapp requests personal_sign, wallet approves.
+# Web dapp (Safari) + native wallet. Dapp actions/asserts are matched by TEXT
+# (Safari webview doesn't expose testIDs); wallet by id. Return to the dapp by
+# resuming Safari (Home + icon), not relaunching.
 appId: ${APP_ID}
 tags:
   - relay-walletkit
   - sign
 ---
-- launchApp:
-    clearState: true
-    permissions:
-      all: allow
 - runFlow: _connect_walletkit.yaml
-# In the dapp (browser), trigger personal_sign ("Hello AppKit!").
-- tapOn:
-    id: 'sign-message-button'
-# The request arrives in the wallet over the relay; foreground it to approve.
-- launchApp
+- extendedWaitUntil:
+    visible: 'Connected to'
+    timeout: 60000
+# Trigger personal_sign on the dapp ("^Sign$" to avoid "Sign Typed Data").
+- tapOn: '^Sign$'
+# Foreground the wallet and approve the request.
+- launchApp:
+    appId: ${APP_ID}
 - extendedWaitUntil:
     visible:
       id: 'approve-button'
-    timeout: 30000
+    timeout: 60000
 - tapOn:
     id: 'approve-button'
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - back
-# Dapp shows the persistent, testID'd result.
+# Resume the dapp; it shows the persistent result ("Sign success").
+- runFlow: _focus_browser.yaml
 - extendedWaitUntil:
-    visible:
-      id: 'sign-result'
-    timeout: 30000
-- assertVisible: 'Sign success'
+    visible: 'Sign success'
+    timeout: 60000

@@ -9,12 +9,15 @@ interface Props {
 
 export function WalletInfoView({ style }: Props) {
   const { walletInfo } = useWalletInfo();
-  const { address, chain } = useAccount();
+  const { address, chain, isConnected } = useAccount();
 
-  return walletInfo ? (
+  // Gate on isConnected (not walletInfo): after the post-approve redirect reload
+  // the session rehydrates (isConnected true) but walletInfo/AppKit metadata may
+  // not, so a walletInfo gate would hide the connected state. Maestro uses
+  // `dapp-connected` as the connected target and its absence to assert disconnect.
+  return isConnected ? (
     // Plain RN View wrapper carries the testID reliably (AppKit-UI components
-    // don't guarantee testID forwarding); Maestro uses `dapp-connected` as the
-    // connected-state target and its absence to assert disconnect.
+    // don't guarantee testID forwarding).
     <View testID="dapp-connected">
       <FlexView style={style} alignItems="center">
         <Text variant="small-600" style={styles.label}>
@@ -26,8 +29,8 @@ export function WalletInfoView({ style }: Props) {
           )}
           {walletInfo?.name && <Text variant="small-400">{walletInfo?.name}</Text>}
         </FlexView>
-        {address && <Text testID="connected-address" numberOfLines={1} ellipsizeMode="middle" style={styles.address} variant="small-400">Address: {address}</Text>}
-        {chain?.name && <Text testID="connected-chain" numberOfLines={1} variant="small-400">Chain: {chain.name}</Text>}
+        {address && <Text testID="connected-address" numberOfLines={1} ellipsizeMode="middle" style={styles.address} variant="small-400">{`Address: ${address}`}</Text>}
+        {chain?.name && <Text testID="connected-chain" numberOfLines={1} variant="small-400">{`Chain: ${chain.name}`}</Text>}
       </FlexView>
     </View>
   ) : null;

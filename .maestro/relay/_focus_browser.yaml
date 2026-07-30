@@ -1,0 +1,26 @@
+# Resume the device browser tab (NOT relaunch) so the dapp's live WalletConnect
+# client receives the queued session settlement / response. Home + tapping the
+# browser icon RESUMES the app with its tab intact; openLink/launchApp would
+# reload the tab and drop the pending in-memory state.
+#
+# iOS uses Safari (validated). Android uses Chrome (the return step is not yet
+# verified on the emulator — the browser name/icon may differ).
+appId: ${APP_ID}
+---
+- pressKey: Home
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible: 'Safari'
+          timeout: 10000
+      - tapOn: 'Safari'
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - extendedWaitUntil:
+          visible: 'Chrome'
+          timeout: 10000
+      - tapOn: 'Chrome'

@@ -4,13 +4,9 @@ tags:
   - relay-walletkit
   - connect
 ---
-- launchApp:
-    clearState: true
-    permissions:
-      all: allow
 - runFlow: _connect_walletkit.yaml
-# Dapp reflects the connected account (WalletInfoView).
+# Web dapp reflects the connected account (matched by text — Safari webview
+# doesn't expose testIDs).
 - extendedWaitUntil:
-    visible:
-      id: 'dapp-connected'
-    timeout: 30000
+    visible: 'Connected to'
+    timeout: 60000
