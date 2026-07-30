@@ -362,9 +362,12 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
           disable-animations: true
-          # 10.0.2.2 = the host's localhost from inside the Android emulator.
+          # `adb reverse` maps the emulator's localhost:8081 -> the runner's dapp
+          # server. DAPP_URL must be http://localhost:8081 (NOT 10.0.2.2): Chrome
+          # only allows navigator.clipboard.writeText (the dapp's Copy link) from a
+          # secure context, and localhost qualifies while 10.0.2.2 does not.
           script: |
-            adb install "$APK_PATH"; mkdir -p maestro-artifacts; "$HOME/.maestro/bin/maestro" test --env APP_ID="$APP_ID" --env DAPP_URL="http://10.0.2.2:8081" --include-tags relay-walletkit --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/relay
+            adb install "$APK_PATH"; adb reverse tcp:8081 tcp:8081; mkdir -p maestro-artifacts; "$HOME/.maestro/bin/maestro" test --env APP_ID="$APP_ID" --env DAPP_URL="http://localhost:8081" --include-tags relay-walletkit --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/relay
 
       - name: Upload Maestro artifacts (Android)
         if: ${{ !cancelled() }}
