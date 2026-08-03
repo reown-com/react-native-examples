@@ -30,6 +30,16 @@ appId: ${APP_ID}
 - extendedWaitUntil:
     visible: 'Open QR (E2E)'
     timeout: 60000
+# Dismiss Safari's first-launch feature popover ("View Bookmarks…") if present —
+# it overlays the page on the first Safari launch of a fresh CI sim and otherwise
+# intercepts the tap. Conditional, so it no-ops on later flows and on Android.
+- runFlow:
+    when:
+      visible:
+        id: 'PopoverDismissRegion'
+    commands:
+      - tapOn:
+          id: 'PopoverDismissRegion'
 - tapOn: 'Open QR (E2E)'
 - extendedWaitUntil:
     visible: 'Copy link'
