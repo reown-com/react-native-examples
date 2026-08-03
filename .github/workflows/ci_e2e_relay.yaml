@@ -88,11 +88,12 @@ jobs:
           xcodebuild -version
 
       - name: Install Ruby
+        # Bundle from the repo root — `fastlane` is in the root Gemfile (the
+        # wallet dir's Gemfile doesn't have it), and fastlane-action runs at root.
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.3.0
           bundler-cache: true
-          working-directory: ${{ env.WALLET_ROOT }}
 
       - name: Expo Prebuild (iOS)
         working-directory: ${{ env.WALLET_ROOT }}
