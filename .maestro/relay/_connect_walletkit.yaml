@@ -25,8 +25,10 @@ appId: ${APP_ID}
 - openLink:
     link: ${DAPP_URL}
     browser: true
+# Wait for the button itself (not just the title) — it renders slightly after the
+# page and the immediate tap could miss it.
 - extendedWaitUntil:
-    visible: 'AppKit + Multichain'
+    visible: 'Open QR (E2E)'
     timeout: 60000
 - tapOn: 'Open QR (E2E)'
 - extendedWaitUntil:
