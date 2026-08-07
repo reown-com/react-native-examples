@@ -1,0 +1,21 @@
+url: ${APP_URL}
+name: POS Payment — create a sale and show the payment QR
+tags:
+  - payment
+---
+- launchApp:
+    clearState: true
+
+# Start a $0.01 sale and wait for the gateway QR (see the subflow for the
+# merchant-credential requirements).
+- runFlow: common/create-payment-qr.yaml
+
+# The scan screen shows the amount ("$0.01", uppercased)
+- assertVisible:
+    text: "\\$0.01"
+
+# Tapping the QR copies the payment link to the clipboard
+- tapOn:
+    id: "pos-qr-code"
+- assertVisible:
+    text: "Payment link copied"

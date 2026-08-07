@@ -101,7 +101,9 @@ export const TokenBalanceCard = React.memo(function TokenBalanceCard({
       </View>
       <View style={styles.cardContent}>
         <Text variant="lg-400" color="text-primary">
-          {formatBalance(balance.quantity.numeric, balance.symbol)}
+          {balance.balanceUnavailable
+            ? `~ ${balance.symbol}`
+            : formatBalance(balance.quantity.numeric, balance.symbol)}
         </Text>
         <Text variant="lg-400" color="text-secondary">
           {truncateAddress(walletAddress)}

@@ -6,6 +6,7 @@ import { fetchERC20Balances } from '@/services/ERC20BalanceService';
 import { EIP155_CHAINS } from '@/constants/Eip155';
 import { isSpamToken } from '@/utils/SpamFilter';
 import { SOLANA_MAINNET_CAIP2 } from '@/constants/Solana';
+import { BIP122_MAINNET_CAIP2 } from '@/constants/Bitcoin';
 import LogStore, { serializeError } from '@/store/LogStore';
 
 const mmkv = new MMKV();
@@ -16,6 +17,7 @@ const TON_SUPPORTED_CHAINS = ['ton:-239'];
 const TRON_SUPPORTED_CHAINS = ['tron:0x2b6653dc'];
 const SUI_SUPPORTED_CHAINS = ['sui:mainnet'];
 const SOLANA_SUPPORTED_CHAINS = [SOLANA_MAINNET_CAIP2];
+const BITCOIN_SUPPORTED_CHAINS = [BIP122_MAINNET_CAIP2];
 
 export interface WalletAddresses {
   eip155Address?: string;
@@ -23,6 +25,7 @@ export interface WalletAddresses {
   tronAddress?: string;
   suiAddress?: string;
   solanaAddress?: string;
+  bitcoinAddress?: string;
 }
 
 interface WalletState {
@@ -78,6 +81,7 @@ const MAINNET_NATIVE_TOKENS = {
   'tron:0x2b6653dc': { name: 'TRON', symbol: 'TRX', decimals: '6' },
   'sui:mainnet': { name: 'Sui', symbol: 'SUI', decimals: '9' },
   [SOLANA_MAINNET_CAIP2]: { name: 'Solana', symbol: 'SOL', decimals: '9' },
+  [BIP122_MAINNET_CAIP2]: { name: 'Bitcoin', symbol: 'BTC', decimals: '8' },
 };
 
 /**
@@ -85,9 +89,21 @@ const MAINNET_NATIVE_TOKENS = {
  * 1. Filters out tokens with 0 value (except mainnet native tokens)
  * 2. Ensures mainnet native tokens are always present for address visibility
  */
+// Per-namespace flag: true when that chain's balance request failed, so the
+// synthesized native row should read "~" (unknown) instead of a confirmed 0.
+interface BalanceUnavailableFlags {
+  eip155?: boolean;
+  ton?: boolean;
+  tron?: boolean;
+  sui?: boolean;
+  solana?: boolean;
+  bitcoin?: boolean;
+}
+
 function processBalances(
   apiBalances: TokenBalance[],
   addresses: WalletAddresses,
+  unavailable: BalanceUnavailableFlags = {},
 ): TokenBalance[] {
   const mainnetChainIds = Object.keys(MAINNET_NATIVE_TOKENS);
 
@@ -118,6 +134,7 @@ function processBalances(
         price: 0,
         quantity: { decimals: '18', numeric: '0' },
         iconUrl: undefined,
+        balanceUnavailable: unavailable.eip155,
       });
     }
   }
@@ -136,6 +153,7 @@ function processBalances(
         price: 0,
         quantity: { decimals: '9', numeric: '0' },
         iconUrl: undefined,
+        balanceUnavailable: unavailable.ton,
       });
     }
   }
@@ -154,6 +172,7 @@ function processBalances(
         price: 0,
         quantity: { decimals: '6', numeric: '0' },
         iconUrl: undefined,
+        balanceUnavailable: unavailable.tron,
       });
     }
   }
@@ -172,6 +191,7 @@ function processBalances(
         price: 0,
         quantity: { decimals: '9', numeric: '0' },
         iconUrl: undefined,
+        balanceUnavailable: unavailable.sui,
       });
     }
   }
@@ -190,6 +210,26 @@ function processBalances(
         price: 0,
         quantity: { decimals: '9', numeric: '0' },
         iconUrl: undefined,
+        balanceUnavailable: unavailable.solana,
+      });
+    }
+  }
+
+  // BTC on mainnet
+  if (addresses.bitcoinAddress) {
+    const hasBtcMainnet = result.some(
+      b => b.chainId === BIP122_MAINNET_CAIP2 && !b.address,
+    );
+    if (!hasBtcMainnet) {
+      result.push({
+        name: 'Bitcoin',
+        symbol: 'BTC',
+        chainId: BIP122_MAINNET_CAIP2,
+        value: 0,
+        price: 0,
+        quantity: { decimals: '8', numeric: '0' },
+        iconUrl: undefined,
+        balanceUnavailable: unavailable.bitcoin,
       });
     }
   }
@@ -220,7 +260,8 @@ const WalletStore = {
       !addresses.tonAddress &&
       !addresses.tronAddress &&
       !addresses.suiAddress &&
-      !addresses.solanaAddress
+      !addresses.solanaAddress &&
+      !addresses.bitcoinAddress
     ) {
       return;
     }
@@ -237,6 +278,7 @@ const WalletStore = {
         tronResult,
         suiResult,
         solanaResult,
+        bitcoinResult,
         erc20Balances,
       ] = await Promise.all([
         // EIP155 balances (or empty result if no address)
@@ -277,6 +319,16 @@ const WalletStore = {
               balances: [] as TokenBalance[],
               anySuccess: false,
             }),
+        // Bitcoin balances (or empty result if no address)
+        addresses.bitcoinAddress
+          ? fetchBalancesForChains(
+              addresses.bitcoinAddress,
+              BITCOIN_SUPPORTED_CHAINS,
+            )
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
         // On-chain ERC-20 balances (EURC etc.)
         addresses.eip155Address
           ? fetchERC20Balances(addresses.eip155Address)
@@ -289,7 +341,8 @@ const WalletStore = {
         tonResult.anySuccess ||
         tronResult.anySuccess ||
         suiResult.anySuccess ||
-        solanaResult.anySuccess;
+        solanaResult.anySuccess ||
+        bitcoinResult.anySuccess;
 
       if (!anySuccess) {
         return;
@@ -302,6 +355,7 @@ const WalletStore = {
         ...tronResult.balances,
         ...suiResult.balances,
         ...solanaResult.balances,
+        ...bitcoinResult.balances,
       ];
 
       // Merge on-chain ERC-20 balances (only non-zero) unless the API already returned them
@@ -334,8 +388,20 @@ const WalletStore = {
         }
       }
 
+      // A group that has an address but didn't return any successful response
+      // means the balance is unknown (e.g. the API rejects bip122/sui) — mark
+      // it so the synthesized native row shows "~" instead of a confirmed 0.
+      const unavailable = {
+        eip155: !!addresses.eip155Address && !eip155Result.anySuccess,
+        ton: !!addresses.tonAddress && !tonResult.anySuccess,
+        tron: !!addresses.tronAddress && !tronResult.anySuccess,
+        sui: !!addresses.suiAddress && !suiResult.anySuccess,
+        solana: !!addresses.solanaAddress && !solanaResult.anySuccess,
+        bitcoin: !!addresses.bitcoinAddress && !bitcoinResult.anySuccess,
+      };
+
       // Filter 0-balance tokens and ensure mainnet natives are present
-      const allBalances = processBalances(apiBalances, addresses);
+      const allBalances = processBalances(apiBalances, addresses, unavailable);
 
       // Sort: tokens with value first, then by chain
       allBalances.sort((a, b) => {

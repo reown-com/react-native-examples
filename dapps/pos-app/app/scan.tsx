@@ -17,6 +17,7 @@ import {
 } from "@/utils/currency";
 import { formatCountdown } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
+import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
@@ -85,7 +86,7 @@ export default function ScanScreen() {
   }, [paymentId, amount]);
 
   const onFailure = useCallback(
-    (errorCode?: string) => {
+    (errorCode?: string, minAmount?: string) => {
       if (hasNavigatedRef.current) return;
       hasNavigatedRef.current = true;
       router.dismiss();
@@ -94,6 +95,7 @@ export default function ScanScreen() {
         params: {
           amount,
           ...(errorCode && { errorCode }),
+          ...(minAmount && { minAmount }),
         },
       });
     },
@@ -101,7 +103,10 @@ export default function ScanScreen() {
   );
 
   const handleOnClosePress = () => {
-    if (paymentId && paymentStatusData?.status === "requires_action") {
+    // Before the first status poll resolves, `paymentStatusData` is undefined
+    // but the payment is already open at the gateway — cancel it then too.
+    const status = paymentStatusData?.status;
+    if (paymentId && (status === undefined || status === "requires_action")) {
       cancelPayment(paymentId).catch((error) => {
         addLog("error", "Failed to cancel payment", "scan", "cancelPayment", {
           paymentId,
@@ -161,7 +166,14 @@ export default function ScanScreen() {
           "initiatePayment",
           { error },
         );
-        onFailure(error.code);
+        // The below-minimum rejection only carries the floor in its message, so
+        // parse it here and keep the raw server string out of the route params.
+        const minAmountCents = parseMinAmountCents(error.message);
+        if (minAmountCents) {
+          onFailure(AMOUNT_TOO_LOW, minAmountCents);
+        } else {
+          onFailure(error.code);
+        }
       }
     }
 
@@ -276,6 +288,7 @@ export default function ScanScreen() {
       )}
       {!isProcessing && (
         <Button
+          testID="cancel-button"
           onPress={handleOnClosePress}
           style={[
             styles.closeButton,

@@ -1,3 +1,7 @@
+/// <reference lib="dom" />
+// This is a web-only (.web.tsx) file, so it uses browser globals (`window`).
+// The RN base tsconfig's `lib` omits DOM; pull it in for this file only rather
+// than project-wide, so native code can't reference browser APIs unchecked.
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { useSnapshot } from 'valtio';
 

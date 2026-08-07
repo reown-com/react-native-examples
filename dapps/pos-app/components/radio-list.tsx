@@ -32,6 +32,7 @@ export function RadioList<T extends string = string>({
         return (
           <Pressable
             key={option.value}
+            testID={`option-${option.value}`}
             onPress={() => onChange(option.value)}
             style={[
               styles.item,

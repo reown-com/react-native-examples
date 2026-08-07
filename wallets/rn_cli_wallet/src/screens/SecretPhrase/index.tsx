@@ -121,6 +121,7 @@ export default function SecretPhrase() {
     tronWallet,
     cantonWallet,
     solanaWallet,
+    bitcoinWallet,
   } = useSnapshot(SettingsStore.state);
   const Theme = useTheme();
 
@@ -144,6 +145,9 @@ export default function SecretPhrase() {
   // not hex; SecretSection's `type` prop only drives layout, not encoding).
   const solanaMnemonic = solanaWallet?.getMnemonic?.() || null;
   const solanaBase58SecretKey = solanaWallet?.getSecretKey?.() ?? null;
+
+  // Get Bitcoin mnemonic
+  const bitcoinMnemonic = bitcoinWallet?.getMnemonic?.() ?? null;
 
   return (
     <ScrollView
@@ -211,6 +215,13 @@ export default function SecretPhrase() {
           notAvailableMessage="Solana wallet not initialized"
         />
       )}
+
+      <SecretSection
+        title="Bitcoin"
+        secret={bitcoinMnemonic}
+        type="mnemonic"
+        notAvailableMessage="Bitcoin wallet not initialized"
+      />
     </ScrollView>
   );
 }

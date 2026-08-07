@@ -9,13 +9,11 @@ import ModalStore from '@/store/ModalStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
 import { getSupportedChains } from '@/utils/HelperUtil';
-import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
-import { SUI_SIGNING_METHODS } from '@/constants/Sui';
+import { EIP155_CHAINS } from '@/constants/Eip155';
 import { TON_SIGNING_METHODS } from '@/constants/Ton';
-import { TRON_SIGNING_METHODS } from '@/constants/Tron';
 import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
 import { approveCantonRequest } from '@/utils/CantonRequestHandlerUtil';
-import { SOLANA_SIGNING_METHODS } from '@/constants/Solana';
+import { getRequestConfig } from '@/modals/requestConfig';
 
 export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -74,65 +72,15 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(verifyContext);
 
+      // Config-driven dispatch: methods are described in requestConfig.ts
+      if (getRequestConfig(request.method)) {
+        return ModalStore.open('SessionRequestModal', {
+          requestEvent,
+          requestSession,
+        });
+      }
+
       switch (request.method) {
-        case EIP155_SIGNING_METHODS.ETH_SIGN:
-        case EIP155_SIGNING_METHODS.PERSONAL_SIGN:
-          return ModalStore.open('SessionSignModal', {
-            requestEvent,
-            requestSession,
-          });
-
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA:
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V3:
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TYPED_DATA_V4:
-          return ModalStore.open('SessionSignTypedDataModal', {
-            requestEvent,
-            requestSession,
-          });
-
-        case EIP155_SIGNING_METHODS.ETH_SEND_TRANSACTION:
-        case EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION:
-          return ModalStore.open('SessionSendTransactionModal', {
-            requestEvent,
-            requestSession,
-          });
-        case SUI_SIGNING_METHODS.SUI_SIGN_TRANSACTION:
-          return ModalStore.open('SessionSuiSignTransactionModal', {
-            requestEvent,
-            requestSession,
-          });
-        case SUI_SIGNING_METHODS.SUI_SIGN_PERSONAL_MESSAGE:
-          LogStore.log(
-            'Opening Sui personal message modal',
-            'WalletKitEvents',
-            'onSessionRequest',
-          );
-          return ModalStore.open('SessionSuiSignPersonalMessageModal', {
-            requestEvent,
-            requestSession,
-          });
-        case SUI_SIGNING_METHODS.SUI_SIGN_AND_EXECUTE_TRANSACTION:
-          return ModalStore.open('SessionSuiSignAndExecuteTransactionModal', {
-            requestEvent,
-            requestSession,
-          });
-        case TON_SIGNING_METHODS.SIGN_DATA:
-          return ModalStore.open('SessionTonSignDataModal', {
-            requestEvent,
-            requestSession,
-          });
-        case TON_SIGNING_METHODS.SEND_MESSAGE:
-          return ModalStore.open('SessionTonSendMessageModal', {
-            requestEvent,
-            requestSession,
-          });
-        case TRON_SIGNING_METHODS.TRON_SIGN_MESSAGE:
-        case TRON_SIGNING_METHODS.TRON_SIGN_TRANSACTION:
-        case TRON_SIGNING_METHODS.TRON_SEND_TRANSACTION:
-          return ModalStore.open('SessionSignTronModal', {
-            requestEvent,
-            requestSession,
-          });
         // Canton auto-approve (read-only methods)
         case CANTON_SIGNING_METHODS.LIST_ACCOUNTS:
         case CANTON_SIGNING_METHODS.GET_PRIMARY_ACCOUNT:
@@ -164,22 +112,14 @@ export default function useWalletKitEventsManager(initialized: boolean) {
               ),
             });
           }
-        // Canton manual-approve (sensitive methods)
-        case CANTON_SIGNING_METHODS.SIGN_MESSAGE:
-        case CANTON_SIGNING_METHODS.PREPARE_SIGN_EXECUTE:
-          return ModalStore.open('SessionSignCantonModal', {
+        // Custom TON modals (bespoke validation + rendering)
+        case TON_SIGNING_METHODS.SIGN_DATA:
+          return ModalStore.open('SessionTonSignDataModal', {
             requestEvent,
             requestSession,
           });
-        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_MESSAGE:
-          return ModalStore.open('SessionSolanaSignMessageModal', {
-            requestEvent,
-            requestSession,
-          });
-        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION:
-        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_ALL_TRANSACTIONS:
-        case SOLANA_SIGNING_METHODS.SOLANA_SIGN_AND_SEND_TRANSACTION:
-          return ModalStore.open('SessionSolanaSignTransactionModal', {
+        case TON_SIGNING_METHODS.SEND_MESSAGE:
+          return ModalStore.open('SessionTonSendMessageModal', {
             requestEvent,
             requestSession,
           });

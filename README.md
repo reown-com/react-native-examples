@@ -11,7 +11,7 @@ A collection of React Native example apps showcasing [Reown](https://reown.com) 
 
 ### AppKit Apps
 
-- AppKit + Wagmi + Multichain: `dapps/W3MWagmi`
+- AppKit + Wagmi + Multichain: `dapps/appkit-wagmi`
 - AppKit + Ethers: `dapps/W3MEthers`
 - AppKit + Ethers v5: `dapps/W3MEthers5`
 - AppKit + Expo + Wagmi: `dapps/appkit-expo-wagmi`

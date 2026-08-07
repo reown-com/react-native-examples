@@ -9,6 +9,7 @@ import TonLib from '../lib/TonLib';
 import TronLib from '../lib/TronLib';
 import CantonLib from '../lib/CantonLib';
 import SolanaLib from '../lib/SolanaLib';
+import BitcoinLib from '../lib/BitcoinLib';
 import { MMKV } from 'react-native-mmkv';
 
 function getInitialThemeMode(): 'light' | 'dark' {
@@ -41,6 +42,8 @@ interface State {
   cantonWallet: CantonLib | null;
   solanaAddress: string;
   solanaWallet: SolanaLib | null;
+  bitcoinAddress: string;
+  bitcoinWallet: BitcoinLib | null;
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -75,6 +78,8 @@ const state = proxy<State>({
   cantonWallet: null,
   solanaAddress: '',
   solanaWallet: null,
+  bitcoinAddress: '',
+  bitcoinWallet: null,
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
@@ -182,6 +187,14 @@ const SettingsStore = {
 
   setSolanaWallet(solanaWallet: SolanaLib) {
     state.solanaWallet = ref(solanaWallet);
+  },
+
+  setBitcoinAddress(bitcoinAddress: string) {
+    state.bitcoinAddress = bitcoinAddress;
+  },
+
+  setBitcoinWallet(bitcoinWallet: BitcoinLib) {
+    state.bitcoinWallet = ref(bitcoinWallet);
   },
 
   setThemeMode(value: 'light' | 'dark') {
