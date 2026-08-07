@@ -24,6 +24,11 @@ on:
         options:
           - internal
           - production
+      external-group:
+        description: 'iOS TestFlight external group to also release to. Leave empty for internal-only (no Beta App Review). Providing a group triggers external distribution, which requires a Beta App Description configured on the App Store Connect app.'
+        required: false
+        default: ''
+        type: string
   push:
     tags:
       - 'variant-*'
@@ -65,7 +70,7 @@ jobs:
       apple-id: ${{ inputs.release-type == 'production' && vars.POS_IOS_PROD_APPLE_ID || vars.POS_IOS_INTERNAL_APPLE_ID }}
       project-type: 'dapp'
       package-manager: 'npm'
-      testflight-groups: ${{ inputs.release-type == 'production' && 'External' || 'Internal' }}
+      testflight-groups: ${{ inputs.external-group }}
       is-expo-project: true
     secrets:
       env-file: ${{ secrets.POS_ENV_FILE }}
