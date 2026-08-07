@@ -57,7 +57,22 @@ bundle install
 
 ### Creating Certificates for a New App
 
-Use the provided script to create new certificates and provisioning profiles. The script handles creating a branch, running fastlane match, and creating a PR (required since the certificates repo has branch protection):
+**Preferred: do it on CI.** Run the **Create iOS Certificates** GitHub Action
+(`.github/workflows/create-ios-certs.yaml`) — it creates the app's signing certificates and
+provisioning profiles via the App Store Connect API key (no Apple ID / 2FA), so you don't need
+Ruby, fastlane, or CocoaPods locally. It pushes a branch to the certs repo over SSH and links a
+compare URL in the job summary; a teammate opens and merges that PR.
+
+> **Prerequisite:** the App ID must already be registered in the Developer Portal and the App
+> Store Connect app record must already exist. `match` does not create the identifier, and
+> fastlane `produce` can't authenticate with the API key — so both are created manually
+> (Developer Portal → Identifiers, then App Store Connect → Apps → +).
+
+**Local fallback.** Use the provided script to create new certificates and provisioning profiles.
+The script handles creating a branch, running fastlane match, and creating a PR (required since
+the certificates repo has branch protection). When the App Store Connect API key env vars
+(`APPLE_KEY_ID`, `APPLE_ISSUER_ID`, `APPLE_KEY_CONTENT`) are set it uses API-key auth (no 2FA);
+otherwise it falls back to interactive Apple ID auth:
 
 ```bash
 # Make the script executable (first time only)
@@ -76,11 +91,18 @@ chmod +x scripts/create-certificates.sh
 **Example:**
 
 ```bash
-./scripts/create-certificates.sh reown-com/mobile-certificates com.reown.myapp dev@reown.com appstore
-./scripts/create-certificates.sh reown-com/mobile-certificates com.reown.myapp dev@reown.com development
+./scripts/create-certificates.sh reown-com/mobile-match com.reown.myapp dev@reown.com appstore
+./scripts/create-certificates.sh reown-com/mobile-match com.reown.myapp dev@reown.com development
+
+# With API-key auth (no 2FA), the Apple email is optional — pass "" instead:
+./scripts/create-certificates.sh reown-com/mobile-match com.reown.myapp "" appstore --auto-merge
 ```
 
-> **Note:** Requires [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated. By default, the script creates a PR that requires manual merge. Use `--auto-merge` to automatically merge.
+> **Note:** These local invocations require [GitHub CLI](https://cli.github.com/) (`gh`) to be
+> installed and authenticated, because the script opens the PR for you — by default one that
+> needs a manual merge; pass `--auto-merge` to merge it automatically. The CI workflow instead
+> passes `--no-pr`, which pushes the branch over SSH and makes no GitHub API calls at all, so it
+> needs no `gh` and no token; you open that PR from the link in the job summary.
 
 ### Downloading Certificates Locally
 
