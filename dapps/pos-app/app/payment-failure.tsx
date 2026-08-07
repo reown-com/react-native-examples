@@ -8,21 +8,31 @@ import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { getPaymentErrorMessage } from "@/utils/payment-errors";
 import { useAssets } from "expo-asset";
 
+// The params can't be declared optional here: `UnknownOutputParams` indexes to
+// `string | string[]`, so `?` widens to undefined and breaks the constraint.
+// Read them through `Partial` below instead, since `scan.tsx` only passes
+// `errorCode`/`minAmount` when it has them.
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
   errorCode: string; // Error status from API (e.g., "expired") or error code (e.g., "invalid_api_key")
+  minAmount: string; // Minimum amount in cents, only set for "amount_too_low"
 }
 
 export default function PaymentFailureScreen() {
   const Theme = useTheme();
   const { top } = useSafeAreaInsets();
-  const params = useLocalSearchParams<ScreenParams>();
+  const params: Partial<ScreenParams> = useLocalSearchParams<ScreenParams>();
+  const currencyCode = useSettingsStore((state) => state.currency);
   const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
 
-  const { title, subtitle } = getPaymentErrorMessage(params.errorCode);
+  const { title, subtitle } = getPaymentErrorMessage(params.errorCode, {
+    minAmountCents: params.minAmount,
+    currencyCode,
+  });
 
   const handleRetry = () => {
     router.dismissTo("/amount");

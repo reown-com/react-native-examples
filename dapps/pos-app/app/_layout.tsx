@@ -212,8 +212,15 @@ export default Sentry.wrap(function RootLayout() {
                   headerTitleAlign: "center",
                   headerStyle: {
                     backgroundColor: Theme[headerBackgroundColor],
+                  },
+                  headerRightContainerStyle: {
                     ...(Platform.OS === "web" && {
-                      paddingHorizontal: Spacing["spacing-3"],
+                      paddingRight: Spacing["spacing-3"],
+                    }),
+                  },
+                  headerLeftContainerStyle: {
+                    ...(Platform.OS === "web" && {
+                      paddingLeft: Spacing["spacing-3"],
                     }),
                   },
                   contentStyle: {
