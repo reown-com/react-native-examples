@@ -1,14 +1,17 @@
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Animated, { Keyframe } from 'react-native-reanimated';
 import LottieView from 'lottie-react-native';
 
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
-import { useTheme } from '@/hooks/useTheme';
 import { Spacing } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
 
-import { arePayModalAnimationsEnabled } from './utils';
+import {
+  arePayModalAnimationsEnabled,
+  LOTTIE_ICON_SIZE,
+  PAY_STATUS_LAYOUT,
+} from './utils';
 
 interface LoadingViewProps {
   message?: string;
@@ -30,10 +33,9 @@ const exitingKeyframe = new Keyframe({
 export function LoadingView({
   message,
   note,
-  size = 120,
+  size,
   variant = 'lottie',
 }: LoadingViewProps) {
-  const Theme = useTheme();
   const hasMountedRef = useRef(false);
   const entering =
     arePayModalAnimationsEnabled && hasMountedRef.current
@@ -43,45 +45,33 @@ export function LoadingView({
 
   const messageKey = message || 'default';
 
-  // The Lottie loader has white "track matte" strokes (Shape Layer 1/2) that
-  // lottie-react-native's native renderers leak through at the end of each
-  // loop — unnoticeable in light mode (white on white) but visible in dark
-  // mode. Remap them to the modal background so they vanish in both themes.
-  const lottieColorFilters = useMemo(
-    () => [
-      { keypath: 'Shape Layer 1', color: Theme['bg-primary'] },
-      { keypath: 'Shape Layer 2', color: Theme['bg-primary'] },
-    ],
-    [Theme],
-  );
-
   const resolvedVariant = arePayModalAnimationsEnabled ? variant : 'spinner';
 
+  const lottieSize = size ?? LOTTIE_ICON_SIZE;
+
   return (
-    <View style={styles.loadingContainer}>
+    <>
       {resolvedVariant === 'spinner' ? (
-        <WalletConnectLoading size={size} />
+        <View style={styles.spinnerArea}>
+          <WalletConnectLoading size={size} />
+        </View>
       ) : (
-        <LottieView
-          source={require('@/assets/lottie/Loading.json')}
-          autoPlay
-          loop
-          colorFilters={lottieColorFilters}
-          style={{ width: size, height: size }}
-          testID="pay-loading-lottie"
-        />
+        <View style={styles.iconArea}>
+          <LottieView
+            source={require('@/assets/lottie/Loading.json')}
+            autoPlay
+            loop
+            style={{ width: lottieSize, height: lottieSize }}
+            testID="pay-loading-lottie"
+          />
+        </View>
       )}
-      <View
-        style={[
-          styles.messageContainer,
-          note && styles.messageContainerWithNote,
-        ]}
-      >
+      <View style={styles.textArea}>
         <Animated.View
           key={messageKey}
           entering={entering}
           exiting={arePayModalAnimationsEnabled ? exitingKeyframe : undefined}
-          style={styles.messageSlot}
+          style={styles.textSlot}
         >
           <Text
             variant="h6-400"
@@ -91,7 +81,7 @@ export function LoadingView({
             numberOfLines={2}
             ellipsizeMode="tail"
           >
-            {message || 'Loading...'}
+            {message || 'Loading…'}
           </Text>
           {note && (
             <Text
@@ -99,35 +89,34 @@ export function LoadingView({
               color="text-secondary"
               center
               style={styles.loadingNote}
+              testID="pay-loading-setup-note"
             >
               {note}
             </Text>
           )}
         </Animated.View>
       </View>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    padding: Spacing[5],
+  iconArea: {
+    height: PAY_STATUS_LAYOUT.iconAreaHeight,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  messageContainer: {
-    marginTop: Spacing[4],
-    minHeight: 64,
+  spinnerArea: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing[4],
+  },
+  textArea: {
     width: '100%',
-    overflow: 'hidden',
+    paddingVertical: Spacing[4],
   },
-  messageContainerWithNote: {
-    minHeight: 110,
-  },
-  messageSlot: {
-    ...StyleSheet.absoluteFill,
+  textSlot: {
     alignItems: 'center',
-    justifyContent: 'center',
     paddingHorizontal: Spacing[2],
   },
   loadingText: {

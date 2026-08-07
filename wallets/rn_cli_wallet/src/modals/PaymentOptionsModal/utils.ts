@@ -1,6 +1,18 @@
-import Config from 'react-native-config';
+import { ENV } from '@/utils/env';
 
-export const arePayModalAnimationsEnabled = Config.ENV_TEST_MODE !== 'true';
+export const arePayModalAnimationsEnabled = ENV.TEST_MODE !== 'true';
+
+// The Loading.json / Success.json artwork has inner padding inside its
+// 1080×1080 canvas, so the visible glyph is smaller than the container.
+export const LOTTIE_ICON_SIZE = 200;
+
+// Shared icon area height for the LoadingView + ResultView screens. The fixed
+// height keeps the Lottie centered at the same Y across the loading -> success
+// transition, so the W and check don't jump. Text and any button below size
+// naturally — the ViewWrapper's LinearTransition animates the modal growth.
+export const PAY_STATUS_LAYOUT = {
+  iconAreaHeight: 200,
+} as const;
 
 // Format date input as user types (YYYY-MM-DD)
 export function formatDateInput(value: string): string {
@@ -126,14 +138,27 @@ export function getCurrencySymbol(currencyCode?: string): string {
   return CURRENCY_SYMBOLS[currencyCode.toUpperCase()] || currencyCode;
 }
 
-// ----- Error Type Helpers -----
-
 export type ErrorType =
   | 'insufficient_funds'
   | 'expired'
   | 'cancelled'
   | 'not_found'
   | 'generic';
+
+export type ResultIcon = 'success' | 'coins' | 'warning';
+export type ResultActionKind = 'close' | 'scanQR';
+
+export interface ResultContent {
+  title: string;
+  // Errors show a secondary description line; success shows title only.
+  description?: string;
+  icon: ResultIcon;
+  iconTestId: string;
+  actionLabel: string;
+  actionKind: ResultActionKind;
+}
+
+const SUCCESS_DEFAULT_TITLE = 'Payment confirmed';
 
 export function detectErrorType(message: string): ErrorType {
   const lowerMsg = message.toLowerCase();
@@ -156,37 +181,133 @@ export function detectErrorType(message: string): ErrorType {
   return 'generic';
 }
 
-export function getErrorTitle(errorType: ErrorType): string {
+function getErrorTitle(errorType: ErrorType): string {
   switch (errorType) {
     case 'insufficient_funds':
-      return 'Not enough funds';
+      return 'Not enough funds in your wallet';
     case 'expired':
-      return 'Your payment has expired';
+      return 'Payment request expired';
     case 'cancelled':
-      return 'This payment was cancelled';
+      return 'Payment request cancelled';
     case 'not_found':
-      return 'Payment not found';
+      return 'Payment request not found';
     case 'generic':
-      return 'Transaction failed';
+      return 'Payment didn’t go through';
   }
 }
 
-export function getErrorMessage(
+function getErrorDescription(
   errorType: ErrorType,
   originalMessage?: string,
 ): string {
   switch (errorType) {
     case 'insufficient_funds':
-      return "This wallet doesn't have enough funds on the supported networks to complete the payment.";
+      return 'This wallet doesn’t have enough funds on the supported networks. Add funds, or pay with a different asset.';
     case 'expired':
-      return 'Please ask the merchant to generate a new payment and try again.';
+      return 'Ask the merchant to create a new payment, then try again.';
     case 'cancelled':
-      return 'Please ask the merchant to generate a new payment and try again.';
+      return 'Ask the merchant to create a new payment, then try again.';
     case 'not_found':
-      return 'This payment link is not valid or has already been completed.';
+      return 'This payment link isn’t valid, or it’s already been completed.';
     case 'generic':
       return (
-        originalMessage || "The network couldn't complete this transaction."
+        originalMessage ||
+        'No funds were moved. Try again, or pay with a different asset from checkout.'
       );
   }
+}
+
+function getErrorIcon(errorType: ErrorType): {
+  icon: ResultIcon;
+  testId: string;
+} {
+  switch (errorType) {
+    case 'insufficient_funds':
+      return { icon: 'coins', testId: 'pay-result-insufficient-funds-icon' };
+    case 'expired':
+      return { icon: 'warning', testId: 'pay-result-expired-icon' };
+    case 'cancelled':
+      return { icon: 'warning', testId: 'pay-result-cancelled-icon' };
+    case 'not_found':
+    case 'generic':
+      return { icon: 'warning', testId: 'pay-result-error-icon' };
+  }
+}
+
+function getErrorActionLabel(errorType: ErrorType): string {
+  switch (errorType) {
+    case 'insufficient_funds':
+      return 'Got it';
+    case 'expired':
+    case 'cancelled':
+      return 'Scan a new QR code';
+    case 'not_found':
+    case 'generic':
+      return 'Close';
+  }
+}
+
+/**
+ * Resolves the full presentation for a result screen.
+ *
+ * @param status     'success' or 'error'.
+ * @param errorType  The classified error (ignored for success).
+ * @param ctx.message Dynamic context — the success summary on success, or the
+ *                    raw error message used as the generic-error fallback.
+ */
+export function getResultContent(
+  status: 'success' | 'error',
+  errorType: ErrorType | null,
+  ctx?: { message?: string },
+): ResultContent {
+  if (status === 'success') {
+    return {
+      title: ctx?.message || SUCCESS_DEFAULT_TITLE,
+      icon: 'success',
+      iconTestId: 'pay-result-success-icon',
+      actionLabel: 'Done',
+      actionKind: 'close',
+    };
+  }
+
+  const type = errorType ?? 'generic';
+  const { icon, testId } = getErrorIcon(type);
+
+  return {
+    title: getErrorTitle(type),
+    description: getErrorDescription(type, ctx?.message),
+    icon,
+    iconTestId: testId,
+    actionLabel: getErrorActionLabel(type),
+    actionKind: type === 'expired' || type === 'cancelled' ? 'scanQR' : 'close',
+  };
+}
+
+// Steps that render the LoadingView. Token setup happens during 'confirming'.
+export type LoadingStep = 'loading' | 'confirming';
+
+export interface LoadingContent {
+  message: string;
+  // Secondary line shown only while setting up a token for the first time.
+  note?: string;
+}
+
+export function getLoadingContent(
+  step: LoadingStep,
+  ctx?: { setupTokenSymbol?: string | null },
+): LoadingContent {
+  const symbol = ctx?.setupTokenSymbol;
+  if (symbol) {
+    return {
+      message: `Setting up ${symbol}`,
+      note: `This usually takes a few seconds. Future ${symbol} payments will skip this step.`,
+    };
+  }
+
+  return {
+    message:
+      step === 'confirming'
+        ? 'Confirming your payment…'
+        : 'Preparing your payment…',
+  };
 }

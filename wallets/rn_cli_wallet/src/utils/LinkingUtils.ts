@@ -1,5 +1,5 @@
 import { Linking } from 'react-native';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 interface redirect {
   native?: string;
@@ -14,7 +14,7 @@ interface Props {
 }
 
 const showSuccessToast = () => {
-  Toast.show({
+  showToast({
     type: 'success',
     text1: 'Success',
     text2: 'Please go back to the dapp',
@@ -24,7 +24,7 @@ const showSuccessToast = () => {
 export const handleRedirect = ({ peerRedirect, isLinkMode, error }: Props) => {
   try {
     if (error) {
-      Toast.show({
+      showToast({
         type: 'error',
         text1: 'Error',
         text2: error,
@@ -33,7 +33,7 @@ export const handleRedirect = ({ peerRedirect, isLinkMode, error }: Props) => {
     }
 
     if (isLinkMode) {
-      Toast.show({
+      showToast({
         type: 'success',
         text1: 'Success',
         text2: 'Redirecting to the dapp',

@@ -9,8 +9,15 @@ import WarningCircle from '@/assets/WarningCircle';
 import { haptics } from '@/utils/haptics';
 import { Spacing } from '@/utils/ThemeUtil';
 
-import type { ErrorType } from './utils';
-import { arePayModalAnimationsEnabled, getErrorTitle } from './utils';
+import type { ErrorType, ResultIcon } from './utils';
+import {
+  arePayModalAnimationsEnabled,
+  getResultContent,
+  LOTTIE_ICON_SIZE,
+  PAY_STATUS_LAYOUT,
+} from './utils';
+
+const ERROR_ICON_COLOR = '#0988F0';
 
 const getResultButtonTestId = (
   isSuccess: boolean,
@@ -18,14 +25,38 @@ const getResultButtonTestId = (
 ) =>
   `pay-button-result-action-${isSuccess ? 'success' : errorType || 'generic'}`;
 
-const getActionButtonText = (
-  isSuccess: boolean,
-  errorType?: ErrorType | null,
-) => {
-  if (isSuccess || errorType === 'insufficient_funds') return 'Got it!';
-  if (errorType === 'expired' || errorType === 'cancelled')
-    return 'Scan new QR code';
-  return 'Close';
+// The testID is placed on a wrapping <View> rather than directly on the icon.
+// On web, react-native-svg renders an <svg> and Lottie a <canvas>; Maestro's web
+// driver skips svg/img tags entirely, so a testID on the icon itself would be
+// unreachable. A wrapping View renders as a <div>, which Maestro can find (and
+// native testID lookup works on the View just the same).
+const renderIcon = (icon: ResultIcon, testID: string) => {
+  switch (icon) {
+    case 'success':
+      return (
+        <View testID={testID}>
+          <LottieView
+            source={require('@/assets/lottie/Success.json')}
+            autoPlay={arePayModalAnimationsEnabled}
+            loop={false}
+            progress={arePayModalAnimationsEnabled ? undefined : 1}
+            style={styles.successAnimation}
+          />
+        </View>
+      );
+    case 'coins':
+      return (
+        <View testID={testID}>
+          <CoinStack width={40} height={40} fill={ERROR_ICON_COLOR} />
+        </View>
+      );
+    case 'warning':
+      return (
+        <View testID={testID}>
+          <WarningCircle width={40} height={40} fill={ERROR_ICON_COLOR} />
+        </View>
+      );
+  }
 };
 
 interface ResultViewProps {
@@ -52,117 +83,29 @@ export function ResultView({
   }, [status]);
 
   const isSuccess = status === 'success';
-  const defaultMessage = isSuccess
-    ? 'Your payment has been confirmed'
-    : 'An error occurred';
-
-  const renderIcon = () => {
-    if (isSuccess) {
-      return (
-        <LottieView
-          source={require('@/assets/lottie/Success.json')}
-          autoPlay={arePayModalAnimationsEnabled}
-          loop={false}
-          progress={arePayModalAnimationsEnabled ? undefined : 1}
-          style={styles.successAnimation}
-          testID="pay-result-success-icon"
-        />
-      );
-    }
-
-    const iconColor = '#0988F0';
-
-    switch (errorType) {
-      case 'insufficient_funds':
-        return (
-          <CoinStack
-            width={40}
-            height={40}
-            fill={iconColor}
-            testID="pay-result-insufficient-funds-icon"
-          />
-        );
-      case 'expired':
-        return (
-          <WarningCircle
-            width={40}
-            height={40}
-            fill={iconColor}
-            testID="pay-result-expired-icon"
-          />
-        );
-      case 'cancelled':
-        return (
-          <WarningCircle
-            width={40}
-            height={40}
-            fill={iconColor}
-            testID="pay-result-cancelled-icon"
-          />
-        );
-      case 'not_found':
-      case 'generic':
-      default:
-        return (
-          <WarningCircle
-            width={40}
-            height={40}
-            fill={iconColor}
-            testID="pay-result-error-icon"
-          />
-        );
-    }
-  };
-
-  const renderTitle = () => {
-    if (isSuccess) {
-      return (
-        <Text
-          variant="h6-400"
-          color="text-primary"
-          center
-          style={styles.title}
-          numberOfLines={2}
-          testID="pay-result-title"
-        >
-          {message || defaultMessage}
-        </Text>
-      );
-    }
-
-    if (!errorType) {
-      return (
-        <Text
-          variant="h6-400"
-          color="text-primary"
-          center
-          style={styles.title}
-          testID="pay-result-title"
-        >
-          {message || defaultMessage}
-        </Text>
-      );
-    }
-
-    return (
-      <Text
-        variant="h6-400"
-        color="text-primary"
-        center
-        style={styles.title}
-        testID="pay-result-title"
-      >
-        {getErrorTitle(errorType)}
-      </Text>
-    );
-  };
+  const content = getResultContent(status, errorType ?? null, { message });
+  const onPress =
+    content.actionKind === 'scanQR' && onScanQR ? onScanQR : onClose;
 
   return (
     <>
-      <View style={styles.contentContainer} testID="pay-result-container">
-        {renderIcon()}
-        {renderTitle()}
-        {!isSuccess && (
+      <View
+        style={isSuccess ? styles.iconArea : styles.iconAreaCompact}
+        testID="pay-result-container"
+      >
+        {renderIcon(content.icon, content.iconTestId)}
+      </View>
+      <View style={styles.textArea}>
+        <Text
+          variant="h6-400"
+          color="text-primary"
+          center
+          numberOfLines={isSuccess ? 2 : undefined}
+          testID="pay-result-title"
+        >
+          {content.title}
+        </Text>
+        {content.description && (
           <Text
             variant="lg-400"
             color="text-tertiary"
@@ -170,21 +113,17 @@ export function ResultView({
             numberOfLines={3}
             center
           >
-            {message || defaultMessage}
+            {content.description}
           </Text>
         )}
       </View>
       <View style={styles.footerContainer}>
         <ActionButton
-          onPress={
-            (errorType === 'expired' || errorType === 'cancelled') && onScanQR
-              ? onScanQR
-              : onClose
-          }
+          onPress={onPress}
           fullWidth
           testID={getResultButtonTestId(isSuccess, errorType)}
         >
-          {getActionButtonText(isSuccess, errorType)}
+          {content.actionLabel}
         </ActionButton>
       </View>
     </>
@@ -192,22 +131,37 @@ export function ResultView({
 }
 
 const styles = StyleSheet.create({
-  contentContainer: {
+  iconArea: {
+    height: PAY_STATUS_LAYOUT.iconAreaHeight,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconAreaCompact: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    // Static-icon results (errors) keep only top padding so the icon sits
+    // 16px above the text — matching the Figma "Visual Asset + text" group
+    // (gap-4). The textArea's own top padding supplies that 16px gap; a
+    // bottom padding here would double it to 32px.
+    paddingTop: Spacing[4],
   },
   successAnimation: {
-    width: 120,
-    height: 120,
+    width: LOTTIE_ICON_SIZE,
+    height: LOTTIE_ICON_SIZE,
   },
-  title: {
-    marginTop: Spacing[4],
+  textArea: {
+    width: '100%',
+    paddingHorizontal: Spacing[2],
+    paddingVertical: Spacing[4],
+    alignItems: 'center',
   },
   message: {
-    marginTop: Spacing[1],
+    // Title → body gap of 8px to match the Figma text group (gap-2).
+    marginTop: Spacing[2],
   },
   footerContainer: {
-    paddingTop: Spacing[7],
-    marginBottom: Spacing[2],
+    paddingTop: Spacing[2],
+    paddingBottom: Spacing[2],
     alignItems: 'center',
   },
 });

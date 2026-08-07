@@ -1,6 +1,5 @@
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
-import { CloseButton } from "@/components/close-button";
 import { PinModal } from "@/components/pin-modal";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
@@ -8,7 +7,7 @@ import { SettingsItem } from "@/components/settings-item";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
-import { VariantList, VariantName } from "@/constants/variants";
+import { VariantList, VariantName, Variants } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
@@ -17,8 +16,8 @@ import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { ThemeMode } from "@/utils/types";
 import { getBiometricLabel } from "@/utils/biometrics";
+import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
-import { resetNavigation } from "@/utils/navigation";
 import {
   connectPrinter,
   printReceipt,
@@ -27,7 +26,6 @@ import {
 import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
@@ -70,6 +68,9 @@ export default function SettingsScreen() {
   const setThemeMode = useSettingsStore((state) => state.setThemeMode);
   const variant = useSettingsStore((state) => state.variant);
   const setVariant = useSettingsStore((state) => state.setVariant);
+  const getVariantPrinterLogo = useSettingsStore(
+    (state) => state.getVariantPrinterLogo,
+  );
   const currency = useSettingsStore((state) => state.currency);
   const setCurrency = useSettingsStore((state) => state.setCurrency);
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
@@ -140,7 +141,9 @@ export default function SettingsScreen() {
 
   const currentVariant = VariantList.find((v) => v.id === variant);
   const currentCurrency = getCurrency(currency);
-  const isCustomVariant = variant !== "default";
+  // Branded variants lock the theme to their default, unless they opt into manual switching.
+  const isThemeLocked =
+    variant !== "default" && !Variants[variant].allowThemeToggle;
 
   const closeSheet = () => {
     if (activeSheet === "customerApiKey") {
@@ -195,7 +198,9 @@ export default function SettingsScreen() {
           "settings",
           "handleTestPrinterPress",
         );
-        showErrorToast("Failed to request Bluetooth permission");
+        showErrorToast(
+          "We need Bluetooth to connect your printer. Allow it in your device settings.",
+        );
         return;
       }
       const { connected, error } = await connectPrinter();
@@ -207,10 +212,17 @@ export default function SettingsScreen() {
           "handleTestPrinterPress",
           { error },
         );
-        showErrorToast(error || "Failed to connect to printer");
+        showErrorToast(
+          error ||
+            "We couldn't connect to the printer. Check that it's on and paired in your device's Bluetooth settings.",
+        );
         return;
       }
       const currencyData = getCurrency(currency);
+      // Build the header lockup for the active variant so each one can be
+      // test-printed easily; fall back to the pre-built logo on failure.
+      const logoBase64 =
+        (await buildReceiptLogo(variant)) ?? getVariantPrinterLogo();
       await printReceipt({
         txnId: "69e4355c-e0d3-42d6-b63b-ce82e23b68e9",
         amountFiat: 15,
@@ -220,6 +232,7 @@ export default function SettingsScreen() {
         tokenDecimals: 6,
         networkName: "Base",
         date: new Date().toLocaleDateString("en-GB"),
+        logoBase64,
       });
     } catch (error) {
       const errorMessage =
@@ -252,32 +265,37 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <SettingsItem
+          testID="settings-theme"
           title="Theme"
           value={THEME_LABELS[themeMode]}
           onPress={() => setActiveSheet("theme")}
-          disabled={isCustomVariant}
+          disabled={isThemeLocked}
         />
 
         <SettingsItem
+          testID="settings-wallet-theme"
           title="Wallet theme"
           value={currentVariant?.name ?? "None"}
           onPress={() => setActiveSheet("walletTheme")}
         />
 
         <SettingsItem
+          testID="settings-currency"
           title="Currency"
           value={`${currentCurrency.name} (${currentCurrency.symbol})`}
           onPress={() => setActiveSheet("currency")}
         />
 
         <SettingsItem
+          testID="settings-merchant-id"
           title="Merchant ID"
           value={merchantIdInput || undefined}
           onPress={() => setActiveSheet("merchantId")}
         />
 
         <SettingsItem
-          title="Customer API KEY"
+          testID="settings-customer-api-key"
+          title="Customer API key"
           value="**********"
           onPress={() => setActiveSheet("customerApiKey")}
         />
@@ -287,10 +305,10 @@ export default function SettingsScreen() {
             <View style={styles.biometricRow}>
               <View style={styles.biometricLabel}>
                 <ThemedText fontSize={16} lineHeight={18}>
-                  Show NFC UI
+                  Tap-to-pay prompt
                 </ThemedText>
                 <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Show NFC tap UI on the payment screen
+                  Show the tap-to-pay prompt on the payment screen.
                 </ThemedText>
               </View>
               <Switch
@@ -311,7 +329,7 @@ export default function SettingsScreen() {
                   {getBiometricLabel(biometricStatus.biometricType)}
                 </ThemedText>
                 <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Use instead of PIN
+                  Use instead of PIN.
                 </ThemedText>
               </View>
               <Switch
@@ -323,9 +341,17 @@ export default function SettingsScreen() {
           </Card>
         )}
 
-        <SettingsItem title="Test printer" onPress={handleTestPrinterPress} />
+        <SettingsItem
+          testID="settings-test-printer"
+          title="Test printer"
+          onPress={handleTestPrinterPress}
+        />
 
-        <SettingsItem title="View Logs" onPress={() => router.push("/logs")} />
+        <SettingsItem
+          testID="settings-view-logs"
+          title="View logs"
+          onPress={() => router.push("/logs")}
+        />
 
         <ThemedText
           fontSize={12}
@@ -336,19 +362,6 @@ export default function SettingsScreen() {
           Version {appVersion} ({buildVersion})
         </ThemedText>
       </ScrollView>
-
-      <LinearGradient
-        colors={[
-          theme["bg-primary"] + "00",
-          theme["bg-primary"] + "40",
-          theme["bg-primary"] + "CC",
-          theme["bg-primary"],
-        ]}
-        locations={[0, 0.3, 0.5, 1]}
-        style={styles.gradient}
-        pointerEvents="none"
-      />
-      <CloseButton style={styles.closeButton} onPress={resetNavigation} />
 
       {/* Theme Bottom Sheet */}
       <SettingsBottomSheet
@@ -413,6 +426,7 @@ export default function SettingsScreen() {
             ]}
           />
           <Button
+            testID="settings-merchant-save"
             onPress={handleMerchantIdSave}
             disabled={isMerchantIdConfirmDisabled}
             style={[
@@ -439,7 +453,7 @@ export default function SettingsScreen() {
       {/* Customer API Key Bottom Sheet */}
       <SettingsBottomSheet
         visible={activeSheet === "customerApiKey"}
-        title="Customer API KEY"
+        title="Customer API key"
         onClose={closeSheet}
       >
         <View style={styles.inputContent}>
@@ -467,6 +481,7 @@ export default function SettingsScreen() {
             ]}
           />
           <Button
+            testID="settings-customer-save"
             onPress={handleCustomerApiKeySave}
             disabled={isCustomerApiKeyConfirmDisabled}
             style={[
@@ -496,8 +511,8 @@ export default function SettingsScreen() {
         title={activeModal === "pin-verify" ? "Enter PIN" : "Create PIN"}
         subtitle={
           activeModal === "pin-verify"
-            ? "Enter your PIN to save merchant settings"
-            : "Set a 4-digit PIN to protect merchant settings"
+            ? "Enter your PIN to save these settings."
+            : "Set a 4-digit PIN to protect your settings."
         }
         onComplete={
           activeModal === "pin-verify"
@@ -522,17 +537,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing["spacing-5"],
     paddingBottom: Spacing["extra-spacing-2"],
     gap: Spacing["spacing-2"],
-  },
-  closeButton: {
-    position: "absolute",
-    alignSelf: "center",
-  },
-  gradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 200,
   },
   versionText: {
     alignSelf: "flex-end",

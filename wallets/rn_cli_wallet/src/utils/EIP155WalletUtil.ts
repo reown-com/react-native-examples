@@ -1,6 +1,6 @@
-import { utils } from 'ethers';
+import { Mnemonic } from 'ethers';
 
-import Config from 'react-native-config';
+import { ENV } from './env';
 
 import EIP155Lib from '../lib/EIP155Lib';
 import { storage } from './storage';
@@ -20,8 +20,8 @@ export async function createOrRestoreEIP155Wallet() {
     wallet1 = EIP155Lib.init({ mnemonic: mnemonic1 });
   } else if (privateKey1) {
     wallet1 = EIP155Lib.init({ privateKey: privateKey1 });
-  } else if (Config.ENV_TEST_PRIVATE_KEY) {
-    wallet1 = EIP155Lib.init({ privateKey: Config.ENV_TEST_PRIVATE_KEY });
+  } else if (ENV.TEST_PRIVATE_KEY) {
+    wallet1 = EIP155Lib.init({ privateKey: ENV.TEST_PRIVATE_KEY });
   } else {
     wallet1 = EIP155Lib.init({});
     storage.setItem('EIP155_MNEMONIC_1', wallet1.getMnemonic());
@@ -68,7 +68,7 @@ export function loadEIP155Wallet(input: string): {
         `Mnemonic must be 12, 15, 18, 21, or 24 words (got ${words.length})`,
       );
     }
-    if (!utils.isValidMnemonic(trimmedInput)) {
+    if (!Mnemonic.isValidMnemonic(trimmedInput)) {
       throw new Error('Invalid mnemonic phrase');
     }
   }

@@ -1,6 +1,6 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
-import { formatFiatAmount } from "@/utils/currency";
+import { formatFiatAmount, formatTokenAmount } from "@/utils/currency";
 import { formatDateTime } from "@/utils/misc";
 import { PaymentRecord } from "@/utils/types";
 import { memo, useEffect } from "react";
@@ -44,6 +44,24 @@ function truncateHash(hash?: string): string {
   if (!hash) return "-";
   if (hash.length <= 12) return hash;
   return `${hash.slice(0, 4)}...${hash.slice(-4)}`;
+}
+
+function formatTokenAmountLabel(
+  tokenAmount: NonNullable<PaymentRecord["tokenAmount"]>,
+): string {
+  const { value, display } = tokenAmount;
+  const symbol = display?.assetSymbol;
+
+  let amount = display?.formatted;
+  if (!amount && value) {
+    amount =
+      display?.decimals != null
+        ? formatTokenAmount(value, display.decimals)
+        : value;
+  }
+
+  if (!amount) return symbol ?? "";
+  return symbol ? `${amount} ${symbol}` : amount;
 }
 
 interface DetailRowProps {
@@ -135,7 +153,7 @@ function TransactionDetailModalBase({
   const handleCopyHash = async () => {
     if (!txHash) return;
     await Clipboard.setStringAsync(txHash);
-    showSuccessToast("Transaction hash copied to clipboard");
+    showSuccessToast("Transaction ID copied to clipboard");
   };
 
   return (
@@ -196,15 +214,14 @@ function TransactionDetailModalBase({
                 />
 
                 {payment.tokenAmount?.value && (
-                  <DetailRow label="Crypto received">
+                  <DetailRow label="Asset received">
                     <View style={styles.cryptoValue}>
                       <ThemedText
                         fontSize={16}
                         lineHeight={18}
                         color="text-primary"
                       >
-                        {payment.tokenAmount.display?.formatted ??
-                          payment.tokenAmount.value}
+                        {formatTokenAmountLabel(payment.tokenAmount)}
                       </ThemedText>
                       {payment.tokenAmount.display?.iconUrl && (
                         <Image
@@ -225,7 +242,7 @@ function TransactionDetailModalBase({
 
                 {txHash && (
                   <DetailRow
-                    label="Hash ID"
+                    label="Transaction ID"
                     value={truncateHash(txHash)}
                     onPress={handleCopyHash}
                     underline

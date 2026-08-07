@@ -121,14 +121,12 @@ jobs:
 
       - name: Optimize Gradle for CI
         run: |
-          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m" >> ${{ inputs.root-path }}/android/gradle.properties
-          echo "org.gradle.parallel=true" >> ${{ inputs.root-path }}/android/gradle.properties
-          echo "org.gradle.caching=true" >> ${{ inputs.root-path }}/android/gradle.properties
+          printf '\norg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m\norg.gradle.parallel=true\norg.gradle.caching=true\n' >> ${{ inputs.root-path }}/android/gradle.properties
 
       - name: Configure ABI for internal builds
         if: ${{ inputs.release-type == 'internal' }}
         run: |
-          echo "reactNativeArchitectures=arm64-v8a,armeabi-v7a" >> ${{ inputs.root-path }}/android/gradle.properties
+          printf 'reactNativeArchitectures=arm64-v8a,armeabi-v7a\n' >> ${{ inputs.root-path }}/android/gradle.properties
 
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -141,6 +139,58 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-${{ inputs.name }}-
 
+      # RN/AGP fetches the build-requested NDK on the fly during Build APK, and
+      # that download intermittently lands corrupted on CI runners
+      # ("Archive is not a ZIP archive" -> InstallFailedException) — failing the
+      # build but passing on rerun. Pre-install it via sdkmanager so the build
+      # finds it locally. The version is read from the generated
+      # android/build.gradle — the exact one the build resolves (Expo apps: pinned
+      # by plugins/withAndroidNdkVersion.js; committed-native apps: their
+      # buildscript ext) — so it can't drift. Apps that don't pin it are skipped
+      # (no regression). Retry so a corrupted archive self-heals. Mirrors the
+      # E2E action's Install Android NDK step.
+      - name: Pre-install Android NDK
+        run: |
+          set -euo pipefail
+          ANDROID_DIR="${{ inputs.root-path }}/android"
+          # Extraction must not abort the step: grep exits non-zero when nothing
+          # matches (apps that don't pin a literal ndkVersion, or a missing
+          # android/build.gradle), and under `set -e -o pipefail` that would kill
+          # the step before the skip check below. Disable pipefail and `|| true`
+          # so an empty result flows through to the graceful skip.
+          set +o pipefail
+          NDK_VERSION="$(grep -rhoE 'ndkVersion[^"]*"[0-9][0-9.]+"' \
+            "$ANDROID_DIR/build.gradle" "$ANDROID_DIR/app/build.gradle" 2>/dev/null \
+            | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
+          set -o pipefail
+          if [ -z "${NDK_VERSION:-}" ]; then
+            echo "No pinned ndkVersion found under $ANDROID_DIR — skipping NDK pre-install."
+            exit 0
+          fi
+          echo "Resolved ndkVersion=$NDK_VERSION (from generated android/build.gradle)"
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          # Accept licenses so the install runs unattended; `yes` feeds the prompts
+          # (and takes SIGPIPE on exit, hence `|| true`).
+          yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+          status=1
+          for attempt in 1 2 3; do
+            echo "=== sdkmanager NDK install attempt $attempt/3 (ndk;$NDK_VERSION) ==="
+            # pipefail off: `yes` takes SIGPIPE when sdkmanager exits, which would
+            # otherwise mask sdkmanager's exit code. The `if` is exempt from set -e,
+            # so a failed install is captured and retried instead of aborting.
+            set +o pipefail
+            if yes | "$SDKMANAGER" --install "ndk;$NDK_VERSION"; then
+              status=0
+            else
+              status=$?
+            fi
+            set -o pipefail
+            [ "$status" -eq 0 ] && break
+            echo "NDK install attempt $attempt failed (exit $status); clearing partial download and retrying"
+            rm -rf "$ANDROID_HOME/ndk/$NDK_VERSION"
+          done
+          [ "$status" -eq 0 ] || { echo "Error: NDK install failed after 3 attempts"; exit 1; }
+
       - name: Build APK
         id: build
         run: |
@@ -150,22 +200,27 @@ jobs:
             cd ${{ inputs.root-path }} && ${{ inputs.package-manager }} run android:build
           fi
   
-      - name: Setup Firebase
-        uses: w9jds/setup-firebase@main
-        with:
-          tools-version: 13.0.1
-          gcp_sa_key: ${{ secrets.gsa-key }}
-      
+      - name: Debug - Dump APK theme resources
+        if: ${{ inputs.release-type == 'internal' }}
+        run: |
+          APK_PATH="${{ inputs.output-path }}"
+          echo "=== APK theme resources ==="
+          $ANDROID_HOME/build-tools/36.0.0/aapt2 dump resources "$APK_PATH" 2>&1 | grep -A15 "style/AppTheme\|style/BootTheme" || true
+          echo "=== AndroidManifest theme ==="
+          $ANDROID_HOME/build-tools/36.0.0/aapt2 dump xmltree "$APK_PATH" --file AndroidManifest.xml 2>&1 | grep -i "theme" || true
+          echo "=== Effective gradle.properties ==="
+          cat ${{ inputs.root-path }}/android/gradle.properties
+
       - name: Upload APK to Firebase
         id: firebase-upload
         continue-on-error: false
-        env:
-          APP_ID: ${{ inputs.firebase-app-id }}
-        run: |
-          firebase appdistribution:distribute ${{ inputs.output-path }} \
-            --app $APP_ID \
-            --release-notes "${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }} - Branch: ${{ github.ref_name }}" \
-            --groups "flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers"
+        uses: wzieba/Firebase-Distribution-Github-Action@bd494989dd4bec0343f78adee87fe66e48279ad6 # v1
+        with:
+          appId: ${{ inputs.firebase-app-id }}
+          serviceCredentialsFileContent: ${{ secrets.gsa-key }}
+          groups: flutter-team, javascript-team, kotlin-team, unity, rust-team, swift-team, wc-testers
+          file: ${{ inputs.output-path }}
+          releaseNotes: "${{ inputs.name }} (${{ inputs.project-type }}) - ${{ inputs.release-type }} - Branch: ${{ github.ref_name }}"
     
       - name: Configure AWS credentials
         id: aws-creds

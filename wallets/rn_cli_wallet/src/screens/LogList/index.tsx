@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useSnapshot } from 'valtio';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import { WalletKitLog } from './components/WalletKitLog';
 import { AppLog } from './components/AppLog';
@@ -93,7 +93,7 @@ export function LogList() {
 
   const handleClearLogs = useCallback(() => {
     LogStore.clearLogs();
-    Toast.show({
+    showToast({
       type: 'info',
       text1: 'App logs cleared',
     });

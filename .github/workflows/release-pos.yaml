@@ -1,4 +1,4 @@
-name: Release Mobile POS
+name: 🚀 Release Mobile POS
 run-name: "Mobile POS - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 Android' || inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }}"
 
 permissions:

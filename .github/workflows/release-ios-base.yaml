@@ -58,6 +58,11 @@ on:
         required: false
         default: false
         type: boolean
+      app-variant:
+        description: "APP_VARIANT for expo prebuild (e.g. production/internal). Selects the iOS bundle id/icon via app.config.js."
+        required: false
+        default: 'production'
+        type: string
     secrets:
       sentry-file:
         required: true
@@ -120,7 +125,7 @@ jobs:
         if: ${{ inputs.is-expo-project == true }}
         run: |
           cd ${{ inputs.root-path }}
-          npx expo prebuild --platform ios
+          APP_VARIANT=${{ inputs.app-variant }} npx expo prebuild --platform ios
 
       - name: Set Xcode paths
         run: |
@@ -149,9 +154,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ inputs.root-path }}/ios/Pods
+          # No restore-keys fallback on purpose: a prefix match would restore a
+          # stale Pods/ whenever Podfile.lock changes (e.g. a dependency bump),
+          # and its Pods/Local Podspecs no longer match the resolved podspecs
+          # (notably hermes-engine), breaking `pod install`. Only an exact
+          # Podfile.lock match restores; otherwise we start clean and reinstall.
           key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(env.podfile_path) }}
-          restore-keys: |
-            ${{ runner.os }}-pods-${{ github.ref_name }}-
 
       - name: Install Ruby
         uses: ruby/setup-ruby@v1

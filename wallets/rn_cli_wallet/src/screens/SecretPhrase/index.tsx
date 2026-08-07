@@ -1,9 +1,9 @@
 import { useSnapshot } from 'valtio';
 import { View, StyleSheet } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
 import { ScrollView } from 'react-native-gesture-handler';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
+import { setClipboardString } from '@/utils/ClipboardUtil';
 import SettingsStore from '@/store/SettingsStore';
 import { eip155Wallets } from '@/utils/EIP155WalletUtil';
 import { useTheme } from '@/hooks/useTheme';
@@ -29,10 +29,10 @@ function SecretSection({
 
   const copySecret = () => {
     if (secret) {
-      Clipboard.setString(secret);
-      Toast.show({
+      setClipboardString(secret);
+      showToast({
         type: 'info',
-        text1: `${title} copied to clipboard`,
+        text1: `${title} secret copied`,
       });
     }
   };
@@ -121,6 +121,7 @@ export default function SecretPhrase() {
     tronWallet,
     cantonWallet,
     solanaWallet,
+    bitcoinWallet,
   } = useSnapshot(SettingsStore.state);
   const Theme = useTheme();
 
@@ -145,6 +146,9 @@ export default function SecretPhrase() {
   const solanaMnemonic = solanaWallet?.getMnemonic?.() || null;
   const solanaBase58SecretKey = solanaWallet?.getSecretKey?.() ?? null;
 
+  // Get Bitcoin mnemonic
+  const bitcoinMnemonic = bitcoinWallet?.getMnemonic?.() ?? null;
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
@@ -157,40 +161,40 @@ export default function SecretPhrase() {
         ]}
       >
         <Text variant="sm-500" color="text-primary">
-          Mnemonics and secret keys are provided for development purposes only
-          and should not be used elsewhere
+          These mnemonics and secret keys are for development only. Don’t use
+          them anywhere else.
         </Text>
       </View>
       <SecretSection
-        title="EVM (Ethereum)"
+        title="Ethereum"
         secret={evmMnemonic}
         type="mnemonic"
-        notAvailableMessage="Imported via private key - no recovery phrase"
+        notAvailableMessage="Imported via private key. No recovery phrase."
       />
 
       <SecretSection
-        title="SUI"
+        title="Sui"
         secret={suiMnemonic}
         type="mnemonic"
-        notAvailableMessage="SUI wallet not initialized"
+        notAvailableMessage="Sui wallet not initialized"
       />
 
       <SecretSection
-        title="TON"
+        title="Ton"
         secret={tonSecretKey}
         type="hex"
-        notAvailableMessage="TON wallet not initialized"
+        notAvailableMessage="Ton wallet not initialized"
       />
 
       <SecretSection
-        title="TRON"
+        title="Tron"
         secret={tronPrivateKey}
         type="hex"
-        notAvailableMessage="TRON wallet not initialized"
+        notAvailableMessage="Tron wallet not initialized"
       />
 
       <SecretSection
-        title="CANTON"
+        title="Canton"
         secret={cantonSecretKey}
         type="hex"
         notAvailableMessage="Canton wallet not initialized"
@@ -198,19 +202,26 @@ export default function SecretPhrase() {
 
       {solanaMnemonic ? (
         <SecretSection
-          title="SOLANA"
+          title="Solana"
           secret={solanaMnemonic}
           type="mnemonic"
           notAvailableMessage="Solana wallet not initialized"
         />
       ) : (
         <SecretSection
-          title="SOLANA (base58 secret key)"
+          title="Solana (base58 secret key)"
           secret={solanaBase58SecretKey}
           type="hex"
           notAvailableMessage="Solana wallet not initialized"
         />
       )}
+
+      <SecretSection
+        title="Bitcoin"
+        secret={bitcoinMnemonic}
+        type="mnemonic"
+        notAvailableMessage="Bitcoin wallet not initialized"
+      />
     </ScrollView>
   );
 }

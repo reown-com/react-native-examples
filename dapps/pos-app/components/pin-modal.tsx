@@ -40,12 +40,24 @@ function PinModalBase({
   const theme = useTheme();
   const [pin, setPin] = useState("");
   const [shakeAnimation] = useState(new Animated.Value(0));
+  const [prevVisible, setPrevVisible] = useState(visible);
+  const [prevError, setPrevError] = useState(error);
 
-  useEffect(() => {
+  // Clear the entered PIN when the modal is hidden or a new error arrives.
+  // Adjusting state during render is the recommended React pattern for
+  // resetting state in response to prop changes (avoids setState-in-effect).
+  if (prevVisible !== visible) {
+    setPrevVisible(visible);
     if (!visible) {
       setPin("");
     }
-  }, [visible]);
+  }
+  if (prevError !== error) {
+    setPrevError(error);
+    if (error) {
+      setPin("");
+    }
+  }
 
   useEffect(() => {
     if (error) {
@@ -76,7 +88,6 @@ function PinModalBase({
           useNativeDriver: true,
         }),
       ]).start();
-      setPin("");
     }
   }, [error, shakeAnimation]);
 

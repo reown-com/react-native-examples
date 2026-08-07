@@ -33,7 +33,7 @@ console.error = (...args) => {
 jest.mock("react-native", () => {
   // Use react-native preset's mock instead of requiring actual module
   // This avoids native module dependencies
-  const RN = require("react-native/jest/mock");
+  const RN = require("@react-native/jest-preset/jest/mock");
   return {
     ...RN,
     Appearance: {

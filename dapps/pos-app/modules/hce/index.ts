@@ -1,7 +1,11 @@
-import { requireNativeModule, type EventSubscription } from "expo-modules-core";
+import { requireNativeModule } from "expo";
 import { Platform } from "react-native";
 
 import type { NfcCapabilitiesResult } from "./src/HceModule.types";
+
+// Matches expo-modules-core's EventSubscription shape. Defined locally so the
+// module does not import expo-modules-core directly (flagged by expo-doctor).
+type EventSubscription = { remove: () => void };
 
 type HceEvents = {
   onTap: () => void;

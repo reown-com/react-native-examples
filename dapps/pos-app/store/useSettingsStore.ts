@@ -1,3 +1,4 @@
+import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { VariantName, Variants } from "@/constants/variants";
 import { CurrencyCode } from "@/utils/currency";
 import { MerchantConfig } from "@/utils/merchant-config";
@@ -80,6 +81,7 @@ interface SettingsStore {
   setDeviceId: (deviceId: string) => void;
   setHasHydrated: (state: boolean) => void;
   setVariant: (variant: VariantName) => void;
+  getVariantPrinterLogo: () => string;
   setCurrency: (currency: CurrencyCode) => void;
   setMerchantId: (merchantId: string | null) => void;
   clearMerchantId: () => Promise<string | null>;
@@ -129,6 +131,8 @@ export const useSettingsStore = create<SettingsStore>()(
           set({ themeMode: variantData.defaultTheme });
         }
       },
+      getVariantPrinterLogo: () =>
+        Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64,
       setCurrency: (currency: CurrencyCode) => set({ currency }),
       setMerchantId: (merchantId: string | null) => {
         // If clearing, reset to env default (unless embedded — parent provides credentials)

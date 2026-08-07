@@ -92,7 +92,7 @@ export function ReviewPaymentView({
           {`Pay ${currencySymbol}${totalPayAmount}`}{' '}
           {canIncludeGasInTotal && (
             <Text variant="sm-400" color="text-invert">
-              (incl. gas fee)
+              (includes network fee)
             </Text>
           )}
         </ActionButton>
@@ -106,7 +106,7 @@ export function ReviewPaymentView({
             onPress={onGasFeePress}
           >
             Why does {selectedOption.amount.display.assetSymbol?.toUpperCase()}{' '}
-            require a gas fee?
+            need a network fee?
           </Text>
         )}
       </View>

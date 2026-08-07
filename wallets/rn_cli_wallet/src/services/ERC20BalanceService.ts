@@ -1,5 +1,5 @@
-import { Contract, providers, utils } from 'ethers';
-import Config from 'react-native-config';
+import { Contract, JsonRpcProvider, formatUnits } from 'ethers';
+import { ENV } from '@/utils/env';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import LogStore, { serializeError } from '@/store/LogStore';
 
@@ -35,7 +35,7 @@ const ERC20_TOKENS: ERC20TokenConfig[] = [
 const RPC_BASE_URL = 'https://rpc.walletconnect.org/v1/';
 
 function getRpcUrl(chainId: string): string | null {
-  const projectId = Config.ENV_PROJECT_ID;
+  const projectId = ENV.PROJECT_ID;
   if (!projectId) {
     return null;
   }
@@ -58,14 +58,14 @@ async function fetchSingleERC20Balance(
   }
 
   try {
-    const provider = new providers.JsonRpcProvider(rpcUrl);
+    const provider = new JsonRpcProvider(rpcUrl);
     const contract = new Contract(
       token.address,
       ERC20_BALANCE_OF_ABI,
       provider,
     );
     const rawBalance = await contract.balanceOf(walletAddress);
-    const numeric = utils.formatUnits(rawBalance, token.decimals);
+    const numeric = formatUnits(rawBalance, token.decimals);
 
     return {
       name: token.name,

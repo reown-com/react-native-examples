@@ -1,4 +1,8 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  DEFAULT_LOGO_BASE64,
+  MONEY2020_LOGO_BASE64,
+} from "@/constants/printer-logos";
 import { resetSettingsStore } from "../utils/store-helpers";
 
 // Get the mocked secure store
@@ -124,6 +128,39 @@ describe("useSettingsStore", () => {
         useSettingsStore.getState().setVariant(variantName);
         expect(useSettingsStore.getState().variant).toBe(variantName);
       });
+    });
+  });
+
+  describe("getVariantPrinterLogo", () => {
+    it("should return the default logo for variants without a printerLogo", () => {
+      useSettingsStore.getState().setVariant("default");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        DEFAULT_LOGO_BASE64,
+      );
+
+      useSettingsStore.getState().setVariant("solflare");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        DEFAULT_LOGO_BASE64,
+      );
+    });
+
+    it("should return the variant's printerLogo when set", () => {
+      useSettingsStore.getState().setVariant("money2020");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        MONEY2020_LOGO_BASE64,
+      );
+    });
+
+    it("should reflect the current variant when it changes", () => {
+      useSettingsStore.getState().setVariant("money2020");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        MONEY2020_LOGO_BASE64,
+      );
+
+      useSettingsStore.getState().setVariant("default");
+      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
+        DEFAULT_LOGO_BASE64,
+      );
     });
   });
 

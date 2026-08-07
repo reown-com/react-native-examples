@@ -5,7 +5,11 @@ import {
   ReactNativePosPrinter,
   TextOptions,
 } from "react-native-thermal-pos-printer";
-import { Currency, formatAmountWithSymbol } from "./currency";
+import {
+  Currency,
+  formatAmountWithSymbol,
+  formatTokenAmount,
+} from "./currency";
 import { getDate } from "./misc";
 
 export const requestBluetoothPermission = async () => {
@@ -61,32 +65,6 @@ export const connectPrinter = async (): Promise<{
       error: `Failed to connect: ${errorMessage}`,
     };
   }
-};
-
-/**
- * Formats a raw token amount (in smallest units) to a human-readable string
- * @param rawAmount - Token amount in smallest unit (e.g., "100000" for 0.0001 SOL)
- * @param decimals - Token decimals (e.g., 9 for SOL, 6 for USDC)
- * @returns Formatted amount string (e.g., "0.0001")
- */
-const MAX_RECEIPT_DECIMALS = 8;
-
-const formatTokenAmount = (rawAmount: string, decimals: number): string => {
-  if (!rawAmount || decimals === 0) return rawAmount;
-
-  const padded = rawAmount.padStart(decimals + 1, "0");
-  const integerPart = padded.slice(0, -decimals) || "0";
-  const decimalPart = padded.slice(-decimals);
-
-  // Trim trailing zeros but keep at least 2 decimal places for readability
-  let trimmedDecimal = decimalPart.replace(/0+$/, "").padEnd(2, "0");
-
-  // Cap decimals for receipt readability (avoids line wrapping on thermal printers)
-  if (trimmedDecimal.length > MAX_RECEIPT_DECIMALS) {
-    trimmedDecimal = trimmedDecimal.slice(0, MAX_RECEIPT_DECIMALS);
-  }
-
-  return `${integerPart}.${trimmedDecimal}`;
 };
 
 interface PrintReceiptProps {

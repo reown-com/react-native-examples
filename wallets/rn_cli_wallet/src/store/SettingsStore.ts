@@ -1,4 +1,4 @@
-import { proxy } from 'valtio';
+import { proxy, ref } from 'valtio';
 import { Appearance } from 'react-native';
 import { Verify, SessionTypes } from '@walletconnect/types';
 
@@ -9,16 +9,20 @@ import TonLib from '../lib/TonLib';
 import TronLib from '../lib/TronLib';
 import CantonLib from '../lib/CantonLib';
 import SolanaLib from '../lib/SolanaLib';
+import BitcoinLib from '../lib/BitcoinLib';
 import { MMKV } from 'react-native-mmkv';
 
 function getInitialThemeMode(): 'light' | 'dark' {
   const mmkv = new MMKV();
   const saved = mmkv.getString('THEME_MODE');
   if (saved === 'light' || saved === 'dark') {
+    Appearance.setColorScheme?.(saved);
     return saved;
   }
 
-  return Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+  const systemMode = Appearance.getColorScheme() === 'dark' ? 'dark' : 'light';
+  Appearance.setColorScheme?.(systemMode);
+  return systemMode;
 }
 
 /**
@@ -38,6 +42,8 @@ interface State {
   cantonWallet: CantonLib | null;
   solanaAddress: string;
   solanaWallet: SolanaLib | null;
+  bitcoinAddress: string;
+  bitcoinWallet: BitcoinLib | null;
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -72,6 +78,8 @@ const state = proxy<State>({
   cantonWallet: null,
   solanaAddress: '',
   solanaWallet: null,
+  bitcoinAddress: '',
+  bitcoinWallet: null,
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
@@ -96,7 +104,10 @@ const SettingsStore = {
   },
 
   setWallet(wallet: EIP155Lib) {
-    state.wallet = wallet;
+    // ref() keeps the wallet out of valtio's proxy: ethers v6's private
+    // #signingKey throws through a Proxy and valtio would corrupt the shared
+    // eip155Wallets instance.
+    state.wallet = ref(wallet);
   },
 
   setActiveChainId(value: string) {
@@ -143,7 +154,7 @@ const SettingsStore = {
   },
 
   setSuiWallet(suiWallet: SuiLib) {
-    state.suiWallet = suiWallet;
+    state.suiWallet = ref(suiWallet);
   },
 
   setTonAddress(tonAddress: string) {
@@ -151,7 +162,7 @@ const SettingsStore = {
   },
 
   setTonWallet(tonWallet: TonLib) {
-    state.tonWallet = tonWallet;
+    state.tonWallet = ref(tonWallet);
   },
 
   setTronAddress(tronAddress: string) {
@@ -159,7 +170,7 @@ const SettingsStore = {
   },
 
   setTronWallet(tronWallet: TronLib) {
-    state.tronWallet = tronWallet;
+    state.tronWallet = ref(tronWallet);
   },
 
   setCantonAddress(cantonAddress: string) {
@@ -167,7 +178,7 @@ const SettingsStore = {
   },
 
   setCantonWallet(cantonWallet: CantonLib) {
-    state.cantonWallet = cantonWallet;
+    state.cantonWallet = ref(cantonWallet);
   },
 
   setSolanaAddress(solanaAddress: string) {
@@ -175,11 +186,20 @@ const SettingsStore = {
   },
 
   setSolanaWallet(solanaWallet: SolanaLib) {
-    state.solanaWallet = solanaWallet;
+    state.solanaWallet = ref(solanaWallet);
+  },
+
+  setBitcoinAddress(bitcoinAddress: string) {
+    state.bitcoinAddress = bitcoinAddress;
+  },
+
+  setBitcoinWallet(bitcoinWallet: BitcoinLib) {
+    state.bitcoinWallet = ref(bitcoinWallet);
   },
 
   setThemeMode(value: 'light' | 'dark') {
     state.themeMode = value;
+    Appearance.setColorScheme?.(value);
     storage.setItem('THEME_MODE', value);
   },
 
@@ -187,6 +207,7 @@ const SettingsStore = {
     const saved = await storage.getItem<string>('THEME_MODE');
     if (saved === 'light' || saved === 'dark') {
       state.themeMode = saved;
+      Appearance.setColorScheme?.(saved);
     }
   },
 };

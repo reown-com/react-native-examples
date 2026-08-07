@@ -1,8 +1,8 @@
-import { CloseButton } from "@/components/close-button";
+import { Button } from "@/components/button";
 import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
-import { Spacing } from "@/constants/spacing";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -17,6 +17,7 @@ import {
 } from "@/utils/currency";
 import { formatCountdown } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
+import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
@@ -42,19 +43,17 @@ export default function ScanScreen() {
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const hasNavigatedRef = useRef(false);
 
-  const {
-    deviceId,
-    merchantId,
-    currency: currencyCode,
-    nfcEnabled,
-  } = useSettingsStore((state) => state);
+  const deviceId = useSettingsStore((state) => state.deviceId);
+  const merchantId = useSettingsStore((state) => state.merchantId);
+  const currencyCode = useSettingsStore((state) => state.currency);
+  const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
 
   const { amount } = params;
 
-  const { isNfcActive, nfcMode } = useNfcPayment({
+  const { nfcMode } = useNfcPayment({
     paymentUrl: qrUri,
     // HCE runs whenever the device supports it; `nfcEnabled` only controls UI visibility below.
     enabled: true,
@@ -87,7 +86,7 @@ export default function ScanScreen() {
   }, [paymentId, amount]);
 
   const onFailure = useCallback(
-    (errorCode?: string) => {
+    (errorCode?: string, minAmount?: string) => {
       if (hasNavigatedRef.current) return;
       hasNavigatedRef.current = true;
       router.dismiss();
@@ -96,6 +95,7 @@ export default function ScanScreen() {
         params: {
           amount,
           ...(errorCode && { errorCode }),
+          ...(minAmount && { minAmount }),
         },
       });
     },
@@ -103,13 +103,16 @@ export default function ScanScreen() {
   );
 
   const handleOnClosePress = () => {
-    if (paymentId && paymentStatusData?.status === "requires_action") {
+    // Before the first status poll resolves, `paymentStatusData` is undefined
+    // but the payment is already open at the gateway — cancel it then too.
+    const status = paymentStatusData?.status;
+    if (paymentId && (status === undefined || status === "requires_action")) {
       cancelPayment(paymentId).catch((error) => {
         addLog("error", "Failed to cancel payment", "scan", "cancelPayment", {
           paymentId,
           error,
         });
-        showErrorToast("Failed to cancel payment");
+        showErrorToast("We couldn't cancel this payment. Try again.");
       });
     }
     resetNavigation("/amount");
@@ -117,7 +120,7 @@ export default function ScanScreen() {
 
   const handleCopyPaymentUrl = async () => {
     await Clipboard.setStringAsync(qrUri);
-    showSuccessToast("Payment URL copied");
+    showSuccessToast("Payment link copied");
   };
 
   useEffect(() => {
@@ -131,7 +134,9 @@ export default function ScanScreen() {
           "scan",
           "initiatePayment",
         );
-        showErrorToast("Merchant ID is not configured");
+        showErrorToast(
+          "Add a merchant ID in Settings before starting a payment.",
+        );
         return;
       }
 
@@ -161,7 +166,14 @@ export default function ScanScreen() {
           "initiatePayment",
           { error },
         );
-        onFailure(error.code);
+        // The below-minimum rejection only carries the floor in its message, so
+        // parse it here and keep the raw server string out of the route params.
+        const minAmountCents = parseMinAmountCents(error.message);
+        if (minAmountCents) {
+          onFailure(AMOUNT_TOO_LOW, minAmountCents);
+        } else {
+          onFailure(error.code);
+        }
       }
     }
 
@@ -195,51 +207,38 @@ export default function ScanScreen() {
 
   const isProcessing = paymentStatusData?.status === "processing";
   const showNfc = nfcEnabled && nfcMode === "hce";
-  const nfcIconTint = isNfcActive
-    ? Theme["icon-accent-primary"]
-    : Theme["icon-default"];
 
   return (
     <View style={styles.container}>
       {isProcessing ? (
         <View style={styles.loadingContainer}>
           <WalletConnectLoading size={180} />
-          <ThemedText
-            style={[styles.amountText, { color: Theme["text-primary"] }]}
-            fontSize={16}
-            lineHeight={18}
-          >
-            Waiting for payment confirmation…
-          </ThemedText>
+          <View style={styles.loadingTextContainer}>
+            <ThemedText
+              style={{ color: Theme["text-primary"] }}
+              fontSize={18}
+              lineHeight={22}
+            >
+              Waiting for confirmation
+            </ThemedText>
+            <ThemedText
+              style={{ color: Theme["text-secondary"] }}
+              fontSize={14}
+              lineHeight={18}
+            >
+              This usually takes a few seconds.
+            </ThemedText>
+          </View>
         </View>
       ) : (
         <View style={styles.scanContainer}>
           <View style={[styles.header, !showNfc && styles.headerCentered]}>
-            {showNfc ? (
-              <>
-                <Image
-                  source={assets?.[1]}
-                  style={[styles.nfcIcon, { tintColor: nfcIconTint }]}
-                  tintColor={nfcIconTint}
-                />
-                <ThemedText
-                  style={[
-                    styles.instructionText,
-                    { color: Theme["text-secondary"] },
-                  ]}
-                >
-                  Open your wallet app and tap
-                </ThemedText>
-              </>
-            ) : (
-              <ThemedText
-                style={[
-                  styles.instructionText,
-                  { color: Theme["text-secondary"] },
-                ]}
-              >
-                Scan to pay
-              </ThemedText>
+            {showNfc && (
+              <Image
+                source={assets?.[1]}
+                contentFit="contain"
+                style={[styles.nfcIcon, { tintColor: Theme["text-primary"] }]}
+              />
             )}
             <ThemedText
               style={[
@@ -251,30 +250,11 @@ export default function ScanScreen() {
             </ThemedText>
           </View>
 
-          {showNfc && (
-            <View style={styles.divider}>
-              <View
-                style={[
-                  styles.dividerLine,
-                  { backgroundColor: Theme["foreground-tertiary"] },
-                ]}
-              />
-              <ThemedText
-                style={[
-                  styles.instructionText,
-                  { color: Theme["text-secondary"] },
-                ]}
-              >
-                Or scan the QR code
-              </ThemedText>
-              <View
-                style={[
-                  styles.dividerLine,
-                  { backgroundColor: Theme["foreground-tertiary"] },
-                ]}
-              />
-            </View>
-          )}
+          <ThemedText
+            style={[styles.instructionText, { color: Theme["text-secondary"] }]}
+          >
+            {showNfc ? "Scan or tap to pay" : "Scan to pay"}
+          </ThemedText>
 
           <View style={styles.qrSection}>
             <QRCode
@@ -306,7 +286,24 @@ export default function ScanScreen() {
           <View style={{ flex: 1 }} />
         </View>
       )}
-      <CloseButton style={styles.closeButton} onPress={handleOnClosePress} />
+      {!isProcessing && (
+        <Button
+          testID="cancel-button"
+          onPress={handleOnClosePress}
+          style={[
+            styles.closeButton,
+            { backgroundColor: Theme["foreground-primary"] },
+          ]}
+        >
+          <ThemedText
+            style={{ color: Theme["text-primary"] }}
+            fontSize={16}
+            lineHeight={18}
+          >
+            Cancel
+          </ThemedText>
+        </Button>
+      )}
     </View>
   );
 }
@@ -337,11 +334,10 @@ const styles = StyleSheet.create({
   headerCentered: {
     flex: 1,
     justifyContent: "flex-end",
-    paddingBottom: Spacing["spacing-7"],
   },
-  amountText: {
-    fontSize: 16,
-    textAlign: "center",
+  loadingTextContainer: {
+    alignItems: "center",
+    gap: Spacing["spacing-2"],
   },
   instructionText: {
     fontSize: 18,
@@ -353,21 +349,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     letterSpacing: -1,
     lineHeight: 50,
-  },
-  divider: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: Spacing["spacing-4"],
-    marginBottom: Spacing["spacing-3"],
-    gap: Spacing["spacing-3"],
-  },
-  dividerLine: {
-    flex: 1,
-    height: StyleSheet.hairlineWidth,
-  },
-  dividerText: {
-    fontSize: 14,
   },
   logo: {
     width: 80,
@@ -384,12 +365,20 @@ const styles = StyleSheet.create({
     gap: Spacing["spacing-1"],
   },
   closeButton: {
-    position: "absolute",
-    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: BorderRadius["4"],
+    marginHorizontal: Spacing["spacing-5"],
+    height: 48,
   },
   nfcIcon: {
-    width: 60,
+    // The artwork is not centered within its bounding box (the hand holding the
+    // card sits to the right), so the unbalanced marginLeft nudges it back to
+    // optically align with the amount text below it. Intentional — do not add a
+    // matching marginRight.
+    marginLeft: Spacing["spacing-5"],
+    width: 80,
     height: 60,
-    marginBottom: Spacing["spacing-2"],
+    marginBottom: Spacing["spacing-3"],
   },
 });

@@ -397,8 +397,8 @@ This POS app supports a **variants system** that allows for minor UI customizati
    - Variants are selected via settings and stored in Zustand store
 
 3. **Printer Logo** (`constants/printer-logos.ts`)
-   - Contains the single base64-encoded `DEFAULT_LOGO_BASE64` used on thermal printer receipts
-   - All variants share this default logo on the printed receipt
+   - Contains base64-encoded logos used on thermal printer receipts (e.g. `DEFAULT_LOGO_BASE64`, `MONEY2020_LOGO_BASE64`)
+   - Variants may opt into a per-variant receipt logo via `printerLogo`; variants without one fall back to `DEFAULT_LOGO_BASE64`
 
 ### How Variants Work
 
@@ -411,7 +411,7 @@ Each variant is defined with:
 - **defaultTheme**: Optional default theme mode ("light" or "dark")
 - **colors**: Color overrides for light and dark themes
 
-The thermal printer receipt always uses `DEFAULT_LOGO_BASE64` regardless of variant.
+The thermal printer receipt uses the variant's `printerLogo` when set (e.g. `money2020` → `MONEY2020_LOGO_BASE64`), falling back to `DEFAULT_LOGO_BASE64` otherwise. Resolve the correct logo at print time via `getVariantPrinterLogo()` from the settings store.
 
 #### Color Override System
 
@@ -538,8 +538,9 @@ export const Variants: Record<VariantName, Variant> = {
    - Dark backgrounds need light text
    - Some variants use `text-invert` override for better contrast
 
-2. **Printer Logo**: Receipts use the shared `DEFAULT_LOGO_BASE64` for every variant
-   - Defined in `constants/printer-logos.ts` as a `data:image/png;base64,...` string
+2. **Printer Logo**: Receipts use the variant's `printerLogo` when set, falling back to the shared `DEFAULT_LOGO_BASE64`
+   - Defined in `constants/printer-logos.ts` as `data:image/png;base64,...` strings
+   - Use `getVariantPrinterLogo()` from the settings store to resolve the logo at print time
    - Logo size is automatically handled by the printer library
 
 3. **Default Theme**: Variants can specify a default theme mode

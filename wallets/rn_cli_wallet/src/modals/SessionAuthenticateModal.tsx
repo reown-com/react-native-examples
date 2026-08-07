@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes, AuthTypes } from '@walletconnect/types';
 import { buildAuthObject, populateAuthPayload } from '@walletconnect/utils';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
@@ -41,7 +41,7 @@ export default function SessionAuthenticateModal() {
   // the chains that are supported by the wallet from the proposal
   const supportedChains = useMemo(() => {
     const chains = authRequest.params.authPayload.chains.filter(
-      chain => !!EIP155_CHAINS[chain.split(':')[1]],
+      chain => !!EIP155_CHAINS[chain],
     );
     return chains;
   }, [authRequest]);
@@ -98,9 +98,9 @@ export default function SessionAuthenticateModal() {
           'SessionAuthenticateModal',
           'onApprove',
         );
-        Toast.show({
+        showToast({
           type: 'error',
-          text1: 'Authentication failed',
+          text1: 'Couldn’t authenticate',
           text2: (e as Error).message,
         });
       } finally {
@@ -135,9 +135,9 @@ export default function SessionAuthenticateModal() {
           'SessionAuthenticateModal',
           'onReject',
         );
-        Toast.show({
+        showToast({
           type: 'error',
-          text1: 'Rejection failed',
+          text1: 'Couldn’t reject request',
           text2: (e as Error).message,
         });
       } finally {

@@ -10,6 +10,7 @@ import { createOrRestoreTonWallet } from '@/utils/TonWalletUtil';
 import { createOrRestoreTronWallet } from '@/utils/TronWalletUtil';
 import { createOrRestoreCantonWallet } from '@/utils/CantonWalletUtil';
 import { createOrRestoreSolanaWallet } from '@/utils/SolanaWalletUtil';
+import { createOrRestoreBitcoinWallet } from '@/utils/BitcoinWalletUtil';
 
 export default function useInitializeWalletKit() {
   const [initialized, setInitialized] = useState(false);
@@ -28,6 +29,8 @@ export default function useInitializeWalletKit() {
         await createOrRestoreCantonWallet();
       const { solanaAddress, solanaWallet } =
         await createOrRestoreSolanaWallet();
+      const { bitcoinAddress, bitcoinWallet } =
+        await createOrRestoreBitcoinWallet();
 
       SettingsStore.setEIP155Address(eip155Addresses[0]);
       SettingsStore.setWallet(eip155Wallets[eip155Addresses[0]]);
@@ -41,6 +44,8 @@ export default function useInitializeWalletKit() {
       SettingsStore.setCantonWallet(cantonWallet);
       SettingsStore.setSolanaAddress(solanaAddress);
       SettingsStore.setSolanaWallet(solanaWallet);
+      SettingsStore.setBitcoinAddress(bitcoinAddress);
+      SettingsStore.setBitcoinWallet(bitcoinWallet);
       await createWalletKit(relayerRegionURL);
       setInitialized(true);
       SettingsStore.state.initPromiseResolver?.resolve(undefined);

@@ -28,13 +28,22 @@ function getAddressForChain(
   if (chainId.startsWith('solana:')) {
     return addresses.solanaAddress || '';
   }
+  if (chainId.startsWith('bip122:')) {
+    return addresses.bitcoinAddress || '';
+  }
   // Default to EIP155 address for all EVM chains
   return addresses.eip155Address || '';
 }
 
 export default function Wallets() {
-  const { eip155Address, tonAddress, tronAddress, suiAddress, solanaAddress } =
-    useSnapshot(SettingsStore.state);
+  const {
+    eip155Address,
+    tonAddress,
+    tronAddress,
+    suiAddress,
+    solanaAddress,
+    bitcoinAddress,
+  } = useSnapshot(SettingsStore.state);
   const { balances, isLoading } = useSnapshot(WalletStore.state);
   const Theme = useTheme();
 
@@ -45,8 +54,16 @@ export default function Wallets() {
       tronAddress,
       suiAddress,
       solanaAddress,
+      bitcoinAddress,
     }),
-    [eip155Address, tonAddress, tronAddress, suiAddress, solanaAddress],
+    [
+      eip155Address,
+      tonAddress,
+      tronAddress,
+      suiAddress,
+      solanaAddress,
+      bitcoinAddress,
+    ],
   );
 
   const fetchBalances = useCallback(() => {
@@ -55,7 +72,8 @@ export default function Wallets() {
       addresses.tonAddress ||
       addresses.tronAddress ||
       addresses.suiAddress ||
-      addresses.solanaAddress
+      addresses.solanaAddress ||
+      addresses.bitcoinAddress
     ) {
       WalletStore.fetchBalances(addresses);
     }
@@ -100,7 +118,7 @@ export default function Wallets() {
         <View style={styles.emptyContainer}>
           <WalletConnectLoading size={60} />
           <Text variant="lg-400" color="text-primary">
-            Loading balances...
+            Loading your balances…
           </Text>
         </View>
       );
@@ -109,7 +127,7 @@ export default function Wallets() {
     return (
       <View style={styles.emptyContainer}>
         <Text variant="lg-400" color="text-primary" style={styles.emptyText}>
-          No balances found
+          No balances yet
         </Text>
       </View>
     );

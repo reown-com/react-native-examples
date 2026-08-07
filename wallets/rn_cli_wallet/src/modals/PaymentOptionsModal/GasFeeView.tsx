@@ -28,11 +28,11 @@ export function GasFeeView({
         <Image source={{ uri: imageSource }} style={styles.image} />
       )}
       <Text center variant="h6-400" color="text-primary" style={styles.title}>
-        Why does {tokenNameUppercase} require a gas fee?
+        Why does {tokenNameUppercase} need a network fee?
       </Text>
 
       <Text center variant="lg-400" color="text-secondary">
-        The gas fee covers a one-time setup that lets your wallet pay with{' '}
+        The network fee covers a one-time setup so your wallet can pay with{' '}
         {tokenNameUppercase}.
       </Text>
 
@@ -43,14 +43,14 @@ export function GasFeeView({
 
       <View style={styles.gasFeeContainer}>
         <Text variant="lg-400" color="text-secondary">
-          Gas fee: {gasCostEstimate}
+          Network fee: {gasCostEstimate}
         </Text>
         <GasPump height={18} width={18} fill={Theme['icon-default']} />
       </View>
 
       <View style={styles.buttonContainer}>
         <ActionButton onPress={onDismiss} fullWidth>
-          Got it!
+          Got it
         </ActionButton>
       </View>
     </View>

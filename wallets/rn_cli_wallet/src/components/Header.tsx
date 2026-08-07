@@ -1,6 +1,6 @@
 import { View, StyleSheet, Image, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Toast from 'react-native-toast-message';
+import { showToast } from '@/utils/ToastUtil';
 
 import { useTheme } from '@/hooks/useTheme';
 import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
@@ -27,7 +27,7 @@ export function Header() {
       const uri = await scanNfcTag();
       if (uri) {
         if (!isAllowedNfcUri(uri)) {
-          Toast.show({
+          showToast({
             type: 'error',
             text1: 'Unrecognized NFC tag',
           });
@@ -35,13 +35,13 @@ export function Header() {
         }
         handleUriOrPaymentLink(uri);
       } else if (uri === null) {
-        Toast.show({
+        showToast({
           type: 'info',
           text1: 'No data found on NFC tag',
         });
       }
     } catch {
-      Toast.show({
+      showToast({
         type: 'error',
         text1: 'NFC scan failed',
       });
@@ -53,7 +53,12 @@ export function Header() {
       style={[
         styles.container,
         {
-          paddingTop: Platform.OS === 'ios' ? top : top + Spacing[2],
+          paddingTop:
+            Platform.OS === 'ios'
+              ? top
+              : Platform.OS === 'web'
+                ? Spacing[8]
+                : top + Spacing[2],
           backgroundColor: Theme['bg-primary'],
         },
       ]}

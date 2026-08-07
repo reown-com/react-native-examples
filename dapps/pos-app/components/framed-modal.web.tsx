@@ -101,13 +101,21 @@ export function FramedModal({
   onRequestClose,
   children,
 }: FramedModalProps) {
-  const { containerRef } = useModalPortal();
-  const frameContainer = containerRef?.current ?? null;
-  const [isRendered, setIsRendered] = useState(false);
+  const { container: frameContainer } = useModalPortal();
+  const [isRendered, setIsRendered] = useState(visible);
   const progress = useSharedValue(0);
   const visibleRef = useRef(visible);
 
-  visibleRef.current = visible;
+  // Mount the modal as soon as it becomes visible; it stays mounted while the
+  // close animation plays (unmounted later in handleCloseComplete). Adjusting
+  // state during render is the recommended pattern for deriving state from props.
+  if (visible && !isRendered) {
+    setIsRendered(true);
+  }
+
+  useEffect(() => {
+    visibleRef.current = visible;
+  }, [visible]);
 
   const handleCloseComplete = useCallback(() => {
     if (!visibleRef.current) {
@@ -117,7 +125,6 @@ export function FramedModal({
 
   useEffect(() => {
     if (visible) {
-      setIsRendered(true);
       requestAnimationFrame(() => {
         progress.value = withTiming(1, {
           duration: ANIMATION_DURATION,
@@ -169,10 +176,17 @@ export function FramedModal({
 
   if (!isRendered) return null;
 
+  // While the close animation plays the modal is still mounted; without this,
+  // its full-screen overlay swallows clicks meant for the screen underneath.
+  const pointerEvents = visible ? "auto" : "none";
+
   // If we have a container ref (desktop web), use portal into the frame
   if (frameContainer) {
     const modalContent = (
-      <Animated.View style={[styles.container, containerAnimatedStyle]}>
+      <Animated.View
+        pointerEvents={pointerEvents}
+        style={[styles.container, containerAnimatedStyle]}
+      >
         {children}
       </Animated.View>
     );
@@ -180,7 +194,10 @@ export function FramedModal({
   }
 
   const modalContent = (
-    <Animated.View style={[mobileWebContainer, containerAnimatedStyle]}>
+    <Animated.View
+      pointerEvents={pointerEvents}
+      style={[mobileWebContainer, containerAnimatedStyle]}
+    >
       {children}
     </Animated.View>
   );

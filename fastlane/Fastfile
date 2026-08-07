@@ -86,20 +86,26 @@ platform :ios do
       output_name: "#{ENV['PROJECT_TYPE']}-#{ENV['RELEASE_TYPE']}.ipa"
     )
 
+    # Don't pass `changelog` with `skip_waiting_for_build_processing: true` —
+    # fastlane then waits for the build to appear in App Store Connect and hangs
+    # forever if processing stalls/rejects.
     testflight_params = {
       apple_id: ENV["APPLE_ID"],
       app_identifier: ENV["BUNDLE_ID"],
-      changelog: "#{project_type} build from branch: #{branch_name}",
       skip_waiting_for_build_processing: true
     }
-    
+
     if ENV['TESTFLIGHT_GROUPS'] && !ENV['TESTFLIGHT_GROUPS'].empty?
+      # External distribution must wait for processing; bound it so a stuck/
+      # rejected build fails fast instead of hanging. Changelog only here.
+      testflight_params[:skip_waiting_for_build_processing] = false
+      testflight_params[:wait_processing_timeout_duration] = 1800
+      testflight_params[:changelog] = "#{project_type} build from branch: #{branch_name}"
       testflight_params[:distribute_external] = true
       testflight_params[:notify_external_testers] = true
       testflight_params[:groups] = ENV['TESTFLIGHT_GROUPS'].split(',').map(&:strip)
     end
 
-    # Upload to TestFlight
     upload_to_testflight(testflight_params)
 
     # Only clean artifacts when running locally (not in CI)
@@ -138,7 +144,10 @@ platform :ios do
       )
     end
 
-    # Install pods (skip repo_update if cache hit)
+    # Always run pod install: on New Arch it also runs RN codegen, writing
+    # ios/build/generated/**-generated.mm that the ReactCodegen Pods target
+    # compiles. That output isn't cached or committed, so it can't be skipped.
+    # Skip only repo_update on an exact cache hit (Podfile.lock unchanged).
     cocoapods(
       clean_install: false,
       repo_update: ENV['PODS_CACHE_HIT'] != 'true',
@@ -150,6 +159,10 @@ platform :ios do
     build_dir   = File.expand_path("../build")
     archive_path = "#{build_dir}/wallet-simulator.xcarchive"
 
+    # Build only arm64 (the runner is Apple Silicon) instead of both sim slices, and skip
+    # the compiler index store CI never reads. Base string so the signing branch can append.
+    xcargs = "ARCHS=arm64 ONLY_ACTIVE_ARCH=YES COMPILER_INDEX_STORE_ENABLE=NO"
+
     gym_params = {
       workspace: ENV['XCWORKSPACE_PATH'],
       scheme: ENV['SCHEME'],
@@ -160,8 +173,9 @@ platform :ios do
     }
 
     if sign_build
-      gym_params[:xcargs] = "CODE_SIGNING_ALLOWED=YES"
+      gym_params[:xcargs] = "#{xcargs} CODE_SIGNING_ALLOWED=YES"
     else
+      gym_params[:xcargs] = xcargs
       gym_params[:skip_codesigning] = true
     end
 
@@ -176,16 +190,15 @@ platform :ios do
     UI.success("✅ Simulator .app: #{app_path}")
   end
 
-  # NOTE: There is intentionally no `create_app` lane. fastlane `produce` only supports
-  # Apple ID + password (web session / 2FA) auth — it ignores the App Store Connect API
-  # key — so it can't run unattended on CI. Create the App Store Connect app record
-  # manually (App Store Connect → Apps → +), then use create_certs below for signing.
+  # No `create_app` lane on purpose: fastlane `produce` only supports Apple ID + 2FA auth and
+  # ignores the API key, so it can't run unattended. Create the app record by hand instead.
 
-  # Create / sync certificates and provisioning profiles for an app, pushing them
-  # to a branch in the match git repo. Uses the App Store Connect API key (no 2FA)
-  # so it can run unattended on CI. The PR/merge of that branch is handled outside
-  # this lane (see scripts/create-certificates.sh).
+  # Sync certs / profiles to a branch in the match repo, using the API key so it needs no 2FA.
+  # Opening and merging that branch is handled by scripts/create-certificates.sh.
   lane :create_certs do
+    # match needs a keychain to import the certificate into.
+    setup_ci()
+
     api_key = app_store_connect_api_key(
       key_id: ENV["APPLE_KEY_ID"],
       issuer_id: ENV["APPLE_ISSUER_ID"],

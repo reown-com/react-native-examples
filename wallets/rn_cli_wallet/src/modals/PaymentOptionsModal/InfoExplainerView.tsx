@@ -12,23 +12,22 @@ export function InfoExplainerView({ onDismiss }: InfoExplainerViewProps) {
   return (
     <View style={styles.container}>
       <Text center variant="h6-400" color="text-primary" style={styles.title}>
-        Why do we collect personal details?
+        Why we collect personal details
       </Text>
 
       <Text center variant="lg-400" color="text-secondary" style={styles.body}>
-        To meet compliance requirements, some basic information is collected
-        from WalletConnect Pay users.
+        We collect a few basic details to meet compliance requirements for
+        WalletConnect Pay.
       </Text>
 
       <Text center variant="lg-400" color="text-secondary">
-        This is typically a one-time step—if you use the same wallet on this
-        network again, you won't need to provide the info again, unless your
-        information changes.
+        We only ask once per wallet on this network. You won’t see this again
+        unless your details change.
       </Text>
 
       <View style={styles.buttonContainer}>
         <ActionButton onPress={onDismiss} fullWidth>
-          Got it!
+          Got it
         </ActionButton>
       </View>
     </View>

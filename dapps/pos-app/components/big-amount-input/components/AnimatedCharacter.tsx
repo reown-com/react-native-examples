@@ -58,24 +58,30 @@ function AnimatedCharacterComponent({
   const animatedTranslateX = useSharedValue(positionX - scaleOffsetX);
   const animatedScale = useSharedValue(scale);
   const isMounted = useRef(false);
+  const prevScale = useRef(scale);
 
   useEffect(() => {
     translateY.value = withTiming(0, TIMING_CONFIG);
     opacity.value = withTiming(1, TIMING_CONFIG);
   }, [translateY, opacity]);
 
+  // Reposition / rescale an existing character. A scale-tier change (crossing a
+  // digit-count threshold) resizes and repositions every character at once, so
+  // we snap those instantly to avoid a burst of simultaneous timing animations
+  // on low-end devices. Pure repositions (e.g. a thousands separator shifting
+  // digits without a scale change) still animate smoothly.
   useEffect(() => {
     if (!isMounted.current) return;
-    animatedTranslateX.value = withTiming(
-      positionX - scaleOffsetX,
-      TIMING_CONFIG,
-    );
-  }, [positionX, scaleOffsetX, animatedTranslateX]);
-
-  useEffect(() => {
-    if (!isMounted.current) return;
-    animatedScale.value = withTiming(scale, TIMING_CONFIG);
-  }, [scale, animatedScale]);
+    const targetX = positionX - scaleOffsetX;
+    const scaleChanged = prevScale.current !== scale;
+    prevScale.current = scale;
+    if (scaleChanged) {
+      animatedTranslateX.value = targetX;
+      animatedScale.value = scale;
+    } else {
+      animatedTranslateX.value = withTiming(targetX, TIMING_CONFIG);
+    }
+  }, [positionX, scaleOffsetX, scale, animatedTranslateX, animatedScale]);
 
   useEffect(() => {
     isMounted.current = true;

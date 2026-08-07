@@ -1,12 +1,15 @@
 import { proxy, ref } from 'valtio';
 import type {
   Action,
+  CollectDataFieldResult,
   ConfirmPaymentResponse,
   PaymentOptionsResponse,
   PaymentOption,
 } from '@walletconnect/pay';
-import { providers } from 'ethers';
+import type { TransactionRequest } from 'ethers';
+import { Platform } from 'react-native';
 
+import { ENV } from '@/utils/env';
 import LogStore, { serializeError } from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
@@ -15,7 +18,6 @@ import { storage } from '@/utils/storage';
 import type { OptionFeeEstimateStatus, Step } from '@/utils/TypesUtil';
 import {
   detectErrorType,
-  getErrorMessage,
   formatAmount,
 } from '@/modals/PaymentOptionsModal/utils';
 import type { ErrorType } from '@/modals/PaymentOptionsModal/utils';
@@ -32,8 +34,7 @@ import { getApprovalAction, shouldShowSetupLoader } from '@/utils/PaymentUtil';
 
 interface PaymentState {
   paymentOptions: PaymentOptionsResponse | null;
-  loadingMessage: string | null;
-  loadingNote: string | null;
+  setupTokenSymbol: string | null;
   errorMessage: string | null;
   step: Step;
   previousStep: Step | null;
@@ -44,19 +45,21 @@ interface PaymentState {
   optionFeeEstimatesById: Record<string, TransactionFeeEstimate | null>;
   optionFeeEstimateStatusById: Record<string, OptionFeeEstimateStatus>;
   collectDataCompletedIds: string[];
+  // Identity-collection field values gathered in-app (web native form), keyed by
+  // option id. Passed to confirmPayment as `collectedData`. On native the hosted
+  // webview submits server-side, so this stays empty there.
+  collectedDataByOptionId: Record<string, CollectDataFieldResult[]>;
   expiresAt: number | null;
 }
 
 const PAY_EXPIRY_GUARD_MS = 10_000;
-const FAILED_CONFIRMATION_MESSAGE = 'The payment could not be confirmed.';
 const PAY_LAST_TOKEN_UNIT_KEY = 'PAY_LAST_TOKEN_UNIT';
 const DEFAULT_FIAT_CURRENCY = 'USD';
 
 function createInitialState(): PaymentState {
   return {
     paymentOptions: null,
-    loadingMessage: null,
-    loadingNote: null,
+    setupTokenSymbol: null,
     errorMessage: null,
     step: 'loading',
     previousStep: null,
@@ -67,6 +70,7 @@ function createInitialState(): PaymentState {
     optionFeeEstimatesById: {},
     optionFeeEstimateStatusById: {},
     collectDataCompletedIds: [],
+    collectedDataByOptionId: {},
     expiresAt: null,
   };
 }
@@ -108,7 +112,6 @@ function setPaymentResultFromConfirmStatus({
     PaymentStore.setResult({
       status: 'error',
       errorType: 'expired',
-      message: getErrorMessage('expired'),
     });
     return;
   }
@@ -117,7 +120,6 @@ function setPaymentResultFromConfirmStatus({
     PaymentStore.setResult({
       status: 'error',
       errorType: 'cancelled',
-      message: getErrorMessage('cancelled'),
     });
     return;
   }
@@ -126,7 +128,6 @@ function setPaymentResultFromConfirmStatus({
     PaymentStore.setResult({
       status: 'error',
       errorType: 'generic',
-      message: FAILED_CONFIRMATION_MESSAGE,
     });
     return;
   }
@@ -144,18 +145,18 @@ function setPaymentResultFromConfirmStatus({
   PaymentStore.setResult({
     status: 'error',
     errorType: 'generic',
-    message: FAILED_CONFIRMATION_MESSAGE,
   });
 }
 
 const PaymentStore = {
   state,
 
-  startPayment(params: {
-    paymentOptions?: PaymentOptionsResponse;
-    loadingMessage?: string;
-    errorMessage?: string;
-  }) {
+  startPayment(
+    params: {
+      paymentOptions?: PaymentOptionsResponse;
+      errorMessage?: string;
+    } = {},
+  ) {
     PaymentStore.clearExpiryTimer();
     paymentActionsRequestSeq += 1;
     optionFeeEstimateRequestSeq += 1;
@@ -163,14 +164,12 @@ const PaymentStore = {
     if (params.paymentOptions) {
       state.paymentOptions = ref(params.paymentOptions);
     }
-    state.loadingMessage = params.loadingMessage ?? null;
     state.errorMessage = params.errorMessage ?? null;
   },
 
   setPaymentOptions(options: PaymentOptionsResponse) {
     state.paymentOptions = ref(options);
-    state.loadingMessage = null;
-    state.loadingNote = null;
+    state.setupTokenSymbol = null;
     state.errorMessage = null;
     state.resultErrorType = null;
     state.optionFeeEstimatesById = {};
@@ -190,12 +189,13 @@ const PaymentStore = {
 
   setError(errorMessage: string) {
     const errorType = detectErrorType(errorMessage);
-    state.errorMessage = errorMessage;
-    state.loadingMessage = null;
-    state.loadingNote = null;
     state.resultStatus = 'error';
-    state.resultMessage = getErrorMessage(errorType, errorMessage);
+    state.resultMessage = errorMessage;
     state.resultErrorType = errorType;
+    // Clear the transient loading-phase errorMessage so it can't re-trigger the
+    // error branch in resolveLoadingStep, consistent with setResult.
+    state.errorMessage = null;
+    state.setupTokenSymbol = null;
     state.step = 'result';
   },
 
@@ -216,15 +216,16 @@ const PaymentStore = {
 
   setResult(payload: {
     status: 'success' | 'error';
-    message: string;
+    // Optional dynamic context — success summary, or raw error message. Result
+    // copy itself is resolved in the view via getResultContent.
+    message?: string;
     errorType?: ErrorType;
   }) {
     state.resultStatus = payload.status;
-    state.resultMessage = payload.message;
+    state.resultMessage = payload.message ?? '';
     state.resultErrorType = payload.errorType ?? null;
     state.errorMessage = null;
-    state.loadingMessage = null;
-    state.loadingNote = null;
+    state.setupTokenSymbol = null;
     state.step = 'result';
   },
 
@@ -242,6 +243,10 @@ const PaymentStore = {
     }
   },
 
+  setCollectedData(optionId: string, data: CollectDataFieldResult[]) {
+    state.collectedDataByOptionId[optionId] = data;
+  },
+
   isCollectDataCompleted(optionId: string): boolean {
     return state.collectDataCompletedIds.includes(optionId);
   },
@@ -255,6 +260,14 @@ const PaymentStore = {
   },
 
   async loadLastPaidTokenUnit(): Promise<string | undefined> {
+    // In E2E on web, Maestro's clearState doesn't clear localStorage (our MMKV
+    // shim), so a token remembered from a prior flow would make multi-option
+    // payments skip the select screen and break flows that assert it. Ignore it
+    // there so each flow starts clean — matching native, where clearState wipes
+    // MMKV. Real web users keep the "remember last token" convenience.
+    if (ENV.TEST_MODE === 'true' && Platform.OS === 'web') {
+      return undefined;
+    }
     return storage.getItem<string>(PAY_LAST_TOKEN_UNIT_KEY);
   },
 
@@ -487,7 +500,6 @@ const PaymentStore = {
       PaymentStore.setResult({
         status: 'error',
         errorType: 'expired',
-        message: getErrorMessage('expired'),
       });
       return;
     }
@@ -498,13 +510,7 @@ const PaymentStore = {
     );
 
     state.step = 'confirming';
-    if (showInitialSetupLoader) {
-      state.loadingMessage = `Setting up ${tokenSymbol}`;
-      state.loadingNote = `This usually takes a few seconds. Future ${tokenSymbol} payments will skip this step.`;
-    } else {
-      state.loadingMessage = null;
-      state.loadingNote = null;
-    }
+    state.setupTokenSymbol = showInitialSetupLoader ? tokenSymbol : null;
 
     try {
       const payClient = walletKit?.pay;
@@ -531,13 +537,10 @@ const PaymentStore = {
           throw new Error(`Payment action ${stepLabel} is missing walletRpc`);
         }
 
-        if (showSetupLoader && approvalAction && action === approvalAction) {
-          state.loadingMessage = `Setting up ${tokenSymbol}`;
-          state.loadingNote = `This usually takes a few seconds. Future ${tokenSymbol} payments will skip this step.`;
-        } else {
-          state.loadingMessage = null;
-          state.loadingNote = null;
-        }
+        state.setupTokenSymbol =
+          showSetupLoader && approvalAction && action === approvalAction
+            ? tokenSymbol
+            : null;
 
         LogStore.log(
           'Executing payment action',
@@ -617,7 +620,7 @@ const PaymentStore = {
 
             const tx = await sendTransactionWithFreshFees({
               chainId,
-              baseTx: { ...(txPayload as providers.TransactionRequest) },
+              baseTx: { ...(txPayload as TransactionRequest) },
               wallet: evmWallet,
               logContext: 'approvePayment',
             });
@@ -753,10 +756,16 @@ const PaymentStore = {
         signaturesCount: signatures.length,
       });
 
+      // Identity-collection values gathered by the in-app form (web). Omitted
+      // (undefined) when there are none — e.g. native, where the hosted webview
+      // already submitted them server-side, or options that need no collection.
+      const collectedData = state.collectedDataByOptionId[selectedOption.id];
+
       const confirmResult = await payClient.confirmPayment({
         paymentId: paymentOptions.paymentId,
         optionId: selectedOption.id,
         signatures,
+        collectedData: collectedData?.length ? collectedData : undefined,
       });
 
       LogStore.log(
@@ -803,7 +812,7 @@ const PaymentStore = {
       PaymentStore.setResult({
         status: 'error',
         errorType,
-        message: getErrorMessage(errorType, errorMessage),
+        message: errorMessage,
       });
     }
   },

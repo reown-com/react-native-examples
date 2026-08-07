@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Clipboard from '@react-native-clipboard/clipboard';
 
+import { setClipboardString } from '@/utils/ClipboardUtil';
 import { useTheme } from '@/hooks/useTheme';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { Text } from '@/components/Text';
@@ -59,7 +59,7 @@ export function WalletKitLog({ value }: WalletKitLogProps) {
     // If parsing fails, render a fallback
     return (
       <Button
-        onPress={() => Clipboard.setString(value)}
+        onPress={() => setClipboardString(value)}
         style={[
           styles.container,
           { backgroundColor: Theme['foreground-primary'] },
@@ -78,7 +78,7 @@ export function WalletKitLog({ value }: WalletKitLogProps) {
   const { log } = jsonLog;
 
   const copyToClipboard = () => {
-    Clipboard.setString(value);
+    setClipboardString(value);
   };
 
   const formatTime = (time: string) => {

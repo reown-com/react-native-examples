@@ -1,5 +1,5 @@
 import { Text } from './Text';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { Button } from './Button';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 import { formatAmount } from '@/modals/PaymentOptionsModal/utils';
@@ -20,6 +20,7 @@ interface OptionItemProps {
   onPress?: (option: PaymentOption) => void;
   onIconRightPress?: () => void;
   testID?: string;
+  iconRightTestID?: string;
 }
 
 function formatOptionAmount(value: string, decimals: number): string {
@@ -41,6 +42,7 @@ export function OptionItem({
   option,
   renderIconRight,
   onIconRightPress,
+  iconRightTestID,
   gasCostEstimate,
   isEstimatingApprovalGas,
   onPress,
@@ -61,68 +63,75 @@ export function OptionItem({
   const mainIconSource = hasTokenIcon ? { uri: tokenIconUrl } : chainIcon;
 
   return (
-    <Button
-      onPress={() => onPress?.(option)}
-      testID={testID}
-      disabled={!onPress}
-      accessibilityLabel={
-        option.amount.display?.networkName?.toLowerCase() || ''
-      }
-      style={[
-        styles.optionItem,
-        { backgroundColor: Theme['foreground-primary'] },
-      ]}
+    // The card is a plain (non-accessible) View; the option <Button> and the
+    // icon-right <Pressable> are SIBLINGS inside it. The icon button must not be
+    // nested inside the labeled (accessible) option Button — on iOS the New
+    // Architecture merges an accessible parent's descendants into one a11y
+    // element, which makes the icon's testID unreachable by XCUITest/Maestro.
+    <View
+      style={[styles.optionItem, { backgroundColor: Theme['foreground-primary'] }]}
     >
-      <View style={styles.optionItemContent}>
-        <View style={styles.contentLeftContainer}>
-          <View style={styles.optionIconContainer}>
-            {mainIconSource && (
-              <Image source={mainIconSource} style={styles.optionIcon} />
+      <Button
+        onPress={() => onPress?.(option)}
+        testID={testID}
+        disabled={!onPress}
+        accessibilityLabel={
+          option.amount.display?.networkName?.toLowerCase() || ''
+        }
+        style={styles.optionPressable}
+      >
+        <View style={styles.optionItemContent}>
+          <View style={styles.contentLeftContainer}>
+            <View style={styles.optionIconContainer}>
+              {mainIconSource && (
+                <Image source={mainIconSource} style={styles.optionIcon} />
+              )}
+              {hasTokenIcon && chainIcon && (
+                <Image
+                  source={chainIcon}
+                  style={[
+                    styles.optionChainIcon,
+                    {
+                      borderColor: Theme['foreground-secondary'],
+                    },
+                  ]}
+                />
+              )}
+            </View>
+            <Text variant="lg-400" color="text-primary">
+              {amount} {option.amount.display.assetSymbol}
+            </Text>
+          </View>
+          <View style={styles.contentRightContainer}>
+            {gasCostEstimate && (
+              <View style={styles.gasFeeContainer}>
+                <Text variant="lg-400" color="text-secondary">
+                  +{gasCostEstimate}{' '}
+                </Text>
+                <GasPump height={18} width={18} fill={Theme['icon-default']} />
+              </View>
             )}
-            {hasTokenIcon && chainIcon && (
-              <Image
-                source={chainIcon}
-                style={[
-                  styles.optionChainIcon,
-                  {
-                    borderColor: Theme['foreground-secondary'],
-                  },
-                ]}
-              />
+            {!gasCostEstimate && isEstimatingApprovalGas && (
+              <Shimmer width={70} height={16} borderRadius={BorderRadius['1']} />
             )}
           </View>
-          <Text variant="lg-400" color="text-primary">
-            {amount} {option.amount.display.assetSymbol}
-          </Text>
         </View>
-        <View style={styles.contentRightContainer}>
-          {gasCostEstimate && (
-            <View style={styles.gasFeeContainer}>
-              <Text variant="lg-400" color="text-secondary">
-                +{gasCostEstimate}{' '}
-              </Text>
-              <GasPump height={18} width={18} fill={Theme['icon-default']} />
-            </View>
-          )}
-          {!gasCostEstimate && isEstimatingApprovalGas && (
-            <Shimmer width={70} height={16} borderRadius={BorderRadius['1']} />
-          )}
-          {renderIconRight && onIconRightPress && (
-            <Button
-              onPress={onIconRightPress}
-              style={[
-                {
-                  borderColor: Theme['border-secondary'],
-                },
-                styles.iconRightContainer,
-              ]}
-            >
-              {renderIconRight}
-            </Button>
-          )}
-        </View>
-      </View>
-    </Button>
+      </Button>
+      {renderIconRight && onIconRightPress && (
+        <Pressable
+          testID={iconRightTestID}
+          accessible
+          accessibilityRole="button"
+          onPress={() => onIconRightPress()}
+          style={[
+            { borderColor: Theme['border-secondary'] },
+            styles.iconRightContainer,
+          ]}
+        >
+          {renderIconRight}
+        </Pressable>
+      )}
+    </View>
   );
 }
 
@@ -131,10 +140,16 @@ const styles = StyleSheet.create({
     height: OPTION_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing[4],
     paddingHorizontal: Spacing[5],
     borderRadius: BorderRadius[4],
     justifyContent: 'space-between',
     overflow: 'hidden',
+  },
+  optionPressable: {
+    flex: 1,
+    height: '100%',
+    justifyContent: 'center',
   },
   optionItemContent: {
     flexDirection: 'row',
