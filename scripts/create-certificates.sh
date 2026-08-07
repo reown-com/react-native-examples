@@ -57,9 +57,31 @@ echo "   Branch: ${BRANCH_NAME}"
 echo "   PR mode: $([ "$SKIP_PR" = true ] && echo 'skip (manual merge)' || echo "create$([ "$AUTO_MERGE" = true ] && echo ' + auto-merge')")"
 echo ""
 
-# Cleanup function for error cases — remove the branch we created so a retry is clean.
+# Cleanup for error cases — remove the branch we created so a retry is clean.
+#
+# Only safe while the branch is still identical to master, i.e. match never got as far as
+# committing. Once match has pushed, the branch is the only record of a certificate Apple
+# has already issued; deleting it strands that cert AND removes the "branch already exists"
+# guard below, so a retry re-runs match and can mint a duplicate. Apple caps distribution
+# certificates, so that costs a manual revoke in the portal. Keep the branch instead.
 cleanup_branch() {
-  echo "🧹 Cleaning up branch ${BRANCH_NAME}..."
+  local branch_sha master_sha
+  branch_sha=$(git ls-remote "${CERTS_GIT_URL}" "refs/heads/${BRANCH_NAME}" 2>/dev/null | cut -f1) || true
+  master_sha=$(git ls-remote "${CERTS_GIT_URL}" refs/heads/master 2>/dev/null | cut -f1) || true
+
+  if [ -z "$branch_sha" ]; then
+    return 0  # nothing was ever pushed
+  fi
+
+  if [ -n "$master_sha" ] && [ "$branch_sha" != "$master_sha" ]; then
+    echo ""
+    echo "⚠️  NOT deleting ${BRANCH_NAME} — match already pushed to it."
+    echo "   It may hold a certificate Apple has already issued. Do NOT re-run this script;"
+    echo "   inspect the branch first: ${COMPARE_URL}"
+    return 0
+  fi
+
+  echo "🧹 Cleaning up branch ${BRANCH_NAME} (unchanged from master)..."
   if [ "$SKIP_PR" = false ]; then
     gh api repos/${CERTS_REPO}/git/refs/heads/${BRANCH_NAME} -X DELETE 2>/dev/null || true
   else
@@ -82,7 +104,10 @@ if [ "$SKIP_PR" = false ]; then
   fi
 
   echo "📌 Creating branch ${BRANCH_NAME} from master..."
-  MASTER_SHA=$(gh api repos/${CERTS_REPO}/git/ref/heads/master --jq '.object.sha' 2>/dev/null)
+  # `|| true` matters: under `set -e` a failing command substitution aborts the script at
+  # the assignment, so without it the diagnostic below is unreachable and gh's own error is
+  # swallowed by 2>/dev/null — you'd get a silent exit 1.
+  MASTER_SHA=$(gh api repos/${CERTS_REPO}/git/ref/heads/master --jq '.object.sha' 2>/dev/null) || true
   if [ -z "$MASTER_SHA" ]; then
     echo "❌ Error: Failed to fetch master branch SHA from ${CERTS_REPO}"
     echo "   Make sure you have access to the repository and the master branch exists."
@@ -161,16 +186,21 @@ if [ "$SKIP_PR" = true ]; then
 fi
 
 echo "📝 Creating pull request..."
-PR_URL=$(gh pr create \
+# Assign inside `if !` rather than checking $? afterwards: under `set -e` a failing command
+# substitution aborts at the assignment, so a separate `if [ $? -ne 0 ]` never runs — and
+# because 2>&1 captures gh's error into PR_URL, the script would exit silently.
+if ! PR_URL=$(gh pr create \
   --repo "${CERTS_REPO}" \
   --base master \
   --head "${BRANCH_NAME}" \
   --title "Add ${MATCH_TYPE} certificates for ${BUNDLE_ID}" \
-  --body "Adding ${MATCH_TYPE} certificates and provisioning profiles for \`${BUNDLE_ID}\`" 2>&1)
-
-if [ $? -ne 0 ]; then
+  --body "Adding ${MATCH_TYPE} certificates and provisioning profiles for \`${BUNDLE_ID}\`" 2>&1); then
   echo "❌ Error: Failed to create PR"
-  echo "   Branch ${BRANCH_NAME} exists with certificates. Create PR manually or clean up."
+  echo "   ${PR_URL}"
+  echo ""
+  echo "⚠️  The certificates were created successfully — only opening the PR failed."
+  echo "   Branch ${BRANCH_NAME} holds them. Do NOT re-run this script; open the PR by hand:"
+  echo "   ${COMPARE_URL}"
   exit 1
 fi
 echo "   ✓ PR created: ${PR_URL}"

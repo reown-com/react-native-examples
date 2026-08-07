@@ -98,7 +98,11 @@ chmod +x scripts/create-certificates.sh
 ./scripts/create-certificates.sh reown-com/mobile-match com.reown.myapp "" appstore --auto-merge
 ```
 
-> **Note:** Requires [GitHub CLI](https://cli.github.com/) (`gh`) to be installed and authenticated. By default, the script creates a PR that requires manual merge. Use `--auto-merge` to automatically merge.
+> **Note:** These local invocations require [GitHub CLI](https://cli.github.com/) (`gh`) to be
+> installed and authenticated, because the script opens the PR for you — by default one that
+> needs a manual merge; pass `--auto-merge` to merge it automatically. The CI workflow instead
+> passes `--no-pr`, which pushes the branch over SSH and makes no GitHub API calls at all, so it
+> needs no `gh` and no token; you open that PR from the link in the job summary.
 
 ### Downloading Certificates Locally
 

@@ -59,21 +59,32 @@ jobs:
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
           APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
           MATCH_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          # Inputs go through env, never straight into the script body — ${{ }} is
+          # substituted before the shell parses the line, so a quote in an input would
+          # otherwise break out of the command.
+          INPUT_BUNDLE_ID: ${{ inputs.bundle-id }}
+          INPUT_CERTS_REPO: ${{ inputs.certs-repo }}
+          INPUT_MATCH_TYPES: ${{ inputs.match-types }}
         run: |
           chmod +x scripts/create-certificates.sh
-          IFS=',' read -ra TYPES <<< "${{ inputs.match-types }}"
+          IFS=',' read -ra TYPES <<< "$INPUT_MATCH_TYPES"
           {
-            echo "### ⚠️ Action required: merge the certificates PR(s)"
-            echo "Certs were pushed to branch(es) in \`${{ inputs.certs-repo }}\`. The release"
-            echo "workflow will fail until they are merged into \`master\`:"
+            echo "### ✅ Certificates created — open and merge the PR(s)"
+            echo "This is the expected next step, not a failure: the workflow pushes the cert"
+            echo "branches over SSH and intentionally does **not** open PRs (it holds no write"
+            echo "token for \`$INPUT_CERTS_REPO\`)."
+            echo ""
+            echo "Open each PR below and merge it into \`master\` — the release workflow will"
+            echo "fail until you do:"
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
           for type in "${TYPES[@]}"; do
             type="$(echo "$type" | xargs)" # trim whitespace
+            [ -z "$type" ] && continue     # tolerate a doubled comma in the input
             echo "::group::Creating ${type} certificates"
-            ./scripts/create-certificates.sh "${{ inputs.certs-repo }}" "${{ inputs.bundle-id }}" "" "$type" --no-pr
+            ./scripts/create-certificates.sh "$INPUT_CERTS_REPO" "$INPUT_BUNDLE_ID" "" "$type" --no-pr
             echo "::endgroup::"
-            branch="certs/add-${{ inputs.bundle-id }}-${type}"
-            compare="https://github.com/${{ inputs.certs-repo }}/compare/master...${branch}?expand=1"
+            branch="certs/add-${INPUT_BUNDLE_ID}-${type}"
+            compare="https://github.com/${INPUT_CERTS_REPO}/compare/master...${branch}?expand=1"
             echo "- **${type}**: [open PR for \`${branch}\`](${compare})" >> "$GITHUB_STEP_SUMMARY"
           done
