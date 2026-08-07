@@ -90,10 +90,15 @@ platform :ios do
     # fastlane then waits for the build to appear in App Store Connect and hangs
     # forever if processing stalls/rejects.
     testflight_params = {
-      apple_id: ENV["APPLE_ID"],
       app_identifier: ENV["BUNDLE_ID"],
       skip_waiting_for_build_processing: true
     }
+
+    # `apple_id` (the numeric App Store Connect app ID) is optional — pilot
+    # resolves the app by `app_identifier` (bundle id) when it's absent. Passing
+    # an empty string, however, forces an invalid `/v1/apps/` lookup and fails
+    # ("The URL path is not valid"). Only include it when actually provided.
+    testflight_params[:apple_id] = ENV["APPLE_ID"] unless ENV["APPLE_ID"].to_s.empty?
 
     if ENV['TESTFLIGHT_GROUPS'] && !ENV['TESTFLIGHT_GROUPS'].empty?
       # External distribution must wait for processing; bound it so a stuck/

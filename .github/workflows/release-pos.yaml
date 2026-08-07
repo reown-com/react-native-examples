@@ -62,7 +62,7 @@ jobs:
       app-variant: ${{ inputs.release-type == 'production' && 'production' || 'internal' }}
       scheme-name: ${{ inputs.release-type == 'production' && 'WPay' || 'WPayDev' }}
       bundle-id: ${{ inputs.release-type == 'production' && 'com.reown.mobilepos' || 'com.reown.mobilepos.internal' }}
-      apple-id: ${{ inputs.release-type == 'production' && '6754570257' || vars.POS_IOS_INTERNAL_APPLE_ID }}
+      apple-id: ${{ inputs.release-type == 'production' && vars.POS_IOS_PROD_APPLE_ID || vars.POS_IOS_INTERNAL_APPLE_ID }}
       project-type: 'dapp'
       package-manager: 'npm'
       testflight-groups: ${{ inputs.release-type == 'production' && 'External' || 'Internal' }}
