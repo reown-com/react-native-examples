@@ -25,7 +25,7 @@ on:
           - internal
           - production
       external-group:
-        description: 'iOS TestFlight external group to also release to. Leave empty for internal-only (no Beta App Review). Providing a group triggers external distribution, which requires a Beta App Description configured on the App Store Connect app.'
+        description: 'iOS TestFlight external group to also release to. Leave empty for internal-only.'
         required: false
         default: ''
         type: string
