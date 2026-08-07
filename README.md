@@ -59,9 +59,9 @@ bundle install
 
 **Preferred: do it on CI.** You don't need Ruby/fastlane/CocoaPods locally. Run the
 **Create iOS Certificates** GitHub Action (`.github/workflows/create-ios-certs.yaml`) — it
-creates the app's signing certificates via the App Store Connect API key (no 2FA). The App
-Store Connect app record itself is created manually first; see the full runbook in
-[`docs/releasing-a-new-app.md`](docs/releasing-a-new-app.md).
+creates the app's signing certificates via the App Store Connect API key (no 2FA). The App ID
+and the App Store Connect app record are created manually first — `match` does not create the
+identifier, and fastlane `produce` can't authenticate with the API key.
 
 **Local fallback.** Use the provided script to create new certificates and provisioning
 profiles. The script handles creating a branch, running fastlane match, and creating a PR

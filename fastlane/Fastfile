@@ -180,7 +180,6 @@ platform :ios do
   # Apple ID + password (web session / 2FA) auth — it ignores the App Store Connect API
   # key — so it can't run unattended on CI. Create the App Store Connect app record
   # manually (App Store Connect → Apps → +), then use create_certs below for signing.
-  # See docs/releasing-a-new-app.md.
 
   # Create / sync certificates and provisioning profiles for an app, pushing them
   # to a branch in the match git repo. Uses the App Store Connect API key (no 2FA)

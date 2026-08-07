@@ -10,7 +10,7 @@ run-name: "Create iOS Certificates - ${{ inputs.bundle-id }}"
 # Developer Portal, and the App Store Connect app record must already exist. `match` does
 # NOT create the identifier — it fails with "Couldn't find bundle identifier" otherwise.
 # Both are created manually (App Store Connect → Apps → +) because fastlane `produce` only
-# supports Apple ID + 2FA auth. See docs/releasing-a-new-app.md.
+# supports Apple ID + 2FA auth.
 
 permissions:
   contents: read
