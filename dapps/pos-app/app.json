@@ -15,11 +15,7 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NFCReaderUsageDescription": "WPay uses NFC to accept contactless tap-to-pay and read payment cards and tags at checkout.",
         "NSBluetoothAlwaysUsageDescription": "WPay uses Bluetooth to connect to a thermal receipt printer so you can print transaction receipts."
-      },
-      "entitlements": {
-        "com.apple.developer.nfc.readersession.formats": ["TAG"]
       }
     },
     "android": {
