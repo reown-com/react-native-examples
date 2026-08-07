@@ -86,9 +86,15 @@ function addAndroidVariants(buildGradle) {
 
 const withAndroidVariants = (config) =>
   withAppBuildGradle(config, (cfg) => {
-    if (cfg.modResults.language === "groovy") {
-      cfg.modResults.contents = addAndroidVariants(cfg.modResults.contents);
+    if (cfg.modResults.language !== "groovy") {
+      console.warn(
+        "[withAndroidVariants] app/build.gradle is not Groovy (Kotlin DSL detected); " +
+          "signing config and the `internal` buildType were NOT applied. " +
+          "Port the transform to Kotlin DSL to restore internal builds.",
+      );
+      return cfg;
     }
+    cfg.modResults.contents = addAndroidVariants(cfg.modResults.contents);
     return cfg;
   });
 
