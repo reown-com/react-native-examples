@@ -1,5 +1,5 @@
 name: 🚀 Release Mobile POS
-run-name: "Mobile POS - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 Android' || inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }}"
+run-name: "Mobile POS - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 Android' || inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }} (${{ inputs.release-type || 'internal' }})"
 
 permissions:
   id-token: write
@@ -16,6 +16,19 @@ on:
           - both
           - android
           - ios
+      release-type:
+        description: 'Release type'
+        required: false
+        default: internal
+        type: choice
+        options:
+          - internal
+          - production
+      external-group:
+        description: 'iOS TestFlight external group to also release to. Leave empty for internal-only.'
+        required: false
+        default: ''
+        type: string
   push:
     tags:
       - 'variant-*'
@@ -27,22 +40,22 @@ jobs:
     with:
       name: 'Mobile POS React Native'
       root-path: 'dapps/pos-app'
-      release-type: 'production'
+      release-type: ${{ inputs.release-type == 'production' && 'production' || 'internal' }}
       project-type: 'dapp'
-      output-path: 'dapps/pos-app/android/app/build/outputs/apk/release/app-release.apk'
+      output-path: ${{ inputs.release-type == 'production' && 'dapps/pos-app/android/app/build/outputs/apk/release/app-release.apk' || 'dapps/pos-app/android/app/build/outputs/apk/internal/app-internal.apk' }}
       package-manager: 'npm'
       is-expo-project: true
-      firebase-app-id: ${{ vars.POS_ANDROID_FIREBASE_APP_ID }}
+      firebase-app-id: ${{ inputs.release-type == 'production' && vars.POS_ANDROID_FIREBASE_APP_ID || vars.POS_ANDROID_INTERNAL_FIREBASE_APP_ID }}
     secrets:
       env-file: ${{ secrets.POS_ENV_FILE }}
       sentry-file: ${{ secrets.POS_SENTRY_FILE }}
       secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
       gsa-key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}
-      keystore-name: ${{ vars.WC_PROD_KEYSTORE_NAME }}
-      keystore: ${{ secrets.WC_PROD_KEYSTORE }}
+      keystore-name: ${{ inputs.release-type == 'production' && vars.WC_PROD_KEYSTORE_NAME || vars.WC_INTERNAL_KEYSTORE_NAME }}
+      keystore: ${{ inputs.release-type == 'production' && secrets.WC_PROD_KEYSTORE || secrets.WC_INTERNAL_KEYSTORE }}
       aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      firebase-url: ${{ vars.FIREBASE_POS_URL }}
+      firebase-url: ${{ inputs.release-type == 'production' && vars.FIREBASE_POS_URL || vars.FIREBASE_POS_INTERNAL_URL }}
 
   release-ios:
     if: ${{ github.event_name != 'push' && (inputs.platform == 'ios' || inputs.platform == 'both') }}
@@ -50,13 +63,14 @@ jobs:
     with:
       name: 'Mobile POS React Native'
       root-path: 'dapps/pos-app'
-      release-type: 'production'
-      scheme-name: 'WPay'
-      bundle-id: 'com.reown.mobilepos'
-      apple-id: '6754570257'
+      release-type: ${{ inputs.release-type == 'production' && 'production' || 'internal' }}
+      app-variant: ${{ inputs.release-type == 'production' && 'production' || 'internal' }}
+      scheme-name: ${{ inputs.release-type == 'production' && 'WPay' || 'WPayDev' }}
+      bundle-id: ${{ inputs.release-type == 'production' && 'com.reown.mobilepos' || 'com.reown.mobilepos.internal' }}
+      apple-id: ${{ inputs.release-type == 'production' && vars.POS_IOS_PROD_APPLE_ID || vars.POS_IOS_INTERNAL_APPLE_ID }}
       project-type: 'dapp'
       package-manager: 'npm'
-      testflight-groups: 'External'
+      testflight-groups: ${{ inputs.external-group }}
       is-expo-project: true
     secrets:
       env-file: ${{ secrets.POS_ENV_FILE }}
@@ -70,4 +84,4 @@ jobs:
       match-git-url: ${{ secrets.MATCH_GIT_URL }}
       match-ssh-key: ${{ secrets.MATCH_SSH_KEY }}
       slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-      testflight-url: ${{ vars.TESTFLIGHT_POS_URL }}
+      testflight-url: ${{ inputs.release-type == 'production' && vars.TESTFLIGHT_POS_URL || vars.TESTFLIGHT_POS_INTERNAL_URL }}

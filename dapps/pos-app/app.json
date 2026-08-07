@@ -67,7 +67,8 @@
           "organization": "walletconnect"
         }
       ],
-      "./scripts/withAndroidReleaseSigningConfig.js",
+      "./plugins/withAndroidVariants.js",
+      "./plugins/withAndroidVariantIcons.js",
       "./plugins/withHceNfc.js",
       [
         "expo-font",
