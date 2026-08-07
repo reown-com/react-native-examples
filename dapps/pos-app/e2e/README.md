@@ -21,12 +21,15 @@ serve them.
 ## Prerequisites
 
 1. Install Maestro CLI:
+
    ```bash
    curl -Ls "https://get.maestro.mobile.dev" | bash
    ```
+
    You also need Google Chrome / Chromium installed.
 
 2. Build and serve the web app (from `dapps/pos-app`):
+
    ```bash
    npm run web:build
    # canvaskit.wasm is emitted at dist/ root, but the bundle requests it from the
@@ -35,15 +38,16 @@ serve them.
    cp dist/canvaskit.wasm dist/_expo/static/js/web/canvaskit.wasm
    npx serve -s dist -l 8081
    ```
+
    To run the **payment** flows locally you need the `/api` proxy too — use
    `npx vercel dev --listen 8081` instead of `serve` (serves the static build
-   *and* the serverless functions; requires Vercel login + the pay-API env).
+   _and_ the serverless functions; requires Vercel login + the pay-API env).
 
 3. Configure a merchant so payment flows can reach the amount/scan screens. The
    amount-based flows need `EXPO_PUBLIC_DEFAULT_MERCHANT_ID` and
    `EXPO_PUBLIC_DEFAULT_CUSTOMER_API_KEY` in `.env` **at build time** (they are
    seeded into the settings store on first load; without them "Start payment"
-   redirects to Settings). `payment-flow.yaml` additionally needs *valid* creds +
+   redirects to Settings). `payment-flow.yaml` additionally needs _valid_ creds +
    network to mint a real gateway QR — in CI these are baked into the tested
    deployment from the Vercel `pos-demo` project's environment variables at
    build time (configured in the Vercel dashboard, not in this repo).
@@ -68,12 +72,12 @@ Add `--headless` to run without a visible browser window (as CI does under xvfb)
 
 ## Test Files
 
-| File | Tags | Description |
-|------|------|-------------|
-| `payment-flow.yaml` | `payment` | Start payment → enter $0.01 → charge → wait for QR → tap QR copies the payment link. Needs valid merchant creds + network. |
-| `payment-cancel.yaml` | `payment` | Same prelude as `payment-flow`, then cancel returns to a fresh amount screen (and cancels the payment at the gateway). |
-| `invalid-amount.yaml` | `amount` | Charge button stays "Enter amount"/disabled at empty/`0`; enables once a non-zero amount is entered. |
-| `keypad.yaml` | `amount` | Keypad decimal handling (single decimal, max 2 fractional digits) and backspace. |
+| File                  | Tags      | Description                                                                                                                |
+| --------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `payment-flow.yaml`   | `payment` | Start payment → enter $0.01 → charge → wait for QR → tap QR copies the payment link. Needs valid merchant creds + network. |
+| `payment-cancel.yaml` | `payment` | Same prelude as `payment-flow`, then cancel returns to a fresh amount screen (and cancels the payment at the gateway).     |
+| `invalid-amount.yaml` | `amount`  | Charge button stays "Enter amount"/disabled at empty/`0`; enables once a non-zero amount is entered.                       |
+| `keypad.yaml`         | `amount`  | Keypad decimal handling (single decimal, max 2 fractional digits) and backspace.                                           |
 
 Shared steps live in `common/*.yaml` (the `$0.01`→QR prelude, run via `runFlow`).
 Flows there are **not** picked up as standalone tests — neither by CI's
