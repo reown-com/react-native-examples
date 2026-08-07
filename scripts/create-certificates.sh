@@ -6,17 +6,16 @@ set -e
 # Example (auto):     ./scripts/create-certificates.sh reown-com/mobile-match com.reown.myapp dev@reown.com appstore --auto-merge
 # Example (CI):       ./scripts/create-certificates.sh reown-com/mobile-match com.reown.myapp "" appstore --no-pr
 #
-# --no-pr: don't touch GitHub (no token needed). fastlane match pushes the certs branch over
-#          SSH; a human then opens and merges the PR in the certs repo. This is the CI default.
+# --no-pr: make no GitHub API calls (no token needed). match pushes the branch over SSH and a
+#          human opens the PR. This is what CI uses.
 
 CERTS_REPO=$1
 BUNDLE_ID=$2
 APPLE_EMAIL=$3
-MATCH_TYPE=${4:-appstore}  # Default to appstore
+MATCH_TYPE=${4:-appstore}
 AUTO_MERGE=false
 SKIP_PR=false
 
-# Parse flags
 for arg in "$@"; do
   if [ "$arg" = "--auto-merge" ]; then
     AUTO_MERGE=true
@@ -26,14 +25,12 @@ for arg in "$@"; do
   fi
 done
 
-# Decide auth mode: App Store Connect API key (CI, no 2FA) vs Apple ID (local, interactive).
-# The API key is used automatically when its env vars are present.
+# App Store Connect API key (CI, no 2FA) when available, else interactive Apple ID.
 USE_API_KEY=false
 if [ -n "$APPLE_KEY_ID" ] && [ -n "$APPLE_ISSUER_ID" ] && [ -n "$APPLE_KEY_CONTENT" ]; then
   USE_API_KEY=true
 fi
 
-# apple_email is only required for interactive (Apple ID) auth.
 if [ -z "$CERTS_REPO" ] || [ -z "$BUNDLE_ID" ] || { [ "$USE_API_KEY" = false ] && [ -z "$APPLE_EMAIL" ]; }; then
   echo "Usage: $0 <certificates_repo> <bundle_id> <apple_email> [match_type] [--auto-merge] [--no-pr]"
   echo "  certificates_repo: GitHub repo in owner/repo format"
@@ -57,13 +54,9 @@ echo "   Branch: ${BRANCH_NAME}"
 echo "   PR mode: $([ "$SKIP_PR" = true ] && echo 'skip (manual merge)' || echo "create$([ "$AUTO_MERGE" = true ] && echo ' + auto-merge')")"
 echo ""
 
-# Cleanup for error cases — remove the branch we created so a retry is clean.
-#
-# Only safe while the branch is still identical to master, i.e. match never got as far as
-# committing. Once match has pushed, the branch is the only record of a certificate Apple
-# has already issued; deleting it strands that cert AND removes the "branch already exists"
-# guard below, so a retry re-runs match and can mint a duplicate. Apple caps distribution
-# certificates, so that costs a manual revoke in the portal. Keep the branch instead.
+# Drop the branch we created so a retry is clean — but only while it still matches master.
+# Once match has pushed, the branch is the sole record of a certificate Apple already issued;
+# deleting it strands that cert and lets a retry mint a duplicate against Apple's cap.
 cleanup_branch() {
   local branch_sha master_sha
   branch_sha=$(git ls-remote "${CERTS_GIT_URL}" "refs/heads/${BRANCH_NAME}" 2>/dev/null | cut -f1) || true
@@ -89,13 +82,10 @@ cleanup_branch() {
   fi
 }
 
-# The branch MUST be created from master before match runs, so match adds the new
-# profile on top of the existing certs (reusing the shared distribution/development
-# certificate) and produces a mergeable diff. If match is pointed at a non-existent
-# branch it creates an ORPHAN branch with only the new files — unmergeable, and it
-# re-mints a duplicate certificate because it can't see the existing one.
+# Branch from master BEFORE match runs. Pointed at a non-existent branch, match builds an
+# orphan branch holding only the new files — unmergeable — and re-mints a duplicate
+# certificate because it can't see the existing one.
 if [ "$SKIP_PR" = false ]; then
-  # gh-based pre-create (uses a GitHub token)
   echo "🔍 Checking if branch already exists..."
   if gh api repos/${CERTS_REPO}/git/ref/heads/${BRANCH_NAME} &>/dev/null; then
     echo "⚠️  Branch ${BRANCH_NAME} already exists."
@@ -104,9 +94,7 @@ if [ "$SKIP_PR" = false ]; then
   fi
 
   echo "📌 Creating branch ${BRANCH_NAME} from master..."
-  # `|| true` matters: under `set -e` a failing command substitution aborts the script at
-  # the assignment, so without it the diagnostic below is unreachable and gh's own error is
-  # swallowed by 2>/dev/null — you'd get a silent exit 1.
+  # `|| true`: without it `set -e` aborts at the assignment and the diagnostic below never runs.
   MASTER_SHA=$(gh api repos/${CERTS_REPO}/git/ref/heads/master --jq '.object.sha' 2>/dev/null) || true
   if [ -z "$MASTER_SHA" ]; then
     echo "❌ Error: Failed to fetch master branch SHA from ${CERTS_REPO}"
@@ -122,7 +110,7 @@ if [ "$SKIP_PR" = false ]; then
   fi
   echo "   ✓ Branch created"
 else
-  # --no-pr: pre-create the branch from master over SSH (no GitHub token needed).
+  # --no-pr: same thing over SSH, no GitHub token.
   echo "📌 Creating branch ${BRANCH_NAME} from master over SSH..."
   WORKDIR=$(mktemp -d)
   if ! git clone --depth 1 --branch master "${CERTS_GIT_URL}" "${WORKDIR}" >/dev/null 2>&1; then
@@ -142,10 +130,8 @@ else
   echo "   ✓ Branch created from master"
 fi
 
-# 4. Run fastlane match
 echo "🚀 Running fastlane match ${MATCH_TYPE}..."
 if [ "$USE_API_KEY" = true ]; then
-  # CI path: API-key auth via the create_certs lane (no Apple ID / 2FA).
   echo "   🔑 Using App Store Connect API key auth"
   if ! BUNDLE_ID="${BUNDLE_ID}" \
     MATCH_TYPE="${MATCH_TYPE}" \
@@ -158,7 +144,6 @@ if [ "$USE_API_KEY" = true ]; then
     exit 1
   fi
 else
-  # Local path: interactive Apple ID auth.
   if ! bundle exec fastlane match ${MATCH_TYPE} \
     --git_url "${CERTS_GIT_URL}" \
     --git_branch "${BRANCH_NAME}" \
@@ -172,7 +157,6 @@ else
 fi
 echo "   ✓ Certificates created"
 
-# 5/6. Open (and optionally merge) the PR. Skipped entirely in --no-pr mode.
 if [ "$SKIP_PR" = true ]; then
   echo ""
   echo "✅ Done! Certificates for ${BUNDLE_ID} have been pushed to branch ${BRANCH_NAME}."
@@ -186,9 +170,8 @@ if [ "$SKIP_PR" = true ]; then
 fi
 
 echo "📝 Creating pull request..."
-# Assign inside `if !` rather than checking $? afterwards: under `set -e` a failing command
-# substitution aborts at the assignment, so a separate `if [ $? -ne 0 ]` never runs — and
-# because 2>&1 captures gh's error into PR_URL, the script would exit silently.
+# Assign inside `if !`, not a trailing $? check — `set -e` aborts at the assignment, and 2>&1
+# hides gh's error inside PR_URL, so the failure would otherwise be silent.
 if ! PR_URL=$(gh pr create \
   --repo "${CERTS_REPO}" \
   --base master \

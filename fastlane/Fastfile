@@ -190,17 +190,13 @@ platform :ios do
     UI.success("✅ Simulator .app: #{app_path}")
   end
 
-  # NOTE: There is intentionally no `create_app` lane. fastlane `produce` only supports
-  # Apple ID + password (web session / 2FA) auth — it ignores the App Store Connect API
-  # key — so it can't run unattended on CI. Create the App Store Connect app record
-  # manually (App Store Connect → Apps → +), then use create_certs below for signing.
+  # No `create_app` lane on purpose: fastlane `produce` only supports Apple ID + 2FA auth and
+  # ignores the API key, so it can't run unattended. Create the app record by hand instead.
 
-  # Create / sync certificates and provisioning profiles for an app, pushing them
-  # to a branch in the match git repo. Uses the App Store Connect API key (no 2FA)
-  # so it can run unattended on CI. The PR/merge of that branch is handled outside
-  # this lane (see scripts/create-certificates.sh).
+  # Sync certs / profiles to a branch in the match repo, using the API key so it needs no 2FA.
+  # Opening and merging that branch is handled by scripts/create-certificates.sh.
   lane :create_certs do
-    # Temporary keychain — match needs somewhere to import the certificate on CI.
+    # match needs a keychain to import the certificate into.
     setup_ci()
 
     api_key = app_store_connect_api_key(

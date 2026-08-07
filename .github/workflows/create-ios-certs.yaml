@@ -2,15 +2,12 @@ name: Create iOS Certificates
 
 run-name: "Create iOS Certificates - ${{ inputs.bundle-id }}"
 
-# Creates the signing certificates / provisioning profiles for an iOS app on CI, so
-# developers don't need Ruby / fastlane / CocoaPods locally. Auth uses the App Store
-# Connect API key (no Apple ID / 2FA).
+# Creates an iOS app's signing certificates / provisioning profiles on CI, so developers don't
+# need Ruby / fastlane / CocoaPods locally.
 #
-# PREREQUISITE: the app's bundle id / App ID must already be registered in the Apple
-# Developer Portal, and the App Store Connect app record must already exist. `match` does
-# NOT create the identifier — it fails with "Couldn't find bundle identifier" otherwise.
-# Both are created manually (App Store Connect → Apps → +) because fastlane `produce` only
-# supports Apple ID + 2FA auth.
+# PREREQUISITE: the App ID and the App Store Connect app record must already exist — create both
+# by hand first. `match` won't create the identifier (it fails with "Couldn't find bundle
+# identifier") and fastlane `produce` can't authenticate with the API key.
 
 permissions:
   contents: read
@@ -51,17 +48,16 @@ jobs:
           ruby-version: 3.3.0
           bundler-cache: true
 
-      # Certs are pushed to a branch over SSH (MATCH_SSH_KEY); no GitHub token is used.
-      # A teammate opens & merges the PR in the certs repo (see job summary).
+      # Certs go to a branch over SSH (MATCH_SSH_KEY), no GitHub token. A teammate opens and
+      # merges the PR in the certs repo — see the job summary.
       - name: Create certificates
         env:
           APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
           APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
           APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
           MATCH_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          # Inputs go through env, never straight into the script body — ${{ }} is
-          # substituted before the shell parses the line, so a quote in an input would
-          # otherwise break out of the command.
+          # Inputs via env, never inline in run: — ${{ }} expands before the shell parses,
+          # so a quote in an input would break out of the command.
           INPUT_BUNDLE_ID: ${{ inputs.bundle-id }}
           INPUT_CERTS_REPO: ${{ inputs.certs-repo }}
           INPUT_MATCH_TYPES: ${{ inputs.match-types }}
