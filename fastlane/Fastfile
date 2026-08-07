@@ -190,6 +190,38 @@ platform :ios do
     UI.success("✅ Simulator .app: #{app_path}")
   end
 
+  # No `create_app` lane on purpose: fastlane `produce` only supports Apple ID + 2FA auth and
+  # ignores the API key, so it can't run unattended. Create the app record by hand instead.
+
+  # Sync certs / profiles to a branch in the match repo, using the API key so it needs no 2FA.
+  # Opening and merging that branch is handled by scripts/create-certificates.sh.
+  lane :create_certs do
+    # match needs a keychain to import the certificate into.
+    setup_ci()
+
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APPLE_KEY_ID"],
+      issuer_id: ENV["APPLE_ISSUER_ID"],
+      key_content: ENV["APPLE_KEY_CONTENT"],
+      duration: 1200,
+      in_house: false,
+    )
+
+    match_type = ENV["MATCH_TYPE"] || "appstore"
+
+    match(
+      readonly: false,
+      type: match_type,
+      app_identifier: ENV["BUNDLE_ID"],
+      git_url: ENV["MATCH_GIT_URL"],
+      git_branch: ENV["MATCH_GIT_BRANCH"],
+      api_key: api_key,
+      include_all_certificates: true,
+    )
+
+    UI.success("✅ #{match_type} certificates synced for #{ENV['BUNDLE_ID']}")
+  end
+
   lane :test_code_signing do
     ENV['XCODE_PROJECT_PATH'] = 'dapps/pos-app/ios/WPay.xcodeproj'
     ENV['BUNDLE_ID'] = 'com.reown.mobilepos'
