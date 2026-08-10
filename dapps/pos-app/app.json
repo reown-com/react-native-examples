@@ -15,12 +15,7 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NFCReaderUsageDescription": "This app requires NFC to send messages",
-        "NSLocationWhenInUseUsageDescription": "This app requires location when using the camera",
-        "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts"
-      },
-      "entitlements": {
-        "com.apple.developer.nfc.readersession.formats": ["TAG"]
+        "NSBluetoothAlwaysUsageDescription": "WPay uses Bluetooth to connect to a thermal receipt printer so you can print transaction receipts."
       }
     },
     "android": {
@@ -41,7 +36,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 28
+      "versionCode": 29
     },
     "web": {
       "output": "static",

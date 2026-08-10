@@ -9,6 +9,7 @@
     "android:internal": "expo run:android --variant internal --app-id com.reown.mobilepos.internal",
     "android:build": "cd android && ./gradlew assembleRelease",
     "android:build:internal": "cd android && ./gradlew assembleInternal",
+    "android:build:aab": "cd android && ./gradlew bundleRelease",
     "prebuild": "expo prebuild",
     "postprebuild": "node scripts/setup-secrets.js",
     "postinstall": "patch-package && npm run web:setup",
