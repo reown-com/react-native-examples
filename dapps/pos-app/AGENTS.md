@@ -316,6 +316,7 @@ This project uses **npm** (not pnpm or yarn). Always use `npm` commands for inst
 - `npm run ios`: Run on iOS
 - `npm run web`: Run on web
 - `npm run android:build`: Build Android release APK
+- `npm run android:build:aab`: Build Android App Bundle (AAB) for release. Output: `android/app/build/outputs/bundle/release/app-release.aab`
 - `npm run lint`: Run ESLint
 - `npm test`: Run Jest tests
 
@@ -589,6 +590,14 @@ export const Variants: Record<VariantName, Variant> = {
    ```
 
    Output: `android/app/build/outputs/apk/release/app-release.apk`
+
+   For an **Android App Bundle (AAB)** instead (required for Play Store uploads):
+
+   ```bash
+   npm run android:build:aab
+   ```
+
+   Output: `android/app/build/outputs/bundle/release/app-release.aab`
 
 3. **Install via USB**:
    ```bash
