@@ -132,7 +132,7 @@ export default function Settings() {
           onToggle={toggleDarkMode}
         />
         <ToggleCard
-          label="Testnets"
+          label="Enable testnets"
           value={testNets}
           onToggle={() => SettingsStore.toggleTestNets()}
         />
