@@ -1,6 +1,5 @@
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { showInfoToast } from "@/utils/toast";
 import { router } from "expo-router";
 import { useCallback, useEffect, useRef } from "react";
 import { Platform } from "react-native";
@@ -58,7 +57,7 @@ export function useUrlCredentials() {
           );
         }
 
-        showInfoToast("Credentials updated");
+        addLog("info", "Credentials updated", "layout", "useUrlCredentials");
         window.parent.postMessage({ type: "pos-credentials-updated" }, "*");
       } catch (error) {
         const errorMessage =
