@@ -20,6 +20,7 @@ import { loadSuiWallet } from '@/utils/SuiWalletUtil';
 import { loadCantonWallet } from '@/utils/CantonWalletUtil';
 import { loadSolanaWallet } from '@/utils/SolanaWalletUtil';
 import { loadBitcoinWallet } from '@/utils/BitcoinWalletUtil';
+import { loadStellarWallet } from '@/utils/StellarWalletUtil';
 import { Text } from '@/components/Text';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
 import {
@@ -34,6 +35,7 @@ import { SUI_MAINNET_CAIP2 } from '@/constants/Sui';
 import { CANTON_CHAINS } from '@/constants/Canton';
 import { SOLANA_MAINNET_CAIP2 } from '@/constants/Solana';
 import { BIP122_MAINNET_CAIP2 } from '@/constants/Bitcoin';
+import { STELLAR_MAINNET_CAIP2 } from '@/constants/Stellar';
 
 type ChainOption =
   | 'Ethereum'
@@ -42,7 +44,8 @@ type ChainOption =
   | 'Sui'
   | 'Canton'
   | 'Solana'
-  | 'Bitcoin';
+  | 'Bitcoin'
+  | 'Stellar';
 
 // Representative chainId per option, used to render the network icon in the
 // dropdown. Derived from each namespace's chain map so it stays correct if the
@@ -55,6 +58,7 @@ const CHAIN_OPTIONS: readonly NetworkDropdownOption<ChainOption>[] = [
   { label: 'Canton', chainId: Object.keys(CANTON_CHAINS)[0] },
   { label: 'Solana', chainId: SOLANA_MAINNET_CAIP2 },
   { label: 'Bitcoin', chainId: BIP122_MAINNET_CAIP2 },
+  { label: 'Stellar', chainId: STELLAR_MAINNET_CAIP2 },
 ] as const;
 
 const PLACEHOLDER_TEXT: Record<ChainOption, string> = {
@@ -65,6 +69,7 @@ const PLACEHOLDER_TEXT: Record<ChainOption, string> = {
   Canton: 'Secret key (128 hex chars)',
   Solana: 'Mnemonic (12–24 words) or base58 secret key',
   Bitcoin: 'Mnemonic phrase (12–24 words)',
+  Stellar: 'Mnemonic (12–24 words) or secret key (S…)',
 };
 
 const EMPTY_INPUT_ERROR: Record<ChainOption, string> = {
@@ -75,6 +80,7 @@ const EMPTY_INPUT_ERROR: Record<ChainOption, string> = {
   Canton: 'Enter an Ed25519 secret key.',
   Solana: 'Enter a mnemonic or base58 secret key.',
   Bitcoin: 'Enter a mnemonic phrase.',
+  Stellar: 'Enter a mnemonic or an S… secret key.',
 };
 
 export default function ImportWalletModal() {
@@ -203,6 +209,23 @@ export default function ImportWalletModal() {
               tronAddress: SettingsStore.state.tronAddress,
               suiAddress: SettingsStore.state.suiAddress,
               solanaAddress: address,
+            },
+            { force: true },
+          );
+          break;
+        }
+        case 'Stellar': {
+          const result = await loadStellarWallet(sanitizedInput);
+          address = result.address;
+          // Refetch balances with the new Stellar address
+          WalletStore.fetchBalances(
+            {
+              eip155Address: SettingsStore.state.eip155Address,
+              tonAddress: SettingsStore.state.tonAddress,
+              tronAddress: SettingsStore.state.tronAddress,
+              suiAddress: SettingsStore.state.suiAddress,
+              solanaAddress: SettingsStore.state.solanaAddress,
+              stellarAddress: address,
             },
             { force: true },
           );

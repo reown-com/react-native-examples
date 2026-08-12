@@ -51,6 +51,7 @@
     "@reown/walletkit": "1.5.6",
     "@sentry/react-native": "~7.11.0",
     "@solana/web3.js": "1.98.2",
+    "@stellar/stellar-sdk": "16.2.0",
     "@ton/core": "0.62.0",
     "@ton/crypto": "3.3.0",
     "@ton/ton": "15.4.0",

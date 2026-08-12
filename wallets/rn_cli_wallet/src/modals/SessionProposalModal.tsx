@@ -38,6 +38,12 @@ import {
   BIP122_EVENTS,
   BIP122_SIGNING_METHODS,
 } from '@/constants/Bitcoin';
+import { stellarAddresses } from '@/utils/StellarWalletUtil';
+import {
+  STELLAR_CHAINS,
+  STELLAR_EVENTS,
+  STELLAR_SIGNING_METHODS,
+} from '@/constants/Stellar';
 import { AccordionCard } from '@/components/AccordionCard';
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkSelector } from '@/components/NetworkSelector';
@@ -100,6 +106,10 @@ export default function SessionProposalModal() {
     const bip122Methods = Object.values(BIP122_SIGNING_METHODS);
     const bip122Events = Object.values(BIP122_EVENTS);
 
+    const stellarChains = Object.keys(STELLAR_CHAINS);
+    const stellarMethods = Object.values(STELLAR_SIGNING_METHODS);
+    const stellarEvents = Object.values(STELLAR_EVENTS);
+
     return {
       eip155: {
         chains: eip155Chains,
@@ -154,6 +164,14 @@ export default function SessionProposalModal() {
           ? bip122Chains.flatMap(chain =>
               bitcoinAddresses.map(address => `${chain}:${address}`),
             )
+          : [],
+      },
+      stellar: {
+        chains: stellarChains,
+        methods: stellarMethods,
+        events: stellarEvents,
+        accounts: stellarAddresses?.[0]
+          ? stellarChains.map(chain => `${chain}:${stellarAddresses[0]}`)
           : [],
       },
     };
