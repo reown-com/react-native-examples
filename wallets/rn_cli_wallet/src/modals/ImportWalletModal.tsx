@@ -193,6 +193,7 @@ export default function ImportWalletModal() {
               suiAddress: SettingsStore.state.suiAddress,
               solanaAddress: SettingsStore.state.solanaAddress,
               bitcoinAddress: address,
+              stellarAddress: SettingsStore.state.stellarAddress,
             },
             { force: true },
           );
@@ -225,6 +226,7 @@ export default function ImportWalletModal() {
               tronAddress: SettingsStore.state.tronAddress,
               suiAddress: SettingsStore.state.suiAddress,
               solanaAddress: SettingsStore.state.solanaAddress,
+              bitcoinAddress: SettingsStore.state.bitcoinAddress,
               stellarAddress: address,
             },
             { force: true },

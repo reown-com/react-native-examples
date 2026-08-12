@@ -117,11 +117,22 @@ export default class StellarLib {
     const signedXDR = transaction.toXDR();
     const txHash = transaction.hash().toString('hex');
 
-    const response = await fetch(`${rpcUrl.replace(/\/$/, '')}/transactions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ tx: signedXDR }).toString(),
-    });
+    // React Native's fetch has no built-in timeout; without one an unreachable
+    // or slow Horizon would hang the sign flow modal indefinitely with no way to
+    // cancel. Abort after 30s so the request rejects and the modal can recover.
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30_000);
+    let response: Response;
+    try {
+      response = await fetch(`${rpcUrl.replace(/\/$/, '')}/transactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ tx: signedXDR }).toString(),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
     const result = await response.json();
 
     if (!response.ok) {
