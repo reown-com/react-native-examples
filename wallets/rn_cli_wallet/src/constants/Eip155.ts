@@ -46,6 +46,7 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     namespace: 'eip155',
     name: 'Avalanche Fuji',
     rpcUrl: 'https://api.avax-test.network/ext/bc/C/rpc',
+    isTestnet: true,
   },
   'eip155:56': {
     chainId: '56',
@@ -70,6 +71,7 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     namespace: 'eip155',
     name: 'Optimism Sepholia',
     rpcUrl: 'https://sepolia.optimism.io',
+    isTestnet: true,
   },
   'eip155:137': {
     chainId: '137',

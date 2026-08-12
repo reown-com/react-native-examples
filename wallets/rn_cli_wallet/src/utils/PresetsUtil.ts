@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from 'react-native';
+import { Chain } from '@/utils/TypesUtil';
 import { TON_CHAINS, TON_NETWORKS_IMAGES } from '@/constants/Ton';
 import { SUI_CHAINS, SUI_NETWORKS_IMAGES } from '@/constants/Sui';
 import { EIP155_CHAINS, EIP155_NETWORK_IMAGES } from '@/constants/Eip155';
@@ -19,7 +20,7 @@ const NetworkImages: Record<string, ImageSourcePropType> = {
   ...STELLAR_NETWORKS_IMAGES,
 };
 
-export const ALL_CHAINS = {
+export const ALL_CHAINS: Record<string, Chain> = {
   ...EIP155_CHAINS,
   ...SUI_CHAINS,
   ...TON_CHAINS,

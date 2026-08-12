@@ -295,7 +295,12 @@ const WalletStore = {
 
     try {
       // Fetch all balances in parallel for better performance and resilience
-      const eip155ChainIds = Object.keys(EIP155_CHAINS);
+      // Only mainnets — the balance API is mainnet-only, and testnet chains
+      // (e.g. Sepolia) just return errors. Mirrors the mainnet-only *_SUPPORTED_CHAINS
+      // lists used by the other namespaces.
+      const eip155ChainIds = Object.entries(EIP155_CHAINS)
+        .filter(([, chain]) => !chain.isTestnet)
+        .map(([id]) => id);
 
       const [
         eip155Result,

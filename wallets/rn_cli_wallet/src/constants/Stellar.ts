@@ -52,6 +52,7 @@ export const STELLAR_TEST = {
     namespace: STELLAR_NAMESPACE,
     name: 'Stellar Testnet',
     rpcUrl: STELLAR_TESTNET_RPC,
+    isTestnet: true,
   },
 };
 
