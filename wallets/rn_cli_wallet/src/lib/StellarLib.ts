@@ -156,9 +156,14 @@ export default class StellarLib {
   }
 
   /**
-   * Signs an arbitrary message under the account's Ed25519 key with the
-   * domain-separating prefix required by the spec:
-   *   sign(Ed25519, sha256("StellarMessage" || 0x00 || message))
+   * Signs an arbitrary message under the account's Ed25519 key using the
+   * finalized SEP-53 message-signing scheme:
+   *   sign(Ed25519, sha256("Stellar Signed Message:\n" || message))
+   * The prefix is the fixed UTF-8 string with a trailing newline (no length
+   * prefix and no 0x00 separator), matching Bitcoin/Ethereum-style signed
+   * messages. Keeping this byte-for-byte identical to SEP-53 is what makes the
+   * signature verifiable by compliant Stellar wallets and SDKs.
+   * @see https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0053.md
    * @returns base64-encoded 64-byte Ed25519 signature
    */
   public signMessage(
@@ -172,8 +177,7 @@ export default class StellarLib {
 
     const payload = hash(
       Buffer.concat([
-        Buffer.from('StellarMessage'),
-        Buffer.from([0]),
+        Buffer.from('Stellar Signed Message:\n', 'utf-8'),
         messageBytes,
       ]),
     );
