@@ -69,7 +69,7 @@ export const EIP155_CHAINS: Record<string, Chain> = {
   'eip155:11155420': {
     chainId: '11155420',
     namespace: 'eip155',
-    name: 'Optimism Sepholia',
+    name: 'Optimism Sepolia',
     rpcUrl: 'https://sepolia.optimism.io',
     isTestnet: true,
   },
