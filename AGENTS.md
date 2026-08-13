@@ -27,8 +27,7 @@ This repository contains sample React Native applications demonstrating WalletCo
 
 | App | Description | AGENTS.md |
 |-----|-------------|-----------|
-| expo-wallet | Expo-based sample wallet | [View](wallets/expo-wallet/AGENTS.md) |
-| rn_cli_wallet | React Native CLI wallet | [View](wallets/rn_cli_wallet/AGENTS.md) |
+| rn_cli_wallet | Expo-based sample wallet (iOS, Android, and web) | [View](wallets/rn_cli_wallet/AGENTS.md) |
 
 ## Dependency Rules
 
