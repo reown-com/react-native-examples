@@ -26,6 +26,13 @@ function getInitialThemeMode(): 'light' | 'dark' {
   return systemMode;
 }
 
+// `toggleTestNets` persists 'YES' via storage.setItem (JSON-encoded as '"YES"'),
+// so read it back the same way for a synchronous initial value.
+function getInitialTestNets(): boolean {
+  const saved = new MMKV().getString('TEST_NETS');
+  return saved === '"YES"' || saved === 'YES';
+}
+
 /**
  * Types
  */
@@ -67,7 +74,7 @@ interface State {
  * State
  */
 const state = proxy<State>({
-  testNets: false, //add async boolean
+  testNets: getInitialTestNets(),
   account: 0,
   activeChainId: '1',
   eip155Address: '',

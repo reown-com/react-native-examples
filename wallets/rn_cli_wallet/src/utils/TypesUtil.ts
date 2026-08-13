@@ -89,6 +89,9 @@ export type Chain = {
   name: string;
   namespace: string;
   rpcUrl: string;
+  // Testnet chains are only advertised to dapps when the "Testnets" setting is
+  // on, and are never queried for balances (the balance API is mainnet-only).
+  isTestnet?: boolean;
 };
 
 // Payment Modal Flow

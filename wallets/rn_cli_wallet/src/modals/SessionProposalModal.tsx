@@ -13,6 +13,7 @@ import SettingsStore from '@/store/SettingsStore';
 import { handleRedirect } from '@/utils/LinkingUtils';
 import { RequestModal } from './RequestModal';
 import { getSupportedChains } from '@/utils/HelperUtil';
+import { ALL_CHAINS } from '@/utils/PresetsUtil';
 import { suiAddresses } from '@/utils/SuiWalletUtil';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SUI_CHAINS, SUI_EVENTS, SUI_SIGNING_METHODS } from '@/constants/Sui';
@@ -61,7 +62,9 @@ type AccordionType = 'app' | 'network' | null;
 
 export default function SessionProposalModal() {
   const { data } = useSnapshot(ModalStore.state);
-  const { currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
+  const { currentRequestVerifyContext, testNets } = useSnapshot(
+    SettingsStore.state,
+  );
   const proposal =
     data?.proposal as SignClientTypes.EventArguments['session_proposal'];
 
@@ -79,7 +82,14 @@ export default function SessionProposalModal() {
   const isScam = currentRequestVerifyContext?.verified?.isScam;
 
   const supportedNamespaces = useMemo(() => {
-    const eip155Chains = Object.keys(EIP155_CHAINS);
+    // Testnet chains are only advertised to dapps when the "Testnets" setting is
+    // on (default off), so a mainnet-only wallet doesn't offer test networks.
+    const withoutTestnets = (chainIds: string[]) =>
+      testNets
+        ? chainIds
+        : chainIds.filter(id => !ALL_CHAINS[id]?.isTestnet);
+
+    const eip155Chains = withoutTestnets(Object.keys(EIP155_CHAINS));
     const eip155Methods = Object.values(EIP155_SIGNING_METHODS);
 
     const suiChains = Object.keys(SUI_CHAINS);
@@ -106,7 +116,7 @@ export default function SessionProposalModal() {
     const bip122Methods = Object.values(BIP122_SIGNING_METHODS);
     const bip122Events = Object.values(BIP122_EVENTS);
 
-    const stellarChains = Object.keys(STELLAR_CHAINS);
+    const stellarChains = withoutTestnets(Object.keys(STELLAR_CHAINS));
     const stellarMethods = Object.values(STELLAR_SIGNING_METHODS);
     const stellarEvents = Object.values(STELLAR_EVENTS);
 
@@ -175,7 +185,7 @@ export default function SessionProposalModal() {
           : [],
       },
     };
-  }, []);
+  }, [testNets]);
 
   const supportedChains = useMemo(() => {
     if (!proposal) {
@@ -186,6 +196,8 @@ export default function SessionProposalModal() {
       proposal.params.requiredNamespaces,
       proposal.params.optionalNamespaces,
     );
+    // getSupportedChains reads the current `testNets` setting internally; the
+    // toggle lives in Settings and can't change while this modal is open.
   }, [proposal]);
 
   // Initialize selected chains with all supported chains (only once)
