@@ -7,6 +7,7 @@ import { EIP155_CHAINS } from '@/constants/Eip155';
 import { isSpamToken } from '@/utils/SpamFilter';
 import { SOLANA_MAINNET_CAIP2 } from '@/constants/Solana';
 import { BIP122_MAINNET_CAIP2 } from '@/constants/Bitcoin';
+import { STELLAR_MAINNET_CAIP2 } from '@/constants/Stellar';
 import LogStore, { serializeError } from '@/store/LogStore';
 
 const mmkv = new MMKV();
@@ -18,6 +19,7 @@ const TRON_SUPPORTED_CHAINS = ['tron:0x2b6653dc'];
 const SUI_SUPPORTED_CHAINS = ['sui:mainnet'];
 const SOLANA_SUPPORTED_CHAINS = [SOLANA_MAINNET_CAIP2];
 const BITCOIN_SUPPORTED_CHAINS = [BIP122_MAINNET_CAIP2];
+const STELLAR_SUPPORTED_CHAINS = [STELLAR_MAINNET_CAIP2];
 
 export interface WalletAddresses {
   eip155Address?: string;
@@ -26,6 +28,7 @@ export interface WalletAddresses {
   suiAddress?: string;
   solanaAddress?: string;
   bitcoinAddress?: string;
+  stellarAddress?: string;
 }
 
 interface WalletState {
@@ -82,6 +85,7 @@ const MAINNET_NATIVE_TOKENS = {
   'sui:mainnet': { name: 'Sui', symbol: 'SUI', decimals: '9' },
   [SOLANA_MAINNET_CAIP2]: { name: 'Solana', symbol: 'SOL', decimals: '9' },
   [BIP122_MAINNET_CAIP2]: { name: 'Bitcoin', symbol: 'BTC', decimals: '8' },
+  [STELLAR_MAINNET_CAIP2]: { name: 'Stellar', symbol: 'XLM', decimals: '7' },
 };
 
 /**
@@ -98,6 +102,7 @@ interface BalanceUnavailableFlags {
   sui?: boolean;
   solana?: boolean;
   bitcoin?: boolean;
+  stellar?: boolean;
 }
 
 function processBalances(
@@ -234,6 +239,25 @@ function processBalances(
     }
   }
 
+  // XLM on mainnet
+  if (addresses.stellarAddress) {
+    const hasStellarMainnet = result.some(
+      b => b.chainId === STELLAR_MAINNET_CAIP2 && !b.address,
+    );
+    if (!hasStellarMainnet) {
+      result.push({
+        name: 'Stellar',
+        symbol: 'XLM',
+        chainId: STELLAR_MAINNET_CAIP2,
+        value: 0,
+        price: 0,
+        quantity: { decimals: '7', numeric: '0' },
+        iconUrl: undefined,
+        balanceUnavailable: unavailable.stellar,
+      });
+    }
+  }
+
   return result;
 }
 
@@ -261,7 +285,8 @@ const WalletStore = {
       !addresses.tronAddress &&
       !addresses.suiAddress &&
       !addresses.solanaAddress &&
-      !addresses.bitcoinAddress
+      !addresses.bitcoinAddress &&
+      !addresses.stellarAddress
     ) {
       return;
     }
@@ -279,6 +304,7 @@ const WalletStore = {
         suiResult,
         solanaResult,
         bitcoinResult,
+        stellarResult,
         erc20Balances,
       ] = await Promise.all([
         // EIP155 balances (or empty result if no address)
@@ -329,6 +355,16 @@ const WalletStore = {
               balances: [] as TokenBalance[],
               anySuccess: false,
             }),
+        // Stellar balances (or empty result if no address)
+        addresses.stellarAddress
+          ? fetchBalancesForChains(
+              addresses.stellarAddress,
+              STELLAR_SUPPORTED_CHAINS,
+            )
+          : Promise.resolve({
+              balances: [] as TokenBalance[],
+              anySuccess: false,
+            }),
         // On-chain ERC-20 balances (EURC etc.)
         addresses.eip155Address
           ? fetchERC20Balances(addresses.eip155Address)
@@ -342,7 +378,8 @@ const WalletStore = {
         tronResult.anySuccess ||
         suiResult.anySuccess ||
         solanaResult.anySuccess ||
-        bitcoinResult.anySuccess;
+        bitcoinResult.anySuccess ||
+        stellarResult.anySuccess;
 
       if (!anySuccess) {
         return;
@@ -356,6 +393,7 @@ const WalletStore = {
         ...suiResult.balances,
         ...solanaResult.balances,
         ...bitcoinResult.balances,
+        ...stellarResult.balances,
       ];
 
       // Merge on-chain ERC-20 balances (only non-zero) unless the API already returned them
@@ -398,6 +436,7 @@ const WalletStore = {
         sui: !!addresses.suiAddress && !suiResult.anySuccess,
         solana: !!addresses.solanaAddress && !solanaResult.anySuccess,
         bitcoin: !!addresses.bitcoinAddress && !bitcoinResult.anySuccess,
+        stellar: !!addresses.stellarAddress && !stellarResult.anySuccess,
       };
 
       // Filter 0-balance tokens and ensure mainnet natives are present

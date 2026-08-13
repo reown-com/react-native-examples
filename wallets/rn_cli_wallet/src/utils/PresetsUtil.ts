@@ -6,6 +6,7 @@ import { TRON_CHAINS, TRON_NETWORKS_IMAGES } from '@/constants/Tron';
 import { CANTON_CHAINS, CANTON_NETWORKS_IMAGES } from '@/constants/Canton';
 import { SOLANA_CHAINS, SOLANA_NETWORKS_IMAGES } from '@/constants/Solana';
 import { BIP122_CHAINS, BIP122_NETWORKS_IMAGES } from '@/constants/Bitcoin';
+import { STELLAR_CHAINS, STELLAR_NETWORKS_IMAGES } from '@/constants/Stellar';
 
 const NetworkImages: Record<string, ImageSourcePropType> = {
   ...EIP155_NETWORK_IMAGES,
@@ -15,6 +16,7 @@ const NetworkImages: Record<string, ImageSourcePropType> = {
   ...CANTON_NETWORKS_IMAGES,
   ...SOLANA_NETWORKS_IMAGES,
   ...BIP122_NETWORKS_IMAGES,
+  ...STELLAR_NETWORKS_IMAGES,
 };
 
 export const ALL_CHAINS = {
@@ -25,6 +27,7 @@ export const ALL_CHAINS = {
   ...CANTON_CHAINS,
   ...SOLANA_CHAINS,
   ...BIP122_CHAINS,
+  ...STELLAR_CHAINS,
 };
 
 export const PresetsUtil = {

@@ -31,6 +31,9 @@ function getAddressForChain(
   if (chainId.startsWith('bip122:')) {
     return addresses.bitcoinAddress || '';
   }
+  if (chainId.startsWith('stellar:')) {
+    return addresses.stellarAddress || '';
+  }
   // Default to EIP155 address for all EVM chains
   return addresses.eip155Address || '';
 }
@@ -43,6 +46,7 @@ export default function Wallets() {
     suiAddress,
     solanaAddress,
     bitcoinAddress,
+    stellarAddress,
   } = useSnapshot(SettingsStore.state);
   const { balances, isLoading } = useSnapshot(WalletStore.state);
   const Theme = useTheme();
@@ -55,6 +59,7 @@ export default function Wallets() {
       suiAddress,
       solanaAddress,
       bitcoinAddress,
+      stellarAddress,
     }),
     [
       eip155Address,
@@ -63,6 +68,7 @@ export default function Wallets() {
       suiAddress,
       solanaAddress,
       bitcoinAddress,
+      stellarAddress,
     ],
   );
 
@@ -73,7 +79,8 @@ export default function Wallets() {
       addresses.tronAddress ||
       addresses.suiAddress ||
       addresses.solanaAddress ||
-      addresses.bitcoinAddress
+      addresses.bitcoinAddress ||
+      addresses.stellarAddress
     ) {
       WalletStore.fetchBalances(addresses);
     }

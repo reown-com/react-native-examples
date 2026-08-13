@@ -122,6 +122,7 @@ export default function SecretPhrase() {
     cantonWallet,
     solanaWallet,
     bitcoinWallet,
+    stellarWallet,
   } = useSnapshot(SettingsStore.state);
   const Theme = useTheme();
 
@@ -148,6 +149,11 @@ export default function SecretPhrase() {
 
   // Get Bitcoin mnemonic
   const bitcoinMnemonic = bitcoinWallet?.getMnemonic?.() ?? null;
+
+  // Get Stellar mnemonic (or the strkey `S…` secret when imported from a raw
+  // secret — like Solana, the secret is not hex; `type` only drives layout).
+  const stellarMnemonic = stellarWallet?.getMnemonic?.() || null;
+  const stellarSecret = stellarWallet?.getSecret?.() ?? null;
 
   return (
     <ScrollView
@@ -222,6 +228,22 @@ export default function SecretPhrase() {
         type="mnemonic"
         notAvailableMessage="Bitcoin wallet not initialized"
       />
+
+      {stellarMnemonic ? (
+        <SecretSection
+          title="Stellar"
+          secret={stellarMnemonic}
+          type="mnemonic"
+          notAvailableMessage="Stellar wallet not initialized"
+        />
+      ) : (
+        <SecretSection
+          title="Stellar (secret key)"
+          secret={stellarSecret}
+          type="hex"
+          notAvailableMessage="Stellar wallet not initialized"
+        />
+      )}
     </ScrollView>
   );
 }

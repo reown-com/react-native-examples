@@ -3303,6 +3303,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/ed25519@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@noble/ed25519@npm:3.1.0"
+  checksum: 31b40df0d0c5e5bee577f2e4b61e11d349832952565dd2271a171555da8a40873b043af8aad73218b5800a8de58e47bc3b053548288c78cc244dabb13abe7097
+  languageName: node
+  linkType: hard
+
 "@noble/hashes@npm:1.3.2":
   version: 1.3.2
   resolution: "@noble/hashes@npm:1.3.2"
@@ -3328,6 +3335,13 @@ __metadata:
   version: 1.8.0
   resolution: "@noble/hashes@npm:1.8.0"
   checksum: c94e98b941963676feaba62475b1ccfa8341e3f572adbb3b684ee38b658df44100187fa0ef4220da580b13f8d27e87d5492623c8a02ecc61f23fb9960c7918f5
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:^2.2.0":
+  version: 2.3.0
+  resolution: "@noble/hashes@npm:2.3.0"
+  checksum: 6e134d0013843a3d1757d84dce198fe7f3c2282e32dc44d40a20974943d43e9cc925dea840a231d1f9ac2ff748291004c53dd9172577352f0c9f04aa1f5cb2dc
   languageName: node
   linkType: hard
 
@@ -4448,6 +4462,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stellar/js-xdr@npm:4.0.0":
+  version: 4.0.0
+  resolution: "@stellar/js-xdr@npm:4.0.0"
+  checksum: 947b3405b55f9f236755ed6a93e72ba7659e6d8a1c9096087ee5bf4eec2707ba0bc097403ab607e3ff7e4d3966fef13137fe0cae6219f0403373341a0f18dde7
+  languageName: node
+  linkType: hard
+
+"@stellar/stellar-sdk@npm:16.2.0":
+  version: 16.2.0
+  resolution: "@stellar/stellar-sdk@npm:16.2.0"
+  dependencies:
+    "@noble/ed25519": ^3.1.0
+    "@noble/hashes": ^2.2.0
+    "@stellar/js-xdr": 4.0.0
+    axios: 1.18.0
+    base32.js: ^0.1.0
+    bignumber.js: ^11.1.4
+    buffer: ^6.0.3
+    commander: ^14.0.3
+    eventsource: ^4.1.0
+    feaxios: ^0.0.23
+    smol-toml: ^1.6.1
+    uint8array-extras: ^1.5.0
+  bin:
+    stellar-js: bin/stellar-js
+  checksum: 98abcdaaf0ea7259bb8c417b502be6125ea87747ab92b558779c68b6542b76d1a33ccb6d12a7fc035d7738f332bc20f31e8e84da2a813ca1a8bded41b1802097
+  languageName: node
+  linkType: hard
+
 "@swc/helpers@npm:^0.5.11":
   version: 0.5.22
   resolution: "@swc/helpers@npm:0.5.22"
@@ -5230,6 +5273,7 @@ __metadata:
     "@reown/walletkit": 1.5.6
     "@sentry/react-native": ~7.11.0
     "@solana/web3.js": 1.98.2
+    "@stellar/stellar-sdk": 16.2.0
     "@ton/core": 0.62.0
     "@ton/crypto": 3.3.0
     "@ton/ton": 15.4.0
@@ -6003,6 +6047,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"base32.js@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "base32.js@npm:0.1.0"
+  checksum: e1ac2c4c405794bfb30e47c708718544091055371c61040c3d85aba56dd699646f1ae840fb686df9f6da8d9fdee9bbe0a07d04be79d2c13e9bb39595aedecb78
+  languageName: node
+  linkType: hard
+
 "base64-js@npm:^1.1.2, base64-js@npm:^1.2.3, base64-js@npm:^1.3.1, base64-js@npm:^1.5.1":
   version: 1.5.1
   resolution: "base64-js@npm:1.5.1"
@@ -6053,6 +6104,13 @@ __metadata:
   version: 9.1.2
   resolution: "bignumber.js@npm:9.1.2"
   checksum: 582c03af77ec9cb0ebd682a373ee6c66475db94a4325f92299621d544aa4bd45cb45fd60001610e94aef8ae98a0905fa538241d9638d4422d57abbeeac6fadaf
+  languageName: node
+  linkType: hard
+
+"bignumber.js@npm:^11.1.4":
+  version: 11.1.5
+  resolution: "bignumber.js@npm:11.1.5"
+  checksum: 6e054d1039a62c1a72c9cf1d4f75ab57af522beedfe4115e0ad0b5a993b42f5b9d831e87a2c9a20e205f13ca27fd734b1175bdc71519a52aac6d3320b22b7107
   languageName: node
   linkType: hard
 
@@ -6831,7 +6889,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^14.0.0":
+"commander@npm:^14.0.0, commander@npm:^14.0.3":
   version: 14.0.3
   resolution: "commander@npm:14.0.3"
   checksum: b8440159124aefbb02784a8996cd0481d8ce503d8d3cd413f4289d06db7e912c36b511277c2faba62f59152dd9ff79239d75e3b9400d9402851878994201d429
@@ -8199,6 +8257,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eventsource-parser@npm:^3.0.1":
+  version: 3.1.1
+  resolution: "eventsource-parser@npm:3.1.1"
+  checksum: ab220722d2ae82818b92e0d92a2fd333102f384a0314190ad1d469dc9598ade8047bb83644e3b09f7766becbda9b84a265508b66272aa57d8c76d2afd5c29fa8
+  languageName: node
+  linkType: hard
+
+"eventsource@npm:^4.1.0":
+  version: 4.1.1
+  resolution: "eventsource@npm:4.1.1"
+  dependencies:
+    eventsource-parser: ^3.0.1
+  checksum: 913d5fabb49a8344dab91feabc0ca13980c9da1ba27b22c3d95f8be768ec321e9a4f22dcb0eac60b1060631ddacb984a94ce1de07e7c199a34e41bb95927c7b9
+  languageName: node
+  linkType: hard
+
 "evp_bytestokey@npm:^1.0.3":
   version: 1.0.3
   resolution: "evp_bytestokey@npm:1.0.3"
@@ -8616,6 +8690,15 @@ __metadata:
     picomatch:
       optional: true
   checksum: bd537daa9d3cd53887eed35efa0eab2dbb1ca408790e10e024120e7a36c6e9ae2b33710cb8381e35def01bc9c1d7eaba746f886338413e68ff6ebaee07b9a6e8
+  languageName: node
+  linkType: hard
+
+"feaxios@npm:^0.0.23":
+  version: 0.0.23
+  resolution: "feaxios@npm:0.0.23"
+  dependencies:
+    is-retry-allowed: ^3.0.0
+  checksum: 22034c7a9c32a0d9fc036f79fc58f360afd33c2a5aaa92f3311021acac76f669b784e1a90cf319d46453c4f6055bbb236cf50d9c6f2df328ff369b67367721fe
   languageName: node
   linkType: hard
 
@@ -9758,6 +9841,13 @@ __metadata:
     has-tostringtag: ^1.0.2
     hasown: ^2.0.2
   checksum: 99ee0b6d30ef1bb61fa4b22fae7056c6c9b3c693803c0c284ff7a8570f83075a7d38cda53b06b7996d441215c27895ea5d1af62124562e13d91b3dbec41a5e13
+  languageName: node
+  linkType: hard
+
+"is-retry-allowed@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "is-retry-allowed@npm:3.0.0"
+  checksum: 12d17b44410484c6b0292ca38127b2ad026b65d1c1ead40f055effb2498c1a65b28ac5bc8f0383d0d091f84c1f791c3e09da32219fc3a745c3b1bab106db6cfb
   languageName: node
   linkType: hard
 
@@ -14027,6 +14117,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"smol-toml@npm:^1.6.1":
+  version: 1.8.0
+  resolution: "smol-toml@npm:1.8.0"
+  checksum: eb465a145ab88c0c38a758a87eac19e6b25604718311415162cab87d6915e173d8dfdeec5a699c4bd1bf55c347e63a828a7e7cc73dc9b6138c874d7344eb5bd1
+  languageName: node
+  linkType: hard
+
 "socks-proxy-agent@npm:^8.0.3":
   version: 8.0.5
   resolution: "socks-proxy-agent@npm:8.0.5"
@@ -14938,6 +15035,13 @@ __metadata:
   version: 1.6.3
   resolution: "ufo@npm:1.6.3"
   checksum: a23eff86bbbef0b9cc69c19c653c703b656c2328938576d3a60e05e246ef5a78d88b17c710afa146311c5b855950ccfee60ba8f6c8845e8d1ed6b5a9086ddad1
+  languageName: node
+  linkType: hard
+
+"uint8array-extras@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "uint8array-extras@npm:1.5.0"
+  checksum: e7fb42b57e73a5891fe3d5358ca6ac2e2db8e8666b1621220319e2dd0523965cd35562a8171c3e9b2ff26693cc658dc5bc1256e6f4935e4e4c13070d779bf76e
   languageName: node
   linkType: hard
 
