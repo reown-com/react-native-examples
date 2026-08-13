@@ -4,8 +4,7 @@ A collection of React Native example apps showcasing [Reown](https://reown.com) 
 
 ## Wallets
 
-- React Native CLI Wallet: `wallets/rn_cli_wallet`
-- Expo Wallet (WIP): `wallets/expo-wallet`
+- Sample Wallet (Expo — iOS, Android, and web): `wallets/rn_cli_wallet`
 
 ## Dapps
 
