@@ -106,11 +106,14 @@ export default class StellarLib {
     rpcUrl: string,
     waitForInclusion = false,
   ): Promise<{ tx_hash: string; signedXDR: string; successful?: boolean }> {
+    // Validate the chain before the RPC URL: an unsupported chainId otherwise
+    // surfaces as "No Horizon RPC configured" (its rpcUrl lookup is undefined)
+    // instead of the accurate "Unsupported Stellar chain" error.
+    const networkPassphrase = this.getNetworkPassphrase(chainId);
     if (!rpcUrl) {
       throw new Error(`No Horizon RPC configured for chain: ${chainId}`);
     }
 
-    const networkPassphrase = this.getNetworkPassphrase(chainId);
     const transaction = TransactionBuilder.fromXDR(xdrValue, networkPassphrase);
     transaction.sign(this.keypair);
 
