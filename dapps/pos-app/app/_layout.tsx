@@ -12,6 +12,7 @@ import "react-native-reanimated";
 import Toast from "react-native-toast-message";
 
 import HeaderImage from "@/components/header-image";
+import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useFonts } from "expo-font";
 
@@ -73,6 +74,12 @@ Sentry.init({
 });
 
 const queryClient = new QueryClient();
+
+const renderHeaderTitle = (title: string) => () => (
+  <ThemedText fontSize={18} style={{ fontWeight: "500" }}>
+    {title}
+  </ThemedText>
+);
 
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
@@ -254,8 +261,14 @@ export default Sentry.wrap(function RootLayout() {
                   },
                 }}
               />
-              <Stack.Screen name="settings" />
-              <Stack.Screen name="activity" />
+              <Stack.Screen
+                name="settings"
+                options={{ headerTitle: renderHeaderTitle("Settings") }}
+              />
+              <Stack.Screen
+                name="activity"
+                options={{ headerTitle: renderHeaderTitle("Transactions") }}
+              />
               <Stack.Screen name="logs" />
             </Stack>
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
