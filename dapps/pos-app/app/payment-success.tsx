@@ -10,6 +10,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
+import HeaderImage from "@/components/header-image";
 import { SuccessAnimation } from "@/components/success-animation";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
@@ -38,6 +39,9 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
 const diagonalLength = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
 const initialCircleSize = 20;
 const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
+const contentOffset = 16;
+const contentRevealDelay = 700;
+const contentRevealDuration = 200;
 
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
@@ -56,10 +60,16 @@ export default function PaymentSuccessScreen() {
   const { amount } = params;
   const [isPrinterConnected, setIsPrinterConnected] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isThemeBackgroundVisible, setIsThemeBackgroundVisible] =
+    useState(false);
+  const [isSuccessAnimationVisible, setIsSuccessAnimationVisible] =
+    useState(false);
   const isPrintingRef = useRef(false);
 
   const circleScale = useSharedValue(1);
+  const backgroundOverlayOpacity = useSharedValue(0);
   const contentOpacity = useSharedValue(0);
+  const contentTranslateY = useSharedValue(contentOffset);
 
   const handleNewPayment = () => {
     resetNavigation("/amount");
@@ -127,10 +137,32 @@ export default function PaymentSuccessScreen() {
   }, [addLog]);
 
   useEffect(() => {
-    circleScale.value = withTiming(finalScale, {
-      duration: 400,
-    });
-    contentOpacity.value = withDelay(150, withTiming(1, { duration: 200 }));
+    circleScale.value = withTiming(finalScale, { duration: 400 });
+    backgroundOverlayOpacity.value = withDelay(
+      400,
+      withTiming(1, { duration: 300 }),
+    );
+    contentOpacity.value = withDelay(
+      contentRevealDelay,
+      withTiming(1, { duration: contentRevealDuration }),
+    );
+    contentTranslateY.value = withDelay(
+      contentRevealDelay,
+      withTiming(0, { duration: contentRevealDuration }),
+    );
+    const themeBackgroundTimeout = setTimeout(
+      () => setIsThemeBackgroundVisible(true),
+      contentRevealDelay,
+    );
+    const successAnimationTimeout = setTimeout(
+      () => setIsSuccessAnimationVisible(true),
+      contentRevealDelay,
+    );
+
+    return () => {
+      clearTimeout(themeBackgroundTimeout);
+      clearTimeout(successAnimationTimeout);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -140,6 +172,11 @@ export default function PaymentSuccessScreen() {
 
   const contentAnimatedStyle = useAnimatedStyle(() => ({
     opacity: contentOpacity.value,
+    transform: [{ translateY: contentTranslateY.value }],
+  }));
+
+  const backgroundOverlayAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: backgroundOverlayOpacity.value,
   }));
 
   return (
@@ -149,7 +186,7 @@ export default function PaymentSuccessScreen() {
         style={[
           styles.circle,
           {
-            backgroundColor: Theme["bg-primary"],
+            backgroundColor: Theme["bg-accent-primary"],
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
@@ -158,8 +195,20 @@ export default function PaymentSuccessScreen() {
         ]}
       />
 
-      {/* Content that fades in after circle expands */}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.backgroundOverlay,
+          { backgroundColor: Theme["bg-primary"] },
+          backgroundOverlayAnimatedStyle,
+        ]}
+      />
+
+      {/* Content fades in after the blue-to-theme transition completes. */}
       <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
+        <View style={styles.header}>
+          <HeaderImage tintColor={Theme["text-primary"]} />
+        </View>
         <View
           testID="pos-payment-success"
           nativeID="pos-payment-success"
@@ -170,7 +219,11 @@ export default function PaymentSuccessScreen() {
             gap: Spacing["spacing-2"],
           }}
         >
-          <SuccessAnimation width={200} height={175} />
+          <View style={styles.successAnimationContainer}>
+            {isSuccessAnimationVisible && (
+              <SuccessAnimation width={200} height={175} />
+            )}
+          </View>
           <ThemedText
             fontSize={38}
             lineHeight={38}
@@ -233,7 +286,15 @@ export default function PaymentSuccessScreen() {
           </Button>
         </View>
       </Animated.View>
-      <StatusBar style={themeMode === "system" ? "auto" : themeMode} />
+      <StatusBar
+        style={
+          isThemeBackgroundVisible
+            ? themeMode === "system"
+              ? "auto"
+              : themeMode
+            : "light"
+        }
+      />
     </View>
   );
 }
@@ -241,6 +302,7 @@ export default function PaymentSuccessScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    overflow: "hidden",
     paddingHorizontal: Spacing["spacing-5"],
     paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
@@ -251,9 +313,20 @@ const styles = StyleSheet.create({
     marginLeft: -initialCircleSize / 2,
     marginTop: -initialCircleSize / 2,
   },
+  backgroundOverlay: {
+    ...StyleSheet.absoluteFill,
+  },
   contentContainer: {
     flex: 1,
     width: "100%",
+  },
+  header: {
+    alignItems: "center",
+    paddingBottom: Spacing["spacing-4"],
+  },
+  successAnimationContainer: {
+    width: 200,
+    height: 175,
   },
   amountDescription: {
     textAlign: "center",
