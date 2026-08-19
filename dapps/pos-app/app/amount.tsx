@@ -1,7 +1,6 @@
 import { BigAmountInput } from "@/components/big-amount-input";
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
-import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -129,11 +128,9 @@ export default function AmountScreen() {
         disabled={!isValid}
         style={styles.button}
       >
-        <ThemedText fontSize={18} lineHeight={20} color="text-white">
-          {isValid
-            ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
-            : "Enter amount"}
-        </ThemedText>
+        {isValid
+          ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
+          : "Enter amount"}
       </Button>
     </View>
   );

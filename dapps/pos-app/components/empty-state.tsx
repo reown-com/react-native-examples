@@ -41,9 +41,7 @@ function EmptyStateBase({ title, subtitle, icon, cta }: EmptyStateProps) {
           onPress={cta.onPress}
           style={styles.cta}
         >
-          <ThemedText fontSize={16} lineHeight={18} color="text-white">
-            {cta.label}
-          </ThemedText>
+          {cta.label}
         </Button>
       )}
     </View>

@@ -393,14 +393,7 @@ export default function SettingsScreen() {
             onPress={handleMerchantIdSave}
             disabled={isMerchantIdConfirmDisabled}
           >
-            <ThemedText
-              fontSize={18}
-              lineHeight={20}
-              color="text-white"
-              style={styles.saveButtonLabel}
-            >
-              Save
-            </ThemedText>
+            Save
           </Button>
         </View>
       </SettingsBottomSheet>
@@ -442,14 +435,7 @@ export default function SettingsScreen() {
             onPress={handleCustomerApiKeySave}
             disabled={isCustomerApiKeyConfirmDisabled}
           >
-            <ThemedText
-              fontSize={18}
-              lineHeight={20}
-              color="text-white"
-              style={styles.saveButtonLabel}
-            >
-              Save
-            </ThemedText>
+            Save
           </Button>
         </View>
       </SettingsBottomSheet>
@@ -521,8 +507,5 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontFamily: "KH Teka",
     height: 60,
-  },
-  saveButtonLabel: {
-    textAlign: "center",
   },
 });

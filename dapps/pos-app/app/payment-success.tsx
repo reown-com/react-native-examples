@@ -257,28 +257,20 @@ export default function PaymentSuccessScreen() {
               variant="tertiary"
               onPress={handlePrintReceipt}
               disabled={isPrinting}
-              style={styles.button}
+              icon={
+                <Image
+                  source={require("@/assets/images/receipt.png")}
+                  style={styles.buttonIcon}
+                  tintColor={Theme["bg-primary"]}
+                />
+              }
             >
-              <ThemedText fontSize={18} lineHeight={20} color="text-invert">
-                {isPrinting ? "Printing receipt…" : "Print receipt"}
-              </ThemedText>
-              <Image
-                source={require("@/assets/images/receipt.png")}
-                style={styles.buttonIcon}
-                tintColor={Theme["bg-primary"]}
-              />
+              {isPrinting ? "Printing receipt…" : "Print receipt"}
             </Button>
           )}
 
-          <Button
-            type="accent"
-            variant="primary"
-            style={styles.button}
-            onPress={handleNewPayment}
-          >
-            <ThemedText fontSize={18} lineHeight={20} color="text-white">
-              Start new payment
-            </ThemedText>
+          <Button type="accent" variant="primary" onPress={handleNewPayment}>
+            Start new payment
           </Button>
         </View>
       </Animated.View>
@@ -332,10 +324,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: "100%",
     gap: Spacing["spacing-3"],
-  },
-  button: {
-    flexDirection: "row",
-    gap: Spacing["spacing-2"],
   },
   buttonIcon: {
     width: 16,

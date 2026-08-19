@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "@testing-library/react-native";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet } from "react-native";
 
 import { Button } from "@/components/button";
 import { Colors } from "@/constants/theme";
@@ -24,6 +24,8 @@ jest.mock("react-native", () => ({
 
 jest.mock("@/hooks/use-theme-color", () => ({
   useTheme: () => mockColors.light,
+  useThemeColor: (colorName: keyof typeof mockColors.light) =>
+    mockColors.light[colorName],
 }));
 
 jest.mock("./pressable", () => {
@@ -38,7 +40,7 @@ jest.mock("./pressable", () => {
 function getButtonStyle(testID: string) {
   const button = render(
     <Button type="accent" variant="primary" testID={testID} onPress={() => {}}>
-      <Text>CTA</Text>
+      CTA
     </Button>,
   ).getByTestId(testID);
 
@@ -65,7 +67,7 @@ describe("Button", () => {
         testID="secondary-button"
         onPress={() => {}}
       >
-        <Text>Cancel</Text>
+        Cancel
       </Button>,
     ).getByTestId("secondary-button");
 
@@ -84,7 +86,7 @@ describe("Button", () => {
         testID="tertiary-button"
         onPress={() => {}}
       >
-        <Text>Print</Text>
+        Print
       </Button>,
     ).getByTestId("tertiary-button");
 
@@ -102,7 +104,7 @@ describe("Button", () => {
         testID="disabled-button"
         onPress={() => {}}
       >
-        <Text>Disabled</Text>
+        Disabled
       </Button>,
     ).getByTestId("disabled-button");
 

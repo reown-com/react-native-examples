@@ -81,9 +81,7 @@ export default function PaymentFailureScreen() {
         </ThemedText>
       </View>
       <Button type="accent" variant="primary" onPress={handlePrimaryPress}>
-        <ThemedText fontSize={18} lineHeight={20} color="text-white">
-          {isInvalidApiKey ? "Go to Settings" : "Start new payment"}
-        </ThemedText>
+        {isInvalidApiKey ? "Go to Settings" : "Start new payment"}
       </Button>
     </View>
   );

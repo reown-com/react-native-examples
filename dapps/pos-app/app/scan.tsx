@@ -343,9 +343,7 @@ export default function ScanScreen() {
           fullWidth={false}
           style={styles.cancelButton}
         >
-          <ThemedText fontSize={18} lineHeight={20} color="text-primary">
-            Cancel
-          </ThemedText>
+          Cancel
         </Button>
       )}
     </View>

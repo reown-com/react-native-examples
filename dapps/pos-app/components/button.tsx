@@ -1,11 +1,13 @@
-import { BorderRadius } from "@/constants/spacing";
+import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import React from "react";
-import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Pressable } from "./pressable";
+import { ThemedText } from "./themed-text";
 
 interface ButtonBaseProps {
-  children: React.ReactNode;
+  children: string;
+  icon?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
   disabled?: boolean;
@@ -19,6 +21,7 @@ export type ButtonProps =
 
 export function Button({
   children,
+  icon,
   style,
   onPress,
   disabled = false,
@@ -43,6 +46,13 @@ export function Button({
             backgroundColor: theme["bg-invert"],
           };
 
+  const textColor =
+    type === "accent"
+      ? "text-white"
+      : variant === "secondary"
+        ? "text-primary"
+        : "text-invert";
+
   return (
     <Pressable
       onPress={onPress}
@@ -56,7 +66,17 @@ export function Button({
         style,
       ]}
     >
-      {children}
+      <View style={styles.content}>
+        <ThemedText
+          color={textColor}
+          fontSize={18}
+          lineHeight={20}
+          style={styles.label}
+        >
+          {children}
+        </ThemedText>
+        {icon}
+      </View>
     </Pressable>
   );
 }
@@ -67,6 +87,15 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius["4"],
     alignItems: "center",
     justifyContent: "center",
+  },
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Spacing["spacing-2"],
+  },
+  label: {
+    textAlign: "center",
   },
   fullWidth: {
     width: "100%",
