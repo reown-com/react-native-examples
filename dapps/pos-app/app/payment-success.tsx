@@ -10,6 +10,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
+import { SuccessAnimation } from "@/components/success-animation";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
@@ -40,8 +41,8 @@ const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
 
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
-  const Theme = useTheme("light");
-  const DarkTheme = useTheme("dark");
+  const Theme = useTheme();
+  const LightTheme = useTheme("light");
   const params = useLocalSearchParams<SuccessParams>();
   const themeMode = useSettingsStore((state) => state.themeMode);
   const currencyCode = useSettingsStore((state) => state.currency);
@@ -148,7 +149,7 @@ export default function PaymentSuccessScreen() {
         style={[
           styles.circle,
           {
-            backgroundColor: Theme["bg-payment-success"],
+            backgroundColor: Theme["bg-primary"],
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
@@ -162,34 +163,38 @@ export default function PaymentSuccessScreen() {
         <View
           testID="pos-payment-success"
           nativeID="pos-payment-success"
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            gap: Spacing["spacing-2"],
+          }}
         >
+          <SuccessAnimation width={200} height={175} />
           <ThemedText
-            style={[
-              styles.amountDescription,
-              { color: Theme["text-payment-success"] },
-            ]}
-          >
-            Payment successful
-          </ThemedText>
-          <ThemedText
-            style={[
-              styles.amountValue,
-              { color: Theme["text-payment-success"] },
-            ]}
+            fontSize={38}
+            lineHeight={38}
+            style={[styles.amountValue, { color: Theme["text-primary"] }]}
           >
             {formatAmountWithSymbol(amount, currency)}
           </ThemedText>
+          <ThemedText
+            fontSize={18}
+            lineHeight={20}
+            style={[styles.amountDescription, { color: Theme["text-primary"] }]}
+          >
+            Payment successful
+          </ThemedText>
         </View>
         <View style={styles.buttonContainer}>
-          {isPrinterConnected && (
+          {!isPrinterConnected && (
             <Button
               onPress={handlePrintReceipt}
               disabled={isPrinting}
               style={[
                 styles.button,
                 {
-                  backgroundColor: DarkTheme["foreground-primary"],
+                  backgroundColor: Theme["bg-invert"],
                   opacity: isPrinting ? 0.6 : 1,
                 },
               ]}
@@ -197,14 +202,14 @@ export default function PaymentSuccessScreen() {
               <ThemedText
                 fontSize={18}
                 lineHeight={20}
-                style={{ color: DarkTheme["text-primary"] }}
+                style={{ color: Theme["text-invert"] }}
               >
                 {isPrinting ? "Printing receipt…" : "Print receipt"}
               </ThemedText>
               <Image
                 source={require("@/assets/images/receipt.png")}
                 style={styles.buttonIcon}
-                tintColor={DarkTheme["icon-default"]}
+                tintColor={Theme["bg-primary"]}
               />
             </Button>
           )}
@@ -213,7 +218,7 @@ export default function PaymentSuccessScreen() {
             style={[
               styles.button,
               {
-                backgroundColor: DarkTheme["bg-invert"],
+                backgroundColor: Theme["bg-accent-primary"],
               },
             ]}
             onPress={handleNewPayment}
@@ -221,7 +226,7 @@ export default function PaymentSuccessScreen() {
             <ThemedText
               fontSize={18}
               lineHeight={20}
-              style={{ color: DarkTheme["text-invert"] }}
+              style={{ color: LightTheme["text-invert"] }}
             >
               Start new payment
             </ThemedText>
@@ -251,14 +256,9 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   amountDescription: {
-    fontSize: 18,
-    lineHeight: 20,
     textAlign: "center",
-    marginBottom: Spacing["spacing-3"],
   },
   amountValue: {
-    fontSize: 38,
-    lineHeight: 38,
     textAlign: "center",
   },
   buttonContainer: {

@@ -31,7 +31,7 @@ describe("getPaymentErrorMessage", () => {
         minAmountCents: "14",
         currencyCode: "USD",
       });
-      expect(result.title).toBe("Amount is too low");
+      expect(result.title).toBe("This amount is too low");
       expect(result.subtitle).toContain("$0.14");
     });
 
@@ -74,8 +74,8 @@ describe("getPaymentErrorMessage", () => {
 
     it('returns invalid API key message for "invalid_api_key" status', () => {
       const result = getPaymentErrorMessage("invalid_api_key");
-      expect(result.title).toBe("This payment didn't go through");
-      expect(result.subtitle).toContain("API key is invalid");
+      expect(result.title).toBe("This terminal can't take payments");
+      expect(result.subtitle).toContain("lost access");
     });
 
     it('returns cancelled message for "cancelled" status', () => {

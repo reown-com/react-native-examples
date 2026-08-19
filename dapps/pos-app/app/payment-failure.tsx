@@ -66,30 +66,23 @@ export default function PaymentFailureScreen() {
           {subtitle}
         </ThemedText>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          onPress={handleRetry}
-          style={[
-            styles.button,
-            {
-              backgroundColor: Theme["bg-accent-primary"],
-            },
-          ]}
+      <Button
+        onPress={handleRetry}
+        style={[
+          styles.button,
+          {
+            backgroundColor: Theme["bg-accent-primary"],
+          },
+        ]}
+      >
+        <ThemedText
+          fontSize={18}
+          lineHeight={20}
+          style={{ color: Theme["text-invert"] }}
         >
-          <ThemedText
-            fontSize={18}
-            lineHeight={20}
-            style={{ color: Theme["text-invert"] }}
-          >
-            Start payment
-          </ThemedText>
-          <Image
-            source={require("@/assets/images/plus.png")}
-            style={styles.plusIcon}
-            tintColor={Theme["text-invert"]}
-          />
-        </Button>
-      </View>
+          Start new payment
+        </ThemedText>
+      </Button>
     </View>
   );
 }
@@ -117,21 +110,11 @@ const styles = StyleSheet.create({
     height: 48,
     marginBottom: Spacing["spacing-6"],
   },
-  buttonContainer: {
-    width: "100%",
-    gap: Spacing["spacing-3"],
-  },
   button: {
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-5"],
     borderRadius: BorderRadius["5"],
-    gap: Spacing["spacing-2"],
-  },
-  plusIcon: {
-    width: 12.5,
-    height: 12.5,
   },
 });

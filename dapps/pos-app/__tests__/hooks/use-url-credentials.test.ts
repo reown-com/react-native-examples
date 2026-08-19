@@ -164,9 +164,10 @@ describe("useUrlCredentials", () => {
 
     const logs = useLogsStore.getState().logs;
     const infoLogs = logs.filter((l) => l.level === "info");
-    expect(infoLogs).toHaveLength(2);
+    expect(infoLogs).toHaveLength(3);
     expect(infoLogs[0].message).toContain("Merchant ID set from URL");
     expect(infoLogs[1].message).toContain("Customer API key set from URL");
+    expect(infoLogs[2].message).toContain("Credentials updated");
   });
 });
 
@@ -305,11 +306,12 @@ describe("useUrlCredentials — postMessage", () => {
 
     const logs = useLogsStore.getState().logs;
     const infoLogs = logs.filter((l) => l.level === "info");
-    expect(infoLogs).toHaveLength(2);
+    expect(infoLogs).toHaveLength(3);
     expect(infoLogs[0].message).toContain("Merchant ID set from postMessage");
     expect(infoLogs[1].message).toContain(
       "Customer API key set from postMessage",
     );
+    expect(infoLogs[2].message).toContain("Credentials updated");
   });
 
   it("cleans up listener on unmount", async () => {

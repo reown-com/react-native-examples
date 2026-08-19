@@ -8,7 +8,7 @@ interface PaymentErrorMessage {
 const DEFAULT_ERROR: PaymentErrorMessage = {
   title: "This payment didn't go through",
   subtitle:
-    "No funds were moved. Start a new payment, or check your connection and try again.",
+    "No funds were moved. Check the terminal's connection before trying again.",
 };
 
 const ERROR_MESSAGES: Record<string, PaymentErrorMessage> = {
@@ -18,17 +18,17 @@ const ERROR_MESSAGES: Record<string, PaymentErrorMessage> = {
   },
   cancelled: {
     title: "Payment cancelled",
-    subtitle: "No funds were moved. Start a new payment when you're ready.",
+    subtitle: "No funds were moved.",
   },
   invalid_api_key: {
-    title: "This payment didn't go through",
+    title: "This terminal can't take payments",
     subtitle:
-      "Your API key is invalid. No funds were moved. Check your credentials in Settings and try again.",
+      "No funds were moved. This terminal has lost access and needs attention before it can take payments.",
   },
   params_validation: {
     title: "This payment didn't go through",
     subtitle:
-      "No funds were moved. Something's off with this payment's details. Check your settings and start a new payment.",
+      "No funds were moved. Something's off with this payment's details.",
   },
 };
 
@@ -68,8 +68,8 @@ export function getPaymentErrorMessage(
       context.currencyCode,
     );
     return {
-      title: "Amount is too low",
-      subtitle: `Payments must be at least ${minAmount} to cover network fees. Start a new payment with a higher amount.`,
+      title: "This amount is too low",
+      subtitle: `Payments must be at least ${minAmount} to cover network fees.`,
     };
   }
 

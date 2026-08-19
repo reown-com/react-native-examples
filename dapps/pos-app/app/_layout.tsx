@@ -17,11 +17,6 @@ import { useFonts } from "expo-font";
 
 import { useTheme } from "@/hooks/use-theme-color";
 import { useUrlCredentials } from "@/hooks/use-url-credentials";
-import {
-  getHeaderBackgroundColor,
-  getHeaderTintColor,
-  shouldCenterHeaderTitle,
-} from "@/utils/navigation";
 import * as Sentry from "@sentry/react-native";
 
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
@@ -190,28 +185,20 @@ export default Sentry.wrap(function RootLayout() {
           <ThemeProvider value={navigationTheme}>
             <Stack
               screenOptions={({ route }) => {
-                const centerTitle = shouldCenterHeaderTitle(route.name);
-                const headerTintColor = getHeaderTintColor(route.name);
-                const headerBackgroundColor = getHeaderBackgroundColor(
-                  route.name,
-                );
-
                 return {
-                  headerTitle: centerTitle ? HeaderImage : "",
-                  headerRight: !centerTitle
-                    ? () => (
-                        <HeaderImage
-                          padding
-                          tintColor={Theme[headerTintColor]}
-                        />
-                      )
-                    : undefined,
+                  headerTitle: ({ tintColor }) => (
+                    <HeaderImage
+                      tintColor={
+                        typeof tintColor === "string" ? tintColor : undefined
+                      }
+                    />
+                  ),
                   headerShadowVisible: false,
-                  headerTintColor: Theme[headerTintColor],
+                  headerTintColor: Theme["text-primary"],
                   headerBackButtonDisplayMode: "minimal",
                   headerTitleAlign: "center",
                   headerStyle: {
-                    backgroundColor: Theme[headerBackgroundColor],
+                    backgroundColor: Theme["bg-primary"],
                   },
                   headerRightContainerStyle: {
                     ...(Platform.OS === "web" && {
