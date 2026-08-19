@@ -2,7 +2,7 @@ import { BigAmountInput } from "@/components/big-amount-input";
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { ThemedText } from "@/components/themed-text";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
@@ -122,22 +122,14 @@ export default function AmountScreen() {
         )}
       />
       <Button
+        type="accent"
+        variant="primary"
         testID="charge-button"
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid}
-        style={[
-          styles.button,
-          {
-            backgroundColor: Theme["bg-accent-primary"],
-            opacity: isValid ? 1 : 0.6,
-          },
-        ]}
+        style={styles.button}
       >
-        <ThemedText
-          fontSize={18}
-          lineHeight={20}
-          style={{ color: Theme["text-invert"] }}
-        >
+        <ThemedText fontSize={18} lineHeight={20} color="text-white">
           {isValid
             ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
             : "Enter amount"}
@@ -165,11 +157,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
   },
   button: {
-    width: "100%",
     marginTop: Spacing["spacing-6"],
-    paddingVertical: Spacing["spacing-4"],
-    paddingHorizontal: Spacing["spacing-5"],
-    alignItems: "center",
-    borderRadius: BorderRadius["5"],
   },
 });

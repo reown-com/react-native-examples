@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
@@ -80,20 +80,8 @@ export default function PaymentFailureScreen() {
           {subtitle}
         </ThemedText>
       </View>
-      <Button
-        onPress={handlePrimaryPress}
-        style={[
-          styles.button,
-          {
-            backgroundColor: Theme["bg-accent-primary"],
-          },
-        ]}
-      >
-        <ThemedText
-          fontSize={18}
-          lineHeight={20}
-          style={{ color: Theme["text-invert"] }}
-        >
+      <Button type="accent" variant="primary" onPress={handlePrimaryPress}>
+        <ThemedText fontSize={18} lineHeight={20} color="text-white">
           {isInvalidApiKey ? "Go to Settings" : "Start new payment"}
         </ThemedText>
       </Button>
@@ -123,12 +111,5 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     marginBottom: Spacing["spacing-6"],
-  },
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-5"],
-    borderRadius: BorderRadius["5"],
   },
 });

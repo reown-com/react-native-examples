@@ -1,7 +1,7 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { Button } from "./button";
+import { Pressable } from "./pressable";
 
 interface Props {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ export function Card({ children, onPress, style }: Props) {
   const Theme = useTheme();
 
   return onPress ? (
-    <Button
+    <Pressable
       onPress={onPress}
       style={[
         styles.card,
@@ -22,7 +22,7 @@ export function Card({ children, onPress, style }: Props) {
       ]}
     >
       {children}
-    </Button>
+    </Pressable>
   ) : (
     <View
       style={[

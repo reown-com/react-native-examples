@@ -13,7 +13,7 @@ import { Button } from "@/components/button";
 import HeaderImage from "@/components/header-image";
 import { SuccessAnimation } from "@/components/success-animation";
 import { ThemedText } from "@/components/themed-text";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
@@ -46,7 +46,6 @@ const contentRevealDuration = 200;
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
   const Theme = useTheme();
-  const LightTheme = useTheme("light");
   const params = useLocalSearchParams<SuccessParams>();
   const themeMode = useSettingsStore((state) => state.themeMode);
   const currencyCode = useSettingsStore((state) => state.currency);
@@ -254,21 +253,13 @@ export default function PaymentSuccessScreen() {
         <View style={styles.buttonContainer}>
           {isPrinterConnected && (
             <Button
+              type="neutral"
+              variant="tertiary"
               onPress={handlePrintReceipt}
               disabled={isPrinting}
-              style={[
-                styles.button,
-                {
-                  backgroundColor: Theme["bg-invert"],
-                  opacity: isPrinting ? 0.6 : 1,
-                },
-              ]}
+              style={styles.button}
             >
-              <ThemedText
-                fontSize={18}
-                lineHeight={20}
-                style={{ color: Theme["text-invert"] }}
-              >
+              <ThemedText fontSize={18} lineHeight={20} color="text-invert">
                 {isPrinting ? "Printing receipt…" : "Print receipt"}
               </ThemedText>
               <Image
@@ -280,19 +271,12 @@ export default function PaymentSuccessScreen() {
           )}
 
           <Button
-            style={[
-              styles.button,
-              {
-                backgroundColor: Theme["bg-accent-primary"],
-              },
-            ]}
+            type="accent"
+            variant="primary"
+            style={styles.button}
             onPress={handleNewPayment}
           >
-            <ThemedText
-              fontSize={18}
-              lineHeight={20}
-              style={{ color: LightTheme["text-invert"] }}
-            >
+            <ThemedText fontSize={18} lineHeight={20} color="text-white">
               Start new payment
             </ThemedText>
           </Button>
@@ -351,11 +335,6 @@ const styles = StyleSheet.create({
   },
   button: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-5"],
-    borderRadius: BorderRadius["5"],
     gap: Spacing["spacing-2"],
   },
   buttonIcon: {

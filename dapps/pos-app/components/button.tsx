@@ -1,30 +1,77 @@
-import { PressableScale } from "pressto";
+import { BorderRadius } from "@/constants/spacing";
+import { useTheme } from "@/hooks/use-theme-color";
 import React from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { Pressable } from "./pressable";
 
-interface Props {
+interface ButtonBaseProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
   disabled?: boolean;
+  fullWidth?: boolean;
   testID?: string;
 }
 
-export const Button: React.FC<Props> = ({
+export type ButtonProps =
+  | (ButtonBaseProps & { type: "accent"; variant: "primary" })
+  | (ButtonBaseProps & { type: "neutral"; variant: "secondary" | "tertiary" });
+
+export function Button({
   children,
   style,
   onPress,
-  disabled,
+  disabled = false,
+  fullWidth = true,
   testID,
-}) => {
+  type,
+  variant,
+}: ButtonProps) {
+  const theme = useTheme();
+
+  const variantStyle =
+    type === "accent"
+      ? {
+          backgroundColor: theme["bg-accent-primary"],
+        }
+      : variant === "secondary"
+        ? {
+            borderColor: theme["border-secondary"],
+            borderWidth: 1,
+          }
+        : {
+            backgroundColor: theme["bg-invert"],
+          };
+
   return (
-    <PressableScale
-      style={style}
+    <Pressable
       onPress={onPress}
-      enabled={!disabled}
+      disabled={disabled}
       testID={testID}
+      style={[
+        styles.button,
+        fullWidth && styles.fullWidth,
+        variantStyle,
+        disabled && styles.disabled,
+        style,
+      ]}
     >
       {children}
-    </PressableScale>
+    </Pressable>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  button: {
+    height: 54,
+    borderRadius: BorderRadius["4"],
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  fullWidth: {
+    width: "100%",
+  },
+  disabled: {
+    opacity: 0.6,
+  },
+});

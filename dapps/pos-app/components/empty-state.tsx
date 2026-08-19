@@ -1,5 +1,4 @@
-import { BorderRadius, Spacing } from "@/constants/spacing";
-import { useTheme } from "@/hooks/use-theme-color";
+import { Spacing } from "@/constants/spacing";
 import { memo, ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button } from "./button";
@@ -16,8 +15,6 @@ interface EmptyStateProps {
 }
 
 function EmptyStateBase({ title, subtitle, icon, cta }: EmptyStateProps) {
-  const theme = useTheme();
-
   return (
     <View style={styles.container}>
       {icon && <View style={styles.iconContainer}>{icon}</View>}
@@ -39,10 +36,12 @@ function EmptyStateBase({ title, subtitle, icon, cta }: EmptyStateProps) {
       </ThemedText>
       {cta && (
         <Button
+          type="accent"
+          variant="primary"
           onPress={cta.onPress}
-          style={[styles.cta, { backgroundColor: theme["bg-accent-primary"] }]}
+          style={styles.cta}
         >
-          <ThemedText fontSize={16} lineHeight={18} color="text-invert">
+          <ThemedText fontSize={16} lineHeight={18} color="text-white">
             {cta.label}
           </ThemedText>
         </Button>
@@ -72,10 +71,5 @@ const styles = StyleSheet.create({
   },
   cta: {
     marginTop: Spacing["spacing-5"],
-    paddingHorizontal: Spacing["spacing-6"],
-    paddingVertical: Spacing["spacing-4"],
-    borderRadius: BorderRadius["4"],
-    alignItems: "center",
-    justifyContent: "center",
   },
 });

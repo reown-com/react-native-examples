@@ -5,7 +5,7 @@ import { formatShortDate } from "@/utils/misc";
 import { PaymentRecord } from "@/utils/types";
 import { memo } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { Button } from "./button";
+import { Pressable } from "./pressable";
 import { StatusBadge } from "./status-badge";
 import { ThemedText } from "./themed-text";
 
@@ -23,7 +23,7 @@ function TransactionCardBase({
   const theme = useTheme();
 
   return (
-    <Button
+    <Pressable
       onPress={onPress}
       style={[
         styles.container,
@@ -48,7 +48,7 @@ function TransactionCardBase({
         </ThemedText>
       </View>
       <StatusBadge status={payment.status} />
-    </Button>
+    </Pressable>
   );
 }
 

@@ -20,7 +20,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { Button } from "./button";
+import { Pressable as ScalePressable } from "./pressable";
 import { FramedModal } from "./framed-modal";
 import { ThemedText } from "./themed-text";
 
@@ -95,7 +95,7 @@ export function SettingsBottomSheet({
           >
             {title}
           </ThemedText>
-          <Button
+          <ScalePressable
             onPress={onClose}
             style={[
               styles.closeButton,
@@ -108,7 +108,7 @@ export function SettingsBottomSheet({
               tintColor={Theme["text-primary"]}
               cachePolicy="memory-disk"
             />
-          </Button>
+          </ScalePressable>
         </View>
         <ScrollView
           showsVerticalScrollIndicator={false}

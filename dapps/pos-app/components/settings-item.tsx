@@ -3,7 +3,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { StyleSheet, View } from "react-native";
-import { Button } from "./button";
+import { Pressable } from "./pressable";
 import { ThemedText } from "./themed-text";
 
 interface SettingsItemProps {
@@ -28,7 +28,7 @@ export function SettingsItem({
   const shouldShowCaret = showCaret ?? !!value;
 
   return (
-    <Button
+    <Pressable
       onPress={onPress}
       disabled={disabled}
       testID={testID}
@@ -62,7 +62,7 @@ export function SettingsItem({
           cachePolicy="memory-disk"
         />
       )}
-    </Button>
+    </Pressable>
   );
 }
 

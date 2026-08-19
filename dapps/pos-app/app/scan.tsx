@@ -2,7 +2,7 @@ import { Button } from "@/components/button";
 import QRCode from "@/components/qr-code";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -334,18 +334,14 @@ export default function ScanScreen() {
       )}
       {!isProcessing && (
         <Button
+          type="neutral"
+          variant="secondary"
           testID="cancel-button"
           onPress={handleOnCancelPress}
-          style={[
-            styles.cancelButton,
-            { borderColor: Theme["border-secondary"] },
-          ]}
+          fullWidth={false}
+          style={styles.cancelButton}
         >
-          <ThemedText
-            style={{ color: Theme["text-primary"] }}
-            fontSize={18}
-            lineHeight={20}
-          >
+          <ThemedText fontSize={18} lineHeight={20} color="text-primary">
             Cancel
           </ThemedText>
         </Button>
@@ -411,12 +407,7 @@ const styles = StyleSheet.create({
     gap: Spacing["spacing-1"],
   },
   cancelButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: BorderRadius["4"],
     marginHorizontal: Spacing["spacing-5"],
-    borderWidth: 1,
-    height: 48,
   },
   nfcIcon: {
     marginLeft: Spacing["spacing-5"],

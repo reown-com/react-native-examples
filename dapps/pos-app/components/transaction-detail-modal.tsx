@@ -18,7 +18,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { Button } from "./button";
+import { Pressable as ScalePressable } from "./pressable";
 import { FramedModal } from "./framed-modal";
 import { StatusBadge } from "./status-badge";
 import { ThemedText } from "./themed-text";
@@ -106,7 +106,7 @@ function DetailRow({
   );
 
   if (onPress) {
-    return <Button onPress={onPress}>{content}</Button>;
+    return <ScalePressable onPress={onPress}>{content}</ScalePressable>;
   }
 
   return content;
@@ -176,7 +176,7 @@ function TransactionDetailModalBase({
             ]}
           >
             <View style={styles.header}>
-              <Button
+              <ScalePressable
                 onPress={onClose}
                 style={[
                   styles.closeButton,
@@ -188,7 +188,7 @@ function TransactionDetailModalBase({
                   tintColor={theme["icon-invert"]}
                   source={require("@/assets/images/close.png")}
                 />
-              </Button>
+              </ScalePressable>
             </View>
 
             <ScrollView

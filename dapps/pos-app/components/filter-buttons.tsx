@@ -4,7 +4,7 @@ import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { memo } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button } from "./button";
+import { Pressable } from "./pressable";
 import { ThemedText } from "./themed-text";
 
 interface FilterButtonsProps {
@@ -25,7 +25,7 @@ function FilterButtonsBase({
 
   return (
     <View style={styles.container}>
-      <Button
+      <Pressable
         onPress={onStatusPress}
         style={[
           styles.button,
@@ -43,8 +43,8 @@ function FilterButtonsBase({
             cachePolicy="memory-disk"
           />
         )}
-      </Button>
-      <Button
+      </Pressable>
+      <Pressable
         onPress={onDateRangePress}
         style={[
           styles.button,
@@ -62,7 +62,7 @@ function FilterButtonsBase({
             cachePolicy="memory-disk"
           />
         )}
-      </Button>
+      </Pressable>
     </View>
   );
 }

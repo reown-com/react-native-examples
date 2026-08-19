@@ -384,22 +384,16 @@ export default function SettingsScreen() {
             ]}
           />
           <Button
+            type="accent"
+            variant="primary"
             testID="settings-merchant-save"
             onPress={handleMerchantIdSave}
             disabled={isMerchantIdConfirmDisabled}
-            style={[
-              styles.saveButton,
-              {
-                backgroundColor: isMerchantIdConfirmDisabled
-                  ? theme["foreground-accent-primary-60"]
-                  : theme["bg-accent-primary"],
-              },
-            ]}
           >
             <ThemedText
               fontSize={18}
               lineHeight={20}
-              color="text-invert"
+              color="text-white"
               style={styles.saveButtonLabel}
             >
               Save
@@ -439,22 +433,16 @@ export default function SettingsScreen() {
             ]}
           />
           <Button
+            type="accent"
+            variant="primary"
             testID="settings-customer-save"
             onPress={handleCustomerApiKeySave}
             disabled={isCustomerApiKeyConfirmDisabled}
-            style={[
-              styles.saveButton,
-              {
-                backgroundColor: isCustomerApiKeyConfirmDisabled
-                  ? theme["foreground-accent-primary-60"]
-                  : theme["bg-accent-primary"],
-              },
-            ]}
           >
             <ThemedText
               fontSize={18}
               lineHeight={20}
-              color="text-invert"
+              color="text-white"
               style={styles.saveButtonLabel}
             >
               Save
@@ -530,12 +518,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontFamily: "KH Teka",
     height: 60,
-  },
-  saveButton: {
-    borderRadius: BorderRadius["4"],
-    paddingVertical: Spacing["spacing-4"],
-    justifyContent: "center",
-    alignItems: "center",
   },
   saveButtonLabel: {
     textAlign: "center",

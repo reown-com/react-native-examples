@@ -1,4 +1,4 @@
-import { Button } from "@/components/button";
+import { Pressable } from "@/components/pressable";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -63,7 +63,7 @@ export default function HomeScreen() {
         { paddingTop: topSpacing, paddingBottom: bottomSpacing },
       ]}
     >
-      <Button
+      <Pressable
         testID="start-payment-button"
         onPress={handleStartPayment}
         style={[
@@ -83,11 +83,11 @@ export default function HomeScreen() {
         <ThemedText style={{ fontWeight: 500 }} fontSize={18}>
           New payment
         </ThemedText>
-      </Button>
+      </Pressable>
       <View
         style={[styles.secondaryActions, { height: secondaryActionHeight }]}
       >
-        <Button
+        <Pressable
           testID="activity-button"
           onPress={handleActivityPress}
           style={[
@@ -104,8 +104,8 @@ export default function HomeScreen() {
             priority="high"
           />
           <ThemedText fontSize={18}>Transactions</ThemedText>
-        </Button>
-        <Button
+        </Pressable>
+        <Pressable
           testID="settings-button"
           onPress={handleSettingsPress}
           style={[
@@ -122,7 +122,7 @@ export default function HomeScreen() {
             priority="high"
           />
           <ThemedText fontSize={18}>Settings</ThemedText>
-        </Button>
+        </Pressable>
       </View>
     </View>
   );
