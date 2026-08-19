@@ -15,7 +15,7 @@ import {
   formatAmountWithSymbol,
   getCurrency,
 } from "@/utils/currency";
-import { formatCountdown } from "@/utils/misc";
+import { formatCountdown, formatCountdownSpoken } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
 import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
@@ -24,12 +24,16 @@ import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { AccessibilityInfo, StyleSheet, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
 }
+
+// Remaining-seconds marks at which to announce the countdown to screen readers
+// (descending). One minute left is the primary cue; 30s and 10s add urgency.
+const COUNTDOWN_ANNOUNCE_THRESHOLDS = [60, 30, 10];
 
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
@@ -102,7 +106,7 @@ export default function ScanScreen() {
     [amount],
   );
 
-  const handleOnClosePress = () => {
+  const handleOnCancelPress = () => {
     // Before the first status poll resolves, `paymentStatusData` is undefined
     // but the payment is already open at the gateway — cancel it then too.
     const status = paymentStatusData?.status;
@@ -205,6 +209,32 @@ export default function ScanScreen() {
     onExpired: () => onFailure("expired"),
   });
 
+  // The visible countdown is plain (non-live) text so screen readers don't
+  // announce every second. Instead we announce the remaining time only when it
+  // crosses these thresholds, giving low-vision users the urgency cue without
+  // the per-second chatter.
+  const announcedThresholdsRef = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    announcedThresholdsRef.current = new Set();
+  }, [expiresAt]);
+  useEffect(() => {
+    if (!isCountdownActive) return;
+    const crossed = COUNTDOWN_ANNOUNCE_THRESHOLDS.filter(
+      (threshold) => remainingSeconds <= threshold,
+    );
+    const hasNewCrossing = crossed.some(
+      (threshold) => !announcedThresholdsRef.current.has(threshold),
+    );
+    if (hasNewCrossing) {
+      crossed.forEach((threshold) =>
+        announcedThresholdsRef.current.add(threshold),
+      );
+      AccessibilityInfo.announceForAccessibility(
+        `Payment expires in ${formatCountdownSpoken(remainingSeconds)}`,
+      );
+    }
+  }, [remainingSeconds, isCountdownActive]);
+
   const isProcessing = paymentStatusData?.status === "processing";
   const showNfc = nfcEnabled && nfcMode === "hce";
 
@@ -216,17 +246,17 @@ export default function ScanScreen() {
           <View style={styles.loadingTextContainer}>
             <ThemedText
               style={{ color: Theme["text-primary"] }}
-              fontSize={18}
+              fontSize={20}
               lineHeight={22}
             >
-              Waiting for confirmation
+              Waiting for confirmation...
             </ThemedText>
             <ThemedText
-              style={{ color: Theme["text-secondary"] }}
-              fontSize={14}
+              style={{ color: Theme["text-secondary"], textAlign: "center" }}
+              fontSize={16}
               lineHeight={18}
             >
-              This usually takes a few seconds.
+              This usually takes a few seconds. Keep this screen open.
             </ThemedText>
           </View>
         </View>
@@ -237,7 +267,7 @@ export default function ScanScreen() {
               <Image
                 source={assets?.[1]}
                 contentFit="contain"
-                style={[styles.nfcIcon, { tintColor: Theme["text-primary"] }]}
+                style={[styles.nfcIcon, { tintColor: Theme["icon-default"] }]}
               />
             )}
             <ThemedText
@@ -267,11 +297,27 @@ export default function ScanScreen() {
               <Image source={assets?.[0]} style={styles.logo} />
             </QRCode>
             <View
+              accessible={isCountdownActive}
+              accessibilityRole="text"
+              accessibilityLabel={
+                isCountdownActive
+                  ? `Payment expires in ${formatCountdownSpoken(remainingSeconds)}`
+                  : undefined
+              }
+              aria-label={
+                isCountdownActive
+                  ? `Payment expires in ${formatCountdownSpoken(remainingSeconds)}`
+                  : undefined
+              }
               aria-hidden={!isCountdownActive}
+              accessibilityElementsHidden={!isCountdownActive}
+              importantForAccessibility={
+                isCountdownActive ? "yes" : "no-hide-descendants"
+              }
               style={[styles.timerRow, { opacity: isCountdownActive ? 1 : 0 }]}
             >
               <ThemedText style={{ color: Theme["text-secondary"] }}>
-                Payment expires in
+                Expires in
               </ThemedText>
               <ThemedText
                 style={{
@@ -289,16 +335,16 @@ export default function ScanScreen() {
       {!isProcessing && (
         <Button
           testID="cancel-button"
-          onPress={handleOnClosePress}
+          onPress={handleOnCancelPress}
           style={[
-            styles.closeButton,
-            { backgroundColor: Theme["foreground-primary"] },
+            styles.cancelButton,
+            { borderColor: Theme["border-secondary"] },
           ]}
         >
           <ThemedText
             style={{ color: Theme["text-primary"] }}
-            fontSize={16}
-            lineHeight={18}
+            fontSize={18}
+            lineHeight={20}
           >
             Cancel
           </ThemedText>
@@ -317,7 +363,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: Spacing["spacing-6"],
-    paddingHorizontal: Spacing["spacing-5"],
+    paddingHorizontal: Spacing["spacing-7"],
   },
   scanContainer: {
     flex: 1,
@@ -364,18 +410,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: Spacing["spacing-1"],
   },
-  closeButton: {
+  cancelButton: {
     alignItems: "center",
     justifyContent: "center",
     borderRadius: BorderRadius["4"],
     marginHorizontal: Spacing["spacing-5"],
+    borderWidth: 1,
     height: 48,
   },
   nfcIcon: {
-    // The artwork is not centered within its bounding box (the hand holding the
-    // card sits to the right), so the unbalanced marginLeft nudges it back to
-    // optically align with the amount text below it. Intentional — do not add a
-    // matching marginRight.
     marginLeft: Spacing["spacing-5"],
     width: 80,
     height: 60,

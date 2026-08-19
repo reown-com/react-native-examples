@@ -235,7 +235,13 @@ export default Sentry.wrap(function RootLayout() {
               }}
             >
               <Stack.Screen name="index" />
-              <Stack.Screen name="amount" />
+              <Stack.Screen
+                name="amount"
+                // When resetNavigation lands here via a replace (target not in
+                // the stack, e.g. from payment-success), animate it as a
+                // backward pop rather than a forward push.
+                options={{ animationTypeForReplace: "pop" }}
+              />
               <Stack.Screen name="scan" />
               <Stack.Screen
                 name="payment-failure"

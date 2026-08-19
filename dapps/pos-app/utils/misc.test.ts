@@ -1,4 +1,9 @@
-import { formatCountdown, getDate, getDeviceIdentifier } from "./misc";
+import {
+  formatCountdown,
+  formatCountdownSpoken,
+  getDate,
+  getDeviceIdentifier,
+} from "./misc";
 
 // Mock react-native-device-info
 const mockGetUniqueId = jest.fn();
@@ -78,20 +83,40 @@ describe("getDeviceIdentifier", () => {
 });
 
 describe("formatCountdown", () => {
-  it("formats minutes and seconds with M:SSs format", () => {
-    expect(formatCountdown(312)).toBe("5:12s");
-    expect(formatCountdown(65)).toBe("1:05s");
-    expect(formatCountdown(0)).toBe("0:00s");
-    expect(formatCountdown(9)).toBe("0:09s");
-    expect(formatCountdown(60)).toBe("1:00s");
-    expect(formatCountdown(599)).toBe("9:59s");
+  it("formats minutes and seconds with M:SS colon notation and no suffix", () => {
+    expect(formatCountdown(312)).toBe("5:12");
+    expect(formatCountdown(65)).toBe("1:05");
+    expect(formatCountdown(45)).toBe("0:45");
+    expect(formatCountdown(0)).toBe("0:00");
+    expect(formatCountdown(9)).toBe("0:09");
+    expect(formatCountdown(60)).toBe("1:00");
+    expect(formatCountdown(599)).toBe("9:59");
   });
 
-  it("clamps negative values to 0:00s", () => {
-    expect(formatCountdown(-5)).toBe("0:00s");
+  it("clamps negative values to 0:00", () => {
+    expect(formatCountdown(-5)).toBe("0:00");
   });
 
   it("floors fractional seconds", () => {
-    expect(formatCountdown(65.8)).toBe("1:05s");
+    expect(formatCountdown(65.8)).toBe("1:05");
+  });
+});
+
+describe("formatCountdownSpoken", () => {
+  it("spells out minutes and seconds for screen readers", () => {
+    expect(formatCountdownSpoken(312)).toBe("5 minutes 12 seconds");
+    expect(formatCountdownSpoken(65)).toBe("1 minute 5 seconds");
+  });
+
+  it("singularizes and omits zero units", () => {
+    expect(formatCountdownSpoken(60)).toBe("1 minute");
+    expect(formatCountdownSpoken(61)).toBe("1 minute 1 second");
+    expect(formatCountdownSpoken(45)).toBe("45 seconds");
+    expect(formatCountdownSpoken(1)).toBe("1 second");
+  });
+
+  it("reads zero (and negatives) as 0 seconds", () => {
+    expect(formatCountdownSpoken(0)).toBe("0 seconds");
+    expect(formatCountdownSpoken(-5)).toBe("0 seconds");
   });
 });

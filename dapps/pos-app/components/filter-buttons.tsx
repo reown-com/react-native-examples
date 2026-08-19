@@ -29,7 +29,7 @@ function FilterButtonsBase({
         onPress={onStatusPress}
         style={[
           styles.button,
-          { backgroundColor: theme["foreground-primary"] },
+          { backgroundColor: theme["foreground-primary-fix"] },
         ]}
       >
         <ThemedText fontSize={16} lineHeight={18} color="text-primary">
@@ -48,7 +48,7 @@ function FilterButtonsBase({
         onPress={onDateRangePress}
         style={[
           styles.button,
-          { backgroundColor: theme["foreground-primary"] },
+          { backgroundColor: theme["foreground-primary-fix"] },
         ]}
       >
         <ThemedText fontSize={16} lineHeight={18} color="text-primary">

@@ -27,7 +27,7 @@ function TransactionCardBase({
       onPress={onPress}
       style={[
         styles.container,
-        { backgroundColor: theme["foreground-primary"] },
+        { backgroundColor: theme["foreground-primary-fix"] },
         style,
       ]}
     >

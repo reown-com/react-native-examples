@@ -439,8 +439,8 @@ export default function SettingsScreen() {
             ]}
           >
             <ThemedText
-              fontSize={16}
-              lineHeight={18}
+              fontSize={18}
+              lineHeight={20}
               color="text-invert"
               style={styles.saveButtonLabel}
             >
@@ -494,8 +494,8 @@ export default function SettingsScreen() {
             ]}
           >
             <ThemedText
-              fontSize={16}
-              lineHeight={18}
+              fontSize={18}
+              lineHeight={20}
               color="text-invert"
               style={styles.saveButtonLabel}
             >

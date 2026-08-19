@@ -39,7 +39,10 @@ function LogItem({ item }: { item: LogEntry }) {
 
   return (
     <View
-      style={[styles.logItem, { backgroundColor: Theme["foreground-primary"] }]}
+      style={[
+        styles.logItem,
+        { backgroundColor: Theme["foreground-primary-fix"] },
+      ]}
     >
       <View style={styles.logHeader}>
         <View style={[styles.levelBadge, { backgroundColor: levelColor }]}>
@@ -94,7 +97,7 @@ export default function LogsScreen() {
   return (
     <View style={styles.container}>
       <Card onPress={clearLogs} style={styles.clearButton}>
-        <ThemedText fontSize={16} lineHeight={18}>
+        <ThemedText fontSize={18} lineHeight={20}>
           Clear logs
         </ThemedText>
       </Card>

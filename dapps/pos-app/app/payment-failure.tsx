@@ -77,8 +77,8 @@ export default function PaymentFailureScreen() {
           ]}
         >
           <ThemedText
-            fontSize={16}
-            lineHeight={18}
+            fontSize={18}
+            lineHeight={20}
             style={{ color: Theme["text-invert"] }}
           >
             Start payment

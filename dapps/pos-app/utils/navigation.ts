@@ -19,10 +19,6 @@ export const getHeaderTintColor = (
     : "text-primary";
 };
 
-export const resetNavigation = (href?: Href) => {
-  router.dismissAll();
-  router.replace("/");
-  if (href) {
-    router.navigate(href);
-  }
+export const resetNavigation = (href: Href = "/") => {
+  router.dismissTo(href);
 };

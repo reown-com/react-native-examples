@@ -1,5 +1,6 @@
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { formatCountdown } from "@/utils/misc";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useCallback, useEffect, useState } from "react";
 
@@ -61,9 +62,7 @@ export function useMerchantFlow() {
 
   const formatLockoutMessage = useCallback(() => {
     const remaining = getLockoutRemainingSeconds();
-    const minutes = Math.floor(remaining / 60);
-    const seconds = remaining % 60;
-    return `Too many failed attempts. Try again in ${minutes}:${seconds.toString().padStart(2, "0")}`;
+    return `Too many failed attempts. Try again in ${formatCountdown(remaining)}`;
   }, [getLockoutRemainingSeconds]);
 
   const handleMerchantIdInputChange = useCallback((value: string) => {

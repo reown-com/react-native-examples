@@ -11,8 +11,8 @@ import { Platform, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   const [assets] = useAssets([
-    require("@/assets/images/plus.png"),
-    require("@/assets/images/clock.png"),
+    require("@/assets/images/plus_circle_fill.png"),
+    require("@/assets/images/receipt.png"),
     require("@/assets/images/gear.png"),
   ]);
 
@@ -46,53 +46,66 @@ export default function HomeScreen() {
         testID="start-payment-button"
         onPress={handleStartPayment}
         style={[
-          styles.actionButton,
-          { backgroundColor: Theme["foreground-primary"] },
+          styles.baseActionButton,
+          { height: 320, width: "100%" },
+          { backgroundColor: Theme["foreground-primary-fix"] },
         ]}
       >
         <Image
           source={assets?.[0]}
           style={styles.actionButtonImage}
-          tintColor={Theme["icon-default"]}
+          tintColor={Theme["icon-invert"]}
           cachePolicy="memory-disk"
           priority="high"
         />
-        <ThemedText fontSize={18}>Start payment</ThemedText>
+        <ThemedText style={{ fontWeight: 500 }} fontSize={18}>
+          New payment
+        </ThemedText>
       </Button>
-      <Button
-        testID="activity-button"
-        onPress={handleActivityPress}
-        style={[
-          styles.actionButton,
-          { backgroundColor: Theme["foreground-primary"] },
-        ]}
+      <View
+        style={{
+          flexDirection: "row",
+          gap: Spacing["spacing-3"],
+          width: "100%",
+        }}
       >
-        <Image
-          source={assets?.[1]}
-          style={styles.actionButtonImage}
-          tintColor={Theme["icon-default"]}
-          cachePolicy="memory-disk"
-          priority="high"
-        />
-        <ThemedText fontSize={18}>Activity</ThemedText>
-      </Button>
-      <Button
-        testID="settings-button"
-        onPress={handleSettingsPress}
-        style={[
-          styles.actionButton,
-          { backgroundColor: Theme["foreground-primary"] },
-        ]}
-      >
-        <Image
-          source={assets?.[2]}
-          style={styles.actionButtonImage}
-          tintColor={Theme["icon-default"]}
-          cachePolicy="memory-disk"
-          priority="high"
-        />
-        <ThemedText fontSize={18}>Settings</ThemedText>
-      </Button>
+        <Button
+          testID="activity-button"
+          onPress={handleActivityPress}
+          style={[
+            styles.actionButton,
+            styles.baseActionButton,
+            { backgroundColor: Theme["foreground-primary-fix"] },
+          ]}
+        >
+          <Image
+            source={assets?.[1]}
+            style={styles.actionButtonImage}
+            tintColor={Theme["icon-invert"]}
+            cachePolicy="memory-disk"
+            priority="high"
+          />
+          <ThemedText fontSize={18}>Transactions</ThemedText>
+        </Button>
+        <Button
+          testID="settings-button"
+          onPress={handleSettingsPress}
+          style={[
+            styles.baseActionButton,
+            styles.actionButton,
+            { backgroundColor: Theme["foreground-primary-fix"] },
+          ]}
+        >
+          <Image
+            source={assets?.[2]}
+            style={styles.actionButtonImage}
+            tintColor={Theme["icon-invert"]}
+            cachePolicy="memory-disk"
+            priority="high"
+          />
+          <ThemedText fontSize={18}>Settings</ThemedText>
+        </Button>
+      </View>
     </View>
   );
 }
@@ -100,6 +113,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
     paddingHorizontal: Spacing["spacing-5"],
     paddingTop: Spacing["spacing-2"],
     paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-7"],
@@ -107,13 +121,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing["spacing-3"],
   },
-  actionButton: {
-    flex: 1,
+  baseActionButton: {
     justifyContent: "center",
     alignItems: "center",
-    width: "100%",
     borderRadius: BorderRadius["5"],
     gap: Spacing["spacing-4"],
+  },
+  actionButton: {
+    height: 140,
+    width: "48%",
   },
   actionButtonImage: {
     width: 32,

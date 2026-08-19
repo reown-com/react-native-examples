@@ -98,8 +98,8 @@ Uses **Expo Router** with file-based routing:
 ### 1. Payment Flow
 
 1. **Home Screen** (`app/index.tsx`)
-   - "New sale" button to start payment
-   - "Activity" button to view transaction history
+   - "New payment" button to start payment
+   - "Transactions" button to view transaction history
    - "Settings" button for configuration
    - Validates merchant setup before allowing payments
 

@@ -204,7 +204,7 @@ function PinModalBase({
                     activeOpacity={0.7}
                     style={[
                       styles.key,
-                      { backgroundColor: theme["foreground-primary"] },
+                      { backgroundColor: theme["foreground-primary-fix"] },
                     ]}
                   >
                     {key === "erase" ? (
@@ -238,7 +238,7 @@ function PinModalBase({
           activeOpacity={0.7}
           style={[
             styles.cancelButton,
-            { backgroundColor: theme["foreground-secondary"] },
+            { backgroundColor: theme["foreground-primary-fix"] },
           ]}
         >
           <ThemedText fontSize={16} lineHeight={18} color="text-primary">

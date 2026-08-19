@@ -195,10 +195,9 @@ export default function PaymentSuccessScreen() {
               ]}
             >
               <ThemedText
-                style={[
-                  styles.buttonText,
-                  { color: DarkTheme["text-primary"] },
-                ]}
+                fontSize={18}
+                lineHeight={20}
+                style={{ color: DarkTheme["text-primary"] }}
               >
                 {isPrinting ? "Printing receipt…" : "Print receipt"}
               </ThemedText>
@@ -220,7 +219,9 @@ export default function PaymentSuccessScreen() {
             onPress={handleNewPayment}
           >
             <ThemedText
-              style={[styles.buttonText, { color: DarkTheme["text-invert"] }]}
+              fontSize={18}
+              lineHeight={20}
+              style={{ color: DarkTheme["text-invert"] }}
             >
               Start new payment
             </ThemedText>
@@ -272,10 +273,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing["spacing-5"],
     borderRadius: BorderRadius["5"],
     gap: Spacing["spacing-2"],
-  },
-  buttonText: {
-    fontSize: 16,
-    lineHeight: 18,
   },
   buttonIcon: {
     width: 16,

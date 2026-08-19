@@ -34,7 +34,7 @@ export function SettingsItem({
       testID={testID}
       style={[
         styles.container,
-        { backgroundColor: Theme["foreground-primary"] },
+        { backgroundColor: Theme["foreground-primary-fix"] },
         disabled && { opacity: 0.4 },
       ]}
     >

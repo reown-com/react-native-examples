@@ -36,7 +36,7 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
               onPress={() => handlePress(key)}
               style={[
                 styles.key,
-                { backgroundColor: Theme["foreground-primary"] },
+                { backgroundColor: Theme["foreground-primary-fix"] },
               ]}
             >
               {key === "erase" ? (
