@@ -269,7 +269,10 @@ export default Sentry.wrap(function RootLayout() {
                 name="activity"
                 options={{ headerTitle: renderHeaderTitle("Transactions") }}
               />
-              <Stack.Screen name="logs" />
+              <Stack.Screen
+                name="logs"
+                options={{ headerTitle: renderHeaderTitle("Logs") }}
+              />
             </Stack>
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
             <Toast
