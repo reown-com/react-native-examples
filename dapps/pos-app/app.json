@@ -69,6 +69,7 @@
       "./plugins/withAndroidVariants.js",
       "./plugins/withAndroidVariantIcons.js",
       "./plugins/withHceNfc.js",
+      "./plugins/withHceFeatureFlag.js",
       [
         "expo-font",
         {
@@ -110,7 +111,6 @@
             "./assets/images/tokens",
             "./assets/images/chains",
             "./assets/images/payment_methods",
-            "./assets/images/variants",
             "./assets/app_icons"
           ]
         }

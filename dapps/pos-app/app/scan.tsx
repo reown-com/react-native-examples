@@ -17,6 +17,7 @@ import {
 } from "@/utils/currency";
 import { formatCountdown, formatCountdownSpoken } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
+import { isNfcHceEnabled } from "@/utils/feature-flags";
 import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
@@ -59,8 +60,9 @@ export default function ScanScreen() {
 
   const { nfcMode } = useNfcPayment({
     paymentUrl: qrUri,
-    // HCE runs whenever the device supports it; `nfcEnabled` only controls UI visibility below.
-    enabled: true,
+    // NFC/HCE is gated by a build-time kill-switch (EXPO_PUBLIC_NFC_HCE_ENABLED).
+    // When off, no payment URL is emitted and the native side never enables HCE.
+    enabled: isNfcHceEnabled,
     onNfcReady: () => {
       addLog("info", "NFC HCE activated", "scan", "useNfcPayment", {
         paymentId,
@@ -236,7 +238,7 @@ export default function ScanScreen() {
   }, [remainingSeconds, isCountdownActive]);
 
   const isProcessing = paymentStatusData?.status === "processing";
-  const showNfc = nfcEnabled && nfcMode === "hce";
+  const showNfc = isNfcHceEnabled && nfcEnabled && nfcMode === "hce";
 
   return (
     <View style={styles.container}>

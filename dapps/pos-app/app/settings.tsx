@@ -17,6 +17,7 @@ import { ThemeMode } from "@/utils/types";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
+import { isNfcHceEnabled } from "@/utils/feature-flags";
 import {
   connectPrinter,
   printReceipt,
@@ -165,7 +166,9 @@ export default function SettingsScreen() {
   };
 
   const showNfcToggle =
-    Platform.OS === "android" && nfcCapabilities.isHceSupported;
+    isNfcHceEnabled &&
+    Platform.OS === "android" &&
+    nfcCapabilities.isHceSupported;
 
   const handleTestPrinterPress = async () => {
     try {
