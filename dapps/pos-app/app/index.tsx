@@ -7,7 +7,10 @@ import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { Platform, StyleSheet, View } from "react-native";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const compactScreenHeight = 700;
 
 export default function HomeScreen() {
   const [assets] = useAssets([
@@ -17,6 +20,8 @@ export default function HomeScreen() {
   ]);
 
   const Theme = useTheme();
+  const { height: windowHeight } = useWindowDimensions();
+  const { bottom } = useSafeAreaInsets();
   const merchantId = useSettingsStore((state) => state.merchantId);
   const isCustomerApiKeySet = useSettingsStore(
     (state) => state.isCustomerApiKeySet,
@@ -40,14 +45,31 @@ export default function HomeScreen() {
     router.push("/settings");
   };
 
+  const isCompact = windowHeight < compactScreenHeight;
+  const secondaryActionHeight = isCompact ? 112 : 140;
+  const primaryActionMinHeight = isCompact ? 200 : 320;
+  const topSpacing = isCompact
+    ? Spacing["spacing-6"]
+    : Spacing["extra-spacing-1"];
+  const bottomSpacing = Math.max(
+    bottom + Spacing["spacing-3"],
+    Spacing["spacing-7"],
+  );
+
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { paddingTop: topSpacing, paddingBottom: bottomSpacing },
+      ]}
+    >
       <Button
         testID="start-payment-button"
         onPress={handleStartPayment}
         style={[
           styles.baseActionButton,
-          { height: 320, width: "100%" },
+          styles.primaryActionButton,
+          { minHeight: primaryActionMinHeight },
           { backgroundColor: Theme["foreground-primary-fix"] },
         ]}
       >
@@ -63,11 +85,7 @@ export default function HomeScreen() {
         </ThemedText>
       </Button>
       <View
-        style={{
-          flexDirection: "row",
-          gap: Spacing["spacing-3"],
-          width: "100%",
-        }}
+        style={[styles.secondaryActions, { height: secondaryActionHeight }]}
       >
         <Button
           testID="activity-button"
@@ -115,9 +133,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     paddingHorizontal: Spacing["spacing-5"],
-    paddingTop: Spacing["spacing-2"],
-    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-7"],
-    justifyContent: "center",
     alignItems: "center",
     gap: Spacing["spacing-3"],
   },
@@ -128,8 +143,16 @@ const styles = StyleSheet.create({
     gap: Spacing["spacing-4"],
   },
   actionButton: {
-    height: 140,
-    width: "48%",
+    flex: 1,
+  },
+  primaryActionButton: {
+    flex: 1,
+    width: "100%",
+  },
+  secondaryActions: {
+    flexDirection: "row",
+    width: "100%",
+    gap: Spacing["spacing-3"],
   },
   actionButtonImage: {
     width: 32,

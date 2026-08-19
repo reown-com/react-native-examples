@@ -221,7 +221,15 @@ export default Sentry.wrap(function RootLayout() {
                 };
               }}
             >
-              <Stack.Screen name="index" />
+              <Stack.Screen
+                name="index"
+                options={{
+                  contentStyle: {
+                    backgroundColor: Theme["bg-primary"],
+                    paddingBottom: 0,
+                  },
+                }}
+              />
               <Stack.Screen
                 name="amount"
                 // When resetNavigation lands here via a replace (target not in
