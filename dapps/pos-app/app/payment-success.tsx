@@ -1,6 +1,6 @@
 import { UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, Platform, StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -56,7 +56,7 @@ export default function PaymentSuccessScreen() {
   );
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
-  const { top } = useSafeAreaInsets();
+  const { top, bottom } = useSafeAreaInsets();
   const { amount } = params;
   const [isPrinterConnected, setIsPrinterConnected] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -65,6 +65,10 @@ export default function PaymentSuccessScreen() {
   const [isSuccessAnimationVisible, setIsSuccessAnimationVisible] =
     useState(false);
   const isPrintingRef = useRef(false);
+  const bottomSpacing = Math.max(
+    bottom + Spacing["spacing-3"],
+    Spacing["spacing-7"],
+  );
 
   const circleScale = useSharedValue(1);
   const backgroundOverlayOpacity = useSharedValue(0);
@@ -180,7 +184,15 @@ export default function PaymentSuccessScreen() {
   }));
 
   return (
-    <View style={[styles.container, { paddingTop: top }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: top + Spacing["spacing-3"],
+          paddingBottom: bottomSpacing,
+        },
+      ]}
+    >
       {/* Expanding circle background */}
       <Animated.View
         style={[
@@ -240,7 +252,7 @@ export default function PaymentSuccessScreen() {
           </ThemedText>
         </View>
         <View style={styles.buttonContainer}>
-          {!isPrinterConnected && (
+          {isPrinterConnected && (
             <Button
               onPress={handlePrintReceipt}
               disabled={isPrinting}
@@ -304,7 +316,6 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: "hidden",
     paddingHorizontal: Spacing["spacing-5"],
-    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
   circle: {
     position: "absolute",
