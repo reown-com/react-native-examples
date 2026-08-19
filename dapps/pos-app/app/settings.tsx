@@ -7,7 +7,6 @@ import { SettingsItem } from "@/components/settings-item";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
-import { VariantList, VariantName, Variants } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
@@ -33,7 +32,6 @@ import { ScrollView } from "react-native-gesture-handler";
 
 type ActiveSheet =
   | "theme"
-  | "walletTheme"
   | "currency"
   | "merchantId"
   | "customerApiKey"
@@ -67,7 +65,6 @@ export default function SettingsScreen() {
   const themeMode = useSettingsStore((state) => state.themeMode);
   const setThemeMode = useSettingsStore((state) => state.setThemeMode);
   const variant = useSettingsStore((state) => state.variant);
-  const setVariant = useSettingsStore((state) => state.setVariant);
   const getVariantPrinterLogo = useSettingsStore(
     (state) => state.getVariantPrinterLogo,
   );
@@ -113,15 +110,6 @@ export default function SettingsScreen() {
     handleCancelSecurityFlow,
   } = useMerchantFlow();
 
-  const variantOptions: RadioOption<VariantName>[] = useMemo(
-    () =>
-      VariantList.map((v) => ({
-        value: v.id,
-        label: v.name,
-      })),
-    [],
-  );
-
   const currencyOptions: RadioOption<CurrencyCode>[] = useMemo(
     () =>
       CURRENCIES.map((c) => ({
@@ -139,11 +127,7 @@ export default function SettingsScreen() {
   const buildVersion =
     Platform.OS === "web" ? "web" : Application.nativeBuildVersion;
 
-  const currentVariant = VariantList.find((v) => v.id === variant);
   const currentCurrency = getCurrency(currency);
-  // Branded variants lock the theme to their default, unless they opt into manual switching.
-  const isThemeLocked =
-    variant !== "default" && !Variants[variant].allowThemeToggle;
 
   const closeSheet = () => {
     if (activeSheet === "customerApiKey") {
@@ -155,11 +139,6 @@ export default function SettingsScreen() {
 
   const handleThemeModeChange = (value: ThemeMode) => {
     setThemeMode(value);
-    closeSheet();
-  };
-
-  const handleVariantChange = (value: VariantName) => {
-    setVariant(value);
     closeSheet();
   };
 
@@ -269,14 +248,6 @@ export default function SettingsScreen() {
           title="Theme"
           value={THEME_LABELS[themeMode]}
           onPress={() => setActiveSheet("theme")}
-          disabled={isThemeLocked}
-        />
-
-        <SettingsItem
-          testID="settings-wallet-theme"
-          title="Wallet theme"
-          value={currentVariant?.name ?? "None"}
-          onPress={() => setActiveSheet("walletTheme")}
         />
 
         <SettingsItem
@@ -373,19 +344,6 @@ export default function SettingsScreen() {
           options={THEME_OPTIONS}
           value={themeMode}
           onChange={handleThemeModeChange}
-        />
-      </SettingsBottomSheet>
-
-      {/* Wallet Theme Bottom Sheet */}
-      <SettingsBottomSheet
-        visible={activeSheet === "walletTheme"}
-        title="Wallet theme"
-        onClose={closeSheet}
-      >
-        <RadioList
-          options={variantOptions}
-          value={variant}
-          onChange={handleVariantChange}
         />
       </SettingsBottomSheet>
 

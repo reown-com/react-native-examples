@@ -279,7 +279,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 16,
+      version: 17,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -343,6 +343,12 @@ export const useSettingsStore = create<SettingsStore>()(
           // nfcEnabled now means "show NFC UI" (HCE always runs when supported).
           // Preserve any user-set value; only fresh installs get the new default of true.
           persistedState.nfcEnabled = persistedState.nfcEnabled ?? true;
+        }
+
+        if (version < 17) {
+          // Wallet theme variants were removed; reset any persisted branded
+          // variant so it maps back to the only remaining option.
+          persistedState.variant = "default";
         }
 
         return persistedState;

@@ -1,8 +1,5 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
-import {
-  DEFAULT_LOGO_BASE64,
-  MONEY2020_LOGO_BASE64,
-} from "@/constants/printer-logos";
+import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { resetSettingsStore } from "../utils/store-helpers";
 
 // Get the mocked secure store
@@ -90,73 +87,17 @@ describe("useSettingsStore", () => {
   });
 
   describe("setVariant", () => {
-    it("should set variant", () => {
+    it("should set the default variant", () => {
       const { setVariant } = useSettingsStore.getState();
 
-      setVariant("solflare");
+      setVariant("default");
 
-      expect(useSettingsStore.getState().variant).toBe("solflare");
-    });
-
-    it("should update theme when variant has defaultTheme", () => {
-      // Solflare variant has defaultTheme: "dark"
-      const { setVariant } = useSettingsStore.getState();
-
-      // Start with light theme
-      useSettingsStore.getState().setThemeMode("light");
-      expect(useSettingsStore.getState().themeMode).toBe("light");
-
-      // Set solflare variant which has dark as default
-      setVariant("solflare");
-
-      expect(useSettingsStore.getState().variant).toBe("solflare");
-      expect(useSettingsStore.getState().themeMode).toBe("dark");
-    });
-
-    it("should support all variant types", () => {
-      const variants = [
-        "default",
-        "solflare",
-        "binance",
-        "phantom",
-        "solana",
-        "trezor",
-        "ledger",
-      ] as const;
-
-      variants.forEach((variantName) => {
-        useSettingsStore.getState().setVariant(variantName);
-        expect(useSettingsStore.getState().variant).toBe(variantName);
-      });
+      expect(useSettingsStore.getState().variant).toBe("default");
     });
   });
 
   describe("getVariantPrinterLogo", () => {
-    it("should return the default logo for variants without a printerLogo", () => {
-      useSettingsStore.getState().setVariant("default");
-      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
-        DEFAULT_LOGO_BASE64,
-      );
-
-      useSettingsStore.getState().setVariant("solflare");
-      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
-        DEFAULT_LOGO_BASE64,
-      );
-    });
-
-    it("should return the variant's printerLogo when set", () => {
-      useSettingsStore.getState().setVariant("money2020");
-      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
-        MONEY2020_LOGO_BASE64,
-      );
-    });
-
-    it("should reflect the current variant when it changes", () => {
-      useSettingsStore.getState().setVariant("money2020");
-      expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
-        MONEY2020_LOGO_BASE64,
-      );
-
+    it("should return the default logo for the default variant", () => {
       useSettingsStore.getState().setVariant("default");
       expect(useSettingsStore.getState().getVariantPrinterLogo()).toBe(
         DEFAULT_LOGO_BASE64,
@@ -530,14 +471,14 @@ describe("useSettingsStore", () => {
       useSettingsStore.getState().setThemeMode("dark");
       useSettingsStore.getState().setMerchantId("merchant-persist-123");
       useSettingsStore.getState().setDeviceId("device-persist-456");
-      useSettingsStore.getState().setVariant("solflare");
+      useSettingsStore.getState().setVariant("default");
 
       // Verify all values are maintained
       const state = useSettingsStore.getState();
       expect(state.themeMode).toBe("dark");
       expect(state.merchantId).toBe("merchant-persist-123");
       expect(state.deviceId).toBe("device-persist-456");
-      expect(state.variant).toBe("solflare");
+      expect(state.variant).toBe("default");
     });
 
     it("should track hydration state correctly", () => {
@@ -586,7 +527,7 @@ describe("useSettingsStore", () => {
 
       // Change other settings
       useSettingsStore.getState().setThemeMode("dark");
-      useSettingsStore.getState().setVariant("binance");
+      useSettingsStore.getState().setVariant("default");
 
       // Biometric should still be enabled
       expect(useSettingsStore.getState().biometricEnabled).toBe(true);
@@ -598,7 +539,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(16);
+      expect(persistOptions?.version).toBe(17);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();
@@ -610,6 +551,16 @@ describe("useSettingsStore", () => {
       expect(typeof useSettingsStore.persist.rehydrate).toBe("function");
       expect(typeof useSettingsStore.persist.hasHydrated).toBe("function");
       expect(typeof useSettingsStore.persist.getOptions).toBe("function");
+    });
+
+    it("should reset a stale branded variant to default on migration", () => {
+      const migrate = useSettingsStore.persist?.getOptions?.().migrate;
+      expect(migrate).toBeDefined();
+
+      // Simulate persisted state from before variants were removed.
+      const migrated: any = migrate!({ variant: "solflare" }, 16);
+
+      expect(migrated.variant).toBe("default");
     });
   });
 });
