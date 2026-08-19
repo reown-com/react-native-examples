@@ -35,6 +35,9 @@ const ERROR_MESSAGES: Record<string, PaymentErrorMessage> = {
 /** Synthetic code: the API reports this as a generic `params_validation`. */
 export const AMOUNT_TOO_LOW = "amount_too_low";
 
+/** API error code: the terminal's API key is invalid or has lost access. */
+export const INVALID_API_KEY = "invalid_api_key";
+
 // "Validation error: Amount must be at least 14 to cover fees" (14 = cents)
 const MIN_AMOUNT_PATTERN = /amount must be at least\s+(\d+)/i;
 

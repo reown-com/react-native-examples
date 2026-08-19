@@ -9,7 +9,10 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { getPaymentErrorMessage } from "@/utils/payment-errors";
+import {
+  getPaymentErrorMessage,
+  INVALID_API_KEY,
+} from "@/utils/payment-errors";
 import { useAssets } from "expo-asset";
 
 // The params can't be declared optional here: `UnknownOutputParams` indexes to
@@ -34,7 +37,18 @@ export default function PaymentFailureScreen() {
     currencyCode,
   });
 
-  const handleRetry = () => {
+  // An invalid API key can't be fixed by retrying — the merchant needs Settings.
+  const isInvalidApiKey = params.errorCode === INVALID_API_KEY;
+
+  const handlePrimaryPress = () => {
+    if (isInvalidApiKey) {
+      // Leave the payment flow entirely and land on Settings so the merchant
+      // can fix credentials; settings isn't in this stack, so dismissTo won't
+      // reach it — pop back to root, then push Settings.
+      router.dismissAll();
+      router.push("/settings");
+      return;
+    }
     router.dismissTo("/amount");
   };
 
@@ -67,7 +81,7 @@ export default function PaymentFailureScreen() {
         </ThemedText>
       </View>
       <Button
-        onPress={handleRetry}
+        onPress={handlePrimaryPress}
         style={[
           styles.button,
           {
@@ -80,7 +94,7 @@ export default function PaymentFailureScreen() {
           lineHeight={20}
           style={{ color: Theme["text-invert"] }}
         >
-          Start new payment
+          {isInvalidApiKey ? "Go to Settings" : "Start new payment"}
         </ThemedText>
       </Button>
     </View>
