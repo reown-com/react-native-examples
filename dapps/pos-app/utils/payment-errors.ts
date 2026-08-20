@@ -28,7 +28,7 @@ const ERROR_MESSAGES: Record<string, PaymentErrorMessage> = {
   params_validation: {
     title: "This payment didn't go through",
     subtitle:
-      "No funds were moved. Something's off with this payment's details.",
+      "No funds were moved. Try the payment again. If it keeps failing, contact support.",
   },
 };
 

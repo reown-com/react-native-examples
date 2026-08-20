@@ -14,7 +14,7 @@ const compactScreenHeight = 700;
 
 export default function HomeScreen() {
   const [assets] = useAssets([
-    require("@/assets/images/plus_circle_fill.png"),
+    require("@/assets/images/plus-circle-fill.png"),
     require("@/assets/images/receipt.png"),
     require("@/assets/images/gear.png"),
   ]);

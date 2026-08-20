@@ -44,7 +44,7 @@ const COUNTDOWN_ANNOUNCE_THRESHOLDS = [60, 30, 10];
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
   const [assets] = useAssets([
-    require("@/assets/images/wc_logo_dark.png"),
+    require("@/assets/images/wc-logo-dark.png"),
     require("@/assets/images/nfc.png"),
   ]);
 
