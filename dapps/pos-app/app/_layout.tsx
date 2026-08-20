@@ -277,8 +277,8 @@ export default Sentry.wrap(function RootLayout() {
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
             <Toast
               config={toastConfig}
-              position="bottom"
-              bottomOffset={initialWindowMetrics?.insets.bottom ?? 0}
+              position="top"
+              topOffset={(initialWindowMetrics?.insets.top ?? 0) + 8}
               visibilityTime={2000}
             />
           </ThemeProvider>

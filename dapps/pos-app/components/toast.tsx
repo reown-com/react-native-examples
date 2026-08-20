@@ -2,44 +2,53 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
-import { StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { ThemedText } from "./themed-text";
+
+type ToastType = "error" | "info" | "success" | "warning" | "loading";
 
 interface ToastProps {
   message?: string;
-  type: "error" | "info" | "success" | "warning";
+  type: ToastType;
 }
+
+const LOADING_COLOR = "#0988F0";
 
 export function Toast({ message = "", type }: ToastProps) {
   const Theme = useTheme();
   const [assets] = useAssets([
-    require("@/assets/images/error.png"),
-    require("@/assets/images/check_circle.png"),
+    require("@/assets/images/toast-info.png"),
+    require("@/assets/images/toast-warning.png"),
+    require("@/assets/images/toast-error.png"),
+    require("@/assets/images/toast-success.png"),
   ]);
 
-  const image = type === "error" ? assets?.[0] : assets?.[1];
-  const iconColor =
-    type === "error" ? Theme["icon-error"] : Theme["icon-success"];
+  const icon = {
+    info: assets?.[0],
+    warning: assets?.[1],
+    error: assets?.[2],
+    success: assets?.[3],
+    loading: undefined,
+  }[type];
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: Theme["foreground-primary"],
-          borderColor: Theme["border-primary"],
-        },
-      ]}
-    >
-      <Image
-        source={image}
-        style={[styles.image, { tintColor: iconColor }]}
-        tintColor={iconColor}
-      />
-
-      <ThemedText fontSize={16} lineHeight={18}>
+    <View style={[styles.container, { backgroundColor: Theme["bg-invert"] }]}>
+      <ThemedText
+        color="text-invert"
+        fontSize={16}
+        lineHeight={18}
+        style={styles.label}
+      >
         {message}
       </ThemedText>
+
+      <View style={styles.icon}>
+        {type === "loading" ? (
+          <ActivityIndicator size="small" color={LOADING_COLOR} />
+        ) : (
+          <Image source={icon} style={styles.iconImage} contentFit="contain" />
+        )}
+      </View>
     </View>
   );
 }
@@ -47,14 +56,32 @@ export function Toast({ message = "", type }: ToastProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    width: "90%",
-    gap: Spacing["spacing-2"],
-    padding: Spacing["spacing-4"],
-    borderRadius: BorderRadius["3"],
-    borderWidth: 1,
+    alignItems: "center",
+    alignSelf: "center",
+    maxWidth: "90%",
+    gap: Spacing["spacing-9"],
+    paddingLeft: Spacing["spacing-6"],
+    paddingRight: 10,
+    paddingVertical: 10,
+    borderRadius: BorderRadius["13"],
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
   },
-  image: {
-    height: 18,
-    width: 18,
+  label: {
+    flexShrink: 1,
+  },
+  icon: {
+    height: 28,
+    width: 28,
+    flexShrink: 0,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconImage: {
+    height: 28,
+    width: 28,
   },
 });
