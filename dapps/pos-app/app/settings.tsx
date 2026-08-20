@@ -367,6 +367,7 @@ export default function SettingsScreen() {
       <SettingsBottomSheet
         visible={activeSheet === "merchantId"}
         title="Merchant ID"
+        subtitle="Find your Merchant ID in your merchant dashboard and paste it here."
         onClose={closeSheet}
       >
         <View style={styles.inputContent}>
