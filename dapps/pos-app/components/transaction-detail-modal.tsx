@@ -21,7 +21,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { Pressable as ScalePressable } from "./pressable";
 import { FramedModal } from "./framed-modal";
 import { StatusBadge } from "./status-badge";
 import { ThemedText } from "./themed-text";
@@ -103,7 +102,7 @@ function DetailRow({ label, value, children, onPress }: DetailRowProps) {
   );
 
   if (onPress) {
-    return <ScalePressable onPress={onPress}>{content}</ScalePressable>;
+    return <Pressable onPress={onPress}>{content}</Pressable>;
   }
 
   return content;
@@ -201,7 +200,7 @@ function TransactionDetailModalBase({
             ]}
           >
             <View style={styles.header}>
-              <ScalePressable
+              <Pressable
                 onPress={onClose}
                 style={[
                   styles.closeButton,
@@ -213,7 +212,7 @@ function TransactionDetailModalBase({
                   tintColor={theme["icon-invert"]}
                   source={require("@/assets/images/close.png")}
                 />
-              </ScalePressable>
+              </Pressable>
             </View>
 
             <ScrollView
