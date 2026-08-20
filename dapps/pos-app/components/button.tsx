@@ -12,6 +12,7 @@ interface ButtonBaseProps {
   onPress: () => void;
   disabled?: boolean;
   fullWidth?: boolean;
+  size?: "md" | "sm";
   testID?: string;
 }
 
@@ -26,11 +27,13 @@ export function Button({
   onPress,
   disabled = false,
   fullWidth = true,
+  size = "md",
   testID,
   type,
   variant,
 }: ButtonProps) {
   const theme = useTheme();
+  const isSmall = size === "sm";
 
   const variantStyle =
     type === "accent"
@@ -60,17 +63,18 @@ export function Button({
       testID={testID}
       style={[
         styles.button,
+        isSmall && styles.buttonSmall,
         fullWidth && styles.fullWidth,
         variantStyle,
         disabled && styles.disabled,
         style,
       ]}
     >
-      <View style={styles.content}>
+      <View style={[styles.content, isSmall && styles.contentSmall]}>
         <ThemedText
           color={textColor}
-          fontSize={18}
-          lineHeight={20}
+          fontSize={isSmall ? 12 : 18}
+          lineHeight={isSmall ? 14 : 20}
           style={styles.label}
         >
           {children}
@@ -88,11 +92,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  buttonSmall: {
+    height: 28,
+    borderRadius: 10,
+    paddingHorizontal: Spacing["spacing-3"],
+  },
   content: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: Spacing["spacing-2"],
+  },
+  contentSmall: {
+    gap: Spacing["spacing-1"],
   },
   label: {
     textAlign: "center",

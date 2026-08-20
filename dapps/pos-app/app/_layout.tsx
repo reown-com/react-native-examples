@@ -75,11 +75,14 @@ Sentry.init({
 
 const queryClient = new QueryClient();
 
-const renderHeaderTitle = (title: string) => () => (
-  <ThemedText fontSize={18} style={{ fontWeight: "500" }}>
-    {title}
-  </ThemedText>
-);
+const renderHeaderTitle = (title: string) => {
+  const HeaderTitle = () => (
+    <ThemedText fontSize={18} style={{ fontWeight: "500" }}>
+      {title}
+    </ThemedText>
+  );
+  return HeaderTitle;
+};
 
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
