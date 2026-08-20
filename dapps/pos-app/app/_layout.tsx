@@ -84,6 +84,13 @@ const renderHeaderTitle = (title: string) => {
   return HeaderTitle;
 };
 
+// Build once at module scope so each Stack.Screen gets a stable headerTitle
+// reference — React Navigation compares by identity and would otherwise
+// remount the header (visible flicker) on every RootLayout re-render.
+const SettingsHeaderTitle = renderHeaderTitle("Settings");
+const TransactionsHeaderTitle = renderHeaderTitle("Transactions");
+const LogsHeaderTitle = renderHeaderTitle("Logs");
+
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
 
@@ -269,15 +276,15 @@ export default Sentry.wrap(function RootLayout() {
               />
               <Stack.Screen
                 name="settings"
-                options={{ headerTitle: renderHeaderTitle("Settings") }}
+                options={{ headerTitle: SettingsHeaderTitle }}
               />
               <Stack.Screen
                 name="activity"
-                options={{ headerTitle: renderHeaderTitle("Transactions") }}
+                options={{ headerTitle: TransactionsHeaderTitle }}
               />
               <Stack.Screen
                 name="logs"
-                options={{ headerTitle: renderHeaderTitle("Logs") }}
+                options={{ headerTitle: LogsHeaderTitle }}
               />
             </Stack>
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />

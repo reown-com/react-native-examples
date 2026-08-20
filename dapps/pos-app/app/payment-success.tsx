@@ -153,18 +153,13 @@ export default function PaymentSuccessScreen() {
       contentRevealDelay,
       withTiming(0, { duration: contentRevealDuration }),
     );
-    const themeBackgroundTimeout = setTimeout(
-      () => setIsThemeBackgroundVisible(true),
-      contentRevealDelay,
-    );
-    const successAnimationTimeout = setTimeout(
-      () => setIsSuccessAnimationVisible(true),
-      contentRevealDelay,
-    );
+    const revealTimeout = setTimeout(() => {
+      setIsThemeBackgroundVisible(true);
+      setIsSuccessAnimationVisible(true);
+    }, contentRevealDelay);
 
     return () => {
-      clearTimeout(themeBackgroundTimeout);
-      clearTimeout(successAnimationTimeout);
+      clearTimeout(revealTimeout);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -366,10 +366,7 @@ export default function SettingsScreen() {
             icon={
               <Image
                 source={require("@/assets/images/printer.png")}
-                style={[
-                  styles.printerIcon,
-                  { tintColor: theme["text-primary"] },
-                ]}
+                style={styles.printerIcon}
                 tintColor={theme["text-primary"]}
                 cachePolicy="memory-disk"
               />
