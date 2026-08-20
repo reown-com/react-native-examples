@@ -23,7 +23,12 @@ import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
-import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
+import {
+  router,
+  Stack,
+  UnknownOutputParams,
+  useLocalSearchParams,
+} from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AccessibilityInfo, StyleSheet, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
@@ -240,8 +245,26 @@ export default function ScanScreen() {
   const isProcessing = paymentStatusData?.status === "processing";
   const showNfc = isNfcHceEnabled && nfcEnabled && nfcMode === "hce";
 
+  // Hide the header back button (and swipe-back) once the payment leaves the
+  // interactive QR state. We derive this from the status rather than binding it
+  // to `isProcessing`: a terminal status flips `isProcessing` back to false
+  // *and* navigates away in the same tick, and reviving the header back-button
+  // config while the screen is detaching crashes react-native-screens on Android
+  // with "ScreenStackFragment added into a non-stack container". Keeping it
+  // hidden for every status past `requires_action` means the option never flips
+  // back during that transition. (Derived value only — a ref/effect latch trips
+  // the react-hooks lint rules.)
+  const backHidden =
+    !!paymentStatusData && paymentStatusData.status !== "requires_action";
+
   return (
     <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerBackVisible: !backHidden,
+          gestureEnabled: !backHidden,
+        }}
+      />
       {isProcessing ? (
         <View style={styles.loadingContainer}>
           <WalletConnectLoading size={180} />

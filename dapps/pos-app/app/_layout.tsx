@@ -253,12 +253,14 @@ export default Sentry.wrap(function RootLayout() {
                 name="payment-failure"
                 options={{
                   headerBackVisible: false,
+                  gestureEnabled: false,
                 }}
               />
               <Stack.Screen
                 name="payment-success"
                 options={{
                   headerShown: false,
+                  gestureEnabled: false,
                   contentStyle: {
                     backgroundColor: Theme["bg-primary"],
                     paddingBottom: 0,
