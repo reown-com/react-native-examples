@@ -5,6 +5,7 @@ import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { TransactionCard } from "@/components/transaction-card";
 import { TransactionDetailModal } from "@/components/transaction-detail-modal";
 import { Spacing } from "@/constants/spacing";
+import { DATE_RANGE_OPTIONS } from "@/utils/date-range";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useTransactions } from "@/services/hooks";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -26,14 +27,6 @@ import {
 } from "react-native";
 
 type ActiveSheet = "status" | "dateRange" | null;
-
-const DATE_RANGE_OPTIONS: { value: DateRangeFilterType; label: string }[] = [
-  { value: "all_time", label: "All time" },
-  { value: "today", label: "Today" },
-  { value: "7_days", label: "7 days" },
-  { value: "this_week", label: "This week" },
-  { value: "this_month", label: "This month" },
-];
 
 const STATUS_LABELS: Record<TransactionFilterType, string> = {
   all: "Status",
@@ -209,10 +202,16 @@ export default function ActivityScreen() {
   const listHeader = useMemo(
     () => (
       <FilterButtons
-        statusLabel={STATUS_LABELS[transactionFilter]}
-        dateRangeLabel={DATE_RANGE_LABELS[dateRangeFilter]}
-        onStatusPress={() => setActiveSheet("status")}
-        onDateRangePress={() => setActiveSheet("dateRange")}
+        buttons={[
+          {
+            label: STATUS_LABELS[transactionFilter],
+            onPress: () => setActiveSheet("status"),
+          },
+          {
+            label: DATE_RANGE_LABELS[dateRangeFilter],
+            onPress: () => setActiveSheet("dateRange"),
+          },
+        ]}
       />
     ),
     [transactionFilter, dateRangeFilter],

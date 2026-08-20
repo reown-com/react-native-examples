@@ -55,6 +55,9 @@ export type DateRangeFilterType =
   | "this_week"
   | "this_month";
 
+// Logs filters
+export type LogLevelFilterType = "all" | "info" | "error";
+
 export interface DisplayAmount {
   formatted?: string;
   assetSymbol?: string;
