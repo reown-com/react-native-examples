@@ -1,6 +1,6 @@
 import { PressableScale } from "pressto";
 import React from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { AccessibilityRole, StyleProp, ViewStyle } from "react-native";
 
 interface Props {
   children: React.ReactNode;
@@ -8,6 +8,9 @@ interface Props {
   onPress: () => void;
   disabled?: boolean;
   testID?: string;
+  accessibilityRole?: AccessibilityRole;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
 export const Pressable: React.FC<Props> = ({
@@ -16,6 +19,9 @@ export const Pressable: React.FC<Props> = ({
   onPress,
   disabled,
   testID,
+  accessibilityRole,
+  accessibilityLabel,
+  accessibilityHint,
 }) => {
   return (
     <PressableScale
@@ -23,6 +29,10 @@ export const Pressable: React.FC<Props> = ({
       onPress={onPress}
       enabled={!disabled}
       testID={testID}
+      accessibilityRole={accessibilityRole}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{ disabled: !!disabled }}
     >
       {children}
     </PressableScale>

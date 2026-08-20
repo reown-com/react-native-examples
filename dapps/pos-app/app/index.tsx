@@ -65,6 +65,9 @@ export default function HomeScreen() {
     >
       <Pressable
         testID="start-payment-button"
+        accessibilityRole="button"
+        accessibilityLabel="New payment"
+        accessibilityHint="Starts a new payment"
         onPress={handleStartPayment}
         style={[
           styles.baseActionButton,
@@ -89,6 +92,9 @@ export default function HomeScreen() {
       >
         <Pressable
           testID="activity-button"
+          accessibilityRole="button"
+          accessibilityLabel="Transactions"
+          accessibilityHint="Opens your transactions list"
           onPress={handleActivityPress}
           style={[
             styles.actionButton,
@@ -107,6 +113,9 @@ export default function HomeScreen() {
         </Pressable>
         <Pressable
           testID="settings-button"
+          accessibilityRole="button"
+          accessibilityLabel="Settings"
+          accessibilityHint="Opens settings"
           onPress={handleSettingsPress}
           style={[
             styles.baseActionButton,

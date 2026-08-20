@@ -14,6 +14,9 @@ interface ButtonBaseProps {
   fullWidth?: boolean;
   size?: "md" | "sm";
   testID?: string;
+  /** Overrides the accessible name (defaults to the button's text label). */
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
 export type ButtonProps =
@@ -29,6 +32,8 @@ export function Button({
   fullWidth = true,
   size = "md",
   testID,
+  accessibilityLabel,
+  accessibilityHint,
   type,
   variant,
 }: ButtonProps) {
@@ -61,6 +66,9 @@ export function Button({
       onPress={onPress}
       disabled={disabled}
       testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? children}
+      accessibilityHint={accessibilityHint}
       style={[
         styles.button,
         isSmall && styles.buttonSmall,
