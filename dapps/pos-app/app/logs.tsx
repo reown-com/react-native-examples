@@ -87,12 +87,17 @@ export default function LogsScreen() {
     setConfirmVisible(false);
   }, [clearLogs]);
 
+  const handleClearFilters = useCallback(() => {
+    setLogLevelFilter("all");
+    setLogDateRangeFilter("all_time");
+  }, [setLogLevelFilter, setLogDateRangeFilter]);
+
   return (
     <View style={styles.container}>
       {logs.length === 0 ? (
         <EmptyState
-          title="No logs yet"
-          subtitle="Logs record what happens on this terminal. Only the most recent entries are kept."
+          title="No logs to show"
+          subtitle="Here you'll see what this terminal has been doing, from payments to printing and errors."
           icon={
             <Image
               source={require("@/assets/images/scroll.png")}
@@ -126,21 +131,34 @@ export default function LogsScreen() {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
             style={styles.list}
+            // Virtualization tuning for low-end POS hardware. No getItemLayout:
+            // log cards have variable, content-driven heights and expand on tap,
+            // so heights must stay measured rather than assumed. The list is
+            // capped at 100 entries, so we keep a generous window to avoid blank
+            // cells on fast Android scrolling, and skip removeClippedSubviews
+            // (it drops cells mid-scroll on Android with these variable rows).
+            initialNumToRender={12}
+            maxToRenderPerBatch={12}
+            windowSize={15}
             ListEmptyComponent={
               <EmptyState
                 title="No matching logs"
                 subtitle="No logs match the selected filters. Try adjusting the type or date range."
+                cta={{ label: "Clear filters", onPress: handleClearFilters }}
               />
             }
           />
-          <Button
-            type="neutral"
-            variant="secondary"
-            onPress={() => setConfirmVisible(true)}
-            style={styles.clearButton}
-          >
-            Clear logs
-          </Button>
+          {filtered.length > 0 && (
+            <View style={styles.footer}>
+              <Button
+                type="neutral"
+                variant="secondary"
+                onPress={() => setConfirmVisible(true)}
+              >
+                Clear logs
+              </Button>
+            </View>
+          )}
         </>
       )}
 
@@ -189,9 +207,9 @@ const styles = StyleSheet.create({
     marginTop: Spacing["spacing-1"],
     marginBottom: Spacing["spacing-3"],
   },
-  clearButton: {
-    marginTop: Spacing["spacing-3"],
-    marginHorizontal: Spacing["spacing-5"],
+  footer: {
+    paddingTop: Spacing["spacing-3"],
+    paddingHorizontal: Spacing["spacing-5"],
   },
   list: {
     flex: 1,
