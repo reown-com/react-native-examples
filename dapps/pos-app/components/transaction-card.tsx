@@ -6,8 +6,7 @@ import { getTransactionStatusMeta } from "@/utils/transaction-status";
 import { PaymentRecord } from "@/utils/types";
 import { Image } from "expo-image";
 import { memo } from "react";
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { Pressable } from "./pressable";
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { ThemedText } from "./themed-text";
 
 const CHEVRON = require("@/assets/images/chevron-right.png");
