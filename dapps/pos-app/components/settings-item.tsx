@@ -11,6 +11,11 @@ interface SettingsItemProps {
   value?: string;
   onPress: () => void;
   showCaret?: boolean;
+  /**
+   * Which caret to draw on the right. "up-down" (default) opens a picker sheet;
+   * "right" drills into an editor.
+   */
+  caret?: "up-down" | "right";
   disabled?: boolean;
   testID?: string;
 }
@@ -20,12 +25,17 @@ export function SettingsItem({
   value,
   onPress,
   showCaret,
+  caret = "up-down",
   disabled,
   testID,
 }: SettingsItemProps) {
   const Theme = useTheme();
-  const [assets] = useAssets([require("@/assets/images/caret-up-down.png")]);
+  const [assets] = useAssets([
+    require("@/assets/images/caret-up-down.png"),
+    require("@/assets/images/chevron-right.png"),
+  ]);
   const shouldShowCaret = showCaret ?? !!value;
+  const caretAsset = caret === "right" ? assets?.[1] : assets?.[0];
 
   return (
     <Pressable
@@ -39,7 +49,12 @@ export function SettingsItem({
       ]}
     >
       <View style={styles.labelRow}>
-        <ThemedText fontSize={16} lineHeight={18} color="text-primary">
+        <ThemedText
+          fontSize={16}
+          lineHeight={18}
+          color="text-primary"
+          style={styles.title}
+        >
           {title}
         </ThemedText>
         {value && (
@@ -54,9 +69,9 @@ export function SettingsItem({
           </ThemedText>
         )}
       </View>
-      {shouldShowCaret && assets?.[0] && (
+      {shouldShowCaret && caretAsset && (
         <Image
-          source={assets[0]}
+          source={caretAsset}
           style={[styles.caretIcon, { tintColor: Theme["text-primary"] }]}
           tintColor={Theme["text-primary"]}
           cachePolicy="memory-disk"
@@ -81,6 +96,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing["spacing-2"],
+  },
+  title: {
+    fontWeight: "500",
   },
   value: {
     flex: 1,

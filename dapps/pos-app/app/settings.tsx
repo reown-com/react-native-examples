@@ -1,9 +1,11 @@
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 import { PinModal } from "@/components/pin-modal";
+import { LogEntriesRow } from "@/components/log-entries-row";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { SettingsItem } from "@/components/settings-item";
+import { SettingsSection } from "@/components/settings-section";
 import { Switch } from "@/components/switch";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
@@ -26,6 +28,7 @@ import {
 import { showErrorToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
@@ -75,6 +78,7 @@ export default function SettingsScreen() {
   const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
   const nfcCapabilities = useNfcCapabilities();
   const addLog = useLogsStore((state) => state.addLog);
+  const logsCount = useLogsStore((state) => state.logs.length);
   const theme = useTheme();
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
@@ -170,6 +174,9 @@ export default function SettingsScreen() {
     Platform.OS === "android" &&
     nfcCapabilities.isHceSupported;
 
+  const showBiometricToggle = shouldShowBiometricOption && !!biometricStatus;
+  const showSecuritySection = showNfcToggle || showBiometricToggle;
+
   const handleTestPrinterPress = async () => {
     try {
       const isBluetoothPermissionGranted = await requestBluetoothPermission();
@@ -246,86 +253,98 @@ export default function SettingsScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <SettingsItem
-          testID="settings-theme"
-          title="Theme"
-          value={THEME_LABELS[themeMode]}
-          onPress={() => setActiveSheet("theme")}
-        />
+        <SettingsSection title="Terminal">
+          <SettingsItem
+            testID="settings-theme"
+            title="Theme"
+            value={THEME_LABELS[themeMode]}
+            onPress={() => setActiveSheet("theme")}
+          />
 
-        <SettingsItem
-          testID="settings-currency"
-          title="Currency"
-          value={`${currentCurrency.name} (${currentCurrency.symbol})`}
-          onPress={() => setActiveSheet("currency")}
-        />
+          <SettingsItem
+            testID="settings-currency"
+            title="Currency"
+            value={`${currentCurrency.name} (${currentCurrency.symbol})`}
+            onPress={() => setActiveSheet("currency")}
+          />
+        </SettingsSection>
 
-        <SettingsItem
-          testID="settings-merchant-id"
-          title="Merchant ID"
-          value={merchantIdInput || undefined}
-          onPress={() => setActiveSheet("merchantId")}
-        />
+        <SettingsSection title="Connection">
+          <SettingsItem
+            testID="settings-merchant-id"
+            title="Merchant ID"
+            value={merchantIdInput || undefined}
+            caret="right"
+            onPress={() => setActiveSheet("merchantId")}
+          />
 
-        <SettingsItem
-          testID="settings-customer-api-key"
-          title="Customer API key"
-          value="**********"
-          onPress={() => setActiveSheet("customerApiKey")}
-        />
+          <SettingsItem
+            testID="settings-customer-api-key"
+            title="Customer API key"
+            value="**********"
+            caret="right"
+            onPress={() => setActiveSheet("customerApiKey")}
+          />
 
-        {showNfcToggle && (
-          <Card style={styles.biometricCard}>
-            <View style={styles.biometricRow}>
-              <View style={styles.biometricLabel}>
-                <ThemedText fontSize={16} lineHeight={18}>
-                  Tap-to-pay prompt
-                </ThemedText>
-                <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Show the tap-to-pay prompt on the payment screen.
-                </ThemedText>
-              </View>
-              <Switch
-                style={styles.switch}
-                value={nfcEnabled}
-                onValueChange={setNfcEnabled}
-              />
-            </View>
-          </Card>
+          <LogEntriesRow
+            testID="settings-view-logs"
+            count={logsCount}
+            onPress={() => router.push("/logs")}
+          />
+        </SettingsSection>
+
+        {showSecuritySection && (
+          <SettingsSection title="Security">
+            {showNfcToggle && (
+              <Card style={styles.biometricCard}>
+                <View style={styles.biometricRow}>
+                  <View style={styles.biometricLabel}>
+                    <ThemedText fontSize={16} lineHeight={18}>
+                      Tap-to-pay prompt
+                    </ThemedText>
+                    <ThemedText
+                      fontSize={12}
+                      lineHeight={14}
+                      color="text-tertiary"
+                    >
+                      Show the tap-to-pay prompt on the payment screen.
+                    </ThemedText>
+                  </View>
+                  <Switch
+                    style={styles.switch}
+                    value={nfcEnabled}
+                    onValueChange={setNfcEnabled}
+                  />
+                </View>
+              </Card>
+            )}
+
+            {/* Biometric toggle - only show if PIN is set and biometrics available */}
+            {showBiometricToggle && (
+              <Card style={styles.biometricCard}>
+                <View style={styles.biometricRow}>
+                  <View style={styles.biometricLabel}>
+                    <ThemedText fontSize={16} lineHeight={18}>
+                      {getBiometricLabel(biometricStatus.biometricType)}
+                    </ThemedText>
+                    <ThemedText
+                      fontSize={12}
+                      lineHeight={14}
+                      color="text-tertiary"
+                    >
+                      Use instead of PIN.
+                    </ThemedText>
+                  </View>
+                  <Switch
+                    style={styles.switch}
+                    value={biometricEnabled}
+                    onValueChange={handleBiometricToggle}
+                  />
+                </View>
+              </Card>
+            )}
+          </SettingsSection>
         )}
-
-        {/* Biometric toggle - only show if PIN is set and biometrics available */}
-        {shouldShowBiometricOption && biometricStatus && (
-          <Card style={styles.biometricCard}>
-            <View style={styles.biometricRow}>
-              <View style={styles.biometricLabel}>
-                <ThemedText fontSize={16} lineHeight={18}>
-                  {getBiometricLabel(biometricStatus.biometricType)}
-                </ThemedText>
-                <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Use instead of PIN.
-                </ThemedText>
-              </View>
-              <Switch
-                style={styles.switch}
-                value={biometricEnabled}
-                onValueChange={handleBiometricToggle}
-              />
-            </View>
-          </Card>
-        )}
-
-        <SettingsItem
-          testID="settings-test-printer"
-          title="Test printer"
-          onPress={handleTestPrinterPress}
-        />
-
-        <SettingsItem
-          testID="settings-view-logs"
-          title="View logs"
-          onPress={() => router.push("/logs")}
-        />
 
         <ThemedText
           fontSize={12}
@@ -336,6 +355,30 @@ export default function SettingsScreen() {
           Version {appVersion} ({buildVersion})
         </ThemedText>
       </ScrollView>
+
+      {Platform.OS !== "web" && (
+        <View style={styles.footer}>
+          <Button
+            type="neutral"
+            variant="secondary"
+            testID="settings-test-printer"
+            onPress={handleTestPrinterPress}
+            icon={
+              <Image
+                source={require("@/assets/images/printer.png")}
+                style={[
+                  styles.printerIcon,
+                  { tintColor: theme["text-primary"] },
+                ]}
+                tintColor={theme["text-primary"]}
+                cachePolicy="memory-disk"
+              />
+            }
+          >
+            Print test receipt
+          </Button>
+        </View>
+      )}
 
       {/* Theme Bottom Sheet */}
       <SettingsBottomSheet
@@ -471,8 +514,15 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: Spacing["spacing-5"],
-    paddingBottom: Spacing["extra-spacing-2"],
-    gap: Spacing["spacing-2"],
+    paddingBottom: Spacing["spacing-6"],
+    gap: Spacing["spacing-7"],
+  },
+  footer: {
+    paddingTop: Spacing["spacing-4"],
+  },
+  printerIcon: {
+    width: 16,
+    height: 16,
   },
   versionText: {
     alignSelf: "flex-end",
