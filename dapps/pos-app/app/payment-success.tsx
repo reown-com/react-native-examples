@@ -38,7 +38,7 @@ interface SuccessParams extends UnknownOutputParams {
 const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
 const diagonalLength = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
 const initialCircleSize = 20;
-const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
+const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 4;
 const contentOffset = 16;
 const contentRevealDelay = 700;
 const contentRevealDuration = 200;
@@ -183,15 +183,7 @@ export default function PaymentSuccessScreen() {
   }));
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingTop: top + Spacing["spacing-3"],
-          paddingBottom: bottomSpacing,
-        },
-      ]}
-    >
+    <View style={styles.container}>
       {/* Expanding circle background */}
       <Animated.View
         style={[
@@ -215,8 +207,19 @@ export default function PaymentSuccessScreen() {
         ]}
       />
 
-      {/* Content fades in after the blue-to-theme transition completes. */}
-      <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
+      {/* Content fades in after the blue-to-theme transition completes. The
+          safe-area padding lives here (not on the full-screen container) so the
+          expanding circle stays centered on the true screen center. */}
+      <Animated.View
+        style={[
+          styles.contentContainer,
+          {
+            paddingTop: top + Spacing["spacing-3"],
+            paddingBottom: bottomSpacing,
+          },
+          contentAnimatedStyle,
+        ]}
+      >
         <View style={styles.header}>
           <HeaderImage tintColor={Theme["text-primary"]} />
         </View>
@@ -291,7 +294,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     overflow: "hidden",
-    paddingHorizontal: Spacing["spacing-5"],
   },
   circle: {
     position: "absolute",
@@ -306,6 +308,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     width: "100%",
+    paddingHorizontal: Spacing["spacing-5"],
   },
   header: {
     alignItems: "center",
