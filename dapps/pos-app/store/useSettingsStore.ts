@@ -115,7 +115,7 @@ export const useSettingsStore = create<SettingsStore>()(
       merchantId: null,
       isCustomerApiKeySet: false,
       transactionFilter: "all",
-      dateRangeFilter: "today",
+      dateRangeFilter: "all_time",
       isPinHashSet: false,
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
@@ -279,7 +279,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 17,
+      version: 18,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -349,6 +349,14 @@ export const useSettingsStore = create<SettingsStore>()(
           // Wallet theme variants were removed; reset any persisted branded
           // variant so it maps back to the only remaining option.
           persistedState.variant = "default";
+        }
+
+        if (version < 18) {
+          // The date range filter previously defaulted to "today", which made a
+          // fresh terminal with no transactions show the "filters active" empty
+          // state ("No payments found") instead of the onboarding empty state
+          // ("No payments yet"). Reset to "all_time" so the default is unfiltered.
+          persistedState.dateRangeFilter = "all_time";
         }
 
         return persistedState;
