@@ -1,5 +1,6 @@
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { maskPathIds } from "@/utils/api";
 import { ApiError } from "@/utils/types";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -33,6 +34,7 @@ class ApiClient {
       ? endpoint
       : `/${endpoint}`;
     const url = `${normalizedBaseUrl}${normalizedEndpoint}`;
+    const method = fetchOptions.method ?? "GET";
 
     const requestHeaders: HeadersInit = {
       "Content-Type": "application/json",
@@ -72,11 +74,18 @@ class ApiClient {
       const data = await response.json();
       useLogsStore
         .getState()
-        .addLog("info", "API request successful", "api", "request", {
-          endpoint,
-          body,
-          response: data,
-        });
+        .addLog(
+          "info",
+          `${method} ${maskPathIds(normalizedEndpoint)}`,
+          "api",
+          "request",
+          {
+            method,
+            endpoint,
+            body,
+            response: data,
+          },
+        );
       return data as T;
     } catch (error) {
       clearTimeout(timeoutId);
@@ -90,6 +99,7 @@ class ApiClient {
         useLogsStore
           .getState()
           .addLog("error", timeoutError.message, "api", "request", {
+            method,
             endpoint,
             body,
           });
@@ -105,7 +115,7 @@ class ApiClient {
             apiError.message || "API request failed",
             "api",
             "request",
-            { endpoint, body, response: error },
+            { method, endpoint, body, response: error },
           );
         throw error;
       }
@@ -113,7 +123,7 @@ class ApiClient {
         error instanceof Error ? error.message : "An unexpected error occurred";
       useLogsStore
         .getState()
-        .addLog("error", errorMessage, "api", "request", { endpoint });
+        .addLog("error", errorMessage, "api", "request", { method, endpoint });
       const apiError: ApiError = {
         message: errorMessage,
       };
