@@ -26,10 +26,7 @@ function FilterButtonsBase({ buttons }: FilterButtonsProps) {
         <Pressable
           key={`${button.label}-${index}`}
           onPress={button.onPress}
-          style={[
-            styles.button,
-            { backgroundColor: theme["foreground-primary-fix"] },
-          ]}
+          style={[styles.button, { borderColor: theme["border-secondary"] }]}
         >
           <ThemedText fontSize={16} lineHeight={18} color="text-primary">
             {button.label}
@@ -63,8 +60,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 48,
     paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-4"],
     borderRadius: BorderRadius["4"],
+    borderWidth: 1,
     gap: Spacing["spacing-2"],
   },
   caretIcon: {

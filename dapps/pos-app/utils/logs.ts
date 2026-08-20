@@ -3,17 +3,21 @@ import { getDateRange } from "./date-range";
 import { DateRangeFilterType, LogLevelFilterType } from "./types";
 
 /**
- * Short timestamp for the log card header (day/month + time, no year).
+ * Timestamp for the log card header (e.g. "14 Oct 2025 - 14:45"). Matches the
+ * transaction card date format; no seconds.
  */
 export const formatTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp);
-  return date.toLocaleString(undefined, {
-    day: "2-digit",
-    month: "2-digit",
+  const datePart = date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  const timePart = date.toLocaleTimeString("en-GB", {
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit",
   });
+  return `${datePart} - ${timePart}`;
 };
 
 /**

@@ -6,7 +6,7 @@ import { showSuccessToast } from "@/utils/toast";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
 import { memo, useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   Easing,
   FadeIn,
@@ -15,7 +15,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { Button } from "./button";
-import { Pressable } from "./pressable";
 import { ThemedText } from "./themed-text";
 
 const ANIMATION_DURATION = 200;
@@ -73,7 +72,7 @@ function LogCardBase({ item }: { item: LogEntry }) {
 
   const handleCopy = useCallback(async () => {
     await Clipboard.setStringAsync(buildLogText(item));
-    showSuccessToast("Log entry copied to clipboard");
+    showSuccessToast("Log entry copied");
   }, [item]);
 
   const inner = (

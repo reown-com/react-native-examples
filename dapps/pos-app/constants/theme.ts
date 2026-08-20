@@ -19,6 +19,7 @@ export const Colors = {
     "icon-success": "#30A46B",
     "icon-accent-primary": "#0666FF",
     "icon-error": "#DF4A34",
+    "icon-warning": "#F3A13F",
 
     // Background colors
     "bg-primary": "#FFFFFF",
@@ -58,6 +59,7 @@ export const Colors = {
     "icon-success": "#30A46B",
     "icon-accent-primary": "#0666FF",
     "icon-error": "#DF4A34",
+    "icon-warning": "#F3A13F",
 
     // Background colors
     "bg-primary": "#202020",

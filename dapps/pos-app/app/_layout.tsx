@@ -98,6 +98,7 @@ export default Sentry.wrap(function RootLayout() {
     "KH Teka": require("@/assets/fonts/KHTeka-Regular.otf"),
     "KH Teka Light": require("@/assets/fonts/KHTeka-Light.otf"),
     "KH Teka Medium": require("@/assets/fonts/KHTeka-Medium.otf"),
+    "KH Teka Mono": require("@/assets/fonts/KHTekaMono-Regular.otf"),
   });
 
   // Register the expo-router navigation container with Sentry so route changes

@@ -11,7 +11,10 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  useSafeAreaInsets,
+  initialWindowMetrics,
+} from "react-native-safe-area-context";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -38,12 +41,13 @@ interface TransactionDetailModalProps {
 }
 
 /**
- * Truncate hash for display (e.g., "0x23...22d3")
+ * Truncate a developer-facing id in the middle (e.g., "0x23...22d3"). Used for
+ * transaction hashes and payment ids so long values stay a single short line.
  */
-function truncateHash(hash?: string): string {
-  if (!hash) return "-";
-  if (hash.length <= 12) return hash;
-  return `${hash.slice(0, 4)}...${hash.slice(-4)}`;
+function truncateMiddle(value?: string, lead = 4, trail = 4): string {
+  if (!value) return "-";
+  if (value.length <= lead + trail + 3) return value;
+  return `${value.slice(0, lead)}...${value.slice(-trail)}`;
 }
 
 function formatTokenAmountLabel(
@@ -69,16 +73,9 @@ interface DetailRowProps {
   value?: string;
   children?: React.ReactNode;
   onPress?: () => void;
-  underline?: boolean;
 }
 
-function DetailRow({
-  label,
-  value,
-  children,
-  onPress,
-  underline,
-}: DetailRowProps) {
+function DetailRow({ label, value, children, onPress }: DetailRowProps) {
   const theme = useTheme();
 
   const content = (
@@ -97,7 +94,7 @@ function DetailRow({
           color="text-primary"
           numberOfLines={1}
           ellipsizeMode="middle"
-          style={[styles.valueText, underline && styles.underlineText]}
+          style={styles.valueText}
         >
           {value}
         </ThemedText>
@@ -110,6 +107,34 @@ function DetailRow({
   }
 
   return content;
+}
+
+/**
+ * Developer-facing id value: monospaced (KH Teka Mono) + a copy affordance.
+ * The row's onPress performs the copy; this only renders the value + icon.
+ */
+function CopyableId({ value }: { value: string }) {
+  const theme = useTheme();
+
+  return (
+    <View style={styles.copyValue}>
+      <ThemedText
+        fontSize={16}
+        lineHeight={18}
+        color="text-primary"
+        numberOfLines={1}
+        style={styles.monoValue}
+      >
+        {value}
+      </ThemedText>
+      <Image
+        source={require("@/assets/images/copy.png")}
+        tintColor={theme["icon-invert"]}
+        contentFit="contain"
+        style={styles.copyIcon}
+      />
+    </View>
+  );
 }
 
 function TransactionDetailModalBase({
@@ -146,14 +171,14 @@ function TransactionDetailModalBase({
   const handleCopyPaymentId = async () => {
     if (!payment?.paymentId) return;
     await Clipboard.setStringAsync(payment.paymentId);
-    showSuccessToast("Payment ID copied to clipboard");
+    showSuccessToast("Payment ID copied");
   };
 
   const txHash = payment.transaction?.hash;
   const handleCopyHash = async () => {
     if (!txHash) return;
     await Clipboard.setStringAsync(txHash);
-    showSuccessToast("Transaction ID copied to clipboard");
+    showSuccessToast("Transaction ID copied");
   };
 
   return (
@@ -233,20 +258,14 @@ function TransactionDetailModalBase({
                   </DetailRow>
                 )}
 
-                <DetailRow
-                  label="Payment ID"
-                  value={payment.paymentId}
-                  onPress={handleCopyPaymentId}
-                  underline
-                />
+                <DetailRow label="Payment ID" onPress={handleCopyPaymentId}>
+                  <CopyableId value={truncateMiddle(payment.paymentId)} />
+                </DetailRow>
 
                 {txHash && (
-                  <DetailRow
-                    label="Transaction ID"
-                    value={truncateHash(txHash)}
-                    onPress={handleCopyHash}
-                    underline
-                  />
+                  <DetailRow label="Transaction ID" onPress={handleCopyHash}>
+                    <CopyableId value={truncateMiddle(txHash)} />
+                  </DetailRow>
                 )}
               </View>
             </ScrollView>
@@ -255,8 +274,8 @@ function TransactionDetailModalBase({
       </View>
       <Toast
         config={toastConfig}
-        position="bottom"
-        bottomOffset={insets.bottom}
+        position="top"
+        topOffset={(initialWindowMetrics?.insets.top ?? 0) + 8}
         visibilityTime={2000}
       />
     </FramedModal>
@@ -305,9 +324,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
     flex: 1,
   },
-  underlineText: {
-    textDecorationLine: "underline",
-  },
   closeButton: {
     borderRadius: BorderRadius["3"],
     borderWidth: StyleSheet.hairlineWidth,
@@ -325,6 +341,20 @@ const styles = StyleSheet.create({
     gap: Spacing["spacing-2"],
   },
   tokenIcon: {
+    width: 18,
+    height: 18,
+  },
+  copyValue: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing["spacing-2"],
+    flexShrink: 1,
+  },
+  monoValue: {
+    fontFamily: "KH Teka Mono",
+    textAlign: "right",
+  },
+  copyIcon: {
     width: 18,
     height: 18,
   },

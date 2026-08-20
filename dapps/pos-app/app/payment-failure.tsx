@@ -30,7 +30,9 @@ export default function PaymentFailureScreen() {
   const { top } = useSafeAreaInsets();
   const params: Partial<ScreenParams> = useLocalSearchParams<ScreenParams>();
   const currencyCode = useSettingsStore((state) => state.currency);
-  const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
+  const [assets] = useAssets([
+    require("@/assets/images/warning_circle_fill.png"),
+  ]);
 
   const { title, subtitle } = getPaymentErrorMessage(params.errorCode, {
     minAmountCents: params.minAmount,

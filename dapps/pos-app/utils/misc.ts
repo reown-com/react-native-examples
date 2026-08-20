@@ -18,30 +18,19 @@ export const getDeviceIdentifier = async () => {
 };
 
 /**
- * Format date to short display string (e.g., "Oct 14, 25")
+ * Format a date with time (e.g., "14 Oct 2025 - 14:45").
+ * Accepts an ISO string or an epoch-ms timestamp.
  */
-export function formatShortDate(dateString?: string): string {
-  if (!dateString) return "-";
+export function formatDateTime(input?: string | number): string {
+  if (input === undefined || input === null || input === "") return "-";
 
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
+  const date = new Date(input);
+  if (Number.isNaN(date.getTime())) return "-";
+
+  const datePart = date.toLocaleDateString("en-GB", {
     day: "numeric",
-    year: "2-digit",
-  });
-}
-
-/**
- * Format date with time (e.g., "Oct 14, 25 - 14:23")
- */
-export function formatDateTime(dateString?: string): string {
-  if (!dateString) return "-";
-
-  const date = new Date(dateString);
-  const datePart = date.toLocaleDateString("en-US", {
     month: "short",
-    day: "numeric",
-    year: "2-digit",
+    year: "numeric",
   });
   const timePart = date.toLocaleTimeString("en-GB", {
     hour: "2-digit",

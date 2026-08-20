@@ -31,7 +31,7 @@ type ActiveSheet = "status" | "dateRange" | null;
 const STATUS_LABELS: Record<TransactionFilterType, string> = {
   all: "Status",
   pending: "Pending",
-  completed: "Completed",
+  completed: "Confirmed",
   failed: "Failed",
   expired: "Expired",
   cancelled: "Cancelled",
@@ -73,15 +73,15 @@ export default function ActivityScreen() {
       {
         value: "pending",
         label: "Pending",
-        dotColor: theme["icon-default"],
+        dotColor: theme["bg-invert"],
       },
       {
         value: "completed",
-        label: "Completed",
+        label: "Confirmed",
         dotColor: theme["icon-success"],
       },
       { value: "failed", label: "Failed", dotColor: theme["icon-error"] },
-      { value: "expired", label: "Expired", dotColor: theme["icon-error"] },
+      { value: "expired", label: "Expired", dotColor: theme["icon-warning"] },
       {
         value: "cancelled",
         label: "Cancelled",
@@ -146,6 +146,16 @@ export default function ActivityScreen() {
     setSelectedPayment(null);
   }, []);
 
+  const isEmpty = !transactions || transactions.length === 0;
+
+  const filtersActive =
+    transactionFilter !== "all" || dateRangeFilter !== "all_time";
+
+  const handleClearFilters = useCallback(() => {
+    setTransactionFilter("all");
+    setDateRangeFilter("all_time");
+  }, [setTransactionFilter, setDateRangeFilter]);
+
   const renderItem = useCallback(
     ({ item }: { item: PaymentRecord }) => (
       <TransactionCard
@@ -171,6 +181,16 @@ export default function ActivityScreen() {
       );
     }
 
+    if (filtersActive) {
+      return (
+        <EmptyState
+          title="No payments found"
+          subtitle="No payments match the filters you selected."
+          cta={{ label: "Clear filters", onPress: handleClearFilters }}
+        />
+      );
+    }
+
     return (
       <EmptyState
         title="No payments yet"
@@ -181,7 +201,7 @@ export default function ActivityScreen() {
         }}
       />
     );
-  }, [isLoading, theme]);
+  }, [isLoading, theme, filtersActive, handleClearFilters]);
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -199,8 +219,8 @@ export default function ActivityScreen() {
     );
   }, [isFetchingNextPage, theme]);
 
-  const listHeader = useMemo(
-    () => (
+  return (
+    <View style={styles.container}>
       <FilterButtons
         buttons={[
           {
@@ -213,22 +233,19 @@ export default function ActivityScreen() {
           },
         ]}
       />
-    ),
-    [transactionFilter, dateRangeFilter],
-  );
-
-  return (
-    <>
+      <View
+        style={[styles.divider, { backgroundColor: theme["border-primary"] }]}
+      />
       <FlatList
         data={transactions}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        ListHeaderComponent={listHeader}
+        style={styles.list}
         contentContainerStyle={[
           styles.listContent,
-          (!transactions || transactions?.length === 0) &&
-            styles.emptyListContent,
+          isEmpty && styles.emptyListContent,
         ]}
+        scrollEnabled={!isEmpty}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={renderEmptyComponent}
         ListFooterComponent={renderFooter}
@@ -276,13 +293,19 @@ export default function ActivityScreen() {
         payment={selectedPayment}
         onClose={handleCloseModal}
       />
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  listContent: {
+  container: {
+    flex: 1,
     paddingTop: Spacing["spacing-4"],
+  },
+  list: {
+    flex: 1,
+  },
+  listContent: {
     paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-6"],
     gap: Spacing["spacing-2"],
   },
@@ -296,6 +319,12 @@ const styles = StyleSheet.create({
   },
   cardPadding: {
     marginHorizontal: Spacing["spacing-5"],
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    marginHorizontal: Spacing["spacing-5"],
+    marginTop: Spacing["spacing-1"],
+    marginBottom: Spacing["spacing-3"],
   },
   footerLoader: {
     paddingVertical: Spacing["spacing-4"],
