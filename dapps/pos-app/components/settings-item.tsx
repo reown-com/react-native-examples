@@ -1,7 +1,7 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAssets } from "expo-asset";
-import { Image } from "expo-image";
+import { Image, ImageSource } from "expo-image";
 import { StyleSheet, View } from "react-native";
 import { Pressable } from "./pressable";
 import { ThemedText } from "./themed-text";
@@ -16,6 +16,8 @@ interface SettingsItemProps {
    * "right" drills into an editor.
    */
   caret?: "up-down" | "right";
+  /** Optional leading icon rendered before the title (tinted to text-primary). */
+  icon?: ImageSource;
   disabled?: boolean;
   testID?: string;
 }
@@ -26,6 +28,7 @@ export function SettingsItem({
   onPress,
   showCaret,
   caret = "up-down",
+  icon,
   disabled,
   testID,
 }: SettingsItemProps) {
@@ -49,6 +52,14 @@ export function SettingsItem({
       ]}
     >
       <View style={styles.labelRow}>
+        {icon && (
+          <Image
+            source={icon}
+            style={[styles.leadingIcon, { tintColor: Theme["text-primary"] }]}
+            tintColor={Theme["text-primary"]}
+            cachePolicy="memory-disk"
+          />
+        )}
         <ThemedText
           fontSize={16}
           lineHeight={18}
@@ -106,5 +117,9 @@ const styles = StyleSheet.create({
   caretIcon: {
     width: 20,
     height: 20,
+  },
+  leadingIcon: {
+    width: 16,
+    height: 16,
   },
 });

@@ -1,12 +1,10 @@
 import { Button } from "@/components/button";
-import { Card } from "@/components/card";
 import { PinModal } from "@/components/pin-modal";
-import { LogEntriesRow } from "@/components/log-entries-row";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { SettingsItem } from "@/components/settings-item";
 import { SettingsSection } from "@/components/settings-section";
-import { Switch } from "@/components/switch";
+import { SettingsToggleItem } from "@/components/settings-toggle-item";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
@@ -175,7 +173,6 @@ export default function SettingsScreen() {
     nfcCapabilities.isHceSupported;
 
   const showBiometricToggle = shouldShowBiometricOption && !!biometricStatus;
-  const showSecuritySection = showNfcToggle || showBiometricToggle;
 
   const handleTestPrinterPress = async () => {
     try {
@@ -280,71 +277,64 @@ export default function SettingsScreen() {
 
           <SettingsItem
             testID="settings-customer-api-key"
-            title="Customer API key"
+            title="Customer API KEY"
             value="**********"
             caret="right"
             onPress={() => setActiveSheet("customerApiKey")}
           />
 
-          <LogEntriesRow
-            testID="settings-view-logs"
-            count={logsCount}
-            onPress={() => router.push("/logs")}
-          />
+          {showNfcToggle && (
+            <SettingsToggleItem
+              testID="settings-nfc-toggle"
+              title="Tap to pay"
+              description="Show NFC prompt"
+              value={nfcEnabled}
+              onValueChange={setNfcEnabled}
+            />
+          )}
+
+          {/* Biometric toggle - only show if PIN is set and biometrics available */}
+          {showBiometricToggle && (
+            <SettingsToggleItem
+              testID="settings-biometric-toggle"
+              title={getBiometricLabel(biometricStatus.biometricType)}
+              description="Use instead of Pin"
+              value={biometricEnabled}
+              onValueChange={handleBiometricToggle}
+            />
+          )}
         </SettingsSection>
 
-        {showSecuritySection && (
-          <SettingsSection title="Security">
-            {showNfcToggle && (
-              <Card style={styles.biometricCard}>
-                <View style={styles.biometricRow}>
-                  <View style={styles.biometricLabel}>
-                    <ThemedText fontSize={16} lineHeight={18}>
-                      Tap-to-pay prompt
-                    </ThemedText>
-                    <ThemedText
-                      fontSize={12}
-                      lineHeight={14}
-                      color="text-tertiary"
-                    >
-                      Show the tap-to-pay prompt on the payment screen.
-                    </ThemedText>
-                  </View>
-                  <Switch
-                    style={styles.switch}
-                    value={nfcEnabled}
-                    onValueChange={setNfcEnabled}
-                  />
-                </View>
-              </Card>
-            )}
+        <SettingsSection title="Device">
+          <SettingsItem
+            testID="settings-view-logs"
+            icon={require("@/assets/images/terminal.png")}
+            title="Logs"
+            value={`${logsCount} ${logsCount === 1 ? "entry" : "entries"}`}
+            caret="right"
+            showCaret
+            onPress={() => router.push("/logs")}
+          />
 
-            {/* Biometric toggle - only show if PIN is set and biometrics available */}
-            {showBiometricToggle && (
-              <Card style={styles.biometricCard}>
-                <View style={styles.biometricRow}>
-                  <View style={styles.biometricLabel}>
-                    <ThemedText fontSize={16} lineHeight={18}>
-                      {getBiometricLabel(biometricStatus.biometricType)}
-                    </ThemedText>
-                    <ThemedText
-                      fontSize={12}
-                      lineHeight={14}
-                      color="text-tertiary"
-                    >
-                      Use instead of PIN.
-                    </ThemedText>
-                  </View>
-                  <Switch
-                    style={styles.switch}
-                    value={biometricEnabled}
-                    onValueChange={handleBiometricToggle}
-                  />
-                </View>
-              </Card>
-            )}
-          </SettingsSection>
-        )}
+          {Platform.OS !== "web" && (
+            <Button
+              type="neutral"
+              variant="secondary"
+              testID="settings-test-printer"
+              onPress={handleTestPrinterPress}
+              icon={
+                <Image
+                  source={require("@/assets/images/printer.png")}
+                  style={styles.printerIcon}
+                  tintColor={theme["text-primary"]}
+                  cachePolicy="memory-disk"
+                />
+              }
+            >
+              Print test receipt
+            </Button>
+          )}
+        </SettingsSection>
 
         <ThemedText
           fontSize={12}
@@ -355,27 +345,6 @@ export default function SettingsScreen() {
           Version {appVersion} ({buildVersion})
         </ThemedText>
       </ScrollView>
-
-      {Platform.OS !== "web" && (
-        <View style={styles.footer}>
-          <Button
-            type="neutral"
-            variant="secondary"
-            testID="settings-test-printer"
-            onPress={handleTestPrinterPress}
-            icon={
-              <Image
-                source={require("@/assets/images/printer.png")}
-                style={styles.printerIcon}
-                tintColor={theme["text-primary"]}
-                cachePolicy="memory-disk"
-              />
-            }
-          >
-            Print test receipt
-          </Button>
-        </View>
-      )}
 
       {/* Theme Bottom Sheet */}
       <SettingsBottomSheet
@@ -514,9 +483,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing["spacing-6"],
     gap: Spacing["spacing-7"],
   },
-  footer: {
-    paddingTop: Spacing["spacing-4"],
-  },
   printerIcon: {
     width: 16,
     height: 16,
@@ -524,24 +490,6 @@ const styles = StyleSheet.create({
   versionText: {
     alignSelf: "flex-end",
     marginVertical: Spacing["spacing-2"],
-  },
-  switch: {
-    alignSelf: "center",
-  },
-  biometricCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: 68,
-  },
-  biometricRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-  },
-  biometricLabel: {
-    gap: Spacing["spacing-1"],
   },
   inputContent: {
     gap: Spacing["spacing-3"],
