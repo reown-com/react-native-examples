@@ -7,7 +7,13 @@ import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { useState } from "react";
+import {
+  LayoutChangeEvent,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const compactScreenHeight = 700;
@@ -25,8 +31,9 @@ export default function HomeScreen() {
   ]);
 
   const Theme = useTheme();
-  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const { height: windowHeight } = useWindowDimensions();
   const { bottom } = useSafeAreaInsets();
+  const [contentWidth, setContentWidth] = useState(0);
   const merchantId = useSettingsStore((state) => state.merchantId);
   const isCustomerApiKeySet = useSettingsStore(
     (state) => state.isCustomerApiKeySet,
@@ -53,14 +60,26 @@ export default function HomeScreen() {
   const isCompact = windowHeight < compactScreenHeight;
   const secondaryActionHeight = isCompact ? 112 : 140;
   const primaryActionMinHeight = isCompact ? 200 : 320;
-  // The button is full-width minus the horizontal padding; cap its height so
-  // the height/width gap stays small (almost square). Never below its min.
-  const primaryWidth = windowWidth - Spacing["spacing-5"] * 2;
-  const primaryActionMaxHeight = Math.max(
-    primaryActionMinHeight,
-    Math.round(primaryWidth * primaryMaxAspectRatio),
-  );
+  // Cap the button's height from its actual measured width (the container's
+  // content box, via onLayout) so the near-square rule holds regardless of the
+  // window size — on web the app renders inside a device-frame, so the window
+  // width isn't the button's width. Undefined until measured (button grows).
+  const primaryActionMaxHeight = contentWidth
+    ? Math.max(
+        primaryActionMinHeight,
+        Math.round(contentWidth * primaryMaxAspectRatio),
+      )
+    : undefined;
   const topSpacing = Spacing["spacing-6"];
+
+  const handleContentLayout = (event: LayoutChangeEvent) => {
+    // Content box width = full width minus the container's horizontal padding,
+    // which matches the full-width button's width.
+    const measured = event.nativeEvent.layout.width - Spacing["spacing-5"] * 2;
+    if (measured > 0 && measured !== contentWidth) {
+      setContentWidth(measured);
+    }
+  };
   const bottomSpacing = Math.max(
     bottom + Spacing["spacing-3"],
     Spacing["spacing-7"],
@@ -68,6 +87,7 @@ export default function HomeScreen() {
 
   return (
     <View
+      onLayout={handleContentLayout}
       style={[
         styles.container,
         { paddingTop: topSpacing, paddingBottom: bottomSpacing },
