@@ -23,7 +23,7 @@ export interface TransactionStatusMeta {
 }
 
 /**
- * Single source of truth mapping a raw `PaymentStatus` to its display label,
+ * Single source of truth mapping a raw `TransactionStatus` to its display label,
  * colors and icon. Consumed by both the transaction card and the status pill so
  * the two never drift apart.
  */

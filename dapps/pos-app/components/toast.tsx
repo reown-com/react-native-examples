@@ -12,8 +12,6 @@ interface ToastProps {
   type: ToastType;
 }
 
-const LOADING_COLOR = "#0988F0";
-
 export function Toast({ message = "", type }: ToastProps) {
   const Theme = useTheme();
   const [assets] = useAssets([
@@ -44,7 +42,10 @@ export function Toast({ message = "", type }: ToastProps) {
 
       <View style={styles.icon}>
         {type === "loading" ? (
-          <ActivityIndicator size="small" color={LOADING_COLOR} />
+          <ActivityIndicator
+            size="small"
+            color={Theme["icon-accent-primary"]}
+          />
         ) : (
           <Image source={icon} style={styles.iconImage} contentFit="contain" />
         )}
