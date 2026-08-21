@@ -1,0 +1,29 @@
+# Flow 4 — sign a message on another chain: switch chain, then personal_sign.
+appId: ${APP_ID}
+tags:
+  - relay-walletkit
+  - sign-other-chain
+---
+- runFlow: _connect_walletkit.yaml
+- extendedWaitUntil:
+    visible: 'Connected to'
+    timeout: 60000
+# Switch to Polygon via the dapp's TEST_MODE button.
+- tapOn: 'Switch to Polygon (E2E)'
+- extendedWaitUntil:
+    visible: 'Chain: Polygon'
+    timeout: 30000
+# Sign on the new chain.
+- tapOn: '^Sign$'
+- launchApp:
+    appId: ${APP_ID}
+- extendedWaitUntil:
+    visible:
+      id: 'approve-button'
+    timeout: 60000
+- tapOn:
+    id: 'approve-button'
+- runFlow: _focus_browser.yaml
+- extendedWaitUntil:
+    visible: 'Sign success'
+    timeout: 60000

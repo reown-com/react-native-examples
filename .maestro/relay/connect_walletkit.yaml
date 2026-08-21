@@ -1,0 +1,12 @@
+# Flow 1 — connect: dapp initiates, wallet approves, session established.
+appId: ${APP_ID}
+tags:
+  - relay-walletkit
+  - connect
+---
+- runFlow: _connect_walletkit.yaml
+# Web dapp reflects the connected account (matched by text — Safari webview
+# doesn't expose testIDs).
+- extendedWaitUntil:
+    visible: 'Connected to'
+    timeout: 60000
