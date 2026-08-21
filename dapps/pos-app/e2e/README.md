@@ -64,7 +64,7 @@ maestro test --env APP_URL=http://localhost:8081 e2e/
 # A single flow
 maestro test --env APP_URL=http://localhost:8081 e2e/keypad.yaml
 
-# Filter by tag (payment | amount)
+# Filter by tag (payment | amount | settings)
 maestro test --include-tags amount --env APP_URL=http://localhost:8081 e2e/
 ```
 
@@ -72,12 +72,13 @@ Add `--headless` to run without a visible browser window (as CI does under xvfb)
 
 ## Test Files
 
-| File                  | Tags      | Description                                                                                                                |
-| --------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `payment-flow.yaml`   | `payment` | Start payment → enter $0.01 → charge → wait for QR → tap QR copies the payment link. Needs valid merchant creds + network. |
-| `payment-cancel.yaml` | `payment` | Same prelude as `payment-flow`, then cancel returns to a fresh amount screen (and cancels the payment at the gateway).     |
-| `invalid-amount.yaml` | `amount`  | Charge button stays "Enter amount"/disabled at empty/`0`; enables once a non-zero amount is entered.                       |
-| `keypad.yaml`         | `amount`  | Keypad decimal handling (single decimal, max 2 fractional digits) and backspace.                                           |
+| File                  | Tags       | Description                                                                                                                |
+| --------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `payment-flow.yaml`   | `payment`  | Start payment → enter $0.01 → charge → wait for QR → tap QR copies the payment link. Needs valid merchant creds + network. |
+| `payment-cancel.yaml` | `payment`  | Same prelude as `payment-flow`, then cancel returns to a fresh amount screen (and cancels the payment at the gateway).     |
+| `invalid-amount.yaml` | `amount`   | Charge button stays "Enter amount"/disabled at empty/`0`; enables once a non-zero amount is entered.                       |
+| `keypad.yaml`         | `amount`   | Keypad decimal handling (single decimal, max 2 fractional digits) and backspace.                                           |
+| `settings-theme.yaml` | `settings` | Opens the Theme bottom sheet, selects Dark, and verifies the updated setting.                                              |
 
 Shared steps live in `common/*.yaml` (the `$0.01`→QR prelude, run via `runFlow`).
 Flows there are **not** picked up as standalone tests — neither by CI's

@@ -19,7 +19,7 @@ export const Pressable: React.FC<Props> = ({
   onPress,
   disabled,
   testID,
-  accessibilityRole,
+  accessibilityRole = "button",
   accessibilityLabel,
   accessibilityHint,
 }) => {
