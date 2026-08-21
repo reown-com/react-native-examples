@@ -12,6 +12,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const compactScreenHeight = 700;
 
+// Keep the primary "New payment" button close to square on tall screens: cap
+// its height relative to its width so it never stretches into a long rectangle.
+// A little over 1 keeps it a rectangle that reads as almost-square.
+const primaryMaxAspectRatio = 1.3;
+
 export default function HomeScreen() {
   const [assets] = useAssets([
     require("@/assets/images/plus-circle-fill.png"),
@@ -20,7 +25,7 @@ export default function HomeScreen() {
   ]);
 
   const Theme = useTheme();
-  const { height: windowHeight } = useWindowDimensions();
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const { bottom } = useSafeAreaInsets();
   const merchantId = useSettingsStore((state) => state.merchantId);
   const isCustomerApiKeySet = useSettingsStore(
@@ -48,9 +53,14 @@ export default function HomeScreen() {
   const isCompact = windowHeight < compactScreenHeight;
   const secondaryActionHeight = isCompact ? 112 : 140;
   const primaryActionMinHeight = isCompact ? 200 : 320;
-  const topSpacing = isCompact
-    ? Spacing["spacing-6"]
-    : Spacing["extra-spacing-1"];
+  // The button is full-width minus the horizontal padding; cap its height so
+  // the height/width gap stays small (almost square). Never below its min.
+  const primaryWidth = windowWidth - Spacing["spacing-5"] * 2;
+  const primaryActionMaxHeight = Math.max(
+    primaryActionMinHeight,
+    Math.round(primaryWidth * primaryMaxAspectRatio),
+  );
+  const topSpacing = Spacing["spacing-6"];
   const bottomSpacing = Math.max(
     bottom + Spacing["spacing-3"],
     Spacing["spacing-7"],
@@ -72,7 +82,10 @@ export default function HomeScreen() {
         style={[
           styles.baseActionButton,
           styles.primaryActionButton,
-          { minHeight: primaryActionMinHeight },
+          {
+            minHeight: primaryActionMinHeight,
+            maxHeight: primaryActionMaxHeight,
+          },
           { backgroundColor: Theme["foreground-primary-fix"] },
         ]}
       >
@@ -143,6 +156,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: Spacing["spacing-5"],
     alignItems: "center",
+    justifyContent: "flex-end",
     gap: Spacing["spacing-3"],
   },
   baseActionButton: {
