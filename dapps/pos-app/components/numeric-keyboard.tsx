@@ -34,6 +34,9 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
             <Pressable
               key={key}
               onPress={() => handlePress(key)}
+              testID={key === "." ? "key-decimal" : `key-${key}`}
+              accessibilityRole="button"
+              accessibilityLabel={key === "erase" ? "Backspace" : key}
               style={[
                 styles.key,
                 { backgroundColor: Theme["foreground-primary-fix"] },
@@ -41,7 +44,6 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
             >
               {key === "erase" ? (
                 <Image
-                  testID="key-erase"
                   source={assets?.[0]}
                   style={[
                     styles.backspace,
@@ -55,10 +57,6 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                 />
               ) : (
                 <ThemedText
-                  // The "." key gets a dedicated id ("key-decimal") instead of
-                  // "key-." because Maestro treats id selectors as regex, where
-                  // "." is a wildcard that would match any "key-X".
-                  testID={key === "." ? "key-decimal" : `key-${key}`}
                   style={[styles.keyText, { color: Theme["text-primary"] }]}
                 >
                   {key}
