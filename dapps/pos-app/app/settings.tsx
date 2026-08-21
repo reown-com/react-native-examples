@@ -1,3 +1,4 @@
+import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { PinModal } from "@/components/pin-modal";
 import { RadioList, RadioOption } from "@/components/radio-list";
@@ -5,6 +6,7 @@ import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { SettingsItem } from "@/components/settings-item";
 import { SettingsSection } from "@/components/settings-section";
 import { SettingsToggleItem } from "@/components/settings-toggle-item";
+import { SetupBanner } from "@/components/setup-banner";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
@@ -80,7 +82,6 @@ export default function SettingsScreen() {
   const theme = useTheme();
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
-  const [isEditingCustomerKey, setIsEditingCustomerKey] = useState(false);
 
   // Custom hooks for biometrics and merchant flow
   const {
@@ -96,6 +97,8 @@ export default function SettingsScreen() {
   const {
     merchantIdInput,
     customerApiKeyInput,
+    isEditingCustomerApiKey,
+    storedMerchantId,
     activeModal,
     pinError,
     isMerchantIdConfirmDisabled,
@@ -137,7 +140,6 @@ export default function SettingsScreen() {
       resetCustomerApiKeyInput();
     }
     setActiveSheet(null);
-    setIsEditingCustomerKey(false);
   };
 
   const handleThemeModeChange = (value: ThemeMode) => {
@@ -160,19 +162,16 @@ export default function SettingsScreen() {
     handleCustomerApiKeyConfirm();
   };
 
-  const handleCustomerKeyChange = (value: string) => {
-    if (!isEditingCustomerKey) {
-      setIsEditingCustomerKey(true);
-    }
-    handleCustomerApiKeyInputChange(value);
-  };
-
   const showNfcToggle =
     isNfcHceEnabled &&
     Platform.OS === "android" &&
     nfcCapabilities.isHceSupported;
 
   const showBiometricToggle = shouldShowBiometricOption && !!biometricStatus;
+
+  const hasMerchantId = !!storedMerchantId?.trim();
+  const setupRemaining =
+    (hasMerchantId ? 0 : 1) + (hasStoredCustomerApiKey ? 0 : 1);
 
   const handleTestPrinterPress = async () => {
     try {
@@ -250,6 +249,13 @@ export default function SettingsScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
+        {setupRemaining > 0 && (
+          <SetupBanner
+            testID="settings-setup-banner"
+            remaining={setupRemaining}
+          />
+        )}
+
         <SettingsSection title="Terminal">
           <SettingsItem
             testID="settings-theme"
@@ -270,16 +276,38 @@ export default function SettingsScreen() {
           <SettingsItem
             testID="settings-merchant-id"
             title="Merchant ID"
-            value={merchantIdInput || undefined}
+            value={hasMerchantId ? merchantIdInput : undefined}
+            bullet={!hasMerchantId}
+            badge={
+              hasMerchantId ? undefined : (
+                <Badge
+                  label="Not set"
+                  backgroundColor="bg-warning"
+                  color="text-tertiary"
+                />
+              )
+            }
             caret="right"
+            showCaret
             onPress={() => setActiveSheet("merchantId")}
           />
 
           <SettingsItem
             testID="settings-customer-api-key"
             title="Customer API KEY"
-            value="**********"
+            value={hasStoredCustomerApiKey ? "**********" : undefined}
+            bullet={!hasStoredCustomerApiKey}
+            badge={
+              hasStoredCustomerApiKey ? undefined : (
+                <Badge
+                  label="Not set"
+                  backgroundColor="bg-warning"
+                  color="text-tertiary"
+                />
+              )
+            }
             caret="right"
+            showCaret
             onPress={() => setActiveSheet("customerApiKey")}
           />
 
@@ -417,13 +445,13 @@ export default function SettingsScreen() {
         <View style={styles.inputContent}>
           <TextInput
             value={
-              isEditingCustomerKey
+              isEditingCustomerApiKey
                 ? customerApiKeyInput
                 : hasStoredCustomerApiKey
                   ? "********"
                   : ""
             }
-            onChangeText={handleCustomerKeyChange}
+            onChangeText={handleCustomerApiKeyInputChange}
             placeholder="Enter customer API key"
             placeholderTextColor={theme["text-tertiary"]}
             autoCapitalize="none"

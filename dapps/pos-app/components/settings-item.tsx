@@ -2,6 +2,7 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAssets } from "expo-asset";
 import { Image, ImageSource } from "expo-image";
+import { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import { Pressable } from "./pressable";
 import { ThemedText } from "./themed-text";
@@ -18,6 +19,10 @@ interface SettingsItemProps {
   caret?: "up-down" | "right";
   /** Optional leading icon rendered before the title (tinted to text-primary). */
   icon?: ImageSource;
+  /** Renders an amber dot after the title to flag an unconfigured value. */
+  bullet?: boolean;
+  /** Optional badge rendered on the right, before the caret. */
+  badge?: ReactNode;
   disabled?: boolean;
   testID?: string;
 }
@@ -29,6 +34,8 @@ export function SettingsItem({
   showCaret,
   caret = "up-down",
   icon,
+  bullet,
+  badge,
   disabled,
   testID,
 }: SettingsItemProps) {
@@ -68,6 +75,11 @@ export function SettingsItem({
         >
           {title}
         </ThemedText>
+        {bullet && (
+          <View
+            style={[styles.bullet, { backgroundColor: Theme["icon-warning"] }]}
+          />
+        )}
         {value && (
           <ThemedText
             fontSize={16}
@@ -80,6 +92,7 @@ export function SettingsItem({
           </ThemedText>
         )}
       </View>
+      {badge}
       {shouldShowCaret && caretAsset && (
         <Image
           source={caretAsset}
@@ -121,5 +134,10 @@ const styles = StyleSheet.create({
   leadingIcon: {
     width: 16,
     height: 16,
+  },
+  bullet: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 });

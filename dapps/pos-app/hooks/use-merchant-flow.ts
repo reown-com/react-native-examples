@@ -10,6 +10,9 @@ type PendingAction = "merchant-id" | "customer-api-key" | null;
 interface MerchantFlowState {
   merchantIdInput: string;
   customerApiKeyInput: string;
+  // Whether the user has started editing the (masked) API key field. Used to
+  // distinguish "just opened, still showing ********" from "cleared the field".
+  isEditingCustomerApiKey: boolean;
   activeModal: ModalType;
   pinError: string | null;
   pendingValue: string | null;
@@ -19,6 +22,7 @@ interface MerchantFlowState {
 const initialState: MerchantFlowState = {
   merchantIdInput: "",
   customerApiKeyInput: "",
+  isEditingCustomerApiKey: false,
   activeModal: "none",
   pinError: null,
   pendingValue: null,
@@ -76,6 +80,7 @@ export function useMerchantFlow() {
     setState((prev) => ({
       ...prev,
       customerApiKeyInput: value,
+      isEditingCustomerApiKey: true,
     }));
   }, []);
 
@@ -83,6 +88,7 @@ export function useMerchantFlow() {
     setState((prev) => ({
       ...prev,
       customerApiKeyInput: "",
+      isEditingCustomerApiKey: false,
     }));
   }, []);
 
@@ -121,11 +127,16 @@ export function useMerchantFlow() {
   const handleCustomerApiKeyConfirm = useCallback(() => {
     const trimmedApiKey = state.customerApiKeyInput.trim();
     if (!trimmedApiKey) {
+      // Empty means "clear the key". Only meaningful when one is stored.
+      if (!isCustomerApiKeySet) {
+        return;
+      }
+      initiateSave("", "customer-api-key");
       return;
     }
 
     initiateSave(trimmedApiKey, "customer-api-key");
-  }, [state.customerApiKeyInput, initiateSave]);
+  }, [state.customerApiKeyInput, isCustomerApiKeySet, initiateSave]);
 
   const completeSave = useCallback(async () => {
     if (state.pendingValue === null || !state.pendingAction) {
@@ -135,20 +146,14 @@ export function useMerchantFlow() {
     try {
       if (state.pendingAction === "merchant-id") {
         if (state.pendingValue === "") {
-          // Clear merchant ID and API key (resets both to env defaults)
-          const newMerchantId = await clearMerchantId();
-          // Sync local input with the new default value
+          // Clear only the merchant ID, leaving the terminal unconfigured.
+          await clearMerchantId();
           setState((prev) => ({
             ...prev,
-            merchantIdInput: newMerchantId ?? "",
+            merchantIdInput: "",
           }));
-          showSuccessToast("Merchant credentials reset to default");
-          addLog(
-            "info",
-            "Merchant credentials reset to default",
-            "settings",
-            "completeSave",
-          );
+          showSuccessToast("Merchant ID cleared");
+          addLog("info", "Merchant ID cleared", "settings", "completeSave");
         } else {
           setMerchantId(state.pendingValue);
           showSuccessToast("Merchant ID saved successfully");
@@ -160,13 +165,24 @@ export function useMerchantFlow() {
           );
         }
       } else if (state.pendingAction === "customer-api-key") {
+        const isClearing = state.pendingValue === "";
         await setCustomerApiKey(state.pendingValue);
         setState((prev) => ({
           ...prev,
           customerApiKeyInput: "", // Clear input after saving
+          isEditingCustomerApiKey: false,
         }));
-        showSuccessToast("Customer API key saved successfully");
-        addLog("info", "Customer API key updated", "settings", "completeSave");
+        showSuccessToast(
+          isClearing
+            ? "Customer API key cleared"
+            : "Customer API key saved successfully",
+        );
+        addLog(
+          "info",
+          isClearing ? "Customer API key cleared" : "Customer API key updated",
+          "settings",
+          "completeSave",
+        );
       }
 
       setState((prev) => ({
@@ -254,15 +270,19 @@ export function useMerchantFlow() {
       pendingAction: null,
       merchantIdInput: storedMerchantId ?? "",
       customerApiKeyInput: "", // Clear input on cancel
+      isEditingCustomerApiKey: false,
     }));
   }, [storedMerchantId]);
 
-  // Enable save when value has changed (including clearing to reset to default)
+  // Enable save when the merchant ID has changed (including clearing it).
   const isMerchantIdConfirmDisabled =
     state.merchantIdInput.trim() === (storedMerchantId ?? "");
 
+  // Enable save for a non-empty key, or when the user has emptied the field to
+  // clear an existing key. Stays disabled on open (masked, not yet edited).
   const isCustomerApiKeyConfirmDisabled =
-    state.customerApiKeyInput.trim().length === 0;
+    state.customerApiKeyInput.trim().length === 0 &&
+    !(state.isEditingCustomerApiKey && isCustomerApiKeySet);
 
   const hasStoredCustomerApiKey = isCustomerApiKeySet;
 
@@ -270,6 +290,7 @@ export function useMerchantFlow() {
     // State
     merchantIdInput: state.merchantIdInput,
     customerApiKeyInput: state.customerApiKeyInput,
+    isEditingCustomerApiKey: state.isEditingCustomerApiKey,
     activeModal: state.activeModal,
     pinError: state.pinError,
     storedMerchantId,

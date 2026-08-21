@@ -539,7 +539,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(17);
+      expect(persistOptions?.version).toBe(19);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();
@@ -561,6 +561,17 @@ describe("useSettingsStore", () => {
       const migrated: any = migrate!({ variant: "solflare" }, 16);
 
       expect(migrated.variant).toBe("default");
+    });
+
+    it("marks pre-existing installs as already initialized on migration", () => {
+      const migrate = useSettingsStore.persist?.getOptions?.().migrate;
+      expect(migrate).toBeDefined();
+
+      // A persisted install from before the flag existed should be treated as
+      // initialized so env defaults are not re-seeded on the next launch.
+      const migrated: any = migrate!({ variant: "default" }, 18);
+
+      expect(migrated.hasInitializedDefaults).toBe(true);
     });
   });
 });

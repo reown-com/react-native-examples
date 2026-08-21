@@ -26,6 +26,7 @@ export const Colors = {
     "bg-invert": "#202020",
     "bg-accent-primary": "#0666FF",
     "bg-payment-success": "#0666FF",
+    "bg-warning": "#F3A13F33", // 20% opacity
 
     // Text colors
     "text-primary": "#202020",
@@ -66,6 +67,7 @@ export const Colors = {
     "bg-invert": "#FFFFFF",
     "bg-accent-primary": "#0666FF",
     "bg-payment-success": "#0666FF",
+    "bg-warning": "#F3A13F33", // 20% opacity
 
     // Text colors
     "text-primary": "#FFFFFF",
@@ -82,6 +84,8 @@ export const Colors = {
     "border-accent-primary": "#0666FF",
   },
 };
+
+export type ColorKey = keyof typeof Colors.light;
 
 export const Fonts = Platform.select({
   ios: {
