@@ -6,6 +6,20 @@ interface DateRange {
 }
 
 /**
+ * Shared date-range options for filter UIs (Transactions + Logs).
+ */
+export const DATE_RANGE_OPTIONS: {
+  value: DateRangeFilterType;
+  label: string;
+}[] = [
+  { value: "all_time", label: "All time" },
+  { value: "today", label: "Today" },
+  { value: "7_days", label: "7 days" },
+  { value: "this_week", label: "This week" },
+  { value: "this_month", label: "This month" },
+];
+
+/**
  * Computes ISO date strings for a given date range filter.
  */
 export function getDateRange(filter: DateRangeFilterType): DateRange {

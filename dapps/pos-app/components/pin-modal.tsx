@@ -204,7 +204,7 @@ function PinModalBase({
                     activeOpacity={0.7}
                     style={[
                       styles.key,
-                      { backgroundColor: theme["foreground-primary"] },
+                      { backgroundColor: theme["foreground-primary-fix"] },
                     ]}
                   >
                     {key === "erase" ? (
@@ -238,10 +238,10 @@ function PinModalBase({
           activeOpacity={0.7}
           style={[
             styles.cancelButton,
-            { backgroundColor: theme["foreground-secondary"] },
+            { borderColor: theme["border-secondary"], borderWidth: 1 },
           ]}
         >
-          <ThemedText fontSize={16} lineHeight={18} color="text-primary">
+          <ThemedText fontSize={18} lineHeight={20} color="text-primary">
             Cancel
           </ThemedText>
         </TouchableOpacity>
@@ -329,10 +329,11 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     marginTop: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-3"],
     paddingHorizontal: Spacing["spacing-6"],
     borderRadius: BorderRadius["3"],
     width: "100%",
+    height: 48,
     alignItems: "center",
+    justifyContent: "center",
   },
 });

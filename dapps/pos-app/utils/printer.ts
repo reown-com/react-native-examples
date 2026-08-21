@@ -1,5 +1,6 @@
 import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { useLogsStore } from "@/store/useLogsStore";
+import { Platform } from "react-native";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import {
   ReactNativePosPrinter,
@@ -13,6 +14,9 @@ import {
 import { getDate } from "./misc";
 
 export const requestBluetoothPermission = async () => {
+  // BLUETOOTH_CONNECT is an Android 12+ runtime permission. On iOS/web there is
+  // no such handler, so requesting it throws. Only ask for it on Android.
+  if (Platform.OS !== "android") return true;
   const result = await request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
   return result === RESULTS.GRANTED || result === RESULTS.LIMITED;
 };

@@ -1,9 +1,10 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useAssets } from "expo-asset";
-import { Image } from "expo-image";
+import { Image, ImageSource } from "expo-image";
+import { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button } from "./button";
+import { Pressable } from "./pressable";
 import { ThemedText } from "./themed-text";
 
 interface SettingsItemProps {
@@ -11,6 +12,17 @@ interface SettingsItemProps {
   value?: string;
   onPress: () => void;
   showCaret?: boolean;
+  /**
+   * Which caret to draw on the right. "up-down" (default) opens a picker sheet;
+   * "right" drills into an editor.
+   */
+  caret?: "up-down" | "right";
+  /** Optional leading icon rendered before the title (tinted to text-primary). */
+  icon?: ImageSource;
+  /** Renders an amber dot after the title to flag an unconfigured value. */
+  bullet?: boolean;
+  /** Optional badge rendered on the right, before the caret. */
+  badge?: ReactNode;
   disabled?: boolean;
   testID?: string;
 }
@@ -20,28 +32,54 @@ export function SettingsItem({
   value,
   onPress,
   showCaret,
+  caret = "up-down",
+  icon,
+  bullet,
+  badge,
   disabled,
   testID,
 }: SettingsItemProps) {
   const Theme = useTheme();
-  const [assets] = useAssets([require("@/assets/images/caret-up-down.png")]);
+  const [assets] = useAssets([
+    require("@/assets/images/caret-up-down.png"),
+    require("@/assets/images/chevron-right.png"),
+  ]);
   const shouldShowCaret = showCaret ?? !!value;
+  const caretAsset = caret === "right" ? assets?.[1] : assets?.[0];
 
   return (
-    <Button
+    <Pressable
       onPress={onPress}
       disabled={disabled}
       testID={testID}
       style={[
         styles.container,
-        { backgroundColor: Theme["foreground-primary"] },
+        { backgroundColor: Theme["foreground-primary-fix"] },
         disabled && { opacity: 0.4 },
       ]}
     >
       <View style={styles.labelRow}>
-        <ThemedText fontSize={16} lineHeight={18} color="text-primary">
+        {icon && (
+          <Image
+            source={icon}
+            style={[styles.leadingIcon, { tintColor: Theme["text-primary"] }]}
+            tintColor={Theme["text-primary"]}
+            cachePolicy="memory-disk"
+          />
+        )}
+        <ThemedText
+          fontSize={16}
+          lineHeight={18}
+          color="text-primary"
+          style={styles.title}
+        >
           {title}
         </ThemedText>
+        {bullet && (
+          <View
+            style={[styles.bullet, { backgroundColor: Theme["icon-warning"] }]}
+          />
+        )}
         {value && (
           <ThemedText
             fontSize={16}
@@ -54,15 +92,16 @@ export function SettingsItem({
           </ThemedText>
         )}
       </View>
-      {shouldShowCaret && assets?.[0] && (
+      {badge}
+      {shouldShowCaret && caretAsset && (
         <Image
-          source={assets[0]}
+          source={caretAsset}
           style={[styles.caretIcon, { tintColor: Theme["text-primary"] }]}
           tintColor={Theme["text-primary"]}
           cachePolicy="memory-disk"
         />
       )}
-    </Button>
+    </Pressable>
   );
 }
 
@@ -82,11 +121,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing["spacing-2"],
   },
+  title: {
+    fontWeight: "500",
+  },
   value: {
     flex: 1,
   },
   caretIcon: {
     width: 20,
     height: 20,
+  },
+  leadingIcon: {
+    width: 16,
+    height: 16,
+  },
+  bullet: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 });

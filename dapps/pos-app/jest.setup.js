@@ -279,7 +279,6 @@ global.fetch = jest.fn();
 // Force test-only URLs to prevent accidental real endpoint calls
 // Using .invalid TLD per RFC 2606 to ensure these can never resolve
 process.env.EXPO_PUBLIC_API_URL = "https://api.test.example.com";
-process.env.EXPO_PUBLIC_PROJECT_ID = "test-project-id";
 
 // Cleanup function to reset mocks between tests
 afterEach(() => {

@@ -6,10 +6,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { getPaymentErrorMessage } from "@/utils/payment-errors";
+import {
+  getPaymentErrorMessage,
+  INVALID_API_KEY,
+} from "@/utils/payment-errors";
 import { useAssets } from "expo-asset";
 
 // The params can't be declared optional here: `UnknownOutputParams` indexes to
@@ -27,14 +30,27 @@ export default function PaymentFailureScreen() {
   const { top } = useSafeAreaInsets();
   const params: Partial<ScreenParams> = useLocalSearchParams<ScreenParams>();
   const currencyCode = useSettingsStore((state) => state.currency);
-  const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
+  const [assets] = useAssets([
+    require("@/assets/images/warning-circle-fill.png"),
+  ]);
 
   const { title, subtitle } = getPaymentErrorMessage(params.errorCode, {
     minAmountCents: params.minAmount,
     currencyCode,
   });
 
-  const handleRetry = () => {
+  // An invalid API key can't be fixed by retrying — the merchant needs Settings.
+  const isInvalidApiKey = params.errorCode === INVALID_API_KEY;
+
+  const handlePrimaryPress = () => {
+    if (isInvalidApiKey) {
+      // Leave the payment flow entirely and land on Settings so the merchant
+      // can fix credentials; settings isn't in this stack, so dismissTo won't
+      // reach it — pop back to root, then push Settings.
+      router.dismissAll();
+      router.push("/settings");
+      return;
+    }
     router.dismissTo("/amount");
   };
 
@@ -66,30 +82,9 @@ export default function PaymentFailureScreen() {
           {subtitle}
         </ThemedText>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          onPress={handleRetry}
-          style={[
-            styles.button,
-            {
-              backgroundColor: Theme["bg-accent-primary"],
-            },
-          ]}
-        >
-          <ThemedText
-            fontSize={16}
-            lineHeight={18}
-            style={{ color: Theme["text-invert"] }}
-          >
-            Start payment
-          </ThemedText>
-          <Image
-            source={require("@/assets/images/plus.png")}
-            style={styles.plusIcon}
-            tintColor={Theme["text-invert"]}
-          />
-        </Button>
-      </View>
+      <Button type="accent" variant="primary" onPress={handlePrimaryPress}>
+        {isInvalidApiKey ? "Go to Settings" : "Start new payment"}
+      </Button>
     </View>
   );
 }
@@ -116,22 +111,5 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     marginBottom: Spacing["spacing-6"],
-  },
-  buttonContainer: {
-    width: "100%",
-    gap: Spacing["spacing-3"],
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-5"],
-    borderRadius: BorderRadius["5"],
-    gap: Spacing["spacing-2"],
-  },
-  plusIcon: {
-    width: 12.5,
-    height: 12.5,
   },
 });

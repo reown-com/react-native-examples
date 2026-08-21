@@ -39,7 +39,7 @@ export function RadioList<T extends string = string>({
               {
                 backgroundColor: isSelected
                   ? Theme["foreground-accent-primary-10"]
-                  : Theme["foreground-primary"],
+                  : Theme["foreground-primary-fix"],
                 borderColor: isSelected
                   ? Theme["bg-accent-primary"]
                   : "transparent",

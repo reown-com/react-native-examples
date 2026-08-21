@@ -20,7 +20,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { Button } from "./button";
+import { Pressable as ScalePressable } from "./pressable";
 import { FramedModal } from "./framed-modal";
 import { ThemedText } from "./themed-text";
 
@@ -30,6 +30,7 @@ const EASING = Easing.inOut(Easing.ease);
 interface SettingsBottomSheetProps {
   visible: boolean;
   title: string;
+  subtitle?: string;
   onClose: () => void;
   children: React.ReactNode;
 }
@@ -37,6 +38,7 @@ interface SettingsBottomSheetProps {
 export function SettingsBottomSheet({
   visible,
   title,
+  subtitle,
   onClose,
   children,
 }: SettingsBottomSheetProps) {
@@ -85,30 +87,42 @@ export function SettingsBottomSheet({
           },
         ]}
       >
-        <View style={styles.header}>
-          <View style={styles.headerSpacer} />
-          <ThemedText
-            fontSize={20}
-            lineHeight={20}
-            color="text-primary"
-            style={styles.title}
-          >
-            {title}
-          </ThemedText>
-          <Button
-            onPress={onClose}
-            style={[
-              styles.closeButton,
-              { borderColor: Theme["border-secondary"] },
-            ]}
-          >
-            <Image
-              source={assets?.[0]}
-              style={[styles.closeIcon, { tintColor: Theme["text-primary"] }]}
-              tintColor={Theme["text-primary"]}
-              cachePolicy="memory-disk"
-            />
-          </Button>
+        <View style={styles.headerBlock}>
+          <View style={styles.header}>
+            <View style={styles.headerSpacer} />
+            <ThemedText
+              fontSize={20}
+              lineHeight={20}
+              color="text-primary"
+              style={styles.title}
+            >
+              {title}
+            </ThemedText>
+            <ScalePressable
+              onPress={onClose}
+              style={[
+                styles.closeButton,
+                { borderColor: Theme["border-secondary"] },
+              ]}
+            >
+              <Image
+                source={assets?.[0]}
+                style={[styles.closeIcon, { tintColor: Theme["text-primary"] }]}
+                tintColor={Theme["text-primary"]}
+                cachePolicy="memory-disk"
+              />
+            </ScalePressable>
+          </View>
+          {subtitle ? (
+            <ThemedText
+              fontSize={14}
+              lineHeight={18}
+              color="text-secondary"
+              style={styles.subtitle}
+            >
+              {subtitle}
+            </ThemedText>
+          ) : null}
         </View>
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -169,10 +183,16 @@ const styles = StyleSheet.create({
   scrollContent: {
     gap: Spacing["spacing-7"],
   },
+  headerBlock: {
+    gap: Spacing["spacing-4"],
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  subtitle: {
+    textAlign: "center",
   },
   headerSpacer: {
     width: 38,

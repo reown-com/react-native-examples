@@ -4,7 +4,7 @@ import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { memo } from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import { Button } from "./button";
+import { Pressable } from "./pressable";
 import { ThemedText } from "./themed-text";
 
 export interface NumericKeyboardProps {
@@ -31,17 +31,19 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
       {keys.map((row, rowIndex) => (
         <View key={`row-${rowIndex}`} style={styles.row}>
           {row.map((key) => (
-            <Button
+            <Pressable
               key={key}
               onPress={() => handlePress(key)}
+              testID={key === "." ? "key-decimal" : `key-${key}`}
+              accessibilityRole="button"
+              accessibilityLabel={key === "erase" ? "Backspace" : key}
               style={[
                 styles.key,
-                { backgroundColor: Theme["foreground-primary"] },
+                { backgroundColor: Theme["foreground-primary-fix"] },
               ]}
             >
               {key === "erase" ? (
                 <Image
-                  testID="key-erase"
                   source={assets?.[0]}
                   style={[
                     styles.backspace,
@@ -55,16 +57,12 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                 />
               ) : (
                 <ThemedText
-                  // The "." key gets a dedicated id ("key-decimal") instead of
-                  // "key-." because Maestro treats id selectors as regex, where
-                  // "." is a wildcard that would match any "key-X".
-                  testID={key === "." ? "key-decimal" : `key-${key}`}
                   style={[styles.keyText, { color: Theme["text-primary"] }]}
                 >
                   {key}
                 </ThemedText>
               )}
-            </Button>
+            </Pressable>
           ))}
         </View>
       ))}

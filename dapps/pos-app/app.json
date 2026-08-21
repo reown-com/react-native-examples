@@ -36,7 +36,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 29
+      "versionCode": 30
     },
     "web": {
       "output": "static",
@@ -47,10 +47,14 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/app_icons/splash_icon.png",
-          "imageWidth": 200,
+          "image": "./assets/app_icons/splash_logo.png",
+          "imageWidth": 270,
           "resizeMode": "contain",
-          "backgroundColor": "#000000"
+          "backgroundColor": "#000000",
+          "android": {
+            "image": "./assets/app_icons/splash_logo_android.png",
+            "imageWidth": 288
+          }
         }
       ],
       [
@@ -65,6 +69,7 @@
       "./plugins/withAndroidVariants.js",
       "./plugins/withAndroidVariantIcons.js",
       "./plugins/withHceNfc.js",
+      "./plugins/withHceFeatureFlag.js",
       [
         "expo-font",
         {
@@ -86,6 +91,15 @@
                     "weight": 500
                   }
                 ]
+              },
+              {
+                "fontFamily": "KH Teka Mono",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/KHTekaMono-Regular.otf",
+                    "weight": 400
+                  }
+                ]
               }
             ]
           },
@@ -93,7 +107,8 @@
             "fonts": [
               "./assets/fonts/KHTeka-Light.otf",
               "./assets/fonts/KHTeka-Regular.otf",
-              "./assets/fonts/KHTeka-Medium.otf"
+              "./assets/fonts/KHTeka-Medium.otf",
+              "./assets/fonts/KHTekaMono-Regular.otf"
             ]
           }
         }
@@ -106,7 +121,6 @@
             "./assets/images/tokens",
             "./assets/images/chains",
             "./assets/images/payment_methods",
-            "./assets/images/variants",
             "./assets/app_icons"
           ]
         }

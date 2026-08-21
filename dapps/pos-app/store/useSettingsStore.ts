@@ -62,6 +62,7 @@ interface SettingsStore {
   _hasHydrated: boolean;
   merchantId: string | null;
   isCustomerApiKeySet: boolean;
+  hasInitializedDefaults: boolean;
 
   // Transaction filters
   transactionFilter: TransactionFilterType;
@@ -114,8 +115,9 @@ export const useSettingsStore = create<SettingsStore>()(
       _hasHydrated: false,
       merchantId: null,
       isCustomerApiKeySet: false,
+      hasInitializedDefaults: false,
       transactionFilter: "all",
-      dateRangeFilter: "today",
+      dateRangeFilter: "all_time",
       isPinHashSet: false,
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
@@ -135,41 +137,15 @@ export const useSettingsStore = create<SettingsStore>()(
         Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64,
       setCurrency: (currency: CurrencyCode) => set({ currency }),
       setMerchantId: (merchantId: string | null) => {
-        // If clearing, reset to env default (unless embedded — parent provides credentials)
         if (!merchantId || merchantId.trim() === "") {
-          set({
-            merchantId: isEmbedded()
-              ? null
-              : MerchantConfig.getDefaultMerchantId(),
-          });
+          set({ merchantId: null });
         } else {
           set({ merchantId });
         }
       },
       clearMerchantId: async () => {
-        // When embedded, clear to null — parent provides credentials via postMessage.
-        // Otherwise, reset both merchant ID and API key to env defaults.
-        if (isEmbedded()) {
-          set({ merchantId: null });
-          await secureStorage.removeItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
-          set({ isCustomerApiKeySet: false });
-          return null;
-        }
-
-        const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
-        set({ merchantId: defaultMerchantId });
-        const defaultApiKey = MerchantConfig.getDefaultCustomerApiKey();
-        if (defaultApiKey) {
-          await secureStorage.setItem(
-            SECURE_STORAGE_KEYS.CUSTOMER_API_KEY,
-            defaultApiKey,
-          );
-          set({ isCustomerApiKeySet: true });
-        } else {
-          await secureStorage.removeItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
-          set({ isCustomerApiKeySet: false });
-        }
-        return defaultMerchantId;
+        set({ merchantId: null });
+        return null;
       },
       setCustomerApiKey: async (apiKey: string | null) => {
         try {
@@ -279,7 +255,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 16,
+      version: 19,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -345,6 +321,27 @@ export const useSettingsStore = create<SettingsStore>()(
           persistedState.nfcEnabled = persistedState.nfcEnabled ?? true;
         }
 
+        if (version < 17) {
+          // Wallet theme variants were removed; reset any persisted branded
+          // variant so it maps back to the only remaining option.
+          persistedState.variant = "default";
+        }
+
+        if (version < 18) {
+          // The date range filter previously defaulted to "today", which made a
+          // fresh terminal with no transactions show the "filters active" empty
+          // state ("No payments found") instead of the onboarding empty state
+          // ("No payments yet"). Reset to "all_time" so the default is unfiltered.
+          persistedState.dateRangeFilter = "all_time";
+        }
+
+        if (version < 19) {
+          // Existing installs have already been through first-run, so treat
+          // them as initialized. This stops env defaults from being re-seeded
+          // after the user manually clears/changes their credentials.
+          persistedState.hasInitializedDefaults = true;
+        }
+
         return persistedState;
       },
       onRehydrateStorage: () => async (state, error) => {
@@ -393,9 +390,10 @@ export const useSettingsStore = create<SettingsStore>()(
           );
           state.isPinHashSet = pinHash !== null;
 
-          // Initialize merchant defaults from env if not set.
+          // Initialize merchant defaults from env on first run only, so we
+          // don't re-seed defaults after the user clears/changes credentials.
           // Skip when embedded in an iframe — parent provides credentials via postMessage.
-          if (!isEmbedded()) {
+          if (!isEmbedded() && !state.hasInitializedDefaults) {
             const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
             const defaultApiKey = MerchantConfig.getDefaultCustomerApiKey();
 
@@ -406,6 +404,8 @@ export const useSettingsStore = create<SettingsStore>()(
             if (!state.isCustomerApiKeySet && defaultApiKey) {
               await state.setCustomerApiKey(defaultApiKey);
             }
+
+            state.hasInitializedDefaults = true;
           }
         }
 

@@ -1,30 +1,126 @@
-import { PressableScale } from "pressto";
+import { BorderRadius, Spacing } from "@/constants/spacing";
+import { useTheme } from "@/hooks/use-theme-color";
 import React from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { Pressable } from "./pressable";
+import { ThemedText } from "./themed-text";
 
-interface Props {
-  children: React.ReactNode;
+interface ButtonBaseProps {
+  children: string;
+  icon?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
   disabled?: boolean;
+  fullWidth?: boolean;
+  size?: "md" | "sm";
   testID?: string;
+  /** Overrides the accessible name (defaults to the button's text label). */
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
 }
 
-export const Button: React.FC<Props> = ({
+export type ButtonProps =
+  | (ButtonBaseProps & { type: "accent"; variant: "primary" })
+  | (ButtonBaseProps & { type: "neutral"; variant: "secondary" | "tertiary" });
+
+export function Button({
   children,
+  icon,
   style,
   onPress,
-  disabled,
+  disabled = false,
+  fullWidth = true,
+  size = "md",
   testID,
-}) => {
+  accessibilityLabel,
+  accessibilityHint,
+  type,
+  variant,
+}: ButtonProps) {
+  const theme = useTheme();
+  const isSmall = size === "sm";
+
+  const variantStyle =
+    type === "accent"
+      ? {
+          backgroundColor: theme["bg-accent-primary"],
+        }
+      : variant === "secondary"
+        ? {
+            borderColor: theme["border-secondary"],
+            borderWidth: 1,
+          }
+        : {
+            backgroundColor: theme["bg-invert"],
+          };
+
+  const textColor =
+    type === "accent"
+      ? "text-white"
+      : variant === "secondary"
+        ? "text-primary"
+        : "text-invert";
+
   return (
-    <PressableScale
-      style={style}
+    <Pressable
       onPress={onPress}
-      enabled={!disabled}
+      disabled={disabled}
       testID={testID}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? children}
+      accessibilityHint={accessibilityHint}
+      style={[
+        styles.button,
+        isSmall && styles.buttonSmall,
+        fullWidth && styles.fullWidth,
+        variantStyle,
+        disabled && styles.disabled,
+        style,
+      ]}
     >
-      {children}
-    </PressableScale>
+      <View style={[styles.content, isSmall && styles.contentSmall]}>
+        <ThemedText
+          color={textColor}
+          fontSize={isSmall ? 12 : 18}
+          lineHeight={isSmall ? 14 : 20}
+          style={styles.label}
+        >
+          {children}
+        </ThemedText>
+        {icon}
+      </View>
+    </Pressable>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  button: {
+    height: 54,
+    borderRadius: BorderRadius["4"],
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonSmall: {
+    height: 28,
+    borderRadius: 10,
+    paddingHorizontal: Spacing["spacing-3"],
+  },
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Spacing["spacing-2"],
+  },
+  contentSmall: {
+    gap: Spacing["spacing-1"],
+  },
+  label: {
+    textAlign: "center",
+  },
+  fullWidth: {
+    width: "100%",
+  },
+  disabled: {
+    opacity: 0.6,
+  },
+});

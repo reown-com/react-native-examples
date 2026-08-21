@@ -12,16 +12,12 @@ import "react-native-reanimated";
 import Toast from "react-native-toast-message";
 
 import HeaderImage from "@/components/header-image";
+import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useFonts } from "expo-font";
 
 import { useTheme } from "@/hooks/use-theme-color";
 import { useUrlCredentials } from "@/hooks/use-url-credentials";
-import {
-  getHeaderBackgroundColor,
-  getHeaderTintColor,
-  shouldCenterHeaderTitle,
-} from "@/utils/navigation";
 import * as Sentry from "@sentry/react-native";
 
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
@@ -79,6 +75,22 @@ Sentry.init({
 
 const queryClient = new QueryClient();
 
+const renderHeaderTitle = (title: string) => {
+  const HeaderTitle = () => (
+    <ThemedText fontSize={18} style={{ fontWeight: "500" }}>
+      {title}
+    </ThemedText>
+  );
+  return HeaderTitle;
+};
+
+// Build once at module scope so each Stack.Screen gets a stable headerTitle
+// reference — React Navigation compares by identity and would otherwise
+// remount the header (visible flicker) on every RootLayout re-render.
+const SettingsHeaderTitle = renderHeaderTitle("Settings");
+const TransactionsHeaderTitle = renderHeaderTitle("Transactions");
+const LogsHeaderTitle = renderHeaderTitle("Logs");
+
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
 
@@ -93,6 +105,7 @@ export default Sentry.wrap(function RootLayout() {
     "KH Teka": require("@/assets/fonts/KHTeka-Regular.otf"),
     "KH Teka Light": require("@/assets/fonts/KHTeka-Light.otf"),
     "KH Teka Medium": require("@/assets/fonts/KHTeka-Medium.otf"),
+    "KH Teka Mono": require("@/assets/fonts/KHTekaMono-Regular.otf"),
   });
 
   // Register the expo-router navigation container with Sentry so route changes
@@ -190,28 +203,20 @@ export default Sentry.wrap(function RootLayout() {
           <ThemeProvider value={navigationTheme}>
             <Stack
               screenOptions={({ route }) => {
-                const centerTitle = shouldCenterHeaderTitle(route.name);
-                const headerTintColor = getHeaderTintColor(route.name);
-                const headerBackgroundColor = getHeaderBackgroundColor(
-                  route.name,
-                );
-
                 return {
-                  headerTitle: centerTitle ? HeaderImage : "",
-                  headerRight: !centerTitle
-                    ? () => (
-                        <HeaderImage
-                          padding
-                          tintColor={Theme[headerTintColor]}
-                        />
-                      )
-                    : undefined,
+                  headerTitle: ({ tintColor }) => (
+                    <HeaderImage
+                      tintColor={
+                        typeof tintColor === "string" ? tintColor : undefined
+                      }
+                    />
+                  ),
                   headerShadowVisible: false,
-                  headerTintColor: Theme[headerTintColor],
+                  headerTintColor: Theme["text-primary"],
                   headerBackButtonDisplayMode: "minimal",
                   headerTitleAlign: "center",
                   headerStyle: {
-                    backgroundColor: Theme[headerBackgroundColor],
+                    backgroundColor: Theme["bg-primary"],
                   },
                   headerRightContainerStyle: {
                     ...(Platform.OS === "web" && {
@@ -234,30 +239,59 @@ export default Sentry.wrap(function RootLayout() {
                 };
               }}
             >
-              <Stack.Screen name="index" />
-              <Stack.Screen name="amount" />
+              <Stack.Screen
+                name="index"
+                options={{
+                  contentStyle: {
+                    backgroundColor: Theme["bg-primary"],
+                    paddingBottom: 0,
+                  },
+                }}
+              />
+              <Stack.Screen
+                name="amount"
+                // When resetNavigation lands here via a replace (target not in
+                // the stack, e.g. from payment-success), animate it as a
+                // backward pop rather than a forward push.
+                options={{ animationTypeForReplace: "pop" }}
+              />
               <Stack.Screen name="scan" />
               <Stack.Screen
                 name="payment-failure"
                 options={{
                   headerBackVisible: false,
+                  gestureEnabled: false,
                 }}
               />
               <Stack.Screen
                 name="payment-success"
                 options={{
-                  headerBackVisible: false,
+                  headerShown: false,
+                  gestureEnabled: false,
+                  contentStyle: {
+                    backgroundColor: Theme["bg-primary"],
+                    paddingBottom: 0,
+                  },
                 }}
               />
-              <Stack.Screen name="settings" />
-              <Stack.Screen name="activity" />
-              <Stack.Screen name="logs" />
+              <Stack.Screen
+                name="settings"
+                options={{ headerTitle: SettingsHeaderTitle }}
+              />
+              <Stack.Screen
+                name="activity"
+                options={{ headerTitle: TransactionsHeaderTitle }}
+              />
+              <Stack.Screen
+                name="logs"
+                options={{ headerTitle: LogsHeaderTitle }}
+              />
             </Stack>
             <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
             <Toast
               config={toastConfig}
-              position="bottom"
-              bottomOffset={initialWindowMetrics?.insets.bottom ?? 0}
+              position="top"
+              topOffset={(initialWindowMetrics?.insets.top ?? 0) + 8}
               visibilityTime={2000}
             />
           </ThemeProvider>
