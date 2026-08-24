@@ -3,6 +3,7 @@ import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { SandboxBanner } from "@/components/sandbox-banner";
 import { Spacing } from "@/constants/spacing";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { isSandboxModeAvailable } from "@/utils/feature-flags";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -40,6 +41,7 @@ export default function AmountScreen() {
   const Theme = useTheme();
   const sandboxMode = useSettingsStore((state) => state.sandboxMode);
   const isSandboxPayment = isSandboxModeAvailable && sandboxMode;
+  const isTablet = useIsTablet();
   const currencyCode = useSettingsStore((state) => state.currency);
   const currency = getCurrency(currencyCode);
   const {
@@ -65,7 +67,7 @@ export default function AmountScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isTablet && styles.containerTablet]}>
       {isSandboxPayment && <SandboxBanner style={styles.sandboxBanner} />}
       <View
         style={[
@@ -78,6 +80,7 @@ export default function AmountScreen() {
           value={watchAmount}
           currency={currency.symbol}
           symbolPosition={currency.symbolPosition}
+          size={isTablet ? "lg" : "md"}
         />
       </View>
       <Controller
@@ -131,7 +134,8 @@ export default function AmountScreen() {
         testID="charge-button"
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid}
-        style={styles.button}
+        size={isTablet ? "lg" : "md"}
+        style={[styles.button, isTablet && styles.buttonTablet]}
       >
         {isValid
           ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
@@ -150,6 +154,10 @@ const styles = StyleSheet.create({
     paddingTop: Spacing["spacing-5"],
     paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
+  containerTablet: {
+    paddingHorizontal: Spacing["spacing-8"],
+    paddingTop: Spacing["spacing-8"],
+  },
   amountContainer: {
     flex: 1,
     width: "100%",
@@ -163,5 +171,8 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: Spacing["spacing-6"],
+  },
+  buttonTablet: {
+    marginTop: Spacing["spacing-8"],
   },
 });

@@ -12,7 +12,7 @@ interface ButtonBaseProps {
   onPress: () => void;
   disabled?: boolean;
   fullWidth?: boolean;
-  size?: "md" | "sm";
+  size?: "lg" | "md" | "sm";
   testID?: string;
   /** Overrides the accessible name (defaults to the button's text label). */
   accessibilityLabel?: string;
@@ -39,6 +39,7 @@ export function Button({
 }: ButtonProps) {
   const theme = useTheme();
   const isSmall = size === "sm";
+  const isLarge = size === "lg";
 
   const variantStyle =
     type === "accent"
@@ -72,17 +73,24 @@ export function Button({
       style={[
         styles.button,
         isSmall && styles.buttonSmall,
+        isLarge && styles.buttonLarge,
         fullWidth && styles.fullWidth,
         variantStyle,
         disabled && styles.disabled,
         style,
       ]}
     >
-      <View style={[styles.content, isSmall && styles.contentSmall]}>
+      <View
+        style={[
+          styles.content,
+          isSmall && styles.contentSmall,
+          isLarge && styles.contentLarge,
+        ]}
+      >
         <ThemedText
           color={textColor}
-          fontSize={isSmall ? 12 : 18}
-          lineHeight={isSmall ? 14 : 20}
+          fontSize={isSmall ? 12 : isLarge ? 22 : 18}
+          lineHeight={isSmall ? 14 : isLarge ? 24 : 20}
           style={styles.label}
         >
           {children}
@@ -105,6 +113,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: Spacing["spacing-3"],
   },
+  buttonLarge: {
+    height: 64,
+  },
   content: {
     flexDirection: "row",
     alignItems: "center",
@@ -113,6 +124,9 @@ const styles = StyleSheet.create({
   },
   contentSmall: {
     gap: Spacing["spacing-1"],
+  },
+  contentLarge: {
+    gap: Spacing["spacing-3"],
   },
   label: {
     textAlign: "center",

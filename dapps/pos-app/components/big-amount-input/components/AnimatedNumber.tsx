@@ -20,6 +20,7 @@ type AnimatedNumberProps = {
   symbolPosition?: SymbolPosition;
   locale?: SupportedLocale;
   placeholder?: string;
+  size?: "md" | "lg";
 };
 
 export const AnimatedNumber = ({
@@ -28,6 +29,7 @@ export const AnimatedNumber = ({
   symbolPosition = "left",
   locale,
   placeholder = "0.00",
+  size = "md",
 }: AnimatedNumberProps) => {
   const Theme = useTheme();
   const { characters, separators, isEmpty, decimalSeparator } =
@@ -38,7 +40,7 @@ export const AnimatedNumber = ({
       locale,
       placeholder,
     });
-  const layout = useAnimatedNumberLayout({ characters, separators });
+  const layout = useAnimatedNumberLayout({ characters, separators, size });
 
   const animatedWidth = useSharedValue(layout.totalContentWidth);
 

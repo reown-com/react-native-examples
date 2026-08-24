@@ -5,6 +5,7 @@ import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
@@ -67,6 +68,7 @@ export default function ScanScreen() {
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
+  const isTablet = useIsTablet();
 
   const { amount } = params;
   const isSandboxPayment = isSandboxModeAvailable && sandboxMode;
@@ -315,38 +317,56 @@ export default function ScanScreen() {
       />
       {isSandboxPayment && <SandboxBanner style={styles.sandboxBanner} />}
       {isProcessing ? (
-        <View style={styles.loadingContainer}>
-          <WalletConnectLoading size={180} />
+        <View
+          style={[
+            styles.loadingContainer,
+            isTablet && styles.loadingContainerTablet,
+          ]}
+        >
+          <WalletConnectLoading size={isTablet ? 220 : 180} />
           <View style={styles.loadingTextContainer}>
             <ThemedText
               style={{ color: Theme["text-primary"] }}
-              fontSize={20}
-              lineHeight={22}
+              fontSize={isTablet ? 24 : 20}
+              lineHeight={isTablet ? 26 : 22}
             >
               Waiting for confirmation...
             </ThemedText>
             <ThemedText
               style={{ color: Theme["text-secondary"], textAlign: "center" }}
-              fontSize={16}
-              lineHeight={18}
+              fontSize={isTablet ? 20 : 16}
+              lineHeight={isTablet ? 22 : 18}
             >
               This usually takes a few seconds. Keep this screen open.
             </ThemedText>
           </View>
         </View>
       ) : (
-        <View style={styles.scanContainer}>
-          <View style={[styles.header, !showNfc && styles.headerCentered]}>
+        <View
+          style={[styles.scanContainer, isTablet && styles.scanContainerTablet]}
+        >
+          <View
+            style={[
+              styles.header,
+              isTablet && styles.headerTablet,
+              !showNfc && styles.headerCentered,
+            ]}
+          >
             {showNfc && (
               <Image
                 source={assets?.[1]}
                 contentFit="contain"
-                style={[styles.nfcIcon, { tintColor: Theme["icon-default"] }]}
+                style={[
+                  styles.nfcIcon,
+                  isTablet && styles.nfcIconTablet,
+                  { tintColor: Theme["icon-default"] },
+                ]}
               />
             )}
             <ThemedText
               style={[
                 styles.amountValue,
+                isTablet && styles.amountValueTablet,
                 { color: Theme["text-primary"], textTransform: "uppercase" },
               ]}
             >
@@ -355,7 +375,11 @@ export default function ScanScreen() {
           </View>
 
           <ThemedText
-            style={[styles.instructionText, { color: Theme["text-secondary"] }]}
+            style={[
+              styles.instructionText,
+              isTablet && styles.instructionTextTablet,
+              { color: Theme["text-secondary"] },
+            ]}
           >
             {sandboxProcessing
               ? "Waiting for confirmation..."
@@ -364,16 +388,19 @@ export default function ScanScreen() {
                 : "Scan to pay"}
           </ThemedText>
 
-          <View style={styles.qrSection}>
+          <View style={[styles.qrSection, isTablet && styles.qrSectionTablet]}>
             <QRCode
-              size={300}
+              size={isTablet ? 420 : 300}
               uri={qrUri}
               imageSrc={qrLogoSource}
               logoBorderRadius={100}
               onPress={handleCopyPaymentUrl}
               testID="pos-qr-code"
             >
-              <Image source={assets?.[0]} style={styles.logo} />
+              <Image
+                source={assets?.[0]}
+                style={[styles.logo, isTablet && styles.logoTablet]}
+              />
             </QRCode>
             <View
               accessible={isCountdownActive}
@@ -395,10 +422,16 @@ export default function ScanScreen() {
               }
               style={[styles.timerRow, { opacity: isCountdownActive ? 1 : 0 }]}
             >
-              <ThemedText style={{ color: Theme["text-secondary"] }}>
+              <ThemedText
+                fontSize={isTablet ? 20 : undefined}
+                lineHeight={isTablet ? 22 : undefined}
+                style={{ color: Theme["text-secondary"] }}
+              >
                 Expires in
               </ThemedText>
               <ThemedText
+                fontSize={isTablet ? 20 : undefined}
+                lineHeight={isTablet ? 22 : undefined}
                 style={{
                   color: Theme["bg-accent-primary"],
                   fontVariant: ["tabular-nums"],
@@ -418,7 +451,8 @@ export default function ScanScreen() {
           testID="cancel-button"
           onPress={handleOnCancelPress}
           fullWidth={false}
-          style={styles.cancelButton}
+          size={isTablet ? "lg" : "md"}
+          style={[styles.cancelButton, isTablet && styles.cancelButtonTablet]}
         >
           Cancel
         </Button>
@@ -438,6 +472,10 @@ const styles = StyleSheet.create({
     gap: Spacing["spacing-6"],
     paddingHorizontal: Spacing["spacing-7"],
   },
+  loadingContainerTablet: {
+    gap: Spacing["spacing-8"],
+    paddingHorizontal: Spacing["spacing-8"],
+  },
   scanContainer: {
     flex: 1,
     paddingHorizontal: Spacing["spacing-5"],
@@ -445,10 +483,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing["spacing-4"],
   },
+  scanContainerTablet: {
+    paddingHorizontal: Spacing["spacing-8"],
+    paddingVertical: Spacing["spacing-8"],
+    gap: Spacing["spacing-5"],
+  },
   header: {
     width: "100%",
     alignItems: "center",
     gap: Spacing["spacing-3"],
+  },
+  headerTablet: {
+    gap: Spacing["spacing-5"],
   },
   headerCentered: {
     flex: 1,
@@ -462,6 +508,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
   },
+  instructionTextTablet: {
+    fontSize: 22,
+    lineHeight: 24,
+  },
   amountValue: {
     fontFamily: "KH Teka Medium",
     fontSize: 50,
@@ -469,9 +519,17 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     lineHeight: 50,
   },
+  amountValueTablet: {
+    fontSize: 64,
+    lineHeight: 64,
+  },
   logo: {
     width: 80,
     height: 80,
+  },
+  logoTablet: {
+    width: 104,
+    height: 104,
   },
   qrSection: {
     alignItems: "center",
@@ -480,6 +538,9 @@ const styles = StyleSheet.create({
   sandboxBanner: {
     marginHorizontal: Spacing["spacing-5"],
     marginTop: Spacing["spacing-3"],
+  },
+  qrSectionTablet: {
+    gap: Spacing["spacing-5"],
   },
   timerRow: {
     flexDirection: "row",
@@ -490,10 +551,19 @@ const styles = StyleSheet.create({
   cancelButton: {
     marginHorizontal: Spacing["spacing-5"],
   },
+  cancelButtonTablet: {
+    marginHorizontal: Spacing["spacing-8"],
+  },
   nfcIcon: {
     marginLeft: Spacing["spacing-5"],
     width: 80,
     height: 60,
     marginBottom: Spacing["spacing-3"],
+  },
+  nfcIconTablet: {
+    marginLeft: Spacing["spacing-8"],
+    width: 104,
+    height: 78,
+    marginBottom: Spacing["spacing-5"],
   },
 });
