@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
@@ -27,6 +28,7 @@ interface ScreenParams extends UnknownOutputParams {
 
 export default function PaymentFailureScreen() {
   const Theme = useTheme();
+  const isTablet = useIsTablet();
   const { top } = useSafeAreaInsets();
   const params: Partial<ScreenParams> = useLocalSearchParams<ScreenParams>();
   const currencyCode = useSettingsStore((state) => state.currency);
@@ -55,16 +57,23 @@ export default function PaymentFailureScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: top }]}>
+    <View
+      style={[
+        styles.container,
+        isTablet && styles.containerTablet,
+        { paddingTop: top },
+      ]}
+    >
       <View
         testID="pos-payment-failure"
         nativeID="pos-payment-failure"
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        style={styles.failureContent}
       >
         <Image
           source={assets?.[0]}
           style={[
             styles.warningCircle,
+            isTablet && styles.warningCircleTablet,
             { tintColor: Theme["bg-accent-primary"] },
           ]}
           cachePolicy="memory-disk"
@@ -72,17 +81,30 @@ export default function PaymentFailureScreen() {
           priority="high"
         />
         <ThemedText
-          style={[styles.failedText, { color: Theme["text-primary"] }]}
+          style={[
+            styles.failedText,
+            isTablet && styles.failedTextTablet,
+            { color: Theme["text-primary"] },
+          ]}
         >
           {title}
         </ThemedText>
         <ThemedText
-          style={[styles.failedDescription, { color: Theme["text-tertiary"] }]}
+          style={[
+            styles.failedDescription,
+            isTablet && styles.failedDescriptionTablet,
+            { color: Theme["text-tertiary"] },
+          ]}
         >
           {subtitle}
         </ThemedText>
       </View>
-      <Button type="accent" variant="primary" onPress={handlePrimaryPress}>
+      <Button
+        type="accent"
+        variant="primary"
+        size={isTablet ? "lg" : "md"}
+        onPress={handlePrimaryPress}
+      >
         {isInvalidApiKey ? "Go to Settings" : "Start new payment"}
       </Button>
     </View>
@@ -95,11 +117,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
+  containerTablet: {
+    paddingHorizontal: Spacing["spacing-8"],
+    paddingBottom: Spacing["spacing-8"],
+  },
+  failureContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   failedText: {
     fontSize: 20,
     lineHeight: 20,
     textAlign: "center",
     marginBottom: Spacing["spacing-3"],
+  },
+  failedTextTablet: {
+    fontSize: 28,
+    lineHeight: 32,
+    marginBottom: Spacing["spacing-5"],
   },
   failedDescription: {
     fontSize: 16,
@@ -107,9 +143,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: Spacing["spacing-3"],
   },
+  failedDescriptionTablet: {
+    maxWidth: 640,
+    fontSize: 20,
+    lineHeight: 24,
+    marginBottom: Spacing["spacing-5"],
+  },
   warningCircle: {
     width: 48,
     height: 48,
     marginBottom: Spacing["spacing-6"],
+  },
+  warningCircleTablet: {
+    width: 72,
+    height: 72,
+    marginBottom: Spacing["spacing-8"],
   },
 });

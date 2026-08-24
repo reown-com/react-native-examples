@@ -2,6 +2,7 @@ import { BigAmountInput } from "@/components/big-amount-input";
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
 import { Spacing } from "@/constants/spacing";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
@@ -36,6 +37,7 @@ const formatAmount = (amount: string) => {
 
 export default function AmountScreen() {
   const Theme = useTheme();
+  const isTablet = useIsTablet();
   const currencyCode = useSettingsStore((state) => state.currency);
   const currency = getCurrency(currencyCode);
   const {
@@ -61,7 +63,7 @@ export default function AmountScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isTablet && styles.containerTablet]}>
       <View
         style={[
           styles.amountContainer,
@@ -73,6 +75,7 @@ export default function AmountScreen() {
           value={watchAmount}
           currency={currency.symbol}
           symbolPosition={currency.symbolPosition}
+          size={isTablet ? "lg" : "md"}
         />
       </View>
       <Controller
@@ -126,7 +129,8 @@ export default function AmountScreen() {
         testID="charge-button"
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid}
-        style={styles.button}
+        size={isTablet ? "lg" : "md"}
+        style={[styles.button, isTablet && styles.buttonTablet]}
       >
         {isValid
           ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
@@ -145,6 +149,10 @@ const styles = StyleSheet.create({
     paddingTop: Spacing["spacing-5"],
     paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
+  containerTablet: {
+    paddingHorizontal: Spacing["spacing-8"],
+    paddingTop: Spacing["spacing-8"],
+  },
   amountContainer: {
     flex: 1,
     width: "100%",
@@ -155,5 +163,8 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: Spacing["spacing-6"],
+  },
+  buttonTablet: {
+    marginTop: Spacing["spacing-8"],
   },
 });

@@ -45,6 +45,7 @@ function CharacterGroupComponent({
         scale={layout.scale}
         characterWidth={charLayout.width}
         itemHeight={layout.itemHeight}
+        fontSize={layout.fontSize}
         positionX={charLayout.position}
         isPlaceholder={isEmpty}
         textPrimaryColor={textPrimaryColor}
@@ -57,6 +58,7 @@ function CharacterGroupComponent({
           scale={layout.scale}
           characterWidth={layout.getCharWidth(separator)}
           itemHeight={layout.itemHeight}
+          fontSize={layout.fontSize}
           positionX={charLayout.position + charLayout.spacingWidth}
           isPlaceholder={isEmpty}
           textPrimaryColor={textPrimaryColor}
