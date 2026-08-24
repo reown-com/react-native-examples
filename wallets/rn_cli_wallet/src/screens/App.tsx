@@ -26,6 +26,7 @@ import LogStore from '@/store/LogStore';
 import { getEnvironment } from '@/utils/misc';
 import { toastConfig } from '@/components/ToastConfig';
 import { DarkTheme, LightTheme } from '@/utils/ThemeUtil';
+import { startBackgroundWalletRestoration } from '@/utils/WalletInitializationUtil';
 
 Sentry.init({
   enabled: !__DEV__ && !!ENV.SENTRY_DSN,
@@ -84,6 +85,10 @@ const App = () => {
   useEffect(() => {
     if (initialized && eip155Address && themeMode) {
       BootSplash.hide({ fade: true });
+
+      // Give the first frame and splash transition priority. The restoration
+      // utility then runs signers one at a time after active interactions.
+      requestAnimationFrame(startBackgroundWalletRestoration);
     }
   }, [initialized, eip155Address, themeMode]);
 
@@ -213,11 +218,14 @@ const App = () => {
         <SafeAreaProvider>
           <KeyboardProvider>
             <NavigationContainer
-              documentTitle={{ formatter: () => 'React N. Wallet' }}>
+              documentTitle={{ formatter: () => 'React N. Wallet' }}
+            >
               <StatusBar
                 translucent
                 backgroundColor="transparent"
-                barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
+                barStyle={
+                  themeMode === 'dark' ? 'light-content' : 'dark-content'
+                }
               />
               <NavigationBar style={themeMode === 'dark' ? 'light' : 'dark'} />
               <RootStackNavigator />

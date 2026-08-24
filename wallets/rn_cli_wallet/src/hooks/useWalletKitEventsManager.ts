@@ -14,6 +14,10 @@ import { TON_SIGNING_METHODS } from '@/constants/Ton';
 import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
 import { approveCantonRequest } from '@/utils/CantonRequestHandlerUtil';
 import { getRequestConfig } from '@/modals/requestConfig';
+import {
+  ensureWalletForChainId,
+  ensureWalletReady,
+} from '@/utils/WalletInitializationUtil';
 
 export default function useWalletKitEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -40,7 +44,7 @@ export default function useWalletKitEventsManager(initialized: boolean) {
 
       if (chains.length === 0) {
         ModalStore.open('LoadingModal', {
-          errorTitle: "These networks aren’t supported",
+          errorTitle: 'These networks aren’t supported',
           errorMessage:
             'This wallet doesn’t support any of the networks this app requested. Try connecting to a different app.',
         });
@@ -71,6 +75,26 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       const requestSession = walletKit.engine.signClient.session.get(topic);
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(verifyContext);
+
+      // A restored address cache is not a signer. Do not open a request flow
+      // until the signer for its namespace has been restored and verified.
+      try {
+        await ensureWalletForChainId(params.chainId);
+      } catch (error) {
+        LogStore.error(
+          error instanceof Error ? error.message : 'Wallet restore failed',
+          'WalletKitEvents',
+          'onSessionRequest:ensureWallet',
+          { chainId: params.chainId },
+        );
+        return walletKit.respondSessionRequest({
+          topic,
+          response: formatJsonRpcError(
+            requestEvent.id,
+            'Wallet for this network could not be initialized',
+          ),
+        });
+      }
 
       // Config-driven dispatch: methods are described in requestConfig.ts
       if (getRequestConfig(request.method)) {
@@ -134,7 +158,9 @@ export default function useWalletKitEventsManager(initialized: boolean) {
   );
 
   const onSessionAuthenticate = useCallback(
-    (authRequest: SignClientTypes.EventArguments['session_authenticate']) => {
+    async (
+      authRequest: SignClientTypes.EventArguments['session_authenticate'],
+    ) => {
       LogStore.info(
         'Session authenticate received',
         'WalletKitEvents',
@@ -150,12 +176,23 @@ export default function useWalletKitEventsManager(initialized: boolean) {
 
       if (chains.length === 0) {
         ModalStore.open('LoadingModal', {
-          errorTitle: "These networks aren’t supported",
+          errorTitle: 'These networks aren’t supported',
           errorMessage:
             'This wallet doesn’t support any of the networks this app requested. Try connecting to a different app.',
         });
       } else {
-        ModalStore.open('SessionAuthenticateModal', { authRequest });
+        try {
+          await ensureWalletReady('eip155');
+          ModalStore.open('SessionAuthenticateModal', { authRequest });
+        } catch (error) {
+          ModalStore.open('LoadingModal', {
+            errorTitle: 'Wallet unavailable',
+            errorMessage:
+              error instanceof Error
+                ? error.message
+                : 'The Ethereum wallet could not be initialized.',
+          });
+        }
       }
     },
     [],

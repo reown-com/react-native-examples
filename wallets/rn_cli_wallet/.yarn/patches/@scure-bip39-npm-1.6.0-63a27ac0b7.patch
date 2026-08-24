@@ -1,0 +1,86 @@
+diff --git a/esm/index.js b/esm/index.js
+index d5734b0aa14633279c2e7229476fb5cc881b16bc..b695ccb137a3519b4413665f04177550e8b0bd73 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -144,7 +144,21 @@ const psalt = (passphrase) => nfkd('mnemonic' + passphrase);
+  * // new Uint8Array([...64 bytes])
+  */
+ export function mnemonicToSeed(mnemonic, passphrase = '') {
+-    return pbkdf2Async(sha512, normalize(mnemonic).nfkd, psalt(passphrase), { c: 2048, dkLen: 64 });
++    // Use react-native-quick-crypto's native PBKDF2 (JS @noble impl blocks the
++    // JS thread for 2048 rounds of HMAC-SHA512). Falls back to @noble.
++    try {
++        const crypto = require('crypto');
++        const pw = Buffer.from(normalize(mnemonic).nfkd, 'utf8');
++        const salt = Buffer.from(psalt(passphrase), 'utf8');
++        return new Promise((resolve, reject) => {
++            crypto.pbkdf2(pw, salt, 2048, 64, 'sha512', (err, res) => {
++                if (err) reject(err);
++                else resolve(Uint8Array.from(res));
++            });
++        }).catch(() => pbkdf2Async(sha512, normalize(mnemonic).nfkd, psalt(passphrase), { c: 2048, dkLen: 64 }));
++    } catch (e) {
++        return pbkdf2Async(sha512, normalize(mnemonic).nfkd, psalt(passphrase), { c: 2048, dkLen: 64 });
++    }
+ }
+ /**
+  * Irreversible: Uses KDF to derive 64 bytes of key data from mnemonic + optional password.
+@@ -157,5 +171,14 @@ export function mnemonicToSeed(mnemonic, passphrase = '') {
+  * // new Uint8Array([...64 bytes])
+  */
+ export function mnemonicToSeedSync(mnemonic, passphrase = '') {
+-    return pbkdf2(sha512, normalize(mnemonic).nfkd, psalt(passphrase), { c: 2048, dkLen: 64 });
++    // Use react-native-quick-crypto's native PBKDF2 (JS @noble impl blocks the
++    // JS thread for 2048 rounds of HMAC-SHA512). Falls back to @noble.
++    try {
++        const crypto = require('crypto');
++        const pw = Buffer.from(normalize(mnemonic).nfkd, 'utf8');
++        const salt = Buffer.from(psalt(passphrase), 'utf8');
++        return Uint8Array.from(crypto.pbkdf2Sync(pw, salt, 2048, 64, 'sha512'));
++    } catch (e) {
++        return pbkdf2(sha512, normalize(mnemonic).nfkd, psalt(passphrase), { c: 2048, dkLen: 64 });
++    }
+ }
+diff --git a/index.js b/index.js
+index 5292f989daab4e6babbdc413f0533a0312dff3bc..763d3391b3614aae8f87244d0d4deafa94451417 100644
+--- a/index.js
++++ b/index.js
+@@ -152,7 +152,21 @@ const psalt = (passphrase) => nfkd('mnemonic' + passphrase);
+  * // new Uint8Array([...64 bytes])
+  */
+ function mnemonicToSeed(mnemonic, passphrase = '') {
+-    return (0, pbkdf2_1.pbkdf2Async)(sha2_1.sha512, normalize(mnemonic).nfkd, psalt(passphrase), { c: 2048, dkLen: 64 });
++    // Use react-native-quick-crypto's native PBKDF2 (JS @noble impl blocks the
++    // JS thread for 2048 rounds of HMAC-SHA512). Falls back to @noble.
++    try {
++        const crypto = require('crypto');
++        const pw = Buffer.from(normalize(mnemonic).nfkd, 'utf8');
++        const salt = Buffer.from(psalt(passphrase), 'utf8');
++        return new Promise((resolve, reject) => {
++            crypto.pbkdf2(pw, salt, 2048, 64, 'sha512', (err, res) => {
++                if (err) reject(err);
++                else resolve(Uint8Array.from(res));
++            });
++        }).catch(() => (0, pbkdf2_1.pbkdf2Async)(sha2_1.sha512, normalize(mnemonic).nfkd, psalt(passphrase), { c: 2048, dkLen: 64 }));
++    } catch (e) {
++        return (0, pbkdf2_1.pbkdf2Async)(sha2_1.sha512, normalize(mnemonic).nfkd, psalt(passphrase), { c: 2048, dkLen: 64 });
++    }
+ }
+ /**
+  * Irreversible: Uses KDF to derive 64 bytes of key data from mnemonic + optional password.
+@@ -165,5 +179,14 @@ function mnemonicToSeed(mnemonic, passphrase = '') {
+  * // new Uint8Array([...64 bytes])
+  */
+ function mnemonicToSeedSync(mnemonic, passphrase = '') {
+-    return (0, pbkdf2_1.pbkdf2)(sha2_1.sha512, normalize(mnemonic).nfkd, psalt(passphrase), { c: 2048, dkLen: 64 });
++    // Use react-native-quick-crypto's native PBKDF2 (JS @noble impl blocks the
++    // JS thread for 2048 rounds of HMAC-SHA512). Falls back to @noble.
++    try {
++        const crypto = require('crypto');
++        const pw = Buffer.from(normalize(mnemonic).nfkd, 'utf8');
++        const salt = Buffer.from(psalt(passphrase), 'utf8');
++        return Uint8Array.from(crypto.pbkdf2Sync(pw, salt, 2048, 64, 'sha512'));
++    } catch (e) {
++        return (0, pbkdf2_1.pbkdf2)(sha2_1.sha512, normalize(mnemonic).nfkd, psalt(passphrase), { c: 2048, dkLen: 64 });
++    }
+ }
