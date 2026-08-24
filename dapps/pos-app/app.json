@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "WPay",
+    "name": "WalletConnect Pay",
     "slug": "mobile-pos",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0666FF",
         "foregroundImage": "./assets/app_icons/android_icon_foreground.png",
         "backgroundImage": "./assets/app_icons/android_icon_background.png",
         "monochromeImage": "./assets/app_icons/android_icon_monochrome.png"
