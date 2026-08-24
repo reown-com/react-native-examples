@@ -77,6 +77,29 @@ describe("Button", () => {
     expect(flattenedStyle.borderWidth).toBe(1);
   });
 
+  it("supports the large tablet size", () => {
+    const screen = render(
+      <Button
+        type="accent"
+        variant="primary"
+        size="lg"
+        testID="large-button"
+        onPress={() => {}}
+      >
+        Charge
+      </Button>,
+    );
+
+    const button = screen.getByTestId("large-button");
+    const label = screen.getByText("Charge");
+
+    expect(StyleSheet.flatten(button.props.style).height).toBe(64);
+    expect(StyleSheet.flatten(label.props.style)).toMatchObject({
+      fontSize: 22,
+      lineHeight: 24,
+    });
+  });
+
   it("supports the neutral tertiary variant and compact width", () => {
     const button = render(
       <Button

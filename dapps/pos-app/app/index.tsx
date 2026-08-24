@@ -1,6 +1,7 @@
 import { Pressable } from "@/components/pressable";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { showErrorToast } from "@/utils/toast";
@@ -31,6 +32,7 @@ export default function HomeScreen() {
   ]);
 
   const Theme = useTheme();
+  const isTablet = useIsTablet();
   const { height: windowHeight } = useWindowDimensions();
   const { bottom } = useSafeAreaInsets();
   const [contentWidth, setContentWidth] = useState(0);
@@ -58,7 +60,17 @@ export default function HomeScreen() {
   };
 
   const isCompact = windowHeight < compactScreenHeight;
-  const secondaryActionHeight = isCompact ? 112 : 140;
+  const horizontalPadding = isTablet
+    ? Spacing["spacing-8"]
+    : Spacing["spacing-5"];
+  const actionGap = isTablet ? Spacing["spacing-6"] : Spacing["spacing-3"];
+  const secondaryActionSize = isTablet
+    ? contentWidth
+      ? Math.round((contentWidth - actionGap) / 2)
+      : 140
+    : isCompact
+      ? 112
+      : 140;
   const primaryActionMinHeight = isCompact ? 200 : 320;
   // Cap the button's height from its actual measured width (the container's
   // content box, via onLayout) so the near-square rule holds regardless of the
@@ -70,15 +82,25 @@ export default function HomeScreen() {
         Math.round(contentWidth * primaryMaxAspectRatio),
       )
     : undefined;
-  const topSpacing = Spacing["spacing-6"];
+  const topSpacing = isTablet ? Spacing["spacing-11"] : Spacing["spacing-6"];
+  const actionLabelSize = isTablet ? 24 : 18;
+  const actionLabelLineHeight = isTablet ? 28 : undefined;
+  const secondaryActionDimensions = isTablet
+    ? {
+        flex: 0,
+        width: secondaryActionSize,
+        height: secondaryActionSize,
+      }
+    : undefined;
 
   const handleContentLayout = (event: LayoutChangeEvent) => {
     // Content box width = full width minus the container's horizontal padding,
     // which matches the full-width button's width.
-    const measured = event.nativeEvent.layout.width - Spacing["spacing-5"] * 2;
-    if (measured > 0 && measured !== contentWidth) {
-      setContentWidth(measured);
-    }
+    const measured = event.nativeEvent.layout.width - horizontalPadding * 2;
+    if (measured <= 0) return;
+    setContentWidth((currentWidth) =>
+      currentWidth === measured ? currentWidth : measured,
+    );
   };
   const bottomSpacing = Math.max(
     bottom + Spacing["spacing-3"],
@@ -90,7 +112,12 @@ export default function HomeScreen() {
       onLayout={handleContentLayout}
       style={[
         styles.container,
-        { paddingTop: topSpacing, paddingBottom: bottomSpacing },
+        {
+          paddingHorizontal: horizontalPadding,
+          paddingTop: topSpacing,
+          paddingBottom: bottomSpacing,
+          gap: actionGap,
+        },
       ]}
     >
       <Pressable
@@ -111,17 +138,27 @@ export default function HomeScreen() {
       >
         <Image
           source={assets?.[0]}
-          style={styles.actionButtonImage}
+          style={[
+            styles.actionButtonImage,
+            isTablet && styles.actionButtonImageTablet,
+          ]}
           tintColor={Theme["icon-invert"]}
           cachePolicy="memory-disk"
           priority="high"
         />
-        <ThemedText style={{ fontWeight: 500 }} fontSize={18}>
+        <ThemedText
+          style={{ fontWeight: 500 }}
+          fontSize={actionLabelSize}
+          lineHeight={actionLabelLineHeight}
+        >
           New payment
         </ThemedText>
       </Pressable>
       <View
-        style={[styles.secondaryActions, { height: secondaryActionHeight }]}
+        style={[
+          styles.secondaryActions,
+          { height: secondaryActionSize, gap: actionGap },
+        ]}
       >
         <Pressable
           testID="activity-button"
@@ -131,18 +168,27 @@ export default function HomeScreen() {
           onPress={handleActivityPress}
           style={[
             styles.actionButton,
+            secondaryActionDimensions,
             styles.baseActionButton,
             { backgroundColor: Theme["foreground-primary-fix"] },
           ]}
         >
           <Image
             source={assets?.[1]}
-            style={styles.actionButtonImage}
+            style={[
+              styles.actionButtonImage,
+              isTablet && styles.actionButtonImageTablet,
+            ]}
             tintColor={Theme["icon-invert"]}
             cachePolicy="memory-disk"
             priority="high"
           />
-          <ThemedText fontSize={18}>Transactions</ThemedText>
+          <ThemedText
+            fontSize={actionLabelSize}
+            lineHeight={actionLabelLineHeight}
+          >
+            Transactions
+          </ThemedText>
         </Pressable>
         <Pressable
           testID="settings-button"
@@ -153,17 +199,26 @@ export default function HomeScreen() {
           style={[
             styles.baseActionButton,
             styles.actionButton,
+            secondaryActionDimensions,
             { backgroundColor: Theme["foreground-primary-fix"] },
           ]}
         >
           <Image
             source={assets?.[2]}
-            style={styles.actionButtonImage}
+            style={[
+              styles.actionButtonImage,
+              isTablet && styles.actionButtonImageTablet,
+            ]}
             tintColor={Theme["icon-invert"]}
             cachePolicy="memory-disk"
             priority="high"
           />
-          <ThemedText fontSize={18}>Settings</ThemedText>
+          <ThemedText
+            fontSize={actionLabelSize}
+            lineHeight={actionLabelLineHeight}
+          >
+            Settings
+          </ThemedText>
         </Pressable>
       </View>
     </View>
@@ -174,10 +229,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    paddingHorizontal: Spacing["spacing-5"],
     alignItems: "center",
     justifyContent: "flex-end",
-    gap: Spacing["spacing-3"],
   },
   baseActionButton: {
     justifyContent: "center",
@@ -195,10 +248,13 @@ const styles = StyleSheet.create({
   secondaryActions: {
     flexDirection: "row",
     width: "100%",
-    gap: Spacing["spacing-3"],
   },
   actionButtonImage: {
     width: 32,
     height: 32,
+  },
+  actionButtonImageTablet: {
+    width: 48,
+    height: 48,
   },
 });

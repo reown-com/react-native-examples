@@ -1,5 +1,6 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { memo } from "react";
@@ -14,6 +15,7 @@ export interface NumericKeyboardProps {
 
 function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
   const Theme = useTheme();
+  const isTablet = useIsTablet();
   const [assets] = useAssets([require("@/assets/images/backspace.png")]);
   const keys = [
     ["1", "2", "3"],
@@ -27,9 +29,12 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
   };
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, isTablet && styles.containerTablet, style]}>
       {keys.map((row, rowIndex) => (
-        <View key={`row-${rowIndex}`} style={styles.row}>
+        <View
+          key={`row-${rowIndex}`}
+          style={[styles.row, isTablet && styles.rowTablet]}
+        >
           {row.map((key) => (
             <Pressable
               key={key}
@@ -39,6 +44,7 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
               accessibilityLabel={key === "erase" ? "Backspace" : key}
               style={[
                 styles.key,
+                isTablet && styles.keyTablet,
                 { backgroundColor: Theme["foreground-primary-fix"] },
               ]}
             >
@@ -47,6 +53,7 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                   source={assets?.[0]}
                   style={[
                     styles.backspace,
+                    isTablet && styles.backspaceTablet,
                     {
                       tintColor: Theme["text-primary"],
                     },
@@ -57,7 +64,11 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                 />
               ) : (
                 <ThemedText
-                  style={[styles.keyText, { color: Theme["text-primary"] }]}
+                  style={[
+                    styles.keyText,
+                    isTablet && styles.keyTextTablet,
+                    { color: Theme["text-primary"] },
+                  ]}
                 >
                   {key}
                 </ThemedText>
@@ -77,10 +88,16 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: Spacing["spacing-3"],
   },
+  containerTablet: {
+    gap: Spacing["spacing-5"],
+  },
   row: {
     flexDirection: "row",
     justifyContent: "space-around",
     gap: Spacing["spacing-3"],
+  },
+  rowTablet: {
+    gap: Spacing["spacing-5"],
   },
   key: {
     flex: 1,
@@ -89,12 +106,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: BorderRadius["4"],
   },
+  keyTablet: {
+    height: 96,
+  },
   keyText: {
     fontSize: 22,
     lineHeight: 26,
   },
+  keyTextTablet: {
+    fontSize: 28,
+    lineHeight: 32,
+  },
   backspace: {
     width: 22,
     height: 22,
+  },
+  backspaceTablet: {
+    width: 28,
+    height: 28,
   },
 });
