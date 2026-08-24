@@ -19,7 +19,7 @@ import { ThemeMode } from "@/utils/types";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
-import { isNfcHceEnabled } from "@/utils/feature-flags";
+import { isNfcHceEnabled, isSandboxModeAvailable } from "@/utils/feature-flags";
 import {
   connectPrinter,
   printReceipt,
@@ -76,6 +76,8 @@ export default function SettingsScreen() {
   const setCurrency = useSettingsStore((state) => state.setCurrency);
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
+  const sandboxMode = useSettingsStore((state) => state.sandboxMode);
+  const setSandboxMode = useSettingsStore((state) => state.setSandboxMode);
   const nfcCapabilities = useNfcCapabilities();
   const addLog = useLogsStore((state) => state.addLog);
   const logsCount = useLogsStore((state) => state.logs.length);
@@ -170,8 +172,10 @@ export default function SettingsScreen() {
   const showBiometricToggle = shouldShowBiometricOption && !!biometricStatus;
 
   const hasMerchantId = !!storedMerchantId?.trim();
-  const setupRemaining =
-    (hasMerchantId ? 0 : 1) + (hasStoredCustomerApiKey ? 0 : 1);
+  const sandboxActive = isSandboxModeAvailable && sandboxMode;
+  const setupRemaining = sandboxActive
+    ? 0
+    : (hasMerchantId ? 0 : 1) + (hasStoredCustomerApiKey ? 0 : 1);
 
   const handleTestPrinterPress = async () => {
     try {
@@ -289,6 +293,7 @@ export default function SettingsScreen() {
             }
             caret="right"
             showCaret
+            disabled={sandboxActive}
             onPress={() => setActiveSheet("merchantId")}
           />
 
@@ -308,6 +313,7 @@ export default function SettingsScreen() {
             }
             caret="right"
             showCaret
+            disabled={sandboxActive}
             onPress={() => setActiveSheet("customerApiKey")}
           />
 
@@ -318,6 +324,16 @@ export default function SettingsScreen() {
               description="Show NFC prompt"
               value={nfcEnabled}
               onValueChange={setNfcEnabled}
+            />
+          )}
+
+          {isSandboxModeAvailable && (
+            <SettingsToggleItem
+              testID="settings-sandbox-toggle"
+              title="Sandbox mode"
+              description="Simulate payments"
+              value={sandboxMode}
+              onValueChange={setSandboxMode}
             />
           )}
 

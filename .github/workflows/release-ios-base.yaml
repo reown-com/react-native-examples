@@ -18,6 +18,11 @@ on:
       release-type:
         description: "Release type of the project (debug/internal/production)"
         type: string
+      sandbox-enabled:
+        description: "Show the Sandbox mode switch in the app"
+        required: false
+        default: false
+        type: boolean
       project-type:
         description: "Type of project (wallet/dapp)"
         required: true
@@ -175,6 +180,7 @@ jobs:
             exit 1
           fi
           echo "${{ secrets.env-file }}" > ${{ inputs.root-path }}/.env
+          echo "EXPO_PUBLIC_SANDBOX_ENABLED=${{ inputs.sandbox-enabled }}" >> ${{ inputs.root-path }}/.env
 
       - name: Copy variant files
         run: |

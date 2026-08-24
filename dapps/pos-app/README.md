@@ -26,6 +26,11 @@ Follow the official React Native documentation to set up your environment:
 
    Update the `.env` file with your configuration values.
 
+   For a test build that does not require merchant credentials or a wallet, set
+   `EXPO_PUBLIC_SANDBOX_ENABLED="true"`. The Settings screen will then show a
+   Sandbox mode switch. In sandbox mode, `$0.01` succeeds, `$0.02` is declined,
+   and Transactions shows local sample records.
+
 3. Create native folders
 
    ```bash

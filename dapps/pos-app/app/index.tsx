@@ -3,6 +3,7 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { isSandboxModeAvailable } from "@/utils/feature-flags";
 import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
@@ -38,9 +39,11 @@ export default function HomeScreen() {
   const isCustomerApiKeySet = useSettingsStore(
     (state) => state.isCustomerApiKeySet,
   );
+  const sandboxMode = useSettingsStore((state) => state.sandboxMode);
 
   const handleStartPayment = () => {
-    if (!merchantId || !isCustomerApiKeySet) {
+    const canUseSandbox = isSandboxModeAvailable && sandboxMode;
+    if (!canUseSandbox && (!merchantId || !isCustomerApiKeySet)) {
       router.push("/settings");
       showErrorToast("Finish setup in Settings before starting a payment.");
       return;

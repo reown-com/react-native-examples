@@ -1,5 +1,6 @@
 import { Button } from "@/components/button";
 import QRCode from "@/components/qr-code";
+import { SandboxBanner } from "@/components/sandbox-banner";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
@@ -17,7 +18,7 @@ import {
 } from "@/utils/currency";
 import { formatCountdown, formatCountdownSpoken } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
-import { isNfcHceEnabled } from "@/utils/feature-flags";
+import { isNfcHceEnabled, isSandboxModeAvailable } from "@/utils/feature-flags";
 import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
@@ -29,7 +30,7 @@ import {
   UnknownOutputParams,
   useLocalSearchParams,
 } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AccessibilityInfo, StyleSheet, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 
@@ -47,14 +48,20 @@ export default function ScanScreen() {
     require("@/assets/images/wc-logo-dark.png"),
     require("@/assets/images/nfc.png"),
   ]);
+  const qrLogoSource = useMemo(() => {
+    const uri = assets?.[0]?.uri;
+    return uri ? { uri } : undefined;
+  }, [assets]);
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
+  const [sandboxProcessing, setSandboxProcessing] = useState(false);
   const hasNavigatedRef = useRef(false);
 
   const deviceId = useSettingsStore((state) => state.deviceId);
   const merchantId = useSettingsStore((state) => state.merchantId);
+  const sandboxMode = useSettingsStore((state) => state.sandboxMode);
   const currencyCode = useSettingsStore((state) => state.currency);
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const currency = getCurrency(currencyCode);
@@ -62,6 +69,7 @@ export default function ScanScreen() {
   const Theme = useTheme();
 
   const { amount } = params;
+  const isSandboxPayment = isSandboxModeAvailable && sandboxMode;
 
   const { nfcMode } = useNfcPayment({
     paymentUrl: qrUri,
@@ -114,6 +122,12 @@ export default function ScanScreen() {
   );
 
   const handleOnCancelPress = () => {
+    if (isSandboxPayment) {
+      setSandboxProcessing(false);
+      resetNavigation("/amount");
+      return;
+    }
+
     // Before the first status poll resolves, `paymentStatusData` is undefined
     // but the payment is already open at the gateway — cancel it then too.
     const status = paymentStatusData?.status;
@@ -138,7 +152,7 @@ export default function ScanScreen() {
     if (!deviceId || !amount) return;
 
     async function initiatePayment() {
-      if (!merchantId) {
+      if (!isSandboxPayment && !merchantId) {
         addLog(
           "error",
           "Merchant ID is not configured",
@@ -152,6 +166,23 @@ export default function ScanScreen() {
       }
 
       try {
+        if (isSandboxPayment) {
+          const sandboxPaymentId = `sandbox_${Date.now()}`;
+          const sandboxQrUrl = `${sandboxPaymentId}?amount=${encodeURIComponent(amount)}`;
+
+          addLog("info", "Sandbox payment started", "scan", "initiatePayment", {
+            paymentId: sandboxPaymentId,
+            amount,
+          });
+          setQrUri(sandboxQrUrl);
+          setPaymentId(sandboxPaymentId);
+          // useCountdown expects an epoch timestamp in seconds, matching the
+          // API response format.
+          setExpiresAt(Math.floor(Date.now() / 1000) + 15 * 60);
+          setSandboxProcessing(true);
+          return;
+        }
+
         const paymentRequest = {
           referenceId: uuidv4().replace(/-/g, ""),
           amount: {
@@ -190,10 +221,27 @@ export default function ScanScreen() {
 
     initiatePayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deviceId, amount, merchantId]);
+  }, [deviceId, amount, merchantId, isSandboxPayment]);
+
+  useEffect(() => {
+    if (!isSandboxPayment || !paymentId) return;
+
+    const timeout = setTimeout(() => {
+      setSandboxProcessing(false);
+      if (amountToCents(amount) === 1) {
+        addLog("info", "Sandbox payment completed", "scan", "sandboxPayment");
+        onSuccess();
+      } else {
+        addLog("info", "Sandbox payment declined", "scan", "sandboxPayment");
+        onFailure("failed");
+      }
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [addLog, amount, isSandboxPayment, onFailure, onSuccess, paymentId]);
 
   const { data: paymentStatusData } = usePaymentStatus(paymentId, {
-    enabled: !!paymentId && !!qrUri,
+    enabled: !isSandboxPayment && !!paymentId && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "succeeded") {
         addLog("info", "Payment completed", "scan", "usePaymentStatus", {
@@ -265,6 +313,7 @@ export default function ScanScreen() {
           gestureEnabled: !backHidden,
         }}
       />
+      {isSandboxPayment && <SandboxBanner style={styles.sandboxBanner} />}
       {isProcessing ? (
         <View style={styles.loadingContainer}>
           <WalletConnectLoading size={180} />
@@ -308,13 +357,18 @@ export default function ScanScreen() {
           <ThemedText
             style={[styles.instructionText, { color: Theme["text-secondary"] }]}
           >
-            {showNfc ? "Scan or tap to pay" : "Scan to pay"}
+            {sandboxProcessing
+              ? "Waiting for confirmation..."
+              : showNfc
+                ? "Scan or tap to pay"
+                : "Scan to pay"}
           </ThemedText>
 
           <View style={styles.qrSection}>
             <QRCode
               size={300}
               uri={qrUri}
+              imageSrc={qrLogoSource}
               logoBorderRadius={100}
               onPress={handleCopyPaymentUrl}
               testID="pos-qr-code"
@@ -422,6 +476,10 @@ const styles = StyleSheet.create({
   qrSection: {
     alignItems: "center",
     gap: Spacing["spacing-4"],
+  },
+  sandboxBanner: {
+    marginHorizontal: Spacing["spacing-5"],
+    marginTop: Spacing["spacing-3"],
   },
   timerRow: {
     flexDirection: "row",

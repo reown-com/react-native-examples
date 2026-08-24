@@ -77,6 +77,9 @@ interface SettingsStore {
   // NFC
   nfcEnabled: boolean;
 
+  // Sandbox
+  sandboxMode: boolean;
+
   // Actions
   setThemeMode: (themeMode: ThemeMode) => void;
   setDeviceId: (deviceId: string) => void;
@@ -99,6 +102,7 @@ interface SettingsStore {
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
   setNfcEnabled: (enabled: boolean) => void;
+  setSandboxMode: (enabled: boolean) => void;
 
   // Transaction filters
   setTransactionFilter: (filter: TransactionFilterType) => void;
@@ -123,6 +127,7 @@ export const useSettingsStore = create<SettingsStore>()(
       pinLockoutUntil: null,
       biometricEnabled: false,
       nfcEnabled: true,
+      sandboxMode: false,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
@@ -247,6 +252,7 @@ export const useSettingsStore = create<SettingsStore>()(
       setBiometricEnabled: (enabled: boolean) =>
         set({ biometricEnabled: enabled }),
       setNfcEnabled: (enabled: boolean) => set({ nfcEnabled: enabled }),
+      setSandboxMode: (enabled: boolean) => set({ sandboxMode: enabled }),
 
       setTransactionFilter: (filter: TransactionFilterType) =>
         set({ transactionFilter: filter }),
@@ -255,7 +261,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 19,
+      version: 20,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -340,6 +346,10 @@ export const useSettingsStore = create<SettingsStore>()(
           // them as initialized. This stops env defaults from being re-seeded
           // after the user manually clears/changes their credentials.
           persistedState.hasInitializedDefaults = true;
+        }
+
+        if (version < 20) {
+          persistedState.sandboxMode = false;
         }
 
         return persistedState;

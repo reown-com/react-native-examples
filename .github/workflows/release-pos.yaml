@@ -24,6 +24,11 @@ on:
         options:
           - internal
           - production
+      sandbox-enabled:
+        description: 'Show the Sandbox mode switch in the app'
+        required: false
+        default: false
+        type: boolean
       external-group:
         description: 'iOS TestFlight external group to also release to. Leave empty for internal-only.'
         required: false
@@ -45,6 +50,7 @@ jobs:
       output-path: ${{ inputs.release-type == 'production' && 'dapps/pos-app/android/app/build/outputs/apk/release/app-release.apk' || 'dapps/pos-app/android/app/build/outputs/apk/internal/app-internal.apk' }}
       package-manager: 'npm'
       is-expo-project: true
+      sandbox-enabled: ${{ inputs.sandbox-enabled || false }}
       firebase-app-id: ${{ inputs.release-type == 'production' && vars.POS_ANDROID_FIREBASE_APP_ID || vars.POS_ANDROID_INTERNAL_FIREBASE_APP_ID }}
     secrets:
       env-file: ${{ secrets.POS_ENV_FILE }}
@@ -72,6 +78,7 @@ jobs:
       package-manager: 'npm'
       testflight-groups: ${{ inputs.external-group }}
       is-expo-project: true
+      sandbox-enabled: ${{ inputs.sandbox-enabled || false }}
     secrets:
       env-file: ${{ secrets.POS_ENV_FILE }}
       sentry-file: ${{ secrets.POS_SENTRY_FILE }}

@@ -21,6 +21,7 @@ export function resetSettingsStore() {
     pinFailedAttempts: 0,
     pinLockoutUntil: null,
     biometricEnabled: false,
+    sandboxMode: false,
   });
 }
 
