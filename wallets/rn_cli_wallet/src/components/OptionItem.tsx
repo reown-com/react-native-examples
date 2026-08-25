@@ -61,10 +61,12 @@ export function OptionItem({
   // differs from our chain constants ("Binance Smart Chain"), which silently drops
   // the badge — CAIP-2 ids are canonical and always present.
   const networkIconUrl = option.amount.display.networkIconUrl?.trim();
-  const caip2ChainId = option.account.split(':').slice(0, 2).join(':');
+  const caip2ChainId = option.account?.split(':').slice(0, 2).join(':');
   const chainIcon = networkIconUrl
     ? { uri: networkIconUrl }
-    : PresetsUtil.getChainIconById(caip2ChainId);
+    : caip2ChainId
+    ? PresetsUtil.getChainIconById(caip2ChainId)
+    : undefined;
   const tokenIconUrl = option.amount.display.iconUrl?.trim();
   const hasTokenIcon = !!tokenIconUrl;
   const mainIconSource = hasTokenIcon ? { uri: tokenIconUrl } : chainIcon;
