@@ -1,4 +1,4 @@
-package com.reown.mobilepos.hce
+package com.walletconnect.mobilepos.hce
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -8,7 +8,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 class HceModule : Module() {
   companion object {
-    private const val META_DATA_HCE_ENABLED = "com.reown.mobilepos.hce.HCE_ENABLED"
+    private const val META_DATA_HCE_ENABLED = "com.walletconnect.mobilepos.hce.HCE_ENABLED"
   }
 
   private val context: Context

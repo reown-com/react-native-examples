@@ -1,7 +1,7 @@
 // Dynamic Expo config — selects the build variant via the APP_VARIANT env var.
 //
-//   APP_VARIANT=production (default) -> com.reown.mobilepos          "WalletConnect Pay"
-//   APP_VARIANT=internal             -> com.reown.mobilepos.internal "WPay Dev"  (local dev + TestFlight/Firebase)
+//   APP_VARIANT=production (default) -> com.walletconnect.mobilepos          "WalletConnect Pay"
+//   APP_VARIANT=internal             -> com.walletconnect.mobilepos.internal "WPay Dev"  (local dev + TestFlight/Firebase)
 //
 // The variant is named `internal` end-to-end (buildType, CI release-type, gradle
 // assembleInternal) to match wallets/rn_cli_wallet and the shared reusable release
@@ -16,7 +16,7 @@
 // drives the iOS variant (per-variant prebuild via APP_VARIANT) and the production
 // Android prebuild defaults.
 
-const BASE_APP_ID = "com.reown.mobilepos";
+const BASE_APP_ID = "com.walletconnect.mobilepos";
 const BASE_SCHEME = "wpay";
 
 const VARIANT_ID_SUFFIX = {
