@@ -18,6 +18,7 @@ import Celo from '@/assets/chains/celo.webp';
 import Base from '@/assets/chains/base.png';
 import Aurora from '@/assets/chains/aurora.webp';
 import Monad from '@/assets/chains/monad.png';
+import Robinhood from '@/assets/chains/robinhood.webp';
 import { Chain } from '@/utils/TypesUtil';
 import { ImageSourcePropType } from 'react-native';
 
@@ -157,6 +158,12 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     name: 'Monad',
     rpcUrl: 'https://rpc.monad.xyz',
   },
+  'eip155:4663': {
+    chainId: '4663',
+    namespace: 'eip155',
+    name: 'Robinhood Chain',
+    rpcUrl: 'https://rpc.mainnet.chain.robinhood.com',
+  },
 };
 
 export const EIP155_NETWORK_IMAGES: Record<string, ImageSourcePropType> = {
@@ -182,6 +189,7 @@ export const EIP155_NETWORK_IMAGES: Record<string, ImageSourcePropType> = {
   'eip155:8453': Base,
   'eip155:1313161554': Aurora,
   'eip155:143': Monad,
+  'eip155:4663': Robinhood,
 };
 
 export const EIP155_SIGNING_METHODS = {

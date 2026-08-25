@@ -55,9 +55,18 @@ export function OptionItem({
     option.amount.display.decimals,
   );
 
-  const chainIcon = PresetsUtil.getIconLogoByName(
-    option.amount.display.networkName,
-  );
+  // Chain badge: prefer the remote icon the Pay SDK returns, then fall back to a
+  // CAIP-2 id lookup (option.account is a CAIP-10 string, e.g. `eip155:56:0x...`).
+  // Deliberately not name-based: the SDK's networkName ("BNB Smart Chain") often
+  // differs from our chain constants ("Binance Smart Chain"), which silently drops
+  // the badge — CAIP-2 ids are canonical and always present.
+  const networkIconUrl = option.amount.display.networkIconUrl?.trim();
+  const caip2ChainId = option.account?.split(':').slice(0, 2).join(':');
+  const chainIcon = networkIconUrl
+    ? { uri: networkIconUrl }
+    : caip2ChainId
+    ? PresetsUtil.getChainIconById(caip2ChainId)
+    : undefined;
   const tokenIconUrl = option.amount.display.iconUrl?.trim();
   const hasTokenIcon = !!tokenIconUrl;
   const mainIconSource = hasTokenIcon ? { uri: tokenIconUrl } : chainIcon;
