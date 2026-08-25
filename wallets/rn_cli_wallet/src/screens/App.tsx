@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ENV } from '@/utils/env';
 import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
 import { NavigationBar } from 'expo-navigation-bar';
@@ -51,6 +51,10 @@ Sentry.init({
   // spotlight: __DEV__,
 });
 
+// Hard cap on how long the native splash may stay up. Init normally resolves
+// in well under this; the backstop only fires if init stalls or keeps retrying.
+const SPLASH_MAX_WAIT_MS = 12000;
+
 const App = () => {
   const { themeMode, eip155Address } = useSnapshot(SettingsStore.state);
 
@@ -81,16 +85,33 @@ const App = () => {
   );
   useNfcForegroundDispatch(handleNfcUri);
 
+  const splashHiddenRef = useRef(false);
+  const hideSplash = useCallback(() => {
+    if (splashHiddenRef.current) {
+      return;
+    }
+    splashHiddenRef.current = true;
+    BootSplash.hide({ fade: true });
+
+    // Give the first frame and splash transition priority. The restoration
+    // utility then runs signers one at a time after active interactions.
+    requestAnimationFrame(startBackgroundWalletRestoration);
+  }, []);
+
   // Hide splash screen once wallets are initialized, addresses are loaded and theme mode is set
   useEffect(() => {
     if (initialized && eip155Address && themeMode) {
-      BootSplash.hide({ fade: true });
-
-      // Give the first frame and splash transition priority. The restoration
-      // utility then runs signers one at a time after active interactions.
-      requestAnimationFrame(startBackgroundWalletRestoration);
+      hideSplash();
     }
-  }, [initialized, eip155Address, themeMode]);
+  }, [initialized, eip155Address, themeMode, hideSplash]);
+
+  // Safety backstop: never leave the splash up indefinitely if init stalls or
+  // keeps retrying. Reveal the UI (background restoration will populate any
+  // missing signers) rather than trapping the user on the splash forever.
+  useEffect(() => {
+    const timer = setTimeout(hideSplash, SPLASH_MAX_WAIT_MS);
+    return () => clearTimeout(timer);
+  }, [hideSplash]);
 
   // Set up relayer event listeners once initialized
   useEffect(() => {
