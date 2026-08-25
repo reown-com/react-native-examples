@@ -1,4 +1,4 @@
-name: Create iOS Certificates
+name: 🍏 Create iOS Certificates
 
 run-name: "Create iOS Certificates - ${{ inputs.bundle-id }}"
 
