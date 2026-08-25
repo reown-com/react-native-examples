@@ -15,7 +15,7 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NSBluetoothAlwaysUsageDescription": "WPay uses Bluetooth to connect to a thermal receipt printer so you can print transaction receipts."
+        "NSBluetoothAlwaysUsageDescription": "WalletConnect Pay uses Bluetooth to connect to a thermal receipt printer so you can print transaction receipts."
       }
     },
     "android": {
@@ -36,7 +36,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 31
+      "versionCode": 32
     },
     "web": {
       "output": "static",
