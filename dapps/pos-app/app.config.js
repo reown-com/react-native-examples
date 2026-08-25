@@ -31,10 +31,10 @@ const VARIANT_SCHEME_SUFFIX = {
 
 // Human-readable display name per variant (iOS CFBundleDisplayName via `name`; the
 // Android label is overlaid per-buildType via plugins/withAndroidVariantIcons.js
-// strings.xml). Production is the WalletConnect Pay rebrand; internal stays "WPay Dev".
+// strings.xml).
 const VARIANT_NAME = {
   production: "WalletConnect Pay",
-  internal: "WPay Dev",
+  internal: "WalletConnect Pay Dev",
 };
 
 module.exports = ({ config }) => {
