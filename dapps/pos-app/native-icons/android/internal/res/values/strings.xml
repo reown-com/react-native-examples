@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- BuildType res overlay merged into assembleInternal only (copied by
      plugins/withAndroidVariantIcons.js). Overrides the launcher label so the
-     internal build shows "WPay Dev". Don't edit by hand — regenerate the badged
-     mipmaps by prebuilding with APP_VARIANT=internal. -->
+     internal build shows "WalletConnect Pay Dev". Don't edit by hand — regenerate
+     the badged mipmaps by prebuilding with APP_VARIANT=internal. -->
 <resources>
-    <string name="app_name">WPay Dev</string>
+    <string name="app_name">WalletConnect Pay Dev</string>
 </resources>
