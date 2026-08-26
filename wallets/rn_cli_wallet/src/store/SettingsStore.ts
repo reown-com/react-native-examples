@@ -12,7 +12,6 @@ import type SolanaLib from '../lib/SolanaLib';
 import type BitcoinLib from '../lib/BitcoinLib';
 import type StellarLib from '../lib/StellarLib';
 import { MMKV } from 'react-native-mmkv';
-import { updateWalletAddressCache } from '@/utils/WalletAddressCache';
 
 type WalletReadiness = 'idle' | 'loading' | 'ready' | 'failed';
 
@@ -139,7 +138,6 @@ const SettingsStore = {
 
   setEIP155Address(eip155Address: string) {
     state.eip155Address = eip155Address;
-    updateWalletAddressCache({ eip155Address }).catch(() => {});
   },
 
   setWallet(wallet: EIP155Lib) {
@@ -190,7 +188,6 @@ const SettingsStore = {
 
   setSuiAddress(suiAddress: string) {
     state.suiAddress = suiAddress;
-    updateWalletAddressCache({ suiAddress }).catch(() => {});
   },
 
   setSuiWallet(suiWallet: SuiLib) {
@@ -199,7 +196,6 @@ const SettingsStore = {
 
   setTonAddress(tonAddress: string) {
     state.tonAddress = tonAddress;
-    updateWalletAddressCache({ tonAddress }).catch(() => {});
   },
 
   setTonWallet(tonWallet: TonLib) {
@@ -208,7 +204,6 @@ const SettingsStore = {
 
   setTronAddress(tronAddress: string) {
     state.tronAddress = tronAddress;
-    updateWalletAddressCache({ tronAddress }).catch(() => {});
   },
 
   setTronWallet(tronWallet: TronLib) {
@@ -217,7 +212,6 @@ const SettingsStore = {
 
   setCantonAddress(cantonAddress: string) {
     state.cantonAddress = cantonAddress;
-    updateWalletAddressCache({ cantonAddress }).catch(() => {});
   },
 
   setCantonWallet(cantonWallet: CantonLib) {
@@ -226,7 +220,6 @@ const SettingsStore = {
 
   setSolanaAddress(solanaAddress: string) {
     state.solanaAddress = solanaAddress;
-    updateWalletAddressCache({ solanaAddress }).catch(() => {});
   },
 
   setSolanaWallet(solanaWallet: SolanaLib) {
@@ -236,15 +229,11 @@ const SettingsStore = {
   setBitcoinAddress(bitcoinAddress: string) {
     state.bitcoinAddress = bitcoinAddress;
     state.bitcoinAddresses = [bitcoinAddress];
-    updateWalletAddressCache({ bitcoinAddresses: [bitcoinAddress] }).catch(
-      () => {},
-    );
   },
 
   setBitcoinAddresses(bitcoinAddresses: string[]) {
     state.bitcoinAddresses = bitcoinAddresses;
     state.bitcoinAddress = bitcoinAddresses[0] ?? '';
-    updateWalletAddressCache({ bitcoinAddresses }).catch(() => {});
   },
 
   setBitcoinWallet(bitcoinWallet: BitcoinLib) {
@@ -253,7 +242,6 @@ const SettingsStore = {
 
   setStellarAddress(stellarAddress: string) {
     state.stellarAddress = stellarAddress;
-    updateWalletAddressCache({ stellarAddress }).catch(() => {});
   },
 
   setStellarWallet(stellarWallet: StellarLib) {

@@ -248,8 +248,8 @@ export default function SessionProposalModal() {
       setIsLoadingApprove(true);
 
       try {
-        // Cached addresses are display data only. Rebuild the selected
-        // namespaces from verified signer addresses before approving them.
+        // The idle queue may not have reached every requested namespace yet.
+        // Restore selected signers before advertising their accounts.
         await ensureWalletsForChainIds(selectedChainIds);
         const refreshedNamespaces = buildSupportedNamespaces(
           testNets,

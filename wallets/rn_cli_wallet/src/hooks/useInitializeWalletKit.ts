@@ -5,64 +5,79 @@ import * as Sentry from '@sentry/react-native';
 import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 import { createWalletKit, walletKit } from '@/utils/WalletKitUtil';
-import {
-  ensureWalletReady,
-  hydrateCachedWalletAddresses,
-} from '@/utils/WalletInitializationUtil';
 
-// Retry a failed init instead of leaving the splash gated forever. A first
-// launch after an upgrade (empty address cache) restores EIP155 and inits
-// WalletKit on the critical path; a single transient failure there used to
-// require force-quitting the app. Retry with a small backoff so it self-heals.
-const INIT_RETRY_DELAY_MS = 1500;
+const MAX_INIT_ATTEMPTS = 3;
+const INIT_RETRY_BASE_DELAY_MS = 1500;
 
 export default function useInitializeWalletKit() {
   const [initialized, setInitialized] = useState(false);
+  const [initializationError, setInitializationError] = useState<Error | null>(
+    null,
+  );
+  const [retryGeneration, setRetryGeneration] = useState(0);
   const prevRelayerURLValue = useRef<string>('');
-  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { relayerRegionURL } = useSnapshot(SettingsStore.state);
 
-  const onInitialize = useCallback(async () => {
-    if (retryTimer.current) {
-      clearTimeout(retryTimer.current);
-      retryTimer.current = null;
-    }
+  useEffect(() => {
+    if (initialized) return;
 
-    try {
-      const hasEip155Address = await hydrateCachedWalletAddresses();
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    let attempt = 0;
 
-      // A cache miss is a first launch after the upgrade (or a new install).
-      // Restore just EIP155 to establish the minimum address needed by the app;
-      // all remaining signers warm in the idle queue after first paint.
-      if (!hasEip155Address) {
-        await ensureWalletReady('eip155');
+    const onInitialize = async () => {
+      attempt += 1;
+
+      try {
+        await createWalletKit(relayerRegionURL);
+        if (cancelled) return;
+
+        setInitializationError(null);
+        prevRelayerURLValue.current = relayerRegionURL;
+        setInitialized(true);
+        SettingsStore.state.initPromiseResolver?.resolve(undefined);
+      } catch (err: unknown) {
+        if (cancelled) return;
+
+        const error = err instanceof Error ? err : new Error(String(err));
+        LogStore.error(
+          `Failed to initialize WalletKit: ${error.message}`,
+          'Initialization',
+          'onInitialize',
+          { attempt, error: String(err) },
+        );
+
+        if (attempt < MAX_INIT_ATTEMPTS) {
+          const delay = INIT_RETRY_BASE_DELAY_MS * 2 ** (attempt - 1);
+          retryTimer = setTimeout(onInitialize, delay);
+          return;
+        }
+
+        setInitializationError(error);
+        // `initPromise` represents initialization settling. Wake any deep-link
+        // flow so it can show its normal unavailable-state error instead of
+        // awaiting forever.
+        SettingsStore.state.initPromiseResolver?.resolve(undefined);
+        Sentry.captureException(error, {
+          tags: { area: 'Initialization', op: 'onInitialize' },
+          extra: { attempts: attempt },
+        });
       }
+    };
 
-      await createWalletKit(relayerRegionURL);
-      setInitialized(true);
-      SettingsStore.state.initPromiseResolver?.resolve(undefined);
-    } catch (err: unknown) {
-      LogStore.error(
-        `Failed to initialize WalletKit: ${
-          err instanceof Error ? err.message : 'Unknown error'
-        }`,
-        'Initialization',
-        'onInitialize',
-        { error: String(err) },
-      );
-      // Surface the exact failing step (the in-app log is hidden behind the
-      // splash while init is pending, so route it to Sentry too).
-      Sentry.captureException(
-        err instanceof Error ? err : new Error(String(err)),
-        { tags: { area: 'Initialization', op: 'onInitialize' } },
-      );
-      // Do not wedge the splash on a transient failure — retry.
-      retryTimer.current = setTimeout(() => {
-        onInitialize();
-      }, INIT_RETRY_DELAY_MS);
-    }
-  }, [relayerRegionURL]);
+    onInitialize();
+
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+    };
+  }, [initialized, relayerRegionURL, retryGeneration]);
+
+  const retryInitialization = useCallback(() => {
+    setInitializationError(null);
+    setRetryGeneration(value => value + 1);
+  }, []);
 
   // restart transport if relayer region changes
   const onRelayerRegionChange = useCallback(() => {
@@ -82,22 +97,10 @@ export default function useInitializeWalletKit() {
   }, [relayerRegionURL]);
 
   useEffect(() => {
-    if (!initialized) {
-      onInitialize();
-    }
-    if (prevRelayerURLValue.current !== relayerRegionURL) {
+    if (initialized && prevRelayerURLValue.current !== relayerRegionURL) {
       onRelayerRegionChange();
     }
-  }, [initialized, onInitialize, relayerRegionURL, onRelayerRegionChange]);
+  }, [initialized, relayerRegionURL, onRelayerRegionChange]);
 
-  useEffect(
-    () => () => {
-      if (retryTimer.current) {
-        clearTimeout(retryTimer.current);
-      }
-    },
-    [],
-  );
-
-  return initialized;
+  return { initialized, initializationError, retryInitialization };
 }

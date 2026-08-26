@@ -69,7 +69,6 @@
     "expo": "56.0.12",
     "expo-application": "~56.0.3",
     "expo-clipboard": "~56.0.4",
-    "expo-linking": "56.0.14",
     "expo-navigation-bar": "~56.0.3",
     "expo-system-ui": "56.0.5",
     "lottie-react-native": "7.3.5",
@@ -183,8 +182,7 @@
     "ajv": "6.14.0",
     "@xmldom/xmldom": "0.8.13",
     "node-forge": "1.4.0",
-    "undici": "6.27.0",
-    "@scure/bip39@^1.6.0": "patch:@scure/bip39@npm%3A1.6.0#./.yarn/patches/@scure-bip39-npm-1.6.0-63a27ac0b7.patch"
+    "undici": "6.27.0"
   },
   "packageManager": "yarn@3.8.7"
 }

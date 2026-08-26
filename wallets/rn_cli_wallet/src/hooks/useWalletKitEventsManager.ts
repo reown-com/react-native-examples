@@ -76,8 +76,8 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(verifyContext);
 
-      // A restored address cache is not a signer. Do not open a request flow
-      // until the signer for its namespace has been restored and verified.
+      // Signers warm at idle. Do not open a request flow until the signer for
+      // its namespace has been restored.
       try {
         await ensureWalletForChainId(params.chainId);
       } catch (error) {

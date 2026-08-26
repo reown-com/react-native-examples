@@ -131,8 +131,8 @@ export default function SecretPhrase() {
   } = useSnapshot(SettingsStore.state);
   const Theme = useTheme();
 
-  // Address hydration does not restore private key material. Ensure the
-  // signer-backed secret sections are ready when this screen is opened.
+  // The idle queue may still be restoring signers. Ensure every secret-backed
+  // section is ready when this screen is opened.
   useEffect(() => {
     Promise.all(WALLET_NAMESPACES.map(ensureWalletReady)).catch(() => {
       // Individual sections retain their unavailable state if one restore fails.

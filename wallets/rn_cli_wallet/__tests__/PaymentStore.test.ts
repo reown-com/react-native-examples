@@ -27,6 +27,11 @@ jest.mock('../src/store/SettingsStore', () => ({
   },
 }));
 
+jest.mock('@/utils/WalletInitializationUtil', () => ({
+  __esModule: true,
+  ensureWalletForChainId: jest.fn(),
+}));
+
 jest.mock('../src/utils/WalletKitUtil', () => ({
   __esModule: true,
   walletKit: {
@@ -75,6 +80,7 @@ import {
   sendTransactionWithFreshFees,
   waitForTransactionConfirmation,
 } from '../src/utils/PaymentTransactionUtil';
+import { ensureWalletForChainId } from '../src/utils/WalletInitializationUtil';
 
 const mockedEstimateTransactionFee = jest.mocked(estimateTransactionFee);
 const mockedSendTransactionWithFreshFees = jest.mocked(
@@ -92,6 +98,7 @@ const mockedSignTypedData = jest.mocked(mockedWallet._signTypedData);
 const mockedStorageGetItem = jest.mocked(storage.getItem);
 const mockedStorageSetItem = jest.mocked(storage.setItem);
 const mockedStorageRemoveItem = jest.mocked(storage.removeItem);
+const mockedEnsureWalletForChainId = jest.mocked(ensureWalletForChainId);
 
 function createAction(method: string, params: unknown[] = []): Action {
   return {
@@ -221,6 +228,7 @@ describe('PaymentStore', () => {
       transaction: 'signed-b64',
       signature: 'sol-sig-1',
     });
+    mockedEnsureWalletForChainId.mockResolvedValue(undefined);
     (SettingsStore.state as any).solanaWallet = {
       signTransaction: mockedSolanaSignTransaction,
     };
@@ -314,6 +322,7 @@ describe('PaymentStore', () => {
     await flushPromises();
     await PaymentStore.approvePayment();
 
+    expect(mockedEnsureWalletForChainId).toHaveBeenCalledWith('eip155:137');
     expect(mockedGetRequiredPaymentActions).toHaveBeenCalledWith({
       paymentId: 'payment-1',
       optionId: 'signature-option',

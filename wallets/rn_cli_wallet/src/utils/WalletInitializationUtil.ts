@@ -1,12 +1,5 @@
-import { InteractionManager } from 'react-native';
-
 import SettingsStore from '@/store/SettingsStore';
 import LogStore from '@/store/LogStore';
-import {
-  getWalletAddressCache,
-  updateWalletAddressCache,
-} from './WalletAddressCache';
-import type { WalletAddressCache } from './WalletAddressCache';
 
 export const WALLET_NAMESPACES = [
   'eip155',
@@ -25,6 +18,22 @@ type Readiness = 'idle' | 'loading' | 'ready' | 'failed';
 const restorePromises = new Map<WalletNamespace, Promise<void>>();
 let backgroundRestoreStarted = false;
 
+const BACKGROUND_RESTORE_GRACE_MS = 750;
+const IDLE_RESTORE_TIMEOUT_MS = 2000;
+
+function runWhenIdle(callback: () => void) {
+  if (typeof globalThis.requestIdleCallback === 'function') {
+    globalThis.requestIdleCallback(callback, {
+      timeout: IDLE_RESTORE_TIMEOUT_MS,
+    });
+    return;
+  }
+
+  // Older web runtimes (notably Safari versions without requestIdleCallback)
+  // still get the same one-wallet-per-turn behavior.
+  setTimeout(callback, 0);
+}
+
 function namespaceForChainId(chainId: string): WalletNamespace | null {
   const namespace = chainId.split(':', 1)[0];
   return WALLET_NAMESPACES.includes(namespace as WalletNamespace)
@@ -36,76 +45,8 @@ function setReadiness(namespace: WalletNamespace, readiness: Readiness) {
   SettingsStore.setWalletReadiness(namespace, readiness);
 }
 
-function cachedAddressFor(
-  namespace: WalletNamespace,
-  cache: WalletAddressCache,
-): string | string[] | undefined {
-  switch (namespace) {
-    case 'eip155':
-      return cache.eip155Address;
-    case 'sui':
-      return cache.suiAddress;
-    case 'ton':
-      return cache.tonAddress;
-    case 'tron':
-      return cache.tronAddress;
-    case 'canton':
-      return cache.cantonAddress;
-    case 'solana':
-      return cache.solanaAddress;
-    case 'bip122':
-      return cache.bitcoinAddresses;
-    case 'stellar':
-      return cache.stellarAddress;
-  }
-}
-
-async function verifyAndCacheAddress(
-  namespace: WalletNamespace,
-  update: Omit<Partial<WalletAddressCache>, 'version'>,
-  cacheBeforeRestore: WalletAddressCache | null,
-) {
-  const cached = cacheBeforeRestore
-    ? cachedAddressFor(namespace, cacheBeforeRestore)
-    : undefined;
-  const restored = cachedAddressFor(namespace, { version: 1, ...update });
-
-  if (cached && JSON.stringify(cached) !== JSON.stringify(restored)) {
-    LogStore.info(
-      'Cached address did not match restored signer; cache refreshed',
-      'WalletInitialization',
-      'verifyAndCacheAddress',
-      { namespace },
-    );
-  }
-
-  await updateWalletAddressCache(update);
-}
-
-export async function hydrateCachedWalletAddresses(): Promise<boolean> {
-  const cache = await getWalletAddressCache();
-  if (!cache) {
-    return false;
-  }
-
-  if (cache.eip155Address) SettingsStore.setEIP155Address(cache.eip155Address);
-  if (cache.suiAddress) SettingsStore.setSuiAddress(cache.suiAddress);
-  if (cache.tonAddress) SettingsStore.setTonAddress(cache.tonAddress);
-  if (cache.tronAddress) SettingsStore.setTronAddress(cache.tronAddress);
-  if (cache.cantonAddress) SettingsStore.setCantonAddress(cache.cantonAddress);
-  if (cache.solanaAddress) SettingsStore.setSolanaAddress(cache.solanaAddress);
-  if (cache.bitcoinAddresses?.[0]) {
-    SettingsStore.setBitcoinAddresses(cache.bitcoinAddresses);
-  }
-  if (cache.stellarAddress)
-    SettingsStore.setStellarAddress(cache.stellarAddress);
-
-  return Boolean(cache.eip155Address);
-}
-
 async function restoreWallet(namespace: WalletNamespace) {
   const startedAt = globalThis.performance?.now?.() ?? Date.now();
-  const cacheBeforeRestore = await getWalletAddressCache();
 
   switch (namespace) {
     case 'eip155': {
@@ -115,11 +56,6 @@ async function restoreWallet(namespace: WalletNamespace) {
       const address = eip155Addresses[0];
       SettingsStore.setEIP155Address(address);
       SettingsStore.setWallet(eip155Wallets[address]);
-      await verifyAndCacheAddress(
-        'eip155',
-        { eip155Address: address },
-        cacheBeforeRestore,
-      );
       break;
     }
     case 'sui': {
@@ -128,11 +64,6 @@ async function restoreWallet(namespace: WalletNamespace) {
       const { suiAddresses, suiWallet } = await createOrRestoreSuiWallet();
       SettingsStore.setSuiAddress(suiAddresses[0]);
       SettingsStore.setSuiWallet(suiWallet);
-      await verifyAndCacheAddress(
-        'sui',
-        { suiAddress: suiAddresses[0] },
-        cacheBeforeRestore,
-      );
       break;
     }
     case 'ton': {
@@ -141,11 +72,6 @@ async function restoreWallet(namespace: WalletNamespace) {
       const { tonAddresses, tonWallets } = await createOrRestoreTonWallet();
       SettingsStore.setTonAddress(tonAddresses[0]);
       SettingsStore.setTonWallet(tonWallets[tonAddresses[0]]);
-      await verifyAndCacheAddress(
-        'ton',
-        { tonAddress: tonAddresses[0] },
-        cacheBeforeRestore,
-      );
       break;
     }
     case 'tron': {
@@ -154,11 +80,6 @@ async function restoreWallet(namespace: WalletNamespace) {
       const { tronAddresses, tronWallets } = await createOrRestoreTronWallet();
       SettingsStore.setTronAddress(tronAddresses[0]);
       SettingsStore.setTronWallet(tronWallets[tronAddresses[0]]);
-      await verifyAndCacheAddress(
-        'tron',
-        { tronAddress: tronAddresses[0] },
-        cacheBeforeRestore,
-      );
       break;
     }
     case 'canton': {
@@ -168,13 +89,6 @@ async function restoreWallet(namespace: WalletNamespace) {
         await createOrRestoreCantonWallet();
       SettingsStore.setCantonAddress(cantonAddresses[0]);
       SettingsStore.setCantonWallet(cantonWallet);
-      await verifyAndCacheAddress(
-        'canton',
-        {
-          cantonAddress: cantonAddresses[0],
-        },
-        cacheBeforeRestore,
-      );
       break;
     }
     case 'solana': {
@@ -184,11 +98,6 @@ async function restoreWallet(namespace: WalletNamespace) {
         await createOrRestoreSolanaWallet();
       SettingsStore.setSolanaAddress(solanaAddress);
       SettingsStore.setSolanaWallet(solanaWallet);
-      await verifyAndCacheAddress(
-        'solana',
-        { solanaAddress },
-        cacheBeforeRestore,
-      );
       break;
     }
     case 'bip122': {
@@ -198,11 +107,6 @@ async function restoreWallet(namespace: WalletNamespace) {
         await createOrRestoreBitcoinWallet();
       SettingsStore.setBitcoinAddresses(bitcoinAddresses);
       SettingsStore.setBitcoinWallet(bitcoinWallet);
-      await verifyAndCacheAddress(
-        'bip122',
-        { bitcoinAddresses },
-        cacheBeforeRestore,
-      );
       break;
     }
     case 'stellar': {
@@ -212,11 +116,6 @@ async function restoreWallet(namespace: WalletNamespace) {
         await createOrRestoreStellarWallet();
       SettingsStore.setStellarAddress(stellarAddress);
       SettingsStore.setStellarWallet(stellarWallet);
-      await verifyAndCacheAddress(
-        'stellar',
-        { stellarAddress },
-        cacheBeforeRestore,
-      );
       break;
     }
   }
@@ -275,27 +174,31 @@ export async function ensureWalletForChainId(chainId: string): Promise<void> {
 }
 
 /**
- * Warm all signers after first render. InteractionManager keeps this work out
- * of the startup critical path; yielding between namespaces avoids one large
- * post-splash task on the JS thread.
+ * Warm one signer per idle period after the first screen has had time to become
+ * interactive. Any user-triggered flow can pre-empt this queue by calling an
+ * ensure function directly; concurrent callers share the same restore.
  */
 export function startBackgroundWalletRestoration() {
   if (backgroundRestoreStarted) return;
   backgroundRestoreStarted = true;
 
-  InteractionManager.runAfterInteractions(async () => {
-    for (const namespace of WALLET_NAMESPACES) {
-      try {
-        await ensureWalletReady(namespace);
-      } catch (error) {
-        LogStore.error(
-          error instanceof Error ? error.message : 'Wallet restore failed',
-          'WalletInitialization',
-          'backgroundRestore',
-          { namespace },
-        );
-      }
-      await new Promise(resolve => setTimeout(resolve, 0));
-    }
-  });
+  const scheduleRestore = (index: number) => {
+    const namespace = WALLET_NAMESPACES[index];
+    if (!namespace) return;
+
+    runWhenIdle(() => {
+      ensureWalletReady(namespace)
+        .catch(error => {
+          LogStore.error(
+            error instanceof Error ? error.message : 'Wallet restore failed',
+            'WalletInitialization',
+            'backgroundRestore',
+            { namespace },
+          );
+        })
+        .finally(() => scheduleRestore(index + 1));
+    });
+  };
+
+  setTimeout(() => scheduleRestore(0), BACKGROUND_RESTORE_GRACE_MS);
 }

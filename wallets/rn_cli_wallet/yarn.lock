@@ -4130,23 +4130,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@scure/bip39@npm:1.6.0":
+"@scure/bip39@npm:^1.6.0":
   version: 1.6.0
   resolution: "@scure/bip39@npm:1.6.0"
   dependencies:
     "@noble/hashes": ~1.8.0
     "@scure/base": ~1.2.5
   checksum: 96d46420780473d6c6c9700254a0eceec60302f61d7f9d7f29024e90c7acff3e8e40a5ee52dfaf104db539a10462e531996aaf9e69f082b8540b0a25870545fc
-  languageName: node
-  linkType: hard
-
-"@scure/bip39@patch:@scure/bip39@npm%3A1.6.0#./.yarn/patches/@scure-bip39-npm-1.6.0-63a27ac0b7.patch::locator=RNWeb3Wallet%40workspace%3A.":
-  version: 1.6.0
-  resolution: "@scure/bip39@patch:@scure/bip39@npm%3A1.6.0#./.yarn/patches/@scure-bip39-npm-1.6.0-63a27ac0b7.patch::version=1.6.0&hash=9684c2&locator=RNWeb3Wallet%40workspace%3A."
-  dependencies:
-    "@noble/hashes": ~1.8.0
-    "@scure/base": ~1.2.5
-  checksum: 70798137ab75df8c811b163260bdd31f5dc2fbe145d7152b449d90bcfc289ca4d7a14f1b49432ddc54c69c7ea77ab544dcd542e2676c664dbf812838a27327cb
   languageName: node
   linkType: hard
 
@@ -5309,7 +5299,6 @@ __metadata:
     expo: 56.0.12
     expo-application: ~56.0.3
     expo-clipboard: ~56.0.4
-    expo-linking: 56.0.14
     expo-navigation-bar: ~56.0.3
     expo-system-ui: 56.0.5
     jest: ^29.2.1
@@ -8415,19 +8404,6 @@ __metadata:
     expo: "*"
     react: "*"
   checksum: e634d60cb22da40244ededec191cbe5378599a1433c9a07d46805971beab89d4455df8321d564aea8ff4e021535530880d9c7edc097b8ef38ec44d473d5e19b8
-  languageName: node
-  linkType: hard
-
-"expo-linking@npm:56.0.14":
-  version: 56.0.14
-  resolution: "expo-linking@npm:56.0.14"
-  dependencies:
-    expo-constants: ~56.0.18
-    invariant: ^2.2.4
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 95d1b62631c5ff91e1ed7a13fdc41b3fd990a174f1f3f2137ebe930b9c6c289d4a8ae8545fd38f4fcfb69fef33005d1ae03828e1baa2f78eadc259e3cd5ffdeb
   languageName: node
   linkType: hard
 

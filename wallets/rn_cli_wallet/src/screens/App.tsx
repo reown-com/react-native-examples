@@ -56,7 +56,7 @@ Sentry.init({
 const SPLASH_MAX_WAIT_MS = 12000;
 
 const App = () => {
-  const { themeMode, eip155Address } = useSnapshot(SettingsStore.state);
+  const { themeMode } = useSnapshot(SettingsStore.state);
 
   // Load saved theme mode on startup
   useEffect(() => {
@@ -64,7 +64,8 @@ const App = () => {
   }, []);
 
   // Step 1 - Initialize wallets and wallet connect client
-  const initialized = useInitializeWalletKit();
+  const { initialized, initializationError, retryInitialization } =
+    useInitializeWalletKit();
 
   // Step 2 - Once initialized, set up wallet connect event manager
   useWalletKitEventsManager(initialized);
@@ -91,19 +92,43 @@ const App = () => {
       return;
     }
     splashHiddenRef.current = true;
-    BootSplash.hide({ fade: true });
-
-    // Give the first frame and splash transition priority. The restoration
-    // utility then runs signers one at a time after active interactions.
-    requestAnimationFrame(startBackgroundWalletRestoration);
+    BootSplash.hide({ fade: true })
+      .catch(error => {
+        LogStore.warn(
+          'Failed to hide the native splash screen',
+          'App',
+          'hideSplash',
+          { error: String(error) },
+        );
+      })
+      .finally(() => {
+        requestAnimationFrame(() => {
+          globalThis.performance?.mark?.('screenInteractive');
+          startBackgroundWalletRestoration();
+        });
+      });
   }, []);
 
-  // Hide splash screen once wallets are initialized, addresses are loaded and theme mode is set
+  // Signers are restored on demand/at idle; WalletKit and the theme are the
+  // only prerequisites for the first interactive screen.
   useEffect(() => {
-    if (initialized && eip155Address && themeMode) {
+    if (initialized && themeMode) {
       hideSplash();
     }
-  }, [initialized, eip155Address, themeMode, hideSplash]);
+  }, [initialized, themeMode, hideSplash]);
+
+  useEffect(() => {
+    if (!initializationError) return;
+
+    hideSplash();
+    ModalStore.open('LoadingModal', {
+      errorTitle: 'Couldn’t start WalletConnect',
+      errorMessage:
+        'Check your connection and try again. Your wallets remain available on this device.',
+      actionLabel: 'Try again',
+      onAction: retryInitialization,
+    });
+  }, [initializationError, retryInitialization, hideSplash]);
 
   // Safety backstop: never leave the splash up indefinitely if init stalls or
   // keeps retrying. Reveal the UI (background restoration will populate any
@@ -206,8 +231,6 @@ const App = () => {
 
   // Check if app was opened from a link-mode request
   useEffect(() => {
-    SettingsStore.setInitPromise();
-
     async function checkInitialUrl() {
       const initialUrl = await Linking.getInitialURL();
       if (!initialUrl) {

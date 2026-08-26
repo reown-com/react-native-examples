@@ -47,6 +47,7 @@ export default function Wallets() {
     solanaAddress,
     bitcoinAddress,
     stellarAddress,
+    walletReadiness,
   } = useSnapshot(SettingsStore.state);
   const { balances, isLoading } = useSnapshot(WalletStore.state);
   const Theme = useTheme();
@@ -72,19 +73,24 @@ export default function Wallets() {
     ],
   );
 
+  const walletsRestored = Object.values(walletReadiness).every(
+    readiness => readiness === 'ready' || readiness === 'failed',
+  );
+
   const fetchBalances = useCallback(() => {
     if (
-      addresses.eip155Address ||
-      addresses.tonAddress ||
-      addresses.tronAddress ||
-      addresses.suiAddress ||
-      addresses.solanaAddress ||
-      addresses.bitcoinAddress ||
-      addresses.stellarAddress
+      walletsRestored &&
+      (addresses.eip155Address ||
+        addresses.tonAddress ||
+        addresses.tronAddress ||
+        addresses.suiAddress ||
+        addresses.solanaAddress ||
+        addresses.bitcoinAddress ||
+        addresses.stellarAddress)
     ) {
       WalletStore.fetchBalances(addresses);
     }
-  }, [addresses]);
+  }, [addresses, walletsRestored]);
 
   const handleRefresh = useCallback(() => {
     haptics.pullToRefresh();
@@ -120,12 +126,14 @@ export default function Wallets() {
   );
 
   const ListEmptyComponent = useCallback(() => {
-    if (isLoading) {
+    if (!walletsRestored || isLoading) {
       return (
         <View style={styles.emptyContainer}>
           <WalletConnectLoading size={60} />
           <Text variant="lg-400" color="text-primary">
-            Loading your balances…
+            {walletsRestored
+              ? 'Loading your balances…'
+              : 'Preparing your wallets…'}
           </Text>
         </View>
       );
@@ -138,7 +146,7 @@ export default function Wallets() {
         </Text>
       </View>
     );
-  }, [isLoading]);
+  }, [isLoading, walletsRestored]);
 
   return (
     <FlatList
