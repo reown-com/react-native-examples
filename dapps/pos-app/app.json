@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.reown.mobilepos",
+      "bundleIdentifier": "com.walletconnect.mobilepos",
       "appleTeamId": "W5R8AG9K22",
       "config": {
         "usesNonExemptEncryption": false
@@ -26,7 +26,7 @@
         "monochromeImage": "./assets/app_icons/android_icon_monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.reown.mobilepos",
+      "package": "com.walletconnect.mobilepos",
       "permissions": [
         "android.permission.NFC",
         "android.permission.BLUETOOTH",
@@ -36,7 +36,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 32
+      "versionCode": 1
     },
     "web": {
       "output": "static",

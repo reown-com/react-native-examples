@@ -2,9 +2,9 @@ const { withAndroidManifest } = require("@expo/config-plugins");
 
 // Kept in sync with the JS flag in utils/feature-flags.ts. This injects the same
 // value into the merged AndroidManifest as an <application> meta-data entry so the
-// native HCE module (com.reown.mobilepos.hce) can gate NfcManager.enable() without
+// native HCE module (com.walletconnect.mobilepos.hce) can gate NfcManager.enable() without
 // coupling to the app's variant-specific applicationId / BuildConfig.
-const META_DATA_NAME = "com.reown.mobilepos.hce.HCE_ENABLED";
+const META_DATA_NAME = "com.walletconnect.mobilepos.hce.HCE_ENABLED";
 
 function setMetaData(application, name, value) {
   if (!application["meta-data"]) {
