@@ -192,12 +192,7 @@ export function useMerchantFlow({
         } else {
           setMerchantId(state.pendingValue);
           showSuccessToast("Merchant ID saved successfully");
-          addLog(
-            "info",
-            `Merchant ID updated to: ${state.pendingValue}`,
-            "settings",
-            "completeSave",
-          );
+          addLog("info", "Merchant ID updated", "settings", "completeSave");
         }
       } else if (state.pendingAction === "customer-api-key") {
         const isClearing = state.pendingValue === "";

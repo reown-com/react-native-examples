@@ -189,22 +189,24 @@ function PinModalBase({
                 }
 
                 if (key === "biometric") {
+                  const isFaceLike =
+                    biometricType === "facial" || biometricType === "iris";
                   return (
                     <TouchableOpacity
                       key={key}
                       onPress={onBiometricPress ?? (() => {})}
                       activeOpacity={0.7}
+                      accessibilityRole="button"
+                      accessibilityLabel={
+                        isFaceLike ? "Face ID" : "Fingerprint"
+                      }
                       style={[
                         styles.key,
                         { backgroundColor: theme["foreground-primary-fix"] },
                       ]}
                     >
                       <Image
-                        source={
-                          biometricType === "facial"
-                            ? FACE_ID_ICON
-                            : TOUCH_ID_ICON
-                        }
+                        source={isFaceLike ? FACE_ID_ICON : TOUCH_ID_ICON}
                         style={styles.biometricIcon}
                         tintColor={theme["text-primary"]}
                         contentFit="contain"
@@ -218,6 +220,8 @@ function PinModalBase({
                     key={key}
                     onPress={() => handleKeyPress(key)}
                     activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityLabel={key === "erase" ? "Delete" : key}
                     style={[
                       styles.key,
                       { backgroundColor: theme["foreground-primary-fix"] },
