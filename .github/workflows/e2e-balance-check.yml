@@ -29,8 +29,6 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
         with:
-          # This balance-only job does not run fork tests, so Foundry's RPC/fork
-          # cache is unnecessary. We only need a fresh `cast` installation.
           cache: false
 
       - name: Check USDC balance on Base
