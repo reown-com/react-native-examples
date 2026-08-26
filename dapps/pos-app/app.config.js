@@ -1,7 +1,7 @@
 // Dynamic Expo config — selects the build variant via the APP_VARIANT env var.
 //
 //   APP_VARIANT=production (default) -> com.walletconnect.mobilepos          "WalletConnect Pay"
-//   APP_VARIANT=internal             -> com.walletconnect.mobilepos.internal "WPay Dev"  (local dev + TestFlight/Firebase)
+//   APP_VARIANT=internal             -> com.walletconnect.mobilepos.internal "WalletConnect Pay Dev"  (local dev + TestFlight/Firebase)
 //
 // The variant is named `internal` end-to-end (buildType, CI release-type, gradle
 // assembleInternal) to match wallets/rn_cli_wallet and the shared reusable release
