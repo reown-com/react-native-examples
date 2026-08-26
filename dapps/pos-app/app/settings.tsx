@@ -30,7 +30,7 @@ import * as Application from "expo-application";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -112,11 +112,14 @@ export default function SettingsScreen() {
     handleMerchantIdConfirm,
     handleCustomerApiKeyConfirm,
     handlePinVerifyComplete,
-    handleBiometricAuthSuccess,
-    handleBiometricAuthFailure,
+    handleBiometricPress,
     handlePinSetupComplete,
     handleCancelSecurityFlow,
-  } = useMerchantFlow();
+  } = useMerchantFlow({
+    canUseBiometric: !!canUseBiometric,
+    authenticate,
+    biometricLabel,
+  });
 
   const currencyOptions: RadioOption<CurrencyCode>[] = useMemo(
     () =>
@@ -229,23 +232,6 @@ export default function SettingsScreen() {
       addLog("error", errorMessage, "settings", "handleTestPrinterPress");
     }
   };
-
-  const handleBiometricAuth = useCallback(async () => {
-    const success = await authenticate(
-      `Use ${biometricLabel} to change merchant settings`,
-    );
-
-    if (success) {
-      handleBiometricAuthSuccess();
-    } else {
-      handleBiometricAuthFailure();
-    }
-  }, [
-    authenticate,
-    biometricLabel,
-    handleBiometricAuthSuccess,
-    handleBiometricAuthFailure,
-  ]);
 
   return (
     <View style={styles.container}>
@@ -511,7 +497,8 @@ export default function SettingsScreen() {
         onCancel={handleCancelSecurityFlow}
         error={pinError}
         showBiometric={activeModal === "pin-verify" && !!canUseBiometric}
-        onBiometricPress={handleBiometricAuth}
+        onBiometricPress={handleBiometricPress}
+        biometricType={biometricStatus?.biometricType}
       />
     </View>
   );

@@ -17,6 +17,9 @@ interface MerchantFlowState {
   pinError: string | null;
   pendingValue: string | null;
   pendingAction: PendingAction;
+  // When true, a protected save is waiting for the auto-triggered biometric
+  // prompt to resolve. The PIN modal stays hidden while this is set.
+  biometricPending: boolean;
 }
 
 const initialState: MerchantFlowState = {
@@ -27,9 +30,24 @@ const initialState: MerchantFlowState = {
   pinError: null,
   pendingValue: null,
   pendingAction: null,
+  biometricPending: false,
 };
 
-export function useMerchantFlow() {
+interface MerchantFlowOptions {
+  // Whether biometrics is enabled and available right now. When true, a
+  // protected save auto-triggers the biometric prompt instead of the PIN modal.
+  canUseBiometric: boolean;
+  // Runs the native biometric prompt; resolves true on success.
+  authenticate: (promptMessage: string) => Promise<boolean>;
+  // Label for the current biometric type (e.g. "Face ID"), used in the prompt.
+  biometricLabel: string;
+}
+
+export function useMerchantFlow({
+  canUseBiometric,
+  authenticate,
+  biometricLabel,
+}: MerchantFlowOptions) {
   const storedMerchantId = useSettingsStore((state) => state.merchantId);
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);
   const clearMerchantId = useSettingsStore((state) => state.clearMerchantId);
@@ -102,6 +120,23 @@ export function useMerchantFlow() {
 
       const pinExists = isPinSet();
 
+      // With a PIN set and biometrics enabled, skip the PIN modal entirely and
+      // auto-trigger the biometric prompt. The effect below picks up
+      // `biometricPending` once state commits (so the pending value/action are
+      // available to `completeSave`). The PIN modal only appears if biometrics
+      // fails or is cancelled.
+      if (pinExists && canUseBiometric) {
+        setState((prev) => ({
+          ...prev,
+          pendingValue: value,
+          pendingAction: action,
+          pinError: null,
+          biometricPending: true,
+          activeModal: "none",
+        }));
+        return;
+      }
+
       setState((prev) => ({
         ...prev,
         pendingValue: value,
@@ -109,7 +144,7 @@ export function useMerchantFlow() {
         activeModal: pinExists ? "pin-verify" : "pin-setup",
       }));
     },
-    [isLockedOut, formatLockoutMessage, isPinSet],
+    [isLockedOut, formatLockoutMessage, isPinSet, canUseBiometric],
   );
 
   const handleMerchantIdConfirm = useCallback(() => {
@@ -157,12 +192,7 @@ export function useMerchantFlow() {
         } else {
           setMerchantId(state.pendingValue);
           showSuccessToast("Merchant ID saved successfully");
-          addLog(
-            "info",
-            `Merchant ID updated to: ${state.pendingValue}`,
-            "settings",
-            "completeSave",
-          );
+          addLog("info", "Merchant ID updated", "settings", "completeSave");
         }
       } else if (state.pendingAction === "customer-api-key") {
         const isClearing = state.pendingValue === "";
@@ -237,20 +267,31 @@ export function useMerchantFlow() {
     ],
   );
 
-  const handleBiometricAuthSuccess = useCallback(async () => {
-    setState((prev) => ({
-      ...prev,
-      pinError: null,
-    }));
-    await completeSave();
-  }, [completeSave]);
+  // Runs the biometric prompt for a pending protected save. Used both by the
+  // auto-trigger effect and by the manual retry button inside the PIN modal.
+  // On success the save completes; on failure/cancel the PIN modal is revealed
+  // so the user can type their PIN or retry biometrics from its key.
+  const runBiometricAuth = useCallback(async () => {
+    const success = await authenticate(
+      `Use ${biometricLabel} to change merchant settings`,
+    );
+    if (success) {
+      setState((prev) => ({ ...prev, pinError: null }));
+      await completeSave();
+    } else {
+      setState((prev) => ({ ...prev, activeModal: "pin-verify" }));
+    }
+  }, [authenticate, biometricLabel, completeSave]);
 
-  const handleBiometricAuthFailure = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      pinError: "Biometric check failed. Use your PIN instead.",
-    }));
-  }, []);
+  // Fire the biometric prompt once after `initiateSave` requests it. Clearing
+  // the flag immediately prevents a re-fire on the resulting re-render.
+  useEffect(() => {
+    if (!state.biometricPending) {
+      return;
+    }
+    setState((prev) => ({ ...prev, biometricPending: false }));
+    runBiometricAuth();
+  }, [state.biometricPending, runBiometricAuth]);
 
   const handlePinSetupComplete = useCallback(
     async (pin: string) => {
@@ -305,8 +346,7 @@ export function useMerchantFlow() {
     handleMerchantIdConfirm,
     handleCustomerApiKeyConfirm,
     handlePinVerifyComplete,
-    handleBiometricAuthSuccess,
-    handleBiometricAuthFailure,
+    handleBiometricPress: runBiometricAuth,
     handlePinSetupComplete,
     handleCancelSecurityFlow,
   };

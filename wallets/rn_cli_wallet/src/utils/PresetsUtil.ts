@@ -39,27 +39,6 @@ export const PresetsUtil = {
     }
     return logo;
   },
-  getIconLogoByName: (name?: string) => {
-    if (!name) {
-      return undefined;
-    }
-
-    const chainData = Object.values(ALL_CHAINS).find(
-      chain => chain.name?.toLowerCase() === name.toLowerCase(),
-    );
-
-    const chainId = `${chainData?.namespace}:${chainData?.chainId}`;
-    if (!chainId) {
-      return undefined;
-    }
-
-    const logo = NetworkImages[chainId];
-    if (!logo) {
-      return undefined;
-    }
-
-    return logo;
-  },
   getChainDataById: (chainId?: string) => {
     if (!chainId) return;
     const [namespace, reference] = chainId.toString().split(':');

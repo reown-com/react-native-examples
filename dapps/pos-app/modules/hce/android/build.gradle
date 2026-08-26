@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'expo-module-gradle-plugin'
 
-group = 'com.reown.mobilepos.hce'
+group = 'com.walletconnect.mobilepos.hce'
 version = '1.0.0'
 
 expoModule {
@@ -10,7 +10,7 @@ expoModule {
 }
 
 android {
-  namespace 'com.reown.mobilepos.hce'
+  namespace 'com.walletconnect.mobilepos.hce'
 
   defaultConfig {
     versionCode 1

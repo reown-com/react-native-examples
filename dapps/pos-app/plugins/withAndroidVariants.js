@@ -2,8 +2,8 @@
 // prebuild-generated android/app/build.gradle, so the shared release-android-base
 // workflow keeps working unchanged:
 //
-//   ./gradlew assembleRelease   -> production  (com.reown.mobilepos)
-//   ./gradlew assembleInternal  -> internal    (com.reown.mobilepos.internal, "WPay Dev")
+//   ./gradlew assembleRelease   -> production  (com.walletconnect.mobilepos)
+//   ./gradlew assembleInternal  -> internal    (com.walletconnect.mobilepos.internal, "WalletConnect Pay Dev")
 //
 // It loads credentials from android/secrets.properties and adds:
 //   - signingConfigs.internal (WC_*_INTERNAL) and signingConfigs.release (WC_*_UPLOAD)
