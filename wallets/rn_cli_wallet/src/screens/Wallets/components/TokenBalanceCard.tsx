@@ -120,20 +120,21 @@ export const TokenBalanceCard = React.memo(function TokenBalanceCard({
             ? `~ ${balance.symbol}`
             : formatBalance(balance.quantity.numeric, balance.symbol)}
         </Text>
-        {walletAddressStatus === 'loading' ? (
-          <Shimmer
-            width={126}
-            height={16}
-            borderRadius={BorderRadius[1]}
-            style={styles.addressSkeleton}
-          />
-        ) : (
-          <Text variant="lg-400" color="text-secondary">
-            {isAddressReady
-              ? truncateAddress(walletAddress)
-              : 'Address unavailable'}
-          </Text>
-        )}
+        <View testID="wallet-address-slot" style={styles.addressSlot}>
+          {walletAddressStatus === 'loading' ? (
+            <Shimmer width={126} height={16} borderRadius={BorderRadius[1]} />
+          ) : (
+            <Text
+              variant="lg-400"
+              color="text-secondary"
+              style={styles.addressText}
+            >
+              {isAddressReady
+                ? truncateAddress(walletAddress)
+                : 'Address unavailable'}
+            </Text>
+          )}
+        </View>
       </View>
       <View style={styles.copyButton}>
         <CopySvg
@@ -188,8 +189,12 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: Spacing['05'],
   },
-  addressSkeleton: {
-    marginVertical: 1,
+  addressSlot: {
+    height: 20,
+    justifyContent: 'center',
+  },
+  addressText: {
+    lineHeight: 20,
   },
   copyButton: {
     padding: Spacing[2],

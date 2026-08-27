@@ -105,6 +105,40 @@ describe('TokenBalanceCard wallet address state', () => {
     expect(setClipboardString).toHaveBeenCalledWith(walletAddress);
   });
 
+  it('keeps the address slot geometry stable when the skeleton resolves', () => {
+    act(() => {
+      renderer = create(
+        <TokenBalanceCard
+          balance={balance}
+          walletAddress=""
+          walletAddressStatus="loading"
+        />,
+      );
+    });
+    const loadingSlotStyle = renderer!.root.findByProps({
+      testID: 'wallet-address-slot',
+    }).props.style;
+
+    act(() => {
+      renderer!.update(
+        <TokenBalanceCard
+          balance={balance}
+          walletAddress="0x1234567890abcdef"
+          walletAddressStatus="ready"
+        />,
+      );
+    });
+    const readySlotStyle = renderer!.root.findByProps({
+      testID: 'wallet-address-slot',
+    }).props.style;
+
+    expect(readySlotStyle).toEqual(loadingSlotStyle);
+    expect(readySlotStyle).toMatchObject({
+      height: 20,
+      justifyContent: 'center',
+    });
+  });
+
   it('shows a stable unavailable state instead of an endless skeleton', () => {
     act(() => {
       renderer = create(
