@@ -78,26 +78,14 @@ describe('useInitializeWalletKit', () => {
     jest.useRealTimers();
   });
 
-  it('stops after three attempts and supports an explicit retry', async () => {
-    mockedCreateWalletKit.mockRejectedValue(new Error('relay unavailable'));
+  it('fails once and retries only after an explicit action', async () => {
+    mockedCreateWalletKit.mockRejectedValueOnce(new Error('relay unavailable'));
 
     await act(async () => {
       renderer = create(<Harness />);
       await flushPromises();
     });
     expect(mockedCreateWalletKit).toHaveBeenCalledTimes(1);
-
-    await act(async () => {
-      jest.advanceTimersByTime(1500);
-      await flushPromises();
-    });
-    expect(mockedCreateWalletKit).toHaveBeenCalledTimes(2);
-
-    await act(async () => {
-      jest.advanceTimersByTime(3000);
-      await flushPromises();
-    });
-    expect(mockedCreateWalletKit).toHaveBeenCalledTimes(3);
     expect(latestResult?.initializationError?.message).toBe(
       'relay unavailable',
     );
@@ -108,7 +96,7 @@ describe('useInitializeWalletKit', () => {
       jest.advanceTimersByTime(30_000);
       await flushPromises();
     });
-    expect(mockedCreateWalletKit).toHaveBeenCalledTimes(3);
+    expect(mockedCreateWalletKit).toHaveBeenCalledTimes(1);
 
     mockedCreateWalletKit.mockResolvedValueOnce(undefined);
     await act(async () => {
@@ -116,7 +104,7 @@ describe('useInitializeWalletKit', () => {
       await flushPromises();
     });
 
-    expect(mockedCreateWalletKit).toHaveBeenCalledTimes(4);
+    expect(mockedCreateWalletKit).toHaveBeenCalledTimes(2);
     expect(latestResult?.initialized).toBe(true);
     expect(latestResult?.initializationError).toBeNull();
   });

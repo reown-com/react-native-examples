@@ -6,9 +6,6 @@ import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 import { createWalletKit, walletKit } from '@/utils/WalletKitUtil';
 
-const MAX_INIT_ATTEMPTS = 3;
-const INIT_RETRY_BASE_DELAY_MS = 1500;
-
 export default function useInitializeWalletKit() {
   const [initialized, setInitialized] = useState(false);
   const [initializationError, setInitializationError] = useState<Error | null>(
@@ -23,12 +20,8 @@ export default function useInitializeWalletKit() {
     if (initialized) return;
 
     let cancelled = false;
-    let retryTimer: ReturnType<typeof setTimeout> | undefined;
-    let attempt = 0;
 
     const onInitialize = async () => {
-      attempt += 1;
-
       try {
         await createWalletKit(relayerRegionURL);
         if (cancelled) return;
@@ -45,14 +38,8 @@ export default function useInitializeWalletKit() {
           `Failed to initialize WalletKit: ${error.message}`,
           'Initialization',
           'onInitialize',
-          { attempt, error: String(err) },
+          { error: String(err) },
         );
-
-        if (attempt < MAX_INIT_ATTEMPTS) {
-          const delay = INIT_RETRY_BASE_DELAY_MS * 2 ** (attempt - 1);
-          retryTimer = setTimeout(onInitialize, delay);
-          return;
-        }
 
         setInitializationError(error);
         // `initPromise` represents initialization settling. Wake any deep-link
@@ -61,7 +48,6 @@ export default function useInitializeWalletKit() {
         SettingsStore.state.initPromiseResolver?.resolve(undefined);
         Sentry.captureException(error, {
           tags: { area: 'Initialization', op: 'onInitialize' },
-          extra: { attempts: attempt },
         });
       }
     };
@@ -70,7 +56,6 @@ export default function useInitializeWalletKit() {
 
     return () => {
       cancelled = true;
-      if (retryTimer) clearTimeout(retryTimer);
     };
   }, [initialized, relayerRegionURL, retryGeneration]);
 

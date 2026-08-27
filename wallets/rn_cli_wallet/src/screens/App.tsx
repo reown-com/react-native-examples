@@ -52,7 +52,7 @@ Sentry.init({
 });
 
 // Hard cap on how long the native splash may stay up. Init normally resolves
-// in well under this; the backstop only fires if init stalls or keeps retrying.
+// in well under this; the backstop only fires if the init promise stalls.
 const SPLASH_MAX_WAIT_MS = 12000;
 
 const App = () => {
@@ -130,9 +130,9 @@ const App = () => {
     });
   }, [initializationError, retryInitialization, hideSplash]);
 
-  // Safety backstop: never leave the splash up indefinitely if init stalls or
-  // keeps retrying. Reveal the UI (background restoration will populate any
-  // missing signers) rather than trapping the user on the splash forever.
+  // Safety backstop: never leave the splash up indefinitely if init stalls.
+  // Reveal the UI (background restoration will populate any missing signers)
+  // rather than trapping the user on the splash forever.
   useEffect(() => {
     const timer = setTimeout(hideSplash, SPLASH_MAX_WAIT_MS);
     return () => clearTimeout(timer);
