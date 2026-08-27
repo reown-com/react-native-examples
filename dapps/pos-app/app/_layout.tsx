@@ -47,9 +47,7 @@ Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   sendDefaultPii: false,
 
-  // Structured logging adds serialization + network overhead in production and
-  // duplicates the in-app logs store, so keep it to development only.
-  enableLogs: __DEV__,
+  enableLogs: false,
 
   // Configure Session Replay
   replaysSessionSampleRate: 0,
