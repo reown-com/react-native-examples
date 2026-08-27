@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "WPay",
+    "name": "WalletConnect Pay",
     "slug": "mobile-pos",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,24 +9,24 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.reown.mobilepos",
+      "bundleIdentifier": "com.walletconnect.mobilepos",
       "appleTeamId": "W5R8AG9K22",
       "config": {
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NSBluetoothAlwaysUsageDescription": "WPay uses Bluetooth to connect to a thermal receipt printer so you can print transaction receipts."
+        "NSBluetoothAlwaysUsageDescription": "WalletConnect Pay uses Bluetooth to connect to a thermal receipt printer so you can print transaction receipts."
       }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0666FF",
         "foregroundImage": "./assets/app_icons/android_icon_foreground.png",
         "backgroundImage": "./assets/app_icons/android_icon_background.png",
         "monochromeImage": "./assets/app_icons/android_icon_monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.reown.mobilepos",
+      "package": "com.walletconnect.mobilepos",
       "permissions": [
         "android.permission.NFC",
         "android.permission.BLUETOOTH",
@@ -36,7 +36,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 30
+      "versionCode": 1
     },
     "web": {
       "output": "static",

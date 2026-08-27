@@ -1,4 +1,4 @@
-package com.reown.mobilepos.hce
+package com.walletconnect.mobilepos.hce
 
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle

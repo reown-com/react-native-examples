@@ -6,7 +6,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "android:pos": "expo run:android --port 8082",
-    "android:internal": "expo run:android --variant internal --app-id com.reown.mobilepos.internal",
+    "android:internal": "expo run:android --variant internal --app-id com.walletconnect.mobilepos.internal",
     "android:build": "cd android && ./gradlew assembleRelease",
     "android:build:internal": "cd android && ./gradlew assembleInternal",
     "android:build:aab": "cd android && ./gradlew bundleRelease",

@@ -1,7 +1,7 @@
 // Dynamic Expo config — selects the build variant via the APP_VARIANT env var.
 //
-//   APP_VARIANT=production (default) -> com.reown.mobilepos          "WPay"
-//   APP_VARIANT=internal             -> com.reown.mobilepos.internal "WPay Dev"  (local dev + TestFlight/Firebase)
+//   APP_VARIANT=production (default) -> com.walletconnect.mobilepos          "WalletConnect Pay"
+//   APP_VARIANT=internal             -> com.walletconnect.mobilepos.internal "WalletConnect Pay Dev"  (local dev + TestFlight/Firebase)
 //
 // The variant is named `internal` end-to-end (buildType, CI release-type, gradle
 // assembleInternal) to match wallets/rn_cli_wallet and the shared reusable release
@@ -16,9 +16,8 @@
 // drives the iOS variant (per-variant prebuild via APP_VARIANT) and the production
 // Android prebuild defaults.
 
-const BASE_APP_ID = "com.reown.mobilepos";
+const BASE_APP_ID = "com.walletconnect.mobilepos";
 const BASE_SCHEME = "wpay";
-const BASE_NAME = "WPay";
 
 const VARIANT_ID_SUFFIX = {
   production: "",
@@ -30,11 +29,12 @@ const VARIANT_SCHEME_SUFFIX = {
   internal: "-internal",
 };
 
-// Human-readable display name suffix (iOS CFBundleDisplayName via `name`; Android
-// label is overlaid per-buildType via plugins/withAndroidVariantIcons.js strings.xml).
-const VARIANT_NAME_SUFFIX = {
-  production: "",
-  internal: " Dev",
+// Human-readable display name per variant (iOS CFBundleDisplayName via `name`; the
+// Android label is overlaid per-buildType via plugins/withAndroidVariantIcons.js
+// strings.xml).
+const VARIANT_NAME = {
+  production: "WalletConnect Pay",
+  internal: "WalletConnect Pay Dev",
 };
 
 module.exports = ({ config }) => {
@@ -46,7 +46,7 @@ module.exports = ({ config }) => {
 
   return {
     ...config,
-    name: `${BASE_NAME}${VARIANT_NAME_SUFFIX[variant]}`,
+    name: VARIANT_NAME[variant],
     icon: `${iconDir}/icon.png`,
     scheme: `${BASE_SCHEME}${VARIANT_SCHEME_SUFFIX[variant]}`,
     ios: {

@@ -3,7 +3,7 @@
 
   <application>
     <service
-      android:name="com.reown.mobilepos.hce.NdefHostApduService"
+      android:name="com.walletconnect.mobilepos.hce.NdefHostApduService"
       android:exported="true"
       android:permission="android.permission.BIND_NFC_SERVICE">
       <intent-filter>

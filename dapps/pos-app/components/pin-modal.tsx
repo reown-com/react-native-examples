@@ -1,5 +1,6 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { Image } from "expo-image";
 import { memo, useCallback, useEffect, useState } from "react";
 import {
   Animated,
@@ -16,6 +17,10 @@ import { ThemedText } from "./themed-text";
 
 const PIN_LENGTH = 4;
 
+const FACE_ID_ICON = require("@/assets/images/face-id.png");
+const TOUCH_ID_ICON = require("@/assets/images/touch-id.png");
+const BACKSPACE_ICON = require("@/assets/images/backspace.png");
+
 interface PinModalProps {
   visible: boolean;
   title: string;
@@ -25,6 +30,7 @@ interface PinModalProps {
   error?: string | null;
   showBiometric?: boolean;
   onBiometricPress?: () => void;
+  biometricType?: "facial" | "fingerprint" | "iris" | "none";
 }
 
 function PinModalBase({
@@ -36,6 +42,7 @@ function PinModalBase({
   error,
   showBiometric,
   onBiometricPress,
+  biometricType,
 }: PinModalProps) {
   const theme = useTheme();
   const [pin, setPin] = useState("");
@@ -182,17 +189,28 @@ function PinModalBase({
                 }
 
                 if (key === "biometric") {
+                  const isFaceLike =
+                    biometricType === "facial" || biometricType === "iris";
                   return (
                     <TouchableOpacity
                       key={key}
                       onPress={onBiometricPress ?? (() => {})}
                       activeOpacity={0.7}
+                      accessibilityRole="button"
+                      accessibilityLabel={
+                        isFaceLike ? "Face ID" : "Fingerprint"
+                      }
                       style={[
                         styles.key,
-                        { backgroundColor: theme["foreground-primary"] },
+                        { backgroundColor: theme["foreground-primary-fix"] },
                       ]}
                     >
-                      <ThemedText fontSize={16}>🔐</ThemedText>
+                      <Image
+                        source={isFaceLike ? FACE_ID_ICON : TOUCH_ID_ICON}
+                        style={styles.biometricIcon}
+                        tintColor={theme["text-primary"]}
+                        contentFit="contain"
+                      />
                     </TouchableOpacity>
                   );
                 }
@@ -202,20 +220,20 @@ function PinModalBase({
                     key={key}
                     onPress={() => handleKeyPress(key)}
                     activeOpacity={0.7}
+                    accessibilityRole="button"
+                    accessibilityLabel={key === "erase" ? "Delete" : key}
                     style={[
                       styles.key,
                       { backgroundColor: theme["foreground-primary-fix"] },
                     ]}
                   >
                     {key === "erase" ? (
-                      <ThemedText
-                        style={[
-                          styles.keyText,
-                          { color: theme["text-primary"] },
-                        ]}
-                      >
-                        ⌫
-                      </ThemedText>
+                      <Image
+                        source={BACKSPACE_ICON}
+                        style={styles.eraseIcon}
+                        tintColor={theme["text-primary"]}
+                        contentFit="contain"
+                      />
                     ) : (
                       <ThemedText
                         style={[
@@ -326,6 +344,14 @@ const styles = StyleSheet.create({
   keyText: {
     fontSize: 22,
     lineHeight: 26,
+  },
+  biometricIcon: {
+    width: 26,
+    height: 26,
+  },
+  eraseIcon: {
+    width: 22,
+    height: 22,
   },
   cancelButton: {
     marginTop: Spacing["spacing-5"],

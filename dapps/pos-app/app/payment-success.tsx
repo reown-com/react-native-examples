@@ -15,6 +15,7 @@ import { SuccessAnimation } from "@/components/success-animation";
 import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/spacing";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -46,6 +47,7 @@ const contentRevealDuration = 200;
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
   const Theme = useTheme();
+  const isTablet = useIsTablet();
   const params = useLocalSearchParams<SuccessParams>();
   const themeMode = useSettingsStore((state) => state.themeMode);
   const currencyCode = useSettingsStore((state) => state.currency);
@@ -208,6 +210,7 @@ export default function PaymentSuccessScreen() {
       <Animated.View
         style={[
           styles.contentContainer,
+          isTablet && styles.contentContainerTablet,
           {
             paddingTop: top + Spacing["spacing-3"],
             paddingBottom: bottomSpacing,
@@ -221,44 +224,59 @@ export default function PaymentSuccessScreen() {
         <View
           testID="pos-payment-success"
           nativeID="pos-payment-success"
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            gap: Spacing["spacing-2"],
-          }}
+          style={[
+            styles.successContent,
+            isTablet && styles.successContentTablet,
+          ]}
         >
-          <View style={styles.successAnimationContainer}>
+          <View
+            style={[
+              styles.successAnimationContainer,
+              isTablet && styles.successAnimationContainerTablet,
+            ]}
+          >
             {isSuccessAnimationVisible && (
-              <SuccessAnimation width={200} height={175} />
+              <SuccessAnimation
+                width={isTablet ? 280 : 200}
+                height={isTablet ? 245 : 175}
+              />
             )}
           </View>
           <ThemedText
-            fontSize={38}
-            lineHeight={38}
+            fontSize={isTablet ? 52 : 38}
+            lineHeight={isTablet ? 54 : 38}
             style={[styles.amountValue, { color: Theme["text-primary"] }]}
           >
             {formatAmountWithSymbol(amount, currency)}
           </ThemedText>
           <ThemedText
-            fontSize={18}
-            lineHeight={20}
+            fontSize={isTablet ? 24 : 18}
+            lineHeight={isTablet ? 28 : 20}
             style={[styles.amountDescription, { color: Theme["text-primary"] }]}
           >
             Payment successful
           </ThemedText>
         </View>
-        <View style={styles.buttonContainer}>
+        <View
+          style={[
+            styles.buttonContainer,
+            isTablet && styles.buttonContainerTablet,
+          ]}
+        >
           {isPrinterConnected && (
             <Button
               type="neutral"
               variant="tertiary"
               onPress={handlePrintReceipt}
               disabled={isPrinting}
+              size={isTablet ? "lg" : "md"}
               icon={
                 <Image
                   source={require("@/assets/images/receipt.png")}
-                  style={styles.buttonIcon}
+                  style={[
+                    styles.buttonIcon,
+                    isTablet && styles.buttonIconTablet,
+                  ]}
                   tintColor={Theme["bg-primary"]}
                 />
               }
@@ -267,7 +285,12 @@ export default function PaymentSuccessScreen() {
             </Button>
           )}
 
-          <Button type="accent" variant="primary" onPress={handleNewPayment}>
+          <Button
+            type="accent"
+            variant="primary"
+            size={isTablet ? "lg" : "md"}
+            onPress={handleNewPayment}
+          >
             Start new payment
           </Button>
         </View>
@@ -305,6 +328,9 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: Spacing["spacing-5"],
   },
+  contentContainerTablet: {
+    paddingHorizontal: Spacing["spacing-8"],
+  },
   header: {
     alignItems: "center",
     paddingBottom: Spacing["spacing-4"],
@@ -312,6 +338,19 @@ const styles = StyleSheet.create({
   successAnimationContainer: {
     width: 200,
     height: 175,
+  },
+  successAnimationContainerTablet: {
+    width: 280,
+    height: 245,
+  },
+  successContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: Spacing["spacing-2"],
+  },
+  successContentTablet: {
+    gap: Spacing["spacing-4"],
   },
   amountDescription: {
     textAlign: "center",
@@ -323,8 +362,15 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: Spacing["spacing-3"],
   },
+  buttonContainerTablet: {
+    gap: Spacing["spacing-5"],
+  },
   buttonIcon: {
     width: 16,
     height: 16,
+  },
+  buttonIconTablet: {
+    width: 20,
+    height: 20,
   },
 });

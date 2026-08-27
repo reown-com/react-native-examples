@@ -111,6 +111,7 @@ jest.mock("expo-local-authentication", () => {
 jest.mock("react-native-device-info", () => {
   return {
     getUniqueId: jest.fn(() => Promise.resolve("mock-device-id-12345")),
+    isTablet: jest.fn(() => false),
   };
 });
 
