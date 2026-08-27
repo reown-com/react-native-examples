@@ -51,12 +51,17 @@ async function restoreWallet(namespace: WalletNamespace) {
 
   switch (namespace) {
     case 'eip155': {
-      const { createOrRestoreEIP155Wallet, eip155Wallets } =
+      const { createOrRestoreEIP155Wallet } =
         require('./EIP155WalletUtil') as typeof import('./EIP155WalletUtil');
-      const { eip155Addresses } = await createOrRestoreEIP155Wallet();
+      const { eip155Addresses, eip155Wallets } =
+        await createOrRestoreEIP155Wallet();
       const address = eip155Addresses[0];
+      const wallet = eip155Wallets[address];
+      if (!address || !wallet) {
+        throw new Error('EIP155 wallet restore returned no account');
+      }
       SettingsStore.setEIP155Address(address);
-      SettingsStore.setWallet(eip155Wallets[address]);
+      SettingsStore.setWallet(wallet);
       break;
     }
     case 'sui': {
@@ -190,7 +195,10 @@ export function startBackgroundWalletRestoration() {
     runWhenIdle(() => {
       ensureWalletReady(namespace)
         .catch(error => {
-          LogStore.error(
+          // This is best-effort warming. On-demand callers surface a blocking
+          // error in their own UI; a background failure should not trigger the
+          // React Native red error overlay in development.
+          LogStore.warn(
             error instanceof Error ? error.message : 'Wallet restore failed',
             'WalletInitialization',
             'backgroundRestore',
