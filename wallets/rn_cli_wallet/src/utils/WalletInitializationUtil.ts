@@ -6,10 +6,11 @@ export const WALLET_NAMESPACES = [
   'sui',
   'ton',
   'tron',
-  'canton',
   'solana',
   'bip122',
   'stellar',
+  // Canton has no balance card, so restore it after visible wallet addresses.
+  'canton',
 ] as const;
 
 export type WalletNamespace = (typeof WALLET_NAMESPACES)[number];

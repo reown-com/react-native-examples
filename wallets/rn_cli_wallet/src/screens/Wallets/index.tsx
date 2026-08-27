@@ -11,6 +11,7 @@ import { Spacing } from '@/utils/ThemeUtil';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { TokenBalanceCard, ITEM_HEIGHT } from './components/TokenBalanceCard';
 import { haptics } from '@/utils/haptics';
+import type { WalletNamespace } from '@/utils/WalletInitializationUtil';
 
 function getAddressForChain(
   chainId: string,
@@ -36,6 +37,23 @@ function getAddressForChain(
   }
   // Default to EIP155 address for all EVM chains
   return addresses.eip155Address || '';
+}
+
+function getWalletNamespaceForChain(chainId: string): WalletNamespace {
+  const namespace = chainId.split(':', 1)[0];
+
+  switch (namespace) {
+    case 'sui':
+    case 'ton':
+    case 'tron':
+    case 'canton':
+    case 'solana':
+    case 'bip122':
+    case 'stellar':
+      return namespace;
+    default:
+      return 'eip155';
+  }
 }
 
 export default function Wallets() {
@@ -102,13 +120,26 @@ export default function Wallets() {
   }, [fetchBalances]);
 
   const renderItem = useCallback(
-    ({ item }: { item: TokenBalance }) => (
-      <TokenBalanceCard
-        balance={item}
-        walletAddress={getAddressForChain(item.chainId, addresses)}
-      />
-    ),
-    [addresses],
+    ({ item }: { item: TokenBalance }) => {
+      const walletAddress = getAddressForChain(item.chainId, addresses);
+      const readiness =
+        walletReadiness[getWalletNamespaceForChain(item.chainId)];
+      const walletAddressStatus =
+        readiness === 'ready' && walletAddress
+          ? 'ready'
+          : readiness === 'failed'
+          ? 'unavailable'
+          : 'loading';
+
+      return (
+        <TokenBalanceCard
+          balance={item}
+          walletAddress={walletAddress}
+          walletAddressStatus={walletAddressStatus}
+        />
+      );
+    },
+    [addresses, walletReadiness],
   );
 
   const keyExtractor = useCallback(
