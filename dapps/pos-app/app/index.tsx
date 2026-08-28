@@ -43,10 +43,15 @@ export default function HomeScreen() {
     (state) => state.isCustomerApiKeySet,
   );
   const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
+  const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
 
   const handleStartPayment = () => {
     if (
-      !isTerminalConfigured(merchantId, isCustomerApiKeySet, isBridgeConfigured)
+      !isTerminalConfigured(
+        bridgeMerchantId ?? merchantId,
+        isCustomerApiKeySet,
+        isBridgeConfigured,
+      )
     ) {
       router.push("/settings");
       showErrorToast("Finish setup in Settings before starting a payment.");
