@@ -30,7 +30,7 @@ function isBridgeConfigMessage(data: unknown): data is PosBridgeConfigMessage {
  * are never accepted through URLs or postMessage; standalone and native POS
  * continue to use credentials entered in Settings.
  */
-export function useUrlCredentials() {
+export function usePosBridge() {
   const hasInitialized = useRef(false);
   const hasHydrated = useSettingsStore((state) => state._hasHydrated);
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);

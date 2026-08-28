@@ -17,7 +17,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useFonts } from "expo-font";
 
 import { useTheme } from "@/hooks/use-theme-color";
-import { useUrlCredentials } from "@/hooks/use-url-credentials";
+import { usePosBridge } from "@/hooks/use-pos-bridge";
 import * as Sentry from "@sentry/react-native";
 
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
@@ -131,7 +131,7 @@ export default Sentry.wrap(function RootLayout() {
 
   // Request Bluetooth permission on first app load (Android only)
   // Configure the dashboard bridge after web settings hydration.
-  useUrlCredentials();
+  usePosBridge();
 
   useEffect(() => {
     async function checkBluetoothPermission() {

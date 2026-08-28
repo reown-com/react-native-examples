@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react-native";
 import { Platform } from "react-native";
-import { useUrlCredentials } from "@/hooks/use-url-credentials";
+import { usePosBridge } from "@/hooks/use-pos-bridge";
 import { resetBridge } from "@/services/pos-bridge";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -58,12 +58,12 @@ afterEach(() => {
   (Platform as any).OS = "ios";
 });
 
-describe("useUrlCredentials", () => {
+describe("usePosBridge", () => {
   it("clears an embedded stale key and announces bridge readiness", async () => {
     await useSettingsStore.getState().setCustomerApiKey("stale-key");
     useSettingsStore.setState({ _hasHydrated: true });
 
-    renderHook(() => useUrlCredentials());
+    renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     expect(useSettingsStore.getState().isCustomerApiKeySet).toBe(false);
@@ -76,7 +76,7 @@ describe("useUrlCredentials", () => {
   it("configures the locked bridge and stores only the non-secret merchant ID", async () => {
     await useSettingsStore.getState().setCustomerApiKey("stale-key");
     useSettingsStore.setState({ _hasHydrated: true });
-    renderHook(() => useUrlCredentials());
+    renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     await act(async () => {
@@ -100,7 +100,7 @@ describe("useUrlCredentials", () => {
 
   it("ignores malformed, wrong-version, wrong-window, and subsequent configs", async () => {
     useSettingsStore.setState({ _hasHydrated: true });
-    renderHook(() => useUrlCredentials());
+    renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     await act(async () => {
@@ -147,7 +147,7 @@ describe("useUrlCredentials", () => {
       "?merchantId=bGVnYWN5LW1lcmNoYW50JmN1c3RvbWVyQXBpS2V5PWxlZ2FjeS1rZXk=",
     );
     useSettingsStore.setState({ _hasHydrated: true });
-    renderHook(() => useUrlCredentials());
+    renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     await act(async () => {
@@ -169,7 +169,7 @@ describe("useUrlCredentials", () => {
   it("does nothing on native platforms", async () => {
     (Platform as any).OS = "ios";
     useSettingsStore.setState({ _hasHydrated: true });
-    renderHook(() => useUrlCredentials());
+    renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     expect(parentPostMessage).not.toHaveBeenCalled();
@@ -177,7 +177,7 @@ describe("useUrlCredentials", () => {
 
   it("resets bridge mode when the listener unmounts", async () => {
     useSettingsStore.setState({ _hasHydrated: true });
-    const { unmount } = renderHook(() => useUrlCredentials());
+    const { unmount } = renderHook(() => usePosBridge());
     await act(() => waitForAsync());
     await act(async () => {
       dispatchMessage({
