@@ -130,7 +130,7 @@ export default Sentry.wrap(function RootLayout() {
   }, [deviceId]);
 
   // Request Bluetooth permission on first app load (Android only)
-  // Apply credentials from URL query params (web only)
+  // Configure the dashboard bridge after web settings hydration.
   useUrlCredentials();
 
   useEffect(() => {

@@ -15,7 +15,12 @@ import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { ThemeMode } from "@/utils/types";
+import {
+  getConnectionSetupRemaining,
+  shouldShowConnectionSection,
+} from "@/utils/pos-bridge-ui";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
@@ -80,6 +85,8 @@ export default function SettingsScreen() {
   const addLog = useLogsStore((state) => state.addLog);
   const logsCount = useLogsStore((state) => state.logs.length);
   const theme = useTheme();
+  const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
+  const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
 
@@ -173,8 +180,16 @@ export default function SettingsScreen() {
   const showBiometricToggle = shouldShowBiometricOption && !!biometricStatus;
 
   const hasMerchantId = !!storedMerchantId?.trim();
-  const setupRemaining =
-    (hasMerchantId ? 0 : 1) + (hasStoredCustomerApiKey ? 0 : 1);
+  const setupRemaining = getConnectionSetupRemaining(
+    hasMerchantId,
+    hasStoredCustomerApiKey,
+    isBridgeConfigured,
+  );
+  const showConnectionSection = shouldShowConnectionSection(
+    isBridgeConfigured,
+    !!bridgeMerchantId,
+    showNfcToggle || showBiometricToggle,
+  );
 
   const handleTestPrinterPress = async () => {
     try {
@@ -258,66 +273,81 @@ export default function SettingsScreen() {
           />
         </SettingsSection>
 
-        <SettingsSection title="Connection">
-          <SettingsItem
-            testID="settings-merchant-id"
-            title="Merchant ID"
-            value={hasMerchantId ? merchantIdInput : undefined}
-            bullet={!hasMerchantId}
-            badge={
-              hasMerchantId ? undefined : (
-                <Badge
-                  label="Not set"
-                  backgroundColor="bg-warning"
-                  color="text-tertiary"
+        {showConnectionSection && (
+          <SettingsSection title="Connection">
+            {isBridgeConfigured ? (
+              <SettingsItem
+                testID="settings-merchant-id"
+                title="Merchant ID"
+                value={bridgeMerchantId ?? undefined}
+                onPress={() => undefined}
+                showCaret={false}
+                disabled
+              />
+            ) : (
+              <>
+                <SettingsItem
+                  testID="settings-merchant-id"
+                  title="Merchant ID"
+                  value={hasMerchantId ? merchantIdInput : undefined}
+                  bullet={!hasMerchantId}
+                  badge={
+                    hasMerchantId ? undefined : (
+                      <Badge
+                        label="Not set"
+                        backgroundColor="bg-warning"
+                        color="text-tertiary"
+                      />
+                    )
+                  }
+                  caret="right"
+                  showCaret
+                  onPress={() => setActiveSheet("merchantId")}
                 />
-              )
-            }
-            caret="right"
-            showCaret
-            onPress={() => setActiveSheet("merchantId")}
-          />
 
-          <SettingsItem
-            testID="settings-customer-api-key"
-            title="Customer API KEY"
-            value={hasStoredCustomerApiKey ? "**********" : undefined}
-            bullet={!hasStoredCustomerApiKey}
-            badge={
-              hasStoredCustomerApiKey ? undefined : (
-                <Badge
-                  label="Not set"
-                  backgroundColor="bg-warning"
-                  color="text-tertiary"
+                <SettingsItem
+                  testID="settings-customer-api-key"
+                  title="Customer API KEY"
+                  value={hasStoredCustomerApiKey ? "**********" : undefined}
+                  bullet={!hasStoredCustomerApiKey}
+                  badge={
+                    hasStoredCustomerApiKey ? undefined : (
+                      <Badge
+                        label="Not set"
+                        backgroundColor="bg-warning"
+                        color="text-tertiary"
+                      />
+                    )
+                  }
+                  caret="right"
+                  showCaret
+                  onPress={() => setActiveSheet("customerApiKey")}
                 />
-              )
-            }
-            caret="right"
-            showCaret
-            onPress={() => setActiveSheet("customerApiKey")}
-          />
+              </>
+            )}
 
-          {showNfcToggle && (
-            <SettingsToggleItem
-              testID="settings-nfc-toggle"
-              title="Tap to pay"
-              description="Show NFC prompt"
-              value={nfcEnabled}
-              onValueChange={setNfcEnabled}
-            />
-          )}
+            {showNfcToggle && (
+              <SettingsToggleItem
+                testID="settings-nfc-toggle"
+                title="Tap to pay"
+                description="Show NFC prompt"
+                value={nfcEnabled}
+                onValueChange={setNfcEnabled}
+              />
+            )}
 
-          {/* Biometric toggle - only show if PIN is set and biometrics available */}
-          {showBiometricToggle && (
-            <SettingsToggleItem
-              testID="settings-biometric-toggle"
-              title={getBiometricLabel(biometricStatus.biometricType)}
-              description="Use instead of Pin"
-              value={biometricEnabled}
-              onValueChange={handleBiometricToggle}
-            />
-          )}
-        </SettingsSection>
+            {/* Biometric toggle - only show if PIN is set and biometrics available */}
+            {showBiometricToggle && (
+              <SettingsToggleItem
+                testID="settings-biometric-toggle"
+                title={getBiometricLabel(biometricStatus.biometricType)}
+                description="Use instead of Pin"
+                value={biometricEnabled}
+                onValueChange={handleBiometricToggle}
+              />
+            )}
+          </SettingsSection>
+        )}
 
         <SettingsSection title="Device">
           <SettingsItem
@@ -387,82 +417,86 @@ export default function SettingsScreen() {
       </SettingsBottomSheet>
 
       {/* Merchant ID Bottom Sheet */}
-      <SettingsBottomSheet
-        visible={activeSheet === "merchantId"}
-        title="Merchant ID"
-        subtitle="Find your Merchant ID in your merchant dashboard and paste it here."
-        onClose={closeSheet}
-      >
-        <View style={styles.inputContent}>
-          <TextInput
-            value={merchantIdInput}
-            onChangeText={handleMerchantIdInputChange}
-            placeholder="Enter merchant ID"
-            placeholderTextColor={theme["text-tertiary"]}
-            autoCapitalize="none"
-            autoCorrect={false}
-            style={[
-              styles.sheetInput,
-              {
-                borderColor: theme["border-primary"],
-                color: theme["text-primary"],
-                backgroundColor: theme["foreground-primary"],
-              },
-            ]}
-          />
-          <Button
-            type="accent"
-            variant="primary"
-            testID="settings-merchant-save"
-            onPress={handleMerchantIdSave}
-            disabled={isMerchantIdConfirmDisabled}
-          >
-            Save
-          </Button>
-        </View>
-      </SettingsBottomSheet>
+      {!isBridgeConfigured && (
+        <SettingsBottomSheet
+          visible={activeSheet === "merchantId"}
+          title="Merchant ID"
+          subtitle="Find your Merchant ID in your merchant dashboard and paste it here."
+          onClose={closeSheet}
+        >
+          <View style={styles.inputContent}>
+            <TextInput
+              value={merchantIdInput}
+              onChangeText={handleMerchantIdInputChange}
+              placeholder="Enter merchant ID"
+              placeholderTextColor={theme["text-tertiary"]}
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={[
+                styles.sheetInput,
+                {
+                  borderColor: theme["border-primary"],
+                  color: theme["text-primary"],
+                  backgroundColor: theme["foreground-primary"],
+                },
+              ]}
+            />
+            <Button
+              type="accent"
+              variant="primary"
+              testID="settings-merchant-save"
+              onPress={handleMerchantIdSave}
+              disabled={isMerchantIdConfirmDisabled}
+            >
+              Save
+            </Button>
+          </View>
+        </SettingsBottomSheet>
+      )}
 
       {/* Customer API Key Bottom Sheet */}
-      <SettingsBottomSheet
-        visible={activeSheet === "customerApiKey"}
-        title="Customer API key"
-        onClose={closeSheet}
-      >
-        <View style={styles.inputContent}>
-          <TextInput
-            value={
-              isEditingCustomerApiKey
-                ? customerApiKeyInput
-                : hasStoredCustomerApiKey
-                  ? "********"
-                  : ""
-            }
-            onChangeText={handleCustomerApiKeyInputChange}
-            placeholder="Enter customer API key"
-            placeholderTextColor={theme["text-tertiary"]}
-            autoCapitalize="none"
-            autoCorrect={false}
-            secureTextEntry={true}
-            style={[
-              styles.sheetInput,
-              {
-                borderColor: theme["border-primary"],
-                color: theme["text-primary"],
-                backgroundColor: theme["foreground-primary"],
-              },
-            ]}
-          />
-          <Button
-            type="accent"
-            variant="primary"
-            testID="settings-customer-save"
-            onPress={handleCustomerApiKeySave}
-            disabled={isCustomerApiKeyConfirmDisabled}
-          >
-            Save
-          </Button>
-        </View>
-      </SettingsBottomSheet>
+      {!isBridgeConfigured && (
+        <SettingsBottomSheet
+          visible={activeSheet === "customerApiKey"}
+          title="Customer API key"
+          onClose={closeSheet}
+        >
+          <View style={styles.inputContent}>
+            <TextInput
+              value={
+                isEditingCustomerApiKey
+                  ? customerApiKeyInput
+                  : hasStoredCustomerApiKey
+                    ? "********"
+                    : ""
+              }
+              onChangeText={handleCustomerApiKeyInputChange}
+              placeholder="Enter customer API key"
+              placeholderTextColor={theme["text-tertiary"]}
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={true}
+              style={[
+                styles.sheetInput,
+                {
+                  borderColor: theme["border-primary"],
+                  color: theme["text-primary"],
+                  backgroundColor: theme["foreground-primary"],
+                },
+              ]}
+            />
+            <Button
+              type="accent"
+              variant="primary"
+              testID="settings-customer-save"
+              onPress={handleCustomerApiKeySave}
+              disabled={isCustomerApiKeyConfirmDisabled}
+            >
+              Save
+            </Button>
+          </View>
+        </SettingsBottomSheet>
+      )}
 
       {/* PIN Modal */}
       <PinModal

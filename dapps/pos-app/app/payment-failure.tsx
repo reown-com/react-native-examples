@@ -10,10 +10,12 @@ import { Spacing } from "@/constants/spacing";
 import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import {
   getPaymentErrorMessage,
   INVALID_API_KEY,
 } from "@/utils/payment-errors";
+import { shouldRouteInvalidApiKeyToSettings } from "@/utils/pos-bridge-ui";
 import { useAssets } from "expo-asset";
 
 // The params can't be declared optional here: `UnknownOutputParams` indexes to
@@ -32,6 +34,7 @@ export default function PaymentFailureScreen() {
   const { top } = useSafeAreaInsets();
   const params: Partial<ScreenParams> = useLocalSearchParams<ScreenParams>();
   const currencyCode = useSettingsStore((state) => state.currency);
+  const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
   const [assets] = useAssets([
     require("@/assets/images/warning-circle-fill.png"),
   ]);
@@ -42,7 +45,10 @@ export default function PaymentFailureScreen() {
   });
 
   // An invalid API key can't be fixed by retrying — the merchant needs Settings.
-  const isInvalidApiKey = params.errorCode === INVALID_API_KEY;
+  const isInvalidApiKey = shouldRouteInvalidApiKeyToSettings(
+    params.errorCode === INVALID_API_KEY,
+    isBridgeConfigured,
+  );
 
   const handlePrimaryPress = () => {
     if (isInvalidApiKey) {

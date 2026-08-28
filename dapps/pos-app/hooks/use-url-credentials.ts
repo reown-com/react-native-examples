@@ -1,126 +1,95 @@
-import { useLogsStore } from "@/store/useLogsStore";
+import {
+  configureBridge,
+  handleBridgeResponse,
+  PROTOCOL_VERSION,
+  resetBridge,
+} from "@/services/pos-bridge";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { router } from "expo-router";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 
+type PosBridgeConfigMessage = {
+  type: "pos-bridge-config";
+  protocolVersion: typeof PROTOCOL_VERSION;
+  merchantId: string;
+};
+
+function isBridgeConfigMessage(data: unknown): data is PosBridgeConfigMessage {
+  if (!data || typeof data !== "object") return false;
+  const message = data as Record<string, unknown>;
+  return (
+    message.type === "pos-bridge-config" &&
+    message.protocolVersion === PROTOCOL_VERSION &&
+    typeof message.merchantId === "string" &&
+    message.merchantId.trim().length > 0
+  );
+}
+
 /**
- * On web, accepts credentials via two methods (in priority order):
- *
- * 1. **postMessage** — parent/opener sends `{ type: "pos-credentials", merchantId?, customerApiKey? }`
- *    Values are plain text (no encoding needed).
- *
- * 2. **URL query parameters** — `?merchantId=<base64>&customerApiKey=<base64>`
- *    Values must be base64-encoded. Acts as fallback when postMessage is not used.
- *
- * Both methods overwrite any previously stored credentials.
- * Runs after store hydration; URL params are processed once, postMessage listener
- * stays active until unmount.
- *
- * Posts two events to the parent window:
- * - `{ type: "pos-ready" }` — when the listener is set up and ready to receive credentials.
- * - `{ type: "pos-credentials-updated" }` — after credentials are successfully applied.
+ * Configures the embedded web POS bridge after settings hydration. Credentials
+ * are never accepted through URLs or postMessage; standalone and native POS
+ * continue to use credentials entered in Settings.
  */
 export function useUrlCredentials() {
-  const hasProcessedParams = useRef(false);
-  const _hasHydrated = useSettingsStore((state) => state._hasHydrated);
+  const hasInitialized = useRef(false);
+  const hasHydrated = useSettingsStore((state) => state._hasHydrated);
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);
-  const setCustomerApiKey = useSettingsStore(
-    (state) => state.setCustomerApiKey,
-  );
-  const addLog = useLogsStore((state) => state.addLog);
-
-  const applyCredentials = useCallback(
-    async (
-      merchantId: string | null,
-      customerApiKey: string | null,
-      source: string,
-    ) => {
-      try {
-        if (merchantId) {
-          setMerchantId(merchantId);
-          addLog(
-            "info",
-            `Merchant ID set from ${source}`,
-            "layout",
-            "useUrlCredentials",
-          );
-        }
-
-        if (customerApiKey) {
-          await setCustomerApiKey(customerApiKey);
-          addLog(
-            "info",
-            `Customer API key set from ${source}`,
-            "layout",
-            "useUrlCredentials",
-          );
-        }
-
-        addLog("info", "Credentials updated", "layout", "useUrlCredentials");
-        window.parent.postMessage({ type: "pos-credentials-updated" }, "*");
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        addLog(
-          "error",
-          `Failed to apply credentials from ${source}: ${errorMessage}`,
-          "layout",
-          "useUrlCredentials",
-          { error },
-        );
-      }
-    },
-    [setMerchantId, setCustomerApiKey, addLog],
+  const clearCustomerApiKey = useSettingsStore(
+    (state) => state.clearCustomerApiKey,
   );
 
-  // URL query parameters (fallback, processed once)
   useEffect(() => {
-    if (Platform.OS !== "web") return;
-    if (!_hasHydrated) return;
-    if (hasProcessedParams.current) return;
-    hasProcessedParams.current = true;
+    if (Platform.OS !== "web" || !hasHydrated || hasInitialized.current) {
+      return;
+    }
+    hasInitialized.current = true;
 
-    const params = new URLSearchParams(window.location.search);
-    const rawMerchantId = params.get("merchantId");
-    const rawCustomerApiKey = params.get("customerApiKey");
-
-    if (!rawMerchantId && !rawCustomerApiKey) return;
-
-    const merchantId = rawMerchantId ? atob(rawMerchantId) : null;
-    const customerApiKey = rawCustomerApiKey ? atob(rawCustomerApiKey) : null;
-
-    applyCredentials(merchantId, customerApiKey, "URL parameter").then(() => {
-      router.replace("/");
-    });
-  }, [_hasHydrated, applyCredentials]);
-
-  // postMessage listener (stays active until unmount)
-  useEffect(() => {
-    if (Platform.OS !== "web") return;
-    if (!_hasHydrated) return;
-
-    function handleMessage(event: MessageEvent) {
-      if (
-        !event.data ||
-        typeof event.data !== "object" ||
-        event.data.type !== "pos-credentials"
-      ) {
+    let isMounted = true;
+    const handleMessage = (event: MessageEvent) => {
+      if (isBridgeConfigMessage(event.data)) {
+        if (
+          event.source === window.parent &&
+          configureBridge(
+            event.source as Window,
+            event.origin,
+            event.data.merchantId.trim(),
+          )
+        ) {
+          // A bridge uses the dashboard's key outside this frame. Remove any
+          // local key left by a direct or older embedded POS session.
+          void clearCustomerApiKey().then(() => {
+            if (isMounted) setMerchantId(event.data.merchantId.trim());
+          });
+        }
         return;
       }
 
-      const { merchantId, customerApiKey } = event.data;
-      if (!merchantId && !customerApiKey) return;
-
-      applyCredentials(
-        merchantId ?? null,
-        customerApiKey ?? null,
-        "postMessage",
-      );
-    }
+      // This only accepts responses from the already locked parent origin.
+      handleBridgeResponse(event);
+    };
 
     window.addEventListener("message", handleMessage);
-    window.parent.postMessage({ type: "pos-ready" }, "*");
-    return () => window.removeEventListener("message", handleMessage);
-  }, [_hasHydrated, applyCredentials]);
+
+    const initialize = async () => {
+      if (window.parent !== window) {
+        // Do not retain an old local key while an embedded POS is waiting for
+        // bridge configuration. No URL or legacy credential fallback exists.
+        await clearCustomerApiKey();
+      }
+
+      if (isMounted) {
+        window.parent.postMessage(
+          { type: "pos-ready", protocolVersion: PROTOCOL_VERSION },
+          "*",
+        );
+      }
+    };
+
+    void initialize();
+    return () => {
+      isMounted = false;
+      window.removeEventListener("message", handleMessage);
+      resetBridge("POS bridge listener was unmounted");
+    };
+  }, [clearCustomerApiKey, hasHydrated, setMerchantId]);
 }
