@@ -11,12 +11,14 @@ import { TokenBalance } from '@/utils/BalanceTypes';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 import { haptics } from '@/utils/haptics';
 import { Button } from '@/components/Button';
+import { Shimmer } from '@/components/Shimmer';
 
 export const ITEM_HEIGHT = 86;
 
 interface TokenBalanceCardProps {
   balance: TokenBalance;
   walletAddress: string;
+  walletAddressStatus: 'loading' | 'ready' | 'unavailable';
 }
 
 function truncateAddress(address: string): string {
@@ -38,8 +40,11 @@ function formatBalance(numeric: string, symbol: string): string {
 export const TokenBalanceCard = React.memo(function TokenBalanceCard({
   balance,
   walletAddress,
+  walletAddressStatus,
 }: TokenBalanceCardProps) {
   const Theme = useTheme();
+  const isAddressReady =
+    walletAddressStatus === 'ready' && Boolean(walletAddress);
 
   // Get chain data and icon from PresetsUtil
   const chainData = PresetsUtil.getChainDataById(balance.chainId);
@@ -47,6 +52,8 @@ export const TokenBalanceCard = React.memo(function TokenBalanceCard({
   const chainName = chainData?.name || balance.name;
 
   const copyToClipboard = () => {
+    if (!isAddressReady) return;
+
     setClipboardString(walletAddress);
     haptics.copyAddress();
     showToast({
@@ -58,6 +65,14 @@ export const TokenBalanceCard = React.memo(function TokenBalanceCard({
   return (
     <Button
       onPress={copyToClipboard}
+      disabled={!isAddressReady}
+      accessibilityLabel={
+        isAddressReady
+          ? `Copy ${chainName} address`
+          : walletAddressStatus === 'loading'
+          ? `${chainName} address loading`
+          : `${chainName} address unavailable`
+      }
       style={[styles.card, { backgroundColor: Theme['foreground-primary'] }]}
     >
       <View style={styles.iconContainer}>
@@ -105,12 +120,28 @@ export const TokenBalanceCard = React.memo(function TokenBalanceCard({
             ? `~ ${balance.symbol}`
             : formatBalance(balance.quantity.numeric, balance.symbol)}
         </Text>
-        <Text variant="lg-400" color="text-secondary">
-          {truncateAddress(walletAddress)}
-        </Text>
+        <View testID="wallet-address-slot" style={styles.addressSlot}>
+          {walletAddressStatus === 'loading' ? (
+            <Shimmer width={126} height={16} borderRadius={BorderRadius[1]} />
+          ) : (
+            <Text
+              variant="lg-400"
+              color="text-secondary"
+              style={styles.addressText}
+            >
+              {isAddressReady
+                ? truncateAddress(walletAddress)
+                : 'Address unavailable'}
+            </Text>
+          )}
+        </View>
       </View>
       <View style={styles.copyButton}>
-        <CopySvg width={20} height={20} fill={Theme['text-primary']} />
+        <CopySvg
+          width={20}
+          height={20}
+          fill={isAddressReady ? Theme['text-primary'] : Theme['icon-default']}
+        />
       </View>
     </Button>
   );
@@ -157,6 +188,13 @@ const styles = StyleSheet.create({
   cardContent: {
     flex: 1,
     gap: Spacing['05'],
+  },
+  addressSlot: {
+    height: 20,
+    justifyContent: 'center',
+  },
+  addressText: {
+    lineHeight: 20,
   },
   copyButton: {
     padding: Spacing[2],

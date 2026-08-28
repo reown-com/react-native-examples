@@ -7,6 +7,7 @@ import SettingsStore from '@/store/SettingsStore';
 import PaymentStore from '@/store/PaymentStore';
 import { EIP155_CHAINS } from '@/constants/Eip155';
 import { SOLANA_CHAINS } from '@/constants/Solana';
+import { ensureWalletReady } from '@/utils/WalletInitializationUtil';
 
 export { isPaymentLink };
 
@@ -24,6 +25,17 @@ export function usePairing() {
     }
 
     try {
+      // Payment options are account-specific. Restore the two Pay-supported
+      // namespaces before advertising accounts, rather than exposing an
+      // address whose signer is not ready yet.
+      const readiness = await Promise.allSettled([
+        ensureWalletReady('eip155'),
+        ensureWalletReady('solana'),
+      ]);
+      if (readiness.every(result => result.status === 'rejected')) {
+        throw new Error('No payment wallet could be initialized');
+      }
+
       const eip155Address = SettingsStore.state.eip155Address;
       const solanaAddress = SettingsStore.state.solanaAddress;
       const accounts = [

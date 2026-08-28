@@ -60,4 +60,25 @@ config.cacheStores = ({ FileStore }) => [
   new FileStore({ root: path.join(__dirname, 'node_modules/.cache/metro') }),
 ];
 
+// Defer module evaluation to first use. Otherwise the whole statically-imported
+// graph — including the heavy web3 SDKs (ethers, tronweb, @stellar/sdk,
+// @mysten/sui, @ton/*, bitcoinjs-lib) — is evaluated eagerly at bundle load,
+// which is the dominant cold-start cost (measured ~1.5s of the startup). Chain
+// SDKs aren't touched during initial render, so they drop out of startup.
+// Side-effect-only imports (e.g. react-native-gesture-handler) stay eager since
+// Metro only inlines requires that are bound to a variable and used.
+const baseGetTransformOptions = config.transformer.getTransformOptions;
+config.transformer.getTransformOptions = async (...args) => {
+  const base = baseGetTransformOptions
+    ? await baseGetTransformOptions(...args)
+    : {};
+  return {
+    ...base,
+    transform: {
+      ...base.transform,
+      inlineRequires: true,
+    },
+  };
+};
+
 module.exports = config;

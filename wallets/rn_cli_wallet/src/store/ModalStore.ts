@@ -13,6 +13,8 @@ interface ModalData {
   loadingMessage?: string;
   errorTitle?: string;
   errorMessage?: string;
+  actionLabel?: string;
+  onAction?: () => void;
   session?: SessionTypes.Struct;
 }
 

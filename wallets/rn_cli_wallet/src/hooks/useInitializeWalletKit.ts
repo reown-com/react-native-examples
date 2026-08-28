@@ -1,70 +1,68 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSnapshot } from 'valtio';
+import * as Sentry from '@sentry/react-native';
 
 import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
-import { createOrRestoreEIP155Wallet } from '@/utils/EIP155WalletUtil';
-import { createOrRestoreSuiWallet } from '@/utils/SuiWalletUtil';
 import { createWalletKit, walletKit } from '@/utils/WalletKitUtil';
-import { createOrRestoreTonWallet } from '@/utils/TonWalletUtil';
-import { createOrRestoreTronWallet } from '@/utils/TronWalletUtil';
-import { createOrRestoreCantonWallet } from '@/utils/CantonWalletUtil';
-import { createOrRestoreSolanaWallet } from '@/utils/SolanaWalletUtil';
-import { createOrRestoreBitcoinWallet } from '@/utils/BitcoinWalletUtil';
-import { createOrRestoreStellarWallet } from '@/utils/StellarWalletUtil';
 
 export default function useInitializeWalletKit() {
   const [initialized, setInitialized] = useState(false);
+  const [initializationError, setInitializationError] = useState<Error | null>(
+    null,
+  );
+  const [retryGeneration, setRetryGeneration] = useState(0);
   const prevRelayerURLValue = useRef<string>('');
 
   const { relayerRegionURL } = useSnapshot(SettingsStore.state);
 
-  const onInitialize = useCallback(async () => {
-    try {
-      const { eip155Addresses, eip155Wallets } =
-        await createOrRestoreEIP155Wallet();
-      const { suiAddresses, suiWallet } = await createOrRestoreSuiWallet();
-      const { tonAddresses, tonWallets } = await createOrRestoreTonWallet();
-      const { tronAddresses, tronWallets } = await createOrRestoreTronWallet();
-      const { cantonAddresses, cantonWallet } =
-        await createOrRestoreCantonWallet();
-      const { solanaAddress, solanaWallet } =
-        await createOrRestoreSolanaWallet();
-      const { bitcoinAddress, bitcoinWallet } =
-        await createOrRestoreBitcoinWallet();
-      const { stellarAddress, stellarWallet } =
-        await createOrRestoreStellarWallet();
+  useEffect(() => {
+    if (initialized) return;
 
-      SettingsStore.setEIP155Address(eip155Addresses[0]);
-      SettingsStore.setWallet(eip155Wallets[eip155Addresses[0]]);
-      SettingsStore.setSuiAddress(suiAddresses[0]);
-      SettingsStore.setSuiWallet(suiWallet);
-      SettingsStore.setTonAddress(tonAddresses[0]);
-      SettingsStore.setTonWallet(tonWallets[tonAddresses[0]]);
-      SettingsStore.setTronAddress(tronAddresses[0]);
-      SettingsStore.setTronWallet(tronWallets[tronAddresses[0]]);
-      SettingsStore.setCantonAddress(cantonAddresses[0]);
-      SettingsStore.setCantonWallet(cantonWallet);
-      SettingsStore.setSolanaAddress(solanaAddress);
-      SettingsStore.setSolanaWallet(solanaWallet);
-      SettingsStore.setBitcoinAddress(bitcoinAddress);
-      SettingsStore.setBitcoinWallet(bitcoinWallet);
-      SettingsStore.setStellarAddress(stellarAddress);
-      SettingsStore.setStellarWallet(stellarWallet);
-      await createWalletKit(relayerRegionURL);
-      setInitialized(true);
-      SettingsStore.state.initPromiseResolver?.resolve(undefined);
-    } catch (err: unknown) {
-      LogStore.error(
-        `Failed to initialize WalletKit: ${
-          err instanceof Error ? err.message : 'Unknown error'
-        }`,
-        'Initialization',
-        'onInitialize',
-        { error: String(err) },
-      );
-    }
-  }, [relayerRegionURL]);
+    let cancelled = false;
+
+    const onInitialize = async () => {
+      try {
+        await createWalletKit(relayerRegionURL);
+        if (cancelled) return;
+
+        setInitializationError(null);
+        prevRelayerURLValue.current = relayerRegionURL;
+        setInitialized(true);
+        SettingsStore.state.initPromiseResolver?.resolve(undefined);
+      } catch (err: unknown) {
+        if (cancelled) return;
+
+        const error = err instanceof Error ? err : new Error(String(err));
+        LogStore.error(
+          `Failed to initialize WalletKit: ${error.message}`,
+          'Initialization',
+          'onInitialize',
+          { error: String(err) },
+        );
+
+        setInitializationError(error);
+        // `initPromise` represents initialization settling. Wake any deep-link
+        // flow so it can show its normal unavailable-state error instead of
+        // awaiting forever.
+        SettingsStore.state.initPromiseResolver?.resolve(undefined);
+        Sentry.captureException(error, {
+          tags: { area: 'Initialization', op: 'onInitialize' },
+        });
+      }
+    };
+
+    onInitialize();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialized, relayerRegionURL, retryGeneration]);
+
+  const retryInitialization = useCallback(() => {
+    setInitializationError(null);
+    setRetryGeneration(value => value + 1);
+  }, []);
 
   // restart transport if relayer region changes
   const onRelayerRegionChange = useCallback(() => {
@@ -84,13 +82,10 @@ export default function useInitializeWalletKit() {
   }, [relayerRegionURL]);
 
   useEffect(() => {
-    if (!initialized) {
-      onInitialize();
-    }
-    if (prevRelayerURLValue.current !== relayerRegionURL) {
+    if (initialized && prevRelayerURLValue.current !== relayerRegionURL) {
       onRelayerRegionChange();
     }
-  }, [initialized, onInitialize, relayerRegionURL, onRelayerRegionChange]);
+  }, [initialized, relayerRegionURL, onRelayerRegionChange]);
 
-  return initialized;
+  return { initialized, initializationError, retryInitialization };
 }
