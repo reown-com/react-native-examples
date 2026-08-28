@@ -220,17 +220,27 @@ export default function ScanScreen() {
           paymentId,
           error,
         });
-        showErrorToast("We couldn't cancel this payment. Try again.");
+        // No "try again" — by the time this rejects the user has already left
+        // the scan screen and has no way to retry from here.
+        showErrorToast("We couldn't cancel this payment.");
       });
     }
   }, [paymentId, paymentStatusData?.status, addLog]);
 
+  // Hold the latest callback in a ref so the `beforeRemove` listener stays
+  // registered once for the screen's lifetime instead of being torn down and
+  // re-added on every status poll (which changes `cancelPendingPayment`).
+  const cancelPendingPaymentRef = useRef(cancelPendingPayment);
+  useEffect(() => {
+    cancelPendingPaymentRef.current = cancelPendingPayment;
+  }, [cancelPendingPayment]);
+
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", () => {
-      cancelPendingPayment();
+      cancelPendingPaymentRef.current();
     });
     return unsubscribe;
-  }, [navigation, cancelPendingPayment]);
+  }, [navigation]);
 
   const { remainingSeconds, isActive: isCountdownActive } = useCountdown({
     expiresAt,
