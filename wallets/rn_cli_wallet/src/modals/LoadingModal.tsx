@@ -9,6 +9,7 @@ import { Text } from '@/components/Text';
 import { ModalCloseButton } from '@/components/ModalCloseButton';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import { WalletConnectLoading } from '@/components/WalletConnectLoading';
+import { ActionButton } from '@/components/ActionButton';
 import { haptics } from '@/utils/haptics';
 
 export function LoadingModal() {
@@ -22,6 +23,11 @@ export function LoadingModal() {
   }, [data?.errorMessage, data?.errorTitle]);
 
   const onClose = () => {
+    ModalStore.close();
+  };
+
+  const onAction = () => {
+    data?.onAction?.();
     ModalStore.close();
   };
 
@@ -52,6 +58,11 @@ export function LoadingModal() {
           </Text>
         ) : null}
       </View>
+      {data?.actionLabel && data.onAction ? (
+        <ActionButton onPress={onAction} fullWidth>
+          {data.actionLabel}
+        </ActionButton>
+      ) : null}
     </View>
   );
 }

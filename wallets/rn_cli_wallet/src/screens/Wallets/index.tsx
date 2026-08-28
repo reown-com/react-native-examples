@@ -11,6 +11,7 @@ import { Spacing } from '@/utils/ThemeUtil';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { TokenBalanceCard, ITEM_HEIGHT } from './components/TokenBalanceCard';
 import { haptics } from '@/utils/haptics';
+import type { WalletNamespace } from '@/utils/WalletInitializationUtil';
 
 function getAddressForChain(
   chainId: string,
@@ -38,6 +39,23 @@ function getAddressForChain(
   return addresses.eip155Address || '';
 }
 
+function getWalletNamespaceForChain(chainId: string): WalletNamespace {
+  const namespace = chainId.split(':', 1)[0];
+
+  switch (namespace) {
+    case 'sui':
+    case 'ton':
+    case 'tron':
+    case 'canton':
+    case 'solana':
+    case 'bip122':
+    case 'stellar':
+      return namespace;
+    default:
+      return 'eip155';
+  }
+}
+
 export default function Wallets() {
   const {
     eip155Address,
@@ -47,6 +65,7 @@ export default function Wallets() {
     solanaAddress,
     bitcoinAddress,
     stellarAddress,
+    walletReadiness,
   } = useSnapshot(SettingsStore.state);
   const { balances, isLoading } = useSnapshot(WalletStore.state);
   const Theme = useTheme();
@@ -72,19 +91,24 @@ export default function Wallets() {
     ],
   );
 
+  const walletsRestored = Object.values(walletReadiness).every(
+    readiness => readiness === 'ready' || readiness === 'failed',
+  );
+
   const fetchBalances = useCallback(() => {
     if (
-      addresses.eip155Address ||
-      addresses.tonAddress ||
-      addresses.tronAddress ||
-      addresses.suiAddress ||
-      addresses.solanaAddress ||
-      addresses.bitcoinAddress ||
-      addresses.stellarAddress
+      walletsRestored &&
+      (addresses.eip155Address ||
+        addresses.tonAddress ||
+        addresses.tronAddress ||
+        addresses.suiAddress ||
+        addresses.solanaAddress ||
+        addresses.bitcoinAddress ||
+        addresses.stellarAddress)
     ) {
       WalletStore.fetchBalances(addresses);
     }
-  }, [addresses]);
+  }, [addresses, walletsRestored]);
 
   const handleRefresh = useCallback(() => {
     haptics.pullToRefresh();
@@ -96,13 +120,26 @@ export default function Wallets() {
   }, [fetchBalances]);
 
   const renderItem = useCallback(
-    ({ item }: { item: TokenBalance }) => (
-      <TokenBalanceCard
-        balance={item}
-        walletAddress={getAddressForChain(item.chainId, addresses)}
-      />
-    ),
-    [addresses],
+    ({ item }: { item: TokenBalance }) => {
+      const walletAddress = getAddressForChain(item.chainId, addresses);
+      const readiness =
+        walletReadiness[getWalletNamespaceForChain(item.chainId)];
+      const walletAddressStatus =
+        readiness === 'ready' && walletAddress
+          ? 'ready'
+          : readiness === 'failed'
+          ? 'unavailable'
+          : 'loading';
+
+      return (
+        <TokenBalanceCard
+          balance={item}
+          walletAddress={walletAddress}
+          walletAddressStatus={walletAddressStatus}
+        />
+      );
+    },
+    [addresses, walletReadiness],
   );
 
   const keyExtractor = useCallback(
@@ -120,12 +157,14 @@ export default function Wallets() {
   );
 
   const ListEmptyComponent = useCallback(() => {
-    if (isLoading) {
+    if (!walletsRestored || isLoading) {
       return (
         <View style={styles.emptyContainer}>
           <WalletConnectLoading size={60} />
           <Text variant="lg-400" color="text-primary">
-            Loading your balances…
+            {walletsRestored
+              ? 'Loading your balances…'
+              : 'Preparing your wallets…'}
           </Text>
         </View>
       );
@@ -138,7 +177,7 @@ export default function Wallets() {
         </Text>
       </View>
     );
-  }, [isLoading]);
+  }, [isLoading, walletsRestored]);
 
   return (
     <FlatList

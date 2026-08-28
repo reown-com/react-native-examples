@@ -3,15 +3,17 @@ import { Appearance } from 'react-native';
 import { Verify, SessionTypes } from '@walletconnect/types';
 
 import { storage } from '@/utils/storage';
-import EIP155Lib from '../lib/EIP155Lib';
-import SuiLib from '../lib/SuiLib';
-import TonLib from '../lib/TonLib';
-import TronLib from '../lib/TronLib';
-import CantonLib from '../lib/CantonLib';
-import SolanaLib from '../lib/SolanaLib';
-import BitcoinLib from '../lib/BitcoinLib';
-import StellarLib from '../lib/StellarLib';
+import type EIP155Lib from '../lib/EIP155Lib';
+import type SuiLib from '../lib/SuiLib';
+import type TonLib from '../lib/TonLib';
+import type TronLib from '../lib/TronLib';
+import type CantonLib from '../lib/CantonLib';
+import type SolanaLib from '../lib/SolanaLib';
+import type BitcoinLib from '../lib/BitcoinLib';
+import type StellarLib from '../lib/StellarLib';
 import { MMKV } from 'react-native-mmkv';
+
+type WalletReadiness = 'idle' | 'loading' | 'ready' | 'failed';
 
 function getInitialThemeMode(): 'light' | 'dark' {
   const mmkv = new MMKV();
@@ -51,9 +53,21 @@ interface State {
   solanaAddress: string;
   solanaWallet: SolanaLib | null;
   bitcoinAddress: string;
+  bitcoinAddresses: string[];
   bitcoinWallet: BitcoinLib | null;
   stellarAddress: string;
   stellarWallet: StellarLib | null;
+  walletReadiness: Record<
+    | 'eip155'
+    | 'sui'
+    | 'ton'
+    | 'tron'
+    | 'canton'
+    | 'solana'
+    | 'bip122'
+    | 'stellar',
+    WalletReadiness
+  >;
   relayerRegionURL: string;
   activeChainId: string;
   currentRequestVerifyContext?: Verify.Context;
@@ -89,9 +103,20 @@ const state = proxy<State>({
   solanaAddress: '',
   solanaWallet: null,
   bitcoinAddress: '',
+  bitcoinAddresses: [],
   bitcoinWallet: null,
   stellarAddress: '',
   stellarWallet: null,
+  walletReadiness: {
+    eip155: 'idle',
+    sui: 'idle',
+    ton: 'idle',
+    tron: 'idle',
+    canton: 'idle',
+    solana: 'idle',
+    bip122: 'idle',
+    stellar: 'idle',
+  },
   relayerRegionURL: '',
   sessions: [],
   wallet: null,
@@ -203,6 +228,12 @@ const SettingsStore = {
 
   setBitcoinAddress(bitcoinAddress: string) {
     state.bitcoinAddress = bitcoinAddress;
+    state.bitcoinAddresses = [bitcoinAddress];
+  },
+
+  setBitcoinAddresses(bitcoinAddresses: string[]) {
+    state.bitcoinAddresses = bitcoinAddresses;
+    state.bitcoinAddress = bitcoinAddresses[0] ?? '';
   },
 
   setBitcoinWallet(bitcoinWallet: BitcoinLib) {
@@ -215,6 +246,13 @@ const SettingsStore = {
 
   setStellarWallet(stellarWallet: StellarLib) {
     state.stellarWallet = ref(stellarWallet);
+  },
+
+  setWalletReadiness(
+    namespace: keyof State['walletReadiness'],
+    readiness: WalletReadiness,
+  ) {
+    state.walletReadiness[namespace] = readiness;
   },
 
   setThemeMode(value: 'light' | 'dark') {

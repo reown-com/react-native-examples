@@ -31,6 +31,7 @@ import {
 } from '@/utils/PaymentTransactionUtil';
 import type { TransactionFeeEstimate } from '@/utils/PaymentTransactionUtil';
 import { getApprovalAction, shouldShowSetupLoader } from '@/utils/PaymentUtil';
+import { ensureWalletForChainId } from '@/utils/WalletInitializationUtil';
 
 interface PaymentState {
   paymentOptions: PaymentOptionsResponse | null;
@@ -575,6 +576,8 @@ const PaymentStore = {
         };
 
         const namespace = chainId.split(':')[0];
+        await ensureWalletForChainId(chainId);
+
         let evmWallet:
           | (typeof eip155Wallets)[keyof typeof eip155Wallets]
           | undefined;

@@ -7,39 +7,33 @@ import { showToast } from '@/utils/ToastUtil';
 
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
-import { eip155Addresses } from '@/utils/EIP155WalletUtil';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
+import { ensureWalletsForChainIds } from '@/utils/WalletInitializationUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
 import { RequestModal } from './RequestModal';
 import { getSupportedChains } from '@/utils/HelperUtil';
 import { ALL_CHAINS } from '@/utils/PresetsUtil';
-import { suiAddresses } from '@/utils/SuiWalletUtil';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SUI_CHAINS, SUI_EVENTS, SUI_SIGNING_METHODS } from '@/constants/Sui';
 import { TON_CHAINS, TON_SIGNING_METHODS } from '@/constants/Ton';
-import { getWallet, tonAddresses } from '@/utils/TonWalletUtil';
-import { tronAddresses } from '@/utils/TronWalletUtil';
+import { getWallet } from '@/utils/TonWalletUtil';
 import { TRON_CHAINS, TRON_SIGNING_METHODS } from '@/constants/Tron';
 import {
   CANTON_CHAINS,
   CANTON_SIGNING_METHODS,
   CANTON_EVENTS,
 } from '@/constants/Canton';
-import { cantonAddresses } from '@/utils/CantonWalletUtil';
-import { solanaAddresses } from '@/utils/SolanaWalletUtil';
 import {
   SOLANA_CHAINS,
   SOLANA_EVENTS,
   SOLANA_SIGNING_METHODS,
 } from '@/constants/Solana';
-import { bitcoinAddresses } from '@/utils/BitcoinWalletUtil';
 import {
   BIP122_CHAINS,
   BIP122_EVENTS,
   BIP122_SIGNING_METHODS,
 } from '@/constants/Bitcoin';
-import { stellarAddresses } from '@/utils/StellarWalletUtil';
 import {
   STELLAR_CHAINS,
   STELLAR_EVENTS,
@@ -59,6 +53,106 @@ const NETWORK_GAP = Spacing[2];
 const MAX_VISIBLE_NETWORKS = 5;
 
 type AccordionType = 'app' | 'network' | null;
+
+interface WalletAddresses {
+  eip155Address: string;
+  suiAddress: string;
+  tonAddress: string;
+  tronAddress: string;
+  cantonAddress: string;
+  solanaAddress: string;
+  bitcoinAddresses: string[];
+  stellarAddress: string;
+}
+
+function buildSupportedNamespaces(
+  testNets: boolean,
+  addresses: WalletAddresses,
+) {
+  const withoutTestnets = (chainIds: string[]) =>
+    testNets ? chainIds : chainIds.filter(id => !ALL_CHAINS[id]?.isTestnet);
+
+  const eip155Chains = withoutTestnets(Object.keys(EIP155_CHAINS));
+  const suiChains = Object.keys(SUI_CHAINS);
+  const tonChains = Object.keys(TON_CHAINS);
+  const tronChains = Object.keys(TRON_CHAINS);
+  const cantonChains = Object.keys(CANTON_CHAINS);
+  const solanaChains = Object.keys(SOLANA_CHAINS);
+  const bip122Chains = Object.keys(BIP122_CHAINS);
+  const stellarChains = withoutTestnets(Object.keys(STELLAR_CHAINS));
+
+  const accountsFor = (chains: string[], address: string) =>
+    address ? chains.map(chain => `${chain}:${address}`) : [];
+
+  return {
+    eip155: {
+      chains: eip155Chains,
+      methods: Object.values(EIP155_SIGNING_METHODS),
+      events: ['accountsChanged', 'chainChanged'],
+      accounts: accountsFor(eip155Chains, addresses.eip155Address),
+    },
+    sui: {
+      chains: suiChains,
+      methods: Object.values(SUI_SIGNING_METHODS),
+      events: Object.values(SUI_EVENTS),
+      accounts: accountsFor(suiChains, addresses.suiAddress),
+    },
+    ton: {
+      chains: tonChains,
+      methods: Object.values(TON_SIGNING_METHODS),
+      events: [] as string[],
+      accounts: accountsFor(tonChains, addresses.tonAddress),
+    },
+    tron: {
+      chains: tronChains,
+      methods: Object.values(TRON_SIGNING_METHODS),
+      events: [] as string[],
+      accounts: accountsFor(tronChains, addresses.tronAddress),
+    },
+    canton: {
+      chains: cantonChains,
+      methods: Object.values(CANTON_SIGNING_METHODS),
+      events: Object.values(CANTON_EVENTS),
+      accounts: accountsFor(cantonChains, addresses.cantonAddress),
+    },
+    solana: {
+      chains: solanaChains,
+      methods: Object.values(SOLANA_SIGNING_METHODS),
+      events: Object.values(SOLANA_EVENTS),
+      accounts: accountsFor(solanaChains, addresses.solanaAddress),
+    },
+    bip122: {
+      chains: bip122Chains,
+      methods: Object.values(BIP122_SIGNING_METHODS),
+      events: Object.values(BIP122_EVENTS),
+      accounts: addresses.bitcoinAddresses.length
+        ? bip122Chains.flatMap(chain =>
+            addresses.bitcoinAddresses.map(address => `${chain}:${address}`),
+          )
+        : [],
+    },
+    stellar: {
+      chains: stellarChains,
+      methods: Object.values(STELLAR_SIGNING_METHODS),
+      events: Object.values(STELLAR_EVENTS),
+      accounts: accountsFor(stellarChains, addresses.stellarAddress),
+    },
+  };
+}
+
+function getCurrentWalletAddresses(): WalletAddresses {
+  const state = SettingsStore.state;
+  return {
+    eip155Address: state.eip155Address,
+    suiAddress: state.suiAddress,
+    tonAddress: state.tonAddress,
+    tronAddress: state.tronAddress,
+    cantonAddress: state.cantonAddress,
+    solanaAddress: state.solanaAddress,
+    bitcoinAddresses: [...state.bitcoinAddresses],
+    stellarAddress: state.stellarAddress,
+  };
+}
 
 export default function SessionProposalModal() {
   const { data } = useSnapshot(ModalStore.state);
@@ -80,112 +174,6 @@ export default function SessionProposalModal() {
 
   const validation = currentRequestVerifyContext?.verified?.validation;
   const isScam = currentRequestVerifyContext?.verified?.isScam;
-
-  const supportedNamespaces = useMemo(() => {
-    // Testnet chains are only advertised to dapps when the "Testnets" setting is
-    // on (default off), so a mainnet-only wallet doesn't offer test networks.
-    const withoutTestnets = (chainIds: string[]) =>
-      testNets
-        ? chainIds
-        : chainIds.filter(id => !ALL_CHAINS[id]?.isTestnet);
-
-    const eip155Chains = withoutTestnets(Object.keys(EIP155_CHAINS));
-    const eip155Methods = Object.values(EIP155_SIGNING_METHODS);
-
-    const suiChains = Object.keys(SUI_CHAINS);
-    const suiMethods = Object.values(SUI_SIGNING_METHODS);
-    const suiEvents = Object.values(SUI_EVENTS);
-
-    const tonChains = Object.keys(TON_CHAINS);
-    const tonMethods = Object.values(TON_SIGNING_METHODS);
-    const tonEvents = [] as string[];
-
-    const tronChains = Object.keys(TRON_CHAINS);
-    const tronMethods = Object.values(TRON_SIGNING_METHODS);
-    const tronEvents = [] as string[];
-
-    const cantonChains = Object.keys(CANTON_CHAINS);
-    const cantonMethods = Object.values(CANTON_SIGNING_METHODS);
-    const cantonEvents = Object.values(CANTON_EVENTS);
-
-    const solanaChains = Object.keys(SOLANA_CHAINS);
-    const solanaMethods = Object.values(SOLANA_SIGNING_METHODS);
-    const solanaEvents = Object.values(SOLANA_EVENTS);
-
-    const bip122Chains = Object.keys(BIP122_CHAINS);
-    const bip122Methods = Object.values(BIP122_SIGNING_METHODS);
-    const bip122Events = Object.values(BIP122_EVENTS);
-
-    const stellarChains = withoutTestnets(Object.keys(STELLAR_CHAINS));
-    const stellarMethods = Object.values(STELLAR_SIGNING_METHODS);
-    const stellarEvents = Object.values(STELLAR_EVENTS);
-
-    return {
-      eip155: {
-        chains: eip155Chains,
-        methods: eip155Methods,
-        events: ['accountsChanged', 'chainChanged'],
-        accounts: eip155Chains
-          .map(chain => `${chain}:${eip155Addresses[0]}`)
-          .flat(),
-      },
-      sui: {
-        chains: suiChains,
-        methods: suiMethods,
-        events: suiEvents,
-        accounts: suiChains.map(chain => `${chain}:${suiAddresses[0]}`).flat(),
-      },
-      ton: {
-        chains: tonChains,
-        methods: tonMethods,
-        events: tonEvents,
-        accounts: tonChains.map(chain => `${chain}:${tonAddresses[0]}`).flat(),
-      },
-      tron: {
-        chains: tronChains,
-        methods: tronMethods,
-        events: tronEvents,
-        accounts: tronChains
-          .map(chain => `${chain}:${tronAddresses[0]}`)
-          .flat(),
-      },
-      canton: {
-        chains: cantonChains,
-        methods: cantonMethods,
-        events: cantonEvents,
-        accounts: cantonChains
-          .map(chain => `${chain}:${cantonAddresses[0]}`)
-          .flat(),
-      },
-      solana: {
-        chains: solanaChains,
-        methods: solanaMethods,
-        events: solanaEvents,
-        accounts: solanaAddresses?.[0]
-          ? solanaChains.map(chain => `${chain}:${solanaAddresses[0]}`)
-          : [],
-      },
-      bip122: {
-        chains: bip122Chains,
-        methods: bip122Methods,
-        events: bip122Events,
-        // Expose both the payment (P2WPKH) and ordinals (P2TR) addresses.
-        accounts: bitcoinAddresses?.[0]
-          ? bip122Chains.flatMap(chain =>
-              bitcoinAddresses.map(address => `${chain}:${address}`),
-            )
-          : [],
-      },
-      stellar: {
-        chains: stellarChains,
-        methods: stellarMethods,
-        events: stellarEvents,
-        accounts: stellarAddresses?.[0]
-          ? stellarChains.map(chain => `${chain}:${stellarAddresses[0]}`)
-          : [],
-      },
-    };
-  }, [testNets]);
 
   const supportedChains = useMemo(() => {
     if (!proposal) {
@@ -226,9 +214,9 @@ export default function SessionProposalModal() {
   // Filter namespaces based on selected chains
   const filterNamespacesByChains = useCallback(
     (
-      namespaces: typeof supportedNamespaces,
+      namespaces: ReturnType<typeof buildSupportedNamespaces>,
       selectedIds: string[],
-    ): typeof supportedNamespaces => {
+    ): ReturnType<typeof buildSupportedNamespaces> => {
       const filtered = { ...namespaces };
 
       (Object.keys(filtered) as Array<keyof typeof filtered>).forEach(ns => {
@@ -259,17 +247,23 @@ export default function SessionProposalModal() {
     if (proposal) {
       setIsLoadingApprove(true);
 
-      const filteredNamespaces = filterNamespacesByChains(
-        supportedNamespaces,
-        selectedChainIds,
-      );
-
-      const namespaces = buildApprovedNamespaces({
-        proposal: proposal.params,
-        supportedNamespaces: filteredNamespaces,
-      });
-
       try {
+        // The idle queue may not have reached every requested namespace yet.
+        // Restore selected signers before advertising their accounts.
+        await ensureWalletsForChainIds(selectedChainIds);
+        const refreshedNamespaces = buildSupportedNamespaces(
+          testNets,
+          getCurrentWalletAddresses(),
+        );
+        const filteredNamespaces = filterNamespacesByChains(
+          refreshedNamespaces,
+          selectedChainIds,
+        );
+        const namespaces = buildApprovedNamespaces({
+          proposal: proposal.params,
+          supportedNamespaces: filteredNamespaces,
+        });
+
         // Build session properties for TON
         const sessionProperties: Record<string, string> = {};
 
@@ -310,12 +304,7 @@ export default function SessionProposalModal() {
         ModalStore.close();
       }
     }
-  }, [
-    proposal,
-    supportedNamespaces,
-    selectedChainIds,
-    filterNamespacesByChains,
-  ]);
+  }, [proposal, selectedChainIds, filterNamespacesByChains, testNets]);
 
   const onReject = useCallback(async () => {
     if (proposal) {

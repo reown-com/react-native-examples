@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ENV } from '@/utils/env';
 import { Linking, Platform, StatusBar, StyleSheet } from 'react-native';
 import { NavigationBar } from 'expo-navigation-bar';
@@ -26,6 +26,7 @@ import LogStore from '@/store/LogStore';
 import { getEnvironment } from '@/utils/misc';
 import { toastConfig } from '@/components/ToastConfig';
 import { DarkTheme, LightTheme } from '@/utils/ThemeUtil';
+import { startBackgroundWalletRestoration } from '@/utils/WalletInitializationUtil';
 
 Sentry.init({
   enabled: !__DEV__ && !!ENV.SENTRY_DSN,
@@ -50,8 +51,12 @@ Sentry.init({
   // spotlight: __DEV__,
 });
 
+// Hard cap on how long the native splash may stay up. Init normally resolves
+// in well under this; the backstop only fires if the init promise stalls.
+const SPLASH_MAX_WAIT_MS = 12000;
+
 const App = () => {
-  const { themeMode, eip155Address } = useSnapshot(SettingsStore.state);
+  const { themeMode } = useSnapshot(SettingsStore.state);
 
   // Load saved theme mode on startup
   useEffect(() => {
@@ -59,7 +64,8 @@ const App = () => {
   }, []);
 
   // Step 1 - Initialize wallets and wallet connect client
-  const initialized = useInitializeWalletKit();
+  const { initialized, initializationError, retryInitialization } =
+    useInitializeWalletKit();
 
   // Step 2 - Once initialized, set up wallet connect event manager
   useWalletKitEventsManager(initialized);
@@ -80,12 +86,57 @@ const App = () => {
   );
   useNfcForegroundDispatch(handleNfcUri);
 
-  // Hide splash screen once wallets are initialized, addresses are loaded and theme mode is set
-  useEffect(() => {
-    if (initialized && eip155Address && themeMode) {
-      BootSplash.hide({ fade: true });
+  const splashHiddenRef = useRef(false);
+  const hideSplash = useCallback(() => {
+    if (splashHiddenRef.current) {
+      return;
     }
-  }, [initialized, eip155Address, themeMode]);
+    splashHiddenRef.current = true;
+    BootSplash.hide({ fade: true })
+      .catch(error => {
+        LogStore.warn(
+          'Failed to hide the native splash screen',
+          'App',
+          'hideSplash',
+          { error: String(error) },
+        );
+      })
+      .finally(() => {
+        requestAnimationFrame(() => {
+          globalThis.performance?.mark?.('screenInteractive');
+          startBackgroundWalletRestoration();
+        });
+      });
+  }, []);
+
+  // Signers are restored on demand/at idle; WalletKit and the theme are the
+  // only prerequisites for the first interactive screen.
+  useEffect(() => {
+    if (initialized && themeMode) {
+      hideSplash();
+    }
+  }, [initialized, themeMode, hideSplash]);
+
+  useEffect(() => {
+    if (!initializationError) return;
+
+    hideSplash();
+    ModalStore.open('LoadingModal', {
+      errorTitle: 'Couldn’t start WalletConnect',
+      errorMessage:
+        'Check your connection and try again. Your wallets remain available on this device.',
+      actionLabel: 'Try again',
+      onAction: retryInitialization,
+    });
+  }, [initializationError, retryInitialization, hideSplash]);
+
+  // Safety backstop: never leave the splash up indefinitely if init stalls.
+  // Reveal the UI (background restoration will populate any missing signers)
+  // rather than trapping the user on the splash forever.
+  useEffect(() => {
+    const timer = setTimeout(hideSplash, SPLASH_MAX_WAIT_MS);
+    return () => clearTimeout(timer);
+  }, [hideSplash]);
 
   // Set up relayer event listeners once initialized
   useEffect(() => {
@@ -180,8 +231,6 @@ const App = () => {
 
   // Check if app was opened from a link-mode request
   useEffect(() => {
-    SettingsStore.setInitPromise();
-
     async function checkInitialUrl() {
       const initialUrl = await Linking.getInitialURL();
       if (!initialUrl) {
@@ -213,11 +262,14 @@ const App = () => {
         <SafeAreaProvider>
           <KeyboardProvider>
             <NavigationContainer
-              documentTitle={{ formatter: () => 'React N. Wallet' }}>
+              documentTitle={{ formatter: () => 'React N. Wallet' }}
+            >
               <StatusBar
                 translucent
                 backgroundColor="transparent"
-                barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
+                barStyle={
+                  themeMode === 'dark' ? 'light-content' : 'dark-content'
+                }
               />
               <NavigationBar style={themeMode === 'dark' ? 'light' : 'dark'} />
               <RootStackNavigator />
