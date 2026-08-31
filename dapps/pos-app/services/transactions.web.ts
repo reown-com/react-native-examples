@@ -1,5 +1,7 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { TransactionsResponse } from "@/utils/types";
+import { isSandboxModeAvailable } from "@/utils/feature-flags";
+import { getSandboxTransactions } from "./sandbox-transactions";
 
 export interface GetTransactionsOptions {
   status?: string | string[];
@@ -19,6 +21,10 @@ export interface GetTransactionsOptions {
 export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
+  if (isSandboxModeAvailable && useSettingsStore.getState().sandboxMode) {
+    return getSandboxTransactions(options);
+  }
+
   const merchantId = useSettingsStore.getState().merchantId;
   const apiKey = await useSettingsStore.getState().getCustomerApiKey();
 

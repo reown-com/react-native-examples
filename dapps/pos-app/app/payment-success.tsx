@@ -24,7 +24,6 @@ import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
 import { Image } from "expo-image";
-import { StatusBar } from "expo-status-bar";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
@@ -49,7 +48,7 @@ export default function PaymentSuccessScreen() {
   const Theme = useTheme();
   const isTablet = useIsTablet();
   const params = useLocalSearchParams<SuccessParams>();
-  const themeMode = useSettingsStore((state) => state.themeMode);
+
   const currencyCode = useSettingsStore((state) => state.currency);
   const variant = useSettingsStore((state) => state.variant);
   const getVariantPrinterLogo = useSettingsStore(
@@ -61,8 +60,6 @@ export default function PaymentSuccessScreen() {
   const { amount } = params;
   const [isPrinterConnected, setIsPrinterConnected] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
-  const [isThemeBackgroundVisible, setIsThemeBackgroundVisible] =
-    useState(false);
   const [isSuccessAnimationVisible, setIsSuccessAnimationVisible] =
     useState(false);
   const isPrintingRef = useRef(false);
@@ -156,7 +153,6 @@ export default function PaymentSuccessScreen() {
       withTiming(0, { duration: contentRevealDuration }),
     );
     const revealTimeout = setTimeout(() => {
-      setIsThemeBackgroundVisible(true);
       setIsSuccessAnimationVisible(true);
     }, contentRevealDelay);
 
@@ -295,15 +291,6 @@ export default function PaymentSuccessScreen() {
           </Button>
         </View>
       </Animated.View>
-      <StatusBar
-        style={
-          isThemeBackgroundVisible
-            ? themeMode === "system"
-              ? "auto"
-              : themeMode
-            : "light"
-        }
-      />
     </View>
   );
 }

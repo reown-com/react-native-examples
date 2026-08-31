@@ -2,6 +2,7 @@ import { EmptyState } from "@/components/empty-state";
 import { FilterButtons } from "@/components/filter-buttons";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
+import { SandboxBanner } from "@/components/sandbox-banner";
 import { TransactionCard } from "@/components/transaction-card";
 import { TransactionDetailModal } from "@/components/transaction-detail-modal";
 import { Spacing } from "@/constants/spacing";
@@ -15,6 +16,7 @@ import {
   TransactionFilterType,
 } from "@/utils/types";
 import { showErrorToast } from "@/utils/toast";
+import { isSandboxModeAvailable } from "@/utils/feature-flags";
 import { router } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -47,6 +49,8 @@ const DATE_RANGE_LABELS: Record<DateRangeFilterType, string> = {
 
 export default function ActivityScreen() {
   const theme = useTheme();
+  const sandboxMode = useSettingsStore((state) => state.sandboxMode);
+  const isSandboxPayment = isSandboxModeAvailable && sandboxMode;
   const transactionFilter = useSettingsStore(
     (state) => state.transactionFilter,
   );
@@ -221,6 +225,7 @@ export default function ActivityScreen() {
 
   return (
     <View style={styles.container}>
+      {isSandboxPayment && <SandboxBanner style={styles.sandboxBanner} />}
       <FilterButtons
         buttons={[
           {
@@ -325,6 +330,10 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing["spacing-5"],
     marginTop: Spacing["spacing-1"],
     marginBottom: Spacing["spacing-3"],
+  },
+  sandboxBanner: {
+    marginHorizontal: Spacing["spacing-5"],
+    marginBottom: Spacing["spacing-2"],
   },
   footerLoader: {
     paddingVertical: Spacing["spacing-4"],

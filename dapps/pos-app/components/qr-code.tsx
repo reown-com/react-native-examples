@@ -97,6 +97,7 @@ export default memo(QrCode_, (prevProps, nextProps) => {
   return (
     prevProps.size === nextProps.size &&
     prevProps.uri === nextProps.uri &&
+    prevProps.imageSrc === nextProps.imageSrc &&
     prevProps.style === nextProps.style &&
     prevProps.logoBorderRadius === nextProps.logoBorderRadius
   );

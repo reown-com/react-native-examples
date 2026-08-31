@@ -1,15 +1,15 @@
 import { useLogsStore } from "@/store/useLogsStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDateRange } from "@/utils/date-range";
 import {
   DateRangeFilterType,
-  PaymentRecord,
-  PaymentStatus,
   PaymentStatusResponse,
   StartPaymentRequest,
   StartPaymentResponse,
   TransactionFilterType,
   TransactionsResponse,
 } from "@/utils/types";
+import { isSandboxModeAvailable } from "@/utils/feature-flags";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
 import { cancelPayment, getPaymentStatus, startPayment } from "./payment";
@@ -204,6 +204,8 @@ function filterToStatusArray(
  */
 export function useTransactions(options: UseTransactionsOptions = {}) {
   const { enabled = true, filter = "all", dateRangeFilter = "today" } = options;
+  const sandboxMode = useSettingsStore((state) => state.sandboxMode);
+  const sandboxActive = isSandboxModeAvailable && sandboxMode;
 
   const addLog = useLogsStore.getState().addLog;
 
@@ -214,7 +216,7 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
   );
 
   const query = useInfiniteQuery<TransactionsResponse, Error>({
-    queryKey: ["transactions", filter, dateRangeFilter],
+    queryKey: ["transactions", filter, dateRangeFilter, sandboxActive],
     queryFn: ({ pageParam }) => {
       const statusFilter = filterToStatusArray(filter);
       return getTransactions({
