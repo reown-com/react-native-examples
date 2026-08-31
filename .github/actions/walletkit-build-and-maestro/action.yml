@@ -234,9 +234,6 @@ runs:
       if: inputs.platform == 'ios'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
-      # ios/ is generated (Continuous Native Generation). APP_VARIANT=internal so
-      # app.config.js sets the .internal bundle id; pods are installed by the
-      # fastlane lane (honoring the Pods cache below), hence --no-install.
       run: APP_VARIANT=internal npx expo prebuild --platform ios --no-install
 
     - name: Set Xcode paths
@@ -259,8 +256,6 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ steps.paths.outputs.wallet_root }}/ios/Pods
-        # No restore-keys: a prefix match restores a stale Pods/ on a Podfile.lock
-        # bump (hermes-engine podspec mismatch) and breaks `pod install` (#515).
         # Exact Podfile.lock match only; otherwise start clean and reinstall.
         key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/ios/Podfile.lock', steps.paths.outputs.wallet_root)) }}
 
@@ -667,7 +662,7 @@ runs:
         heap-size: 576M
         emulator-boot-timeout: 900
         force-avd-creation: false
-        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load -dns-server 8.8.8.8,8.8.4.4
         disable-animations: true
         script: |
           adb install "$APK_PATH"
