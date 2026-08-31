@@ -13,6 +13,29 @@ import { RootStackScreenProps } from '@/utils/TypesUtil';
 type Props = RootStackScreenProps<'DappBrowser'>;
 
 /**
+ * H2b bridge wrapper, injected at document start on every page load (per the
+ * technical design, "How wallets expose the bridge"). It gives the dapp:
+ * - autoConnect: the wallet-originated launch signal. Always true here
+ *   because this webview only hosts Explore launches; a generic in-wallet
+ *   browser must NOT set it. User consent still gates auto-approval on the
+ *   wallet side (SettingsStore.pickerAutoConnect) — without it the dapp still
+ *   connects, but through the normal proposal modal.
+ * - postMessage: one wallet-agnostic channel the dapp uses to hand back the
+ *   pairing URI as {type:'wc_session_offer', uri}.
+ * The flag is a trigger, not proof of origin: pairing topics are recorded and
+ * only picker-initiated proposals are auto-approved (PickerUtil).
+ */
+const WALLET_CONNECT_HOST_BRIDGE = `
+  window.walletConnectHost = {
+    autoConnect: true,
+    postMessage: function (message) {
+      window.ReactNativeWebView.postMessage(JSON.stringify(message));
+    }
+  };
+  true;
+`;
+
+/**
  * Dapp Picker POC (H2b): webview host for Explore-launched dapps. The dapp
  * posts {type:'wc_session_offer', uri} via window.ReactNativeWebView; we pair
  * silently and the proposal is auto-approved (see useWalletKitEventsManager).
@@ -72,6 +95,7 @@ export default function DappBrowser({ route }: Props) {
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       <WebView
         source={{ uri: url }}
+        injectedJavaScriptBeforeContentLoaded={WALLET_CONNECT_HOST_BRIDGE}
         onMessage={onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onLoadEnd={() => setIsLoading(false)}

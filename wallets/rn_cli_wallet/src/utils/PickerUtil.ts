@@ -52,6 +52,12 @@ const PICKER_DAPP_BASE_URL =
   ENV.PICKER_DAPP_URL ||
   'https://react-dapp-v2-git-session-fees-poc-reown-com.vercel.app';
 
+// The stake dapp carries the dapp-side auto-connect changes (walletconnect-apps
+// apps/portal). Until they ship to production, point this env var at a local
+// dev server or Vercel preview of the portal.
+const STAKE_DAPP_URL =
+  ENV.STAKE_DAPP_URL || 'https://app.walletconnect.com/stake';
+
 /**
  * Explore tile data — shaped like a future registry entry: a fee-honoring
  * dapp per aggregator. All four point at the same POC dapp with a different
@@ -64,7 +70,14 @@ export interface PickerDapp {
   description: string;
   color: string;
   glyph: string;
-  aggregator: string;
+  /** Legacy POC tiles: default aggregator of the shared Session Fees dapp. */
+  aggregator?: string;
+  /**
+   * Real dapps: opened as-is. No wc_auto/aggregator params — the
+   * auto-connect signal is the injected walletConnectHost.autoConnect bridge
+   * flag (see DappBrowser), per the H2b technical design.
+   */
+  url?: string;
 }
 
 export const PICKER_DAPPS: PickerDapp[] = [
@@ -96,6 +109,15 @@ export const PICKER_DAPPS: PickerDapp[] = [
     aggregator: 'kyberswap',
   },
   {
+    id: 'wc-stake',
+    name: 'WalletConnect',
+    chainLabel: 'Optimism',
+    description: 'Stake WCT',
+    color: '#0988F0',
+    glyph: 'W',
+    url: STAKE_DAPP_URL,
+  },
+  {
     id: 'uniswap',
     name: 'Uniswap',
     chainLabel: 'Arbitrum',
@@ -107,6 +129,13 @@ export const PICKER_DAPPS: PickerDapp[] = [
 ];
 
 export function buildPickerDappUrl(dapp: PickerDapp): string {
+  // Real dapps (e.g. WalletConnect Stake) implement the production
+  // auto-connect approach: the wallet injects the walletConnectHost bridge
+  // flag before the page loads, so the URL stays untouched.
+  if (dapp.url) {
+    return dapp.url;
+  }
+  // Legacy POC tiles keep the wc_auto=1 URL signal + aggregator/variant params.
   const variant = SettingsStore.state.pickerHeadless ? 'headless' : 'provider';
   return `${PICKER_DAPP_BASE_URL}/?wc_auto=1&aggregator=${dapp.aggregator}&connect=${variant}`;
 }
