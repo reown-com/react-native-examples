@@ -26,6 +26,12 @@ export interface PosBridgeError {
   status?: number;
 }
 
+export type PosBridgeConfigMessage = {
+  type: "pos-bridge-config";
+  protocolVersion: typeof PROTOCOL_VERSION;
+  merchantId: string;
+};
+
 type PosApiResponseMessage = {
   type: "pos-api-response";
   protocolVersion: typeof PROTOCOL_VERSION;
@@ -50,7 +56,22 @@ function createRequestId(): string {
   return randomId ?? `pos-${Date.now()}-${requestSequence}`;
 }
 
-function isValidResponseMessage(data: unknown): data is PosApiResponseMessage {
+export function isPosBridgeConfigMessage(
+  data: unknown,
+): data is PosBridgeConfigMessage {
+  if (!data || typeof data !== "object") return false;
+  const message = data as Record<string, unknown>;
+  return (
+    message.type === "pos-bridge-config" &&
+    message.protocolVersion === PROTOCOL_VERSION &&
+    typeof message.merchantId === "string" &&
+    message.merchantId.trim().length > 0
+  );
+}
+
+export function isPosApiResponseMessage(
+  data: unknown,
+): data is PosApiResponseMessage {
   if (!data || typeof data !== "object") return false;
 
   const message = data as Record<string, unknown>;
@@ -119,7 +140,7 @@ export function handleBridgeResponse(event: MessageEvent): boolean {
   if (
     event.source !== parentWindow ||
     event.origin !== parentOrigin ||
-    !isValidResponseMessage(event.data)
+    !isPosApiResponseMessage(event.data)
   ) {
     return false;
   }

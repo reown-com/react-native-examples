@@ -2,6 +2,8 @@ import {
   configureBridge,
   handleBridgeResponse,
   isBridgeConfigured,
+  isPosBridgeConfigMessage,
+  isPosApiResponseMessage,
   requestBridge,
   resetBridge,
 } from "@/services/pos-bridge";
@@ -44,6 +46,39 @@ describe("POS dashboard bridge transport", () => {
   });
 
   afterEach(() => resetBridge());
+
+  it("centralizes strict bridge message validation", () => {
+    expect(
+      isPosBridgeConfigMessage({
+        type: "pos-bridge-config",
+        protocolVersion: 1,
+        merchantId: "merchant-1",
+      }),
+    ).toBe(true);
+    expect(
+      isPosBridgeConfigMessage({
+        type: "pos-bridge-config",
+        protocolVersion: 2,
+        merchantId: "merchant-1",
+      }),
+    ).toBe(false);
+    expect(
+      isPosApiResponseMessage({
+        type: "pos-api-response",
+        protocolVersion: 1,
+        requestId: "request-1",
+        result: { ok: false, error: { message: "Failed", status: 500 } },
+      }),
+    ).toBe(true);
+    expect(
+      isPosApiResponseMessage({
+        type: "pos-api-response",
+        protocolVersion: 1,
+        requestId: "request-1",
+        result: { ok: false, error: {} },
+      }),
+    ).toBe(false);
+  });
 
   it("locks the first parent and resolves a successful response", async () => {
     expect(configureBridge(parentWindow, parentOrigin, "merchant-1")).toBe(

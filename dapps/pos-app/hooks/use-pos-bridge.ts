@@ -1,29 +1,13 @@
 import {
   configureBridge,
   handleBridgeResponse,
+  isPosBridgeConfigMessage,
   PROTOCOL_VERSION,
   resetBridge,
 } from "@/services/pos-bridge";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
-
-type PosBridgeConfigMessage = {
-  type: "pos-bridge-config";
-  protocolVersion: typeof PROTOCOL_VERSION;
-  merchantId: string;
-};
-
-function isBridgeConfigMessage(data: unknown): data is PosBridgeConfigMessage {
-  if (!data || typeof data !== "object") return false;
-  const message = data as Record<string, unknown>;
-  return (
-    message.type === "pos-bridge-config" &&
-    message.protocolVersion === PROTOCOL_VERSION &&
-    typeof message.merchantId === "string" &&
-    message.merchantId.trim().length > 0
-  );
-}
 
 /**
  * Configures the embedded web POS bridge after settings hydration. Credentials
@@ -46,7 +30,7 @@ export function usePosBridge() {
 
     let isMounted = true;
     const handleMessage = (event: MessageEvent) => {
-      if (isBridgeConfigMessage(event.data)) {
+      if (isPosBridgeConfigMessage(event.data)) {
         if (
           event.source === window.parent &&
           configureBridge(
