@@ -56,6 +56,7 @@ export default function ScanScreen() {
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const hasNavigatedRef = useRef(false);
   const hasCancelledRef = useRef(false);
+  const hasLeftRef = useRef(false);
   const navigation = useNavigation();
 
   const deviceId = useSettingsStore((state) => state.deviceId);
@@ -157,6 +158,24 @@ export default function ScanScreen() {
 
         const data = await startPayment(paymentRequest);
 
+        // The user can back out while this create call is in flight, before
+        // `paymentId` state exists for the `beforeRemove` listener to cancel.
+        // Cancel the freshly opened payment here instead of rendering a QR for
+        // a screen that's already gone.
+        if (hasLeftRef.current) {
+          hasCancelledRef.current = true;
+          cancelPayment(data.paymentId).catch((error) => {
+            addLog(
+              "error",
+              "Failed to cancel payment",
+              "scan",
+              "cancelPayment",
+              { paymentId: data.paymentId, error },
+            );
+          });
+          return;
+        }
+
         addLog("info", "Payment started", "scan", "initiatePayment", {
           paymentId: data.paymentId,
           gatewayUrl: data.gatewayUrl,
@@ -165,6 +184,8 @@ export default function ScanScreen() {
         setPaymentId(data.paymentId);
         setExpiresAt(data.expiresAt);
       } catch (error: any) {
+        // Nothing to route to if the user already left mid-request.
+        if (hasLeftRef.current) return;
         addLog(
           "error",
           (error as Error).message || "Unknown error",
@@ -212,6 +233,9 @@ export default function ScanScreen() {
   // resolved yet — cancel then too.
   const cancelPendingPayment = useCallback(() => {
     if (hasNavigatedRef.current || hasCancelledRef.current) return;
+    // Record the leave so an in-flight `startPayment` cancels the payment it
+    // creates instead of leaking it (see `initiatePayment`).
+    hasLeftRef.current = true;
     const status = paymentStatusData?.status;
     if (paymentId && (status === undefined || status === "requires_action")) {
       hasCancelledRef.current = true;
