@@ -53,10 +53,13 @@ const PICKER_DAPP_BASE_URL =
   'https://react-dapp-v2-git-session-fees-poc-reown-com.vercel.app';
 
 // The stake dapp carries the dapp-side auto-connect changes (walletconnect-apps
-// apps/portal). Until they ship to production, point this env var at a local
-// dev server or Vercel preview of the portal.
+// apps/portal). Until they ship to production, the default is the portal
+// preview (Vercel share link — tracks the PR branch's latest deployment), so
+// CI builds work without EXPO_PUBLIC_STAKE_DAPP_URL in the env file. Override
+// via the env var for a local dev server.
 const STAKE_DAPP_URL =
-  ENV.STAKE_DAPP_URL || 'https://app.walletconnect.com/stake';
+  ENV.STAKE_DAPP_URL ||
+  'https://portal-git-feat-h2b-stake-auto-connect-poc-walletconnect.vercel.app/stake?_vercel_share=esDVgpyqZ03Gg6obtfqgsY154bMY7zZh';
 
 /**
  * Explore tile data — shaped like a future registry entry: a fee-honoring
