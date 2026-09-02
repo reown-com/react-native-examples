@@ -93,6 +93,7 @@ export default function ActivityScreen() {
 
   const {
     transactions,
+    data: transactionData,
     isLoading,
     isError,
     error,
@@ -107,16 +108,18 @@ export default function ActivityScreen() {
   });
 
   const isEmpty = !transactions || transactions.length === 0;
+  const hasLoadedData = transactionData !== undefined;
+  const errorMessage = error?.message;
 
   // An initial failure replaces the list with an error state. If data is
   // already visible, retain it and give the merchant lightweight feedback.
   useEffect(() => {
-    if (isError && error && !isEmpty) {
+    if (isError && errorMessage && hasLoadedData) {
       showErrorToast(
         "We couldn't refresh payments. Check your internet connection and try again.",
       );
     }
-  }, [isError, error, isEmpty]);
+  }, [isError, errorMessage, hasLoadedData]);
 
   const closeSheet = useCallback(() => {
     setActiveSheet(null);
@@ -181,12 +184,12 @@ export default function ActivityScreen() {
       );
     }
 
-    if (isError) {
+    if (isError && !hasLoadedData) {
       return (
         <EmptyState
           title="We couldn't load payments"
           subtitle="Check your internet connection and try again."
-          cta={{ label: "Try again", onPress: refetch }}
+          cta={{ label: "Try again", onPress: () => void refetch() }}
         />
       );
     }
@@ -211,7 +214,15 @@ export default function ActivityScreen() {
         }}
       />
     );
-  }, [isLoading, isError, theme, filtersActive, handleClearFilters, refetch]);
+  }, [
+    isLoading,
+    isError,
+    hasLoadedData,
+    theme,
+    filtersActive,
+    handleClearFilters,
+    refetch,
+  ]);
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
