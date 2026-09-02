@@ -22,6 +22,7 @@ import { resetNavigation } from "@/utils/navigation";
 import { isNfcHceEnabled } from "@/utils/feature-flags";
 import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
+import * as Sentry from "@sentry/react-native";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
@@ -318,6 +319,7 @@ export default function ScanScreen() {
 
   return (
     <View style={styles.container}>
+      <Sentry.TimeToFullDisplay ready={!!qrUri} />
       <Stack.Screen
         options={{
           headerBackVisible: !backHidden,

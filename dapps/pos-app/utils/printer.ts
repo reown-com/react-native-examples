@@ -1,5 +1,6 @@
 import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { useLogsStore } from "@/store/useLogsStore";
+import * as Sentry from "@sentry/react-native";
 import { Platform } from "react-native";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import {
@@ -25,50 +26,57 @@ export const connectPrinter = async (): Promise<{
   connected: boolean;
   error?: string;
 }> => {
-  try {
-    // Scan for devices
-    const devices = await ReactNativePosPrinter.getDeviceList();
-    if (devices.length === 0) {
-      return {
-        connected: false,
-        error: "No printer detected on this device",
-      };
-    }
+  return Sentry.startSpan(
+    { name: "printer.connect", op: "printer.connect" },
+    async () => {
+      try {
+        // Scan for devices
+        const devices = await ReactNativePosPrinter.getDeviceList();
+        if (devices.length === 0) {
+          return {
+            connected: false,
+            error: "No printer detected on this device",
+          };
+        }
 
-    // Connect to first device
-    const device = devices[0].getDevice(); // { name, address, vendorId, productId, ... }
-    await ReactNativePosPrinter.connectPrinter(device.address); // e.g., 'USB' or mac address
-    useLogsStore
-      .getState()
-      .addLog("info", "Printer connected", "printer", "connectPrinter", {
-        printer: device,
-      });
-    return { connected: true };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    useLogsStore
-      .getState()
-      .addLog("error", errorMessage, "printer", "connectPrinter", { error });
+        // Connect to first device
+        const device = devices[0].getDevice(); // { name, address, vendorId, productId, ... }
+        await ReactNativePosPrinter.connectPrinter(device.address); // e.g., 'USB' or mac address
+        useLogsStore
+          .getState()
+          .addLog("info", "Printer connected", "printer", "connectPrinter", {
+            printer: device,
+          });
+        return { connected: true };
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        useLogsStore
+          .getState()
+          .addLog("error", errorMessage, "printer", "connectPrinter", {
+            error,
+          });
+        // Check for Bluetooth permission error
+        if (
+          errorMessage.includes("BLUETOOTH_CONNECT") ||
+          errorMessage.includes("bluetooth") ||
+          errorMessage.includes("permission")
+        ) {
+          return {
+            connected: false,
+            error:
+              "Please enable Bluetooth on your device to connect to the printer",
+          };
+        }
 
-    // Check for Bluetooth permission error
-    if (
-      errorMessage.includes("BLUETOOTH_CONNECT") ||
-      errorMessage.includes("bluetooth") ||
-      errorMessage.includes("permission")
-    ) {
-      return {
-        connected: false,
-        error:
-          "Please enable Bluetooth on your device to connect to the printer",
-      };
-    }
-
-    // Generic error with details
-    return {
-      connected: false,
-      error: `Failed to connect: ${errorMessage}`,
-    };
-  }
+        // Generic error with details
+        return {
+          connected: false,
+          error: `Failed to connect: ${errorMessage}`,
+        };
+      }
+    },
+  );
 };
 
 interface PrintReceiptProps {
@@ -94,72 +102,82 @@ export const printReceipt = async ({
   date = getDate(),
   logoBase64 = DEFAULT_LOGO_BASE64,
 }: PrintReceiptProps) => {
-  try {
-    await ReactNativePosPrinter.initializePrinter(); // resets + UTF-8
+  await Sentry.startSpan(
+    { name: "printer.print", op: "printer.print" },
+    async () => {
+      try {
+        await ReactNativePosPrinter.initializePrinter(); // resets + UTF-8
 
-    // Logo
-    await ReactNativePosPrinter.printImage(logoBase64, {
-      align: "CENTER",
-    });
+        // Logo
+        await ReactNativePosPrinter.printImage(logoBase64, {
+          align: "CENTER",
+        });
 
-    await ReactNativePosPrinter.newLine(1);
-    await ReactNativePosPrinter.printText("--------------------------------\n");
+        await ReactNativePosPrinter.newLine(1);
+        await ReactNativePosPrinter.printText(
+          "--------------------------------\n",
+        );
 
-    await ReactNativePosPrinter.newLine(1);
+        await ReactNativePosPrinter.newLine(1);
 
-    const normal = { size: 10 } as TextOptions;
-    const normalCenter = { size: 10, align: "CENTER" } as TextOptions;
-    const bold = { size: 10, bold: true } as TextOptions;
-    const idStyle = { size: 9, bold: true } as TextOptions;
+        const normal = { size: 10 } as TextOptions;
+        const normalCenter = { size: 10, align: "CENTER" } as TextOptions;
+        const bold = { size: 10, bold: true } as TextOptions;
+        const idStyle = { size: 9, bold: true } as TextOptions;
 
-    await ReactNativePosPrinter.printText("ID        ", normal);
-    await ReactNativePosPrinter.printText(`${txnId}\n`, idStyle);
+        await ReactNativePosPrinter.printText("ID        ", normal);
+        await ReactNativePosPrinter.printText(`${txnId}\n`, idStyle);
 
-    await ReactNativePosPrinter.printText("DATE      ", normal);
-    await ReactNativePosPrinter.printText(`${date}\n`, bold);
+        await ReactNativePosPrinter.printText("DATE      ", normal);
+        await ReactNativePosPrinter.printText(`${date}\n`, bold);
 
-    await ReactNativePosPrinter.printText("METHOD    ", normal);
-    await ReactNativePosPrinter.printText("WalletConnect Pay\n", bold);
+        await ReactNativePosPrinter.printText("METHOD    ", normal);
+        await ReactNativePosPrinter.printText("WalletConnect Pay\n", bold);
 
-    if (amountFiat) {
-      await ReactNativePosPrinter.printText("AMOUNT    ", normal);
-      const formattedAmount = formatAmountWithSymbol(
-        amountFiat.toFixed(2),
-        currency,
-      );
-      await ReactNativePosPrinter.printText(`${formattedAmount}\n`, bold);
-    }
+        if (amountFiat) {
+          await ReactNativePosPrinter.printText("AMOUNT    ", normal);
+          const formattedAmount = formatAmountWithSymbol(
+            amountFiat.toFixed(2),
+            currency,
+          );
+          await ReactNativePosPrinter.printText(`${formattedAmount}\n`, bold);
+        }
 
-    if (tokenSymbol && tokenAmount && tokenDecimals) {
-      await ReactNativePosPrinter.printText("PAID WITH ", normal);
-      await ReactNativePosPrinter.printText(
-        `${tokenSymbol} ${formatTokenAmount(tokenAmount, tokenDecimals)}\n`,
-        bold,
-      );
-    }
+        if (tokenSymbol && tokenAmount && tokenDecimals) {
+          await ReactNativePosPrinter.printText("PAID WITH ", normal);
+          await ReactNativePosPrinter.printText(
+            `${tokenSymbol} ${formatTokenAmount(tokenAmount, tokenDecimals)}\n`,
+            bold,
+          );
+        }
 
-    if (networkName) {
-      await ReactNativePosPrinter.printText("NETWORK   ", normal);
-      await ReactNativePosPrinter.printText(`${networkName}\n`, bold);
-    }
+        if (networkName) {
+          await ReactNativePosPrinter.printText("NETWORK   ", normal);
+          await ReactNativePosPrinter.printText(`${networkName}\n`, bold);
+        }
 
-    await ReactNativePosPrinter.newLine(1);
-    await ReactNativePosPrinter.printText("--------------------------------\n");
+        await ReactNativePosPrinter.newLine(1);
+        await ReactNativePosPrinter.printText(
+          "--------------------------------\n",
+        );
 
-    await ReactNativePosPrinter.newLine(2);
+        await ReactNativePosPrinter.newLine(2);
 
-    await ReactNativePosPrinter.printText(
-      "Thank you for your payment!\n",
-      normalCenter,
-    );
+        await ReactNativePosPrinter.printText(
+          "Thank you for your payment!\n",
+          normalCenter,
+        );
 
-    await ReactNativePosPrinter.newLine(2);
-    await ReactNativePosPrinter.cutPaper();
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    useLogsStore
-      .getState()
-      .addLog("error", errorMessage, "printer", "printReceipt");
-    throw error;
-  }
+        await ReactNativePosPrinter.newLine(2);
+        await ReactNativePosPrinter.cutPaper();
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        useLogsStore
+          .getState()
+          .addLog("error", errorMessage, "printer", "printReceipt");
+        throw error;
+      }
+    },
+  );
 };

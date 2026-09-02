@@ -1,11 +1,5 @@
 import "@/utils/polyfills";
-import {
-  DarkTheme,
-  DefaultTheme,
-  Stack,
-  ThemeProvider,
-  useNavigationContainerRef,
-} from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
@@ -26,6 +20,7 @@ import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
 import { requestBluetoothPermission } from "@/utils/printer";
+import { initSentry } from "@/utils/sentry";
 import { showInfoToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -36,40 +31,7 @@ import {
   SafeAreaProvider,
 } from "react-native-safe-area-context";
 
-// Tracks screen transitions as transactions so Mobile Vitals (slow/frozen
-// frames, TTID) are attributed to the route the user was on. The navigation
-// container ref is registered in RootLayout once expo-router mounts it.
-const navigationIntegration = Sentry.reactNavigationIntegration({
-  enableTimeToInitialDisplay: true,
-});
-
-Sentry.init({
-  dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
-  sendDefaultPii: false,
-
-  enableLogs: false,
-
-  // Configure Session Replay
-  replaysSessionSampleRate: 0,
-  replaysOnErrorSampleRate: 0,
-
-  // Performance monitoring. Setting tracesSampleRate activates the default
-  // React Native tracing integration, which captures Mobile Vitals
-  // (slow/frozen frames, frame delay), screen TTID/TTFD and app-start time —
-  // the metrics that surface jank on low-end POS hardware. Native frames
-  // tracking is enabled by default. Sampled to keep overhead low on weak
-  // devices; raise temporarily when actively investigating.
-  tracesSampleRate: 0.2,
-  enableUserInteractionTracing: true,
-
-  // Merged with Sentry's default integrations (which include native frames +
-  // app-start tracking); does not replace them.
-  integrations: [navigationIntegration],
-
-  environment: __DEV__ ? "development" : "production",
-
-  spotlight: __DEV__,
-});
+initSentry();
 
 const queryClient = new QueryClient();
 
@@ -92,8 +54,7 @@ const LogsHeaderTitle = renderHeaderTitle("Logs");
 export default Sentry.wrap(function RootLayout() {
   const colorScheme = useColorScheme();
 
-  const navigationRef = useNavigationContainerRef();
-  const navRegistered = useRef(false);
+  const appLoadedReported = useRef(false);
 
   const setDeviceId = useSettingsStore((state) => state.setDeviceId);
   const deviceId = useSettingsStore((state) => state.deviceId);
@@ -106,17 +67,13 @@ export default Sentry.wrap(function RootLayout() {
     "KH Teka Mono": require("@/assets/fonts/KHTekaMono-Regular.otf"),
   });
 
-  // Register the expo-router navigation container with Sentry so route changes
-  // become transactions. The container only mounts once the app has hydrated
-  // and fonts have loaded (the loader renders until then), so the ref isn't
-  // populated on the first effect pass — and ref mutations alone don't re-run
-  // effects. Keying on those flags re-runs this once the container exists.
+  // Ends Sentry's app-start span once real UI can render (after hydration + fonts).
   useEffect(() => {
-    if (!navRegistered.current && navigationRef?.current) {
-      navigationIntegration.registerNavigationContainer(navigationRef);
-      navRegistered.current = true;
+    if (!appLoadedReported.current && _hasHydrated && fontsLoaded) {
+      Sentry.appLoaded();
+      appLoadedReported.current = true;
     }
-  }, [navigationRef, _hasHydrated, fontsLoaded]);
+  }, [_hasHydrated, fontsLoaded]);
 
   useEffect(() => {
     async function getDeviceId() {

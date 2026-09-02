@@ -15,6 +15,7 @@ import {
   TransactionFilterType,
 } from "@/utils/types";
 import { showErrorToast } from "@/utils/toast";
+import * as Sentry from "@sentry/react-native";
 import { router } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -242,6 +243,7 @@ export default function ActivityScreen() {
 
   return (
     <View style={styles.container}>
+      <Sentry.TimeToFullDisplay ready={!isLoading} />
       {!isInitialLoadError && (
         <>
           <FilterButtons
