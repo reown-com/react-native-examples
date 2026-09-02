@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/react-native";
 
+import { maskPathIds } from "./api";
 import { getBuildVariant } from "./build-variant";
 
 const BUILD_VARIANT = getBuildVariant();
@@ -48,6 +49,12 @@ export function initSentry(): void {
     beforeSend: (event) => {
       delete event.request;
       return event;
+    },
+    beforeSendSpan: (span) => {
+      if (span.op?.startsWith("http") && span.description) {
+        span.description = maskPathIds(span.description);
+      }
+      return span;
     },
     // Navigation gives enough context for automatic errors. Avoid turning
     // network and console activity into a second logging pipeline.
