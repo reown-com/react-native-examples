@@ -93,6 +93,7 @@ export default function ActivityScreen() {
 
   const {
     transactions,
+    data: transactionData,
     isLoading,
     isError,
     error,
@@ -106,15 +107,20 @@ export default function ActivityScreen() {
     dateRangeFilter,
   });
 
-  // Show error toast when fetch fails
+  const isEmpty = !transactions || transactions.length === 0;
+  const hasLoadedData = transactionData !== undefined;
+  const errorMessage = error?.message;
+  const isInitialLoadError = isError && !hasLoadedData;
+
+  // An initial failure replaces the list with an error state. If data is
+  // already visible, retain it and give the merchant lightweight feedback.
   useEffect(() => {
-    if (isError && error) {
+    if (isError && errorMessage && hasLoadedData) {
       showErrorToast(
-        error.message ||
-          "We couldn't load your transactions. Pull to refresh, or try again in a moment.",
+        "We couldn't refresh payments. Check your internet connection and try again.",
       );
     }
-  }, [isError, error]);
+  }, [isError, errorMessage, hasLoadedData]);
 
   const closeSheet = useCallback(() => {
     setActiveSheet(null);
@@ -145,8 +151,6 @@ export default function ActivityScreen() {
     setModalVisible(false);
     setSelectedPayment(null);
   }, []);
-
-  const isEmpty = !transactions || transactions.length === 0;
 
   const filtersActive =
     transactionFilter !== "all" || dateRangeFilter !== "all_time";
@@ -181,6 +185,16 @@ export default function ActivityScreen() {
       );
     }
 
+    if (isInitialLoadError) {
+      return (
+        <EmptyState
+          title="We couldn't load payments"
+          subtitle="Check your internet connection and try again."
+          cta={{ label: "Try again", onPress: () => void refetch() }}
+        />
+      );
+    }
+
     if (filtersActive) {
       return (
         <EmptyState
@@ -201,7 +215,14 @@ export default function ActivityScreen() {
         }}
       />
     );
-  }, [isLoading, theme, filtersActive, handleClearFilters]);
+  }, [
+    isLoading,
+    isInitialLoadError,
+    theme,
+    filtersActive,
+    handleClearFilters,
+    refetch,
+  ]);
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -221,21 +242,28 @@ export default function ActivityScreen() {
 
   return (
     <View style={styles.container}>
-      <FilterButtons
-        buttons={[
-          {
-            label: STATUS_LABELS[transactionFilter],
-            onPress: () => setActiveSheet("status"),
-          },
-          {
-            label: DATE_RANGE_LABELS[dateRangeFilter],
-            onPress: () => setActiveSheet("dateRange"),
-          },
-        ]}
-      />
-      <View
-        style={[styles.divider, { backgroundColor: theme["border-primary"] }]}
-      />
+      {!isInitialLoadError && (
+        <>
+          <FilterButtons
+            buttons={[
+              {
+                label: STATUS_LABELS[transactionFilter],
+                onPress: () => setActiveSheet("status"),
+              },
+              {
+                label: DATE_RANGE_LABELS[dateRangeFilter],
+                onPress: () => setActiveSheet("dateRange"),
+              },
+            ]}
+          />
+          <View
+            style={[
+              styles.divider,
+              { backgroundColor: theme["border-primary"] },
+            ]}
+          />
+        </>
+      )}
       <FlatList
         data={transactions}
         renderItem={renderItem}
