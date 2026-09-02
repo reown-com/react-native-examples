@@ -1,4 +1,5 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { isBridgeConfigured, requestBridge } from "@/services/pos-bridge";
 import {
   ApiError,
   PaymentStatusResponse,
@@ -37,6 +38,13 @@ async function getMerchantCredentials(): Promise<{
 export async function startPayment(
   request: StartPaymentRequest,
 ): Promise<StartPaymentResponse> {
+  if (isBridgeConfigured()) {
+    return requestBridge<StartPaymentResponse>({
+      operation: "start-payment",
+      payload: request,
+    });
+  }
+
   const { merchantId, apiKey } = await getMerchantCredentials();
 
   const response = await fetch("/api/payment", {
@@ -75,6 +83,13 @@ export async function getPaymentStatus(
     throw new Error("paymentId is required");
   }
 
+  if (isBridgeConfigured()) {
+    return requestBridge<PaymentStatusResponse>({
+      operation: "get-payment-status",
+      payload: { paymentId },
+    });
+  }
+
   const { merchantId, apiKey } = await getMerchantCredentials();
 
   const response = await fetch(
@@ -110,6 +125,14 @@ export async function getPaymentStatus(
 export async function cancelPayment(paymentId: string): Promise<void> {
   if (!paymentId?.trim()) {
     throw new Error("paymentId is required");
+  }
+
+  if (isBridgeConfigured()) {
+    await requestBridge<void>({
+      operation: "cancel-payment",
+      payload: { paymentId },
+    });
+    return;
   }
 
   const { merchantId, apiKey } = await getMerchantCredentials();

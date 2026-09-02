@@ -1,15 +1,12 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  GetTransactionsBridgeOptions,
+  isBridgeConfigured,
+  requestBridge,
+} from "@/services/pos-bridge";
 import { TransactionsResponse } from "@/utils/types";
 
-export interface GetTransactionsOptions {
-  status?: string | string[];
-  sortBy?: "date" | "amount";
-  sortDir?: "asc" | "desc";
-  limit?: number;
-  cursor?: string;
-  startTs?: string;
-  endTs?: string;
-}
+export type GetTransactionsOptions = GetTransactionsBridgeOptions;
 
 /**
  * Fetch merchant transactions via server-side proxy (web version)
@@ -19,6 +16,13 @@ export interface GetTransactionsOptions {
 export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
+  if (isBridgeConfigured()) {
+    return requestBridge<TransactionsResponse>({
+      operation: "get-transactions",
+      payload: options,
+    });
+  }
+
   const merchantId = useSettingsStore.getState().merchantId;
   const apiKey = await useSettingsStore.getState().getCustomerApiKey();
 
