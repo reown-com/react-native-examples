@@ -224,7 +224,7 @@ export function useMerchantFlow({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to save";
-      showErrorToast(errorMessage);
+      showErrorToast("We couldn't save this setting. Try again.");
       addLog("error", errorMessage, "settings", "completeSave");
     }
   }, [
