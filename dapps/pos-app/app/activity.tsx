@@ -110,6 +110,7 @@ export default function ActivityScreen() {
   const isEmpty = !transactions || transactions.length === 0;
   const hasLoadedData = transactionData !== undefined;
   const errorMessage = error?.message;
+  const isInitialLoadError = isError && !hasLoadedData;
 
   // An initial failure replaces the list with an error state. If data is
   // already visible, retain it and give the merchant lightweight feedback.
@@ -184,7 +185,7 @@ export default function ActivityScreen() {
       );
     }
 
-    if (isError && !hasLoadedData) {
+    if (isInitialLoadError) {
       return (
         <EmptyState
           title="We couldn't load payments"
@@ -216,8 +217,7 @@ export default function ActivityScreen() {
     );
   }, [
     isLoading,
-    isError,
-    hasLoadedData,
+    isInitialLoadError,
     theme,
     filtersActive,
     handleClearFilters,
@@ -242,21 +242,28 @@ export default function ActivityScreen() {
 
   return (
     <View style={styles.container}>
-      <FilterButtons
-        buttons={[
-          {
-            label: STATUS_LABELS[transactionFilter],
-            onPress: () => setActiveSheet("status"),
-          },
-          {
-            label: DATE_RANGE_LABELS[dateRangeFilter],
-            onPress: () => setActiveSheet("dateRange"),
-          },
-        ]}
-      />
-      <View
-        style={[styles.divider, { backgroundColor: theme["border-primary"] }]}
-      />
+      {!isInitialLoadError && (
+        <>
+          <FilterButtons
+            buttons={[
+              {
+                label: STATUS_LABELS[transactionFilter],
+                onPress: () => setActiveSheet("status"),
+              },
+              {
+                label: DATE_RANGE_LABELS[dateRangeFilter],
+                onPress: () => setActiveSheet("dateRange"),
+              },
+            ]}
+          />
+          <View
+            style={[
+              styles.divider,
+              { backgroundColor: theme["border-primary"] },
+            ]}
+          />
+        </>
+      )}
       <FlatList
         data={transactions}
         renderItem={renderItem}
