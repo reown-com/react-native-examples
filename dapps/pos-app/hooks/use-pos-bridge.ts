@@ -39,11 +39,11 @@ export function usePosBridge() {
             event.data.merchantId.trim(),
           )
         ) {
+          setMerchantId(event.data.merchantId.trim());
           // A bridge uses the dashboard's key outside this frame. Remove any
-          // local key left by a direct or older embedded POS session.
-          void clearCustomerApiKey().then(() => {
-            if (isMounted) setMerchantId(event.data.merchantId.trim());
-          });
+          // local key left by a direct or older embedded POS session. This is
+          // best effort: bridge state does not depend on local secure storage.
+          void clearCustomerApiKey().catch(() => undefined);
         }
         return;
       }
@@ -58,7 +58,7 @@ export function usePosBridge() {
       if (window.parent !== window) {
         // Do not retain an old local key while an embedded POS is waiting for
         // bridge configuration. No URL or legacy credential fallback exists.
-        await clearCustomerApiKey();
+        await clearCustomerApiKey().catch(() => undefined);
       }
 
       if (isMounted) {

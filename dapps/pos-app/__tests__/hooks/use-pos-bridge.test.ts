@@ -98,6 +98,34 @@ describe("usePosBridge", () => {
     });
   });
 
+  it("keeps the bridge merchant ID when clearing an old local key fails", async () => {
+    const originalClearCustomerApiKey =
+      useSettingsStore.getState().clearCustomerApiKey;
+    useSettingsStore.setState({
+      clearCustomerApiKey: async () => {
+        throw new Error("secure storage unavailable");
+      },
+    });
+    useSettingsStore.setState({ _hasHydrated: true });
+    renderHook(() => usePosBridge());
+    await act(() => waitForAsync());
+
+    await act(async () => {
+      dispatchMessage({
+        type: "pos-bridge-config",
+        protocolVersion: 1,
+        merchantId: "merchant-bridge",
+      });
+      await waitForAsync();
+    });
+
+    expect(useSettingsStore.getState().merchantId).toBe("merchant-bridge");
+    expect(usePosBridgeStore.getState().isConfigured).toBe(true);
+    useSettingsStore.setState({
+      clearCustomerApiKey: originalClearCustomerApiKey,
+    });
+  });
+
   it("ignores malformed, wrong-version, wrong-window, and subsequent configs", async () => {
     useSettingsStore.setState({ _hasHydrated: true });
     renderHook(() => usePosBridge());

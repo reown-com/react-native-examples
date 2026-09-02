@@ -44,14 +44,15 @@ export default function PaymentFailureScreen() {
     currencyCode,
   });
 
-  // An invalid API key can't be fixed by retrying — the merchant needs Settings.
-  const isInvalidApiKey = shouldRouteInvalidApiKeyToSettings(
+  // Only direct POS credentials can be fixed from Settings. Bridge credentials
+  // belong to the dashboard, so retrying starts a new payment instead.
+  const shouldRouteToSettings = shouldRouteInvalidApiKeyToSettings(
     params.errorCode === INVALID_API_KEY,
     isBridgeConfigured,
   );
 
   const handlePrimaryPress = () => {
-    if (isInvalidApiKey) {
+    if (shouldRouteToSettings) {
       // Leave the payment flow entirely and land on Settings so the merchant
       // can fix credentials; settings isn't in this stack, so dismissTo won't
       // reach it — pop back to root, then push Settings.
@@ -111,7 +112,7 @@ export default function PaymentFailureScreen() {
         size={isTablet ? "lg" : "md"}
         onPress={handlePrimaryPress}
       >
-        {isInvalidApiKey ? "Go to Settings" : "Start new payment"}
+        {shouldRouteToSettings ? "Go to Settings" : "Start new payment"}
       </Button>
     </View>
   );
