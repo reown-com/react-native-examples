@@ -106,15 +106,17 @@ export default function ActivityScreen() {
     dateRangeFilter,
   });
 
-  // Show error toast when fetch fails
+  const isEmpty = !transactions || transactions.length === 0;
+
+  // An initial failure replaces the list with an error state. If data is
+  // already visible, retain it and give the merchant lightweight feedback.
   useEffect(() => {
-    if (isError && error) {
+    if (isError && error && !isEmpty) {
       showErrorToast(
-        error.message ||
-          "We couldn't load your transactions. Pull to refresh, or try again in a moment.",
+        "We couldn't refresh payments. Check your internet connection and try again.",
       );
     }
-  }, [isError, error]);
+  }, [isError, error, isEmpty]);
 
   const closeSheet = useCallback(() => {
     setActiveSheet(null);
@@ -145,8 +147,6 @@ export default function ActivityScreen() {
     setModalVisible(false);
     setSelectedPayment(null);
   }, []);
-
-  const isEmpty = !transactions || transactions.length === 0;
 
   const filtersActive =
     transactionFilter !== "all" || dateRangeFilter !== "all_time";
@@ -181,6 +181,16 @@ export default function ActivityScreen() {
       );
     }
 
+    if (isError) {
+      return (
+        <EmptyState
+          title="We couldn't load payments"
+          subtitle="Check your internet connection and try again."
+          cta={{ label: "Try again", onPress: refetch }}
+        />
+      );
+    }
+
     if (filtersActive) {
       return (
         <EmptyState
@@ -201,7 +211,7 @@ export default function ActivityScreen() {
         }}
       />
     );
-  }, [isLoading, theme, filtersActive, handleClearFilters]);
+  }, [isLoading, isError, theme, filtersActive, handleClearFilters, refetch]);
 
   const handleEndReached = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
