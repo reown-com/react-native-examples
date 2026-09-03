@@ -1,5 +1,6 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { isBridgeConfigured, requestBridge } from "@/services/pos-bridge";
+import { requestBridge } from "@/services/pos-bridge";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import {
   ApiError,
   PaymentStatusResponse,
@@ -38,7 +39,8 @@ async function getMerchantCredentials(): Promise<{
 export async function startPayment(
   request: StartPaymentRequest,
 ): Promise<StartPaymentResponse> {
-  if (isBridgeConfigured()) {
+  // Iframes never use local credentials.
+  if (isRunningInIframe()) {
     return requestBridge<StartPaymentResponse>({
       operation: "start-payment",
       payload: request,
@@ -83,7 +85,7 @@ export async function getPaymentStatus(
     throw new Error("paymentId is required");
   }
 
-  if (isBridgeConfigured()) {
+  if (isRunningInIframe()) {
     return requestBridge<PaymentStatusResponse>({
       operation: "get-payment-status",
       payload: { paymentId },
@@ -127,7 +129,7 @@ export async function cancelPayment(paymentId: string): Promise<void> {
     throw new Error("paymentId is required");
   }
 
-  if (isBridgeConfigured()) {
+  if (isRunningInIframe()) {
     await requestBridge<void>({
       operation: "cancel-payment",
       payload: { paymentId },

@@ -11,6 +11,7 @@ import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import {
   getPaymentErrorMessage,
   INVALID_API_KEY,
@@ -35,6 +36,7 @@ export default function PaymentFailureScreen() {
   const params: Partial<ScreenParams> = useLocalSearchParams<ScreenParams>();
   const currencyCode = useSettingsStore((state) => state.currency);
   const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
+  const isIframeBridgeConfigured = isRunningInIframe() && isBridgeConfigured;
   const [assets] = useAssets([
     require("@/assets/images/warning-circle-fill.png"),
   ]);
@@ -48,7 +50,7 @@ export default function PaymentFailureScreen() {
   // belong to the dashboard, so retrying starts a new payment instead.
   const shouldRouteToSettings = shouldRouteInvalidApiKeyToSettings(
     params.errorCode === INVALID_API_KEY,
-    isBridgeConfigured,
+    isIframeBridgeConfigured,
   );
 
   const handlePrimaryPress = () => {

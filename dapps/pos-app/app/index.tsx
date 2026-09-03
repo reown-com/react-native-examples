@@ -5,7 +5,11 @@ import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
-import { isTerminalConfigured } from "@/utils/pos-bridge-ui";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
+import {
+  getMerchantIdForSession,
+  isTerminalConfigured,
+} from "@/utils/pos-bridge-ui";
 import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
@@ -44,13 +48,14 @@ export default function HomeScreen() {
   );
   const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
   const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
+  const isIframeSession = isRunningInIframe();
 
   const handleStartPayment = () => {
     if (
       !isTerminalConfigured(
-        bridgeMerchantId ?? merchantId,
-        isCustomerApiKeySet,
-        isBridgeConfigured,
+        getMerchantIdForSession(isIframeSession, merchantId, bridgeMerchantId),
+        isIframeSession ? false : isCustomerApiKeySet,
+        isIframeSession && isBridgeConfigured,
       )
     ) {
       router.push("/settings");

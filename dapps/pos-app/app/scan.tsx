@@ -11,6 +11,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
 import { useLogsStore } from "@/store/useLogsStore";
+import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   amountToCents,
@@ -20,7 +21,9 @@ import {
 import { formatCountdown, formatCountdownSpoken } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
 import { isNfcHceEnabled } from "@/utils/feature-flags";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
+import { getMerchantIdForSession } from "@/utils/pos-bridge-ui";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
@@ -60,7 +63,13 @@ export default function ScanScreen() {
   const navigation = useNavigation();
 
   const deviceId = useSettingsStore((state) => state.deviceId);
-  const merchantId = useSettingsStore((state) => state.merchantId);
+  const storedMerchantId = useSettingsStore((state) => state.merchantId);
+  const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
+  const merchantId = getMerchantIdForSession(
+    isRunningInIframe(),
+    storedMerchantId,
+    bridgeMerchantId,
+  );
   const currencyCode = useSettingsStore((state) => state.currency);
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const currency = getCurrency(currencyCode);

@@ -1,4 +1,5 @@
 import {
+  getMerchantIdForSession,
   getConnectionSetupRemaining,
   isTerminalConfigured,
   shouldRouteInvalidApiKeyToSettings,
@@ -6,6 +7,15 @@ import {
 } from "@/utils/pos-bridge-ui";
 
 describe("POS bridge UI state", () => {
+  it("uses the runtime bridge merchant only for iframe sessions", () => {
+    expect(
+      getMerchantIdForSession(true, "merchant-standalone", "merchant-bridge"),
+    ).toBe("merchant-bridge");
+    expect(
+      getMerchantIdForSession(false, "merchant-standalone", "merchant-bridge"),
+    ).toBe("merchant-standalone");
+  });
+
   it("allows home payment setup with a merchant ID and bridge, but not without either credential path", () => {
     expect(isTerminalConfigured("merchant-1", false, true)).toBe(true);
     expect(isTerminalConfigured("merchant-1", true, false)).toBe(true);

@@ -10,11 +10,22 @@ import {
 } from "@/services/payment.web";
 import { getTransactions } from "@/services/transactions.web";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { Platform } from "react-native";
 import { clearTestMerchant, setupTestMerchant } from "../utils/store-helpers";
 
 const parentPostMessage = jest.fn();
 const parentWindow = { postMessage: parentPostMessage } as unknown as Window;
 const parentOrigin = "https://dashboard.example.com";
+let originalWindow: Window & typeof globalThis;
+let originalPlatform: string;
+
+function setEmbeddedWindow() {
+  (global as any).window = {
+    self: {},
+    top: {},
+    parent: parentWindow,
+  };
+}
 
 function respondWithSuccess(data: unknown) {
   const message = parentPostMessage.mock.calls[
@@ -36,6 +47,9 @@ function respondWithSuccess(data: unknown) {
 
 describe("web services with the POS bridge", () => {
   beforeEach(() => {
+    originalWindow = global.window;
+    originalPlatform = Platform.OS;
+    (Platform as any).OS = "web";
     resetBridge();
     parentPostMessage.mockClear();
     jest.clearAllMocks();
@@ -47,11 +61,14 @@ describe("web services with the POS bridge", () => {
   });
 
   afterEach(async () => {
+    (global as any).window = originalWindow;
+    (Platform as any).OS = originalPlatform;
     resetBridge();
     await clearTestMerchant();
   });
 
   it("uses the four bridge operations without reading the local key or fetching proxies", async () => {
+    setEmbeddedWindow();
     const getCustomerApiKey = useSettingsStore.getState()
       .getCustomerApiKey as jest.Mock;
     configureBridge(parentWindow, parentOrigin, "merchant-bridge");
@@ -144,5 +161,30 @@ describe("web services with the POS bridge", () => {
         }),
       }),
     );
+  });
+
+  it("does not fall back to standalone credentials while an iframe awaits bridge configuration", async () => {
+    setEmbeddedWindow();
+    const getCustomerApiKey = useSettingsStore.getState()
+      .getCustomerApiKey as jest.Mock;
+
+    await expect(
+      startPayment({
+        referenceId: "reference-iframe",
+        amount: { value: "100", unit: "cents" },
+      }),
+    ).rejects.toEqual({ message: "POS bridge is not configured" });
+    await expect(getPaymentStatus("pay-iframe")).rejects.toEqual({
+      message: "POS bridge is not configured",
+    });
+    await expect(cancelPayment("pay-iframe")).rejects.toEqual({
+      message: "POS bridge is not configured",
+    });
+    await expect(getTransactions()).rejects.toEqual({
+      message: "POS bridge is not configured",
+    });
+
+    expect(getCustomerApiKey).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });
