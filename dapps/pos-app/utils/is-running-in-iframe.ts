@@ -5,7 +5,7 @@ import { Platform } from "react-native";
  * Always returns false on native platforms.
  */
 export function isRunningInIframe(): boolean {
-  if (Platform.OS !== "web") return false;
+  if (Platform.OS !== "web" || typeof window === "undefined") return false;
   try {
     return window.self !== window.top;
   } catch {

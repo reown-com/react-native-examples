@@ -6,7 +6,10 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
-import { isTerminalConfigured } from "@/utils/pos-bridge-ui";
+import {
+  getMerchantIdForSession,
+  isTerminalConfigured,
+} from "@/utils/pos-bridge-ui";
 import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
@@ -50,7 +53,7 @@ export default function HomeScreen() {
   const handleStartPayment = () => {
     if (
       !isTerminalConfigured(
-        isIframeSession ? bridgeMerchantId : merchantId,
+        getMerchantIdForSession(isIframeSession, merchantId, bridgeMerchantId),
         isIframeSession ? false : isCustomerApiKeySet,
         isIframeSession && isBridgeConfigured,
       )

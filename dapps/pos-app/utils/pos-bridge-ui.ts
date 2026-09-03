@@ -1,3 +1,11 @@
+export function getMerchantIdForSession(
+  isIframeSession: boolean,
+  merchantId: string | null,
+  bridgeMerchantId: string | null,
+): string | null {
+  return isIframeSession ? bridgeMerchantId : merchantId;
+}
+
 export function isTerminalConfigured(
   merchantId: string | null,
   hasLocalApiKey: boolean,
