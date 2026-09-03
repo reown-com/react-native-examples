@@ -1,0 +1,24 @@
+# Flow 6 — disconnect from the wallet side: wallet tears down the session via
+# the session detail modal.
+appId: ${APP_ID}
+tags:
+  - relay-walletkit
+  - disconnect-wallet
+---
+- runFlow: _connect_walletkit.yaml
+# Foreground the wallet and open the connected app's detail.
+- launchApp:
+    appId: ${APP_ID}
+- tapOn: 'Connected apps'
+- tapOn:
+    id: 'session-item'
+- extendedWaitUntil:
+    visible:
+      id: 'session-disconnect-button'
+    timeout: 30000
+- tapOn:
+    id: 'session-disconnect-button'
+# Wallet's session list is now empty.
+- extendedWaitUntil:
+    visible: 'No connected apps yet'
+    timeout: 30000

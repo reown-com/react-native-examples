@@ -32,6 +32,7 @@ export function ModalFooter({
         style={styles.button}
         onPress={onReject}
         variant="secondary"
+        testID="reject-button"
       >
         {rejectLabel}
       </ActionButton>
@@ -40,6 +41,7 @@ export function ModalFooter({
         disabled={disabled || approveLoader || rejectLoader}
         style={styles.button}
         onPress={onApprove}
+        testID="approve-button"
       >
         {approveLabel}
       </ActionButton>

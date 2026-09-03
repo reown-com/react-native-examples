@@ -7,6 +7,7 @@ import {ActionsView} from './components/ActionsView';
 import { EventsView } from './components/EventsView';
 import { WalletInfoView } from './components/WalletInfoView';
 import { PasteUrlButton } from './components/PasteUrlButton';
+import { OpenQrButton } from './components/OpenQrButton';
 function ConnectionsScreen() {
   return (
     <FlexView flexGrow={1} padding="m" justifyContent="center" alignItems="center">
@@ -17,6 +18,7 @@ function ConnectionsScreen() {
         <WalletInfoView />
         <AppKitButton balance="show" />
         <NetworkButton />
+        <OpenQrButton />
         <PasteUrlButton />
         <ActionsView />
         <EventsView />

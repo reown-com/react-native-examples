@@ -48,16 +48,34 @@ const ENV_CONFIG = {
 export const getMetadata = () => {
   const env = getEnvironment();
   const config = ENV_CONFIG[env];
+
+  // On web the wallet must redirect back to THIS deployment (its own origin —
+  // Vercel when deployed, http://localhost:8081 when served locally), not the
+  // lab.reown.com universal link. Otherwise, after approving, the wallet opens
+  // lab's URL instead of returning to our web dapp, so the connection never
+  // lands back here. `window.location.origin` auto-adapts per environment.
+  // linkMode is disabled on web (it's a native universal-link transport).
+  const webOrigin =
+    Platform.OS === 'web' && typeof window !== 'undefined'
+      ? window.location.origin
+      : undefined;
+
   return {
     name: config.name,
     description: config.description,
-    url: 'https://reown.com/appkit',
+    url: webOrigin ?? 'https://reown.com/appkit',
     icons: ['https://avatars.githubusercontent.com/u/179229932'],
-    redirect: {
-      native: config.native,
-      universal: config.universal,
-      linkMode: true,
-    },
+    redirect: webOrigin
+      ? // No universal redirect on web: it would open a NEW browser tab whose
+        // fresh client can't resume the pending pairing (only established
+        // sessions rehydrate). Instead the E2E returns to the original tab,
+        // whose live client receives the queued session settlement.
+        { linkMode: false }
+      : {
+          native: config.native,
+          universal: config.universal,
+          linkMode: true,
+        },
   };
 };
 
