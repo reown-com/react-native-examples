@@ -1,13 +1,44 @@
 import { MMKV } from 'react-native-mmkv';
 import { safeJsonParse, safeJsonStringify } from '@walletconnect/safe-json';
+import { getEncryptionKey } from './secureEncryptionKey';
 
-const mmkv = new MMKV();
+// Wallet secrets (mnemonics/private keys) and WalletConnect Core data are kept
+// in a DEDICATED, encrypted MMKV instance — never the default store. Other
+// modules (SettingsStore, WalletStore, LogStore) open the default `new MMKV()`
+// without a key; if this data shared that instance, encrypting it would make
+// their reads/writes fail. Isolating it under its own id avoids that conflict.
+const SECURE_STORE_ID = 'wallet-secure';
+
+// Created lazily because the encryption key must be fetched from the OS
+// Keychain/Keystore first (async). On native the store is encrypted at rest; on
+// web (no key) it falls back to the localStorage shim, unencrypted by design.
+let mmkvPromise: Promise<MMKV> | undefined;
+
+function getStore(): Promise<MMKV> {
+  if (!mmkvPromise) {
+    mmkvPromise = (async () => {
+      const key = await getEncryptionKey();
+
+      // No key on web (SecureStore unavailable) — fall back to the unencrypted
+      // localStorage shim, which is best-effort by design.
+      if (!key) {
+        return new MMKV({ id: SECURE_STORE_ID });
+      }
+
+      return new MMKV({ id: SECURE_STORE_ID, encryptionKey: key });
+    })();
+  }
+  return mmkvPromise;
+}
 
 export const storage = {
   getKeys: async () => {
+    const mmkv = await getStore();
     return mmkv.getAllKeys();
   },
   getEntries: async <T = any>(): Promise<[string, T][]> => {
+    const mmkv = await getStore();
+
     function parseEntry(key: string): [string, any] {
       const value = mmkv.getString(key);
       return [key, safeJsonParse(value ?? '')];
@@ -17,9 +48,11 @@ export const storage = {
     return keys.map(parseEntry);
   },
   setItem: async <T = any>(key: string, value: T) => {
+    const mmkv = await getStore();
     return mmkv.set(key, safeJsonStringify(value));
   },
   getItem: async <T = any>(key: string): Promise<T | undefined> => {
+    const mmkv = await getStore();
     const item = mmkv.getString(key);
     if (typeof item === 'undefined' || item === null) {
       return undefined;
@@ -28,6 +61,7 @@ export const storage = {
     return safeJsonParse(item) as T;
   },
   removeItem: async (key: string) => {
+    const mmkv = await getStore();
     return mmkv.delete(key);
   },
 };
