@@ -8,7 +8,7 @@ import {
   SECURE_STORAGE_KEYS,
   secureStorage,
 } from "@/utils/secure-storage";
-import { isEmbedded } from "@/utils/is-embedded";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { storage } from "@/utils/storage";
 import {
   DateRangeFilterType,
@@ -368,20 +368,24 @@ export const useSettingsStore = create<SettingsStore>()(
             delete (state as any).__migrationData;
           }
 
-          // Run customer API key migration before applying defaults
-          // This ensures existing users keep their API key during the rename
-          const migrated = await migrateCustomerApiKey();
-          if (migrated) {
-            // Migration was performed, sync the flag
-            state.isCustomerApiKeySet = true;
-            useLogsStore
-              .getState()
-              .addLog(
-                "info",
-                "Customer API key migrated from legacy storage key",
-                "Settings",
-                "onRehydrateStorage",
-              );
+          // Skip credential migrations in iframes.
+          if (!isRunningInIframe()) {
+            // Run customer API key migration before applying defaults.
+            // This ensures existing standalone users keep their API key during
+            // the rename.
+            const migrated = await migrateCustomerApiKey();
+            if (migrated) {
+              // Migration was performed, sync the flag
+              state.isCustomerApiKeySet = true;
+              useLogsStore
+                .getState()
+                .addLog(
+                  "info",
+                  "Customer API key migrated from legacy storage key",
+                  "Settings",
+                  "onRehydrateStorage",
+                );
+            }
           }
 
           // Sync isPinHashSet from secure storage
@@ -393,7 +397,7 @@ export const useSettingsStore = create<SettingsStore>()(
           // Initialize merchant defaults from env on first run only, so we
           // don't re-seed defaults after the user clears/changes credentials.
           // Skip when embedded in an iframe — parent provides credentials via postMessage.
-          if (!isEmbedded() && !state.hasInitializedDefaults) {
+          if (!isRunningInIframe() && !state.hasInitializedDefaults) {
             const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
             const defaultApiKey = MerchantConfig.getDefaultCustomerApiKey();
 
