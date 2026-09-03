@@ -25,6 +25,7 @@ import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
 import { getMerchantIdForSession } from "@/utils/pos-bridge-ui";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
+import * as Sentry from "@sentry/react-native";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
@@ -327,6 +328,7 @@ export default function ScanScreen() {
 
   return (
     <View style={styles.container}>
+      <Sentry.TimeToFullDisplay ready={!!qrUri} />
       <Stack.Screen
         options={{
           headerBackVisible: !backHidden,

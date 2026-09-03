@@ -270,6 +270,28 @@ jest.mock("expo-application", () => {
   return {
     nativeApplicationVersion: "1.0.0",
     nativeBuildVersion: "1",
+    applicationId: "com.reown.mobilepos",
+  };
+});
+
+// Mock @sentry/react-native. startSpan invokes its callback so instrumented
+// service functions still run; the display components render nothing.
+jest.mock("@sentry/react-native", () => {
+  const passthrough = () => null;
+  return {
+    init: jest.fn(),
+    wrap: (component) => component,
+    reactNativeTracingIntegration: jest.fn((options) => ({
+      name: "ReactNativeTracing",
+      ...options,
+    })),
+    startSpan: jest.fn((_options, callback) =>
+      callback({ setAttribute: jest.fn(), setStatus: jest.fn() }),
+    ),
+    appLoaded: jest.fn(),
+    TimeToInitialDisplay: passthrough,
+    TimeToFullDisplay: passthrough,
+    __esModule: true,
   };
 });
 
