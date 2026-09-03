@@ -19,8 +19,8 @@ const parentWindow = { postMessage: parentPostMessage } as unknown as Window;
 const otherWindow = { postMessage: jest.fn() } as unknown as Window;
 const parentOrigin = "https://dashboard.example.com";
 
-function setWindowLocation(search = "") {
-  (global as any).window = {
+function setWindowLocation(search = "", isIframe = true) {
+  const frameWindow = {
     location: { search, href: `http://localhost${search}` },
     addEventListener: (type: string, handler: MessageHandler) => {
       if (type === "message") messageListeners.push(handler);
@@ -29,8 +29,13 @@ function setWindowLocation(search = "") {
       const index = messageListeners.indexOf(handler);
       if (type === "message" && index >= 0) messageListeners.splice(index, 1);
     },
-    parent: parentWindow,
+    postMessage: jest.fn(),
+    parent: isIframe ? parentWindow : undefined,
   };
+  (frameWindow as any).parent = isIframe ? parentWindow : frameWindow;
+  (frameWindow as any).self = frameWindow;
+  (frameWindow as any).top = isIframe ? parentWindow : frameWindow;
+  (global as any).window = frameWindow;
 }
 
 function dispatchMessage(
@@ -59,22 +64,30 @@ afterEach(() => {
 });
 
 describe("usePosBridge", () => {
-  it("clears an embedded stale key and announces bridge readiness", async () => {
+  it("preserves standalone credentials and announces bridge readiness", async () => {
     await useSettingsStore.getState().setCustomerApiKey("stale-key");
+    useSettingsStore.getState().setMerchantId("merchant-standalone");
     useSettingsStore.setState({ _hasHydrated: true });
 
     renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
-    expect(useSettingsStore.getState().isCustomerApiKeySet).toBe(false);
+    expect(useSettingsStore.getState()).toMatchObject({
+      merchantId: "merchant-standalone",
+      isCustomerApiKeySet: true,
+    });
+    await expect(useSettingsStore.getState().getCustomerApiKey()).resolves.toBe(
+      "stale-key",
+    );
     expect(parentPostMessage).toHaveBeenCalledWith(
       { type: "pos-ready", protocolVersion: 1 },
       "*",
     );
   });
 
-  it("configures the locked bridge and stores only the non-secret merchant ID", async () => {
+  it("configures the locked bridge without changing standalone credentials", async () => {
     await useSettingsStore.getState().setCustomerApiKey("stale-key");
+    useSettingsStore.getState().setMerchantId("merchant-standalone");
     useSettingsStore.setState({ _hasHydrated: true });
     renderHook(() => usePosBridge());
     await act(() => waitForAsync());
@@ -89,40 +102,12 @@ describe("usePosBridge", () => {
     });
 
     expect(useSettingsStore.getState()).toMatchObject({
-      merchantId: "merchant-bridge",
-      isCustomerApiKeySet: false,
+      merchantId: "merchant-standalone",
+      isCustomerApiKeySet: true,
     });
     expect(usePosBridgeStore.getState()).toMatchObject({
       isConfigured: true,
       merchantId: "merchant-bridge",
-    });
-  });
-
-  it("keeps the bridge merchant ID when clearing an old local key fails", async () => {
-    const originalClearCustomerApiKey =
-      useSettingsStore.getState().clearCustomerApiKey;
-    useSettingsStore.setState({
-      clearCustomerApiKey: async () => {
-        throw new Error("secure storage unavailable");
-      },
-    });
-    useSettingsStore.setState({ _hasHydrated: true });
-    renderHook(() => usePosBridge());
-    await act(() => waitForAsync());
-
-    await act(async () => {
-      dispatchMessage({
-        type: "pos-bridge-config",
-        protocolVersion: 1,
-        merchantId: "merchant-bridge",
-      });
-      await waitForAsync();
-    });
-
-    expect(useSettingsStore.getState().merchantId).toBe("merchant-bridge");
-    expect(usePosBridgeStore.getState().isConfigured).toBe(true);
-    useSettingsStore.setState({
-      clearCustomerApiKey: originalClearCustomerApiKey,
     });
   });
 
@@ -168,6 +153,27 @@ describe("usePosBridge", () => {
       await waitForAsync();
     });
     expect(usePosBridgeStore.getState().merchantId).toBe("merchant-bridge");
+  });
+
+  it("rejects bridge configuration from a standalone window", async () => {
+    setWindowLocation("", false);
+    useSettingsStore.setState({ _hasHydrated: true });
+    renderHook(() => usePosBridge());
+    await act(() => waitForAsync());
+
+    await act(async () => {
+      dispatchMessage(
+        {
+          type: "pos-bridge-config",
+          protocolVersion: 1,
+          merchantId: "merchant-bridge",
+        },
+        (global as any).window,
+      );
+      await waitForAsync();
+    });
+
+    expect(usePosBridgeStore.getState().isConfigured).toBe(false);
   });
 
   it("ignores legacy URL and postMessage credentials", async () => {

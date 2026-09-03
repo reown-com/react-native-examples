@@ -17,10 +17,6 @@ import { Platform } from "react-native";
 export function usePosBridge() {
   const hasInitialized = useRef(false);
   const hasHydrated = useSettingsStore((state) => state._hasHydrated);
-  const setMerchantId = useSettingsStore((state) => state.setMerchantId);
-  const clearCustomerApiKey = useSettingsStore(
-    (state) => state.clearCustomerApiKey,
-  );
 
   useEffect(() => {
     if (Platform.OS !== "web" || !hasHydrated || hasInitialized.current) {
@@ -31,19 +27,13 @@ export function usePosBridge() {
     let isMounted = true;
     const handleMessage = (event: MessageEvent) => {
       if (isPosBridgeConfigMessage(event.data)) {
-        if (
-          event.source === window.parent &&
+        if (window.parent !== window && event.source === window.parent) {
+          // Keep bridge credentials runtime-only.
           configureBridge(
             event.source as Window,
             event.origin,
             event.data.merchantId.trim(),
-          )
-        ) {
-          setMerchantId(event.data.merchantId.trim());
-          // A bridge uses the dashboard's key outside this frame. Remove any
-          // local key left by a direct or older embedded POS session. This is
-          // best effort: bridge state does not depend on local secure storage.
-          void clearCustomerApiKey().catch(() => undefined);
+          );
         }
         return;
       }
@@ -54,13 +44,7 @@ export function usePosBridge() {
 
     window.addEventListener("message", handleMessage);
 
-    const initialize = async () => {
-      if (window.parent !== window) {
-        // Do not retain an old local key while an embedded POS is waiting for
-        // bridge configuration. No URL or legacy credential fallback exists.
-        await clearCustomerApiKey().catch(() => undefined);
-      }
-
+    const initialize = () => {
       if (isMounted) {
         window.parent.postMessage(
           { type: "pos-ready", protocolVersion: PROTOCOL_VERSION },
@@ -69,11 +53,11 @@ export function usePosBridge() {
       }
     };
 
-    void initialize();
+    initialize();
     return () => {
       isMounted = false;
       window.removeEventListener("message", handleMessage);
       resetBridge("POS bridge listener was unmounted");
     };
-  }, [clearCustomerApiKey, hasHydrated, setMerchantId]);
+  }, [hasHydrated]);
 }

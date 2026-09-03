@@ -16,6 +16,7 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { ThemeMode } from "@/utils/types";
 import {
   getConnectionSetupRemaining,
@@ -87,6 +88,8 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
   const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
+  const isIframeSession = isRunningInIframe();
+  const isIframeBridgeConfigured = isIframeSession && isBridgeConfigured;
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
 
@@ -180,16 +183,20 @@ export default function SettingsScreen() {
   const showBiometricToggle = shouldShowBiometricOption && !!biometricStatus;
 
   const hasMerchantId = !!storedMerchantId?.trim();
-  const setupRemaining = getConnectionSetupRemaining(
-    hasMerchantId,
-    hasStoredCustomerApiKey,
-    isBridgeConfigured,
-  );
-  const showConnectionSection = shouldShowConnectionSection(
-    isBridgeConfigured,
-    !!bridgeMerchantId,
-    showNfcToggle || showBiometricToggle,
-  );
+  const setupRemaining = isIframeSession
+    ? 0
+    : getConnectionSetupRemaining(
+        hasMerchantId,
+        hasStoredCustomerApiKey,
+        isIframeBridgeConfigured,
+      );
+  const showConnectionSection =
+    isIframeSession ||
+    shouldShowConnectionSection(
+      isIframeBridgeConfigured,
+      !!bridgeMerchantId,
+      showNfcToggle || showBiometricToggle,
+    );
 
   const handleTestPrinterPress = async () => {
     try {
@@ -274,7 +281,16 @@ export default function SettingsScreen() {
 
         {showConnectionSection && (
           <SettingsSection title="Connection">
-            {isBridgeConfigured ? (
+            {isIframeSession && !isIframeBridgeConfigured ? (
+              <SettingsItem
+                testID="settings-dashboard-bridge"
+                title="Dashboard bridge"
+                value="Waiting for dashboard"
+                onPress={() => undefined}
+                showCaret={false}
+                disabled
+              />
+            ) : isIframeBridgeConfigured ? (
               <SettingsItem
                 testID="settings-merchant-id"
                 title="Merchant ID"

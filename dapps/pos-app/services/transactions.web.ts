@@ -1,9 +1,9 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   GetTransactionsBridgeOptions,
-  isBridgeConfigured,
   requestBridge,
 } from "@/services/pos-bridge";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { TransactionsResponse } from "@/utils/types";
 
 export type GetTransactionsOptions = GetTransactionsBridgeOptions;
@@ -16,7 +16,7 @@ export type GetTransactionsOptions = GetTransactionsBridgeOptions;
 export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
-  if (isBridgeConfigured()) {
+  if (isRunningInIframe()) {
     return requestBridge<TransactionsResponse>({
       operation: "get-transactions",
       payload: options,
