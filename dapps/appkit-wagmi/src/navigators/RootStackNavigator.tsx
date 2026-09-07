@@ -9,6 +9,9 @@ import {useLogs} from '@/hooks/useLogs';
 import { AppKitLogList } from '@/screens/AppKitLogList';
 import NetworkSettingsScreen from '@/screens/NetworkSettings';
 import PayWebView from '@/screens/PayWebView';
+import OmenScreen from '@/screens/Omen';
+import OmenDepositWebView from '@/screens/Omen/OmenDepositWebView';
+import GoodDepositConfirm from '@/screens/GoodWallet';
 
 const StackNavigator = createNativeStackNavigator<RootStackParamList>();
 
@@ -74,6 +77,34 @@ export function RootStackNavigator() {
           headerBackButtonDisplayMode: 'minimal',
           title: 'Payment',
           headerTintColor: Theme['fg-100'],
+        }}
+      />
+      <StackNavigator.Screen
+        name="Omen"
+        component={OmenScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <StackNavigator.Screen
+        name="OmenDepositWebView"
+        component={OmenDepositWebView}
+        options={{
+          // BX renders its own "Add money" header (+ close) inside the webview, and the screen
+          // wraps it in a dark SafeAreaView — so the native header would just be a redundant
+          // light bar. Hide it for a seamless "inside the app" surface.
+          headerShown: false,
+        }}
+      />
+      <StackNavigator.Screen
+        name="GoodDepositConfirm"
+        component={GoodDepositConfirm}
+        options={{
+          // Presented as a full-screen modal that slides up — the "a separate wallet opened over
+          // the app" feel. Its own in-screen branded header, so no native header.
+          headerShown: false,
+          presentation: 'fullScreenModal',
+          animation: 'slide_from_bottom',
         }}
       />
     </StackNavigator.Navigator>
