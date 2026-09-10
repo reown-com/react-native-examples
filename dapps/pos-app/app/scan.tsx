@@ -24,6 +24,8 @@ import { isNfcHceEnabled } from "@/utils/feature-flags";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
 import { getMerchantIdForSession } from "@/utils/pos-bridge-ui";
+import { buildPaymentSuccessParams } from "@/utils/payment-success-params";
+import { PaymentStatusResponse } from "@/utils/types";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import * as Sentry from "@sentry/react-native";
 import { useAssets } from "expo-asset";
@@ -100,16 +102,13 @@ export default function ScanScreen() {
     },
   });
 
-  const onSuccess = useCallback(() => {
+  const onSuccess = useCallback((payment?: PaymentStatusResponse) => {
     if (hasNavigatedRef.current) return;
     hasNavigatedRef.current = true;
     router.dismiss();
     router.replace({
       pathname: "/payment-success",
-      params: {
-        amount,
-        paymentId,
-      },
+      params: buildPaymentSuccessParams(amount, paymentId, payment),
     });
   }, [paymentId, amount]);
 
@@ -226,7 +225,7 @@ export default function ScanScreen() {
           paymentId,
           data,
         });
-        onSuccess();
+        onSuccess(data);
       } else {
         addLog("error", data.status, "scan", "usePaymentStatus", {
           paymentId,

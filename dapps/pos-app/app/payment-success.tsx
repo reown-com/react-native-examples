@@ -28,12 +28,12 @@ import { StatusBar } from "expo-status-bar";
 
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
-  chainName: string;
-  token: string;
+  chainName?: string;
+  token?: string;
   timestamp: string;
   paymentId: string;
-  tokenAmount: string;
-  tokenDecimals: string;
+  tokenAmount?: string;
+  tokenDecimals?: string;
 }
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
