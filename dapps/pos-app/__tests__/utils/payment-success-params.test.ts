@@ -34,13 +34,19 @@ describe("buildPaymentSuccessParams", () => {
       status: "succeeded",
       isFinal: true,
       pollInMs: 0,
-      info: { optionAmount: { value: "15", display: { decimals: 0 } } },
+      info: {
+        optionAmount: {
+          value: "15",
+          display: { assetSymbol: "WBTC", decimals: 0 },
+        },
+      },
     };
 
     expect(buildPaymentSuccessParams("15.00", "pay_123", payment)).toEqual({
       amount: "15.00",
       paymentId: "pay_123",
       tokenAmount: "15",
+      token: "WBTC",
       tokenDecimals: "0",
     });
   });
