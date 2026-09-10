@@ -224,13 +224,14 @@ jest.mock("react-native-qrcode-skia", () => {
 // Mock react-native-thermal-pos-printer
 jest.mock("react-native-thermal-pos-printer", () => {
   return {
-    ThermalPrinter: {
-      init: jest.fn(() => Promise.resolve()),
-      print: jest.fn(() => Promise.resolve()),
+    ReactNativePosPrinter: {
+      getDeviceList: jest.fn(() => Promise.resolve([])),
+      connectPrinter: jest.fn(() => Promise.resolve()),
+      initializePrinter: jest.fn(() => Promise.resolve()),
+      printImage: jest.fn(() => Promise.resolve()),
+      newLine: jest.fn(() => Promise.resolve()),
+      printText: jest.fn(() => Promise.resolve()),
       cutPaper: jest.fn(() => Promise.resolve()),
-      getBluetoothDeviceList: jest.fn(() => Promise.resolve([])),
-      connectBluetoothPrinter: jest.fn(() => Promise.resolve()),
-      disconnectBluetoothPrinter: jest.fn(() => Promise.resolve()),
     },
   };
 });

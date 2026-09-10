@@ -24,6 +24,8 @@ import { isNfcHceEnabled } from "@/utils/feature-flags";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
 import { getMerchantIdForSession } from "@/utils/pos-bridge-ui";
+import { buildPaymentSuccessParams } from "@/utils/payment-success-params";
+import { PaymentStatusResponse } from "@/utils/types";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import * as Sentry from "@sentry/react-native";
 import { useAssets } from "expo-asset";
@@ -100,18 +102,18 @@ export default function ScanScreen() {
     },
   });
 
-  const onSuccess = useCallback(() => {
-    if (hasNavigatedRef.current) return;
-    hasNavigatedRef.current = true;
-    router.dismiss();
-    router.replace({
-      pathname: "/payment-success",
-      params: {
-        amount,
-        paymentId,
-      },
-    });
-  }, [paymentId, amount]);
+  const onSuccess = useCallback(
+    (completedPaymentId: string, payment?: PaymentStatusResponse) => {
+      if (hasNavigatedRef.current) return;
+      hasNavigatedRef.current = true;
+      router.dismiss();
+      router.replace({
+        pathname: "/payment-success",
+        params: buildPaymentSuccessParams(amount, completedPaymentId, payment),
+      });
+    },
+    [amount],
+  );
 
   const onFailure = useCallback(
     (errorCode?: string, minAmount?: string) => {
@@ -222,11 +224,21 @@ export default function ScanScreen() {
     enabled: !!paymentId && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "succeeded") {
+        if (!paymentId) {
+          addLog(
+            "error",
+            "Cannot show payment success without a payment ID",
+            "scan",
+            "usePaymentStatus",
+            { data },
+          );
+          return;
+        }
         addLog("info", "Payment completed", "scan", "usePaymentStatus", {
           paymentId,
           data,
         });
-        onSuccess();
+        onSuccess(paymentId, data);
       } else {
         addLog("error", data.status, "scan", "usePaymentStatus", {
           paymentId,
