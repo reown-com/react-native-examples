@@ -2,7 +2,7 @@ import { PaymentStatusResponse } from "./types";
 
 export interface PaymentSuccessParams {
   amount: string;
-  paymentId: string | null;
+  paymentId: string;
   tokenAmount?: string;
   token?: string;
   tokenDecimals?: string;
@@ -11,7 +11,7 @@ export interface PaymentSuccessParams {
 
 export function buildPaymentSuccessParams(
   amount: string,
-  paymentId: string | null,
+  paymentId: string,
   payment?: PaymentStatusResponse,
 ): PaymentSuccessParams {
   const tokenAmount = payment?.info?.optionAmount ?? payment?.tokenAmount;

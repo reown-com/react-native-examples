@@ -102,15 +102,18 @@ export default function ScanScreen() {
     },
   });
 
-  const onSuccess = useCallback((payment?: PaymentStatusResponse) => {
-    if (hasNavigatedRef.current) return;
-    hasNavigatedRef.current = true;
-    router.dismiss();
-    router.replace({
-      pathname: "/payment-success",
-      params: buildPaymentSuccessParams(amount, paymentId, payment),
-    });
-  }, [paymentId, amount]);
+  const onSuccess = useCallback(
+    (completedPaymentId: string, payment?: PaymentStatusResponse) => {
+      if (hasNavigatedRef.current) return;
+      hasNavigatedRef.current = true;
+      router.dismiss();
+      router.replace({
+        pathname: "/payment-success",
+        params: buildPaymentSuccessParams(amount, completedPaymentId, payment),
+      });
+    },
+    [amount],
+  );
 
   const onFailure = useCallback(
     (errorCode?: string, minAmount?: string) => {
@@ -221,11 +224,21 @@ export default function ScanScreen() {
     enabled: !!paymentId && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "succeeded") {
+        if (!paymentId) {
+          addLog(
+            "error",
+            "Cannot show payment success without a payment ID",
+            "scan",
+            "usePaymentStatus",
+            { data },
+          );
+          return;
+        }
         addLog("info", "Payment completed", "scan", "usePaymentStatus", {
           paymentId,
           data,
         });
-        onSuccess(data);
+        onSuccess(paymentId, data);
       } else {
         addLog("error", data.status, "scan", "usePaymentStatus", {
           paymentId,
