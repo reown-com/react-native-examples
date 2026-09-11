@@ -1,4 +1,4 @@
-import { CameraView, requestCameraPermissionsAsync } from 'expo-camera';
+import { CameraView } from 'expo-camera';
 import { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
@@ -59,16 +59,30 @@ export default function Scan({ navigation }: Props) {
 
     try {
       // Safari only displays its camera prompt while the request is tied to a user gesture.
-      const { granted } = await requestCameraPermissionsAsync();
-      if (granted) {
-        setIsCameraEnabled(true);
-      } else {
-        setCameraError(
-          'Camera access was denied. Allow it in Safari settings, then try again.',
-        );
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: { ideal: 'environment' } },
+      });
+      stream.getTracks().forEach(track => track.stop());
+      setIsCameraEnabled(true);
+    } catch (error) {
+      switch (error instanceof DOMException ? error.name : '') {
+        case 'NotAllowedError':
+          setCameraError(
+            'Camera access was denied. Allow it in Safari settings, then try again.',
+          );
+          break;
+        case 'NotFoundError':
+          setCameraError('No camera is available on this device.');
+          break;
+        case 'NotReadableError':
+          setCameraError(
+            'Camera is in use by another app. Close it, then try again.',
+          );
+          break;
+        default:
+          setCameraError('Camera access could not be started.');
       }
-    } catch {
-      setCameraError('Camera access could not be started.');
     }
   }, []);
 
