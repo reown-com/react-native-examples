@@ -56,6 +56,8 @@
     "@ton/crypto": "3.3.0",
     "@ton/ton": "15.4.0",
     "@walletconnect/react-native-compat": "2.23.10",
+    "@zxing/browser": "0.2.1",
+    "@zxing/library": "0.23.0",
     "bip32": "4.0.0",
     "bip39": "3.1.0",
     "bitcoinjs-lib": "6.1.7",

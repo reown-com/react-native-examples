@@ -1,5 +1,5 @@
 import { useSnapshot } from 'valtio';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import RNModal from 'react-native-modal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -31,9 +31,15 @@ export default function Modal() {
     ],
     [insets.bottom],
   );
+  // The tap that opens a modal is fired by an RNGH button on touch-release. On
+  // Android that same touch-up is also delivered to react-native-modal's
+  // freshly-mounted backdrop, so the sheet closes the instant it opens. Ignore
+  // backdrop presses until the enter animation has finished (onModalShow).
+  const isShown = useRef(false);
+
   // handle the modal being closed by click outside
   const onClose = useCallback(() => {
-    if (open) {
+    if (open && isShown.current) {
       ModalStore.close();
     }
   }, [open]);
@@ -73,6 +79,12 @@ export default function Modal() {
       useNativeDriver
       statusBarTranslucent
       propagateSwipe
+      onModalShow={() => {
+        isShown.current = true;
+      }}
+      onModalHide={() => {
+        isShown.current = false;
+      }}
       onBackdropPress={onClose}
       style={[styles.modal, Platform.OS === 'web' ? styles.modalWeb : null]}
       // On web, render inline (not via the full-screen portal) so the sheet +
