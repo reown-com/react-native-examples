@@ -11,7 +11,6 @@ import {
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
 
 import SvgClose from '@/assets/Close';
 import { RootStackScreenProps } from '@/utils/TypesUtil';
@@ -20,10 +19,16 @@ import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
 import { haptics } from '@/utils/haptics';
 import { Button } from '@/components/Button';
-import { ScannerFrame } from '@/components/ScannerFrame';
 import { Spacing } from '@/utils/ThemeUtil';
 
 const CUTOUT_RADIUS = 16;
+
+// Corner brackets, mirroring the native ScannerFrame (stroke 5, radius 30,
+// arm ~50). CORNER_OFFSET pushes them just outside the cutout window.
+const CORNER_SIZE = 52;
+const CORNER_STROKE = 5;
+const CORNER_RADIUS = 30;
+const CORNER_OFFSET = 14;
 
 const Video = forwardRef<HTMLVideoElement>((_, ref) =>
   createElement('video', {
@@ -40,7 +45,7 @@ type Props = RootStackScreenProps<'Scan'>;
 export default function Scan({ navigation }: Props) {
   const Theme = useTheme();
   const { top } = useSafeAreaInsets();
-  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const { height: screenHeight } = useWindowDimensions();
   const isFocused = useIsFocused();
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
@@ -48,7 +53,6 @@ export default function Scan({ navigation }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const scannerControls = useRef<{ stop: () => void } | null>(null);
   const hasHandledScan = useRef(false);
-  const scanAreaLeft = (screenWidth - SCAN_AREA_SIZE) / 2;
   const scanAreaTop = (screenHeight - SCAN_AREA_SIZE) / 3;
 
   const onBarcodeScanned = useCallback(({ data }: { data: string }) => {
@@ -167,44 +171,28 @@ export default function Scan({ navigation }: Props) {
         </View>
       ) : null}
 
-      <Svg
-        style={[StyleSheet.absoluteFill, styles.overlay]}
-        width={screenWidth}
-        height={screenHeight}
-      >
-        <Path
-          d={`M0,0 L${screenWidth},0 L${screenWidth},${screenHeight} L0,${screenHeight} Z M${
-            scanAreaLeft + CUTOUT_RADIUS
-          },${scanAreaTop} L${
-            scanAreaLeft + SCAN_AREA_SIZE - CUTOUT_RADIUS
-          },${scanAreaTop} Q${scanAreaLeft + SCAN_AREA_SIZE},${scanAreaTop} ${
-            scanAreaLeft + SCAN_AREA_SIZE
-          },${scanAreaTop + CUTOUT_RADIUS} L${scanAreaLeft + SCAN_AREA_SIZE},${
-            scanAreaTop + SCAN_AREA_SIZE - CUTOUT_RADIUS
-          } Q${scanAreaLeft + SCAN_AREA_SIZE},${scanAreaTop + SCAN_AREA_SIZE} ${
-            scanAreaLeft + SCAN_AREA_SIZE - CUTOUT_RADIUS
-          },${scanAreaTop + SCAN_AREA_SIZE} L${scanAreaLeft + CUTOUT_RADIUS},${
-            scanAreaTop + SCAN_AREA_SIZE
-          } Q${scanAreaLeft},${scanAreaTop + SCAN_AREA_SIZE} ${scanAreaLeft},${
-            scanAreaTop + SCAN_AREA_SIZE - CUTOUT_RADIUS
-          } L${scanAreaLeft},${
-            scanAreaTop + CUTOUT_RADIUS
-          } Q${scanAreaLeft},${scanAreaTop} ${
-            scanAreaLeft + CUTOUT_RADIUS
-          },${scanAreaTop} Z`}
-          fill="rgba(0,0,0,0.9)"
-          fillRule="evenodd"
-        />
-      </Svg>
-
+      {/* Dark overlay with a transparent center window + corner brackets.
+          react-native-svg's evenodd cutout and stroked paths are unreliable on
+          web, so this uses a boxShadow knockout and bordered Views instead, and
+          centers with flexbox to stay correct regardless of window dimensions. */}
       <View
-        style={[
-          styles.scanFrame,
-          webStyles.scanFrame,
-          { top: scanAreaTop - 14, left: scanAreaLeft - 14 },
-        ]}
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, webStyles.overlay]}
       >
-        <ScannerFrame size={SCAN_AREA_SIZE + 28} />
+        <View style={[webStyles.cutout, { marginTop: scanAreaTop }]}>
+          <View style={[webStyles.corner, webStyles.cornerTopLeft]} />
+          <View style={[webStyles.corner, webStyles.cornerTopRight]} />
+          <View style={[webStyles.corner, webStyles.cornerBottomLeft]} />
+          <View style={[webStyles.corner, webStyles.cornerBottomRight]} />
+          {!isCameraEnabled && (
+            <View style={webStyles.errorContainer}>
+              <Text variant="lg-400" style={webStyles.errorText}>
+                {cameraError ||
+                  'Camera unavailable. Allow camera access to scan codes.'}
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
 
       <Button
@@ -232,39 +220,77 @@ export default function Scan({ navigation }: Props) {
       )}
 
       {!isCameraEnabled && (
-        <>
-          <View pointerEvents="none" style={styles.errorContainer}>
-            <Text
-              variant="lg-400"
-              color="text-invert"
-              style={webStyles.errorText}
-            >
-              {cameraError ||
-                'Camera unavailable. Allow camera access to scan codes.'}
-            </Text>
-          </View>
-          <Button
-            accessibilityLabel="Allow camera access"
-            onPress={requestCameraPermission}
-            style={[
-              webStyles.allowCameraButton,
-              { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[12] },
-            ]}
-            testID="button-allow-camera"
-          >
-            <Text variant="md-500" color="text-invert">
-              Allow camera access
-            </Text>
-          </Button>
-        </>
+        <Button
+          accessibilityLabel="Allow camera access"
+          onPress={requestCameraPermission}
+          style={[
+            webStyles.allowCameraButton,
+            { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[12] },
+          ]}
+          testID="button-allow-camera"
+        >
+          <Text variant="md-500" style={webStyles.allowCameraText}>
+            Allow camera access
+          </Text>
+        </Button>
       )}
     </View>
   );
 }
 
 const webStyles = StyleSheet.create({
-  scanFrame: {
-    zIndex: 1,
+  overlay: {
+    alignItems: 'center',
+  },
+  cutout: {
+    width: SCAN_AREA_SIZE,
+    height: SCAN_AREA_SIZE,
+    borderRadius: CUTOUT_RADIUS,
+    boxShadow: '0px 0px 0px 9999px rgba(0, 0, 0, 0.9)',
+  },
+  corner: {
+    position: 'absolute',
+    width: CORNER_SIZE,
+    height: CORNER_SIZE,
+    borderColor: 'white',
+  },
+  cornerTopLeft: {
+    top: -CORNER_OFFSET,
+    left: -CORNER_OFFSET,
+    borderTopWidth: CORNER_STROKE,
+    borderLeftWidth: CORNER_STROKE,
+    borderTopLeftRadius: CORNER_RADIUS,
+  },
+  cornerTopRight: {
+    top: -CORNER_OFFSET,
+    right: -CORNER_OFFSET,
+    borderTopWidth: CORNER_STROKE,
+    borderRightWidth: CORNER_STROKE,
+    borderTopRightRadius: CORNER_RADIUS,
+  },
+  cornerBottomLeft: {
+    bottom: -CORNER_OFFSET,
+    left: -CORNER_OFFSET,
+    borderBottomWidth: CORNER_STROKE,
+    borderLeftWidth: CORNER_STROKE,
+    borderBottomLeftRadius: CORNER_RADIUS,
+  },
+  cornerBottomRight: {
+    bottom: -CORNER_OFFSET,
+    right: -CORNER_OFFSET,
+    borderBottomWidth: CORNER_STROKE,
+    borderRightWidth: CORNER_STROKE,
+    borderBottomRightRadius: CORNER_RADIUS,
+  },
+  errorContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing[4],
   },
   video: {
     height: '100%',
@@ -272,8 +298,8 @@ const webStyles = StyleSheet.create({
     width: '100%',
   },
   errorText: {
+    color: 'white',
     textAlign: 'center',
-    paddingHorizontal: Spacing[5],
   },
   allowCameraButton: {
     position: 'absolute',
@@ -283,5 +309,8 @@ const webStyles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: Spacing[4],
     paddingVertical: Spacing[3],
+  },
+  allowCameraText: {
+    color: 'white',
   },
 });
