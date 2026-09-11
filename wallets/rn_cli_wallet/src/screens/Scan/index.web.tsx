@@ -97,6 +97,11 @@ export default function Scan({ navigation }: Props) {
     }
   }, []);
 
+  const onCameraMountError = useCallback(({ message }: { message: string }) => {
+    setCameraError(message);
+    setIsCameraEnabled(false);
+  }, []);
+
   const goBack = () => {
     navigation.goBack();
   };
@@ -108,10 +113,7 @@ export default function Scan({ navigation }: Props) {
           active={isFocused}
           barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
           onBarcodeScanned={onBarcodeScanned}
-          onMountError={({ message }) => {
-            setCameraError(message);
-            setIsCameraEnabled(false);
-          }}
+          onMountError={onCameraMountError}
           style={StyleSheet.absoluteFill}
           testID="camera-wc-qr"
         />
@@ -167,16 +169,18 @@ export default function Scan({ navigation }: Props) {
         <SvgClose fill="white" height={14} width={14} />
       </Button>
 
-      <View
-        style={[
-          styles.instructionContainer,
-          { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[8] },
-        ]}
-      >
-        <Text variant="lg-400" style={styles.instructionText}>
-          Scan a WalletConnect QR code
-        </Text>
-      </View>
+      {isCameraEnabled && (
+        <View
+          style={[
+            styles.instructionContainer,
+            { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[8] },
+          ]}
+        >
+          <Text variant="lg-400" style={styles.instructionText}>
+            Scan a WalletConnect QR code
+          </Text>
+        </View>
+      )}
 
       {!isCameraEnabled && (
         <>
