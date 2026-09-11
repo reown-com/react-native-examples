@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -22,6 +22,14 @@ import { Button } from '@/components/Button';
 import { Spacing } from '@/utils/ThemeUtil';
 
 const CUTOUT_RADIUS = 16;
+
+const VIDEO_CONSTRAINTS: MediaStreamConstraints = {
+  audio: false,
+  video: { facingMode: { ideal: 'environment' } },
+};
+
+const stopStream = (stream: MediaStream | null) =>
+  stream?.getTracks().forEach(track => track.stop());
 
 // Corner brackets, mirroring the native ScannerFrame (stroke 5, radius 30,
 // arm ~50). CORNER_OFFSET pushes them just outside the cutout window.
@@ -45,15 +53,23 @@ type Props = RootStackScreenProps<'Scan'>;
 export default function Scan({ navigation }: Props) {
   const Theme = useTheme();
   const { top } = useSafeAreaInsets();
-  const { height: screenHeight } = useWindowDimensions();
   const isFocused = useIsFocused();
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [scannedUri, setScannedUri] = useState<string | null>(null);
+  // Measure the screen rather than the window: on desktop web the app is
+  // clipped to a phone-sized frame (see DesktopFrameWrapper), so window height
+  // would push the cutout and the buttons below the frame's overflow: hidden.
+  const [frameHeight, setFrameHeight] = useState(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const scannerControls = useRef<{ stop: () => void } | null>(null);
+  const cameraStream = useRef<MediaStream | null>(null);
   const hasHandledScan = useRef(false);
-  const scanAreaTop = (screenHeight - SCAN_AREA_SIZE) / 3;
+  const scanAreaTop = (frameHeight - SCAN_AREA_SIZE) / 3;
+
+  const onLayout = useCallback((event: LayoutChangeEvent) => {
+    setFrameHeight(event.nativeEvent.layout.height);
+  }, []);
 
   const onBarcodeScanned = useCallback(({ data }: { data: string }) => {
     if (hasHandledScan.current || !data) return;
@@ -80,30 +96,43 @@ export default function Scan({ navigation }: Props) {
   }, [navigation, scannedUri]);
 
   useEffect(() => {
-    if (!isCameraEnabled || !isFocused || !videoRef.current) return;
+    const video = videoRef.current;
+    if (!isCameraEnabled || !isFocused || !video) return;
 
     let isActive = true;
     const codeReader = new BrowserQRCodeReader();
+    // Hand zxing the stream the permission gesture already opened. Calling
+    // getUserMedia a second time right after the first stream's tracks were
+    // stopped makes Safari reject the request or serve a black preview.
+    // Only the permission gesture can refill this, so claim it eagerly; the
+    // constraints path below re-acquires on a re-run (e.g. refocus).
+    const stream = cameraStream.current;
+    cameraStream.current = null;
 
-    codeReader
-      .decodeFromConstraints(
-        {
-          audio: false,
-          video: { facingMode: { ideal: 'environment' } },
-        },
-        videoRef.current,
-        (result, _error, controls) => {
-          scannerControls.current = controls;
-          if (result && isActive) {
-            onBarcodeScanned({ data: result.getText() });
-          }
-        },
-      )
+    const onDecode = (
+      result: { getText: () => string } | undefined,
+      _error: unknown,
+      controls: { stop: () => void },
+    ) => {
+      scannerControls.current = controls;
+      if (result && isActive) {
+        onBarcodeScanned({ data: result.getText() });
+      }
+    };
+
+    const decoding = stream?.active
+      ? codeReader.decodeFromStream(stream, video, onDecode)
+      : codeReader.decodeFromConstraints(VIDEO_CONSTRAINTS, video, onDecode);
+
+    decoding
       .then(controls => {
         scannerControls.current = controls;
         if (!isActive) controls.stop();
       })
       .catch(() => {
+        // decodeFromStream can reject after attaching (play timeout) without
+        // releasing the device, and we own this stream now, so stop it here.
+        stopStream(stream);
         if (isActive) {
           setCameraError('Camera access could not be started.');
           setIsCameraEnabled(false);
@@ -117,11 +146,24 @@ export default function Scan({ navigation }: Props) {
     };
   }, [isCameraEnabled, isFocused, onBarcodeScanned]);
 
+  // Release the stream if the screen unmounts between the permission gesture
+  // and the decode effect claiming it.
+  useEffect(
+    () => () => {
+      stopStream(cameraStream.current);
+      cameraStream.current = null;
+    },
+    [],
+  );
+
   const requestCameraPermission = useCallback(async () => {
     // Reset the guard so a re-enabled camera can process scans again. Without
     // this, returning to a still-mounted Scan screen after a successful scan
     // would restart the camera but silently drop every subsequent QR code.
     hasHandledScan.current = false;
+    // Clear the last scan too, or re-scanning the same QR writes an identical
+    // value and the navigate effect never re-runs.
+    setScannedUri(null);
     setCameraError(null);
     if (
       typeof window === 'undefined' ||
@@ -136,11 +178,13 @@ export default function Scan({ navigation }: Props) {
 
     try {
       // Safari only displays its camera prompt while the request is tied to a user gesture.
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: { facingMode: { ideal: 'environment' } },
-      });
-      stream.getTracks().forEach(track => track.stop());
+      const stream = await navigator.mediaDevices.getUserMedia(
+        VIDEO_CONSTRAINTS,
+      );
+      // Keep it open and let the decode effect attach to it instead of
+      // re-acquiring the device.
+      stopStream(cameraStream.current);
+      cameraStream.current = stream;
       setIsCameraEnabled(true);
     } catch (error) {
       switch (error instanceof DOMException ? error.name : '') {
@@ -168,7 +212,10 @@ export default function Scan({ navigation }: Props) {
   };
 
   return (
-    <View style={[StyleSheet.absoluteFill, styles.container]}>
+    <View
+      style={[StyleSheet.absoluteFill, styles.container]}
+      onLayout={onLayout}
+    >
       {isCameraEnabled ? (
         <View style={StyleSheet.absoluteFill} testID="camera-wc-qr">
           <Video ref={videoRef} />
@@ -178,26 +225,29 @@ export default function Scan({ navigation }: Props) {
       {/* Dark overlay with a transparent center window + corner brackets.
           react-native-svg's evenodd cutout and stroked paths are unreliable on
           web, so this uses a boxShadow knockout and bordered Views instead, and
-          centers with flexbox to stay correct regardless of window dimensions. */}
-      <View
-        pointerEvents="none"
-        style={[StyleSheet.absoluteFill, webStyles.overlay]}
-      >
-        <View style={[webStyles.cutout, { marginTop: scanAreaTop }]}>
-          <View style={[webStyles.corner, webStyles.cornerTopLeft]} />
-          <View style={[webStyles.corner, webStyles.cornerTopRight]} />
-          <View style={[webStyles.corner, webStyles.cornerBottomLeft]} />
-          <View style={[webStyles.corner, webStyles.cornerBottomRight]} />
-          {!isCameraEnabled && (
-            <View style={webStyles.errorContainer}>
-              <Text variant="lg-400" style={webStyles.errorText}>
-                {cameraError ||
-                  'Camera unavailable. Allow camera access to scan codes.'}
-              </Text>
-            </View>
-          )}
+          centers horizontally with flexbox. Held back until onLayout reports a
+          height so the cutout doesn't jump on the first frame. */}
+      {frameHeight > 0 && (
+        <View
+          pointerEvents="none"
+          style={[StyleSheet.absoluteFill, webStyles.overlay]}
+        >
+          <View style={[webStyles.cutout, { marginTop: scanAreaTop }]}>
+            <View style={[webStyles.corner, webStyles.cornerTopLeft]} />
+            <View style={[webStyles.corner, webStyles.cornerTopRight]} />
+            <View style={[webStyles.corner, webStyles.cornerBottomLeft]} />
+            <View style={[webStyles.corner, webStyles.cornerBottomRight]} />
+            {!isCameraEnabled && (
+              <View style={webStyles.errorContainer}>
+                <Text variant="lg-400" style={webStyles.errorText}>
+                  {cameraError ||
+                    'Camera unavailable. Allow camera access to scan codes.'}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
+      )}
 
       <Button
         onPress={goBack}
@@ -210,7 +260,7 @@ export default function Scan({ navigation }: Props) {
         <SvgClose fill="white" height={14} width={14} />
       </Button>
 
-      {isCameraEnabled && (
+      {isCameraEnabled && frameHeight > 0 && (
         <View
           style={[
             styles.instructionContainer,
@@ -223,7 +273,7 @@ export default function Scan({ navigation }: Props) {
         </View>
       )}
 
-      {!isCameraEnabled && (
+      {!isCameraEnabled && frameHeight > 0 && (
         <Button
           accessibilityLabel="Allow camera access"
           onPress={requestCameraPermission}
