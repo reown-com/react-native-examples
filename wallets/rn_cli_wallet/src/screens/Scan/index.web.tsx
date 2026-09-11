@@ -104,18 +104,7 @@ export default function Scan({ navigation }: Props) {
           style={StyleSheet.absoluteFill}
           testID="camera-wc-qr"
         />
-      ) : (
-        <View style={styles.errorContainer}>
-          <Text
-            variant="lg-400"
-            color="text-invert"
-            style={webStyles.errorText}
-          >
-            {cameraError ||
-              'Camera unavailable. Allow camera access to scan codes.'}
-          </Text>
-        </View>
-      )}
+      ) : null}
 
       <Svg
         style={[StyleSheet.absoluteFill, styles.overlay]}
@@ -179,19 +168,31 @@ export default function Scan({ navigation }: Props) {
       </View>
 
       {!isCameraEnabled && (
-        <Button
-          accessibilityLabel="Allow camera access"
-          onPress={requestCameraPermission}
-          style={[
-            webStyles.allowCameraButton,
-            { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[12] },
-          ]}
-          testID="button-allow-camera"
-        >
-          <Text variant="md-500" color="text-invert">
-            Allow camera access
-          </Text>
-        </Button>
+        <>
+          <View pointerEvents="none" style={styles.errorContainer}>
+            <Text
+              variant="lg-400"
+              color="text-invert"
+              style={webStyles.errorText}
+            >
+              {cameraError ||
+                'Camera unavailable. Allow camera access to scan codes.'}
+            </Text>
+          </View>
+          <Button
+            accessibilityLabel="Allow camera access"
+            onPress={requestCameraPermission}
+            style={[
+              webStyles.allowCameraButton,
+              { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[12] },
+            ]}
+            testID="button-allow-camera"
+          >
+            <Text variant="md-500" color="text-invert">
+              Allow camera access
+            </Text>
+          </Button>
+        </>
       )}
     </View>
   );
