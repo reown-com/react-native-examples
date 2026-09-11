@@ -19,9 +19,9 @@ import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
 import { haptics } from '@/utils/haptics';
 import { Button } from '@/components/Button';
-import { Spacing } from '@/utils/ThemeUtil';
+import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
 
-const CUTOUT_RADIUS = 16;
+const CUTOUT_RADIUS = BorderRadius[4];
 
 // Ask for 720p. Unconstrained, Safari hands back 640x480, and since the QR
 // only fills the 280px cutout in the middle of a cover-scaled preview, its
@@ -380,7 +380,7 @@ const webStyles = StyleSheet.create({
     alignSelf: 'center',
     borderColor: 'white',
     borderWidth: 1,
-    borderRadius: 16,
+    borderRadius: BorderRadius[4],
     paddingHorizontal: Spacing[4],
     paddingVertical: Spacing[3],
   },
