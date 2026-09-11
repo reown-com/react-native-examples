@@ -1,5 +1,5 @@
 import { CameraView } from 'expo-camera';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,23 +26,34 @@ export default function Scan({ navigation }: Props) {
   const isFocused = useIsFocused();
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [scannedUri, setScannedUri] = useState<string | null>(null);
   const hasHandledScan = useRef(false);
   const scanAreaLeft = (screenWidth - SCAN_AREA_SIZE) / 2;
   const scanAreaTop = (screenHeight - SCAN_AREA_SIZE) / 3;
 
-  const onBarcodeScanned = useCallback(
-    ({ data }: { data: string }) => {
-      if (hasHandledScan.current || !data) return;
+  const onBarcodeScanned = useCallback(({ data }: { data: string }) => {
+    if (hasHandledScan.current || !data) return;
 
-      hasHandledScan.current = true;
-      haptics.scanSuccess();
+    hasHandledScan.current = true;
+    haptics.scanSuccess();
+    // Unmount the web camera before navigating. Its scanner runs on a timer,
+    // and navigating from inside that callback can leave React mid-render.
+    setIsCameraEnabled(false);
+    setScannedUri(data);
+  }, []);
+
+  useEffect(() => {
+    if (!scannedUri) return;
+
+    const frame = requestAnimationFrame(() => {
       navigation.navigate('Home', {
         screen: 'Connections',
-        params: { uri: data },
+        params: { uri: scannedUri },
       });
-    },
-    [navigation],
-  );
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [navigation, scannedUri]);
 
   const requestCameraPermission = useCallback(async () => {
     setCameraError(null);
