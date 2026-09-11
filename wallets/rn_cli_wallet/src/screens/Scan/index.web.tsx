@@ -23,10 +23,21 @@ import { Spacing } from '@/utils/ThemeUtil';
 
 const CUTOUT_RADIUS = 16;
 
+// Ask for 720p. Unconstrained, Safari hands back 640x480, and since the QR
+// only fills the 280px cutout in the middle of a cover-scaled preview, its
+// modules land on too few pixels for zxing to lock on quickly.
 const VIDEO_CONSTRAINTS: MediaStreamConstraints = {
   audio: false,
-  video: { facingMode: { ideal: 'environment' } },
+  video: {
+    facingMode: { ideal: 'environment' },
+    width: { ideal: 1280 },
+    height: { ideal: 720 },
+  },
 };
+
+// zxing defaults to 500ms between decode attempts, i.e. two tries a second,
+// which is what made scanning feel unresponsive.
+const READER_OPTIONS = { delayBetweenScanAttempts: 100 };
 
 const stopStream = (stream: MediaStream | null) =>
   stream?.getTracks().forEach(track => track.stop());
@@ -100,7 +111,7 @@ export default function Scan({ navigation }: Props) {
     if (!isCameraEnabled || !isFocused || !video) return;
 
     let isActive = true;
-    const codeReader = new BrowserQRCodeReader();
+    const codeReader = new BrowserQRCodeReader(undefined, READER_OPTIONS);
     // Hand zxing the stream the permission gesture already opened. Calling
     // getUserMedia a second time right after the first stream's tracks were
     // stopped makes Safari reject the request or serve a black preview.
