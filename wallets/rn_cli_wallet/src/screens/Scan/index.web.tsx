@@ -118,6 +118,10 @@ export default function Scan({ navigation }: Props) {
   }, [isCameraEnabled, isFocused, onBarcodeScanned]);
 
   const requestCameraPermission = useCallback(async () => {
+    // Reset the guard so a re-enabled camera can process scans again. Without
+    // this, returning to a still-mounted Scan screen after a successful scan
+    // would restart the camera but silently drop every subsequent QR code.
+    hasHandledScan.current = false;
     setCameraError(null);
     if (
       typeof window === 'undefined' ||
