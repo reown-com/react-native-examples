@@ -109,13 +109,25 @@ export default function Scan({ navigation }: Props) {
     const stream = cameraStream.current;
     cameraStream.current = null;
 
+    // Only the live generation may publish into the ref. A torn-down scanner
+    // that settles late would otherwise overwrite its successor's controls,
+    // and cleanup would then stop the wrong one.
+    const publishControls = (controls: { stop: () => void }) => {
+      if (!isActive) {
+        controls.stop();
+        return false;
+      }
+      scannerControls.current = controls;
+      return true;
+    };
+
     const onDecode = (
       result: { getText: () => string } | undefined,
       _error: unknown,
       controls: { stop: () => void },
     ) => {
-      scannerControls.current = controls;
-      if (result && isActive) {
+      if (!publishControls(controls)) return;
+      if (result) {
         onBarcodeScanned({ data: result.getText() });
       }
     };
@@ -124,20 +136,15 @@ export default function Scan({ navigation }: Props) {
       ? codeReader.decodeFromStream(stream, video, onDecode)
       : codeReader.decodeFromConstraints(VIDEO_CONSTRAINTS, video, onDecode);
 
-    decoding
-      .then(controls => {
-        scannerControls.current = controls;
-        if (!isActive) controls.stop();
-      })
-      .catch(() => {
-        // decodeFromStream can reject after attaching (play timeout) without
-        // releasing the device, and we own this stream now, so stop it here.
-        stopStream(stream);
-        if (isActive) {
-          setCameraError('Camera access could not be started.');
-          setIsCameraEnabled(false);
-        }
-      });
+    decoding.then(publishControls).catch(() => {
+      // decodeFromStream can reject after attaching (play timeout) without
+      // releasing the device, and we own this stream now, so stop it here.
+      stopStream(stream);
+      if (isActive) {
+        setCameraError('Camera access could not be started.');
+        setIsCameraEnabled(false);
+      }
+    });
 
     return () => {
       isActive = false;
@@ -189,8 +196,10 @@ export default function Scan({ navigation }: Props) {
     } catch (error) {
       switch (error instanceof DOMException ? error.name : '') {
         case 'NotAllowedError':
+          // Every browser reports NotAllowedError on denial, so keep this
+          // wording browser-neutral.
           setCameraError(
-            'Camera access was denied. Allow it in Safari settings, then try again.',
+            'Camera access was denied. Allow it in your browser settings, then try again.',
           );
           break;
         case 'NotFoundError':
