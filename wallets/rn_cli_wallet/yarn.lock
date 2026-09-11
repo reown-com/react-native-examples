@@ -4613,13 +4613,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/emscripten@npm:^1.41.5":
-  version: 1.41.6
-  resolution: "@types/emscripten@npm:1.41.6"
-  checksum: bf85ab15c8d931b38b46b38261258ba0fbec099ab25bc387e96f7eacadf4cd01e4f1f90e3b4f9454b651273c5d7f367826fe7be4f07321658a0056bf5390cfda
-  languageName: node
-  linkType: hard
-
 "@types/graceful-fs@npm:^4.1.3":
   version: 4.1.9
   resolution: "@types/graceful-fs@npm:4.1.9"
@@ -5245,6 +5238,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zxing/browser@npm:0.2.1":
+  version: 0.2.1
+  resolution: "@zxing/browser@npm:0.2.1"
+  dependencies:
+    "@zxing/text-encoding": ^0.9.0
+  peerDependencies:
+    "@zxing/library": ^0.23.0
+  dependenciesMeta:
+    "@zxing/text-encoding":
+      optional: true
+  checksum: 542cd184c7fee4dc5cf96b01bfbd2afaa2333e7b4ecb38cbf58ba4422642830d5e99aa8c1914f1a6a16422409215dd20b1ad3a6a203577cc0aaee2c2a395a50e
+  languageName: node
+  linkType: hard
+
+"@zxing/library@npm:0.23.0":
+  version: 0.23.0
+  resolution: "@zxing/library@npm:0.23.0"
+  dependencies:
+    "@zxing/text-encoding": ~0.9.0
+    ts-custom-error: ^3.3.1
+  dependenciesMeta:
+    "@zxing/text-encoding":
+      optional: true
+  checksum: 2921c553e2a74e9fd58d10e26110ade8f9ad7b05960650a49a9a5ccfadbd63de4276670279f69398d548fb09dfaa22b681cc93b0642178b3fceba0e97aa03cbf
+  languageName: node
+  linkType: hard
+
+"@zxing/text-encoding@npm:^0.9.0, @zxing/text-encoding@npm:~0.9.0":
+  version: 0.9.0
+  resolution: "@zxing/text-encoding@npm:0.9.0"
+  checksum: c23b12aee7639382e4949961304a1294776afaffa40f579e09ffecd0e5e68cf26ef3edd75009de46da8a536e571448755ca68b3e2ea707d53793c0edb2e2c34a
+  languageName: node
+  linkType: hard
+
 "RNWeb3Wallet@workspace:.":
   version: 0.0.0-use.local
   resolution: "RNWeb3Wallet@workspace:."
@@ -5289,6 +5316,8 @@ __metadata:
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
     "@walletconnect/react-native-compat": 2.23.10
+    "@zxing/browser": 0.2.1
+    "@zxing/library": 0.23.0
     babel-plugin-module-resolver: ^5.0.0
     babel-preset-expo: 56.0.15
     bip32: 4.0.0
@@ -5305,7 +5334,6 @@ __metadata:
     ethers: 6.13.5
     expo: 56.0.12
     expo-application: ~56.0.3
-    expo-camera: 56.0.8
     expo-clipboard: ~56.0.4
     expo-navigation-bar: ~56.0.3
     expo-system-ui: 56.0.5
@@ -6029,15 +6057,6 @@ __metadata:
   version: 1.0.2
   resolution: "balanced-match@npm:1.0.2"
   checksum: 9706c088a283058a8a99e0bf91b0a2f75497f185980d9ffa8b304de1d9e58ebda7c72c07ebf01dadedaac5b2907b2c6f566f660d62bd336c3468e960403b9d65
-  languageName: node
-  linkType: hard
-
-"barcode-detector@npm:^3.0.0":
-  version: 3.2.2
-  resolution: "barcode-detector@npm:3.2.2"
-  dependencies:
-    zxing-wasm: 3.1.3
-  checksum: e5586fcd09eed0c7ddf6e295a556e62425b0065c777f1f5238886cd0b7c3966cdf3d351569a37611ecfa4bc428a442c8a5bf0f3c78ddb4d5bbe4f4cd0a5cbae5
   languageName: node
   linkType: hard
 
@@ -8365,23 +8384,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 063408a76d0e0ec4e38711b05995b1686ca2cb4fde8fbfeba9110abac3d547fe07da83b657592811e825f2e3de396cd4d66428ba27347af0f41cea5dcd513ca5
-  languageName: node
-  linkType: hard
-
-"expo-camera@npm:56.0.8":
-  version: 56.0.8
-  resolution: "expo-camera@npm:56.0.8"
-  dependencies:
-    barcode-detector: ^3.0.0
-  peerDependencies:
-    expo: "*"
-    react: "*"
-    react-native: "*"
-    react-native-web: "*"
-  peerDependenciesMeta:
-    react-native-web:
-      optional: true
-  checksum: 813092cab64155a47de3e8967e6cee03ab43b0e17e87ca606da81c33b9bf912b43928c45292a3f553c814575f11878c6a6c1252f6e412ae47abeb6d51f92f620
   languageName: node
   linkType: hard
 
@@ -14669,13 +14671,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tagged-tag@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "tagged-tag@npm:1.0.0"
-  checksum: e37653df3e495daa7ea7790cb161b810b00075bba2e4d6c93fb06a709e747e3ae9da11a120d0489833203926511b39e038a2affbd9d279cfb7a2f3fcccd30b5d
-  languageName: node
-  linkType: hard
-
 "tar-fs@npm:2.1.4":
   version: 2.1.4
   resolution: "tar-fs@npm:2.1.4"
@@ -14891,6 +14886,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-custom-error@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "ts-custom-error@npm:3.3.1"
+  checksum: 50a1e825fced68d70049bd8d282379a635e43aa023a370fa8e736b12a6edba7f18a2d731fa194ac35303a8b625be56e121bdb31d8a0318250d1a8b277059fce3
+  languageName: node
+  linkType: hard
+
 "ts-dedent@npm:^2.2.0":
   version: 2.2.0
   resolution: "ts-dedent@npm:2.2.0"
@@ -14969,15 +14971,6 @@ __metadata:
   version: 0.7.1
   resolution: "type-fest@npm:0.7.1"
   checksum: 5b1b113529d59949d97b76977d545989ddc11b81bb0c766b6d2ccc65473cb4b4a5c7d24f5be2c2bb2de302a5d7a13c1732ea1d34c8c59b7e0ec1f890cf7fc424
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:^5.8.0":
-  version: 5.9.0
-  resolution: "type-fest@npm:5.9.0"
-  dependencies:
-    tagged-tag: ^1.0.0
-  checksum: baf464cd769369ca9185396e2aeacdf6f78410b524f16377109d5d6c2c2a6be522f3e8ab3a6b0d8fc8ccfef50aa72c19c38f0bc1cbde5bd483d280315759fa1a
   languageName: node
   linkType: hard
 
@@ -15982,17 +15975,5 @@ __metadata:
   version: 4.3.6
   resolution: "zod@npm:4.3.6"
   checksum: 19cec761b46bae4b6e7e861ea740f3f248e50a6671825afc8a5758e27b35d6f20ccde9942422fd5cf6f8b697f18bd05ef8bb33f5f2db112ab25cc628de2fae47
-  languageName: node
-  linkType: hard
-
-"zxing-wasm@npm:3.1.3":
-  version: 3.1.3
-  resolution: "zxing-wasm@npm:3.1.3"
-  dependencies:
-    "@types/emscripten": ^1.41.5
-    type-fest: ^5.8.0
-  peerDependencies:
-    "@types/emscripten": ">=1.39.6"
-  checksum: 28306d79c6478d21cdc91c9c40a51de1e232075fe18c3d3a19b58453361ad1539c3787ceae0fc15e686e5cefbd43fbc52f1bc93974a9bc9e0970a48fac360b76
   languageName: node
   linkType: hard

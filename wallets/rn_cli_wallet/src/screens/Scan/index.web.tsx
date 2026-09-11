@@ -1,5 +1,13 @@
-import { CameraView } from 'expo-camera';
-import { useCallback, useEffect, useRef, useState } from 'react';
+/// <reference lib="dom" />
+import { BrowserQRCodeReader } from '@zxing/browser';
+import {
+  createElement,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,6 +25,16 @@ import { Spacing } from '@/utils/ThemeUtil';
 
 const CUTOUT_RADIUS = 16;
 
+const Video = forwardRef<HTMLVideoElement>((_, ref) =>
+  createElement('video', {
+    autoPlay: true,
+    muted: true,
+    playsInline: true,
+    ref,
+    style: webStyles.video,
+  }),
+);
+
 type Props = RootStackScreenProps<'Scan'>;
 
 export default function Scan({ navigation }: Props) {
@@ -27,6 +45,8 @@ export default function Scan({ navigation }: Props) {
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [scannedUri, setScannedUri] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const scannerControls = useRef<{ stop: () => void } | null>(null);
   const hasHandledScan = useRef(false);
   const scanAreaLeft = (screenWidth - SCAN_AREA_SIZE) / 2;
   const scanAreaTop = (screenHeight - SCAN_AREA_SIZE) / 3;
@@ -54,6 +74,44 @@ export default function Scan({ navigation }: Props) {
 
     return () => cancelAnimationFrame(frame);
   }, [navigation, scannedUri]);
+
+  useEffect(() => {
+    if (!isCameraEnabled || !isFocused || !videoRef.current) return;
+
+    let isActive = true;
+    const codeReader = new BrowserQRCodeReader();
+
+    codeReader
+      .decodeFromConstraints(
+        {
+          audio: false,
+          video: { facingMode: { ideal: 'environment' } },
+        },
+        videoRef.current,
+        (result, _error, controls) => {
+          scannerControls.current = controls;
+          if (result && isActive) {
+            onBarcodeScanned({ data: result.getText() });
+          }
+        },
+      )
+      .then(controls => {
+        scannerControls.current = controls;
+        if (!isActive) controls.stop();
+      })
+      .catch(() => {
+        if (isActive) {
+          setCameraError('Camera access could not be started.');
+          setIsCameraEnabled(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+      scannerControls.current?.stop();
+      scannerControls.current = null;
+    };
+  }, [isCameraEnabled, isFocused, onBarcodeScanned]);
 
   const requestCameraPermission = useCallback(async () => {
     setCameraError(null);
@@ -97,11 +155,6 @@ export default function Scan({ navigation }: Props) {
     }
   }, []);
 
-  const onCameraMountError = useCallback(({ message }: { message: string }) => {
-    setCameraError(message);
-    setIsCameraEnabled(false);
-  }, []);
-
   const goBack = () => {
     navigation.goBack();
   };
@@ -109,14 +162,9 @@ export default function Scan({ navigation }: Props) {
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]}>
       {isCameraEnabled ? (
-        <CameraView
-          active={isFocused}
-          barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
-          onBarcodeScanned={onBarcodeScanned}
-          onMountError={onCameraMountError}
-          style={StyleSheet.absoluteFill}
-          testID="camera-wc-qr"
-        />
+        <View style={StyleSheet.absoluteFill} testID="camera-wc-qr">
+          <Video ref={videoRef} />
+        </View>
       ) : null}
 
       <Svg
@@ -152,6 +200,7 @@ export default function Scan({ navigation }: Props) {
       <View
         style={[
           styles.scanFrame,
+          webStyles.scanFrame,
           { top: scanAreaTop - 14, left: scanAreaLeft - 14 },
         ]}
       >
@@ -214,6 +263,14 @@ export default function Scan({ navigation }: Props) {
 }
 
 const webStyles = StyleSheet.create({
+  scanFrame: {
+    zIndex: 1,
+  },
+  video: {
+    height: '100%',
+    objectFit: 'cover',
+    width: '100%',
+  },
   errorText: {
     textAlign: 'center',
     paddingHorizontal: Spacing[5],
