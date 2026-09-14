@@ -330,7 +330,7 @@ describe('PaymentStore', () => {
     expect(mockedConfirmPayment).toHaveBeenCalledWith({
       paymentId: 'payment-1',
       optionId: 'signature-option',
-      signatures: ['0xsigned'],
+      data: ['0xsigned'],
     });
     expect(mockedStorageSetItem).toHaveBeenCalledWith(
       'PAY_LAST_TOKEN_UNIT',
@@ -526,7 +526,7 @@ describe('PaymentStore', () => {
     expect(mockedConfirmPayment).toHaveBeenCalledWith({
       paymentId: 'payment-1',
       optionId: 'single-step-sendtx-option',
-      signatures: ['0xhash'],
+      data: ['0xhash'],
     });
     expect(PaymentStore.state.resultStatus).toBe('success');
   });
@@ -575,7 +575,7 @@ describe('PaymentStore', () => {
     expect(mockedConfirmPayment).toHaveBeenCalledWith({
       paymentId: 'payment-1',
       optionId: 'approval-option',
-      signatures: ['0xhash', '0xsigned'],
+      data: ['0xhash', '0xsigned'],
     });
     expect(PaymentStore.state.resultStatus).toBe('success');
   });
@@ -736,7 +736,7 @@ describe('PaymentStore', () => {
     expect(mockedConfirmPayment).toHaveBeenCalledWith({
       paymentId: 'payment-1',
       optionId: 'solana-option',
-      signatures: ['signed-b64'],
+      data: ['signed-b64'],
     });
     expect(PaymentStore.state.resultStatus).toBe('success');
   });

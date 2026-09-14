@@ -519,7 +519,10 @@ const PaymentStore = {
         throw new Error('Pay SDK not available');
       }
 
-      const signatures: string[] = [];
+      // One wallet RPC result per action, sent to the gateway via the Pay
+      // SDK's `data` field (plain strings here; chains with object results,
+      // e.g. Tron, would push JSON objects).
+      const data: string[] = [];
       const paymentActions = await PaymentStore.fetchPaymentActions(
         selectedOption,
       );
@@ -651,7 +654,7 @@ const PaymentStore = {
               'approvePayment',
               { chainId, step: stepLabel, txHash: tx.hash },
             );
-            signatures.push(tx.hash);
+            data.push(tx.hash);
             break;
           }
 
@@ -704,7 +707,7 @@ const PaymentStore = {
               types,
               messageData,
             );
-            signatures.push(signature);
+            data.push(signature);
             break;
           }
 
@@ -746,7 +749,7 @@ const PaymentStore = {
               'approvePayment',
               { chainId, step: stepLabel, signature },
             );
-            signatures.push(signedTransaction);
+            data.push(signedTransaction);
             break;
           }
 
@@ -756,7 +759,7 @@ const PaymentStore = {
       }
 
       LogStore.log('Confirming payment', 'PaymentStore', 'approvePayment', {
-        signaturesCount: signatures.length,
+        dataCount: data.length,
       });
 
       // Identity-collection values gathered by the in-app form (web). Omitted
@@ -767,7 +770,7 @@ const PaymentStore = {
       const confirmResult = await payClient.confirmPayment({
         paymentId: paymentOptions.paymentId,
         optionId: selectedOption.id,
-        signatures,
+        data,
         collectedData: collectedData?.length ? collectedData : undefined,
       });
 
