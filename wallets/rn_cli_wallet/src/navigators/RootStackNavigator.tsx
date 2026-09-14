@@ -17,6 +17,8 @@ const headerTitleStyle = {
   fontSize: 17,
 };
 
+const renderHeader = () => <Header />;
+
 export function RootStackNavigator() {
   const Theme = useTheme();
   useLogs();
@@ -37,7 +39,7 @@ export function RootStackNavigator() {
       <StackNavigator.Screen
         options={{
           headerShown: true,
-          header: Header,
+          header: renderHeader,
         }}
         name="Home"
         component={HomeTabNavigator}

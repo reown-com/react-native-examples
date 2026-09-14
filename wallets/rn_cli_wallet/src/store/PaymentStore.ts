@@ -5,6 +5,7 @@ import type {
   ConfirmPaymentResponse,
   PaymentOptionsResponse,
   PaymentOption,
+  ConfirmPaymentParams,
 } from '@walletconnect/pay';
 import type { TransactionRequest } from 'ethers';
 import { Platform } from 'react-native';
@@ -23,6 +24,8 @@ import {
 import type { ErrorType } from '@/modals/PaymentOptionsModal/utils';
 import { EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SOLANA_SIGNING_METHODS } from '@/constants/Solana';
+import { TRON_SIGNING_METHODS } from '@/constants/Tron';
+import type TronLib from '@/lib/TronLib';
 import type SolanaLib from '@/lib/SolanaLib';
 import {
   estimateTransactionFee,
@@ -519,7 +522,10 @@ const PaymentStore = {
         throw new Error('Pay SDK not available');
       }
 
-      const signatures: string[] = [];
+      // One wallet RPC result per action, sent to the gateway via the Pay
+      // SDK's `data` field: plain strings (signatures, tx hashes) or JSON
+      // objects (Tron's `{ raw_data_hex, signature }`), forwarded verbatim.
+      const data: NonNullable<ConfirmPaymentParams['data']> = [];
       const paymentActions = await PaymentStore.fetchPaymentActions(
         selectedOption,
       );
@@ -582,6 +588,7 @@ const PaymentStore = {
           | (typeof eip155Wallets)[keyof typeof eip155Wallets]
           | undefined;
         let solanaWallet: SolanaLib | undefined;
+        let tronWallet: TronLib | undefined;
 
         switch (namespace) {
           case 'eip155': {
@@ -598,6 +605,14 @@ const PaymentStore = {
               throw new Error('Solana wallet not initialized');
             }
             solanaWallet = stored;
+            break;
+          }
+          case 'tron': {
+            const stored = SettingsStore.state.tronWallet;
+            if (!stored) {
+              throw new Error('Tron wallet not initialized');
+            }
+            tronWallet = stored;
             break;
           }
           default:
@@ -651,7 +666,7 @@ const PaymentStore = {
               'approvePayment',
               { chainId, step: stepLabel, txHash: tx.hash },
             );
-            signatures.push(tx.hash);
+            data.push(tx.hash);
             break;
           }
 
@@ -704,7 +719,7 @@ const PaymentStore = {
               types,
               messageData,
             );
-            signatures.push(signature);
+            data.push(signature);
             break;
           }
 
@@ -746,7 +761,56 @@ const PaymentStore = {
               'approvePayment',
               { chainId, step: stepLabel, signature },
             );
-            signatures.push(signedTransaction);
+            data.push(signedTransaction);
+            break;
+          }
+
+          case TRON_SIGNING_METHODS.TRON_SIGN_TRANSACTION: {
+            if (!tronWallet) {
+              throw new Error(
+                `${method} requires a tron chainId, got ${chainId}`,
+              );
+            }
+            // Params may be a bare object or array-wrapped, and `transaction`
+            // is either the transaction itself or `{ transaction }` — the same
+            // shapes the Sign request handler accepts.
+            const rawParams = Array.isArray(parsedParams)
+              ? parsedParams[0]
+              : parsedParams;
+            if (
+              !rawParams ||
+              typeof rawParams !== 'object' ||
+              Array.isArray(rawParams)
+            ) {
+              throw new Error(
+                `Invalid params for ${method} (${stepLabel}): expected object`,
+              );
+            }
+            const request = rawParams as {
+              transaction?: { transaction?: unknown } & Record<string, unknown>;
+            };
+            const transaction =
+              request.transaction?.transaction ?? request.transaction;
+            if (!transaction || typeof transaction !== 'object') {
+              throw new Error(
+                `Missing transaction in Tron payment action params (${stepLabel})`,
+              );
+            }
+
+            // Tron is a sign-only relay: WC Pay built these bytes, committed
+            // to their txID and broadcasts them itself, so the wallet only
+            // signs. The gateway wants `{ raw_data_hex, signature }` as an
+            // object in the confirm result; `data` carries it as-is.
+            const signed = tronWallet.signPaymentTransaction(
+              transaction as Parameters<TronLib['signPaymentTransaction']>[0],
+            );
+            LogStore.log(
+              'Tron payment transaction signed',
+              'PaymentStore',
+              'approvePayment',
+              { chainId, step: stepLabel },
+            );
+            data.push(signed);
             break;
           }
 
@@ -756,7 +820,7 @@ const PaymentStore = {
       }
 
       LogStore.log('Confirming payment', 'PaymentStore', 'approvePayment', {
-        signaturesCount: signatures.length,
+        dataCount: data.length,
       });
 
       // Identity-collection values gathered by the in-app form (web). Omitted
@@ -767,7 +831,7 @@ const PaymentStore = {
       const confirmResult = await payClient.confirmPayment({
         paymentId: paymentOptions.paymentId,
         optionId: selectedOption.id,
-        signatures,
+        data,
         collectedData: collectedData?.length ? collectedData : undefined,
       });
 

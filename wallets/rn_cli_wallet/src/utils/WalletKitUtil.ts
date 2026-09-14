@@ -15,11 +15,20 @@ export async function createWalletKit(relayerRegionURL: string) {
     storage,
     relayUrl: relayerRegionURL || undefined,
   });
+  // Pay defaults to production, authenticating with the WalletConnect project
+  // ID. Other environments (e.g. staging, where new chains land first) run
+  // their own credential registry, so they need their own gateway URL and
+  // Pay app ID.
   const payApiBaseUrl = ENV.PAY_API_BASE_URL || undefined;
+  const payAppId = ENV.PAY_APP_ID || undefined;
+  const payConfig = {
+    ...(payApiBaseUrl ? { baseUrl: payApiBaseUrl } : {}),
+    ...(payAppId ? { appId: payAppId } : {}),
+  };
   walletKit = await WalletKit.init({
     core,
     metadata: getMetadata(),
-    ...(payApiBaseUrl ? { payConfig: { baseUrl: payApiBaseUrl } } : {}),
+    ...(Object.keys(payConfig).length ? { payConfig } : {}),
   });
 
   try {

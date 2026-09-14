@@ -1,4 +1,5 @@
 import { storage } from "@/utils/storage";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { DateRangeFilterType, LogLevelFilterType } from "@/utils/types";
 import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
@@ -39,6 +40,21 @@ interface LogsStore {
 
 // -- Constants ----------------------------------------- //
 const MAX_LOGS_COUNT = 100;
+
+const logsStorage = {
+  getItem: <T = any>(key: string) => {
+    if (isRunningInIframe()) return null;
+    return storage.getItem<T>(key);
+  },
+  setItem: <T = any>(key: string, value: T) => {
+    if (isRunningInIframe()) return;
+    return storage.setItem(key, value);
+  },
+  removeItem: (key: string) => {
+    if (isRunningInIframe()) return;
+    return storage.removeItem(key);
+  },
+};
 
 // -- Store --------------------------------------------- //
 export const useLogsStore = create<LogsStore>()(
@@ -95,7 +111,7 @@ export const useLogsStore = create<LogsStore>()(
     {
       name: "logs",
       version: 1,
-      storage,
+      storage: logsStorage,
       onRehydrateStorage: () => (state, error) => {
         if (error) {
           console.error("Logs hydration failed:", error);

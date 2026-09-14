@@ -5,12 +5,14 @@ import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
 import { useLogsStore } from "@/store/useLogsStore";
+import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   amountToCents,
@@ -20,8 +22,13 @@ import {
 import { formatCountdown, formatCountdownSpoken } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
 import { isNfcHceEnabled, isSandboxModeAvailable } from "@/utils/feature-flags";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
+import { getMerchantIdForSession } from "@/utils/pos-bridge-ui";
+import { buildPaymentSuccessParams } from "@/utils/payment-success-params";
+import { PaymentStatusResponse } from "@/utils/types";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
+import * as Sentry from "@sentry/react-native";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
@@ -30,6 +37,7 @@ import {
   Stack,
   UnknownOutputParams,
   useLocalSearchParams,
+  useNavigation,
 } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AccessibilityInfo, StyleSheet, View } from "react-native";
@@ -59,10 +67,19 @@ export default function ScanScreen() {
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [sandboxProcessing, setSandboxProcessing] = useState(false);
   const hasNavigatedRef = useRef(false);
+  const hasCancelledRef = useRef(false);
+  const hasLeftRef = useRef(false);
+  const navigation = useNavigation();
 
   const deviceId = useSettingsStore((state) => state.deviceId);
-  const merchantId = useSettingsStore((state) => state.merchantId);
+  const storedMerchantId = useSettingsStore((state) => state.merchantId);
   const sandboxMode = useSettingsStore((state) => state.sandboxMode);
+  const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
+  const merchantId = getMerchantIdForSession(
+    isRunningInIframe(),
+    storedMerchantId,
+    bridgeMerchantId,
+  );
   const currencyCode = useSettingsStore((state) => state.currency);
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const currency = getCurrency(currencyCode);
@@ -93,18 +110,18 @@ export default function ScanScreen() {
     },
   });
 
-  const onSuccess = useCallback(() => {
-    if (hasNavigatedRef.current) return;
-    hasNavigatedRef.current = true;
-    router.dismiss();
-    router.replace({
-      pathname: "/payment-success",
-      params: {
-        amount,
-        paymentId,
-      },
-    });
-  }, [paymentId, amount]);
+  const onSuccess = useCallback(
+    (completedPaymentId: string, payment?: PaymentStatusResponse) => {
+      if (hasNavigatedRef.current) return;
+      hasNavigatedRef.current = true;
+      router.dismiss();
+      router.replace({
+        pathname: "/payment-success",
+        params: buildPaymentSuccessParams(amount, completedPaymentId, payment),
+      });
+    },
+    [amount],
+  );
 
   const onFailure = useCallback(
     (errorCode?: string, minAmount?: string) => {
@@ -126,22 +143,8 @@ export default function ScanScreen() {
   const handleOnCancelPress = () => {
     if (isSandboxPayment) {
       setSandboxProcessing(false);
-      resetNavigation("/amount");
-      return;
     }
-
-    // Before the first status poll resolves, `paymentStatusData` is undefined
-    // but the payment is already open at the gateway — cancel it then too.
-    const status = paymentStatusData?.status;
-    if (paymentId && (status === undefined || status === "requires_action")) {
-      cancelPayment(paymentId).catch((error) => {
-        addLog("error", "Failed to cancel payment", "scan", "cancelPayment", {
-          paymentId,
-          error,
-        });
-        showErrorToast("We couldn't cancel this payment. Try again.");
-      });
-    }
+    // The `beforeRemove` listener below cancels the payment on leave.
     resetNavigation("/amount");
   };
 
@@ -195,6 +198,24 @@ export default function ScanScreen() {
 
         const data = await startPayment(paymentRequest);
 
+        // The user can back out while this create call is in flight, before
+        // `paymentId` state exists for the `beforeRemove` listener to cancel.
+        // Cancel the freshly opened payment here instead of rendering a QR for
+        // a screen that's already gone.
+        if (hasLeftRef.current) {
+          hasCancelledRef.current = true;
+          cancelPayment(data.paymentId).catch((error) => {
+            addLog(
+              "error",
+              "Failed to cancel payment",
+              "scan",
+              "cancelPayment",
+              { paymentId: data.paymentId, error },
+            );
+          });
+          return;
+        }
+
         addLog("info", "Payment started", "scan", "initiatePayment", {
           paymentId: data.paymentId,
           gatewayUrl: data.gatewayUrl,
@@ -203,6 +224,8 @@ export default function ScanScreen() {
         setPaymentId(data.paymentId);
         setExpiresAt(data.expiresAt);
       } catch (error: any) {
+        // Nothing to route to if the user already left mid-request.
+        if (hasLeftRef.current) return;
         addLog(
           "error",
           (error as Error).message || "Unknown error",
@@ -246,11 +269,21 @@ export default function ScanScreen() {
     enabled: !isSandboxPayment && !!paymentId && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "succeeded") {
+        if (!paymentId) {
+          addLog(
+            "error",
+            "Cannot show payment success without a payment ID",
+            "scan",
+            "usePaymentStatus",
+            { data },
+          );
+          return;
+        }
         addLog("info", "Payment completed", "scan", "usePaymentStatus", {
           paymentId,
           data,
         });
-        onSuccess();
+        onSuccess(paymentId, data);
       } else {
         addLog("error", data.status, "scan", "usePaymentStatus", {
           paymentId,
@@ -260,6 +293,46 @@ export default function ScanScreen() {
       }
     },
   });
+
+  // Cancel the open payment when the user leaves the scan screen. `hasNavigatedRef`
+  // is set before we route to success/failure, so those transitions don't cancel.
+  // A still-undefined status means the payment is open but the first poll hasn't
+  // resolved yet — cancel then too.
+  const cancelPendingPayment = useCallback(() => {
+    if (hasNavigatedRef.current || hasCancelledRef.current) return;
+    if (isSandboxPayment) return;
+    // Record the leave so an in-flight `startPayment` cancels the payment it
+    // creates instead of leaking it (see `initiatePayment`).
+    hasLeftRef.current = true;
+    const status = paymentStatusData?.status;
+    if (paymentId && (status === undefined || status === "requires_action")) {
+      hasCancelledRef.current = true;
+      cancelPayment(paymentId).catch((error) => {
+        addLog("error", "Failed to cancel payment", "scan", "cancelPayment", {
+          paymentId,
+          error,
+        });
+        // No "try again" — by the time this rejects the user has already left
+        // the scan screen and has no way to retry from here.
+        showErrorToast("We couldn't cancel this payment.");
+      });
+    }
+  }, [paymentId, paymentStatusData?.status, addLog, isSandboxPayment]);
+
+  // Hold the latest callback in a ref so the `beforeRemove` listener stays
+  // registered once for the screen's lifetime instead of being torn down and
+  // re-added on every status poll (which changes `cancelPendingPayment`).
+  const cancelPendingPaymentRef = useRef(cancelPendingPayment);
+  useEffect(() => {
+    cancelPendingPaymentRef.current = cancelPendingPayment;
+  }, [cancelPendingPayment]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", () => {
+      cancelPendingPaymentRef.current();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const { remainingSeconds, isActive: isCountdownActive } = useCountdown({
     expiresAt,
@@ -307,8 +380,13 @@ export default function ScanScreen() {
   const backHidden =
     !!paymentStatusData && paymentStatusData.status !== "requires_action";
 
+  // Block the Android hardware back button whenever the header back and gesture
+  // are hidden, so it can't pop the screen mid-confirmation.
+  useDisableBackButton(backHidden);
+
   return (
     <View style={styles.container}>
+      <Sentry.TimeToFullDisplay ready={!!qrUri} />
       <Stack.Screen
         options={{
           headerBackVisible: !backHidden,

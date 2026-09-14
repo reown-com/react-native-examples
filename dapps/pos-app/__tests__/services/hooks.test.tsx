@@ -307,6 +307,16 @@ describe("Payment Hooks", () => {
             status: "succeeded",
             isFinal: true,
             pollInMs: 0,
+            info: {
+              optionAmount: {
+                value: "10000",
+                display: {
+                  assetSymbol: "USDC",
+                  decimals: 6,
+                  networkName: "Solana",
+                },
+              },
+            },
           });
         });
 
@@ -453,6 +463,16 @@ describe("Payment Hooks", () => {
             status: "succeeded",
             isFinal: true,
             pollInMs: 0,
+            info: {
+              optionAmount: {
+                value: "10000",
+                display: {
+                  assetSymbol: "USDC",
+                  decimals: 6,
+                  networkName: "Solana",
+                },
+              },
+            },
           });
         });
 
@@ -490,6 +510,16 @@ describe("Payment Hooks", () => {
           expect.objectContaining({
             status: "succeeded",
             isFinal: true,
+            info: expect.objectContaining({
+              optionAmount: expect.objectContaining({
+                value: "10000",
+                display: expect.objectContaining({
+                  assetSymbol: "USDC",
+                  decimals: 6,
+                  networkName: "Solana",
+                }),
+              }),
+            }),
           }),
         );
         // Should only be called once

@@ -3,6 +3,7 @@ import {
   StartPaymentRequest,
   StartPaymentResponse,
 } from "@/utils/types";
+import * as Sentry from "@sentry/react-native";
 import { apiClient, getApiHeaders } from "./client";
 
 /**
@@ -13,10 +14,17 @@ import { apiClient, getApiHeaders } from "./client";
 export async function startPayment(
   request: StartPaymentRequest,
 ): Promise<StartPaymentResponse> {
-  const headers = await getApiHeaders();
-  return apiClient.post<StartPaymentResponse>("/merchant/payment", request, {
-    headers,
-  });
+  return Sentry.startSpan(
+    { name: "payment.create", op: "payment.create" },
+    async () => {
+      const headers = await getApiHeaders();
+      return apiClient.post<StartPaymentResponse>(
+        "/merchant/payment",
+        request,
+        { headers },
+      );
+    },
+  );
 }
 
 /**
@@ -46,6 +54,11 @@ export async function cancelPayment(paymentId: string): Promise<void> {
   if (!paymentId?.trim()) {
     throw new Error("paymentId is required");
   }
-  const headers = await getApiHeaders();
-  await apiClient.post(`/payments/${paymentId}/cancel`, {}, { headers });
+  await Sentry.startSpan(
+    { name: "payment.cancel", op: "payment.cancel" },
+    async () => {
+      const headers = await getApiHeaders();
+      await apiClient.post(`/payments/${paymentId}/cancel`, {}, { headers });
+    },
+  );
 }

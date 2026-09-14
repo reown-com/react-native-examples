@@ -26,7 +26,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@sentry/react-native": "7.11.0",
+    "@sentry/react-native": "8.23.0",
     "@shopify/react-native-skia": "2.6.2",
     "@tanstack/react-query": "5.90.11",
     "@walletconnect/safe-json": "1.0.2",

@@ -17,12 +17,14 @@ jest.mock('../src/store/LogStore', () => ({
 }));
 
 const mockedSolanaSignTransaction = jest.fn();
+const mockedTronSignPaymentTransaction = jest.fn();
 jest.mock('../src/store/SettingsStore', () => ({
   __esModule: true,
   default: {
     state: {
       eip155Address: '0xabc',
       solanaWallet: { signTransaction: mockedSolanaSignTransaction },
+      tronWallet: { signPaymentTransaction: mockedTronSignPaymentTransaction },
     },
   },
 }));
@@ -72,6 +74,7 @@ import PaymentStore from '../src/store/PaymentStore';
 import SettingsStore from '../src/store/SettingsStore';
 import { EIP155_SIGNING_METHODS } from '../src/constants/Eip155';
 import { SOLANA_SIGNING_METHODS } from '../src/constants/Solana';
+import { TRON_SIGNING_METHODS } from '../src/constants/Tron';
 import { walletKit } from '../src/utils/WalletKitUtil';
 import { eip155Wallets } from '../src/utils/EIP155WalletUtil';
 import { storage } from '../src/utils/storage';
@@ -119,6 +122,21 @@ function createSolanaAction(
   return {
     walletRpc: {
       chainId: SOLANA_CHAIN_ID,
+      method,
+      params: JSON.stringify(params),
+    },
+  };
+}
+
+const TRON_CHAIN_ID = 'tron:0x2b6653dc';
+
+function createTronAction(
+  method: string,
+  params: Record<string, unknown> | unknown[],
+): Action {
+  return {
+    walletRpc: {
+      chainId: TRON_CHAIN_ID,
       method,
       params: JSON.stringify(params),
     },
@@ -232,6 +250,9 @@ describe('PaymentStore', () => {
     (SettingsStore.state as any).solanaWallet = {
       signTransaction: mockedSolanaSignTransaction,
     };
+    (SettingsStore.state as any).tronWallet = {
+      signPaymentTransaction: mockedTronSignPaymentTransaction,
+    };
     mockedStorageGetItem.mockResolvedValue(undefined);
     mockedStorageSetItem.mockResolvedValue(undefined as any);
     mockedStorageRemoveItem.mockResolvedValue(undefined as any);
@@ -330,7 +351,7 @@ describe('PaymentStore', () => {
     expect(mockedConfirmPayment).toHaveBeenCalledWith({
       paymentId: 'payment-1',
       optionId: 'signature-option',
-      signatures: ['0xsigned'],
+      data: ['0xsigned'],
     });
     expect(mockedStorageSetItem).toHaveBeenCalledWith(
       'PAY_LAST_TOKEN_UNIT',
@@ -526,7 +547,7 @@ describe('PaymentStore', () => {
     expect(mockedConfirmPayment).toHaveBeenCalledWith({
       paymentId: 'payment-1',
       optionId: 'single-step-sendtx-option',
-      signatures: ['0xhash'],
+      data: ['0xhash'],
     });
     expect(PaymentStore.state.resultStatus).toBe('success');
   });
@@ -575,7 +596,7 @@ describe('PaymentStore', () => {
     expect(mockedConfirmPayment).toHaveBeenCalledWith({
       paymentId: 'payment-1',
       optionId: 'approval-option',
-      signatures: ['0xhash', '0xsigned'],
+      data: ['0xhash', '0xsigned'],
     });
     expect(PaymentStore.state.resultStatus).toBe('success');
   });
@@ -736,7 +757,59 @@ describe('PaymentStore', () => {
     expect(mockedConfirmPayment).toHaveBeenCalledWith({
       paymentId: 'payment-1',
       optionId: 'solana-option',
-      signatures: ['signed-b64'],
+      data: ['signed-b64'],
+    });
+    expect(PaymentStore.state.resultStatus).toBe('success');
+  });
+
+  it('signs Tron payment actions verbatim and forwards the { raw_data_hex, signature } object', async () => {
+    const unsignedTx = {
+      txID: 'aa'.repeat(32),
+      raw_data_hex: '0a02',
+      raw_data: { contract: [] },
+    };
+    const signedTx = {
+      raw_data_hex: '0a02',
+      signature: ['0x' + 'ab'.repeat(65)],
+    };
+    mockedTronSignPaymentTransaction.mockReturnValue(signedTx);
+    mockedGetRequiredPaymentActions.mockResolvedValue([
+      createTronAction(TRON_SIGNING_METHODS.TRON_SIGN_TRANSACTION, [
+        { transaction: unsignedTx },
+      ]),
+    ]);
+
+    const paymentOptions = createPaymentOptions([
+      {
+        id: 'tron-option',
+        account: `${TRON_CHAIN_ID}:TBuyerAddress`,
+        amount: {
+          unit: `caip19/${TRON_CHAIN_ID}/trc20:TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t`,
+          value: '1000000',
+          display: {
+            assetSymbol: 'USDT',
+            assetName: 'Tether USD',
+            decimals: 6,
+            networkName: 'Tron',
+            iconUrl: 'https://example.com/usdt.png',
+            networkIconUrl: 'https://example.com/tron.png',
+          },
+        } as PaymentOption['amount'],
+        actions: [],
+      },
+    ]);
+
+    PaymentStore.setPaymentOptions(paymentOptions);
+    PaymentStore.selectOption(paymentOptions.options[0]);
+
+    await flushPromises();
+    await PaymentStore.approvePayment();
+
+    expect(mockedTronSignPaymentTransaction).toHaveBeenCalledWith(unsignedTx);
+    expect(mockedConfirmPayment).toHaveBeenCalledWith({
+      paymentId: 'payment-1',
+      optionId: 'tron-option',
+      data: [signedTx],
     });
     expect(PaymentStore.state.resultStatus).toBe('success');
   });

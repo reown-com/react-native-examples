@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { HceModule } from "@/modules/hce";
+import * as Sentry from "@sentry/react-native";
 import { NfcMode, useNfcCapabilities } from "./use-nfc-capabilities";
 
 interface UseNfcPaymentOptions {
@@ -43,14 +44,16 @@ export function useNfcPayment(
 
   const activate = useCallback(async (url: string) => {
     try {
-      await HceModule.setPaymentUrl(url);
+      await Sentry.startSpan({ name: "nfc.activate", op: "nfc.activate" }, () =>
+        HceModule.setPaymentUrl(url),
+      );
       lastActivatedUrlRef.current = url;
       setIsNfcActive(true);
       onNfcReadyRef.current?.();
     } catch (error) {
-      onNfcErrorRef.current?.(
-        error instanceof Error ? error : new Error(String(error)),
-      );
+      const normalized =
+        error instanceof Error ? error : new Error(String(error));
+      onNfcErrorRef.current?.(normalized);
     }
   }, []);
 
