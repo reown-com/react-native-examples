@@ -1,13 +1,13 @@
-import { getSandboxTransactions } from "@/services/sandbox-transactions";
+import { getTestTransactions } from "@/services/test-transactions";
 import { useSettingsStore } from "@/store/useSettingsStore";
 
-describe("getSandboxTransactions", () => {
+describe("getTestTransactions", () => {
   beforeEach(() => {
     useSettingsStore.setState({ currency: "USD" });
   });
 
   it("returns one local record for every payment status", () => {
-    const response = getSandboxTransactions();
+    const response = getTestTransactions();
 
     expect(response.data).toHaveLength(6);
     expect(response.data.map((payment) => payment.status)).toEqual([
@@ -22,7 +22,7 @@ describe("getSandboxTransactions", () => {
   });
 
   it("applies status filters and never needs a cursor", () => {
-    const response = getSandboxTransactions({
+    const response = getTestTransactions({
       status: ["succeeded", "failed"],
       limit: 1,
       cursor: "ignored",

@@ -77,8 +77,8 @@ interface SettingsStore {
   // NFC
   nfcEnabled: boolean;
 
-  // Sandbox
-  sandboxMode: boolean;
+  // Test
+  testMode: boolean;
 
   // Actions
   setThemeMode: (themeMode: ThemeMode) => void;
@@ -102,7 +102,7 @@ interface SettingsStore {
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
   setNfcEnabled: (enabled: boolean) => void;
-  setSandboxMode: (enabled: boolean) => void;
+  setTestMode: (enabled: boolean) => void;
 
   // Transaction filters
   setTransactionFilter: (filter: TransactionFilterType) => void;
@@ -127,7 +127,7 @@ export const useSettingsStore = create<SettingsStore>()(
       pinLockoutUntil: null,
       biometricEnabled: false,
       nfcEnabled: true,
-      sandboxMode: false,
+      testMode: false,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
@@ -252,7 +252,7 @@ export const useSettingsStore = create<SettingsStore>()(
       setBiometricEnabled: (enabled: boolean) =>
         set({ biometricEnabled: enabled }),
       setNfcEnabled: (enabled: boolean) => set({ nfcEnabled: enabled }),
-      setSandboxMode: (enabled: boolean) => set({ sandboxMode: enabled }),
+      setTestMode: (enabled: boolean) => set({ testMode: enabled }),
 
       setTransactionFilter: (filter: TransactionFilterType) =>
         set({ transactionFilter: filter }),
@@ -261,7 +261,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 20,
+      version: 21,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -349,7 +349,13 @@ export const useSettingsStore = create<SettingsStore>()(
         }
 
         if (version < 20) {
-          persistedState.sandboxMode = false;
+          persistedState.testMode = false;
+        }
+
+        if (version < 21) {
+          persistedState.testMode =
+            persistedState.testMode ?? persistedState.sandboxMode ?? false;
+          delete persistedState.sandboxMode;
         }
 
         return persistedState;

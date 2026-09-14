@@ -5,8 +5,7 @@ import {
 } from "@/services/pos-bridge";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { TransactionsResponse } from "@/utils/types";
-import { isSandboxModeAvailable } from "@/utils/feature-flags";
-import { getSandboxTransactions } from "./sandbox-transactions";
+import { getTestTransactions } from "./test-transactions";
 
 export type GetTransactionsOptions = GetTransactionsBridgeOptions;
 
@@ -18,8 +17,8 @@ export type GetTransactionsOptions = GetTransactionsBridgeOptions;
 export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
-  if (isSandboxModeAvailable && useSettingsStore.getState().sandboxMode) {
-    return getSandboxTransactions(options);
+  if (useSettingsStore.getState().testMode) {
+    return getTestTransactions(options);
   }
 
   if (isRunningInIframe()) {

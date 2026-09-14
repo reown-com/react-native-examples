@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    height: 68,
+    minHeight: 68,
     paddingHorizontal: Spacing["spacing-5"],
     borderRadius: BorderRadius["4"],
     gap: Spacing["spacing-2"],

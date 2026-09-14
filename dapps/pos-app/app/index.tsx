@@ -4,7 +4,6 @@ import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { isSandboxModeAvailable } from "@/utils/feature-flags";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import {
@@ -47,14 +46,14 @@ export default function HomeScreen() {
   const isCustomerApiKeySet = useSettingsStore(
     (state) => state.isCustomerApiKeySet,
   );
-  const sandboxMode = useSettingsStore((state) => state.sandboxMode);
+  const testMode = useSettingsStore((state) => state.testMode);
   const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
   const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
   const isIframeSession = isRunningInIframe();
 
   const handleStartPayment = () => {
     if (
-      !(isSandboxModeAvailable && sandboxMode) &&
+      !testMode &&
       !isTerminalConfigured(
         getMerchantIdForSession(isIframeSession, merchantId, bridgeMerchantId),
         isIframeSession ? false : isCustomerApiKeySet,

@@ -1,29 +1,33 @@
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { ThemedText } from "./themed-text";
 
-interface SandboxBannerProps {
+interface TestModePillProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function SandboxBanner({ style }: SandboxBannerProps) {
+export function TestModePill({ style }: TestModePillProps) {
   const theme = useTheme();
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: theme["bg-warning"] },
+        { backgroundColor: theme["foreground-accent-primary-60"] },
         style,
       ]}
     >
       <ThemedText
         fontSize={14}
         lineHeight={18}
-        style={{ color: theme["text-primary"] }}
+        style={{
+          color: theme["text-primary"],
+          fontFamily: "KH Teka Medium",
+          fontWeight: "500",
+        }}
       >
-        Sandbox mode · Payments are simulated
+        Test mode
       </ThemedText>
     </View>
   );
@@ -31,11 +35,11 @@ export function SandboxBanner({ style }: SandboxBannerProps) {
 
 const styles = StyleSheet.create({
   container: {
-    minHeight: 48,
+    alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: Spacing["spacing-4"],
-    paddingVertical: Spacing["spacing-2"],
-    borderRadius: BorderRadius["4"],
+    paddingHorizontal: Spacing["spacing-3"],
+    paddingVertical: Spacing["spacing-1"],
+    borderRadius: 999,
   },
 });

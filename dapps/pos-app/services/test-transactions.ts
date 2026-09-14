@@ -2,7 +2,7 @@ import { getCurrency } from "@/utils/currency";
 import { PaymentRecord, TransactionsResponse } from "@/utils/types";
 import { useSettingsStore } from "@/store/useSettingsStore";
 
-export interface SandboxTransactionsOptions {
+export interface TestTransactionsOptions {
   status?: string | string[];
   limit?: number;
   cursor?: string;
@@ -11,12 +11,12 @@ export interface SandboxTransactionsOptions {
 }
 
 /**
- * Returns local records for the sandbox transaction screen. This deliberately
+ * Returns local records for the test transaction screen. This deliberately
  * lives below the platform-specific transaction services so native and web
- * builds have identical, request-free sandbox behavior.
+ * builds have identical, request-free test behavior.
  */
-export function getSandboxTransactions(
-  options: SandboxTransactionsOptions = {},
+export function getTestTransactions(
+  options: TestTransactionsOptions = {},
 ): TransactionsResponse {
   const currency = getCurrency(useSettingsStore.getState().currency);
   const now = Date.now();
@@ -36,9 +36,9 @@ export function getSandboxTransactions(
     const isTerminal = status !== "requires_action" && status !== "processing";
 
     return {
-      paymentId: `sandbox_${status}`,
-      merchantId: "sandbox",
-      referenceId: `sandbox-reference-${status}`,
+      paymentId: `test_${status}`,
+      merchantId: "test",
+      referenceId: `test-reference-${status}`,
       status: status as PaymentRecord["status"],
       isTerminal,
       fiatAmount: {
@@ -56,9 +56,7 @@ export function getSandboxTransactions(
         },
       },
       transaction:
-        status === "succeeded"
-          ? { hash: "0xsandboxtransactionhash" }
-          : undefined,
+        status === "succeeded" ? { hash: "0xtesttransactionhash" } : undefined,
       createdAt,
       lastUpdatedAt: createdAt,
       settledAt: status === "succeeded" ? createdAt : undefined,

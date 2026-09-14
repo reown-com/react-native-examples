@@ -1,11 +1,10 @@
 import { BigAmountInput } from "@/components/big-amount-input";
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
-import { SandboxBanner } from "@/components/sandbox-banner";
+import { TestModePill } from "@/components/test-mode-pill";
 import { Spacing } from "@/constants/spacing";
 import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
-import { isSandboxModeAvailable } from "@/utils/feature-flags";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   exceedsU64Max,
@@ -39,8 +38,8 @@ const formatAmount = (amount: string) => {
 
 export default function AmountScreen() {
   const Theme = useTheme();
-  const sandboxMode = useSettingsStore((state) => state.sandboxMode);
-  const isSandboxPayment = isSandboxModeAvailable && sandboxMode;
+  const testMode = useSettingsStore((state) => state.testMode);
+  const isTestPayment = testMode;
   const isTablet = useIsTablet();
   const currencyCode = useSettingsStore((state) => state.currency);
   const currency = getCurrency(currencyCode);
@@ -68,7 +67,14 @@ export default function AmountScreen() {
 
   return (
     <View style={[styles.container, isTablet && styles.containerTablet]}>
-      {isSandboxPayment && <SandboxBanner style={styles.sandboxBanner} />}
+      {isTestPayment && (
+        <>
+          <View style={styles.testModePillContainer}>
+            <TestModePill />
+          </View>
+          <View style={styles.testModePillSpacer} />
+        </>
+      )}
       <View
         style={[
           styles.amountContainer,
@@ -148,6 +154,7 @@ export default function AmountScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: Spacing["spacing-5"],
@@ -166,8 +173,16 @@ const styles = StyleSheet.create({
     paddingTop: Spacing["spacing-4"],
     paddingHorizontal: Spacing["spacing-5"],
   },
-  sandboxBanner: {
-    width: "100%",
+  testModePillContainer: {
+    position: "absolute",
+    top: Spacing["spacing-3"],
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 1,
+  },
+  testModePillSpacer: {
+    height: Spacing["spacing-8"],
   },
   button: {
     marginTop: Spacing["spacing-6"],

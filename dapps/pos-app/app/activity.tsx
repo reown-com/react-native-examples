@@ -2,7 +2,7 @@ import { EmptyState } from "@/components/empty-state";
 import { FilterButtons } from "@/components/filter-buttons";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
-import { SandboxBanner } from "@/components/sandbox-banner";
+import { TestModePill } from "@/components/test-mode-pill";
 import { TransactionCard } from "@/components/transaction-card";
 import { TransactionDetailModal } from "@/components/transaction-detail-modal";
 import { Spacing } from "@/constants/spacing";
@@ -16,7 +16,6 @@ import {
   TransactionFilterType,
 } from "@/utils/types";
 import { showErrorToast } from "@/utils/toast";
-import { isSandboxModeAvailable } from "@/utils/feature-flags";
 import * as Sentry from "@sentry/react-native";
 import { router } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -50,8 +49,8 @@ const DATE_RANGE_LABELS: Record<DateRangeFilterType, string> = {
 
 export default function ActivityScreen() {
   const theme = useTheme();
-  const sandboxMode = useSettingsStore((state) => state.sandboxMode);
-  const isSandboxPayment = isSandboxModeAvailable && sandboxMode;
+  const testMode = useSettingsStore((state) => state.testMode);
+  const isTestPayment = testMode;
   const transactionFilter = useSettingsStore(
     (state) => state.transactionFilter,
   );
@@ -247,7 +246,14 @@ export default function ActivityScreen() {
 
   return (
     <View style={styles.container}>
-      {isSandboxPayment && <SandboxBanner style={styles.sandboxBanner} />}
+      {isTestPayment && (
+        <>
+          <View style={styles.testModePillContainer}>
+            <TestModePill />
+          </View>
+          <View style={styles.testModePillSpacer} />
+        </>
+      )}
       <Sentry.TimeToFullDisplay ready={!isLoading} />
       {!isInitialLoadError && (
         <>
@@ -335,6 +341,7 @@ export default function ActivityScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
     paddingTop: Spacing["spacing-4"],
   },
   list: {
@@ -361,9 +368,16 @@ const styles = StyleSheet.create({
     marginTop: Spacing["spacing-1"],
     marginBottom: Spacing["spacing-3"],
   },
-  sandboxBanner: {
-    marginHorizontal: Spacing["spacing-5"],
-    marginBottom: Spacing["spacing-2"],
+  testModePillContainer: {
+    position: "absolute",
+    top: Spacing["spacing-3"],
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 1,
+  },
+  testModePillSpacer: {
+    height: Spacing["spacing-8"],
   },
   footerLoader: {
     paddingVertical: Spacing["spacing-4"],

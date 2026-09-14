@@ -1,6 +1,6 @@
 import { Button } from "@/components/button";
 import QRCode from "@/components/qr-code";
-import { SandboxBanner } from "@/components/sandbox-banner";
+import { TestModePill } from "@/components/test-mode-pill";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
@@ -11,6 +11,7 @@ import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
+import { isTestPaymentFailure } from "@/services/test-payment";
 import { useLogsStore } from "@/store/useLogsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -21,7 +22,7 @@ import {
 } from "@/utils/currency";
 import { formatCountdown, formatCountdownSpoken } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
-import { isNfcHceEnabled, isSandboxModeAvailable } from "@/utils/feature-flags";
+import { isNfcHceEnabled } from "@/utils/feature-flags";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
 import { getMerchantIdForSession } from "@/utils/pos-bridge-ui";
@@ -65,7 +66,7 @@ export default function ScanScreen() {
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
-  const [sandboxProcessing, setSandboxProcessing] = useState(false);
+  const [testProcessing, setTestProcessing] = useState(false);
   const hasNavigatedRef = useRef(false);
   const hasCancelledRef = useRef(false);
   const hasLeftRef = useRef(false);
@@ -73,7 +74,7 @@ export default function ScanScreen() {
 
   const deviceId = useSettingsStore((state) => state.deviceId);
   const storedMerchantId = useSettingsStore((state) => state.merchantId);
-  const sandboxMode = useSettingsStore((state) => state.sandboxMode);
+  const testMode = useSettingsStore((state) => state.testMode);
   const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
   const merchantId = getMerchantIdForSession(
     isRunningInIframe(),
@@ -88,7 +89,7 @@ export default function ScanScreen() {
   const isTablet = useIsTablet();
 
   const { amount } = params;
-  const isSandboxPayment = isSandboxModeAvailable && sandboxMode;
+  const isTestPayment = testMode;
 
   const { nfcMode } = useNfcPayment({
     paymentUrl: qrUri,
@@ -141,8 +142,8 @@ export default function ScanScreen() {
   );
 
   const handleOnCancelPress = () => {
-    if (isSandboxPayment) {
-      setSandboxProcessing(false);
+    if (isTestPayment) {
+      setTestProcessing(false);
     }
     // The `beforeRemove` listener below cancels the payment on leave.
     resetNavigation("/amount");
@@ -157,7 +158,7 @@ export default function ScanScreen() {
     if (!deviceId || !amount) return;
 
     async function initiatePayment() {
-      if (!isSandboxPayment && !merchantId) {
+      if (!isTestPayment && !merchantId) {
         addLog(
           "error",
           "Merchant ID is not configured",
@@ -171,20 +172,20 @@ export default function ScanScreen() {
       }
 
       try {
-        if (isSandboxPayment) {
-          const sandboxPaymentId = `sandbox_${Date.now()}`;
-          const sandboxQrUrl = `${sandboxPaymentId}?amount=${encodeURIComponent(amount)}`;
+        if (isTestPayment) {
+          const testPaymentId = `test_${Date.now()}`;
+          const testQrUrl = `${testPaymentId}?amount=${encodeURIComponent(amount)}`;
 
-          addLog("info", "Sandbox payment started", "scan", "initiatePayment", {
-            paymentId: sandboxPaymentId,
+          addLog("info", "Test payment started", "scan", "initiatePayment", {
+            paymentId: testPaymentId,
             amount,
           });
-          setQrUri(sandboxQrUrl);
-          setPaymentId(sandboxPaymentId);
+          setQrUri(testQrUrl);
+          setPaymentId(testPaymentId);
           // useCountdown expects an epoch timestamp in seconds, matching the
           // API response format.
           setExpiresAt(Math.floor(Date.now() / 1000) + 15 * 60);
-          setSandboxProcessing(true);
+          setTestProcessing(true);
           return;
         }
 
@@ -246,27 +247,27 @@ export default function ScanScreen() {
 
     initiatePayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deviceId, amount, merchantId, isSandboxPayment]);
+  }, [deviceId, amount, merchantId, isTestPayment]);
 
   useEffect(() => {
-    if (!isSandboxPayment || !paymentId) return;
+    if (!isTestPayment || !paymentId) return;
 
     const timeout = setTimeout(() => {
-      setSandboxProcessing(false);
-      if (amountToCents(amount) === 1) {
-        addLog("info", "Sandbox payment completed", "scan", "sandboxPayment");
-        onSuccess();
-      } else {
-        addLog("info", "Sandbox payment declined", "scan", "sandboxPayment");
+      setTestProcessing(false);
+      if (isTestPaymentFailure(amount)) {
+        addLog("info", "Test payment declined", "scan", "testPayment");
         onFailure("failed");
+      } else {
+        addLog("info", "Test payment completed", "scan", "testPayment");
+        onSuccess();
       }
     }, 3000);
 
     return () => clearTimeout(timeout);
-  }, [addLog, amount, isSandboxPayment, onFailure, onSuccess, paymentId]);
+  }, [addLog, amount, isTestPayment, onFailure, onSuccess, paymentId]);
 
   const { data: paymentStatusData } = usePaymentStatus(paymentId, {
-    enabled: !isSandboxPayment && !!paymentId && !!qrUri,
+    enabled: !isTestPayment && !!paymentId && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "succeeded") {
         if (!paymentId) {
@@ -300,7 +301,7 @@ export default function ScanScreen() {
   // resolved yet — cancel then too.
   const cancelPendingPayment = useCallback(() => {
     if (hasNavigatedRef.current || hasCancelledRef.current) return;
-    if (isSandboxPayment) return;
+    if (isTestPayment) return;
     // Record the leave so an in-flight `startPayment` cancels the payment it
     // creates instead of leaking it (see `initiatePayment`).
     hasLeftRef.current = true;
@@ -317,7 +318,7 @@ export default function ScanScreen() {
         showErrorToast("We couldn't cancel this payment.");
       });
     }
-  }, [paymentId, paymentStatusData?.status, addLog, isSandboxPayment]);
+  }, [paymentId, paymentStatusData?.status, addLog, isTestPayment]);
 
   // Hold the latest callback in a ref so the `beforeRemove` listener stays
   // registered once for the screen's lifetime instead of being torn down and
@@ -393,7 +394,14 @@ export default function ScanScreen() {
           gestureEnabled: !backHidden,
         }}
       />
-      {isSandboxPayment && <SandboxBanner style={styles.sandboxBanner} />}
+      {isTestPayment && (
+        <>
+          <View style={styles.testModePillContainer}>
+            <TestModePill />
+          </View>
+          <View style={styles.testModePillSpacer} />
+        </>
+      )}
       {isProcessing ? (
         <View
           style={[
@@ -459,7 +467,7 @@ export default function ScanScreen() {
               { color: Theme["text-secondary"] },
             ]}
           >
-            {sandboxProcessing
+            {testProcessing
               ? "Waiting for confirmation..."
               : showNfc
                 ? "Scan or tap to pay"
@@ -542,6 +550,7 @@ export default function ScanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
   },
   loadingContainer: {
     flex: 1,
@@ -613,9 +622,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing["spacing-4"],
   },
-  sandboxBanner: {
-    marginHorizontal: Spacing["spacing-5"],
-    marginTop: Spacing["spacing-3"],
+  testModePillContainer: {
+    position: "absolute",
+    top: Spacing["spacing-3"],
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 1,
+  },
+  testModePillSpacer: {
+    height: Spacing["spacing-9"],
   },
   qrSectionTablet: {
     gap: Spacing["spacing-5"],

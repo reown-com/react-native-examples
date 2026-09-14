@@ -1,8 +1,7 @@
 import { TransactionsResponse } from "@/utils/types";
-import { isSandboxModeAvailable } from "@/utils/feature-flags";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { merchantApiClient, getApiHeaders } from "./client";
-import { getSandboxTransactions } from "./sandbox-transactions";
+import { getTestTransactions } from "./test-transactions";
 
 export interface GetTransactionsOptions {
   status?: string | string[];
@@ -22,8 +21,8 @@ export interface GetTransactionsOptions {
 export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
-  if (isSandboxModeAvailable && useSettingsStore.getState().sandboxMode) {
-    return getSandboxTransactions(options);
+  if (useSettingsStore.getState().testMode) {
+    return getTestTransactions(options);
   }
 
   const headers = await getApiHeaders();
