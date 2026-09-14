@@ -814,47 +814,6 @@ describe('PaymentStore', () => {
     expect(PaymentStore.state.resultStatus).toBe('success');
   });
 
-  it('treats a processing confirm result as an in-flight success', async () => {
-    mockedConfirmPayment.mockResolvedValueOnce({
-      status: 'processing',
-      isFinal: false,
-      pollInMs: 1000,
-    });
-    mockedGetRequiredPaymentActions.mockResolvedValue([
-      createSolanaAction(SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION, [
-        { transaction: 'unsigned-b64' },
-      ]),
-    ]);
-    const paymentOptions = createPaymentOptions([
-      {
-        id: 'solana-option',
-        account: `${SOLANA_CHAIN_ID}:SoLPubKey`,
-        amount: {
-          unit: `caip19/${SOLANA_CHAIN_ID}/slip44:501`,
-          value: '1000000',
-          display: {
-            assetSymbol: 'SOL',
-            assetName: 'Solana',
-            decimals: 9,
-            networkName: 'Solana',
-            iconUrl: 'https://example.com/sol.png',
-            networkIconUrl: 'https://example.com/solana.png',
-          },
-        } as PaymentOption['amount'],
-        actions: [],
-      },
-    ]);
-
-    PaymentStore.setPaymentOptions(paymentOptions);
-    PaymentStore.selectOption(paymentOptions.options[0]);
-
-    await flushPromises();
-    await PaymentStore.approvePayment();
-
-    expect(PaymentStore.state.resultStatus).toBe('success');
-    expect(PaymentStore.state.resultMessage).toContain('being processed');
-  });
-
   it('also accepts Solana params as a bare object (forward compat)', async () => {
     mockedGetRequiredPaymentActions.mockResolvedValue([
       createSolanaAction(SOLANA_SIGNING_METHODS.SOLANA_SIGN_TRANSACTION, {

@@ -136,17 +136,6 @@ function setPaymentResultFromConfirmStatus({
     return;
   }
 
-  if (confirmResult.status === 'processing') {
-    // Chains that settle asynchronously (e.g. Tron: accepted into the mempool
-    // before inclusion) report `processing`; the payment is in flight, not
-    // failed.
-    PaymentStore.setResult({
-      status: 'success',
-      message: `Your payment to ${paymentOptions.info?.merchant?.name} is being processed`,
-    });
-    return;
-  }
-
   LogStore.warn(
     'Unhandled final payment status',
     'PaymentStore',

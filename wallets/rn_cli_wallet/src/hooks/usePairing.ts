@@ -40,8 +40,6 @@ export function usePairing() {
 
       const eip155Address = SettingsStore.state.eip155Address;
       const solanaAddress = SettingsStore.state.solanaAddress;
-      // Pay settles Tron on mainnet only; the buyer pays their own energy, so
-      // the gateway only offers a Tron option to a sufficiently funded account.
       const tronAddress = SettingsStore.state.tronAddress;
       const accounts = [
         ...(eip155Address
