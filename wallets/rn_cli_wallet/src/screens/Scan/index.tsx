@@ -73,6 +73,8 @@ export default function Scan({ navigation }: Props) {
     navigation.goBack();
   };
 
+  const showError = !(hasPermission && device);
+
   useEffect(() => {
     if (!hasPermission) {
       requestPermission();
@@ -81,19 +83,13 @@ export default function Scan({ navigation }: Props) {
 
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]}>
-      {hasPermission && device ? (
+      {showError ? null : (
         <Camera
           style={StyleSheet.absoluteFill}
           device={device}
           isActive={isActive}
           codeScanner={codeScanner}
         />
-      ) : (
-        <View style={styles.errorContainer}>
-          <Text variant="lg-400" color="text-invert">
-            Camera unavailable. Enable camera access in Settings.
-          </Text>
-        </View>
       )}
 
       {/* Dark overlay with rounded cutout */}
@@ -152,17 +148,33 @@ export default function Scan({ navigation }: Props) {
         <SvgClose fill="white" height={14} width={14} />
       </Button>
 
-      {/* Instruction text */}
-      <View
-        style={[
-          styles.instructionContainer,
-          { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[8] },
-        ]}
-      >
-        <Text variant="lg-400" style={styles.instructionText}>
-          Scan a WalletConnect QR code
-        </Text>
-      </View>
+      {/* Camera unavailable message, drawn on top of the overlay so it stays
+          legible instead of being dimmed behind it */}
+      {showError ? (
+        <View
+          style={[
+            styles.errorContainer,
+            { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[8] },
+          ]}
+          pointerEvents="none"
+        >
+          <Text variant="lg-400" color="text-invert" style={styles.errorText}>
+            Camera unavailable.{'\n'}Enable camera access in Settings.
+          </Text>
+        </View>
+      ) : (
+        /* Instruction text */
+        <View
+          style={[
+            styles.instructionContainer,
+            { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[8] },
+          ]}
+        >
+          <Text variant="lg-400" style={styles.instructionText}>
+            Scan a WalletConnect QR code
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
