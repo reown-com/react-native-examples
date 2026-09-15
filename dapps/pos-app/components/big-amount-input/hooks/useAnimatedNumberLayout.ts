@@ -1,5 +1,5 @@
 import type { CharacterItem } from "../utils/getCharactersArray";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 const ITEM_HEIGHT = 60;
 const CURRENCY_SPACE = 6;
@@ -28,12 +28,15 @@ const CHARACTER_WIDTHS: Record<string, number> = {
 };
 const DEFAULT_WIDTH = 40;
 
-const getCharWidth = (char: string): number =>
-  CHARACTER_WIDTHS[char] ?? DEFAULT_WIDTH;
+const SIZE_SCALE = {
+  md: 1,
+  lg: 1.25,
+} as const;
 
 type UseAnimatedNumberLayoutParams = {
   characters: CharacterItem[];
   separators: (string | null)[];
+  size?: keyof typeof SIZE_SCALE;
 };
 
 function getScaleForLength(length: number): number {
@@ -54,6 +57,7 @@ export type CharacterLayoutInfo = {
 
 export type AnimatedNumberLayout = {
   itemHeight: number;
+  fontSize: number;
   scale: number;
   totalContentWidth: number;
   characterLayouts: CharacterLayoutInfo[];
@@ -63,7 +67,14 @@ export type AnimatedNumberLayout = {
 export const useAnimatedNumberLayout = ({
   characters,
   separators,
+  size = "md",
 }: UseAnimatedNumberLayoutParams): AnimatedNumberLayout => {
+  const sizeScale = SIZE_SCALE[size];
+  const getCharWidth = useCallback(
+    (char: string): number =>
+      (CHARACTER_WIDTHS[char] ?? DEFAULT_WIDTH) * sizeScale,
+    [sizeScale],
+  );
   const scale = useMemo(
     () => getScaleForLength(characters.length),
     [characters.length],
@@ -80,7 +91,7 @@ export const useAnimatedNumberLayout = ({
       const spacingWidth = visualWidth * SPACING_FACTOR;
 
       if (!isCurrency && index > 0) {
-        if (index === 1) pos += CURRENCY_SPACE;
+        if (index === 1) pos += CURRENCY_SPACE * sizeScale;
         const prevSep = separators[index - 1];
         if (prevSep) pos += getCharWidth(prevSep) * scale;
       }
@@ -90,7 +101,7 @@ export const useAnimatedNumberLayout = ({
     });
 
     return layouts;
-  }, [characters, separators, scale]);
+  }, [characters, separators, scale, sizeScale, getCharWidth]);
 
   const totalContentWidth = useMemo(() => {
     if (characterLayouts.length === 0) return 0;
@@ -100,12 +111,13 @@ export const useAnimatedNumberLayout = ({
 
   return useMemo(
     () => ({
-      itemHeight: ITEM_HEIGHT,
+      itemHeight: ITEM_HEIGHT * sizeScale,
+      fontSize: 64 * sizeScale,
       scale,
       totalContentWidth,
       characterLayouts,
       getCharWidth,
     }),
-    [scale, totalContentWidth, characterLayouts],
+    [scale, totalContentWidth, characterLayouts, sizeScale, getCharWidth],
   );
 };

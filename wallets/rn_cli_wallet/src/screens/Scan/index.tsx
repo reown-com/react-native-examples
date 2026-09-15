@@ -26,9 +26,9 @@ import { useTheme } from '@/hooks/useTheme';
 import { haptics } from '@/utils/haptics';
 import { Button } from '@/components/Button';
 import { ScannerFrame } from '@/components/ScannerFrame';
-import { Spacing } from '@/utils/ThemeUtil';
+import { BorderRadius, Spacing } from '@/utils/ThemeUtil';
 
-const CUTOUT_RADIUS = 16;
+const CUTOUT_RADIUS = BorderRadius[4];
 
 type Props = RootStackScreenProps<'Scan'>;
 

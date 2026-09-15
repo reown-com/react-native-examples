@@ -1,6 +1,6 @@
 {
   "platforms": ["android"],
   "android": {
-    "modules": ["com.reown.mobilepos.hce.HceModule"]
+    "modules": ["com.walletconnect.mobilepos.hce.HceModule"]
   }
 }

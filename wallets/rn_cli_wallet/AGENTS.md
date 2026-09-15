@@ -55,16 +55,15 @@ rn_cli_wallet/
 │   │   ├── Settings/            # Wallet & chain settings
 │   │   └── LogList/             # Event logging
 │   ├── modals/
-│   │   ├── SessionSignModal.tsx
-│   │   ├── SessionSendTransactionModal.tsx
+│   │   ├── requestConfig.ts          # RPC-method → config map
+│   │   ├── SessionRequestModal.tsx   # Generic config-driven request modal
+│   │   ├── SessionProposalModal.tsx
 │   │   ├── SessionAuthenticateModal.tsx
+│   │   ├── SessionTonSignDataModal.tsx    # bespoke (custom UI/lifecycle)
+│   │   ├── SessionTonSendMessageModal.tsx # bespoke (custom UI/lifecycle)
 │   │   ├── ImportWalletModal.tsx
-│   │   ├── SessionSuiSignAndExecuteTransactionModal.tsx
-│   │   ├── SessionTonSignDataModal.tsx
-│   │   ├── SessionTonSendMessageModal.tsx
-│   │   ├── SessionSignTronModal.tsx
 │   │   ├── PaymentOptionsModal/  # WalletConnect Pay
-│   │   └── RequestModal.tsx
+│   │   └── RequestModal.tsx      # Shared header/footer wrapper
 │   ├── navigators/
 │   │   ├── RootStackNavigator.tsx
 │   │   ├── HomeTabNavigator.tsx
@@ -155,12 +154,65 @@ Uses **Valtio** (proxy-based reactive state):
 - EIP-4361 (Sign-In with Ethereum) verification
 
 ### Request Handling Modals
-- `SessionSignModal`: Message signing
-- `SessionSendTransactionModal`: EVM transactions
-- `SessionAuthenticateModal`: SIWE authentication
-- `SessionSuiSignAndExecuteTransactionModal`: Sui transactions
-- `SessionTonSignDataModal` / `SessionTonSendMessageModal`: TON
-- `SessionSignTronModal`: Tron signing
+
+Most approve/reject signing requests are rendered by **one generic modal**,
+`modals/SessionRequestModal.tsx`, driven by a config map in
+`modals/requestConfig.ts` keyed by RPC method. All EIP155, Solana, Sui,
+Bitcoin (BIP122), Tron and Canton signing methods go through it — there is no
+per-method modal file for them.
+
+`hooks/useWalletKitEventsManager.ts` dispatches by looking the method up in
+the config first (`getRequestConfig(method)`); if found it opens
+`SessionRequestModal`. The `switch` that follows only handles requests that
+need bespoke behavior.
+
+Modals that are intentionally NOT config-driven (they have custom UI and/or
+lifecycle, so they keep dedicated components):
+- `SessionProposalModal`: connection approval (namespace/account selection)
+- `SessionAuthenticateModal`: SIWE / one-click auth
+- `SessionTonSignDataModal` / `SessionTonSendMessageModal`: TON (on-mount
+  `validateTonRequest` auto-reject, "Signing address" card, two-arg
+  `approveTonRequest(event, session)`, custom payload formatting)
+
+#### Adding a new request type / method
+
+For a signing method whose modal is just header + `AppInfoCard` +
+`NetworkInfoCard` + payload + approve/reject (i.e. the common case), do NOT
+create a new modal file. Instead:
+
+1. Add the method constant to the chain's `constants/<Chain>.ts`.
+2. Add a `case` to the chain's `utils/<Chain>RequestHandlerUtil.ts` so
+   `approve<Chain>Request` knows how to sign/execute it.
+3. Add one entry to `REQUEST_CONFIG` in `modals/requestConfig.ts`, keyed by
+   the method string:
+   ```ts
+   [MY_CHAIN_METHODS.MY_METHOD]: {
+     approve: approveMyChainRequest,
+     reject: rejectMyChainRequest,
+     intention: 'Sign a message for',        // header text (string or fn)
+     approveLabel: 'Sign',                     // primary button label
+     renderPayload: req => getSignParamsMessage(req.params), // sync payload
+     approveErrorTitle: 'Couldn’t sign message',
+     rejectRedirectError: 'User rejected signature request', // optional
+     logScope: 'SessionRequestModal:my_method',
+   },
+   ```
+
+That's it — no `ModalStore` view union edit, no `Modal.tsx` case, no
+event-manager `case`. For a brand-new chain, also add its
+`utils/<Chain>WalletUtil.ts` + `utils/<Chain>RequestHandlerUtil.ts` and register
+its namespace/accounts (see `SessionProposalModal` + `HelperUtil`).
+
+Config knobs for the less-common cases:
+- `resolvePayload(req): Promise<string>` — async payload (e.g. Sui decodes a
+  BCS transaction via the wallet); takes precedence over `renderPayload`.
+- `respondErrorOnApproveFailure: true` — on approve failure, also send the
+  reject response so the dapp doesn't hang (Canton relies on this).
+
+If a request needs custom UI or modal-lifecycle behavior (an extra section, a
+validation-on-mount step, a multi-arg handler), it does NOT belong in the
+config — give it a dedicated modal like the TON ones and add a `case` in the
+event manager + `Modal.tsx` + the `ModalStore` view union.
 
 ## Environment Variables
 
@@ -226,6 +278,26 @@ from `app.json` / `app.config.js` / `plugins/` / `assets/`. `yarn ios` / `yarn a
 run prebuild automatically when the folders are missing. Never hand-edit `ios/`
 or `android/`; change the Expo config or a config plugin and re-run prebuild.
 
+### Android NDK version — re-check on every RN/Expo upgrade
+The Android NDK version is pinned in `app.json` via `plugins/withAndroidNdkVersion.js`
+(a plugin arg: `["./plugins/withAndroidNdkVersion.js", { "ndkVersion": "…" }]`). This
+one value is the single source of truth: the plugin injects it into the generated
+`android/build.gradle`, and the E2E workflow
+(`.github/actions/walletkit-build-and-maestro`) reads the same `app.json` entry to
+pre-install that exact NDK via `sdkmanager`. The pre-install exists because RN
+otherwise fetches the NDK on the fly at build time, and that download intermittently
+lands corrupted on CI runners (`Archive is not a ZIP archive` →
+`InstallFailedException`) — failing the build but passing on rerun.
+
+**On any `react-native` / `expo` bump, verify this value still matches Expo's default
+NDK and update it if not.** Expo owns the default (`ExpoRootProjectPlugin`:
+`setIfNotExist("ndkVersion") { … }`) and bumps it across SDK versions. If our pin
+drifts below what the new build wants, the pre-install seeds the wrong NDK, Gradle
+re-fetches the right one at build time, and the corrupt-download flake returns. To
+confirm the current default: run `yarn prebuild` and check the `ndkVersion` line in
+`android/build.gradle`, or read the default in
+`node_modules/expo-modules-autolinking/.../ExpoRootProjectPlugin.kt`.
+
 ### Setup
 ```bash
 yarn install
@@ -282,6 +354,10 @@ export async function approveEIP155Request(
   // Handle different methods: personal_sign, eth_sendTransaction, etc.
 }
 ```
+
+The UI side of a request is data-driven — see **Request Handling Modals →
+Adding a new request type / method** for how a method maps to the generic
+`SessionRequestModal` via `modals/requestConfig.ts`.
 
 ### Chain-Specific Libraries
 

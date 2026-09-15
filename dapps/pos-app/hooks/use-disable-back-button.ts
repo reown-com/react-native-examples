@@ -4,6 +4,8 @@ import { BackHandler, Platform } from "react-native";
 /**
  * Custom hook to disable the Android hardware back button
  *
+ * @param enabled - Whether the block is active (defaults to `true`).
+ *
  * @example
  *
  * const MyComponent = () => {
@@ -11,9 +13,9 @@ import { BackHandler, Platform } from "react-native";
  *   // ... rest of component
  * };
  *  */
-export function useDisableBackButton() {
+export function useDisableBackButton(enabled = true) {
   useEffect(() => {
-    if (Platform.OS !== "android") {
+    if (Platform.OS !== "android" || !enabled) {
       return;
     }
 
@@ -26,5 +28,5 @@ export function useDisableBackButton() {
     );
 
     return () => backHandler.remove();
-  }, []);
+  }, [enabled]);
 }

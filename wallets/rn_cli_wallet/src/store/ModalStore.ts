@@ -13,6 +13,8 @@ interface ModalData {
   loadingMessage?: string;
   errorTitle?: string;
   errorMessage?: string;
+  actionLabel?: string;
+  onAction?: () => void;
   session?: SessionTypes.Struct;
 }
 
@@ -20,25 +22,13 @@ interface State {
   open: boolean;
   view?:
     | 'SessionProposalModal'
-    | 'SessionSignModal'
-    | 'SessionSignTypedDataModal'
-    | 'SessionSendTransactionModal'
+    | 'SessionRequestModal'
     | 'SessionUnsuportedMethodModal'
     | 'AuthRequestModal'
     | 'SessionAuthenticateModal'
     | 'LoadingModal'
-    | 'SessionSuiSignTransactionModal'
-    | 'SessionSuiSignPersonalMessageModal'
-    | 'SessionSuiSignAndExecuteTransactionModal'
     | 'SessionTonSendMessageModal'
-    | 'SessionSignTronModal'
     | 'SessionTonSignDataModal'
-    | 'SessionSignCantonModal'
-    | 'SessionSolanaSignMessageModal'
-    | 'SessionSolanaSignTransactionModal'
-    | 'SessionBitcoinSignMessageModal'
-    | 'SessionBitcoinSendTransactionModal'
-    | 'SessionBitcoinGetAddressesModal'
     | 'PaymentOptionsModal'
     | 'ImportWalletModal'
     | 'SessionDetailModal'

@@ -1,57 +1,38 @@
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useTheme } from "@/hooks/use-theme-color";
+import { getTransactionStatusMeta } from "@/utils/transaction-status";
 import { TransactionStatus } from "@/utils/types";
+import { Image } from "expo-image";
 import { memo } from "react";
 import { StyleSheet, View } from "react-native";
 import { ThemedText } from "./themed-text";
-
-type DisplayStatus = "completed" | "pending" | "failed";
 
 interface StatusBadgeProps {
   status: TransactionStatus;
 }
 
-const STATUS_THEME_KEYS: Record<
-  DisplayStatus,
-  "icon-success" | "foreground-tertiary" | "icon-error"
-> = {
-  completed: "icon-success",
-  pending: "foreground-tertiary",
-  failed: "icon-error",
-};
-
-const STATUS_LABELS: Record<DisplayStatus, string> = {
-  completed: "Completed",
-  pending: "Pending",
-  failed: "Failed",
-};
-
-function mapToDisplayStatus(status: TransactionStatus): DisplayStatus {
-  switch (status) {
-    case "succeeded":
-      return "completed";
-    case "failed":
-    case "expired":
-    case "cancelled":
-      return "failed";
-    case "requires_action":
-    case "processing":
-    default:
-      return "pending";
-  }
-}
-
 function StatusBadgeBase({ status }: StatusBadgeProps) {
   const theme = useTheme();
-  const displayStatus = mapToDisplayStatus(status);
-  const backgroundColor = theme[STATUS_THEME_KEYS[displayStatus]];
-  const label = STATUS_LABELS[displayStatus];
-  const textColor = displayStatus === "pending" ? "text-primary" : "text-white";
+  const meta = getTransactionStatusMeta(status);
+  const tint = theme[meta.iconTintKey];
 
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <ThemedText fontSize={14} style={styles.text} color={textColor}>
-        {label}
+    <View
+      style={[styles.container, { backgroundColor: theme[meta.iconBgKey] }]}
+    >
+      <Image
+        source={meta.badgeIcon ?? meta.icon}
+        style={styles.icon}
+        tintColor={tint}
+        contentFit="contain"
+        cachePolicy="memory-disk"
+      />
+      <ThemedText
+        fontSize={14}
+        lineHeight={16}
+        style={[styles.text, { color: tint }]}
+      >
+        {meta.label}
       </ThemedText>
     </View>
   );
@@ -61,12 +42,18 @@ export const StatusBadge = memo(StatusBadgeBase);
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing["spacing-1"],
     paddingHorizontal: Spacing["spacing-2"],
     paddingVertical: 6,
     borderRadius: BorderRadius["2"],
     alignSelf: "flex-start",
-    alignItems: "center",
     justifyContent: "center",
+  },
+  icon: {
+    width: 14,
+    height: 14,
   },
   text: {
     fontWeight: "500",

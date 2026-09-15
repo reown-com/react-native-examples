@@ -18,10 +18,17 @@ import { showToast } from '@/utils/ToastUtil';
 import { RootStackParamList } from '@/utils/TypesUtil';
 import { Button } from '@/components/Button';
 
-export default function Settings() {
-  const { socketStatus, themeMode } = useSnapshot(SettingsStore.state);
-  const [clientId, setClientId] = useState('');
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+// A settings row with a right-aligned toggle. Mirrors the card styling of the
+// other Settings rows.
+function ToggleCard({
+  label,
+  value,
+  onToggle,
+}: {
+  label: string;
+  value: boolean;
+  onToggle: () => void;
+}) {
   const Theme = useTheme();
 
   // react-native-web paints the Switch "on" state via activeTrackColor/
@@ -36,6 +43,55 @@ export default function Settings() {
         }
       : {}
   ) as { activeTrackColor?: string; activeThumbColor?: string };
+
+  return (
+    <Button
+      onPress={onToggle}
+      style={[
+        styles.switchCard,
+        { backgroundColor: Theme['foreground-primary'] },
+      ]}
+    >
+      <View style={styles.switchCardContent}>
+        <Text variant="md-500" color="text-primary">
+          {label}
+        </Text>
+        {/* On web the whole card (PressableScale) owns the toggle: a tap on
+            the switch bubbles up to the card, so if the Switch also fired
+            onValueChange it would toggle twice (net no change). Render it
+            display-only with pointerEvents="none" so the tap passes through.
+            On native there's no double-toggle, so keep the Switch fully
+            interactive (and accessible) with its own onValueChange. */}
+        {Platform.OS === 'web' ? (
+          <View pointerEvents="none" style={styles.switch}>
+            <Switch value={value} {...webAccentSwitchProps} />
+          </View>
+        ) : (
+          <Switch
+            value={value}
+            style={styles.switch}
+            onValueChange={onToggle}
+            trackColor={Platform.select({
+              android: {
+                false: Theme['foreground-tertiary'],
+                true: Theme['bg-accent-primary'],
+              },
+            })}
+            thumbColor={Platform.select({ android: Theme.white })}
+          />
+        )}
+      </View>
+    </Button>
+  );
+}
+
+export default function Settings() {
+  const { socketStatus, themeMode, testNets } = useSnapshot(
+    SettingsStore.state,
+  );
+  const [clientId, setClientId] = useState('');
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const Theme = useTheme();
 
   useEffect(() => {
     async function getAsyncData() {
@@ -70,43 +126,16 @@ export default function Settings() {
         Preferences
       </Text>
       <View style={styles.sectionContainer}>
-        <Button
-          onPress={toggleDarkMode}
-          style={[
-            styles.switchCard,
-            { backgroundColor: Theme['foreground-primary'] },
-          ]}
-        >
-          <View style={styles.switchCardContent}>
-            <Text variant="md-500" color="text-primary">
-              Dark mode
-            </Text>
-            {/* On web the whole card (PressableScale) owns the toggle: a tap on
-                the switch bubbles up to the card, so if the Switch also fired
-                onValueChange it would toggle twice (net no change). Render it
-                display-only with pointerEvents="none" so the tap passes through.
-                On native there's no double-toggle, so keep the Switch fully
-                interactive (and accessible) with its own onValueChange. */}
-            {Platform.OS === 'web' ? (
-              <View pointerEvents="none" style={styles.switch}>
-                <Switch value={themeMode === 'dark'} {...webAccentSwitchProps} />
-              </View>
-            ) : (
-              <Switch
-                value={themeMode === 'dark'}
-                style={styles.switch}
-                onValueChange={toggleDarkMode}
-                trackColor={Platform.select({
-                  android: {
-                    false: Theme['foreground-tertiary'],
-                    true: Theme['bg-accent-primary'],
-                  },
-                })}
-                thumbColor={Platform.select({ android: Theme.white })}
-              />
-            )}
-          </View>
-        </Button>
+        <ToggleCard
+          label="Dark mode"
+          value={themeMode === 'dark'}
+          onToggle={toggleDarkMode}
+        />
+        <ToggleCard
+          label="Enable testnets"
+          value={testNets}
+          onToggle={() => SettingsStore.toggleTestNets()}
+        />
         <Card
           title="Secret keys & phrases"
           onPress={() => navigation.navigate('SecretPhrase')}

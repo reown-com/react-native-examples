@@ -24,6 +24,10 @@ export type BigAmountInputProps = {
    */
   placeholder?: string;
   /**
+   * Visual size of the amount display. The large size is intended for tablets.
+   */
+  size?: "md" | "lg";
+  /**
    * Test ID for testing
    */
   testID?: string;

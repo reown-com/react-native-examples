@@ -1,0 +1,99 @@
+/// <reference lib="dom" />
+// This is a web-only (.web.tsx) file, so it uses browser globals (`window`).
+// The RN base tsconfig's `lib` omits DOM; pull it in for this file only rather
+// than project-wide, so native code can't reference browser APIs unchecked.
+import {PropsWithChildren, useEffect, useState} from 'react';
+import {useColorScheme} from 'react-native';
+
+import {DarkTheme, LightTheme} from '@/utils/ThemeUtil';
+import {DesktopFrame} from '@/constants/DesktopFrame';
+
+/**
+ * "Framed-lite" desktop frame for web.
+ *
+ * On a wide desktop viewport (>= BREAKPOINT) the app is centered in a fixed,
+ * phone-width surface with rounded corners and a drop shadow so it doesn't
+ * stretch giant across the screen. Below the breakpoint (mobile web) it renders
+ * full-bleed, unchanged.
+ *
+ * This app has no persisted theme store — it follows the system color scheme
+ * (useColorScheme), matching the in-app AppKit theme. The screen background uses
+ * the `bg-100` token from ThemeUtil.
+ *
+ * Note: the AppKit connect modal (<AppKit />) renders via its own internal
+ * <Modal>, which we don't control, so on desktop web it may render full-viewport
+ * rather than clipped to this frame.
+ */
+const RESIZE_DEBOUNCE_MS = 150;
+
+function useIsDesktopWeb(): boolean {
+  const [isDesktop, setIsDesktop] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      window.innerWidth >= DesktopFrame.BREAKPOINT,
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const onResize = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        setIsDesktop(window.innerWidth >= DesktopFrame.BREAKPOINT);
+      }, RESIZE_DEBOUNCE_MS);
+    };
+
+    window.addEventListener('resize', onResize);
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
+
+  return isDesktop;
+}
+
+export function DesktopFrameWrapper({children}: PropsWithChildren) {
+  const scheme = useColorScheme();
+  const isDesktop = useIsDesktopWeb();
+
+  if (!isDesktop) {
+    return <>{children}</>;
+  }
+
+  const isDark = scheme === 'dark';
+  const Theme = isDark ? DarkTheme : LightTheme;
+  const backgroundColor = isDark
+    ? DesktopFrame.BACKGROUND.dark
+    : DesktopFrame.BACKGROUND.light;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: DesktopFrame.DEVICE_WIDTH,
+          height: `min(${DesktopFrame.DEVICE_HEIGHT}px, calc(100vh - 32px))`,
+          borderRadius: DesktopFrame.SCREEN_RADIUS,
+          boxShadow: DesktopFrame.SHADOW,
+          overflow: 'hidden',
+          backgroundColor: Theme['bg-100'],
+        }}>
+        {children}
+      </div>
+    </div>
+  );
+}

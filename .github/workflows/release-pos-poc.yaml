@@ -1,4 +1,4 @@
-name: Release Mobile POS (PoC)
+name: 🚀 Release Mobile POS (PoC)
 run-name: "Mobile POS (PoC) - ${{ inputs.platform == 'both' && '🍎 iOS & 🤖 Android' || inputs.platform == 'ios' && '🍎 iOS' || '🤖 Android' }}"
 
 permissions:

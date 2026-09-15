@@ -1,6 +1,6 @@
 import { UnknownOutputParams, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, Platform, StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -10,9 +10,12 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
+import HeaderImage from "@/components/header-image";
+import { SuccessAnimation } from "@/components/success-animation";
 import { ThemedText } from "@/components/themed-text";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -21,8 +24,11 @@ import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
 import { Image } from "expo-image";
-import { StatusBar } from "expo-status-bar";
 
+// The params can't be declared optional here: `UnknownOutputParams` indexes to
+// `string | string[]`, so `?` widens to undefined and breaks the constraint.
+// Read them through `Partial` below instead, since the token fields are only
+// passed when the payment has a displayable token.
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
   chainName: string;
@@ -36,14 +42,17 @@ interface SuccessParams extends UnknownOutputParams {
 const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
 const diagonalLength = Math.sqrt(screenWidth ** 2 + screenHeight ** 2);
 const initialCircleSize = 20;
-const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 2;
+const finalScale = Math.ceil(diagonalLength / initialCircleSize) + 4;
+const contentOffset = 16;
+const contentRevealDelay = 700;
+const contentRevealDuration = 200;
 
 export default function PaymentSuccessScreen() {
   useDisableBackButton();
-  const Theme = useTheme("light");
-  const DarkTheme = useTheme("dark");
-  const params = useLocalSearchParams<SuccessParams>();
-  const themeMode = useSettingsStore((state) => state.themeMode);
+  const Theme = useTheme();
+  const isTablet = useIsTablet();
+  const params: Partial<SuccessParams> = useLocalSearchParams<SuccessParams>();
+
   const currencyCode = useSettingsStore((state) => state.currency);
   const variant = useSettingsStore((state) => state.variant);
   const getVariantPrinterLogo = useSettingsStore(
@@ -51,14 +60,22 @@ export default function PaymentSuccessScreen() {
   );
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
-  const { top } = useSafeAreaInsets();
-  const { amount } = params;
+  const { top, bottom } = useSafeAreaInsets();
+  const { amount = "" } = params;
   const [isPrinterConnected, setIsPrinterConnected] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isSuccessAnimationVisible, setIsSuccessAnimationVisible] =
+    useState(false);
   const isPrintingRef = useRef(false);
+  const bottomSpacing = Math.max(
+    bottom + Spacing["spacing-3"],
+    Spacing["spacing-7"],
+  );
 
   const circleScale = useSharedValue(1);
+  const backgroundOverlayOpacity = useSharedValue(0);
   const contentOpacity = useSharedValue(0);
+  const contentTranslateY = useSharedValue(contentOffset);
 
   const handleNewPayment = () => {
     resetNavigation("/amount");
@@ -74,7 +91,7 @@ export default function PaymentSuccessScreen() {
       const logoBase64 =
         (await buildReceiptLogo(variant)) ?? getVariantPrinterLogo();
       await printReceipt({
-        txnId: params.paymentId,
+        txnId: params.paymentId ?? "",
         amountFiat: Number(amount),
         currency,
         tokenSymbol: params.token,
@@ -126,10 +143,26 @@ export default function PaymentSuccessScreen() {
   }, [addLog]);
 
   useEffect(() => {
-    circleScale.value = withTiming(finalScale, {
-      duration: 400,
-    });
-    contentOpacity.value = withDelay(150, withTiming(1, { duration: 200 }));
+    circleScale.value = withTiming(finalScale, { duration: 400 });
+    backgroundOverlayOpacity.value = withDelay(
+      400,
+      withTiming(1, { duration: 300 }),
+    );
+    contentOpacity.value = withDelay(
+      contentRevealDelay,
+      withTiming(1, { duration: contentRevealDuration }),
+    );
+    contentTranslateY.value = withDelay(
+      contentRevealDelay,
+      withTiming(0, { duration: contentRevealDuration }),
+    );
+    const revealTimeout = setTimeout(() => {
+      setIsSuccessAnimationVisible(true);
+    }, contentRevealDelay);
+
+    return () => {
+      clearTimeout(revealTimeout);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -139,16 +172,21 @@ export default function PaymentSuccessScreen() {
 
   const contentAnimatedStyle = useAnimatedStyle(() => ({
     opacity: contentOpacity.value,
+    transform: [{ translateY: contentTranslateY.value }],
+  }));
+
+  const backgroundOverlayAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: backgroundOverlayOpacity.value,
   }));
 
   return (
-    <View style={[styles.container, { paddingTop: top }]}>
+    <View style={styles.container}>
       {/* Expanding circle background */}
       <Animated.View
         style={[
           styles.circle,
           {
-            backgroundColor: Theme["bg-payment-success"],
+            backgroundColor: Theme["bg-accent-primary"],
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
@@ -157,77 +195,106 @@ export default function PaymentSuccessScreen() {
         ]}
       />
 
-      {/* Content that fades in after circle expands */}
-      <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.backgroundOverlay,
+          { backgroundColor: Theme["bg-primary"] },
+          backgroundOverlayAnimatedStyle,
+        ]}
+      />
+
+      {/* Content fades in after the blue-to-theme transition completes. The
+          safe-area padding lives here (not on the full-screen container) so the
+          expanding circle stays centered on the true screen center. */}
+      <Animated.View
+        style={[
+          styles.contentContainer,
+          isTablet && styles.contentContainerTablet,
+          {
+            paddingTop: top + Spacing["spacing-3"],
+            paddingBottom: bottomSpacing,
+          },
+          contentAnimatedStyle,
+        ]}
+      >
+        <View style={styles.header}>
+          <HeaderImage tintColor={Theme["text-primary"]} />
+        </View>
         <View
           testID="pos-payment-success"
           nativeID="pos-payment-success"
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          style={[
+            styles.successContent,
+            isTablet && styles.successContentTablet,
+          ]}
         >
-          <ThemedText
+          <View
             style={[
-              styles.amountDescription,
-              { color: Theme["text-payment-success"] },
+              styles.successAnimationContainer,
+              isTablet && styles.successAnimationContainerTablet,
             ]}
           >
-            Payment successful
-          </ThemedText>
+            {isSuccessAnimationVisible && (
+              <SuccessAnimation
+                width={isTablet ? 280 : 200}
+                height={isTablet ? 245 : 175}
+              />
+            )}
+          </View>
           <ThemedText
-            style={[
-              styles.amountValue,
-              { color: Theme["text-payment-success"] },
-            ]}
+            fontSize={isTablet ? 52 : 38}
+            lineHeight={isTablet ? 54 : 38}
+            style={[styles.amountValue, { color: Theme["text-primary"] }]}
           >
             {formatAmountWithSymbol(amount, currency)}
           </ThemedText>
+          <ThemedText
+            fontSize={isTablet ? 24 : 18}
+            lineHeight={isTablet ? 28 : 20}
+            style={[styles.amountDescription, { color: Theme["text-primary"] }]}
+          >
+            Payment successful
+          </ThemedText>
         </View>
-        <View style={styles.buttonContainer}>
+        <View
+          style={[
+            styles.buttonContainer,
+            isTablet && styles.buttonContainerTablet,
+          ]}
+        >
           {isPrinterConnected && (
             <Button
+              type="neutral"
+              variant="tertiary"
               onPress={handlePrintReceipt}
               disabled={isPrinting}
-              style={[
-                styles.button,
-                {
-                  backgroundColor: DarkTheme["foreground-primary"],
-                  opacity: isPrinting ? 0.6 : 1,
-                },
-              ]}
+              size={isTablet ? "lg" : "md"}
+              icon={
+                <Image
+                  source={require("@/assets/images/receipt.png")}
+                  style={[
+                    styles.buttonIcon,
+                    isTablet && styles.buttonIconTablet,
+                  ]}
+                  tintColor={Theme["bg-primary"]}
+                />
+              }
             >
-              <ThemedText
-                style={[
-                  styles.buttonText,
-                  { color: DarkTheme["text-primary"] },
-                ]}
-              >
-                {isPrinting ? "Printing receipt…" : "Print receipt"}
-              </ThemedText>
-              <Image
-                source={require("@/assets/images/receipt.png")}
-                style={styles.buttonIcon}
-                tintColor={DarkTheme["icon-default"]}
-              />
+              {isPrinting ? "Printing receipt…" : "Print receipt"}
             </Button>
           )}
 
           <Button
-            style={[
-              styles.button,
-              {
-                backgroundColor: DarkTheme["bg-invert"],
-              },
-            ]}
+            type="accent"
+            variant="primary"
+            size={isTablet ? "lg" : "md"}
             onPress={handleNewPayment}
           >
-            <ThemedText
-              style={[styles.buttonText, { color: DarkTheme["text-invert"] }]}
-            >
-              Start new payment
-            </ThemedText>
+            Start new payment
           </Button>
         </View>
       </Animated.View>
-      <StatusBar style={themeMode === "system" ? "auto" : themeMode} />
     </View>
   );
 }
@@ -235,8 +302,7 @@ export default function PaymentSuccessScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: Spacing["spacing-5"],
-    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
+    overflow: "hidden",
   },
   circle: {
     position: "absolute",
@@ -245,40 +311,57 @@ const styles = StyleSheet.create({
     marginLeft: -initialCircleSize / 2,
     marginTop: -initialCircleSize / 2,
   },
+  backgroundOverlay: {
+    ...StyleSheet.absoluteFill,
+  },
   contentContainer: {
     flex: 1,
     width: "100%",
+    paddingHorizontal: Spacing["spacing-5"],
+  },
+  contentContainerTablet: {
+    paddingHorizontal: Spacing["spacing-8"],
+  },
+  header: {
+    alignItems: "center",
+    paddingBottom: Spacing["spacing-4"],
+  },
+  successAnimationContainer: {
+    width: 200,
+    height: 175,
+  },
+  successAnimationContainerTablet: {
+    width: 280,
+    height: 245,
+  },
+  successContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: Spacing["spacing-2"],
+  },
+  successContentTablet: {
+    gap: Spacing["spacing-4"],
   },
   amountDescription: {
-    fontSize: 18,
-    lineHeight: 20,
     textAlign: "center",
-    marginBottom: Spacing["spacing-3"],
   },
   amountValue: {
-    fontSize: 38,
-    lineHeight: 38,
     textAlign: "center",
   },
   buttonContainer: {
     width: "100%",
     gap: Spacing["spacing-3"],
   },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-5"],
-    borderRadius: BorderRadius["5"],
-    gap: Spacing["spacing-2"],
-  },
-  buttonText: {
-    fontSize: 16,
-    lineHeight: 18,
+  buttonContainerTablet: {
+    gap: Spacing["spacing-5"],
   },
   buttonIcon: {
     width: 16,
     height: 16,
+  },
+  buttonIconTablet: {
+    width: 20,
+    height: 20,
   },
 });

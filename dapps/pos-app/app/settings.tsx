@@ -1,39 +1,44 @@
+import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
-import { Card } from "@/components/card";
 import { PinModal } from "@/components/pin-modal";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { SettingsItem } from "@/components/settings-item";
-import { Switch } from "@/components/switch";
+import { SettingsSection } from "@/components/settings-section";
+import { SettingsToggleItem } from "@/components/settings-toggle-item";
+import { SetupBanner } from "@/components/setup-banner";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
-import { VariantList, VariantName, Variants } from "@/constants/variants";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { usePosBridgeStore } from "@/store/usePosBridgeStore";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { ThemeMode } from "@/utils/types";
+import { getConnectionSetupRemaining } from "@/utils/pos-bridge-ui";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
+import { isNfcHceEnabled } from "@/utils/feature-flags";
 import {
   connectPrinter,
   printReceipt,
   requestBluetoothPermission,
 } from "@/utils/printer";
-import { showErrorToast } from "@/utils/toast";
+import { showErrorToast, showInfoToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
+import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 type ActiveSheet =
   | "theme"
-  | "walletTheme"
   | "currency"
   | "merchantId"
   | "customerApiKey"
@@ -67,7 +72,6 @@ export default function SettingsScreen() {
   const themeMode = useSettingsStore((state) => state.themeMode);
   const setThemeMode = useSettingsStore((state) => state.setThemeMode);
   const variant = useSettingsStore((state) => state.variant);
-  const setVariant = useSettingsStore((state) => state.setVariant);
   const getVariantPrinterLogo = useSettingsStore(
     (state) => state.getVariantPrinterLogo,
   );
@@ -75,12 +79,18 @@ export default function SettingsScreen() {
   const setCurrency = useSettingsStore((state) => state.setCurrency);
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
+  const testMode = useSettingsStore((state) => state.testMode);
+  const setTestMode = useSettingsStore((state) => state.setTestMode);
   const nfcCapabilities = useNfcCapabilities();
   const addLog = useLogsStore((state) => state.addLog);
+  const logsCount = useLogsStore((state) => state.logs.length);
   const theme = useTheme();
+  const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
+  const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
+  const isIframeSession = isRunningInIframe();
+  const isIframeBridgeConfigured = isIframeSession && isBridgeConfigured;
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
-  const [isEditingCustomerKey, setIsEditingCustomerKey] = useState(false);
 
   // Custom hooks for biometrics and merchant flow
   const {
@@ -96,6 +106,8 @@ export default function SettingsScreen() {
   const {
     merchantIdInput,
     customerApiKeyInput,
+    isEditingCustomerApiKey,
+    storedMerchantId,
     activeModal,
     pinError,
     isMerchantIdConfirmDisabled,
@@ -107,20 +119,14 @@ export default function SettingsScreen() {
     handleMerchantIdConfirm,
     handleCustomerApiKeyConfirm,
     handlePinVerifyComplete,
-    handleBiometricAuthSuccess,
-    handleBiometricAuthFailure,
+    handleBiometricPress,
     handlePinSetupComplete,
     handleCancelSecurityFlow,
-  } = useMerchantFlow();
-
-  const variantOptions: RadioOption<VariantName>[] = useMemo(
-    () =>
-      VariantList.map((v) => ({
-        value: v.id,
-        label: v.name,
-      })),
-    [],
-  );
+  } = useMerchantFlow({
+    canUseBiometric: !!canUseBiometric,
+    authenticate,
+    biometricLabel,
+  });
 
   const currencyOptions: RadioOption<CurrencyCode>[] = useMemo(
     () =>
@@ -139,27 +145,17 @@ export default function SettingsScreen() {
   const buildVersion =
     Platform.OS === "web" ? "web" : Application.nativeBuildVersion;
 
-  const currentVariant = VariantList.find((v) => v.id === variant);
   const currentCurrency = getCurrency(currency);
-  // Branded variants lock the theme to their default, unless they opt into manual switching.
-  const isThemeLocked =
-    variant !== "default" && !Variants[variant].allowThemeToggle;
 
   const closeSheet = () => {
     if (activeSheet === "customerApiKey") {
       resetCustomerApiKeyInput();
     }
     setActiveSheet(null);
-    setIsEditingCustomerKey(false);
   };
 
   const handleThemeModeChange = (value: ThemeMode) => {
     setThemeMode(value);
-    closeSheet();
-  };
-
-  const handleVariantChange = (value: VariantName) => {
-    setVariant(value);
     closeSheet();
   };
 
@@ -178,16 +174,33 @@ export default function SettingsScreen() {
     handleCustomerApiKeyConfirm();
   };
 
-  const handleCustomerKeyChange = (value: string) => {
-    if (!isEditingCustomerKey) {
-      setIsEditingCustomerKey(true);
+  const handleTestModeChange = (enabled: boolean) => {
+    setTestMode(enabled);
+    if (enabled) {
+      showInfoToast(
+        "Enter 0.02 to simulate a failed payment. All other amounts simulate success.",
+        5000,
+      );
     }
-    handleCustomerApiKeyInputChange(value);
   };
 
   const showNfcToggle =
-    Platform.OS === "android" && nfcCapabilities.isHceSupported;
+    isNfcHceEnabled &&
+    Platform.OS === "android" &&
+    nfcCapabilities.isHceSupported;
 
+  const showBiometricToggle = shouldShowBiometricOption && !!biometricStatus;
+
+  const hasMerchantId = !!storedMerchantId?.trim();
+  const testActive = testMode;
+  const setupRemaining =
+    testActive || isIframeSession
+      ? 0
+      : getConnectionSetupRemaining(
+          hasMerchantId,
+          hasStoredCustomerApiKey,
+          isIframeBridgeConfigured,
+        );
   const handleTestPrinterPress = async () => {
     try {
       const isBluetoothPermissionGranted = await requestBluetoothPermission();
@@ -213,8 +226,7 @@ export default function SettingsScreen() {
           { error },
         );
         showErrorToast(
-          error ||
-            "We couldn't connect to the printer. Check that it's on and paired in your device's Bluetooth settings.",
+          "We couldn't connect to the printer. Check that it's on and paired in your device's Bluetooth settings.",
         );
         return;
       }
@@ -241,104 +253,158 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleBiometricAuth = useCallback(async () => {
-    const success = await authenticate(
-      `Use ${biometricLabel} to change merchant settings`,
-    );
-
-    if (success) {
-      handleBiometricAuthSuccess();
-    } else {
-      handleBiometricAuthFailure();
-    }
-  }, [
-    authenticate,
-    biometricLabel,
-    handleBiometricAuthSuccess,
-    handleBiometricAuthFailure,
-  ]);
-
   return (
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <SettingsItem
-          title="Theme"
-          value={THEME_LABELS[themeMode]}
-          onPress={() => setActiveSheet("theme")}
-          disabled={isThemeLocked}
-        />
-
-        <SettingsItem
-          title="Wallet theme"
-          value={currentVariant?.name ?? "None"}
-          onPress={() => setActiveSheet("walletTheme")}
-        />
-
-        <SettingsItem
-          title="Currency"
-          value={`${currentCurrency.name} (${currentCurrency.symbol})`}
-          onPress={() => setActiveSheet("currency")}
-        />
-
-        <SettingsItem
-          title="Merchant ID"
-          value={merchantIdInput || undefined}
-          onPress={() => setActiveSheet("merchantId")}
-        />
-
-        <SettingsItem
-          title="Customer API key"
-          value="**********"
-          onPress={() => setActiveSheet("customerApiKey")}
-        />
-
-        {showNfcToggle && (
-          <Card style={styles.biometricCard}>
-            <View style={styles.biometricRow}>
-              <View style={styles.biometricLabel}>
-                <ThemedText fontSize={16} lineHeight={18}>
-                  Tap-to-pay prompt
-                </ThemedText>
-                <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Show the tap-to-pay prompt on the payment screen.
-                </ThemedText>
-              </View>
-              <Switch
-                style={styles.switch}
-                value={nfcEnabled}
-                onValueChange={setNfcEnabled}
-              />
-            </View>
-          </Card>
+        {setupRemaining > 0 && (
+          <SetupBanner
+            testID="settings-setup-banner"
+            remaining={setupRemaining}
+          />
         )}
 
-        {/* Biometric toggle - only show if PIN is set and biometrics available */}
-        {shouldShowBiometricOption && biometricStatus && (
-          <Card style={styles.biometricCard}>
-            <View style={styles.biometricRow}>
-              <View style={styles.biometricLabel}>
-                <ThemedText fontSize={16} lineHeight={18}>
-                  {getBiometricLabel(biometricStatus.biometricType)}
-                </ThemedText>
-                <ThemedText fontSize={12} lineHeight={14} color="text-tertiary">
-                  Use instead of PIN.
-                </ThemedText>
-              </View>
-              <Switch
-                style={styles.switch}
-                value={biometricEnabled}
-                onValueChange={handleBiometricToggle}
+        <SettingsSection title="Terminal">
+          <SettingsItem
+            testID="settings-theme"
+            title="Theme"
+            value={THEME_LABELS[themeMode]}
+            onPress={() => setActiveSheet("theme")}
+          />
+
+          <SettingsItem
+            testID="settings-currency"
+            title="Currency"
+            value={`${currentCurrency.name} (${currentCurrency.symbol})`}
+            onPress={() => setActiveSheet("currency")}
+          />
+        </SettingsSection>
+
+        <SettingsSection title="Connection">
+          {isIframeSession && !isIframeBridgeConfigured ? (
+            <SettingsItem
+              testID="settings-dashboard-bridge"
+              title="Dashboard bridge"
+              value="Waiting for dashboard"
+              onPress={() => undefined}
+              showCaret={false}
+              disabled
+            />
+          ) : isIframeBridgeConfigured ? (
+            <SettingsItem
+              testID="settings-merchant-id"
+              title="Merchant ID"
+              value={bridgeMerchantId ?? undefined}
+              onPress={() => undefined}
+              showCaret={false}
+              disabled
+            />
+          ) : (
+            <>
+              <SettingsItem
+                testID="settings-merchant-id"
+                title="Merchant ID"
+                value={hasMerchantId ? merchantIdInput : undefined}
+                bullet={!hasMerchantId}
+                badge={
+                  hasMerchantId ? undefined : (
+                    <Badge
+                      label="Not set"
+                      backgroundColor="bg-warning"
+                      color="text-tertiary"
+                    />
+                  )
+                }
+                caret="right"
+                showCaret
+                disabled={testActive}
+                onPress={() => setActiveSheet("merchantId")}
               />
-            </View>
-          </Card>
-        )}
 
-        <SettingsItem title="Test printer" onPress={handleTestPrinterPress} />
+              <SettingsItem
+                testID="settings-customer-api-key"
+                title="Customer API KEY"
+                value={hasStoredCustomerApiKey ? "**********" : undefined}
+                bullet={!hasStoredCustomerApiKey}
+                badge={
+                  hasStoredCustomerApiKey ? undefined : (
+                    <Badge
+                      label="Not set"
+                      backgroundColor="bg-warning"
+                      color="text-tertiary"
+                    />
+                  )
+                }
+                caret="right"
+                showCaret
+                disabled={testActive}
+                onPress={() => setActiveSheet("customerApiKey")}
+              />
+            </>
+          )}
 
-        <SettingsItem title="View logs" onPress={() => router.push("/logs")} />
+          {showNfcToggle && (
+            <SettingsToggleItem
+              testID="settings-nfc-toggle"
+              title="Tap to pay"
+              description="Show NFC prompt"
+              value={nfcEnabled}
+              onValueChange={setNfcEnabled}
+            />
+          )}
+
+          <SettingsToggleItem
+            testID="settings-test-mode-toggle"
+            title="Enable Test Mode"
+            description="Simulate payments"
+            value={testMode}
+            onValueChange={handleTestModeChange}
+          />
+
+          {/* Biometric toggle - only show if PIN is set and biometrics available */}
+          {showBiometricToggle && (
+            <SettingsToggleItem
+              testID="settings-biometric-toggle"
+              title={getBiometricLabel(biometricStatus.biometricType)}
+              description="Use instead of Pin"
+              value={biometricEnabled}
+              onValueChange={handleBiometricToggle}
+            />
+          )}
+        </SettingsSection>
+
+        <SettingsSection title="Device">
+          <SettingsItem
+            testID="settings-view-logs"
+            icon={require("@/assets/images/terminal.png")}
+            title="Logs"
+            value={`${logsCount} ${logsCount === 1 ? "entry" : "entries"}`}
+            caret="right"
+            showCaret
+            onPress={() => router.push("/logs")}
+          />
+
+          {Platform.OS !== "web" && (
+            <Button
+              type="neutral"
+              variant="secondary"
+              testID="settings-test-printer"
+              onPress={handleTestPrinterPress}
+              icon={
+                <Image
+                  source={require("@/assets/images/printer.png")}
+                  style={styles.printerIcon}
+                  tintColor={theme["text-primary"]}
+                  cachePolicy="memory-disk"
+                />
+              }
+            >
+              Print test receipt
+            </Button>
+          )}
+        </SettingsSection>
 
         <ThemedText
           fontSize={12}
@@ -363,19 +429,6 @@ export default function SettingsScreen() {
         />
       </SettingsBottomSheet>
 
-      {/* Wallet Theme Bottom Sheet */}
-      <SettingsBottomSheet
-        visible={activeSheet === "walletTheme"}
-        title="Wallet theme"
-        onClose={closeSheet}
-      >
-        <RadioList
-          options={variantOptions}
-          value={variant}
-          onChange={handleVariantChange}
-        />
-      </SettingsBottomSheet>
-
       {/* Currency Bottom Sheet */}
       <SettingsBottomSheet
         visible={activeSheet === "currency"}
@@ -390,105 +443,86 @@ export default function SettingsScreen() {
       </SettingsBottomSheet>
 
       {/* Merchant ID Bottom Sheet */}
-      <SettingsBottomSheet
-        visible={activeSheet === "merchantId"}
-        title="Merchant ID"
-        onClose={closeSheet}
-      >
-        <View style={styles.inputContent}>
-          <TextInput
-            value={merchantIdInput}
-            onChangeText={handleMerchantIdInputChange}
-            placeholder="Enter merchant ID"
-            placeholderTextColor={theme["text-tertiary"]}
-            autoCapitalize="none"
-            autoCorrect={false}
-            style={[
-              styles.sheetInput,
-              {
-                borderColor: theme["border-primary"],
-                color: theme["text-primary"],
-                backgroundColor: theme["foreground-primary"],
-              },
-            ]}
-          />
-          <Button
-            onPress={handleMerchantIdSave}
-            disabled={isMerchantIdConfirmDisabled}
-            style={[
-              styles.saveButton,
-              {
-                backgroundColor: isMerchantIdConfirmDisabled
-                  ? theme["foreground-accent-primary-60"]
-                  : theme["bg-accent-primary"],
-              },
-            ]}
-          >
-            <ThemedText
-              fontSize={16}
-              lineHeight={18}
-              color="text-invert"
-              style={styles.saveButtonLabel}
+      {!isBridgeConfigured && (
+        <SettingsBottomSheet
+          visible={activeSheet === "merchantId"}
+          title="Merchant ID"
+          subtitle="Find your Merchant ID in your merchant dashboard and paste it here."
+          onClose={closeSheet}
+        >
+          <View style={styles.inputContent}>
+            <TextInput
+              value={merchantIdInput}
+              onChangeText={handleMerchantIdInputChange}
+              placeholder="Enter merchant ID"
+              placeholderTextColor={theme["text-tertiary"]}
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={[
+                styles.sheetInput,
+                {
+                  borderColor: theme["border-primary"],
+                  color: theme["text-primary"],
+                  backgroundColor: theme["foreground-primary"],
+                },
+              ]}
+            />
+            <Button
+              type="accent"
+              variant="primary"
+              testID="settings-merchant-save"
+              onPress={handleMerchantIdSave}
+              disabled={isMerchantIdConfirmDisabled}
             >
               Save
-            </ThemedText>
-          </Button>
-        </View>
-      </SettingsBottomSheet>
+            </Button>
+          </View>
+        </SettingsBottomSheet>
+      )}
 
       {/* Customer API Key Bottom Sheet */}
-      <SettingsBottomSheet
-        visible={activeSheet === "customerApiKey"}
-        title="Customer API key"
-        onClose={closeSheet}
-      >
-        <View style={styles.inputContent}>
-          <TextInput
-            value={
-              isEditingCustomerKey
-                ? customerApiKeyInput
-                : hasStoredCustomerApiKey
-                  ? "********"
-                  : ""
-            }
-            onChangeText={handleCustomerKeyChange}
-            placeholder="Enter customer API key"
-            placeholderTextColor={theme["text-tertiary"]}
-            autoCapitalize="none"
-            autoCorrect={false}
-            secureTextEntry={true}
-            style={[
-              styles.sheetInput,
-              {
-                borderColor: theme["border-primary"],
-                color: theme["text-primary"],
-                backgroundColor: theme["foreground-primary"],
-              },
-            ]}
-          />
-          <Button
-            onPress={handleCustomerApiKeySave}
-            disabled={isCustomerApiKeyConfirmDisabled}
-            style={[
-              styles.saveButton,
-              {
-                backgroundColor: isCustomerApiKeyConfirmDisabled
-                  ? theme["foreground-accent-primary-60"]
-                  : theme["bg-accent-primary"],
-              },
-            ]}
-          >
-            <ThemedText
-              fontSize={16}
-              lineHeight={18}
-              color="text-invert"
-              style={styles.saveButtonLabel}
+      {!isBridgeConfigured && (
+        <SettingsBottomSheet
+          visible={activeSheet === "customerApiKey"}
+          title="Customer API key"
+          onClose={closeSheet}
+        >
+          <View style={styles.inputContent}>
+            <TextInput
+              value={
+                isEditingCustomerApiKey
+                  ? customerApiKeyInput
+                  : hasStoredCustomerApiKey
+                    ? "********"
+                    : ""
+              }
+              onChangeText={handleCustomerApiKeyInputChange}
+              placeholder="Enter customer API key"
+              placeholderTextColor={theme["text-tertiary"]}
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={true}
+              style={[
+                styles.sheetInput,
+                {
+                  borderColor: theme["border-primary"],
+                  color: theme["text-primary"],
+                  backgroundColor: theme["foreground-primary"],
+                },
+              ]}
+            />
+            <Button
+              type="accent"
+              variant="primary"
+              testID="settings-customer-save"
+              onPress={handleCustomerApiKeySave}
+              disabled={isCustomerApiKeyConfirmDisabled}
             >
               Save
-            </ThemedText>
-          </Button>
-        </View>
-      </SettingsBottomSheet>
+            </Button>
+          </View>
+        </SettingsBottomSheet>
+      )}
 
       {/* PIN Modal */}
       <PinModal
@@ -507,7 +541,8 @@ export default function SettingsScreen() {
         onCancel={handleCancelSecurityFlow}
         error={pinError}
         showBiometric={activeModal === "pin-verify" && !!canUseBiometric}
-        onBiometricPress={handleBiometricAuth}
+        onBiometricPress={handleBiometricPress}
+        biometricType={biometricStatus?.biometricType}
       />
     </View>
   );
@@ -520,30 +555,16 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: Spacing["spacing-5"],
-    paddingBottom: Spacing["extra-spacing-2"],
-    gap: Spacing["spacing-2"],
+    paddingBottom: Spacing["spacing-6"],
+    gap: Spacing["spacing-7"],
+  },
+  printerIcon: {
+    width: 16,
+    height: 16,
   },
   versionText: {
     alignSelf: "flex-end",
     marginVertical: Spacing["spacing-2"],
-  },
-  switch: {
-    alignSelf: "center",
-  },
-  biometricCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: 68,
-  },
-  biometricRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-  },
-  biometricLabel: {
-    gap: Spacing["spacing-1"],
   },
   inputContent: {
     gap: Spacing["spacing-3"],
@@ -557,14 +578,5 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontFamily: "KH Teka",
     height: 60,
-  },
-  saveButton: {
-    borderRadius: BorderRadius["4"],
-    paddingVertical: Spacing["spacing-4"],
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  saveButtonLabel: {
-    textAlign: "center",
   },
 });

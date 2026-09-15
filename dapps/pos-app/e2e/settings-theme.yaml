@@ -1,0 +1,26 @@
+url: ${APP_URL}
+name: POS Settings — open the theme modal and change theme
+tags:
+  - settings
+---
+- launchApp:
+    clearState: true
+
+- tapOn:
+    id: "settings-button"
+
+- tapOn:
+    id: "settings-theme"
+
+# The option only exists while the theme bottom sheet is open.
+- assertVisible:
+    id: "option-dark"
+
+- tapOn:
+    id: "option-dark"
+
+# Selecting a theme closes the sheet and updates the Settings row.
+- assertNotVisible:
+    id: "option-light"
+- assertVisible:
+    text: "Dark"

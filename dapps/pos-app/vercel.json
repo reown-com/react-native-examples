@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD .",
   "cleanUrls": true,
   "outputDirectory": "dist",
   "rewrites": [

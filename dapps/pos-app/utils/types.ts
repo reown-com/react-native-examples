@@ -28,7 +28,11 @@ export interface StartPaymentResponse {
 export interface PaymentStatusResponse {
   status: PaymentStatus;
   isFinal: boolean;
-  pollInMs: number;
+  pollInMs: number | null;
+  info?: PaymentStatusInfo;
+  // Retained for compatibility with status responses that expose the amount
+  // directly instead of under info.optionAmount.
+  tokenAmount?: AmountWithDisplay;
 }
 
 export interface ApiError {
@@ -55,6 +59,9 @@ export type DateRangeFilterType =
   | "this_week"
   | "this_month";
 
+// Logs filters
+export type LogLevelFilterType = "all" | "info" | "error";
+
 export interface DisplayAmount {
   formatted?: string;
   assetSymbol?: string;
@@ -67,6 +74,10 @@ export interface AmountWithDisplay {
   unit?: string;
   value?: string;
   display?: DisplayAmount;
+}
+
+export interface PaymentStatusInfo {
+  optionAmount?: AmountWithDisplay;
 }
 
 export interface BuyerInfo {

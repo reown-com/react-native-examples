@@ -1,61 +1,101 @@
 import { Button } from "@/components/button";
 import QRCode from "@/components/qr-code";
+import { TestModeOverlay } from "@/components/test-mode-pill";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
 import { useCountdown } from "@/hooks/use-countdown";
+import { useDisableBackButton } from "@/hooks/use-disable-back-button";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
+import { isTestPaymentFailure } from "@/services/test-payment";
 import { useLogsStore } from "@/store/useLogsStore";
+import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
   amountToCents,
   formatAmountWithSymbol,
   getCurrency,
 } from "@/utils/currency";
-import { formatCountdown } from "@/utils/misc";
+import { formatCountdown, formatCountdownSpoken } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
+import { isNfcHceEnabled } from "@/utils/feature-flags";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
+import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
+import { getMerchantIdForSession } from "@/utils/pos-bridge-ui";
+import { buildPaymentSuccessParams } from "@/utils/payment-success-params";
+import { PaymentStatusResponse } from "@/utils/types";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
+import * as Sentry from "@sentry/react-native";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
-import { router, UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import {
+  router,
+  Stack,
+  UnknownOutputParams,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AccessibilityInfo, StyleSheet, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
 }
 
+// Remaining-seconds marks at which to announce the countdown to screen readers
+// (descending). One minute left is the primary cue; 30s and 10s add urgency.
+const COUNTDOWN_ANNOUNCE_THRESHOLDS = [60, 30, 10];
+
 export default function ScanScreen() {
   const params = useLocalSearchParams<ScreenParams>();
   const [assets] = useAssets([
-    require("@/assets/images/wc_logo_dark.png"),
+    require("@/assets/images/wc-logo-dark.png"),
     require("@/assets/images/nfc.png"),
   ]);
+  const qrLogoSource = useMemo(() => {
+    const uri = assets?.[0]?.uri;
+    return uri ? { uri } : undefined;
+  }, [assets]);
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
+  const [testProcessing, setTestProcessing] = useState(false);
   const hasNavigatedRef = useRef(false);
+  const hasCancelledRef = useRef(false);
+  const hasLeftRef = useRef(false);
+  const navigation = useNavigation();
 
   const deviceId = useSettingsStore((state) => state.deviceId);
-  const merchantId = useSettingsStore((state) => state.merchantId);
+  const storedMerchantId = useSettingsStore((state) => state.merchantId);
+  const testMode = useSettingsStore((state) => state.testMode);
+  const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
+  const merchantId = getMerchantIdForSession(
+    isRunningInIframe(),
+    storedMerchantId,
+    bridgeMerchantId,
+  );
   const currencyCode = useSettingsStore((state) => state.currency);
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const Theme = useTheme();
+  const isTablet = useIsTablet();
 
   const { amount } = params;
+  const isTestPayment = testMode;
 
   const { nfcMode } = useNfcPayment({
     paymentUrl: qrUri,
-    // HCE runs whenever the device supports it; `nfcEnabled` only controls UI visibility below.
-    enabled: true,
+    // NFC/HCE is gated by a build-time kill-switch (EXPO_PUBLIC_NFC_HCE_ENABLED).
+    // When off, no payment URL is emitted and the native side never enables HCE.
+    enabled: isNfcHceEnabled,
     onNfcReady: () => {
       addLog("info", "NFC HCE activated", "scan", "useNfcPayment", {
         paymentId,
@@ -71,21 +111,21 @@ export default function ScanScreen() {
     },
   });
 
-  const onSuccess = useCallback(() => {
-    if (hasNavigatedRef.current) return;
-    hasNavigatedRef.current = true;
-    router.dismiss();
-    router.replace({
-      pathname: "/payment-success",
-      params: {
-        amount,
-        paymentId,
-      },
-    });
-  }, [paymentId, amount]);
+  const onSuccess = useCallback(
+    (completedPaymentId: string, payment?: PaymentStatusResponse) => {
+      if (hasNavigatedRef.current) return;
+      hasNavigatedRef.current = true;
+      router.dismiss();
+      router.replace({
+        pathname: "/payment-success",
+        params: buildPaymentSuccessParams(amount, completedPaymentId, payment),
+      });
+    },
+    [amount],
+  );
 
   const onFailure = useCallback(
-    (errorCode?: string) => {
+    (errorCode?: string, minAmount?: string) => {
       if (hasNavigatedRef.current) return;
       hasNavigatedRef.current = true;
       router.dismiss();
@@ -94,26 +134,24 @@ export default function ScanScreen() {
         params: {
           amount,
           ...(errorCode && { errorCode }),
+          ...(minAmount && { minAmount }),
         },
       });
     },
     [amount],
   );
 
-  const handleOnClosePress = () => {
-    if (paymentId && paymentStatusData?.status === "requires_action") {
-      cancelPayment(paymentId).catch((error) => {
-        addLog("error", "Failed to cancel payment", "scan", "cancelPayment", {
-          paymentId,
-          error,
-        });
-        showErrorToast("We couldn't cancel this payment. Try again.");
-      });
+  const handleOnCancelPress = () => {
+    if (isTestPayment) {
+      setTestProcessing(false);
     }
+    // The `beforeRemove` listener below cancels the payment on leave.
     resetNavigation("/amount");
   };
 
   const handleCopyPaymentUrl = async () => {
+    // No real URL to copy in test mode.
+    if (isTestPayment) return;
     await Clipboard.setStringAsync(qrUri);
     showSuccessToast("Payment link copied");
   };
@@ -122,7 +160,7 @@ export default function ScanScreen() {
     if (!deviceId || !amount) return;
 
     async function initiatePayment() {
-      if (!merchantId) {
+      if (!isTestPayment && !merchantId) {
         addLog(
           "error",
           "Merchant ID is not configured",
@@ -136,6 +174,23 @@ export default function ScanScreen() {
       }
 
       try {
+        if (isTestPayment) {
+          const testPaymentId = `test_${Date.now()}`;
+          const testQrUrl = `${testPaymentId}?amount=${encodeURIComponent(amount)}`;
+
+          addLog("info", "Test payment started", "scan", "initiatePayment", {
+            paymentId: testPaymentId,
+            amount,
+          });
+          setQrUri(testQrUrl);
+          setPaymentId(testPaymentId);
+          // useCountdown expects an epoch timestamp in seconds, matching the
+          // API response format.
+          setExpiresAt(Math.floor(Date.now() / 1000) + 15 * 60);
+          setTestProcessing(true);
+          return;
+        }
+
         const paymentRequest = {
           referenceId: uuidv4().replace(/-/g, ""),
           amount: {
@@ -146,6 +201,24 @@ export default function ScanScreen() {
 
         const data = await startPayment(paymentRequest);
 
+        // The user can back out while this create call is in flight, before
+        // `paymentId` state exists for the `beforeRemove` listener to cancel.
+        // Cancel the freshly opened payment here instead of rendering a QR for
+        // a screen that's already gone.
+        if (hasLeftRef.current) {
+          hasCancelledRef.current = true;
+          cancelPayment(data.paymentId).catch((error) => {
+            addLog(
+              "error",
+              "Failed to cancel payment",
+              "scan",
+              "cancelPayment",
+              { paymentId: data.paymentId, error },
+            );
+          });
+          return;
+        }
+
         addLog("info", "Payment started", "scan", "initiatePayment", {
           paymentId: data.paymentId,
           gatewayUrl: data.gatewayUrl,
@@ -154,6 +227,8 @@ export default function ScanScreen() {
         setPaymentId(data.paymentId);
         setExpiresAt(data.expiresAt);
       } catch (error: any) {
+        // Nothing to route to if the user already left mid-request.
+        if (hasLeftRef.current) return;
         addLog(
           "error",
           (error as Error).message || "Unknown error",
@@ -161,23 +236,57 @@ export default function ScanScreen() {
           "initiatePayment",
           { error },
         );
-        onFailure(error.code);
+        // The below-minimum rejection only carries the floor in its message, so
+        // parse it here and keep the raw server string out of the route params.
+        const minAmountCents = parseMinAmountCents(error.message);
+        if (minAmountCents) {
+          onFailure(AMOUNT_TOO_LOW, minAmountCents);
+        } else {
+          onFailure(error.code);
+        }
       }
     }
 
     initiatePayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deviceId, amount, merchantId]);
+  }, [deviceId, amount, merchantId, isTestPayment]);
+
+  useEffect(() => {
+    if (!isTestPayment || !paymentId) return;
+
+    const timeout = setTimeout(() => {
+      setTestProcessing(false);
+      if (isTestPaymentFailure(amount)) {
+        addLog("info", "Test payment declined", "scan", "testPayment");
+        onFailure("failed");
+      } else {
+        addLog("info", "Test payment completed", "scan", "testPayment");
+        onSuccess(paymentId);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [addLog, amount, isTestPayment, onFailure, onSuccess, paymentId]);
 
   const { data: paymentStatusData } = usePaymentStatus(paymentId, {
-    enabled: !!paymentId && !!qrUri,
+    enabled: !isTestPayment && !!paymentId && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "succeeded") {
+        if (!paymentId) {
+          addLog(
+            "error",
+            "Cannot show payment success without a payment ID",
+            "scan",
+            "usePaymentStatus",
+            { data },
+          );
+          return;
+        }
         addLog("info", "Payment completed", "scan", "usePaymentStatus", {
           paymentId,
           data,
         });
-        onSuccess();
+        onSuccess(paymentId, data);
       } else {
         addLog("error", data.status, "scan", "usePaymentStatus", {
           paymentId,
@@ -188,49 +297,157 @@ export default function ScanScreen() {
     },
   });
 
+  // Cancel the open payment when the user leaves the scan screen. `hasNavigatedRef`
+  // is set before we route to success/failure, so those transitions don't cancel.
+  // A still-undefined status means the payment is open but the first poll hasn't
+  // resolved yet — cancel then too.
+  const cancelPendingPayment = useCallback(() => {
+    if (hasNavigatedRef.current || hasCancelledRef.current) return;
+    if (isTestPayment) return;
+    // Record the leave so an in-flight `startPayment` cancels the payment it
+    // creates instead of leaking it (see `initiatePayment`).
+    hasLeftRef.current = true;
+    const status = paymentStatusData?.status;
+    if (paymentId && (status === undefined || status === "requires_action")) {
+      hasCancelledRef.current = true;
+      cancelPayment(paymentId).catch((error) => {
+        addLog("error", "Failed to cancel payment", "scan", "cancelPayment", {
+          paymentId,
+          error,
+        });
+        // No "try again" — by the time this rejects the user has already left
+        // the scan screen and has no way to retry from here.
+        showErrorToast("We couldn't cancel this payment.");
+      });
+    }
+  }, [paymentId, paymentStatusData?.status, addLog, isTestPayment]);
+
+  // Hold the latest callback in a ref so the `beforeRemove` listener stays
+  // registered once for the screen's lifetime instead of being torn down and
+  // re-added on every status poll (which changes `cancelPendingPayment`).
+  const cancelPendingPaymentRef = useRef(cancelPendingPayment);
+  useEffect(() => {
+    cancelPendingPaymentRef.current = cancelPendingPayment;
+  }, [cancelPendingPayment]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", () => {
+      cancelPendingPaymentRef.current();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   const { remainingSeconds, isActive: isCountdownActive } = useCountdown({
     expiresAt,
     onExpired: () => onFailure("expired"),
   });
 
+  // The visible countdown is plain (non-live) text so screen readers don't
+  // announce every second. Instead we announce the remaining time only when it
+  // crosses these thresholds, giving low-vision users the urgency cue without
+  // the per-second chatter.
+  const announcedThresholdsRef = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    announcedThresholdsRef.current = new Set();
+  }, [expiresAt]);
+  useEffect(() => {
+    if (!isCountdownActive) return;
+    const crossed = COUNTDOWN_ANNOUNCE_THRESHOLDS.filter(
+      (threshold) => remainingSeconds <= threshold,
+    );
+    const hasNewCrossing = crossed.some(
+      (threshold) => !announcedThresholdsRef.current.has(threshold),
+    );
+    if (hasNewCrossing) {
+      crossed.forEach((threshold) =>
+        announcedThresholdsRef.current.add(threshold),
+      );
+      AccessibilityInfo.announceForAccessibility(
+        `Payment expires in ${formatCountdownSpoken(remainingSeconds)}`,
+      );
+    }
+  }, [remainingSeconds, isCountdownActive]);
+
   const isProcessing = paymentStatusData?.status === "processing";
-  const showNfc = nfcEnabled && nfcMode === "hce";
+  const showNfc = isNfcHceEnabled && nfcEnabled && nfcMode === "hce";
+
+  // Hide the header back button (and swipe-back) once the payment leaves the
+  // interactive QR state. We derive this from the status rather than binding it
+  // to `isProcessing`: a terminal status flips `isProcessing` back to false
+  // *and* navigates away in the same tick, and reviving the header back-button
+  // config while the screen is detaching crashes react-native-screens on Android
+  // with "ScreenStackFragment added into a non-stack container". Keeping it
+  // hidden for every status past `requires_action` means the option never flips
+  // back during that transition. (Derived value only — a ref/effect latch trips
+  // the react-hooks lint rules.)
+  const backHidden =
+    !!paymentStatusData && paymentStatusData.status !== "requires_action";
+
+  // Block the Android hardware back button whenever the header back and gesture
+  // are hidden, so it can't pop the screen mid-confirmation.
+  useDisableBackButton(backHidden);
 
   return (
     <View style={styles.container}>
+      <Sentry.TimeToFullDisplay ready={!!qrUri} />
+      <Stack.Screen
+        options={{
+          headerBackVisible: !backHidden,
+          gestureEnabled: !backHidden,
+        }}
+      />
+      {isTestPayment && <TestModeOverlay spacerHeight={Spacing["spacing-9"]} />}
       {isProcessing ? (
-        <View style={styles.loadingContainer}>
-          <WalletConnectLoading size={180} />
+        <View
+          style={[
+            styles.loadingContainer,
+            isTablet && styles.loadingContainerTablet,
+          ]}
+        >
+          <WalletConnectLoading size={isTablet ? 220 : 180} />
           <View style={styles.loadingTextContainer}>
             <ThemedText
               style={{ color: Theme["text-primary"] }}
-              fontSize={18}
-              lineHeight={22}
+              fontSize={isTablet ? 24 : 20}
+              lineHeight={isTablet ? 26 : 22}
             >
-              Waiting for confirmation
+              Waiting for confirmation...
             </ThemedText>
             <ThemedText
-              style={{ color: Theme["text-secondary"] }}
-              fontSize={14}
-              lineHeight={18}
+              style={{ color: Theme["text-secondary"], textAlign: "center" }}
+              fontSize={isTablet ? 20 : 16}
+              lineHeight={isTablet ? 22 : 18}
             >
-              This usually takes a few seconds.
+              This usually takes a few seconds. Keep this screen open.
             </ThemedText>
           </View>
         </View>
       ) : (
-        <View style={styles.scanContainer}>
-          <View style={[styles.header, !showNfc && styles.headerCentered]}>
+        <View
+          style={[styles.scanContainer, isTablet && styles.scanContainerTablet]}
+        >
+          <View
+            style={[
+              styles.header,
+              isTablet && styles.headerTablet,
+              !showNfc && styles.headerCentered,
+            ]}
+          >
             {showNfc && (
               <Image
                 source={assets?.[1]}
                 contentFit="contain"
-                style={[styles.nfcIcon, { tintColor: Theme["text-primary"] }]}
+                style={[
+                  styles.nfcIcon,
+                  isTablet && styles.nfcIconTablet,
+                  { tintColor: Theme["icon-default"] },
+                ]}
               />
             )}
             <ThemedText
               style={[
                 styles.amountValue,
+                isTablet && styles.amountValueTablet,
                 { color: Theme["text-primary"], textTransform: "uppercase" },
               ]}
             >
@@ -239,29 +456,63 @@ export default function ScanScreen() {
           </View>
 
           <ThemedText
-            style={[styles.instructionText, { color: Theme["text-secondary"] }]}
+            style={[
+              styles.instructionText,
+              isTablet && styles.instructionTextTablet,
+              { color: Theme["text-secondary"] },
+            ]}
           >
-            {showNfc ? "Scan or tap to pay" : "Scan to pay"}
+            {testProcessing
+              ? "Waiting for confirmation..."
+              : showNfc
+                ? "Scan or tap to pay"
+                : "Scan to pay"}
           </ThemedText>
 
-          <View style={styles.qrSection}>
+          <View style={[styles.qrSection, isTablet && styles.qrSectionTablet]}>
             <QRCode
-              size={300}
+              size={isTablet ? 420 : 300}
               uri={qrUri}
+              imageSrc={qrLogoSource}
               logoBorderRadius={100}
               onPress={handleCopyPaymentUrl}
               testID="pos-qr-code"
             >
-              <Image source={assets?.[0]} style={styles.logo} />
+              <Image
+                source={assets?.[0]}
+                style={[styles.logo, isTablet && styles.logoTablet]}
+              />
             </QRCode>
             <View
+              accessible={isCountdownActive}
+              accessibilityRole="text"
+              accessibilityLabel={
+                isCountdownActive
+                  ? `Payment expires in ${formatCountdownSpoken(remainingSeconds)}`
+                  : undefined
+              }
+              aria-label={
+                isCountdownActive
+                  ? `Payment expires in ${formatCountdownSpoken(remainingSeconds)}`
+                  : undefined
+              }
               aria-hidden={!isCountdownActive}
+              accessibilityElementsHidden={!isCountdownActive}
+              importantForAccessibility={
+                isCountdownActive ? "yes" : "no-hide-descendants"
+              }
               style={[styles.timerRow, { opacity: isCountdownActive ? 1 : 0 }]}
             >
-              <ThemedText style={{ color: Theme["text-secondary"] }}>
-                Payment expires in
+              <ThemedText
+                fontSize={isTablet ? 20 : undefined}
+                lineHeight={isTablet ? 22 : undefined}
+                style={{ color: Theme["text-secondary"] }}
+              >
+                Expires in
               </ThemedText>
               <ThemedText
+                fontSize={isTablet ? 20 : undefined}
+                lineHeight={isTablet ? 22 : undefined}
                 style={{
                   color: Theme["bg-accent-primary"],
                   fontVariant: ["tabular-nums"],
@@ -276,19 +527,15 @@ export default function ScanScreen() {
       )}
       {!isProcessing && (
         <Button
-          onPress={handleOnClosePress}
-          style={[
-            styles.closeButton,
-            { backgroundColor: Theme["foreground-primary"] },
-          ]}
+          type="neutral"
+          variant="secondary"
+          testID="cancel-button"
+          onPress={handleOnCancelPress}
+          fullWidth={false}
+          size={isTablet ? "lg" : "md"}
+          style={[styles.cancelButton, isTablet && styles.cancelButtonTablet]}
         >
-          <ThemedText
-            style={{ color: Theme["text-primary"] }}
-            fontSize={16}
-            lineHeight={18}
-          >
-            Cancel
-          </ThemedText>
+          Cancel
         </Button>
       )}
     </View>
@@ -298,13 +545,18 @@ export default function ScanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
   },
   loadingContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     gap: Spacing["spacing-6"],
-    paddingHorizontal: Spacing["spacing-5"],
+    paddingHorizontal: Spacing["spacing-7"],
+  },
+  loadingContainerTablet: {
+    gap: Spacing["spacing-8"],
+    paddingHorizontal: Spacing["spacing-8"],
   },
   scanContainer: {
     flex: 1,
@@ -313,10 +565,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing["spacing-4"],
   },
+  scanContainerTablet: {
+    paddingHorizontal: Spacing["spacing-8"],
+    paddingVertical: Spacing["spacing-8"],
+    gap: Spacing["spacing-5"],
+  },
   header: {
     width: "100%",
     alignItems: "center",
     gap: Spacing["spacing-3"],
+  },
+  headerTablet: {
+    gap: Spacing["spacing-5"],
   },
   headerCentered: {
     flex: 1,
@@ -330,6 +590,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
   },
+  instructionTextTablet: {
+    fontSize: 22,
+    lineHeight: 24,
+  },
   amountValue: {
     fontFamily: "KH Teka Medium",
     fontSize: 50,
@@ -337,13 +601,24 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     lineHeight: 50,
   },
+  amountValueTablet: {
+    fontSize: 64,
+    lineHeight: 64,
+  },
   logo: {
     width: 80,
     height: 80,
   },
+  logoTablet: {
+    width: 104,
+    height: 104,
+  },
   qrSection: {
     alignItems: "center",
     gap: Spacing["spacing-4"],
+  },
+  qrSectionTablet: {
+    gap: Spacing["spacing-5"],
   },
   timerRow: {
     flexDirection: "row",
@@ -351,21 +626,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: Spacing["spacing-1"],
   },
-  closeButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: BorderRadius["4"],
+  cancelButton: {
     marginHorizontal: Spacing["spacing-5"],
-    height: 48,
+  },
+  cancelButtonTablet: {
+    marginHorizontal: Spacing["spacing-8"],
   },
   nfcIcon: {
-    // The artwork is not centered within its bounding box (the hand holding the
-    // card sits to the right), so the unbalanced marginLeft nudges it back to
-    // optically align with the amount text below it. Intentional — do not add a
-    // matching marginRight.
     marginLeft: Spacing["spacing-5"],
     width: 80,
     height: 60,
     marginBottom: Spacing["spacing-3"],
+  },
+  nfcIconTablet: {
+    marginLeft: Spacing["spacing-8"],
+    width: 104,
+    height: 78,
+    marginBottom: Spacing["spacing-5"],
   },
 });

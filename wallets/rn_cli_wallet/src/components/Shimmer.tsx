@@ -2,8 +2,12 @@ import { useTheme } from '@/hooks/useTheme';
 import { memo, useEffect, useState } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import Animated, {
+  cancelAnimation,
+  Easing,
   interpolate,
+  ReduceMotion,
   useAnimatedStyle,
+  useReducedMotion,
   useSharedValue,
   withRepeat,
   withTiming,
@@ -43,14 +47,28 @@ function Shimmer_({
   const [measuredHeight, setMeasuredHeight] = useState<number | null>(null);
 
   const translateX = useSharedValue(0);
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (!measuredWidth) {
+    if (!measuredWidth || reducedMotion) {
+      translateX.set(0);
       return undefined;
     }
-    translateX.value = 0;
-    translateX.value = withRepeat(withTiming(1, { duration }), -1, false);
-  }, [duration, measuredWidth, translateX]);
+    translateX.set(0);
+    translateX.set(
+      withRepeat(
+        withTiming(1, {
+          duration,
+          easing: Easing.linear,
+          reduceMotion: ReduceMotion.System,
+        }),
+        -1,
+        false,
+      ),
+    );
+
+    return () => cancelAnimation(translateX);
+  }, [duration, measuredWidth, reducedMotion, translateX]);
 
   const baseColor = backgroundColor ?? Theme['foreground-secondary'];
   const highlightColor = foregroundColor ?? Theme['foreground-tertiary'];
@@ -77,7 +95,7 @@ function Shimmer_({
       return {};
     }
     const translateXValue = interpolate(
-      translateX.value,
+      translateX.get(),
       [0, 1],
       [-bandWidth, travel - bandWidth],
     );

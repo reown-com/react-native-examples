@@ -1,9 +1,8 @@
 import { useLogsStore } from "@/store/useLogsStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDateRange } from "@/utils/date-range";
 import {
   DateRangeFilterType,
-  PaymentRecord,
-  PaymentStatus,
   PaymentStatusResponse,
   StartPaymentRequest,
   StartPaymentResponse,
@@ -204,6 +203,8 @@ function filterToStatusArray(
  */
 export function useTransactions(options: UseTransactionsOptions = {}) {
   const { enabled = true, filter = "all", dateRangeFilter = "today" } = options;
+  const testMode = useSettingsStore((state) => state.testMode);
+  const testActive = testMode;
 
   const addLog = useLogsStore.getState().addLog;
 
@@ -214,7 +215,7 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
   );
 
   const query = useInfiniteQuery<TransactionsResponse, Error>({
-    queryKey: ["transactions", filter, dateRangeFilter],
+    queryKey: ["transactions", filter, dateRangeFilter, testActive],
     queryFn: ({ pageParam }) => {
       const statusFilter = filterToStatusArray(filter);
       return getTransactions({

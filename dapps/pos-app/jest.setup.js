@@ -111,6 +111,7 @@ jest.mock("expo-local-authentication", () => {
 jest.mock("react-native-device-info", () => {
   return {
     getUniqueId: jest.fn(() => Promise.resolve("mock-device-id-12345")),
+    isTablet: jest.fn(() => false),
   };
 });
 
@@ -223,13 +224,14 @@ jest.mock("react-native-qrcode-skia", () => {
 // Mock react-native-thermal-pos-printer
 jest.mock("react-native-thermal-pos-printer", () => {
   return {
-    ThermalPrinter: {
-      init: jest.fn(() => Promise.resolve()),
-      print: jest.fn(() => Promise.resolve()),
+    ReactNativePosPrinter: {
+      getDeviceList: jest.fn(() => Promise.resolve([])),
+      connectPrinter: jest.fn(() => Promise.resolve()),
+      initializePrinter: jest.fn(() => Promise.resolve()),
+      printImage: jest.fn(() => Promise.resolve()),
+      newLine: jest.fn(() => Promise.resolve()),
+      printText: jest.fn(() => Promise.resolve()),
       cutPaper: jest.fn(() => Promise.resolve()),
-      getBluetoothDeviceList: jest.fn(() => Promise.resolve([])),
-      connectBluetoothPrinter: jest.fn(() => Promise.resolve()),
-      disconnectBluetoothPrinter: jest.fn(() => Promise.resolve()),
     },
   };
 });
@@ -269,6 +271,28 @@ jest.mock("expo-application", () => {
   return {
     nativeApplicationVersion: "1.0.0",
     nativeBuildVersion: "1",
+    applicationId: "com.reown.mobilepos",
+  };
+});
+
+// Mock @sentry/react-native. startSpan invokes its callback so instrumented
+// service functions still run; the display components render nothing.
+jest.mock("@sentry/react-native", () => {
+  const passthrough = () => null;
+  return {
+    init: jest.fn(),
+    wrap: (component) => component,
+    reactNativeTracingIntegration: jest.fn((options) => ({
+      name: "ReactNativeTracing",
+      ...options,
+    })),
+    startSpan: jest.fn((_options, callback) =>
+      callback({ setAttribute: jest.fn(), setStatus: jest.fn() }),
+    ),
+    appLoaded: jest.fn(),
+    TimeToInitialDisplay: passthrough,
+    TimeToFullDisplay: passthrough,
+    __esModule: true,
   };
 });
 
@@ -279,7 +303,6 @@ global.fetch = jest.fn();
 // Force test-only URLs to prevent accidental real endpoint calls
 // Using .invalid TLD per RFC 2606 to ensure these can never resolve
 process.env.EXPO_PUBLIC_API_URL = "https://api.test.example.com";
-process.env.EXPO_PUBLIC_PROJECT_ID = "test-project-id";
 
 // Cleanup function to reset mocks between tests
 afterEach(() => {

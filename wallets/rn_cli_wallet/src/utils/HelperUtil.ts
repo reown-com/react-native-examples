@@ -1,6 +1,7 @@
 import { isAddress, isHexString, toUtf8String } from 'ethers';
 import { ProposalTypes } from '@walletconnect/types';
 import { PresetsUtil } from './PresetsUtil';
+import SettingsStore from '@/store/SettingsStore';
 
 /**
  * Truncates string (in the middle) via given lenght value
@@ -124,7 +125,12 @@ export function getSupportedChains(
 
   const chains = [...required.flat(), ...optional.flat()];
 
+  // Hide testnet networks from the connect flow unless the user has opted in via
+  // the "Testnets" setting.
+  const testNetsEnabled = SettingsStore.state.testNets;
+
   return chains
     .map(chain => PresetsUtil.getChainDataById(chain))
-    .filter(chain => chain !== undefined);
+    .filter(chain => chain !== undefined)
+    .filter(chain => testNetsEnabled || !chain?.isTestnet);
 }

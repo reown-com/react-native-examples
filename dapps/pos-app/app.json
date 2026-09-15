@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "WPay",
+    "name": "WalletConnect Pay",
     "slug": "mobile-pos",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,31 +9,25 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.reown.mobilepos",
+      "bundleIdentifier": "com.walletconnect.mobilepos",
       "appleTeamId": "W5R8AG9K22",
       "config": {
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NFCReaderUsageDescription": "This app requires NFC to send messages",
-        "NSLocationWhenInUseUsageDescription": "This app requires location when using the camera",
-        "NSBluetoothAlwaysUsageDescription": "This app requires Bluetooth to print receipts"
-      },
-      "entitlements": {
-        "com.apple.developer.nfc.readersession.formats": ["TAG"]
+        "NSBluetoothAlwaysUsageDescription": "WalletConnect Pay uses Bluetooth to connect to a thermal receipt printer so you can print transaction receipts."
       }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0666FF",
         "foregroundImage": "./assets/app_icons/android_icon_foreground.png",
         "backgroundImage": "./assets/app_icons/android_icon_background.png",
         "monochromeImage": "./assets/app_icons/android_icon_monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.reown.mobilepos",
+      "package": "com.walletconnect.mobilepos",
       "permissions": [
-        "android.permission.NFC",
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
         "android.permission.BLUETOOTH_CONNECT",
@@ -41,7 +35,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 27
+      "versionCode": 6
     },
     "web": {
       "output": "static",
@@ -52,10 +46,14 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/app_icons/splash_icon.png",
-          "imageWidth": 200,
+          "image": "./assets/app_icons/splash_logo.png",
+          "imageWidth": 270,
           "resizeMode": "contain",
-          "backgroundColor": "#000000"
+          "backgroundColor": "#000000",
+          "android": {
+            "image": "./assets/app_icons/splash_logo_android.png",
+            "imageWidth": 288
+          }
         }
       ],
       [
@@ -67,8 +65,10 @@
           "organization": "walletconnect"
         }
       ],
-      "./scripts/withAndroidReleaseSigningConfig.js",
+      "./plugins/withAndroidVariants.js",
+      "./plugins/withAndroidVariantIcons.js",
       "./plugins/withHceNfc.js",
+      "./plugins/withHceFeatureFlag.js",
       [
         "expo-font",
         {
@@ -90,6 +90,15 @@
                     "weight": 500
                   }
                 ]
+              },
+              {
+                "fontFamily": "KH Teka Mono",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/KHTekaMono-Regular.otf",
+                    "weight": 400
+                  }
+                ]
               }
             ]
           },
@@ -97,7 +106,8 @@
             "fonts": [
               "./assets/fonts/KHTeka-Light.otf",
               "./assets/fonts/KHTeka-Regular.otf",
-              "./assets/fonts/KHTeka-Medium.otf"
+              "./assets/fonts/KHTeka-Medium.otf",
+              "./assets/fonts/KHTekaMono-Regular.otf"
             ]
           }
         }
@@ -110,7 +120,6 @@
             "./assets/images/tokens",
             "./assets/images/chains",
             "./assets/images/payment_methods",
-            "./assets/images/variants",
             "./assets/app_icons"
           ]
         }
@@ -128,7 +137,6 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
         }
       ],
-      "@sentry/react-native",
       "expo-image",
       "expo-status-bar"
     ],

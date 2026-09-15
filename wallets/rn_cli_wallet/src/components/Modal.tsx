@@ -1,5 +1,5 @@
 import { useSnapshot } from 'valtio';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import RNModal from 'react-native-modal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -9,23 +9,11 @@ import ModalStore from '@/store/ModalStore';
 import { Spacing } from '@/utils/ThemeUtil';
 import { DesktopFrame } from '@/constants/DesktopFrame';
 import SessionProposalModal from '@/modals/SessionProposalModal';
-import SessionSignModal from '@/modals/SessionSignModal';
-import SessionSendTransactionModal from '@/modals/SessionSendTransactionModal';
-import SessionSignTypedDataModal from '@/modals/SessionSignTypedDataModal';
+import SessionRequestModal from '@/modals/SessionRequestModal';
 import { LoadingModal } from '@/modals/LoadingModal';
 import SessionAuthenticateModal from '@/modals/SessionAuthenticateModal';
-import SessionSignSuiPersonalMessageModal from '@/modals/SessionSuiSignPersonalMessageModal';
-import SessionSignSuiTransactionModal from '@/modals/SessionSuiSignTransactionModal';
-import SessionSignAndExecuteSuiTransactionModal from '@/modals/SessionSuiSignAndExecuteTransactionModal';
 import SessionTonSendMessageModal from '@/modals/SessionTonSendMessageModal';
 import SessionTonSignDataModal from '@/modals/SessionTonSignDataModal';
-import SessionSignTronModal from '@/modals/SessionSignTronModal';
-import SessionSignCantonModal from '@/modals/SessionSignCantonModal';
-import SessionSolanaSignMessageModal from '@/modals/SessionSolanaSignMessageModal';
-import SessionSolanaSignTransactionModal from '@/modals/SessionSolanaSignTransactionModal';
-import SessionBitcoinSignMessageModal from '@/modals/SessionBitcoinSignMessageModal';
-import SessionBitcoinSendTransactionModal from '@/modals/SessionBitcoinSendTransactionModal';
-import SessionBitcoinGetAddressesModal from '@/modals/SessionBitcoinGetAddressesModal';
 import PaymentOptionsModal from '@/modals/PaymentOptionsModal';
 import ImportWalletModal from '@/modals/ImportWalletModal';
 import SessionDetailModal from '@/modals/SessionDetailModal';
@@ -43,9 +31,15 @@ export default function Modal() {
     ],
     [insets.bottom],
   );
+  // The tap that opens a modal is fired by an RNGH button on touch-release. On
+  // Android that same touch-up is also delivered to react-native-modal's
+  // freshly-mounted backdrop, so the sheet closes the instant it opens. Ignore
+  // backdrop presses until the enter animation has finished (onModalShow).
+  const isShown = useRef(false);
+
   // handle the modal being closed by click outside
   const onClose = useCallback(() => {
-    if (open) {
+    if (open && isShown.current) {
       ModalStore.close();
     }
   }, [open]);
@@ -54,40 +48,16 @@ export default function Modal() {
     switch (view) {
       case 'SessionProposalModal':
         return <SessionProposalModal />;
-      case 'SessionSignModal':
-        return <SessionSignModal />;
-      case 'SessionSignTypedDataModal':
-        return <SessionSignTypedDataModal />;
-      case 'SessionSendTransactionModal':
-        return <SessionSendTransactionModal />;
+      case 'SessionRequestModal':
+        return <SessionRequestModal />;
       case 'SessionAuthenticateModal':
         return <SessionAuthenticateModal />;
       case 'LoadingModal':
         return <LoadingModal />;
-      case 'SessionSuiSignTransactionModal':
-        return <SessionSignSuiTransactionModal />;
-      case 'SessionSuiSignPersonalMessageModal':
-        return <SessionSignSuiPersonalMessageModal />;
-      case 'SessionSuiSignAndExecuteTransactionModal':
-        return <SessionSignAndExecuteSuiTransactionModal />;
       case 'SessionTonSendMessageModal':
         return <SessionTonSendMessageModal />;
       case 'SessionTonSignDataModal':
         return <SessionTonSignDataModal />;
-      case 'SessionSignTronModal':
-        return <SessionSignTronModal />;
-      case 'SessionSignCantonModal':
-        return <SessionSignCantonModal />;
-      case 'SessionSolanaSignMessageModal':
-        return <SessionSolanaSignMessageModal />;
-      case 'SessionSolanaSignTransactionModal':
-        return <SessionSolanaSignTransactionModal />;
-      case 'SessionBitcoinSignMessageModal':
-        return <SessionBitcoinSignMessageModal />;
-      case 'SessionBitcoinSendTransactionModal':
-        return <SessionBitcoinSendTransactionModal />;
-      case 'SessionBitcoinGetAddressesModal':
-        return <SessionBitcoinGetAddressesModal />;
       case 'PaymentOptionsModal':
         return <PaymentOptionsModal />;
       case 'ImportWalletModal':
@@ -109,6 +79,12 @@ export default function Modal() {
       useNativeDriver
       statusBarTranslucent
       propagateSwipe
+      onModalShow={() => {
+        isShown.current = true;
+      }}
+      onModalHide={() => {
+        isShown.current = false;
+      }}
       onBackdropPress={onClose}
       style={[styles.modal, Platform.OS === 'web' ? styles.modalWeb : null]}
       // On web, render inline (not via the full-screen portal) so the sheet +

@@ -6,39 +6,83 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
 import { ThemedText } from "@/components/themed-text";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { Spacing } from "@/constants/spacing";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
-import { getPaymentErrorMessage } from "@/utils/payment-errors";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { usePosBridgeStore } from "@/store/usePosBridgeStore";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
+import {
+  getPaymentErrorMessage,
+  INVALID_API_KEY,
+} from "@/utils/payment-errors";
+import { shouldRouteInvalidApiKeyToSettings } from "@/utils/pos-bridge-ui";
 import { useAssets } from "expo-asset";
 
+// The params can't be declared optional here: `UnknownOutputParams` indexes to
+// `string | string[]`, so `?` widens to undefined and breaks the constraint.
+// Read them through `Partial` below instead, since `scan.tsx` only passes
+// `errorCode`/`minAmount` when it has them.
 interface ScreenParams extends UnknownOutputParams {
   amount: string;
   errorCode: string; // Error status from API (e.g., "expired") or error code (e.g., "invalid_api_key")
+  minAmount: string; // Minimum amount in cents, only set for "amount_too_low"
 }
 
 export default function PaymentFailureScreen() {
   const Theme = useTheme();
+  const isTablet = useIsTablet();
   const { top } = useSafeAreaInsets();
-  const params = useLocalSearchParams<ScreenParams>();
-  const [assets] = useAssets([require("@/assets/images/warning_circle.png")]);
+  const params: Partial<ScreenParams> = useLocalSearchParams<ScreenParams>();
+  const currencyCode = useSettingsStore((state) => state.currency);
+  const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
+  const isIframeBridgeConfigured = isRunningInIframe() && isBridgeConfigured;
+  const [assets] = useAssets([
+    require("@/assets/images/warning-circle-fill.png"),
+  ]);
 
-  const { title, subtitle } = getPaymentErrorMessage(params.errorCode);
+  const { title, subtitle } = getPaymentErrorMessage(params.errorCode, {
+    minAmountCents: params.minAmount,
+    currencyCode,
+  });
 
-  const handleRetry = () => {
+  // Only direct POS credentials can be fixed from Settings. Bridge credentials
+  // belong to the dashboard, so retrying starts a new payment instead.
+  const shouldRouteToSettings = shouldRouteInvalidApiKeyToSettings(
+    params.errorCode === INVALID_API_KEY,
+    isIframeBridgeConfigured,
+  );
+
+  const handlePrimaryPress = () => {
+    if (shouldRouteToSettings) {
+      // Leave the payment flow entirely and land on Settings so the merchant
+      // can fix credentials; settings isn't in this stack, so dismissTo won't
+      // reach it — pop back to root, then push Settings.
+      router.dismissAll();
+      router.push("/settings");
+      return;
+    }
     router.dismissTo("/amount");
   };
 
   return (
-    <View style={[styles.container, { paddingTop: top }]}>
+    <View
+      style={[
+        styles.container,
+        isTablet && styles.containerTablet,
+        { paddingTop: top },
+      ]}
+    >
       <View
         testID="pos-payment-failure"
         nativeID="pos-payment-failure"
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        style={styles.failureContent}
       >
         <Image
           source={assets?.[0]}
           style={[
             styles.warningCircle,
+            isTablet && styles.warningCircleTablet,
             { tintColor: Theme["bg-accent-primary"] },
           ]}
           cachePolicy="memory-disk"
@@ -46,40 +90,32 @@ export default function PaymentFailureScreen() {
           priority="high"
         />
         <ThemedText
-          style={[styles.failedText, { color: Theme["text-primary"] }]}
+          style={[
+            styles.failedText,
+            isTablet && styles.failedTextTablet,
+            { color: Theme["text-primary"] },
+          ]}
         >
           {title}
         </ThemedText>
         <ThemedText
-          style={[styles.failedDescription, { color: Theme["text-tertiary"] }]}
+          style={[
+            styles.failedDescription,
+            isTablet && styles.failedDescriptionTablet,
+            { color: Theme["text-tertiary"] },
+          ]}
         >
           {subtitle}
         </ThemedText>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          onPress={handleRetry}
-          style={[
-            styles.button,
-            {
-              backgroundColor: Theme["bg-accent-primary"],
-            },
-          ]}
-        >
-          <ThemedText
-            fontSize={16}
-            lineHeight={18}
-            style={{ color: Theme["text-invert"] }}
-          >
-            Start payment
-          </ThemedText>
-          <Image
-            source={require("@/assets/images/plus.png")}
-            style={styles.plusIcon}
-            tintColor={Theme["text-invert"]}
-          />
-        </Button>
-      </View>
+      <Button
+        type="accent"
+        variant="primary"
+        size={isTablet ? "lg" : "md"}
+        onPress={handlePrimaryPress}
+      >
+        {shouldRouteToSettings ? "Go to Settings" : "Start new payment"}
+      </Button>
     </View>
   );
 }
@@ -90,11 +126,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
     paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
   },
+  containerTablet: {
+    paddingHorizontal: Spacing["spacing-8"],
+    paddingBottom: Spacing["spacing-8"],
+  },
+  failureContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   failedText: {
     fontSize: 20,
     lineHeight: 20,
     textAlign: "center",
     marginBottom: Spacing["spacing-3"],
+  },
+  failedTextTablet: {
+    fontSize: 28,
+    lineHeight: 32,
+    marginBottom: Spacing["spacing-5"],
   },
   failedDescription: {
     fontSize: 16,
@@ -102,26 +152,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: Spacing["spacing-3"],
   },
+  failedDescriptionTablet: {
+    maxWidth: 640,
+    fontSize: 20,
+    lineHeight: 24,
+    marginBottom: Spacing["spacing-5"],
+  },
   warningCircle: {
     width: 48,
     height: 48,
     marginBottom: Spacing["spacing-6"],
   },
-  buttonContainer: {
-    width: "100%",
-    gap: Spacing["spacing-3"],
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: Spacing["spacing-5"],
-    paddingVertical: Spacing["spacing-5"],
-    borderRadius: BorderRadius["5"],
-    gap: Spacing["spacing-2"],
-  },
-  plusIcon: {
-    width: 12.5,
-    height: 12.5,
+  warningCircleTablet: {
+    width: 72,
+    height: 72,
+    marginBottom: Spacing["spacing-8"],
   },
 });

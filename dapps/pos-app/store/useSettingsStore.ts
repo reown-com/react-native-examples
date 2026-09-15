@@ -8,7 +8,7 @@ import {
   SECURE_STORAGE_KEYS,
   secureStorage,
 } from "@/utils/secure-storage";
-import { isEmbedded } from "@/utils/is-embedded";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { storage } from "@/utils/storage";
 import {
   DateRangeFilterType,
@@ -62,6 +62,7 @@ interface SettingsStore {
   _hasHydrated: boolean;
   merchantId: string | null;
   isCustomerApiKeySet: boolean;
+  hasInitializedDefaults: boolean;
 
   // Transaction filters
   transactionFilter: TransactionFilterType;
@@ -75,6 +76,9 @@ interface SettingsStore {
 
   // NFC
   nfcEnabled: boolean;
+
+  // Test
+  testMode: boolean;
 
   // Actions
   setThemeMode: (themeMode: ThemeMode) => void;
@@ -98,6 +102,7 @@ interface SettingsStore {
   resetPinAttempts: () => void;
   setBiometricEnabled: (enabled: boolean) => void;
   setNfcEnabled: (enabled: boolean) => void;
+  setTestMode: (enabled: boolean) => void;
 
   // Transaction filters
   setTransactionFilter: (filter: TransactionFilterType) => void;
@@ -114,13 +119,15 @@ export const useSettingsStore = create<SettingsStore>()(
       _hasHydrated: false,
       merchantId: null,
       isCustomerApiKeySet: false,
+      hasInitializedDefaults: false,
       transactionFilter: "all",
-      dateRangeFilter: "today",
+      dateRangeFilter: "all_time",
       isPinHashSet: false,
       pinFailedAttempts: 0,
       pinLockoutUntil: null,
       biometricEnabled: false,
       nfcEnabled: true,
+      testMode: false,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
@@ -135,41 +142,15 @@ export const useSettingsStore = create<SettingsStore>()(
         Variants[get().variant]?.printerLogo ?? DEFAULT_LOGO_BASE64,
       setCurrency: (currency: CurrencyCode) => set({ currency }),
       setMerchantId: (merchantId: string | null) => {
-        // If clearing, reset to env default (unless embedded — parent provides credentials)
         if (!merchantId || merchantId.trim() === "") {
-          set({
-            merchantId: isEmbedded()
-              ? null
-              : MerchantConfig.getDefaultMerchantId(),
-          });
+          set({ merchantId: null });
         } else {
           set({ merchantId });
         }
       },
       clearMerchantId: async () => {
-        // When embedded, clear to null — parent provides credentials via postMessage.
-        // Otherwise, reset both merchant ID and API key to env defaults.
-        if (isEmbedded()) {
-          set({ merchantId: null });
-          await secureStorage.removeItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
-          set({ isCustomerApiKeySet: false });
-          return null;
-        }
-
-        const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
-        set({ merchantId: defaultMerchantId });
-        const defaultApiKey = MerchantConfig.getDefaultCustomerApiKey();
-        if (defaultApiKey) {
-          await secureStorage.setItem(
-            SECURE_STORAGE_KEYS.CUSTOMER_API_KEY,
-            defaultApiKey,
-          );
-          set({ isCustomerApiKeySet: true });
-        } else {
-          await secureStorage.removeItem(SECURE_STORAGE_KEYS.CUSTOMER_API_KEY);
-          set({ isCustomerApiKeySet: false });
-        }
-        return defaultMerchantId;
+        set({ merchantId: null });
+        return null;
       },
       setCustomerApiKey: async (apiKey: string | null) => {
         try {
@@ -271,6 +252,7 @@ export const useSettingsStore = create<SettingsStore>()(
       setBiometricEnabled: (enabled: boolean) =>
         set({ biometricEnabled: enabled }),
       setNfcEnabled: (enabled: boolean) => set({ nfcEnabled: enabled }),
+      setTestMode: (enabled: boolean) => set({ testMode: enabled }),
 
       setTransactionFilter: (filter: TransactionFilterType) =>
         set({ transactionFilter: filter }),
@@ -279,7 +261,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 16,
+      version: 20,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -345,6 +327,31 @@ export const useSettingsStore = create<SettingsStore>()(
           persistedState.nfcEnabled = persistedState.nfcEnabled ?? true;
         }
 
+        if (version < 17) {
+          // Wallet theme variants were removed; reset any persisted branded
+          // variant so it maps back to the only remaining option.
+          persistedState.variant = "default";
+        }
+
+        if (version < 18) {
+          // The date range filter previously defaulted to "today", which made a
+          // fresh terminal with no transactions show the "filters active" empty
+          // state ("No payments found") instead of the onboarding empty state
+          // ("No payments yet"). Reset to "all_time" so the default is unfiltered.
+          persistedState.dateRangeFilter = "all_time";
+        }
+
+        if (version < 19) {
+          // Existing installs have already been through first-run, so treat
+          // them as initialized. This stops env defaults from being re-seeded
+          // after the user manually clears/changes their credentials.
+          persistedState.hasInitializedDefaults = true;
+        }
+
+        if (version < 20) {
+          persistedState.testMode = false;
+        }
+
         return persistedState;
       },
       onRehydrateStorage: () => async (state, error) => {
@@ -371,20 +378,24 @@ export const useSettingsStore = create<SettingsStore>()(
             delete (state as any).__migrationData;
           }
 
-          // Run customer API key migration before applying defaults
-          // This ensures existing users keep their API key during the rename
-          const migrated = await migrateCustomerApiKey();
-          if (migrated) {
-            // Migration was performed, sync the flag
-            state.isCustomerApiKeySet = true;
-            useLogsStore
-              .getState()
-              .addLog(
-                "info",
-                "Customer API key migrated from legacy storage key",
-                "Settings",
-                "onRehydrateStorage",
-              );
+          // Skip credential migrations in iframes.
+          if (!isRunningInIframe()) {
+            // Run customer API key migration before applying defaults.
+            // This ensures existing standalone users keep their API key during
+            // the rename.
+            const migrated = await migrateCustomerApiKey();
+            if (migrated) {
+              // Migration was performed, sync the flag
+              state.isCustomerApiKeySet = true;
+              useLogsStore
+                .getState()
+                .addLog(
+                  "info",
+                  "Customer API key migrated from legacy storage key",
+                  "Settings",
+                  "onRehydrateStorage",
+                );
+            }
           }
 
           // Sync isPinHashSet from secure storage
@@ -393,9 +404,10 @@ export const useSettingsStore = create<SettingsStore>()(
           );
           state.isPinHashSet = pinHash !== null;
 
-          // Initialize merchant defaults from env if not set.
+          // Initialize merchant defaults from env on first run only, so we
+          // don't re-seed defaults after the user clears/changes credentials.
           // Skip when embedded in an iframe — parent provides credentials via postMessage.
-          if (!isEmbedded()) {
+          if (!isRunningInIframe() && !state.hasInitializedDefaults) {
             const defaultMerchantId = MerchantConfig.getDefaultMerchantId();
             const defaultApiKey = MerchantConfig.getDefaultCustomerApiKey();
 
@@ -406,6 +418,8 @@ export const useSettingsStore = create<SettingsStore>()(
             if (!state.isCustomerApiKeySet && defaultApiKey) {
               await state.setCustomerApiKey(defaultApiKey);
             }
+
+            state.hasInitializedDefaults = true;
           }
         }
 

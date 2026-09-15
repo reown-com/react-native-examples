@@ -4,24 +4,29 @@ export const Colors = {
   light: {
     // Foreground colors
     "foreground-primary": "#F3F3F3",
+    // Same as foreground-primary in light; steps up to foreground-secondary in
+    // dark so card/keyboard surfaces stay distinguishable from bg-primary.
+    "foreground-primary-fix": "#F3F3F3",
     "foreground-secondary": "#E9E9E9",
     "foreground-tertiary": "#D0D0D0",
-    "foreground-accent-primary-10": "#0988F01A", // 10% opacity
-    "foreground-accent-primary-40": "#0988F040", // 40% opacity
-    "foreground-accent-primary-60": "#0988F060", // 60% opacity
+    "foreground-accent-primary-10": "#0666FF1A", // 10% opacity
+    "foreground-accent-primary-40": "#0666FF40", // 40% opacity
+    "foreground-accent-primary-60": "#0666FF60", // 60% opacity
 
     // Icon colors
     "icon-default": "#9A9A9A",
     "icon-invert": "#202020",
     "icon-success": "#30A46B",
-    "icon-accent-primary": "#0988F0",
+    "icon-accent-primary": "#0666FF",
     "icon-error": "#DF4A34",
+    "icon-warning": "#F3A13F",
 
     // Background colors
     "bg-primary": "#FFFFFF",
     "bg-invert": "#202020",
-    "bg-accent-primary": "#0988F0",
-    "bg-payment-success": "#0988F0",
+    "bg-accent-primary": "#0666FF",
+    "bg-payment-success": "#0666FF",
+    "bg-warning": "#F3A13F33", // 20% opacity
 
     // Text colors
     "text-primary": "#202020",
@@ -35,35 +40,40 @@ export const Colors = {
     "border-primary": "#E9E9E9",
     "border-secondary": "#D0D0D0",
     "border-payment-success": "#E9E9E9",
-    "border-accent-primary": "#0988F0",
+    "border-accent-primary": "#0666FF",
   },
   dark: {
     // Foreground colors
     "foreground-primary": "#252525",
+    // Stepped up to foreground-secondary so card/keyboard surfaces read against
+    // the near-black bg-primary (#252525 was effectively invisible).
+    "foreground-primary-fix": "#2A2A2A",
     "foreground-secondary": "#2A2A2A",
     "foreground-tertiary": "#363636",
-    "foreground-accent-primary-10": "#0988F01A", // 10% opacity
-    "foreground-accent-primary-40": "#0988F040", // 40% opacity
-    "foreground-accent-primary-60": "#0988F060", // 60% opacity
+    "foreground-accent-primary-10": "#0666FF1A", // 10% opacity
+    "foreground-accent-primary-40": "#0666FF40", // 40% opacity
+    "foreground-accent-primary-60": "#0666FF60", // 60% opacity
 
     // Icon colors
     "icon-default": "#9A9A9A",
     "icon-invert": "#FFFFFF",
     "icon-success": "#30A46B",
-    "icon-accent-primary": "#0988F0",
+    "icon-accent-primary": "#0666FF",
     "icon-error": "#DF4A34",
+    "icon-warning": "#F3A13F",
 
     // Background colors
     "bg-primary": "#202020",
     "bg-invert": "#FFFFFF",
-    "bg-accent-primary": "#0988F0",
-    "bg-payment-success": "#0988F0",
+    "bg-accent-primary": "#0666FF",
+    "bg-payment-success": "#0666FF",
+    "bg-warning": "#F3A13F33", // 20% opacity
 
     // Text colors
     "text-primary": "#FFFFFF",
     "text-secondary": "#9A9A9A",
     "text-tertiary": "#BBBBBB",
-    "text-invert": "#202020",
+    "text-invert": "#181818",
     "text-white": "#FFFFFF",
     "text-payment-success": "#FFFFFF",
 
@@ -71,9 +81,11 @@ export const Colors = {
     "border-primary": "#363636",
     "border-secondary": "#4F4F4F",
     "border-payment-success": "#E9E9E9",
-    "border-accent-primary": "#0988F0",
+    "border-accent-primary": "#0666FF",
   },
 };
+
+export type ColorKey = keyof typeof Colors.light;
 
 export const Fonts = Platform.select({
   ios: {

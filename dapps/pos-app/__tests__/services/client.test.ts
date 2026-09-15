@@ -325,12 +325,11 @@ describe("ApiClient", () => {
       await apiClient.get("/test");
 
       const logs = useLogsStore.getState().logs;
-      const apiLog = logs.find(
-        (log) => log.message === "API request successful",
-      );
+      const apiLog = logs.find((log) => log.message === "GET /test");
       expect(apiLog).toBeDefined();
       expect(apiLog?.level).toBe("info");
       expect(apiLog?.view).toBe("api");
+      expect(apiLog?.data?.method).toBe("GET");
     });
 
     it("should log failed API requests", async () => {
