@@ -261,7 +261,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 21,
+      version: 20,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -350,12 +350,6 @@ export const useSettingsStore = create<SettingsStore>()(
 
         if (version < 20) {
           persistedState.testMode = false;
-        }
-
-        if (version < 21) {
-          persistedState.testMode =
-            persistedState.testMode ?? persistedState.sandboxMode ?? false;
-          delete persistedState.sandboxMode;
         }
 
         return persistedState;

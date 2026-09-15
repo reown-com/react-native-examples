@@ -553,7 +553,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(21);
+      expect(persistOptions?.version).toBe(20);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();
@@ -588,17 +588,13 @@ describe("useSettingsStore", () => {
       expect(migrated.hasInitializedDefaults).toBe(true);
     });
 
-    it("migrates enabled sandbox mode to Test Mode", () => {
+    it("defaults Test Mode to off for installs from before it existed", () => {
       const migrate = useSettingsStore.persist?.getOptions?.().migrate;
       expect(migrate).toBeDefined();
 
-      const migrated: any = migrate!(
-        { variant: "default", sandboxMode: true },
-        20,
-      );
+      const migrated: any = migrate!({ variant: "default" }, 19);
 
-      expect(migrated.testMode).toBe(true);
-      expect(migrated.sandboxMode).toBeUndefined();
+      expect(migrated.testMode).toBe(false);
     });
   });
 });
