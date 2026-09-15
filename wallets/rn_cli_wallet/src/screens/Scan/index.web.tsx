@@ -257,14 +257,6 @@ export default function Scan({ navigation }: Props) {
             <View style={[webStyles.corner, webStyles.cornerTopRight]} />
             <View style={[webStyles.corner, webStyles.cornerBottomLeft]} />
             <View style={[webStyles.corner, webStyles.cornerBottomRight]} />
-            {!isCameraEnabled && (
-              <View style={webStyles.errorContainer}>
-                <Text variant="lg-400" style={webStyles.errorText}>
-                  {cameraError ||
-                    'Camera unavailable. Allow camera access to scan codes.'}
-                </Text>
-              </View>
-            )}
           </View>
         </View>
       )}
@@ -294,19 +286,27 @@ export default function Scan({ navigation }: Props) {
       )}
 
       {!isCameraEnabled && frameHeight > 0 && (
-        <Button
-          accessibilityLabel="Allow camera access"
-          onPress={requestCameraPermission}
+        <View
           style={[
-            webStyles.allowCameraButton,
-            { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[12] },
+            webStyles.errorBelow,
+            { top: scanAreaTop + SCAN_AREA_SIZE + Spacing[8] },
           ]}
-          testID="button-allow-camera"
         >
-          <Text variant="md-500" style={webStyles.allowCameraText}>
-            Allow camera access
+          <Text variant="lg-400" style={webStyles.errorText}>
+            {cameraError ||
+              'Camera unavailable. Allow camera access to scan codes.'}
           </Text>
-        </Button>
+          <Button
+            accessibilityLabel="Allow camera access"
+            onPress={requestCameraPermission}
+            style={webStyles.allowCameraButton}
+            testID="button-allow-camera"
+          >
+            <Text variant="md-500" style={webStyles.allowCameraText}>
+              Allow camera access
+            </Text>
+          </Button>
+        </View>
       )}
     </View>
   );
@@ -356,15 +356,13 @@ const webStyles = StyleSheet.create({
     borderRightWidth: CORNER_STROKE,
     borderBottomRightRadius: CORNER_RADIUS,
   },
-  errorContainer: {
+  errorBelow: {
     position: 'absolute',
-    top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
     alignItems: 'center',
-    justifyContent: 'center',
     paddingHorizontal: Spacing[4],
+    gap: Spacing[4],
   },
   video: {
     height: '100%',
@@ -376,8 +374,6 @@ const webStyles = StyleSheet.create({
     textAlign: 'center',
   },
   allowCameraButton: {
-    position: 'absolute',
-    alignSelf: 'center',
     borderColor: 'white',
     borderWidth: 1,
     borderRadius: BorderRadius[4],

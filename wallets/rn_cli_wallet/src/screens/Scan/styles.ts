@@ -31,9 +31,15 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   errorContainer: {
-    flex: 1,
+    position: 'absolute',
+    left: 0,
+    right: 0,
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: Spacing[8],
+  },
+  errorText: {
+    color: 'white',
+    textAlign: 'center',
   },
   instructionText: {
     color: 'white',
