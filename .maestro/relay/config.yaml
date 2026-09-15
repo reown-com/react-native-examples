@@ -1,0 +1,14 @@
+# Maestro config for the relay (dapp <-> wallet) E2E suite.
+#
+#   maestro test --include-tags relay-walletkit .maestro/relay
+#     native rn_cli_wallet (app under test) <-> WEB appkit-wagmi dapp (device browser).
+#
+# Tag filtering keeps the untagged `_*.yaml` subflows (_connect_walletkit,
+# _focus_browser) from running as standalone tests; they're pulled in via runFlow.
+#
+# Suite is intentionally separate from the WC Pay suite (shared flows copied in
+# by ci_e2e_walletkit.yaml) and from the legacy .maestro/native + .maestro/web
+# flows.
+baselineBranch: main
+flows:
+  - '*.yaml'

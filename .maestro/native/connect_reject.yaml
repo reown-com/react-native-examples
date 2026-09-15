@@ -1,11 +1,29 @@
 appId: com.walletconnect.web3modal.rnsample.internal
-name: React Native Dapp to React Native Wallet Connection Confirmed
+name: React Native Dapp to React Native Wallet Connection Rejected
 ---
 - clearState
 - launchApp:
     permissions:
       all: allow
-- tapOn: "Connect"
-- tapOn: "React Native Wallet"
-- tapOn: "Reject"
+- startRecording: "Native to Native Connection Rejected"
+- tapOn:
+    id: "connect-button"
+- tapOn:
+    id: "all-wallets"
+- waitForAnimationToEnd
+- tapOn: "React"
+- runFlow:
+    when:
+      visible: "Open"
+      platform: iOS
+    commands:
+      - tapOn: "Open"
+- extendedWaitUntil:
+    visible: 
+        id: "reject-button"
+    timeout: 10000
+- tapOn:
+    id: "reject-button"
+- waitForAnimationToEnd
 - assertVisible: "Connection declined"
+- stopRecording

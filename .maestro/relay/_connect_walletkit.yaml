@@ -1,0 +1,68 @@
+# Reusable connect handshake — NOT a standalone test.
+# Untagged on purpose: CI runs `--include-tags relay-walletkit`, so tag filtering
+# never picks this up directly; the tagged flows pull it in via `runFlow`.
+#
+# Native wallet (app under test) <-> WEB appkit dapp (counterparty, in the device
+# browser). The dapp opens the QR view and copies the wc: URI (Web Clipboard API);
+# the native wallet pastes it and approves. To return to the dapp we RESUME Safari
+# (Home + app icon) rather than relaunching it (`launchApp`/`openLink` reload the
+# tab and drop the pending connection) — a resumed tab keeps its live WC client,
+# which fetches the queued session settlement and completes the connection.
+#
+# Env:
+#   APP_ID    native wallet bundle id (the app under test)
+#   DAPP_URL  appkit-wagmi WEB dapp base URL (served locally or on Vercel)
+appId: ${APP_ID}
+---
+# Clean wallet so sessions don't accumulate across runs (the disconnect flows
+# need to reach an empty list). The OS clipboard survives clearState.
+- launchApp:
+    appId: ${APP_ID}
+    clearState: true
+    permissions:
+      all: allow
+# --- WEB dapp: open the QR view and copy the wc: URI ---
+- openLink:
+    link: ${DAPP_URL}
+    browser: true
+# Wait for the button itself (not just the title) — it renders slightly after the
+# page and the immediate tap could miss it.
+- extendedWaitUntil:
+    visible: 'Open QR (E2E)'
+    timeout: 60000
+# Dismiss Safari's first-launch feature popover ("View Bookmarks…") if present —
+# it overlays the page on the first Safari launch of a fresh CI sim and otherwise
+# intercepts the tap. Conditional, so it no-ops on later flows and on Android.
+- runFlow:
+    when:
+      visible:
+        id: 'PopoverDismissRegion'
+    commands:
+      - tapOn:
+          id: 'PopoverDismissRegion'
+- tapOn: 'Open QR (E2E)'
+- extendedWaitUntil:
+    visible: 'Copy link'
+    timeout: 30000
+- tapOn: 'Copy link'
+# --- Native wallet: pair by pasting the copied wc: URI ---
+- launchApp:
+    appId: ${APP_ID}
+- tapOn:
+    id: 'button-scan'
+- tapOn:
+    id: 'button-paste-url'
+# iOS shows a one-time "… would like to paste" system dialog.
+- runFlow:
+    when:
+      visible: 'Allow Paste'
+    commands:
+      - tapOn: 'Allow Paste'
+- extendedWaitUntil:
+    visible:
+      id: 'approve-button'
+    timeout: 60000
+- tapOn:
+    id: 'approve-button'
+# --- Return to the dapp by RESUMING the browser (Home + icon), not relaunching ---
+- runFlow: _focus_browser.yaml
