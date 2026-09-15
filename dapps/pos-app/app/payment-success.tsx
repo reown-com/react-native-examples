@@ -25,14 +25,18 @@ import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
 import { Image } from "expo-image";
 
+// The params can't be declared optional here: `UnknownOutputParams` indexes to
+// `string | string[]`, so `?` widens to undefined and breaks the constraint.
+// Read them through `Partial` below instead, since the token fields are only
+// passed when the payment has a displayable token.
 interface SuccessParams extends UnknownOutputParams {
   amount: string;
-  chainName?: string;
-  token?: string;
+  chainName: string;
+  token: string;
   timestamp: string;
   paymentId: string;
-  tokenAmount?: string;
-  tokenDecimals?: string;
+  tokenAmount: string;
+  tokenDecimals: string;
 }
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("screen");
@@ -47,7 +51,7 @@ export default function PaymentSuccessScreen() {
   useDisableBackButton();
   const Theme = useTheme();
   const isTablet = useIsTablet();
-  const params = useLocalSearchParams<SuccessParams>();
+  const params: Partial<SuccessParams> = useLocalSearchParams<SuccessParams>();
 
   const currencyCode = useSettingsStore((state) => state.currency);
   const variant = useSettingsStore((state) => state.variant);
@@ -57,7 +61,7 @@ export default function PaymentSuccessScreen() {
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const { top, bottom } = useSafeAreaInsets();
-  const { amount } = params;
+  const { amount = "" } = params;
   const [isPrinterConnected, setIsPrinterConnected] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const [isSuccessAnimationVisible, setIsSuccessAnimationVisible] =
@@ -87,7 +91,7 @@ export default function PaymentSuccessScreen() {
       const logoBase64 =
         (await buildReceiptLogo(variant)) ?? getVariantPrinterLogo();
       await printReceipt({
-        txnId: params.paymentId,
+        txnId: params.paymentId ?? "",
         amountFiat: Number(amount),
         currency,
         tokenSymbol: params.token,

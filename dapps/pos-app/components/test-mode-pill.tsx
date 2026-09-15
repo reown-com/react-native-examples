@@ -12,6 +12,8 @@ export function TestModePill({ style }: TestModePillProps) {
 
   return (
     <View
+      accessibilityRole="alert"
+      accessibilityLabel="Test mode active. Payments are simulated."
       style={[
         styles.container,
         { backgroundColor: theme["foreground-accent-primary-60"] },

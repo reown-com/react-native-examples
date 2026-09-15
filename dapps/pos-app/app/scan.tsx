@@ -150,6 +150,8 @@ export default function ScanScreen() {
   };
 
   const handleCopyPaymentUrl = async () => {
+    // No real URL to copy in test mode.
+    if (isTestPayment) return;
     await Clipboard.setStringAsync(qrUri);
     showSuccessToast("Payment link copied");
   };
@@ -259,7 +261,7 @@ export default function ScanScreen() {
         onFailure("failed");
       } else {
         addLog("info", "Test payment completed", "scan", "testPayment");
-        onSuccess();
+        onSuccess(paymentId);
       }
     }, 3000);
 
