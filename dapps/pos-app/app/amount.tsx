@@ -1,6 +1,7 @@
 import { BigAmountInput } from "@/components/big-amount-input";
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
+import { TestModeOverlay } from "@/components/test-mode-pill";
 import { Spacing } from "@/constants/spacing";
 import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -37,6 +38,8 @@ const formatAmount = (amount: string) => {
 
 export default function AmountScreen() {
   const Theme = useTheme();
+  const testMode = useSettingsStore((state) => state.testMode);
+  const isTestPayment = testMode;
   const isTablet = useIsTablet();
   const currencyCode = useSettingsStore((state) => state.currency);
   const currency = getCurrency(currencyCode);
@@ -64,6 +67,7 @@ export default function AmountScreen() {
 
   return (
     <View style={[styles.container, isTablet && styles.containerTablet]}>
+      {isTestPayment && <TestModeOverlay />}
       <View
         style={[
           styles.amountContainer,
@@ -143,6 +147,7 @@ export default function AmountScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: Spacing["spacing-5"],

@@ -1,6 +1,9 @@
 import { PaymentStatusResponse } from "./types";
 
 export interface PaymentSuccessParams {
+  // Index signature keeps this assignable to Expo Router's `UnknownInputParams`
+  // when passed to `router.replace({ params })`.
+  [key: string]: string | undefined;
   amount: string;
   paymentId: string;
   tokenAmount?: string;

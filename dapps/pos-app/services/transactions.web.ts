@@ -5,6 +5,7 @@ import {
 } from "@/services/pos-bridge";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { TransactionsResponse } from "@/utils/types";
+import { getTestTransactions } from "./test-transactions";
 
 export type GetTransactionsOptions = GetTransactionsBridgeOptions;
 
@@ -16,6 +17,10 @@ export type GetTransactionsOptions = GetTransactionsBridgeOptions;
 export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
+  if (useSettingsStore.getState().testMode) {
+    return getTestTransactions(options);
+  }
+
   if (isRunningInIframe()) {
     return requestBridge<TransactionsResponse>({
       operation: "get-transactions",

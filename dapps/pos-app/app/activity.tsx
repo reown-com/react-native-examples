@@ -2,6 +2,7 @@ import { EmptyState } from "@/components/empty-state";
 import { FilterButtons } from "@/components/filter-buttons";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
+import { TestModeOverlay } from "@/components/test-mode-pill";
 import { TransactionCard } from "@/components/transaction-card";
 import { TransactionDetailModal } from "@/components/transaction-detail-modal";
 import { Spacing } from "@/constants/spacing";
@@ -48,6 +49,8 @@ const DATE_RANGE_LABELS: Record<DateRangeFilterType, string> = {
 
 export default function ActivityScreen() {
   const theme = useTheme();
+  const testMode = useSettingsStore((state) => state.testMode);
+  const isTestPayment = testMode;
   const transactionFilter = useSettingsStore(
     (state) => state.transactionFilter,
   );
@@ -243,6 +246,7 @@ export default function ActivityScreen() {
 
   return (
     <View style={styles.container}>
+      {isTestPayment && <TestModeOverlay />}
       <Sentry.TimeToFullDisplay ready={!isLoading} />
       {!isInitialLoadError && (
         <>
@@ -330,6 +334,7 @@ export default function ActivityScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
     paddingTop: Spacing["spacing-4"],
   },
   list: {
