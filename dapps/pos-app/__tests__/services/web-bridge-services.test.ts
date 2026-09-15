@@ -56,6 +56,7 @@ describe("web services with the POS bridge", () => {
     useSettingsStore.setState({
       merchantId: "merchant-direct",
       isCustomerApiKeySet: true,
+      testMode: false,
       getCustomerApiKey: jest.fn(async () => "local-key"),
     });
   });
@@ -161,6 +162,21 @@ describe("web services with the POS bridge", () => {
         }),
       }),
     );
+  });
+
+  it("uses local test transactions instead of the bridge or proxy", async () => {
+    setEmbeddedWindow();
+    configureBridge(parentWindow, parentOrigin, "merchant-bridge");
+    useSettingsStore.setState({ testMode: true });
+
+    await expect(
+      getTransactions({ status: ["succeeded"] }),
+    ).resolves.toMatchObject({
+      data: [expect.objectContaining({ paymentId: "test_succeeded" })],
+      nextCursor: null,
+    });
+    expect(parentPostMessage).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   it("does not fall back to standalone credentials while an iframe awaits bridge configuration", async () => {

@@ -46,12 +46,14 @@ export default function HomeScreen() {
   const isCustomerApiKeySet = useSettingsStore(
     (state) => state.isCustomerApiKeySet,
   );
+  const testMode = useSettingsStore((state) => state.testMode);
   const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
   const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
   const isIframeSession = isRunningInIframe();
 
   const handleStartPayment = () => {
     if (
+      !testMode &&
       !isTerminalConfigured(
         getMerchantIdForSession(isIframeSession, merchantId, bridgeMerchantId),
         isIframeSession ? false : isCustomerApiKeySet,

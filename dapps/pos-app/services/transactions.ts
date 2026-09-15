@@ -1,5 +1,7 @@
 import { TransactionsResponse } from "@/utils/types";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { merchantApiClient, getApiHeaders } from "./client";
+import { getTestTransactions } from "./test-transactions";
 
 export interface GetTransactionsOptions {
   status?: string | string[];
@@ -19,6 +21,10 @@ export interface GetTransactionsOptions {
 export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
+  if (useSettingsStore.getState().testMode) {
+    return getTestTransactions(options);
+  }
+
   const headers = await getApiHeaders();
 
   // Build query string from options

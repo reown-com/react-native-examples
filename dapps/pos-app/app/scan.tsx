@@ -1,5 +1,6 @@
 import { Button } from "@/components/button";
 import QRCode from "@/components/qr-code";
+import { TestModeOverlay } from "@/components/test-mode-pill";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
@@ -10,6 +11,7 @@ import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
+import { isTestPaymentFailure } from "@/services/test-payment";
 import { useLogsStore } from "@/store/useLogsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -38,7 +40,7 @@ import {
   useLocalSearchParams,
   useNavigation,
 } from "expo-router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AccessibilityInfo, StyleSheet, View } from "react-native";
 import { v4 as uuidv4 } from "uuid";
 
@@ -56,10 +58,15 @@ export default function ScanScreen() {
     require("@/assets/images/wc-logo-dark.png"),
     require("@/assets/images/nfc.png"),
   ]);
+  const qrLogoSource = useMemo(() => {
+    const uri = assets?.[0]?.uri;
+    return uri ? { uri } : undefined;
+  }, [assets]);
 
   const [qrUri, setQrUri] = useState("");
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
+  const [testProcessing, setTestProcessing] = useState(false);
   const hasNavigatedRef = useRef(false);
   const hasCancelledRef = useRef(false);
   const hasLeftRef = useRef(false);
@@ -67,6 +74,7 @@ export default function ScanScreen() {
 
   const deviceId = useSettingsStore((state) => state.deviceId);
   const storedMerchantId = useSettingsStore((state) => state.merchantId);
+  const testMode = useSettingsStore((state) => state.testMode);
   const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
   const merchantId = getMerchantIdForSession(
     isRunningInIframe(),
@@ -81,6 +89,7 @@ export default function ScanScreen() {
   const isTablet = useIsTablet();
 
   const { amount } = params;
+  const isTestPayment = testMode;
 
   const { nfcMode } = useNfcPayment({
     paymentUrl: qrUri,
@@ -133,11 +142,16 @@ export default function ScanScreen() {
   );
 
   const handleOnCancelPress = () => {
+    if (isTestPayment) {
+      setTestProcessing(false);
+    }
     // The `beforeRemove` listener below cancels the payment on leave.
     resetNavigation("/amount");
   };
 
   const handleCopyPaymentUrl = async () => {
+    // No real URL to copy in test mode.
+    if (isTestPayment) return;
     await Clipboard.setStringAsync(qrUri);
     showSuccessToast("Payment link copied");
   };
@@ -146,7 +160,7 @@ export default function ScanScreen() {
     if (!deviceId || !amount) return;
 
     async function initiatePayment() {
-      if (!merchantId) {
+      if (!isTestPayment && !merchantId) {
         addLog(
           "error",
           "Merchant ID is not configured",
@@ -160,6 +174,23 @@ export default function ScanScreen() {
       }
 
       try {
+        if (isTestPayment) {
+          const testPaymentId = `test_${Date.now()}`;
+          const testQrUrl = `${testPaymentId}?amount=${encodeURIComponent(amount)}`;
+
+          addLog("info", "Test payment started", "scan", "initiatePayment", {
+            paymentId: testPaymentId,
+            amount,
+          });
+          setQrUri(testQrUrl);
+          setPaymentId(testPaymentId);
+          // useCountdown expects an epoch timestamp in seconds, matching the
+          // API response format.
+          setExpiresAt(Math.floor(Date.now() / 1000) + 15 * 60);
+          setTestProcessing(true);
+          return;
+        }
+
         const paymentRequest = {
           referenceId: uuidv4().replace(/-/g, ""),
           amount: {
@@ -218,10 +249,27 @@ export default function ScanScreen() {
 
     initiatePayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deviceId, amount, merchantId]);
+  }, [deviceId, amount, merchantId, isTestPayment]);
+
+  useEffect(() => {
+    if (!isTestPayment || !paymentId) return;
+
+    const timeout = setTimeout(() => {
+      setTestProcessing(false);
+      if (isTestPaymentFailure(amount)) {
+        addLog("info", "Test payment declined", "scan", "testPayment");
+        onFailure("failed");
+      } else {
+        addLog("info", "Test payment completed", "scan", "testPayment");
+        onSuccess(paymentId);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [addLog, amount, isTestPayment, onFailure, onSuccess, paymentId]);
 
   const { data: paymentStatusData } = usePaymentStatus(paymentId, {
-    enabled: !!paymentId && !!qrUri,
+    enabled: !isTestPayment && !!paymentId && !!qrUri,
     onTerminalState: (data) => {
       if (data.status === "succeeded") {
         if (!paymentId) {
@@ -255,6 +303,7 @@ export default function ScanScreen() {
   // resolved yet — cancel then too.
   const cancelPendingPayment = useCallback(() => {
     if (hasNavigatedRef.current || hasCancelledRef.current) return;
+    if (isTestPayment) return;
     // Record the leave so an in-flight `startPayment` cancels the payment it
     // creates instead of leaking it (see `initiatePayment`).
     hasLeftRef.current = true;
@@ -271,7 +320,7 @@ export default function ScanScreen() {
         showErrorToast("We couldn't cancel this payment.");
       });
     }
-  }, [paymentId, paymentStatusData?.status, addLog]);
+  }, [paymentId, paymentStatusData?.status, addLog, isTestPayment]);
 
   // Hold the latest callback in a ref so the `beforeRemove` listener stays
   // registered once for the screen's lifetime instead of being torn down and
@@ -347,6 +396,7 @@ export default function ScanScreen() {
           gestureEnabled: !backHidden,
         }}
       />
+      {isTestPayment && <TestModeOverlay spacerHeight={Spacing["spacing-9"]} />}
       {isProcessing ? (
         <View
           style={[
@@ -412,13 +462,18 @@ export default function ScanScreen() {
               { color: Theme["text-secondary"] },
             ]}
           >
-            {showNfc ? "Scan or tap to pay" : "Scan to pay"}
+            {testProcessing
+              ? "Waiting for confirmation..."
+              : showNfc
+                ? "Scan or tap to pay"
+                : "Scan to pay"}
           </ThemedText>
 
           <View style={[styles.qrSection, isTablet && styles.qrSectionTablet]}>
             <QRCode
               size={isTablet ? 420 : 300}
               uri={qrUri}
+              imageSrc={qrLogoSource}
               logoBorderRadius={100}
               onPress={handleCopyPaymentUrl}
               testID="pos-qr-code"
@@ -490,6 +545,7 @@ export default function ScanScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
   },
   loadingContainer: {
     flex: 1,

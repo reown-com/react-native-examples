@@ -18,10 +18,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { ThemeMode } from "@/utils/types";
-import {
-  getConnectionSetupRemaining,
-  shouldShowConnectionSection,
-} from "@/utils/pos-bridge-ui";
+import { getConnectionSetupRemaining } from "@/utils/pos-bridge-ui";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
@@ -31,7 +28,7 @@ import {
   printReceipt,
   requestBluetoothPermission,
 } from "@/utils/printer";
-import { showErrorToast } from "@/utils/toast";
+import { showErrorToast, showInfoToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
@@ -82,6 +79,8 @@ export default function SettingsScreen() {
   const setCurrency = useSettingsStore((state) => state.setCurrency);
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
+  const testMode = useSettingsStore((state) => state.testMode);
+  const setTestMode = useSettingsStore((state) => state.setTestMode);
   const nfcCapabilities = useNfcCapabilities();
   const addLog = useLogsStore((state) => state.addLog);
   const logsCount = useLogsStore((state) => state.logs.length);
@@ -175,6 +174,16 @@ export default function SettingsScreen() {
     handleCustomerApiKeyConfirm();
   };
 
+  const handleTestModeChange = (enabled: boolean) => {
+    setTestMode(enabled);
+    if (enabled) {
+      showInfoToast(
+        "Enter 0.02 to simulate a failed payment. All other amounts simulate success.",
+        5000,
+      );
+    }
+  };
+
   const showNfcToggle =
     isNfcHceEnabled &&
     Platform.OS === "android" &&
@@ -183,21 +192,15 @@ export default function SettingsScreen() {
   const showBiometricToggle = shouldShowBiometricOption && !!biometricStatus;
 
   const hasMerchantId = !!storedMerchantId?.trim();
-  const setupRemaining = isIframeSession
-    ? 0
-    : getConnectionSetupRemaining(
-        hasMerchantId,
-        hasStoredCustomerApiKey,
-        isIframeBridgeConfigured,
-      );
-  const showConnectionSection =
-    isIframeSession ||
-    shouldShowConnectionSection(
-      isIframeBridgeConfigured,
-      !!bridgeMerchantId,
-      showNfcToggle || showBiometricToggle,
-    );
-
+  const testActive = testMode;
+  const setupRemaining =
+    testActive || isIframeSession
+      ? 0
+      : getConnectionSetupRemaining(
+          hasMerchantId,
+          hasStoredCustomerApiKey,
+          isIframeBridgeConfigured,
+        );
   const handleTestPrinterPress = async () => {
     try {
       const isBluetoothPermissionGranted = await requestBluetoothPermission();
@@ -279,90 +282,98 @@ export default function SettingsScreen() {
           />
         </SettingsSection>
 
-        {showConnectionSection && (
-          <SettingsSection title="Connection">
-            {isIframeSession && !isIframeBridgeConfigured ? (
-              <SettingsItem
-                testID="settings-dashboard-bridge"
-                title="Dashboard bridge"
-                value="Waiting for dashboard"
-                onPress={() => undefined}
-                showCaret={false}
-                disabled
-              />
-            ) : isIframeBridgeConfigured ? (
+        <SettingsSection title="Connection">
+          {isIframeSession && !isIframeBridgeConfigured ? (
+            <SettingsItem
+              testID="settings-dashboard-bridge"
+              title="Dashboard bridge"
+              value="Waiting for dashboard"
+              onPress={() => undefined}
+              showCaret={false}
+              disabled
+            />
+          ) : isIframeBridgeConfigured ? (
+            <SettingsItem
+              testID="settings-merchant-id"
+              title="Merchant ID"
+              value={bridgeMerchantId ?? undefined}
+              onPress={() => undefined}
+              showCaret={false}
+              disabled
+            />
+          ) : (
+            <>
               <SettingsItem
                 testID="settings-merchant-id"
                 title="Merchant ID"
-                value={bridgeMerchantId ?? undefined}
-                onPress={() => undefined}
-                showCaret={false}
-                disabled
+                value={hasMerchantId ? merchantIdInput : undefined}
+                bullet={!hasMerchantId}
+                badge={
+                  hasMerchantId ? undefined : (
+                    <Badge
+                      label="Not set"
+                      backgroundColor="bg-warning"
+                      color="text-tertiary"
+                    />
+                  )
+                }
+                caret="right"
+                showCaret
+                disabled={testActive}
+                onPress={() => setActiveSheet("merchantId")}
               />
-            ) : (
-              <>
-                <SettingsItem
-                  testID="settings-merchant-id"
-                  title="Merchant ID"
-                  value={hasMerchantId ? merchantIdInput : undefined}
-                  bullet={!hasMerchantId}
-                  badge={
-                    hasMerchantId ? undefined : (
-                      <Badge
-                        label="Not set"
-                        backgroundColor="bg-warning"
-                        color="text-tertiary"
-                      />
-                    )
-                  }
-                  caret="right"
-                  showCaret
-                  onPress={() => setActiveSheet("merchantId")}
-                />
 
-                <SettingsItem
-                  testID="settings-customer-api-key"
-                  title="Customer API KEY"
-                  value={hasStoredCustomerApiKey ? "**********" : undefined}
-                  bullet={!hasStoredCustomerApiKey}
-                  badge={
-                    hasStoredCustomerApiKey ? undefined : (
-                      <Badge
-                        label="Not set"
-                        backgroundColor="bg-warning"
-                        color="text-tertiary"
-                      />
-                    )
-                  }
-                  caret="right"
-                  showCaret
-                  onPress={() => setActiveSheet("customerApiKey")}
-                />
-              </>
-            )}
-
-            {showNfcToggle && (
-              <SettingsToggleItem
-                testID="settings-nfc-toggle"
-                title="Tap to pay"
-                description="Show NFC prompt"
-                value={nfcEnabled}
-                onValueChange={setNfcEnabled}
+              <SettingsItem
+                testID="settings-customer-api-key"
+                title="Customer API KEY"
+                value={hasStoredCustomerApiKey ? "**********" : undefined}
+                bullet={!hasStoredCustomerApiKey}
+                badge={
+                  hasStoredCustomerApiKey ? undefined : (
+                    <Badge
+                      label="Not set"
+                      backgroundColor="bg-warning"
+                      color="text-tertiary"
+                    />
+                  )
+                }
+                caret="right"
+                showCaret
+                disabled={testActive}
+                onPress={() => setActiveSheet("customerApiKey")}
               />
-            )}
+            </>
+          )}
 
-            {/* Biometric toggle - only show if PIN is set and biometrics available */}
-            {showBiometricToggle && (
-              <SettingsToggleItem
-                testID="settings-biometric-toggle"
-                title={getBiometricLabel(biometricStatus.biometricType)}
-                description="Use instead of Pin"
-                value={biometricEnabled}
-                onValueChange={handleBiometricToggle}
-              />
-            )}
-          </SettingsSection>
-        )}
+          {showNfcToggle && (
+            <SettingsToggleItem
+              testID="settings-nfc-toggle"
+              title="Tap to pay"
+              description="Show NFC prompt"
+              value={nfcEnabled}
+              onValueChange={setNfcEnabled}
+            />
+          )}
+
+          <SettingsToggleItem
+            testID="settings-test-mode-toggle"
+            title="Enable Test Mode"
+            description="Simulate payments"
+            value={testMode}
+            onValueChange={handleTestModeChange}
+          />
+
+          {/* Biometric toggle - only show if PIN is set and biometrics available */}
+          {showBiometricToggle && (
+            <SettingsToggleItem
+              testID="settings-biometric-toggle"
+              title={getBiometricLabel(biometricStatus.biometricType)}
+              description="Use instead of Pin"
+              value={biometricEnabled}
+              onValueChange={handleBiometricToggle}
+            />
+          )}
+        </SettingsSection>
 
         <SettingsSection title="Device">
           <SettingsItem

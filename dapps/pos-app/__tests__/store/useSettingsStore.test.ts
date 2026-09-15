@@ -54,6 +54,10 @@ describe("useSettingsStore", () => {
       const { biometricEnabled } = useSettingsStore.getState();
       expect(biometricEnabled).toBe(false);
     });
+
+    it("should have Test Mode disabled", () => {
+      expect(useSettingsStore.getState().testMode).toBe(false);
+    });
   });
 
   describe("setThemeMode", () => {
@@ -73,6 +77,16 @@ describe("useSettingsStore", () => {
       // Then set to light
       useSettingsStore.getState().setThemeMode("light");
       expect(useSettingsStore.getState().themeMode).toBe("light");
+    });
+  });
+
+  describe("setTestMode", () => {
+    it("enables and disables Test Mode", () => {
+      useSettingsStore.getState().setTestMode(true);
+      expect(useSettingsStore.getState().testMode).toBe(true);
+
+      useSettingsStore.getState().setTestMode(false);
+      expect(useSettingsStore.getState().testMode).toBe(false);
     });
   });
 
@@ -539,7 +553,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(19);
+      expect(persistOptions?.version).toBe(20);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();
@@ -572,6 +586,15 @@ describe("useSettingsStore", () => {
       const migrated: any = migrate!({ variant: "default" }, 18);
 
       expect(migrated.hasInitializedDefaults).toBe(true);
+    });
+
+    it("defaults Test Mode to off for installs from before it existed", () => {
+      const migrate = useSettingsStore.persist?.getOptions?.().migrate;
+      expect(migrate).toBeDefined();
+
+      const migrated: any = migrate!({ variant: "default" }, 19);
+
+      expect(migrated.testMode).toBe(false);
     });
   });
 });
