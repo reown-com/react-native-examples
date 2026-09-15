@@ -76,7 +76,6 @@
     "typescript": "5.9.3"
   },
   "overrides": {
-    "hono": "4.13.5",
     "tar": "7.5.21",
     "node-forge": "1.4.0",
     "glob": "10.5.0",

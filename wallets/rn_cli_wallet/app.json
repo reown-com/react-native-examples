@@ -24,7 +24,7 @@
     },
     "android": {
       "package": "com.walletconnect.web3wallet.rnsample",
-      "versionCode": 73,
+      "versionCode": 74,
       "permissions": ["android.permission.POST_NOTIFICATIONS"],
       "intentFilters": [
         {
