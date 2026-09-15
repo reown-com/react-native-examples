@@ -1,6 +1,6 @@
 import { Button } from "@/components/button";
 import QRCode from "@/components/qr-code";
-import { TestModePill } from "@/components/test-mode-pill";
+import { TestModeOverlay } from "@/components/test-mode-pill";
 import { ThemedText } from "@/components/themed-text";
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
@@ -396,14 +396,7 @@ export default function ScanScreen() {
           gestureEnabled: !backHidden,
         }}
       />
-      {isTestPayment && (
-        <>
-          <View style={styles.testModePillContainer}>
-            <TestModePill />
-          </View>
-          <View style={styles.testModePillSpacer} />
-        </>
-      )}
+      {isTestPayment && <TestModeOverlay spacerHeight={Spacing["spacing-9"]} />}
       {isProcessing ? (
         <View
           style={[
@@ -623,17 +616,6 @@ const styles = StyleSheet.create({
   qrSection: {
     alignItems: "center",
     gap: Spacing["spacing-4"],
-  },
-  testModePillContainer: {
-    position: "absolute",
-    top: Spacing["spacing-3"],
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    zIndex: 1,
-  },
-  testModePillSpacer: {
-    height: Spacing["spacing-9"],
   },
   qrSectionTablet: {
     gap: Spacing["spacing-5"],

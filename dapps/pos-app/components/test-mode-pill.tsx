@@ -35,6 +35,26 @@ export function TestModePill({ style }: TestModePillProps) {
   );
 }
 
+interface TestModeOverlayProps {
+  // Vertical space reserved below the floating pill so screen content isn't
+  // hidden underneath it. The pill's on-screen position is fixed by `top` and
+  // is unaffected by this value.
+  spacerHeight?: number;
+}
+
+export function TestModeOverlay({
+  spacerHeight = Spacing["spacing-8"],
+}: TestModeOverlayProps) {
+  return (
+    <>
+      <View style={styles.overlay}>
+        <TestModePill />
+      </View>
+      <View style={{ height: spacerHeight }} />
+    </>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     alignSelf: "center",
@@ -43,5 +63,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-3"],
     paddingVertical: Spacing["spacing-1"],
     borderRadius: 999,
+  },
+  overlay: {
+    position: "absolute",
+    top: Spacing["spacing-3"],
+    left: 0,
+    right: 0,
+    alignItems: "center",
+    zIndex: 1,
   },
 });

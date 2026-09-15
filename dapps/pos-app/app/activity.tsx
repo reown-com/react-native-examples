@@ -2,7 +2,7 @@ import { EmptyState } from "@/components/empty-state";
 import { FilterButtons } from "@/components/filter-buttons";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
-import { TestModePill } from "@/components/test-mode-pill";
+import { TestModeOverlay } from "@/components/test-mode-pill";
 import { TransactionCard } from "@/components/transaction-card";
 import { TransactionDetailModal } from "@/components/transaction-detail-modal";
 import { Spacing } from "@/constants/spacing";
@@ -246,14 +246,7 @@ export default function ActivityScreen() {
 
   return (
     <View style={styles.container}>
-      {isTestPayment && (
-        <>
-          <View style={styles.testModePillContainer}>
-            <TestModePill />
-          </View>
-          <View style={styles.testModePillSpacer} />
-        </>
-      )}
+      {isTestPayment && <TestModeOverlay />}
       <Sentry.TimeToFullDisplay ready={!isLoading} />
       {!isInitialLoadError && (
         <>
@@ -367,17 +360,6 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing["spacing-5"],
     marginTop: Spacing["spacing-1"],
     marginBottom: Spacing["spacing-3"],
-  },
-  testModePillContainer: {
-    position: "absolute",
-    top: Spacing["spacing-3"],
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    zIndex: 1,
-  },
-  testModePillSpacer: {
-    height: Spacing["spacing-8"],
   },
   footerLoader: {
     paddingVertical: Spacing["spacing-4"],

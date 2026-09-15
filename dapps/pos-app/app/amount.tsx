@@ -1,7 +1,7 @@
 import { BigAmountInput } from "@/components/big-amount-input";
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
-import { TestModePill } from "@/components/test-mode-pill";
+import { TestModeOverlay } from "@/components/test-mode-pill";
 import { Spacing } from "@/constants/spacing";
 import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
@@ -67,14 +67,7 @@ export default function AmountScreen() {
 
   return (
     <View style={[styles.container, isTablet && styles.containerTablet]}>
-      {isTestPayment && (
-        <>
-          <View style={styles.testModePillContainer}>
-            <TestModePill />
-          </View>
-          <View style={styles.testModePillSpacer} />
-        </>
-      )}
+      {isTestPayment && <TestModeOverlay />}
       <View
         style={[
           styles.amountContainer,
@@ -172,17 +165,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingTop: Spacing["spacing-4"],
     paddingHorizontal: Spacing["spacing-5"],
-  },
-  testModePillContainer: {
-    position: "absolute",
-    top: Spacing["spacing-3"],
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    zIndex: 1,
-  },
-  testModePillSpacer: {
-    height: Spacing["spacing-8"],
   },
   button: {
     marginTop: Spacing["spacing-6"],
