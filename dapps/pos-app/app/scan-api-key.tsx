@@ -93,14 +93,14 @@ export default function ScanApiKeyScreen() {
         </View>
       </View>
 
-      {/* Close button, top-left, above the safe-area inset. */}
+      {/* Close button, top-right, above the safe-area inset. */}
       <Pressable
         onPress={close}
         accessibilityLabel="Close scanner"
         style={[
           styles.closeButton,
           {
-            top: insets.top + Spacing["spacing-2"],
+            top: insets.top + Spacing["spacing-3"],
             borderColor: "rgba(255, 255, 255, 0.4)",
           },
         ]}
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    left: Spacing["spacing-5"],
+    right: Spacing["spacing-6"],
     width: 38,
     height: 38,
     borderRadius: BorderRadius["3"],
