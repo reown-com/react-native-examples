@@ -234,6 +234,13 @@ export default Sentry.wrap(function RootLayout() {
                 options={{ headerTitle: SettingsHeaderTitle }}
               />
               <Stack.Screen
+                name="scan-api-key"
+                options={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: "black", paddingBottom: 0 },
+                }}
+              />
+              <Stack.Screen
                 name="activity"
                 options={{ headerTitle: TransactionsHeaderTitle }}
               />

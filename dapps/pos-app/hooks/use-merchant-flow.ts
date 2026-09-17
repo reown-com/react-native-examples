@@ -1,6 +1,7 @@
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { formatCountdown } from "@/utils/misc";
+import { parseApiKeyQr } from "@/utils/parse-api-key-qr";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useCallback, useEffect, useState } from "react";
 
@@ -172,6 +173,18 @@ export function useMerchantFlow({
 
     initiateSave(trimmedApiKey, "customer-api-key");
   }, [state.customerApiKeyInput, isCustomerApiKeySet, initiateSave]);
+
+  const handleScannedCustomerApiKey = useCallback(
+    (raw: string) => {
+      const parsed = parseApiKeyQr(raw);
+      if (!parsed) {
+        showErrorToast("We couldn't read an API key from that QR code.");
+        return;
+      }
+      initiateSave(parsed, "customer-api-key");
+    },
+    [initiateSave],
+  );
 
   const completeSave = useCallback(async () => {
     if (state.pendingValue === null || !state.pendingAction) {
@@ -345,6 +358,7 @@ export function useMerchantFlow({
     resetCustomerApiKeyInput,
     handleMerchantIdConfirm,
     handleCustomerApiKeyConfirm,
+    handleScannedCustomerApiKey,
     handlePinVerifyComplete,
     handleBiometricPress: runBiometricAuth,
     handlePinSetupComplete,
