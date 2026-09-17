@@ -6,12 +6,14 @@ import SettingsStore from '@/store/SettingsStore';
 import WalletStore, { WalletAddresses } from '@/store/WalletStore';
 import { useTheme } from '@/hooks/useTheme';
 import { Text } from '@/components/Text';
-import { WalletConnectLoading } from '@/components/WalletConnectLoading';
 import { Spacing } from '@/utils/ThemeUtil';
 import { TokenBalance } from '@/utils/BalanceTypes';
 import { TokenBalanceCard, ITEM_HEIGHT } from './components/TokenBalanceCard';
+import { TokenBalanceCardSkeleton } from './components/TokenBalanceCardSkeleton';
 import { haptics } from '@/utils/haptics';
 import type { WalletNamespace } from '@/utils/WalletInitializationUtil';
+
+const SKELETON_ROWS = 5;
 
 function getAddressForChain(
   chainId: string,
@@ -156,16 +158,15 @@ export default function Wallets() {
     [],
   );
 
+  const isSkeletonVisible = !walletsRestored || isLoading;
+
   const ListEmptyComponent = useCallback(() => {
     if (!walletsRestored || isLoading) {
       return (
-        <View style={styles.emptyContainer}>
-          <WalletConnectLoading size={60} />
-          <Text variant="lg-400" color="text-primary">
-            {walletsRestored
-              ? 'Loading your balances…'
-              : 'Preparing your wallets…'}
-          </Text>
+        <View style={styles.skeletonContainer}>
+          {Array.from({ length: SKELETON_ROWS }).map((_, index) => (
+            <TokenBalanceCardSkeleton key={index} />
+          ))}
         </View>
       );
     }
@@ -190,7 +191,7 @@ export default function Wallets() {
       style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}
       contentContainerStyle={[
         styles.content,
-        balances.length === 0 && styles.emptyContent,
+        balances.length === 0 && !isSkeletonVisible && styles.emptyContent,
       ]}
       refreshControl={
         <RefreshControl
@@ -214,6 +215,9 @@ const styles = StyleSheet.create({
   emptyContent: {
     flex: 1,
     justifyContent: 'center',
+  },
+  skeletonContainer: {
+    rowGap: Spacing[2],
   },
   emptyContainer: {
     alignItems: 'center',
