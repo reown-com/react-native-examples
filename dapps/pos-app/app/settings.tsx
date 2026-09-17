@@ -1,6 +1,7 @@
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { PinModal } from "@/components/pin-modal";
+import { Pressable } from "@/components/pressable";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { SettingsItem } from "@/components/settings-item";
@@ -10,10 +11,12 @@ import { SetupBanner } from "@/components/setup-banner";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
+import { useHasCamera } from "@/hooks/use-has-camera";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
+import { usePendingApiKeyScanStore } from "@/store/usePendingApiKeyScanStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
@@ -33,7 +36,7 @@ import * as Application from "expo-application";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -91,6 +94,7 @@ export default function SettingsScreen() {
   const isIframeBridgeConfigured = isIframeSession && isBridgeConfigured;
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
+  const hasCamera = useHasCamera();
 
   // Custom hooks for biometrics and merchant flow
   const {
@@ -118,6 +122,7 @@ export default function SettingsScreen() {
     resetCustomerApiKeyInput,
     handleMerchantIdConfirm,
     handleCustomerApiKeyConfirm,
+    handleScannedCustomerApiKey,
     handlePinVerifyComplete,
     handleBiometricPress,
     handlePinSetupComplete,
@@ -127,6 +132,19 @@ export default function SettingsScreen() {
     authenticate,
     biometricLabel,
   });
+
+  // Pick up an API key scanned by the full-screen scan route once it pops back,
+  // then run the auto-save flow (PIN/biometric) here at the settings root.
+  const scannedApiKey = usePendingApiKeyScanStore(
+    (state) => state.scannedValue,
+  );
+  const clearScannedApiKey = usePendingApiKeyScanStore((state) => state.clear);
+
+  useEffect(() => {
+    if (!scannedApiKey) return;
+    handleScannedCustomerApiKey(scannedApiKey);
+    clearScannedApiKey();
+  }, [scannedApiKey, handleScannedCustomerApiKey, clearScannedApiKey]);
 
   const currencyOptions: RadioOption<CurrencyCode>[] = useMemo(
     () =>
@@ -172,6 +190,11 @@ export default function SettingsScreen() {
   const handleCustomerApiKeySave = () => {
     closeSheet();
     handleCustomerApiKeyConfirm();
+  };
+
+  const handleScanApiKeyPress = () => {
+    closeSheet();
+    router.push("/scan-api-key");
   };
 
   const handleTestModeChange = (enabled: boolean) => {
@@ -488,29 +511,53 @@ export default function SettingsScreen() {
           onClose={closeSheet}
         >
           <View style={styles.inputContent}>
-            <TextInput
-              value={
-                isEditingCustomerApiKey
-                  ? customerApiKeyInput
-                  : hasStoredCustomerApiKey
-                    ? "********"
-                    : ""
-              }
-              onChangeText={handleCustomerApiKeyInputChange}
-              placeholder="Enter customer API key"
-              placeholderTextColor={theme["text-tertiary"]}
-              autoCapitalize="none"
-              autoCorrect={false}
-              secureTextEntry={true}
-              style={[
-                styles.sheetInput,
-                {
-                  borderColor: theme["border-primary"],
-                  color: theme["text-primary"],
-                  backgroundColor: theme["foreground-primary"],
-                },
-              ]}
-            />
+            <View style={styles.inputRow}>
+              <TextInput
+                value={
+                  isEditingCustomerApiKey
+                    ? customerApiKeyInput
+                    : hasStoredCustomerApiKey
+                      ? "********"
+                      : ""
+                }
+                onChangeText={handleCustomerApiKeyInputChange}
+                placeholder="Enter customer API key"
+                placeholderTextColor={theme["text-tertiary"]}
+                autoCapitalize="none"
+                autoCorrect={false}
+                secureTextEntry={true}
+                style={[
+                  styles.sheetInput,
+                  styles.inputWithAction,
+                  {
+                    borderColor: theme["border-primary"],
+                    color: theme["text-primary"],
+                    backgroundColor: theme["foreground-primary"],
+                  },
+                ]}
+              />
+              {hasCamera && (
+                <Pressable
+                  onPress={handleScanApiKeyPress}
+                  testID="settings-customer-scan"
+                  accessibilityLabel="Scan API key QR code"
+                  style={[
+                    styles.scanButton,
+                    {
+                      borderColor: theme["border-primary"],
+                      backgroundColor: theme["foreground-primary"],
+                    },
+                  ]}
+                >
+                  <Image
+                    source={require("@/assets/images/scan.png")}
+                    style={styles.scanIcon}
+                    tintColor={theme["text-primary"]}
+                    cachePolicy="memory-disk"
+                  />
+                </Pressable>
+              )}
+            </View>
             <Button
               type="accent"
               variant="primary"
@@ -568,6 +615,26 @@ const styles = StyleSheet.create({
   },
   inputContent: {
     gap: Spacing["spacing-3"],
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing["spacing-3"],
+  },
+  inputWithAction: {
+    flex: 1,
+  },
+  scanButton: {
+    width: 60,
+    height: 60,
+    borderWidth: 1,
+    borderRadius: BorderRadius["4"],
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  scanIcon: {
+    width: 24,
+    height: 24,
   },
   sheetInput: {
     borderWidth: 1,
