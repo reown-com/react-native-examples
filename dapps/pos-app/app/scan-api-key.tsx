@@ -9,7 +9,6 @@ import {
   CameraView,
   useCameraPermissions,
 } from "expo-camera";
-import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router, useIsFocused } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -18,6 +17,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SCAN_AREA_SIZE = 260;
 
+// Static bundled icon — render synchronously from the bundle (no async
+// useAssets round-trip); see the home screen.
+const closeIcon = require("@/assets/images/close.png");
+
 export default function ScanApiKeyScreen() {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
@@ -25,7 +28,6 @@ export default function ScanApiKeyScreen() {
   const setScannedValue = usePendingApiKeyScanStore(
     (state) => state.setScannedValue,
   );
-  const [assets] = useAssets([require("@/assets/images/close.png")]);
 
   // Guards against the scanner firing multiple times before the screen pops.
   const handledRef = useRef(false);
@@ -104,7 +106,7 @@ export default function ScanApiKeyScreen() {
         ]}
       >
         <Image
-          source={assets?.[0]}
+          source={closeIcon}
           style={styles.closeIcon}
           tintColor="#FFFFFF"
           cachePolicy="memory-disk"
