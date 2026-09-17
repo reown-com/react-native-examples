@@ -26,11 +26,8 @@ import { getBiometricLabel } from "@/utils/biometrics";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
 import { isNfcHceEnabled } from "@/utils/feature-flags";
-import {
-  connectPrinter,
-  printReceipt,
-  requestBluetoothPermission,
-} from "@/utils/printer";
+import { connectPrinter, printReceipt } from "@/utils/printer";
+import { requestBluetoothPermission } from "@/utils/printer-permission";
 import { showErrorToast, showInfoToast } from "@/utils/toast";
 import * as Application from "expo-application";
 import Constants from "expo-constants";

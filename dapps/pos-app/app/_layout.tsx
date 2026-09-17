@@ -18,7 +18,7 @@ import { Spacing } from "@/constants/spacing";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
-import { requestBluetoothPermission } from "@/utils/printer";
+import { requestBluetoothPermission } from "@/utils/printer-permission";
 import { initSentry } from "@/utils/sentry";
 import { showInfoToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
