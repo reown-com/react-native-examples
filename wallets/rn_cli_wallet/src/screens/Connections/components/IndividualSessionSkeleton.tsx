@@ -1,3 +1,5 @@
+// TODO: wire in once the Sessions view gains a loading state; kept here so
+// the placeholder stays in sync with IndividualSession's layout.
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';

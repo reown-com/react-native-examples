@@ -161,7 +161,7 @@ export default function Wallets() {
   const isSkeletonVisible = !walletsRestored || isLoading;
 
   const ListEmptyComponent = useCallback(() => {
-    if (!walletsRestored || isLoading) {
+    if (isSkeletonVisible) {
       return (
         <View style={styles.skeletonContainer}>
           {Array.from({ length: SKELETON_ROWS }).map((_, index) => (
@@ -178,7 +178,7 @@ export default function Wallets() {
         </Text>
       </View>
     );
-  }, [isLoading, walletsRestored]);
+  }, [isSkeletonVisible]);
 
   return (
     <FlatList
