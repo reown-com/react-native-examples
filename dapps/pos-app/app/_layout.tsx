@@ -24,7 +24,12 @@ import { showInfoToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect, useRef } from "react";
-import { ActivityIndicator, Platform, View } from "react-native";
+import {
+  ActivityIndicator,
+  InteractionManager,
+  Platform,
+  View,
+} from "react-native";
 import {
   initialWindowMetrics,
   SafeAreaProvider,
@@ -68,6 +73,18 @@ export default Sentry.wrap(function RootLayout() {
       Sentry.appLoaded();
       appLoadedReported.current = true;
     }
+  }, [_hasHydrated, fontsLoaded]);
+
+  // Restore persisted log history off the cold-start path. The logs store skips
+  // hydration at import (avoiding a synchronous MMKV read + JSON.parse before
+  // the home screen paints); we rehydrate once the app is ready and animations
+  // settle. Logs added during startup are buffered and merged (see useLogsStore).
+  useEffect(() => {
+    if (!_hasHydrated || !fontsLoaded) return;
+    const task = InteractionManager.runAfterInteractions(() => {
+      useLogsStore.persist.rehydrate();
+    });
+    return () => task.cancel();
   }, [_hasHydrated, fontsLoaded]);
 
   useEffect(() => {
