@@ -92,6 +92,24 @@
                 ]
               },
               {
+                "fontFamily": "KH Teka Light",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/KHTeka-Light.otf",
+                    "weight": 300
+                  }
+                ]
+              },
+              {
+                "fontFamily": "KH Teka Medium",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/KHTeka-Medium.otf",
+                    "weight": 500
+                  }
+                ]
+              },
+              {
                 "fontFamily": "KH Teka Mono",
                 "fontDefinitions": [
                   {

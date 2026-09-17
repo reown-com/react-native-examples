@@ -7,8 +7,8 @@ import Toast from "react-native-toast-message";
 
 import HeaderImage from "@/components/header-image";
 import { ThemedText } from "@/components/themed-text";
+import { useAppFonts } from "@/hooks/use-app-fonts";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useFonts } from "expo-font";
 
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePosBridge } from "@/hooks/use-pos-bridge";
@@ -59,12 +59,8 @@ export default Sentry.wrap(function RootLayout() {
   const deviceId = useSettingsStore((state) => state.deviceId);
   const _hasHydrated = useSettingsStore((state) => state._hasHydrated);
   const Theme = useTheme();
-  const [fontsLoaded] = useFonts({
-    "KH Teka": require("@/assets/fonts/KHTeka-Regular.otf"),
-    "KH Teka Light": require("@/assets/fonts/KHTeka-Light.otf"),
-    "KH Teka Medium": require("@/assets/fonts/KHTeka-Medium.otf"),
-    "KH Teka Mono": require("@/assets/fonts/KHTekaMono-Regular.otf"),
-  });
+  // Native embeds fonts (no runtime load); web loads them at runtime.
+  const fontsLoaded = useAppFonts();
 
   // Ends Sentry's app-start span once real UI can render (after hydration + fonts).
   useEffect(() => {
