@@ -1,9 +1,5 @@
 import { Currency } from "./currency";
 
-export const requestBluetoothPermission = async () => {
-  return true;
-};
-
 export const connectPrinter = async (): Promise<{
   connected: boolean;
   error?: string;

@@ -11,7 +11,6 @@ import {
   isTerminalConfigured,
 } from "@/utils/pos-bridge-ui";
 import { showErrorToast } from "@/utils/toast";
-import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -30,13 +29,14 @@ const compactScreenHeight = 700;
 // A little over 1 keeps it a rectangle that reads as almost-square.
 const primaryMaxAspectRatio = 1.3;
 
-export default function HomeScreen() {
-  const [assets] = useAssets([
-    require("@/assets/images/plus-circle-fill.png"),
-    require("@/assets/images/receipt.png"),
-    require("@/assets/images/gear.png"),
-  ]);
+// Static bundled icons — pass the require() source straight to <Image> so it
+// resolves synchronously from the bundle on first paint (no async useAssets
+// round-trip / blank frame / extra re-render on the home screen).
+const newPaymentIcon = require("@/assets/images/plus-circle-fill.png");
+const transactionsIcon = require("@/assets/images/receipt.png");
+const settingsIcon = require("@/assets/images/gear.png");
 
+export default function HomeScreen() {
   const Theme = useTheme();
   const isTablet = useIsTablet();
   const { height: windowHeight } = useWindowDimensions();
@@ -154,7 +154,7 @@ export default function HomeScreen() {
         ]}
       >
         <Image
-          source={assets?.[0]}
+          source={newPaymentIcon}
           style={[
             styles.actionButtonImage,
             isTablet && styles.actionButtonImageTablet,
@@ -191,7 +191,7 @@ export default function HomeScreen() {
           ]}
         >
           <Image
-            source={assets?.[1]}
+            source={transactionsIcon}
             style={[
               styles.actionButtonImage,
               isTablet && styles.actionButtonImageTablet,
@@ -221,7 +221,7 @@ export default function HomeScreen() {
           ]}
         >
           <Image
-            source={assets?.[2]}
+            source={settingsIcon}
             style={[
               styles.actionButtonImage,
               isTablet && styles.actionButtonImageTablet,

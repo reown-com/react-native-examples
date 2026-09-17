@@ -41,6 +41,12 @@ interface LogsStore {
 // -- Constants ----------------------------------------- //
 const MAX_LOGS_COUNT = 100;
 
+// Persist writes are held until the saved history has been restored (see the
+// deferred rehydrate in app/_layout.tsx). Without this, logs added during
+// startup — before hydration runs — would persist a buffer-only snapshot and
+// overwrite the saved history before we get a chance to merge it back in.
+let historyRestored = false;
+
 const logsStorage = {
   getItem: <T = any>(key: string) => {
     if (isRunningInIframe()) return null;
@@ -48,6 +54,7 @@ const logsStorage = {
   },
   setItem: <T = any>(key: string, value: T) => {
     if (isRunningInIframe()) return;
+    if (!historyRestored) return;
     return storage.setItem(key, value);
   },
   removeItem: (key: string) => {
@@ -112,10 +119,32 @@ export const useLogsStore = create<LogsStore>()(
       name: "logs",
       version: 1,
       storage: logsStorage,
+      // Don't read + parse the persisted logs synchronously at import time —
+      // that runs on the cold-start path. The root layout calls rehydrate()
+      // once the home screen is usable (see app/_layout.tsx).
+      skipHydration: true,
+      // Combine logs buffered during startup (currentState) with the restored
+      // history (persistedState) instead of letting the restore replace them.
+      // Restored history is older, so it goes first; newest are kept on cap.
+      merge: (persistedState, currentState) => {
+        const persisted = (persistedState ?? {}) as Partial<LogsStore>;
+        const restoredLogs = persisted.logs ?? [];
+        const seenIds = new Set<string>();
+        const logs = [...restoredLogs, ...currentState.logs]
+          .filter((entry) => {
+            if (seenIds.has(entry.id)) return false;
+            seenIds.add(entry.id);
+            return true;
+          })
+          .slice(-MAX_LOGS_COUNT);
+        return { ...currentState, ...persisted, logs };
+      },
       onRehydrateStorage: () => (state, error) => {
         if (error) {
           console.error("Logs hydration failed:", error);
         }
+        // Unlock persistence now that the saved history has been read + merged.
+        historyRestored = true;
         state?.setHasHydrated(true);
       },
     },

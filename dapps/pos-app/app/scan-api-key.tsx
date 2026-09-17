@@ -9,7 +9,6 @@ import {
   CameraView,
   useCameraPermissions,
 } from "expo-camera";
-import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router, useIsFocused } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -18,6 +17,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SCAN_AREA_SIZE = 260;
 
+// Static bundled icon — render synchronously from the bundle (no async
+// useAssets round-trip); see the home screen.
+const closeIcon = require("@/assets/images/close.png");
+
 export default function ScanApiKeyScreen() {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
@@ -25,7 +28,6 @@ export default function ScanApiKeyScreen() {
   const setScannedValue = usePendingApiKeyScanStore(
     (state) => state.setScannedValue,
   );
-  const [assets] = useAssets([require("@/assets/images/close.png")]);
 
   // Guards against the scanner firing multiple times before the screen pops.
   const handledRef = useRef(false);
@@ -91,20 +93,20 @@ export default function ScanApiKeyScreen() {
         </View>
       </View>
 
-      {/* Close button, top-left, above the safe-area inset. */}
+      {/* Close button, top-right, above the safe-area inset. */}
       <Pressable
         onPress={close}
         accessibilityLabel="Close scanner"
         style={[
           styles.closeButton,
           {
-            top: insets.top + Spacing["spacing-2"],
+            top: insets.top + Spacing["spacing-3"],
             borderColor: "rgba(255, 255, 255, 0.4)",
           },
         ]}
       >
         <Image
-          source={assets?.[0]}
+          source={closeIcon}
           style={styles.closeIcon}
           tintColor="#FFFFFF"
           cachePolicy="memory-disk"
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: "absolute",
-    left: Spacing["spacing-5"],
+    right: Spacing["spacing-6"],
     width: 38,
     height: 38,
     borderRadius: BorderRadius["3"],
