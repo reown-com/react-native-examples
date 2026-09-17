@@ -1,0 +1,41 @@
+name: 'Setup iOS Files'
+description: 'Setup required files for building an iOS project'
+
+inputs:
+  root-path:
+    description: 'Path of the react-native project'
+    required: true
+  google-services-file:
+    description: 'Google Services Plist file content, base64 encoded'
+    required: false
+  sentry-file:
+    description: 'Sentry file content'
+    required: true
+  project-id:
+    description: 'WalletConnect Cloud ID'
+    required: true
+  relay-url:
+    description: 'WalletConnect Relay URL'
+    required: false
+  sentry-dsn:
+    description: 'Sentry DSN'
+    required: true
+  release-type:
+    description: 'Release type of the project (debug/internal/production)'
+    default: 'debug'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create .env file
+      shell: bash
+      run: echo -e "ENV_PROJECT_ID=${{ inputs.project-id }}\nENV_RELAY_URL=${{ inputs.relay-url }}\nENV_SENTRY_DSN=${{ inputs.sentry-dsn }}\nENV_SENTRY_TAG=${{ inputs.release-type }}" >> ${{ inputs.root-path }}/.env.${{ inputs.release-type }}
+
+    - name: Create sentry.properties file
+      shell: bash
+      run: echo "${{ inputs.sentry-file }}" > ${{ inputs.root-path }}/ios/sentry.properties
+
+    - name: Create GoogleService-Info.plist file
+      if: ${{ inputs.google-services-file != '' }}
+      shell: bash
+      run: echo "${{ inputs.google-services-file }}" | base64 --decode > ${{ inputs.root-path }}/ios/GoogleService-Info.plist 

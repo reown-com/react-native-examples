@@ -12,12 +12,26 @@ name: AppKit Web to React Native Wallet Connection Confirmed
 - tapOn: "Connect Wallet"
 - scroll
 - scroll
-- tapOn: "React Native Sample Wallet React Native Sample Wallet"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: "React Native Sample Wallet"
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - tapOn: "React Native Sample Wallet React Native Sample Wallet"
 - runFlow:
     when:
       platform: iOS
     commands:
       - back
-- tapOn: "Approve"
+- extendedWaitUntil:
+    visible: 
+        id: "approve-button"
+    timeout: 10000
+- tapOn:
+    id: "approve-button"
 - assertVisible: "AppKit Interactions"
 - stopRecording
