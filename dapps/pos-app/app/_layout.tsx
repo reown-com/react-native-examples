@@ -14,7 +14,6 @@ import { useTheme } from "@/hooks/use-theme-color";
 import { usePosBridge } from "@/hooks/use-pos-bridge";
 import * as Sentry from "@sentry/react-native";
 
-import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -25,7 +24,7 @@ import { showInfoToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect, useRef } from "react";
-import { Platform, View } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
 import {
   initialWindowMetrics,
   SafeAreaProvider,
@@ -130,7 +129,11 @@ export default Sentry.wrap(function RootLayout() {
           backgroundColor: Theme["bg-primary"],
         }}
       >
-        <WalletConnectLoading size={180} />
+        <ActivityIndicator
+          accessibilityLabel="Loading WalletConnect Pay"
+          color={Theme["icon-accent-primary"]}
+          size="large"
+        />
       </View>
     );
   }
