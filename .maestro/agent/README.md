@@ -77,6 +77,29 @@ density-independent rect for debugging the conversion.
 
 ## Running it
 
+### Fastest check: no emulator, no native build
+
+The agent runs under `react-native-web` too, where `Platform.OS === 'web'` points
+the socket at `localhost`. That makes the whole app side testable in minutes,
+long before a Gradle build:
+
+```bash
+cd wallets/rn_cli_wallet
+printf 'EXPO_PUBLIC_DEV_AGENT=true\nEXPO_PUBLIC_TEST_MODE=true\n' >> .env
+
+node scripts/dev-agent-daemon.js   # terminal 1
+yarn web                           # terminal 2
+bash scripts/dev-agent-smoke.sh    # terminal 3
+```
+
+`dev-agent-smoke.sh` exercises the whole command surface, including the failure
+paths, and reports **which strategy `query` used**. If it prints
+`strategy: fiber`, the biggest technical risk in this PoC is cleared without
+touching an emulator. What web cannot tell you: the real OS touch and the dp->px
+conversion — those need step 4 below.
+
+### Full path: native
+
 ```bash
 # 1. daemon (host)
 node wallets/rn_cli_wallet/scripts/dev-agent-daemon.js
