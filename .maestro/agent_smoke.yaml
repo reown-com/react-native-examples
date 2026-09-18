@@ -22,6 +22,11 @@ tags:
       id: "button-scan"
     timeout: 90000
 
+# clearState restarted the app; wait for the new instance to reconnect before
+# sending it anything, rather than racing its backoff.
+- runScript:
+    file: agent/health.js
+
 # The app answers for itself.
 - runScript:
     file: agent/agent.js

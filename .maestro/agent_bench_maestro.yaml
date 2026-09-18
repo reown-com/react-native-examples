@@ -10,6 +10,9 @@ tags:
 #
 # Compare against agent_bench_socket.yaml, which does the same number of
 # round-trips through the dev agent instead.
+# Before the launch: catch a missing daemon without wasting a cold start.
+- runScript:
+    file: agent/health.js
 - clearState
 - launchApp:
     permissions:
@@ -18,6 +21,12 @@ tags:
     visible:
       id: "button-scan"
     timeout: 90000
+# After the launch: clearState restarted the app, and its reconnect is async.
+# Present in ALL THREE arms so the prelude is identical and cancels cleanly in
+# the baseline subtraction -- an extra step in one arm only would be charged to
+# that arm's per-command cost.
+- runScript:
+    file: agent/health.js
 
 # --- measured section: 20x assertVisible ---
 - assertVisible: { id: "button-scan" }

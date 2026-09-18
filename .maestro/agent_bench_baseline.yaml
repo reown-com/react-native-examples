@@ -7,6 +7,9 @@ tags:
 # nothing else, so its wall clock can be subtracted from theirs. Without this
 # the comparison is dominated by cold-start variance rather than per-command
 # cost, which is the thing being measured.
+# Before the launch: catch a missing daemon without wasting a cold start.
+- runScript:
+    file: agent/health.js
 - clearState
 - launchApp:
     permissions:
@@ -15,3 +18,9 @@ tags:
     visible:
       id: "button-scan"
     timeout: 90000
+# After the launch: clearState restarted the app, and its reconnect is async.
+# Present in ALL THREE arms so the prelude is identical and cancels cleanly in
+# the baseline subtraction -- an extra step in one arm only would be charged to
+# that arm's per-command cost.
+- runScript:
+    file: agent/health.js

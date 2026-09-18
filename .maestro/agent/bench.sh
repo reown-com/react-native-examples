@@ -42,6 +42,32 @@ fi
 # baseline subtraction.
 now_ms() { node -p 'Date.now()'; }
 
+# The whole comparison rests on the three arms sharing an identical prelude: the
+# per-command cost is (arm - baseline) / N, so a step present in one arm only is
+# silently charged to that arm's commands. Verify it rather than trust it.
+python3 - <<'PRELUDE_CHECK' || exit 1
+import hashlib, json, sys
+try:
+    import yaml
+except ImportError:
+    print("note: pyyaml not installed, skipping the prelude-identity check")
+    sys.exit(0)
+
+hashes = {}
+for arm in ("baseline", "maestro", "socket"):
+    steps = list(yaml.safe_load_all(open(f".maestro/agent_bench_{arm}.yaml")))[1]
+    hashes[arm] = hashlib.sha256(
+        json.dumps(steps[:5], sort_keys=True).encode()
+    ).hexdigest()[:12]
+
+if len(set(hashes.values())) != 1:
+    print("The bench arms no longer share an identical prelude:")
+    for arm, h in hashes.items():
+        print(f"  {arm:9} {h}")
+    print("Subtracting the baseline would not cancel, so the numbers would lie.")
+    sys.exit(1)
+PRELUDE_CHECK
+
 run_arm() {
   local name="$1" flow="$2"
   # A newline-separated string rather than an array: bash 3.2 (macOS) errors on

@@ -27,6 +27,9 @@ tags:
     visible:
       id: "button-scan"
     timeout: 90000
+# The app restarted with clearState; wait for its reconnect before driving it.
+- runScript:
+    file: agent/health.js
 
 # Setup by socket — the part the upstream prelude spends 4 taps on.
 - runScript:
