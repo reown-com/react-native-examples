@@ -1,0 +1,42 @@
+appId: ${APP_ID}
+name: Bench — Maestro per-command cost (hierarchy dump)
+tags:
+  - agent-bench
+---
+# Phase 0, arm A. 20 consecutive assertVisible on an element that is already
+# visible and static. Nothing here changes app state, so the wall clock is
+# almost entirely Maestro's per-command overhead: dump the view hierarchy,
+# match, re-poll until stable.
+#
+# Compare against agent_bench_socket.yaml, which does the same number of
+# round-trips through the dev agent instead.
+- clearState
+- launchApp:
+    permissions:
+      all: allow
+- extendedWaitUntil:
+    visible:
+      id: "button-scan"
+    timeout: 90000
+
+# --- measured section: 20x assertVisible ---
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }
+- assertVisible: { id: "button-scan" }

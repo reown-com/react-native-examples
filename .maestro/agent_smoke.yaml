@@ -1,0 +1,78 @@
+appId: ${APP_ID}
+name: Dev agent — channel smoke test
+tags:
+  - agent-poc
+---
+# Proves the whole bridge end-to-end with no network, no merchant and no funds.
+# Run this first: if it passes, the channel, the testID resolution and the
+# dp->px coordinate conversion are all working on this device.
+
+# Fail fast and legibly if the daemon or the app side is not up.
+- runScript:
+    file: agent/health.js
+
+- clearState
+- launchApp:
+    permissions:
+      all: allow
+
+# Plain Maestro: the app actually booted and rendered.
+- extendedWaitUntil:
+    visible:
+      id: "button-scan"
+    timeout: 90000
+
+# The app answers for itself.
+- runScript:
+    file: agent/agent.js
+    env:
+      CMD: "ping"
+- assertTrue: ${output.result.ok == true}
+
+# Ask the app where the button is, instead of making Maestro dump the hierarchy.
+- runScript:
+    file: agent/agent.js
+    env:
+      CMD: "query"
+      ARGS: '{"testID":"button-scan"}'
+- assertTrue: ${output.result.found == true}
+- assertTrue: ${output.result.onScreen == true}
+
+# Tap the reported point with a real OS touch. If the dp->px factor were wrong
+# this tap would miss, and the store assertion below would catch it — which is
+# what makes this flow a calibration check and not just a smoke test.
+- tapOn:
+    point: "${output.result.x},${output.result.y}"
+
+# Assert against the domain rather than a rendered label.
+- runScript:
+    file: agent/agent.js
+    env:
+      CMD: "state"
+- assertTrue: ${output.result.modal.open == true}
+- assertTrue: ${output.result.modal.view == 'ScannerOptionsModal'}
+
+- runScript:
+    file: agent/agent.js
+    env:
+      CMD: "closeModal"
+
+# Imperative navigation, then read the nav tree back.
+- runScript:
+    file: agent/agent.js
+    env:
+      CMD: "navigate"
+      ARGS: '{"screen":"Logs"}'
+- runScript:
+    file: agent/agent.js
+    env:
+      CMD: "state"
+- assertTrue: ${output.result.nav.routes[output.result.nav.index].name == 'Logs'}
+- runScript:
+    file: agent/agent.js
+    env:
+      CMD: "back"
+- extendedWaitUntil:
+    visible:
+      id: "button-scan"
+    timeout: 10000

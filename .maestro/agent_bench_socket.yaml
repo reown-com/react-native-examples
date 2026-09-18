@@ -1,0 +1,41 @@
+appId: ${APP_ID}
+name: Bench — dev agent round-trip cost
+tags:
+  - agent-bench
+---
+# Phase 0, arm B. The same 20 "is it there?" checks, answered by the app over
+# the socket instead of by a hierarchy dump. The daemon also reports its own
+# view of each round-trip in elapsedMs, which isolates the in-app work from
+# Maestro's runScript overhead.
+- runScript:
+    file: agent/health.js
+- clearState
+- launchApp:
+    permissions:
+      all: allow
+- extendedWaitUntil:
+    visible:
+      id: "button-scan"
+    timeout: 90000
+
+# --- measured section: 20x query ---
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }
+- runScript: { file: agent/agent.js, env: { CMD: "query", ARGS: '{"testID":"button-scan"}' } }

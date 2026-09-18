@@ -1,0 +1,17 @@
+appId: ${APP_ID}
+name: Bench — baseline (prelude only, no measured section)
+tags:
+  - agent-bench
+---
+# Phase 0, control arm. Exactly the prelude both other bench flows share and
+# nothing else, so its wall clock can be subtracted from theirs. Without this
+# the comparison is dominated by cold-start variance rather than per-command
+# cost, which is the thing being measured.
+- clearState
+- launchApp:
+    permissions:
+      all: allow
+- extendedWaitUntil:
+    visible:
+      id: "button-scan"
+    timeout: 90000

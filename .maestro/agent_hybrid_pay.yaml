@@ -1,0 +1,73 @@
+appId: ${APP_ID}
+name: Dev agent — hybrid pay flow (socket setup, Maestro UI, domain assertions)
+tags:
+  - agent-poc
+---
+# The contrast this PoC exists to measure, against the upstream pay prelude:
+#
+#   upstream  tap button-scan -> tap input-paste-url -> (iOS keyboard prompt) ->
+#             inputText <long url> -> pressKey Enter -> wait button-submit-url ->
+#             tap button-submit-url -> wait pay-merchant-info
+#             = 7 commands, 4 taps, ~40s of wait budget
+#
+#   here      one socket round-trip into the same handleUriOrPaymentLink() that
+#             the scanner, the paste field, deep links and NFC all call
+#
+# Needs: a payment gateway URL (--env PAY_GATEWAY_URL=...), a funded test wallet
+# and network. Tagged agent-poc so `--include-tags pay` never picks it up.
+
+- runScript:
+    file: agent/health.js
+
+- clearState
+- launchApp:
+    permissions:
+      all: allow
+- extendedWaitUntil:
+    visible:
+      id: "button-scan"
+    timeout: 90000
+
+# Setup by socket — the part the upstream prelude spends 4 taps on.
+- runScript:
+    file: agent/agent.js
+    env:
+      CMD: "pair"
+      ARGS: '{"uri":"${PAY_GATEWAY_URL}"}'
+
+# From here on, Maestro over what actually matters: the real rendered UI.
+- extendedWaitUntil:
+    visible:
+      id: "pay-merchant-info"
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: "pay-button-pay"
+    timeout: 10000
+
+# Locate by socket, tap for real.
+- runScript:
+    file: agent/agent.js
+    env:
+      CMD: "query"
+      ARGS: '{"testID":"pay-button-pay"}'
+- assertTrue: ${output.result.found == true}
+- assertTrue: ${output.result.onScreen == true}
+- tapOn:
+    point: "${output.result.x},${output.result.y}"
+
+# Settlement is on-chain: nothing here makes that faster, so keep the real wait.
+- extendedWaitUntil:
+    visible:
+      id: "pay-result-container"
+    timeout: 90000
+
+# The assertion that removes a whole class of flake: the domain state, not an
+# icon. On failure this also reports *why* (resultErrorType / errorMessage),
+# which "icon not visible" never could.
+- runScript:
+    file: agent/agent.js
+    env:
+      CMD: "state"
+- assertTrue: ${output.result.payment.step == 'result'}
+- assertTrue: ${output.result.payment.resultStatus == 'success'}

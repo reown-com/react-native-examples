@@ -18,6 +18,13 @@ import { DesktopFrameWrapper } from '@/components/DesktopFrameWrapper';
 import useInitializeWalletKit from '@/hooks/useInitializeWalletKit';
 import useWalletKitEventsManager from '@/hooks/useWalletKitEventsManager';
 import { usePairing } from '@/hooks/usePairing';
+import { navigationRef } from '@/utils/navigationRef';
+import {
+  isDevAgentEnabled,
+  startDevAgent,
+  stopDevAgent,
+} from '@/utils/devAgent';
+import { AgentFiberProbe } from '@/utils/agentQuery';
 import { useNfcForegroundDispatch, isAllowedNfcUri } from '@/hooks/useNfc';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
@@ -61,6 +68,16 @@ const App = () => {
   // Load saved theme mode on startup
   useEffect(() => {
     SettingsStore.loadThemeMode();
+  }, []);
+
+  // Dev agent (E2E only). No-op unless EXPO_PUBLIC_DEV_AGENT=true was set at
+  // build time, so a shipped binary never opens this channel.
+  useEffect(() => {
+    if (!isDevAgentEnabled()) {
+      return;
+    }
+    startDevAgent();
+    return stopDevAgent;
   }, []);
 
   // Step 1 - Initialize wallets and wallet connect client
@@ -262,6 +279,7 @@ const App = () => {
         <SafeAreaProvider>
           <KeyboardProvider>
             <NavigationContainer
+              ref={navigationRef}
               documentTitle={{ formatter: () => 'React N. Wallet' }}
             >
               <StatusBar
@@ -274,6 +292,7 @@ const App = () => {
               <NavigationBar style={themeMode === 'dark' ? 'light' : 'dark'} />
               <RootStackNavigator />
               <Modal />
+              {isDevAgentEnabled() ? <AgentFiberProbe /> : null}
             </NavigationContainer>
             <Toast config={toastConfig} position="top" topOffset={0} />
           </KeyboardProvider>
