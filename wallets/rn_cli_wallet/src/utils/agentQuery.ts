@@ -237,6 +237,25 @@ export async function queryTestId(testID: string): Promise<AgentQueryResult> {
   const centerXdp = rect.x + rect.width / 2;
   const centerYdp = rect.y + rect.height / 2;
 
+  // A zero-area rect means the node is in the tree but not laid out —
+  // react-navigation keeps previous screens mounted, so a testID from another
+  // screen resolves happily and measures as nothing. Withhold the coordinates
+  // rather than hand back (0,0): a caller that skips the onScreen check would
+  // otherwise tap the corner of the screen and get a confusing failure far from
+  // the cause.
+  if (rect.width <= 0 || rect.height <= 0) {
+    return {
+      found: true,
+      strategy,
+      dp: rect,
+      onScreen: false,
+      opacity,
+      error:
+        'resolved in the React tree but has no layout (zero-size rect) — it is ' +
+        'probably on a screen that is mounted but not visible',
+    };
+  }
+
   return {
     found: true,
     strategy,
@@ -246,8 +265,6 @@ export async function queryTestId(testID: string): Promise<AgentQueryResult> {
     height: Math.round(rect.height * scale),
     dp: rect,
     onScreen:
-      rect.width > 0 &&
-      rect.height > 0 &&
       centerXdp >= 0 &&
       centerYdp >= 0 &&
       centerXdp <= window.width &&

@@ -31,6 +31,12 @@ is this?" itself.
 - **It cannot detect occlusion.** Nothing in the React tree knows another view is
   drawn on top. A point tap that misses while `query` reports `found` is real
   evidence of exactly that, and is worth investigating rather than working around.
+- **Mounted is not visible.** react-navigation keeps previous screens mounted, so
+  a `testID` belonging to another screen still resolves through the fiber walk
+  and measures as a zero-size rect. Observed in practice, not hypothetical.
+  `query` reports `found: true, onScreen: false` for this and **withholds the
+  coordinates**, so a caller that skips the `onScreen` check fails loudly instead
+  of tapping (0,0). Always assert `onScreen`, never just `found`.
 - **It does not replace the full-path flows.** The upstream prelude
   (`flows/pay_open_and_paste_url.yaml`) still exercises scanner → paste → submit
   on every `pay` flow, and must keep doing so. The socket is additive. If someone
@@ -164,6 +170,7 @@ const ref = useAgentTarget('button-scan');
 | `daemon is up but no app is connected` | Build lacks `EXPO_PUBLIC_DEV_AGENT=true`, app not running, or it cannot reach the host. |
 | Taps land in the wrong place | The dp→px factor. Compare `x`/`y` against `dp` in the `query` result. |
 | `found: false` | The testID is not mounted, or the fiber walk broke — check `strategy` and `error`. |
+| `found: true` but `onScreen: false`, zero-size `dp` | The element is on a screen that is mounted but not the active route. Navigate to the screen that owns it, or probe a testID on the current one. |
 
 The daemon pings the app every 5s and drops the connection when no pong comes
 back, so a killed or reloaded app shows up as `connected: false` within ~10s

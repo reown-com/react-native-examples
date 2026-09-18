@@ -71,6 +71,13 @@ cmd() {
   printf '%s' "$res"
 }
 
+current_route() {
+  local nav idx
+  nav="$(cmd state)"
+  idx="$(printf '%s' "$nav" | jget result.nav.index)"
+  printf '%s' "$nav" | jget "result.nav.routes.$idx.name"
+}
+
 echo "=== dev agent smoke test ==="
 echo "daemon: $DAEMON"
 echo
@@ -113,15 +120,27 @@ fi
 res="$(cmd query "{\"testID\":\"$PROBE_TESTID\"}")"
 found="$(printf '%s' "$res" | jget result.found)"
 strategy="$(printf '%s' "$res" | jget result.strategy)"
-if [ "$found" = "true" ]; then
+onscreen="$(printf '%s' "$res" | jget result.onScreen)"
+if [ "$found" = "true" ] && [ "$onscreen" = "true" ]; then
   ok "query resolved '$PROBE_TESTID' (strategy: $strategy)"
-  note "px x=$(printf '%s' "$res" | jget result.x) y=$(printf '%s' "$res" | jget result.y) onScreen=$(printf '%s' "$res" | jget result.onScreen)"
+  note "px x=$(printf '%s' "$res" | jget result.x) y=$(printf '%s' "$res" | jget result.y)"
   note "dp $(printf '%s' "$res" | jget result.dp)"
   if [ "$strategy" = "fiber" ]; then
     note "the fiber walk works on this React/RN version — the PoC's main risk is clear"
   else
     note "fell back to the registry: wire targets with useAgentTarget(testID)"
   fi
+elif [ "$found" = "true" ]; then
+  # Resolved in the React tree but not actually on screen. react-navigation
+  # keeps previous screens mounted, so a testID from another screen is still
+  # walkable and measures as a zero-size rect. This is the "mounted != visible"
+  # limit: only onScreen makes the result usable, which is why a bare `found`
+  # is not enough to pass.
+  bad "query resolved '$PROBE_TESTID' but it is not on screen"
+  note "dp $(printf '%s' "$res" | jget result.dp) — a zero-size rect means mounted but not laid out"
+  note "error=$(printf '%s' "$res" | jget result.error)"
+  note "current route: $(current_route)"
+  note "navigate to the screen that owns it, or set PROBE_TESTID=<one on this screen>"
 else
   bad "query could not resolve '$PROBE_TESTID'"
   note "strategy=$strategy error=$(printf '%s' "$res" | jget result.error)"
@@ -129,25 +148,32 @@ else
 fi
 
 # --- 5. imperative navigation, read back from the nav tree -------------------
-before="$(cmd state | jget result.nav.index)"
-res="$(cmd navigate '{"screen":"Logs"}')"
+# Assert on route names, not stack indices: react-navigation's `navigate` is a
+# no-op when you are already on the target, so it does not always push a frame
+# and `back` does not always return to where the index started.
+before_route="$(current_route)"
+# Pick a destination we are definitely not already on, so the hop is real.
+if [ "$before_route" = "Logs" ]; then
+  target="SecretPhrase"
+else
+  target="Logs"
+fi
+
+res="$(cmd navigate "{\"screen\":\"$target\"}")"
 if [ "$(printf '%s' "$res" | jget ok)" = "true" ]; then
-  nav="$(cmd state)"
-  idx="$(printf '%s' "$nav" | jget result.nav.index)"
-  route="$(printf '%s' "$nav" | jget "result.nav.routes.$idx.name")"
-  if [ "$route" = "Logs" ]; then
-    ok "navigate -> Logs (nav tree confirms)"
+  route="$(current_route)"
+  if [ "$route" = "$target" ]; then
+    ok "navigate -> $target (nav tree confirms)"
   else
     bad "navigate returned ok but the nav tree says '$route'"
   fi
 
   if [ "$(cmd back | jget ok)" = "true" ]; then
-    nav="$(cmd state)"
-    idx="$(printf '%s' "$nav" | jget result.nav.index)"
-    if [ "$idx" = "$before" ]; then
-      ok "back returned to the previous route"
+    route="$(current_route)"
+    if [ "$route" = "$before_route" ]; then
+      ok "back returned to '$before_route'"
     else
-      bad "back left the stack at index $idx, expected $before"
+      bad "back landed on '$route', expected '$before_route'"
     fi
   else
     bad "back failed"
@@ -179,6 +205,15 @@ case "$err" in
     bad "expected the app to reject the command; got: ${err:-$res}"
     ;;
 esac
+
+# Restore the starting screen. A previous run ending elsewhere is what made a
+# later `query` measure a mounted-but-not-laid-out element, so leaving the app
+# as we found it keeps repeated runs comparable.
+restore_attempts=0
+while [ "$(current_route)" != "$before_route" ] && [ "$restore_attempts" -lt 5 ]; do
+  [ "$(cmd back | jget ok)" = "true" ] || break
+  restore_attempts=$((restore_attempts + 1))
+done
 
 echo
 echo "=== $pass passed, $fail failed ==="
