@@ -35,25 +35,36 @@ if ! curl -fsS localhost:7789/health | grep -q '"connected":true'; then
   exit 1
 fi
 
+# macOS `date` has no %N (it is a GNU extension), so `date +%s%N` yields a
+# literal "N" there and the arithmetic below silently produces garbage. node is
+# already a hard requirement of this repo, so use it for a portable millisecond
+# clock. Its startup cost is identical across arms and cancels in the
+# baseline subtraction.
+now_ms() { node -p 'Date.now()'; }
+
 run_arm() {
   local name="$1" flow="$2"
-  local times=()
+  # A newline-separated string rather than an array: bash 3.2 (macOS) errors on
+  # expanding an empty array under `set -u`, which is exactly what happens when
+  # every run of an arm fails.
+  local times=""
   for i in $(seq 1 "$RUNS"); do
-    local start end
-    start=$(date +%s%N)
+    local start end status
+    start=$(now_ms)
     "$MAESTRO" test --env APP_ID="$APP_ID" "$flow" \
       > "$OUT/${name}-${i}.log" 2>&1
-    local status=$?
-    end=$(date +%s%N)
+    status=$?
+    end=$(now_ms)
     if [ $status -ne 0 ]; then
       echo "  run $i FAILED (see $OUT/${name}-${i}.log)" >&2
       continue
     fi
-    local ms=$(( (end - start) / 1000000 ))
-    times+=("$ms")
+    local ms=$(( end - start ))
+    times="${times}${ms}
+"
     echo "  run $i: ${ms}ms"
   done
-  printf '%s\n' "${times[@]}" | sort -n | awk '
+  printf '%s' "$times" | grep -v '^$' | sort -n | awk '
     { v[NR]=$1 }
     END {
       if (NR == 0) { print "NA"; exit }

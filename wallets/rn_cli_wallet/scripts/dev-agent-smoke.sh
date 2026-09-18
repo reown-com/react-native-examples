@@ -46,10 +46,29 @@ jget() {
 }
 
 cmd() {
-  local name="$1" args="${2:-{\}}"
-  curl -s --max-time 30 -X POST "$DAEMON/cmd" \
+  local name="$1"
+  local args="${2:-}"
+  # An empty default, filled in below. Deliberately not ${2:-{\}}: that form
+  # expands differently on bash 3.2 (what macOS ships), where the backslash
+  # survives into the body and every argument-less command becomes invalid JSON.
+  if [ -z "$args" ]; then
+    args='{}'
+  fi
+
+  local res
+  res="$(curl -s --max-time 30 -X POST "$DAEMON/cmd" \
     -H 'Content-Type: application/json' \
-    -d "{\"cmd\":\"$name\",\"args\":$args}"
+    -d "{\"cmd\":\"$name\",\"args\":$args}")"
+
+  # This error can only come from the daemon rejecting what this script sent, so
+  # report it as a harness bug instead of letting it read like an app failure.
+  case "$res" in
+    *'body is not valid JSON'*)
+      echo "{\"ok\":false,\"error\":\"SMOKE SCRIPT BUG: sent malformed JSON for \\\"$name\\\" (args=$args)\"}"
+      return
+      ;;
+  esac
+  printf '%s' "$res"
 }
 
 echo "=== dev agent smoke test ==="
@@ -149,12 +168,17 @@ fi
 # --- 7. an unknown command fails legibly rather than hanging -----------------
 res="$(cmd definitely-not-a-command)"
 err="$(printf '%s' "$res" | jget error)"
-if [ "$(printf '%s' "$res" | jget ok)" = "false" ] && [ -n "$err" ]; then
-  ok "unknown command fails legibly"
-  note "$err"
-else
-  bad "unknown command did not produce a clear error: $res"
-fi
+# Must be the app's own rejection: any ok:false would otherwise pass here, which
+# is how a transport-level failure once masqueraded as this check succeeding.
+case "$err" in
+  *'unknown command'*)
+    ok "unknown command fails legibly"
+    note "$err"
+    ;;
+  *)
+    bad "expected the app to reject the command; got: ${err:-$res}"
+    ;;
+esac
 
 echo
 echo "=== $pass passed, $fail failed ==="
