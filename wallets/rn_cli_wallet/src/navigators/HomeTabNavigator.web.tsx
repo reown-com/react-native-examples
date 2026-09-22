@@ -14,10 +14,13 @@ import { Spacing } from '@/utils/ThemeUtil';
 const TabNav = createBottomTabNavigator<HomeTabParamList>();
 
 const tabIcon = (src: number) =>
-  function TabIcon() {
+  function TabIcon({ color }: { color: string }) {
     return (
       <Image
         source={src}
+        // Recolor the SVG asset to match the active/inactive tab tint
+        // (react-native-web tints via an SVG flood filter).
+        tintColor={color}
         style={{ width: 24, height: 24 }}
         resizeMode="contain"
       />
