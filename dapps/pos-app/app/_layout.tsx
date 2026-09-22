@@ -7,25 +7,29 @@ import Toast from "react-native-toast-message";
 
 import HeaderImage from "@/components/header-image";
 import { ThemedText } from "@/components/themed-text";
+import { useAppFonts } from "@/hooks/use-app-fonts";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useFonts } from "expo-font";
 
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePosBridge } from "@/hooks/use-pos-bridge";
 import * as Sentry from "@sentry/react-native";
 
-import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { getDeviceIdentifier } from "@/utils/misc";
-import { requestBluetoothPermission } from "@/utils/printer";
+import { requestBluetoothPermission } from "@/utils/printer-permission";
 import { initSentry } from "@/utils/sentry";
 import { showInfoToast } from "@/utils/toast";
 import { toastConfig } from "@/utils/toasts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect, useRef } from "react";
-import { Platform, View } from "react-native";
+import {
+  ActivityIndicator,
+  InteractionManager,
+  Platform,
+  View,
+} from "react-native";
 import {
   initialWindowMetrics,
   SafeAreaProvider,
@@ -60,12 +64,8 @@ export default Sentry.wrap(function RootLayout() {
   const deviceId = useSettingsStore((state) => state.deviceId);
   const _hasHydrated = useSettingsStore((state) => state._hasHydrated);
   const Theme = useTheme();
-  const [fontsLoaded] = useFonts({
-    "KH Teka": require("@/assets/fonts/KHTeka-Regular.otf"),
-    "KH Teka Light": require("@/assets/fonts/KHTeka-Light.otf"),
-    "KH Teka Medium": require("@/assets/fonts/KHTeka-Medium.otf"),
-    "KH Teka Mono": require("@/assets/fonts/KHTekaMono-Regular.otf"),
-  });
+  // Native embeds fonts (no runtime load); web loads them at runtime.
+  const fontsLoaded = useAppFonts();
 
   // Ends Sentry's app-start span once real UI can render (after hydration + fonts).
   useEffect(() => {
@@ -73,6 +73,18 @@ export default Sentry.wrap(function RootLayout() {
       Sentry.appLoaded();
       appLoadedReported.current = true;
     }
+  }, [_hasHydrated, fontsLoaded]);
+
+  // Restore persisted log history off the cold-start path. The logs store skips
+  // hydration at import (avoiding a synchronous MMKV read + JSON.parse before
+  // the home screen paints); we rehydrate once the app is ready and animations
+  // settle. Logs added during startup are buffered and merged (see useLogsStore).
+  useEffect(() => {
+    if (!_hasHydrated || !fontsLoaded) return;
+    const task = InteractionManager.runAfterInteractions(() => {
+      useLogsStore.persist.rehydrate();
+    });
+    return () => task.cancel();
   }, [_hasHydrated, fontsLoaded]);
 
   useEffect(() => {
@@ -130,7 +142,11 @@ export default Sentry.wrap(function RootLayout() {
           backgroundColor: Theme["bg-primary"],
         }}
       >
-        <WalletConnectLoading size={180} />
+        <ActivityIndicator
+          accessibilityLabel="Loading WalletConnect Pay"
+          color={Theme["icon-accent-primary"]}
+          size="large"
+        />
       </View>
     );
   }

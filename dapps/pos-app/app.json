@@ -35,7 +35,7 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 7
+      "versionCode": 8
     },
     "web": {
       "output": "static",
@@ -85,6 +85,24 @@
                     "path": "./assets/fonts/KHTeka-Regular.otf",
                     "weight": 400
                   },
+                  {
+                    "path": "./assets/fonts/KHTeka-Medium.otf",
+                    "weight": 500
+                  }
+                ]
+              },
+              {
+                "fontFamily": "KH Teka Light",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/KHTeka-Light.otf",
+                    "weight": 300
+                  }
+                ]
+              },
+              {
+                "fontFamily": "KH Teka Medium",
+                "fontDefinitions": [
                   {
                     "path": "./assets/fonts/KHTeka-Medium.otf",
                     "weight": 500

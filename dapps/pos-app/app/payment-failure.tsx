@@ -17,7 +17,10 @@ import {
   INVALID_API_KEY,
 } from "@/utils/payment-errors";
 import { shouldRouteInvalidApiKeyToSettings } from "@/utils/pos-bridge-ui";
-import { useAssets } from "expo-asset";
+
+// Static bundled icon — render synchronously from the bundle (no async
+// useAssets round-trip / blank frame); see the home screen.
+const warningIcon = require("@/assets/images/warning-circle-fill.png");
 
 // The params can't be declared optional here: `UnknownOutputParams` indexes to
 // `string | string[]`, so `?` widens to undefined and breaks the constraint.
@@ -37,9 +40,6 @@ export default function PaymentFailureScreen() {
   const currencyCode = useSettingsStore((state) => state.currency);
   const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
   const isIframeBridgeConfigured = isRunningInIframe() && isBridgeConfigured;
-  const [assets] = useAssets([
-    require("@/assets/images/warning-circle-fill.png"),
-  ]);
 
   const { title, subtitle } = getPaymentErrorMessage(params.errorCode, {
     minAmountCents: params.minAmount,
@@ -79,7 +79,7 @@ export default function PaymentFailureScreen() {
         style={styles.failureContent}
       >
         <Image
-          source={assets?.[0]}
+          source={warningIcon}
           style={[
             styles.warningCircle,
             isTablet && styles.warningCircleTablet,
