@@ -42,6 +42,8 @@ jobs:
       output-path: ${{ inputs.release-type == 'internal' && 'dapps/appkit-wagmi/android/app/build/outputs/apk/internal/app-internal.apk' || 'dapps/appkit-wagmi/android/app/build/outputs/apk/release/app-release.apk' }}
       upload-to-bucket: ${{ inputs.e2e-build }}
       firebase-app-id: ${{ inputs.release-type == 'internal' && vars.APPKIT_ANDROID_INTERNAL_FIREBASE_APP_ID || vars.APPKIT_ANDROID_PROD_FIREBASE_APP_ID }}
+      # Internal testers use modern 64-bit phones; skipping armeabi-v7a halves native compile time.
+      internal-architectures: 'arm64-v8a'
     secrets:
       env-file: ${{ secrets.APPKIT_ENV_FILE }}
       sentry-file: ${{ secrets.APPKIT_SENTRY_FILE }}
