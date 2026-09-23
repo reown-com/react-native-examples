@@ -567,11 +567,21 @@ runs:
       run: |
         xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
         mkdir -p maestro-artifacts
+        # App-process-only syslog at the default level (no debug/info) — includes
+        # JS console output. Only uploaded on failure (see below). The process name
+        # is read from the built app so it tracks Expo's generated target name.
+        APP_PROCESS=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP_PATH/Info.plist" 2>/dev/null || echo ReactNWallet)
+        xcrun simctl spawn "$DEVICE_ID" log stream \
+          --style=compact \
+          --predicate "process == \"$APP_PROCESS\"" \
+          > maestro-artifacts/ios-syslog.log 2>&1 &
+        SYSLOG_PID=$!
         set +e
         # Retry the suite once on failure to absorb transient cold-start flakes
         # (e.g. an app process that fails to launch/attach) without rebuilding the
         # app or rebooting the simulator. A genuine failure fails every attempt, so
-        # this does not mask regressions.
+        # this does not mask regressions. The syslog stream above keeps capturing
+        # across both attempts.
         maestro_exit_code=0
         # Clear any stale per-attempt logs (composite may be invoked twice per job).
         rm -f maestro-output-attempt-*.log
@@ -604,6 +614,8 @@ runs:
         # Join per-attempt logs so the uploaded artifact keeps attempt 1's output
         # on a double failure (otherwise attempt 2 would have overwritten it).
         for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
+        kill "$SYSLOG_PID" 2>/dev/null || true
+        wait "$SYSLOG_PID" 2>/dev/null || true
         mkdir -p maestro-artifacts/ios-crash-reports
         cp -R "$HOME/Library/Logs/DiagnosticReports/." maestro-artifacts/ios-crash-reports/ 2>/dev/null || true
         mkdir -p maestro-artifacts/maestro-debug
@@ -636,6 +648,17 @@ runs:
         # (e.g. a retry wrapper) without the second upload 409'ing
         # against the first. Last-wins; combine with an out-of-action
         # download+rename step if both attempts' artifacts are needed.
+        overwrite: true
+
+    - name: Upload iOS syslog (on failure)
+      if: ${{ failure() && inputs.platform == 'ios' }}
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-ios-syslog
+        path: maestro-artifacts/ios-syslog.log
+        if-no-files-found: ignore
+        retention-days: 14
         overwrite: true
 
     - name: Run Maestro tests (Android)
