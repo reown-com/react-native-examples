@@ -61,6 +61,7 @@ jobs:
       root-path: 'dapps/appkit-wagmi'
       release-type: ${{ inputs.release-type }}
       is-expo-project: true
+      use-rnrepo: true
       app-variant: ${{ inputs.release-type == 'internal' && 'internal' || 'production' }}
       scheme-name: 'RNAppKit'
       bundle-id: ${{ inputs.release-type == 'internal' && 'com.walletconnect.web3modal.rnsample.internal' || 'com.walletconnect.web3modal.rnsample' }}

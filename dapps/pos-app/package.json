@@ -26,6 +26,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@rnrepo/expo-config-plugin": "0.3.6",
     "@sentry/react-native": "8.23.0",
     "@shopify/react-native-skia": "2.6.2",
     "@tanstack/react-query": "5.90.11",

@@ -49,6 +49,7 @@
     "@react-navigation/native-stack": "7.17.6",
     "@react-navigation/stack": "7.10.6",
     "@reown/walletkit": "1.6.0",
+    "@rnrepo/expo-config-plugin": "0.3.6",
     "@sentry/react-native": "~7.11.0",
     "@solana/web3.js": "1.98.2",
     "@stellar/stellar-sdk": "16.2.0",

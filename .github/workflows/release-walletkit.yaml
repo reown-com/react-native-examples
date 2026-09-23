@@ -61,6 +61,7 @@ jobs:
       root-path: 'wallets/rn_cli_wallet'
       release-type: ${{ inputs.release-type }}
       is-expo-project: true
+      use-rnrepo: true
       app-variant: ${{ inputs.release-type == 'internal' && 'internal' || 'production' }}
       scheme-name: 'ReactNWallet'
       bundle-id: ${{ inputs.release-type == 'internal' && 'com.walletconnect.web3wallet.rnsample.internal' || 'com.walletconnect.web3wallet.rnsample' }}

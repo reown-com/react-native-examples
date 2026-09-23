@@ -42,6 +42,7 @@
       "favicon": "./assets/app_icons/icon.png"
     },
     "plugins": [
+      "@rnrepo/expo-config-plugin",
       "expo-router",
       [
         "expo-splash-screen",
