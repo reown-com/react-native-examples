@@ -536,14 +536,14 @@ runs:
         curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
 
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions#114 (6294383): the flows deliver each payment
+    # Pinned to WalletConnect/actions#114 (9a51b62): the flows deliver each payment
     # link via `openLink` to <DEEPLINK_PREFIX><encoded link> instead of typing it
     # into the test-mode paste input. Each Maestro step below passes DEEPLINK_PREFIX.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@6294383d313bda0a54c8eb61e4258592ede4e957
+      uses: WalletConnect/actions/maestro/pay-tests@9a51b62bcd63afde28865788de560da9f74b508b
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@6294383d313bda0a54c8eb61e4258592ede4e957
+      uses: WalletConnect/actions/maestro/setup@9a51b62bcd63afde28865788de560da9f74b508b
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -683,8 +683,11 @@ runs:
         disable-animations: true
         script: |
           adb install "$APK_PATH"
-          mkdir -p maestro-artifacts maestro-artifacts/maestro-debug; adb logcat -c || true; adb logcat AndroidRuntime:E ActivityManager:W ReactNativeJS:E '*:F' > maestro-artifacts/android-logcat.log 2>&1 & LOGCAT_PID=$!; set +e; maestro_exit_code=0; rm -f maestro-output-attempt-*.log; for attempt in 1 2; do echo "=== Maestro attempt $attempt/2 (Android) ==="; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env DEEPLINK_PREFIX="$DEEPLINK_PREFIX" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1; maestro_exit_code=$?; [ "$maestro_exit_code" -eq 0 ] && break; if [ "$maestro_exit_code" -gt 128 ]; then echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"; break; fi; echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"; done; for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log; kill "$LOGCAT_PID" 2>/dev/null || true; wait "$LOGCAT_PID" 2>/dev/null || true; adb logcat -d -b crash > maestro-artifacts/android-logcat-crash.log 2>&1 || true; find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true; cat maestro-output.log; exit "$maestro_exit_code"
+          mkdir -p maestro-artifacts maestro-artifacts/maestro-debug; adb logcat -b all -c || true; adb logcat AndroidRuntime:E ActivityManager:I ActivityTaskManager:I ReactNativeJS:E '*:F' > maestro-artifacts/android-logcat.log 2>&1 & LOGCAT_PID=$!; adb logcat -b events > maestro-artifacts/android-logcat-events.log 2>&1 & EVENTS_PID=$!; set +e; maestro_exit_code=0; rm -f maestro-output-attempt-*.log; for attempt in 1 2; do echo "=== Maestro attempt $attempt/2 (Android) ==="; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env DEEPLINK_PREFIX="$DEEPLINK_PREFIX" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1; maestro_exit_code=$?; [ "$maestro_exit_code" -eq 0 ] && break; if [ "$maestro_exit_code" -gt 128 ]; then echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"; break; fi; echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"; done; for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log; kill "$LOGCAT_PID" "$EVENTS_PID" 2>/dev/null || true; wait "$LOGCAT_PID" "$EVENTS_PID" 2>/dev/null || true; adb logcat -d -b crash > maestro-artifacts/android-logcat-crash.log 2>&1 || true; cp -R "${RUNNER_TEMP}/maestro-debug/." maestro-artifacts/maestro-debug/ 2>/dev/null || true; cat maestro-output.log; exit "$maestro_exit_code"
 
+    # Besides media, keeps launch diagnostics: the logcat events buffer
+    # (am_proc_start / am_proc_died / wm_on_resume_called) and Maestro's own
+    # maestro.log + commands-*.json (per-command timings).
     - name: Upload Maestro artifacts (Android)
       if: ${{ !cancelled() && inputs.platform == 'android' }}
       continue-on-error: true
@@ -701,6 +704,9 @@ runs:
           maestro-artifacts/**/*.gif
           maestro-artifacts/android-logcat.log
           maestro-artifacts/android-logcat-crash.log
+          maestro-artifacts/android-logcat-events.log
+          maestro-artifacts/**/*.log
+          maestro-artifacts/**/*.json
           maestro-artifacts/maestro-debug/**/*.png
           maestro-artifacts/maestro-debug/**/*.jpg
           maestro-output.log
@@ -851,7 +857,7 @@ runs:
     # steps — actions/runner#1457).
     - name: Reset USDT Permit2 allowance (Polygon)
       if: always() && contains(inputs.maestro-tags, 'pay')
-      uses: WalletConnect/actions/maestro/permit2-reset@6294383d313bda0a54c8eb61e4258592ede4e957
+      uses: WalletConnect/actions/maestro/permit2-reset@9a51b62bcd63afde28865788de560da9f74b508b
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
