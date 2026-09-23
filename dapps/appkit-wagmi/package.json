@@ -37,6 +37,7 @@
     "@reown/appkit-react-native": "2.0.6",
     "@reown/appkit-solana-react-native": "2.0.6",
     "@reown/appkit-wagmi-react-native": "2.0.6",
+    "@rnrepo/expo-config-plugin": "0.3.6",
     "@sentry/react-native": "7.11.0",
     "@solana/web3.js": "1.98.2",
     "@tanstack/react-query": "5.62.2",

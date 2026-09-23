@@ -82,8 +82,10 @@ jobs:
     # Balance alert should not block tests. On schedule, iOS (macOS, expensive)
     # runs only on the once-daily cron; the 6h cadence stays Android-only. On
     # dispatch, gated by the `ios` checkbox.
+    # `!cancelled()` (not `always()`): still runs when check-balance fails, but a
+    # job-level `always()` makes GitHub ignore Cancel, so the run keeps going to the end.
     if: >-
-      always()
+      !cancelled()
       && github.actor != 'dependabot[bot]'
       && (github.event_name != 'workflow_dispatch' || inputs.ios)
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
@@ -164,7 +166,7 @@ jobs:
     # Balance alert should not block tests. Android runs on every trigger (it's
     # the cheap 6h canary); on dispatch, gated by the `android` checkbox.
     if: >-
-      always() && github.actor != 'dependabot[bot]'
+      !cancelled() && github.actor != 'dependabot[bot]'
       && (github.event_name != 'workflow_dispatch' || inputs.android)
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - Android
@@ -247,7 +249,7 @@ jobs:
     # `web` checkbox is set). Cheap (ubuntu), so kept off the 6h Android canary
     # for parity with iOS's daily-only schedule gate.
     if: >-
-      always()
+      !cancelled()
       && github.actor != 'dependabot[bot]'
       && (github.event_name != 'workflow_dispatch' || inputs.web)
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
