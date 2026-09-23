@@ -446,19 +446,16 @@ runs:
           echo "reactNativeArchitectures=x86_64"
         } >> android/gradle.properties
 
-    - name: Cache Gradle
+    # setup-gradle caches Gradle User Home (dependencies, wrapper, transforms,
+    # build cache). It only writes from the default branch; other branches
+    # restore main's latest entry read-only. Release builds (release-android-base)
+    # restore this job's main entry too, so the scheduled runs keep it warm.
+    # Project dirs (android/.gradle, app/.cxx, app/build/generated) are not
+    # cached: they saved no measurable time (the app's CMake build recompiles
+    # anyway) and aren't content-keyed, so they could go stale.
+    - name: Setup Gradle
       if: inputs.platform == 'android'
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-          ${{ steps.paths.outputs.wallet_root }}/android/.gradle
-          ${{ steps.paths.outputs.wallet_root }}/android/app/.cxx
-          ${{ steps.paths.outputs.wallet_root }}/android/app/build/generated
-        key: ${{ runner.os }}-gradle-walletkit-${{ hashFiles(format('{0}/android/**/*.gradle*', steps.paths.outputs.wallet_root), format('{0}/android/**/gradle-wrapper.properties', steps.paths.outputs.wallet_root)) }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-walletkit-
+      uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
     - name: Build APK
       if: inputs.platform == 'android'
