@@ -131,9 +131,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.rnrepo-cache
-          key: ${{ runner.os }}-rnrepo-ios-${{ hashFiles(format('{0}/{1}', inputs.root-path, inputs.package-manager == 'npm' && 'package-lock.json' || 'yarn.lock')) }}
+          # Scoped per app so a prefix fallback only restores that app's own
+          # frameworks instead of whichever app saved a cache most recently.
+          key: ${{ runner.os }}-rnrepo-ios-${{ inputs.root-path }}-${{ hashFiles(format('{0}/{1}', inputs.root-path, inputs.package-manager == 'npm' && 'package-lock.json' || 'yarn.lock')) }}
           restore-keys: |
-            ${{ runner.os }}-rnrepo-ios-
+            ${{ runner.os }}-rnrepo-ios-${{ inputs.root-path }}-
 
       - name: Expo Prebuild
         if: ${{ inputs.is-expo-project == true }}

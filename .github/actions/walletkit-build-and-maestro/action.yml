@@ -255,9 +255,11 @@ runs:
       uses: actions/cache@v4
       with:
         path: ~/.rnrepo-cache
-        key: ${{ runner.os }}-rnrepo-ios-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root)) }}
+        # Same key as release-ios-base's WalletKit cache (scoped by the in-repo
+        # wallet path, independent of wallet-source-dir) so both share it.
+        key: ${{ runner.os }}-rnrepo-ios-wallets/rn_cli_wallet-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root)) }}
         restore-keys: |
-          ${{ runner.os }}-rnrepo-ios-
+          ${{ runner.os }}-rnrepo-ios-wallets/rn_cli_wallet-
 
     - name: Cache Pods
       if: inputs.platform == 'ios'
