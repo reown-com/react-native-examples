@@ -130,8 +130,10 @@ jobs:
 
       - name: Configure ABI for internal builds
         if: ${{ inputs.release-type == 'internal' }}
+        env:
+          ARCHS: ${{ inputs.internal-architectures }}
         run: |
-          printf 'reactNativeArchitectures=${{ inputs.internal-architectures }}\n' >> ${{ inputs.root-path }}/android/gradle.properties
+          printf 'reactNativeArchitectures=%s\n' "$ARCHS" >> ${{ inputs.root-path }}/android/gradle.properties
 
       # setup-gradle caches Gradle User Home (dependencies, wrapper, transforms,
       # build cache). It only writes from the default branch; other branches
