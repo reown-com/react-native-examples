@@ -46,6 +46,11 @@ on:
         description: "Firebase App ID for distribution"
         required: true
         type: string
+      internal-architectures:
+        description: "Comma-separated ABIs for internal builds. Keep armeabi-v7a for apps that must run on old 32-bit devices (e.g. POS hardware)"
+        required: false
+        default: 'arm64-v8a,armeabi-v7a'
+        type: string
     secrets:
       gsa-key:
         required: true
@@ -126,7 +131,7 @@ jobs:
       - name: Configure ABI for internal builds
         if: ${{ inputs.release-type == 'internal' }}
         run: |
-          printf 'reactNativeArchitectures=arm64-v8a,armeabi-v7a\n' >> ${{ inputs.root-path }}/android/gradle.properties
+          printf 'reactNativeArchitectures=${{ inputs.internal-architectures }}\n' >> ${{ inputs.root-path }}/android/gradle.properties
 
       - name: Cache Gradle
         uses: actions/cache@v4
