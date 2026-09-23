@@ -250,16 +250,25 @@ runs:
         echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
         echo "XCWORKSPACE_PATH=$WALLET_ROOT/ios/ReactNWallet.xcworkspace" >> "$GITHUB_ENV"
 
+    - name: Cache RNRepo frameworks
+      if: inputs.platform == 'ios'
+      uses: actions/cache@v4
+      with:
+        path: ~/.rnrepo-cache
+        key: ${{ runner.os }}-rnrepo-ios-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root)) }}
+        restore-keys: |
+          ${{ runner.os }}-rnrepo-ios-
+
     - name: Cache Pods
       if: inputs.platform == 'ios'
       id: pods-cache
       uses: actions/cache@v4
       with:
         path: ${{ steps.paths.outputs.wallet_root }}/ios/Pods
-        # Exact Podfile.lock match only; otherwise start clean and reinstall.
-        # No restore-keys: prefix match restores stale Pods on a Podfile.lock
-        # bump (hermes-engine mismatch) and breaks `pod install` (see #515).
-        key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/ios/Podfile.lock', steps.paths.outputs.wallet_root)) }}
+        # Prebuild intentionally skips pod install, so Podfile.lock does not
+        # exist yet. Hash every tracked input that can affect the generated
+        # Podfile instead, and avoid restore-key fallbacks to stale Pods.
+        key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root), format('{0}/app.json', steps.paths.outputs.wallet_root), format('{0}/app.config.js', steps.paths.outputs.wallet_root), format('{0}/plugins/**', steps.paths.outputs.wallet_root)) }}
 
     - name: Build for Simulator
       if: inputs.platform == 'ios'

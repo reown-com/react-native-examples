@@ -58,6 +58,11 @@ on:
         required: false
         default: false
         type: boolean
+      use-rnrepo:
+        description: "Restore and save RNRepo's downloaded iOS frameworks"
+        required: false
+        default: false
+        type: boolean
       app-variant:
         description: "APP_VARIANT for expo prebuild (e.g. production/internal). Selects the iOS bundle id/icon via app.config.js."
         required: false
@@ -121,21 +126,47 @@ jobs:
           root-path: ${{ inputs.root-path }}
           package-manager: ${{ inputs.package-manager }}
 
+      - name: Cache RNRepo frameworks
+        if: ${{ inputs.use-rnrepo == true }}
+        uses: actions/cache@v4
+        with:
+          path: ~/.rnrepo-cache
+          key: ${{ runner.os }}-rnrepo-ios-${{ hashFiles(format('{0}/{1}', inputs.root-path, inputs.package-manager == 'npm' && 'package-lock.json' || 'yarn.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-rnrepo-ios-
+
       - name: Expo Prebuild
         if: ${{ inputs.is-expo-project == true }}
         run: |
           cd ${{ inputs.root-path }}
-          APP_VARIANT=${{ inputs.app-variant }} npx expo prebuild --platform ios
+          # Fastlane installs pods once after signing setup. Keeping prebuild
+          # generation-only avoids running CocoaPods twice in the same job.
+          APP_VARIANT=${{ inputs.app-variant }} npx expo prebuild --platform ios --no-install
 
       - name: Set Xcode paths
         run: |
-          # Find the .xcodeproj and .xcworkspace (works for both Expo and non-Expo)
+          # Expo's workspace does not exist until Fastlane runs pod install, so
+          # derive its future path from the generated Xcode project.
           XCODEPROJ=$(find "${{ inputs.root-path }}/ios" -maxdepth 1 -name "*.xcodeproj" -print -quit)
           XCWORKSPACE=$(find "${{ inputs.root-path }}/ios" -maxdepth 1 -name "*.xcworkspace" -print -quit)
-          
+
+          if [ -z "$XCODEPROJ" ]; then
+            echo "No Xcode project found in ${{ inputs.root-path }}/ios"
+            exit 1
+          fi
+
+          if [ -z "$XCWORKSPACE" ] && [ "${{ inputs.is-expo-project }}" = "true" ]; then
+            XCWORKSPACE="${XCODEPROJ%.xcodeproj}.xcworkspace"
+          fi
+
+          if [ -z "$XCWORKSPACE" ]; then
+            echo "No Xcode workspace found in ${{ inputs.root-path }}/ios"
+            exit 1
+          fi
+
           echo "Found Xcode project: $XCODEPROJ"
-          echo "Found Xcode workspace: $XCWORKSPACE"
-          
+          echo "Using Xcode workspace: $XCWORKSPACE"
+
           echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
           echo "XCWORKSPACE_PATH=$XCWORKSPACE" >> "$GITHUB_ENV"
 
