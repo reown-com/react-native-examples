@@ -519,7 +519,7 @@ runs:
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       # Static SPA (app.json web.output: single) -> dist/. TEST_MODE (from .env)
-      # keeps the paste-URL test input and disables the last-paid-token shortcut.
+      # disables pay animations and the last-paid-token shortcut.
       run: npx expo export --platform web --output-dir dist
 
     - name: Serve web build

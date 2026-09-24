@@ -225,7 +225,7 @@ EXPO_PUBLIC_SENTRY_DSN=""        # Sentry error tracking (optional)
 EXPO_PUBLIC_TON_CENTER_API_KEY="" # TON blockchain API key (optional)
 EXPO_PUBLIC_BLOCKCHAIN_API_URL="" # Blockchain API URL (to get wallet balances)
 EXPO_PUBLIC_TEST_PRIVATE_KEY=""  # Private key for funded test wallet (Maestro E2E only)
-EXPO_PUBLIC_TEST_MODE=""         # "true" shows test-only UI / disables pay animations
+EXPO_PUBLIC_TEST_MODE=""         # "true" disables pay animations + the web last-paid-token shortcut (Maestro E2E)
 EXPO_PUBLIC_PAY_API_BASE_URL=""  # Override WCPay API base URL (blank = walletkit default)
 SENTRY_DISABLE_AUTO_UPLOAD=true  # Build-time only: disable Sentry auto upload (Android)
 ```
