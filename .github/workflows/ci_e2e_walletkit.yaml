@@ -115,7 +115,7 @@ jobs:
           # Encrypted build cache: every run may restore (fork/Dependabot PRs get
           # no secret, so it's off for them); only trusted main runs save.
           build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
-          build-cache-save: ${{ github.event_name == 'workflow_dispatch' }} # TEMP: branch validation, revert before merge
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()
@@ -201,7 +201,7 @@ jobs:
           # Encrypted build cache: every run may restore (fork/Dependabot PRs get
           # no secret, so it's off for them); only trusted main runs save.
           build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
-          build-cache-save: ${{ github.event_name == 'workflow_dispatch' }} # TEMP: branch validation, revert before merge
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()
