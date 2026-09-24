@@ -130,6 +130,20 @@ inputs:
       should seed an expired payment and pass its gateway URL here.
     required: false
     default: ''
+  build-cache-passphrase:
+    description: |
+      Random passphrase (E2E_BUILD_CACHE_PASSPHRASE) that encrypts the cached
+      wallet build. When empty (the default: fork/Dependabot PRs, cross-repo
+      callers) the build cache is disabled and every run builds from source.
+      Android only for now. See scripts/build-cache.sh.
+    required: false
+    default: ''
+  build-cache-save:
+    description: |
+      'true' to save the build to the cache on a miss. Only pass 'true' from
+      trusted main-branch runs; other runs restore read-only.
+    required: false
+    default: 'false'
 
 outputs:
   maestro-outcome:
@@ -158,18 +172,8 @@ runs:
         echo "wallet_root=$ROOT" >> "$GITHUB_OUTPUT"
         echo "Resolved wallet root - $ROOT"
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: yarn
-        cache-dependency-path: ${{ steps.paths.outputs.wallet_root }}/yarn.lock
-
-    - name: Install dependencies
-      shell: bash
-      working-directory: ${{ steps.paths.outputs.wallet_root }}
-      run: yarn install --immutable
-
+    # Written before the build cache key (the key hashes it) and before
+    # `yarn install` (it needs no node_modules).
     - name: Write wallet .env
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
@@ -198,6 +202,72 @@ runs:
           echo "SENTRY_DISABLE_AUTO_UPLOAD=true"
         } >> .env
         echo "Wrote $(pwd)/.env"
+
+    # --- Encrypted build cache (scripts/build-cache.sh) ---
+    # Reuses the last build of this exact wallet tree + build config instead of
+    # rebuilding. The build inlines the test private key, so the cached blob is
+    # gpg-encrypted with build-cache-passphrase: fork PRs can restore main's
+    # caches but never get the secret. Exact key only (no restore-keys). On a
+    # hit, the build lands in the same staged dir a fresh build is copied to
+    # ($RUNNER_TEMP/e2e-build/<platform>), so later steps don't care which.
+    - name: Compute build cache key
+      id: build-cache
+      shell: bash
+      env:
+        BUILD_CACHE_PASSPHRASE: ${{ inputs.build-cache-passphrase }}
+        PLATFORM: ${{ inputs.platform }}
+        SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+        WALLET_ROOT: ${{ steps.paths.outputs.wallet_root }}
+        ANDROID_SECRETS_FILE: ${{ inputs.android-secrets-file }}
+        ANDROID_KEYSTORE_BASE64: ${{ inputs.android-keystore-base64 }}
+        ANDROID_KEYSTORE_NAME: ${{ inputs.android-keystore-name }}
+      run: bash "$GITHUB_ACTION_PATH/scripts/build-cache.sh" key
+
+    - name: Restore build cache
+      id: build-cache-restore
+      if: steps.build-cache.outputs.enabled == 'true'
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ runner.temp }}/e2e-build-cache/build.tar.gpg
+        key: ${{ steps.build-cache.outputs.key }}
+
+    # Fails the job on a corrupt hit rather than rebuilding: the entry is
+    # immutable, so a silent fallback would rebuild on every run forever.
+    - name: Unpack cached build
+      id: cached-build
+      if: steps.build-cache.outputs.enabled == 'true'
+      shell: bash
+      env:
+        BUILD_CACHE_PASSPHRASE: ${{ inputs.build-cache-passphrase }}
+        CACHE_HIT: ${{ steps.build-cache-restore.outputs.cache-hit }}
+        CACHE_KEY: ${{ steps.build-cache.outputs.key }}
+        CACHE_FILE: ${{ runner.temp }}/e2e-build-cache/build.tar.gpg
+        BUILD_DIR: ${{ runner.temp }}/e2e-build/${{ inputs.platform }}
+        EXPECTED: ${{ inputs.platform == 'android' && 'app-internal.apk' || '' }}
+      run: |
+        set -euo pipefail
+        if [ "$CACHE_HIT" != "true" ]; then
+          echo "Build cache miss ($CACHE_KEY): building from source"
+          echo "Build cache: miss (\`$CACHE_KEY\`)" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+        fi
+        bash "$GITHUB_ACTION_PATH/scripts/build-cache.sh" unpack "$CACHE_FILE" "$BUILD_DIR" "$EXPECTED"
+        echo "Build cache: hit (\`$CACHE_KEY\`)" >> "$GITHUB_STEP_SUMMARY"
+        echo "hit=true" >> "$GITHUB_OUTPUT"
+
+    - name: Setup Node.js
+      if: steps.cached-build.outputs.hit != 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: yarn
+        cache-dependency-path: ${{ steps.paths.outputs.wallet_root }}/yarn.lock
+
+    - name: Install dependencies
+      if: steps.cached-build.outputs.hit != 'true'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      run: yarn install --immutable
 
     # --- iOS leg ---
     - name: Select Xcode 26.2
@@ -336,6 +406,8 @@ runs:
       run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
 
     # --- Android leg ---
+    # On a build cache hit only Java/licenses (the emulator runner's SDK tools
+    # need them), disk cleanup and KVM run; the build steps are skipped.
     - name: Install Java 17
       if: inputs.platform == 'android'
       uses: actions/setup-java@v4
@@ -362,7 +434,7 @@ runs:
     # broke CI when the version was hardcoded separately here. Retry the install
     # so a corrupted archive self-heals instead of failing the run.
     - name: Install Android NDK
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: |
@@ -398,7 +470,7 @@ runs:
         [ "$status" -eq 0 ] || { echo "Error: NDK install failed after 3 attempts"; exit 1; }
 
     - name: Expo Prebuild (Android)
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       # android/ is generated (Continuous Native Generation). Production prebuild;
@@ -408,7 +480,7 @@ runs:
       run: npx expo prebuild --platform android --no-install
 
     - name: Add Secrets file
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       env:
@@ -421,7 +493,7 @@ runs:
         printf '%s\n' "$ANDROID_SECRETS_FILE" > android/secrets.properties
 
     - name: Add Keystore file
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       env:
@@ -435,7 +507,7 @@ runs:
         printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode >> "android/app/${ANDROID_KEYSTORE_NAME}.keystore"
 
     - name: Optimize Gradle for CI
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: |
@@ -449,22 +521,35 @@ runs:
     # setup-gradle caches Gradle User Home (dependencies, wrapper, transforms,
     # build cache). It only writes from the default branch; other branches
     # restore main's latest entry read-only. Release builds (release-android-base)
-    # restore this job's main entry too, so the scheduled runs keep it warm.
+    # restore this job's main entry too. Build cache hits skip this step; the
+    # twice-weekly forced rebuild (scripts/build-cache.sh) keeps it warm.
     # Project dirs (android/.gradle, app/.cxx, app/build/generated) are not
     # cached: they saved no measurable time (the app's CMake build recompiles
     # anyway) and aren't content-keyed, so they could go stale.
     - name: Setup Gradle
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
     - name: Build APK
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       id: build
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: |
         export SENTRY_DISABLE_AUTO_UPLOAD=true
         yarn run android:build:internal
+
+    # Same location as a cache hit, so the emulator step always installs from here.
+    - name: Stage build output (Android)
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
+      shell: bash
+      env:
+        APK: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
+        BUILD_DIR: ${{ runner.temp }}/e2e-build/android
+      run: |
+        set -euo pipefail
+        mkdir -p "$BUILD_DIR"
+        cp "$APK" "$BUILD_DIR/app-internal.apk"
 
     - name: Free disk space
       if: inputs.platform == 'android'
@@ -534,6 +619,30 @@ runs:
           sleep 1
         done
         curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
+
+    # Saved right after the build, before Maestro, so a flaky test run still
+    # stores it. Best-effort: a failed save never fails the job.
+    - name: Pack build cache
+      id: build-cache-pack
+      if: >-
+        steps.build-cache.outputs.enabled == 'true'
+        && steps.cached-build.outputs.hit != 'true'
+        && inputs.build-cache-save == 'true'
+      continue-on-error: true
+      shell: bash
+      env:
+        BUILD_CACHE_PASSPHRASE: ${{ inputs.build-cache-passphrase }}
+        BUILD_DIR: ${{ runner.temp }}/e2e-build/${{ inputs.platform }}
+        CACHE_FILE: ${{ runner.temp }}/e2e-build-cache/build.tar.gpg
+      run: bash "$GITHUB_ACTION_PATH/scripts/build-cache.sh" pack "$BUILD_DIR" "$CACHE_FILE"
+
+    - name: Save build cache
+      if: steps.build-cache-pack.outcome == 'success'
+      continue-on-error: true
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ runner.temp }}/e2e-build-cache/build.tar.gpg
+        key: ${{ steps.build-cache.outputs.key }}
 
     # --- Common: Maestro setup + run ---
     # Pinned to WalletConnect/actions#114 (b6b52ae): the flows deliver each payment
@@ -660,7 +769,7 @@ runs:
         DEEPLINK_PREFIX: rn-web3wallet-internal://wc?uri=
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
-        APK_PATH: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
+        APK_PATH: ${{ runner.temp }}/e2e-build/android/app-internal.apk
         WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
         WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}

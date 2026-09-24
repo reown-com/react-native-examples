@@ -194,6 +194,10 @@ jobs:
           android-secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
           android-keystore-base64: ${{ secrets.WC_INTERNAL_KEYSTORE }}
           android-keystore-name: ${{ vars.WC_INTERNAL_KEYSTORE_NAME }}
+          # Encrypted build cache: every run may restore (fork/Dependabot PRs get
+          # no secret, so it's off for them); only trusted main runs save.
+          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()

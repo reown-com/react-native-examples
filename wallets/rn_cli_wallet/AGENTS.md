@@ -261,6 +261,12 @@ When set, the wallet auto-loads this private key on startup (if no stored wallet
 ### CI Workflow
 `.github/workflows/ci_e2e_walletkit.yaml` runs Maestro tests on both iOS (simulator) and Android (emulator). Triggers on PRs/pushes to main when `wallets/rn_cli_wallet/` or `.maestro/` files change.
 
+### E2E build cache (Android)
+The Android E2E job reuses the last build instead of rebuilding (`.github/actions/walletkit-build-and-maestro/scripts/build-cache.sh`). Saved only by main push/schedule/dispatch runs; every other run restores read-only.
+- **Key**: git tree hash of `wallets/rn_cli_wallet` + the action/helper files + runner OS/arch + hashes of the written `.env`, Android secrets/keystore and the passphrase, rotated twice a week (forced rebuild). Changes under `.maestro/` don't invalidate it, and a dirty wallet tree disables the cache.
+- **Encrypted**: the build inlines `EXPO_PUBLIC_TEST_PRIVATE_KEY`, and fork PRs can restore main's caches, so the blob is gpg-encrypted (AES-256) with the `E2E_BUILD_CACHE_PASSPHRASE` secret. Without the secret (fork/Dependabot PRs, cross-repo callers) the cache is off. Never cache or upload an unencrypted build.
+- **Fails closed**: an exact hit that fails to decrypt/extract fails the job, since cache entries are immutable. Fix with `gh cache delete <key>` or bump `BUILD_CACHE_EPOCH` in the helper. Rotating the passphrase is safe: its fingerprint is in the key, so the next run just misses.
+
 ### Permit2 allowance reset (USDT)
 After the suite runs, the composite action (`.github/actions/walletkit-build-and-maestro`) calls the shared `WalletConnect/actions/maestro/permit2-reset` action to reset the USDT-on-Polygon Permit2 allowance back to 0, so `pay_usdt_polygon` always re-exercises the `approve` step. It signs a transaction (so it's a Node step, not a Maestro `runScript`); the private key is passed via env, never the CLI. `.github/workflows/e2e-balance-check.yml` also monitors USDT + POL (gas) on Polygon and pings the faucet bot on Slack when low.
 
