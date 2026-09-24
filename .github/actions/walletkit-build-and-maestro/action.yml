@@ -596,8 +596,8 @@ runs:
     #
     # Deliberately no Metro transform cache (node_modules/.cache): its entries
     # hold the inlined EXPO_PUBLIC_TEST_PRIVATE_KEY in plain text, and fork PRs
-    # can restore main's caches. A cold export costs ~30-40s on CI; not worth
-    # encrypting. Don't re-add it unencrypted.
+    # can restore main's caches. Cost: a cold export is ~75s slower on CI.
+    # Don't re-add it unencrypted (scripts/build-cache.sh could wrap it).
     - name: Install xvfb (web)
       if: inputs.platform == 'web'
       shell: bash
