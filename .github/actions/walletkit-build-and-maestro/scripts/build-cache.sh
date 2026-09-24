@@ -19,6 +19,8 @@ set -euo pipefail
 
 # Bump to invalidate every entry (e.g. after a corrupt save).
 BUILD_CACHE_EPOCH=v1
+# action.yml line splitting the build part (hashed into the key) from the test part.
+BUILD_KEY_MARKER='# --- Common: Maestro setup + run ---'
 
 die() {
   echo "::error::$*" >&2
@@ -72,8 +74,16 @@ cmd_key() {
 
   local wallet_tree action_digest env_digest week
   wallet_tree="$(git -C "$SOURCE_DIR" rev-parse HEAD:wallets/rn_cli_wallet)"
-  # This action's build steps and this helper (cached-payload schema).
-  action_digest="$(cat "$GITHUB_ACTION_PATH/action.yml" "$GITHUB_ACTION_PATH"/scripts/* | sha256)"
+  # This action's build part (everything above BUILD_KEY_MARKER: inputs, .env,
+  # cache steps, platform builds) and this helper (cached-payload schema). The
+  # Maestro/upload steps below the marker don't affect the build, so editing
+  # them doesn't invalidate it.
+  grep -qF "$BUILD_KEY_MARKER" "$GITHUB_ACTION_PATH/action.yml" ||
+    die "build cache: '$BUILD_KEY_MARKER' not found in action.yml"
+  action_digest="$({
+    sed "/$BUILD_KEY_MARKER/q" "$GITHUB_ACTION_PATH/action.yml"
+    cat "$GITHUB_ACTION_PATH"/scripts/*
+  } | sha256)"
   # EXPO_PUBLIC_* values are inlined into the bundle at build time.
   env_digest="$(sha256 < "$WALLET_ROOT/.env")"
   # Forced rebuild twice a week (Mon-Wed / Thu-Sun): catches runner/toolchain

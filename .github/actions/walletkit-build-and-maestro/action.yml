@@ -648,6 +648,9 @@ runs:
         path: ${{ runner.temp }}/e2e-build-cache/build.tar.gpg
         key: ${{ steps.build-cache.outputs.key }}
 
+    # Everything ABOVE the next line is hashed into the build cache key
+    # (scripts/build-cache.sh BUILD_KEY_MARKER): keep build-affecting steps
+    # above it, and don't edit the marker line without updating the helper.
     # --- Common: Maestro setup + run ---
     # Pinned to WalletConnect/actions#114 (b6b52ae): the flows deliver each payment
     # link via `openLink` to <DEEPLINK_PREFIX><encoded link> instead of typing it
