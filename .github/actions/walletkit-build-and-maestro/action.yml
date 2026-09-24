@@ -812,6 +812,10 @@ runs:
         run_polygon()  { run_maestro polygon  --include-tags pay-chain-polygon ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"}; }
 
         if [ "${WEB_PARALLEL:-1}" = "1" ]; then
+          # Unpack Maestro's bundled deps (~/.maestro/deps) once up front: on a
+          # fresh runner the three concurrent processes race to create them and
+          # one dies at startup ("Unable to create file .../simulator-server").
+          "$HOME/.maestro/bin/maestro" --version >/dev/null 2>&1 || true
           run_readonly & ro_pid=$!
           run_base     & base_pid=$!
           run_polygon  & poly_pid=$!
