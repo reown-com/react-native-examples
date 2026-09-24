@@ -593,28 +593,15 @@ runs:
     # runner. The IC/KYC form is in-app on web, so plain http is sufficient (no
     # HTTPS callback leg). EXPO_PUBLIC_* (project id, TEST_MODE) are inlined at
     # export time from the .env written above — same as the native builds.
+    #
+    # Deliberately no Metro transform cache (node_modules/.cache): its entries
+    # hold the inlined EXPO_PUBLIC_TEST_PRIVATE_KEY in plain text, and fork PRs
+    # can restore main's caches. A cold export costs ~30-40s on CI; not worth
+    # encrypting. Don't re-add it unencrypted.
     - name: Install xvfb (web)
       if: inputs.platform == 'web'
       shell: bash
       run: sudo apt-get update && sudo apt-get install -y xvfb
-
-    - name: Cache Metro web build cache
-      if: inputs.platform == 'web'
-      uses: actions/cache@v4
-      with:
-        # find-cache-dir default (babel-loader / metro transform cache). Warming
-        # this across runs cuts most of the `expo export` transform time.
-        #
-        # The key hashes the written .env too: Expo inlines EXPO_PUBLIC_* into
-        # the bundle at Babel transform time, and Metro's transform cache is NOT
-        # keyed on env values — so reusing a cache built with different
-        # EXPO_PUBLIC_* (e.g. a caller injecting per-run ephemeral creds) bakes
-        # stale key/creds into the bundle. No restore-keys: any prefix fallback
-        # would span different .env values and re-introduce that poisoning.
-        # Stable-creds callers still get a full hit (identical .env => identical
-        # key); per-run-creds callers cold-build each run, which is correct.
-        path: ${{ steps.paths.outputs.wallet_root }}/node_modules/.cache
-        key: ${{ runner.os }}-web-metro-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root), format('{0}/.env', steps.paths.outputs.wallet_root)) }}
 
     - name: Export web build
       if: inputs.platform == 'web'
