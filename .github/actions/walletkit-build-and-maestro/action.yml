@@ -564,10 +564,13 @@ runs:
       run: |
         xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
         mkdir -p maestro-artifacts
+        # App-process-only syslog at the default level (no debug/info) — includes
+        # JS console output. Only uploaded on failure (see below). The process name
+        # is read from the built app so it tracks Expo's generated target name.
+        APP_PROCESS=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP_PATH/Info.plist" 2>/dev/null || echo ReactNWallet)
         xcrun simctl spawn "$DEVICE_ID" log stream \
-          --level=debug \
           --style=compact \
-          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\" OR process CONTAINS \"maestro\" OR process == \"xctest\" OR process == \"testmanagerd\" OR process == \"tccd\" OR process == \"SpringBoard\"" \
+          --predicate "process == \"$APP_PROCESS\"" \
           > maestro-artifacts/ios-syslog.log 2>&1 &
         SYSLOG_PID=$!
         set +e
@@ -632,7 +635,6 @@ runs:
           maestro-artifacts/**/*.mov
           maestro-artifacts/**/*.webm
           maestro-artifacts/**/*.gif
-          maestro-artifacts/ios-syslog.log
           maestro-artifacts/ios-crash-reports/**
           maestro-artifacts/maestro-debug/**/*.png
           maestro-artifacts/maestro-debug/**/*.jpg
@@ -643,6 +645,17 @@ runs:
         # (e.g. a retry wrapper) without the second upload 409'ing
         # against the first. Last-wins; combine with an out-of-action
         # download+rename step if both attempts' artifacts are needed.
+        overwrite: true
+
+    - name: Upload iOS syslog (on failure)
+      if: ${{ failure() && inputs.platform == 'ios' }}
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-ios-syslog
+        path: maestro-artifacts/ios-syslog.log
+        if-no-files-found: ignore
+        retention-days: 14
         overwrite: true
 
     - name: Run Maestro tests (Android)
