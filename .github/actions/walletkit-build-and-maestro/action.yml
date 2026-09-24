@@ -687,7 +687,9 @@ runs:
 
     # Besides media, keeps launch diagnostics: the logcat events buffer
     # (am_proc_start / am_proc_died / wm_on_resume_called) and Maestro's own
-    # maestro.log + commands-*.json (per-command timings).
+    # maestro.log. Never upload Maestro's commands*.json: it records every
+    # command with its resolved --env values (merchant API keys) in plain text,
+    # and artifacts on this public repo are downloadable by anyone.
     - name: Upload Maestro artifacts (Android)
       if: ${{ !cancelled() && inputs.platform == 'android' }}
       continue-on-error: true
@@ -706,7 +708,6 @@ runs:
           maestro-artifacts/android-logcat-crash.log
           maestro-artifacts/android-logcat-events.log
           maestro-artifacts/**/*.log
-          maestro-artifacts/**/*.json
           maestro-artifacts/maestro-debug/**/*.png
           maestro-artifacts/maestro-debug/**/*.jpg
           maestro-output.log
