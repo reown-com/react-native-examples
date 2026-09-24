@@ -8,7 +8,7 @@
 #
 #   build-cache.sh key                       -> writes enabled/key to $GITHUB_OUTPUT
 #   build-cache.sh pack   <src-dir> <file>   -> tar + gpg-encrypt <src-dir> into <file>
-#   build-cache.sh unpack <file> <dest-dir> <expected-relpath>
+#   build-cache.sh unpack <file> <dest-dir> <expected-relpath-glob>
 #                                            -> decrypt + extract into <dest-dir>, atomically
 #
 # `unpack` runs only on an exact cache hit and fails closed: the key embeds a
@@ -52,13 +52,16 @@ cmd_key() {
   local reason=""
   if [ -z "${BUILD_CACHE_PASSPHRASE:-}" ]; then
     reason="no build-cache-passphrase"
-  elif [ "$PLATFORM" != "android" ]; then
+  elif [ "$PLATFORM" != "android" ] && [ "$PLATFORM" != "ios" ]; then
     reason="not supported for platform '$PLATFORM' yet"
+  elif [ "$PLATFORM" = "ios" ] && [ "${IOS_SIGNING:-false}" = "true" ]; then
+    # Signed builds depend on match/ASC state the key can't see.
+    reason="signed iOS builds are never cached"
   elif ! git -C "$SOURCE_DIR" rev-parse --verify -q HEAD >/dev/null; then
     reason="'$SOURCE_DIR' is not a git checkout"
-  elif [ -n "$(git -C "$SOURCE_DIR" status --porcelain -- wallets/rn_cli_wallet)" ]; then
-    # The key trusts the committed tree; local edits would be invisible to it.
-    reason="wallets/rn_cli_wallet has uncommitted changes"
+  elif [ -n "$(git -C "$SOURCE_DIR" status --porcelain -- wallets/rn_cli_wallet fastlane Gemfile Gemfile.lock)" ]; then
+    # The key trusts the committed trees; local edits would be invisible to it.
+    reason="build inputs have uncommitted changes"
   fi
   if [ -n "$reason" ]; then
     echo "Build cache disabled: $reason"
@@ -74,8 +77,8 @@ cmd_key() {
   # EXPO_PUBLIC_* values are inlined into the bundle at build time.
   env_digest="$(sha256 < "$WALLET_ROOT/.env")"
   # Forced rebuild twice a week (Mon-Wed / Thu-Sun): catches runner/toolchain
-  # drift, and keeps the Gradle caches the build restores (release builds
-  # share them) well inside GitHub's 7-days-unused eviction.
+  # drift, and keeps the Gradle/Pods/RNRepo caches the build restores
+  # (release builds share them) well inside GitHub's 7-days-unused eviction.
   week="$(date -u +%G-W%V)-$([ "$(date -u +%u)" -le 3 ] && echo a || echo b)"
 
   # Public components are echoed for debugging; secret-derived ones are not.
@@ -84,8 +87,17 @@ cmd_key() {
     "platform=$PLATFORM" \
     "runner=${RUNNER_OS:-}-${RUNNER_ARCH:-}" \
     "wallet_tree=$wallet_tree" \
-    "action=$action_digest" \
-    "android_keystore_name=${ANDROID_KEYSTORE_NAME:-}")"
+    "action=$action_digest")"
+  if [ "$PLATFORM" = "android" ]; then
+    public_inputs+=$'\n'"android_keystore_name=${ANDROID_KEYSTORE_NAME:-}"
+  else
+    # The root Fastfile/Gemfile drive the simulator build; the selected Xcode
+    # (and its SDK) compiles it.
+    public_inputs+=$'\n'"fastlane=$(git -C "$SOURCE_DIR" rev-parse HEAD:fastlane)"
+    public_inputs+=$'\n'"gemfile=$(git -C "$SOURCE_DIR" rev-parse HEAD:Gemfile)"
+    public_inputs+=$'\n'"gemfile_lock=$(git -C "$SOURCE_DIR" rev-parse HEAD:Gemfile.lock)"
+    public_inputs+=$'\n'"xcode=$(xcodebuild -version | tr '\n' ' ')"
+  fi
   echo "Build cache inputs:"
   echo "$public_inputs" | sed 's/^/  /'
 
@@ -96,8 +108,10 @@ cmd_key() {
     # Rotating the passphrase changes the key (clean miss) instead of hitting an
     # immutable entry that can no longer be decrypted.
     echo "passphrase=$(printf '%s' "$BUILD_CACHE_PASSPHRASE" | sha256)"
-    echo "android_secrets=$(printf '%s' "${ANDROID_SECRETS_FILE:-}" | sha256)"
-    echo "android_keystore=$(printf '%s' "${ANDROID_KEYSTORE_BASE64:-}" | sha256)"
+    if [ "$PLATFORM" = "android" ]; then
+      echo "android_secrets=$(printf '%s' "${ANDROID_SECRETS_FILE:-}" | sha256)"
+      echo "android_keystore=$(printf '%s' "${ANDROID_KEYSTORE_BASE64:-}" | sha256)"
+    fi
   } | sha256)"
 
   local key="e2e-build-${BUILD_CACHE_EPOCH}-${PLATFORM}-${week}-${digest}"
@@ -113,7 +127,9 @@ cmd_pack() {
   rm -f "$out" "$out.partial"
   # Write aside and rename, so a failed pack never leaves a truncated blob
   # where the save step would pick it up.
-  tar -C "$src" -cf - . | run_gpg --symmetric --cipher-algo AES256 --output "$out.partial"
+  # COPYFILE_DISABLE: macOS tar would otherwise add AppleDouble ._* files
+  # (xattrs) inside the .app bundle.
+  COPYFILE_DISABLE=1 tar -C "$src" -cf - . | run_gpg --symmetric --cipher-algo AES256 --output "$out.partial"
   mv "$out.partial" "$out"
   echo "Packed $src -> $out ($(du -h "$out" | cut -f1))"
 }
@@ -134,7 +150,11 @@ cmd_unpack() {
   tar -tf "$tmp/build.tar" >/dev/null || die "Build cache entry is not a valid tar. $hint"
   mkdir "$tmp/stage"
   tar -xf "$tmp/build.tar" -C "$tmp/stage" || die "Build cache entry failed to extract. $hint"
-  [ -e "$tmp/stage/$expected" ] || die "Build cache entry has no '$expected'. $hint"
+  # <expected-relpath> may be a glob (e.g. '*.app/Info.plist').
+  local matches
+  # shellcheck disable=SC2206
+  matches=("$tmp"/stage/$expected)
+  [ -e "${matches[0]}" ] || die "Build cache entry has no '$expected'. $hint"
 
   rm -rf "$dest"
   mkdir -p "$(dirname "$dest")"
@@ -145,6 +165,6 @@ cmd_unpack() {
 case "${1:-}" in
   key) cmd_key ;;
   pack) shift; [ $# -eq 2 ] || die "usage: $0 pack <src-dir> <file>"; cmd_pack "$@" ;;
-  unpack) shift; [ $# -eq 3 ] || die "usage: $0 unpack <file> <dest-dir> <expected-relpath>"; cmd_unpack "$@" ;;
-  *) die "usage: $0 key | pack <src-dir> <file> | unpack <file> <dest-dir> <expected-relpath>" ;;
+  unpack) shift; [ $# -eq 3 ] || die "usage: $0 unpack <file> <dest-dir> <expected-relpath-glob>"; cmd_unpack "$@" ;;
+  *) die "usage: $0 key | pack <src-dir> <file> | unpack <file> <dest-dir> <expected-relpath-glob>" ;;
 esac

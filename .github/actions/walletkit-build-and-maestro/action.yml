@@ -135,7 +135,7 @@ inputs:
       Random passphrase (E2E_BUILD_CACHE_PASSPHRASE) that encrypts the cached
       wallet build. When empty (the default: fork/Dependabot PRs, cross-repo
       callers) the build cache is disabled and every run builds from source.
-      Android only for now. See scripts/build-cache.sh.
+      Android and unsigned iOS simulator builds. See scripts/build-cache.sh.
     required: false
     default: ''
   build-cache-save:
@@ -203,6 +203,20 @@ runs:
         } >> .env
         echo "Wrote $(pwd)/.env"
 
+    # Before the build cache key: it includes `xcodebuild -version`.
+    - name: Select Xcode 26.2
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: |
+        XCODE_PATH=/Applications/Xcode_26.2.app/Contents/Developer
+        if [ ! -d "$XCODE_PATH" ]; then
+          echo "Available Xcode versions:"
+          ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
+          exit 1
+        fi
+        sudo xcode-select -s "$XCODE_PATH"
+        xcodebuild -version
+
     # --- Encrypted build cache (scripts/build-cache.sh) ---
     # Reuses the last build of this exact wallet tree + build config instead of
     # rebuilding. The build inlines the test private key, so the cached blob is
@@ -221,6 +235,7 @@ runs:
         ANDROID_SECRETS_FILE: ${{ inputs.android-secrets-file }}
         ANDROID_KEYSTORE_BASE64: ${{ inputs.android-keystore-base64 }}
         ANDROID_KEYSTORE_NAME: ${{ inputs.android-keystore-name }}
+        IOS_SIGNING: ${{ inputs.match-git-url != '' || inputs.match-ssh-key != '' || inputs.apple-key-id != '' }}
       run: bash "$GITHUB_ACTION_PATH/scripts/build-cache.sh" key
 
     - name: Restore build cache
@@ -243,7 +258,7 @@ runs:
         CACHE_KEY: ${{ steps.build-cache.outputs.key }}
         CACHE_FILE: ${{ runner.temp }}/e2e-build-cache/build.tar.gpg
         BUILD_DIR: ${{ runner.temp }}/e2e-build/${{ inputs.platform }}
-        EXPECTED: ${{ inputs.platform == 'android' && 'app-internal.apk' || '' }}
+        EXPECTED: ${{ inputs.platform == 'android' && 'app-internal.apk' || '*.app/Info.plist' }}
       run: |
         set -euo pipefail
         if [ "$CACHE_HIT" != "true" ]; then
@@ -270,30 +285,19 @@ runs:
       run: yarn install --immutable
 
     # --- iOS leg ---
-    - name: Select Xcode 26.2
-      if: inputs.platform == 'ios'
-      shell: bash
-      run: |
-        XCODE_PATH=/Applications/Xcode_26.2.app/Contents/Developer
-        if [ ! -d "$XCODE_PATH" ]; then
-          echo "Available Xcode versions:"
-          ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
-          exit 1
-        fi
-        sudo xcode-select -s "$XCODE_PATH"
-        xcodebuild -version
-
+    # On a build cache hit only the simulator boot + install run; the build
+    # steps are skipped.
     # Only when a match SSH key is actually provided. The Maestro simulator build
     # is unsigned by default (no match), and webfactory/ssh-agent errors on an
     # empty ssh-private-key — so skip the step unless a signing caller passes one.
     - name: Setup SSH for Match
-      if: inputs.platform == 'ios' && inputs.match-ssh-key != ''
+      if: inputs.platform == 'ios' && inputs.match-ssh-key != '' && steps.cached-build.outputs.hit != 'true'
       uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ inputs.match-ssh-key }}
 
     - name: Install Ruby
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.3.0
@@ -301,13 +305,13 @@ runs:
         working-directory: ${{ inputs.wallet-source-dir }}
 
     - name: Expo Prebuild (iOS)
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: APP_VARIANT=internal npx expo prebuild --platform ios --no-install
 
     - name: Set Xcode paths
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       env:
         WALLET_ROOT: ${{ steps.paths.outputs.wallet_root }}
@@ -321,7 +325,7 @@ runs:
         echo "XCWORKSPACE_PATH=$WALLET_ROOT/ios/ReactNWallet.xcworkspace" >> "$GITHUB_ENV"
 
     - name: Cache RNRepo frameworks
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       uses: actions/cache@v4
       with:
         path: ~/.rnrepo-cache
@@ -332,7 +336,7 @@ runs:
           ${{ runner.os }}-rnrepo-ios-wallets/rn_cli_wallet-
 
     - name: Cache Pods
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       id: pods-cache
       uses: actions/cache@v4
       with:
@@ -343,7 +347,7 @@ runs:
         key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root), format('{0}/app.json', steps.paths.outputs.wallet_root), format('{0}/app.config.js', steps.paths.outputs.wallet_root), format('{0}/plugins/**', steps.paths.outputs.wallet_root)) }}
 
     - name: Build for Simulator
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       uses: maierj/fastlane-action@v3.0.0
       with:
         lane: build_for_simulator
@@ -365,14 +369,26 @@ runs:
         MATCH_GIT_URL: ${{ inputs.match-git-url }}
         MATCH_PASSWORD: ${{ inputs.match-password }}
 
-    - name: Find .app path
+    # Copies a fresh build into the same location as a cache hit, so the
+    # simulator always installs from here. ditto keeps the bundle intact.
+    - name: Stage build output (iOS)
       if: inputs.platform == 'ios'
       shell: bash
       env:
         SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+        CACHE_HIT: ${{ steps.cached-build.outputs.hit }}
+        BUILD_DIR: ${{ runner.temp }}/e2e-build/ios
       run: |
-        APP_PATH=$(cat "$SOURCE_DIR/build/app_path.txt")
+        set -euo pipefail
+        if [ "$CACHE_HIT" != "true" ]; then
+          BUILT_APP=$(cat "$SOURCE_DIR/build/app_path.txt")
+          rm -rf "$BUILD_DIR"
+          mkdir -p "$BUILD_DIR"
+          ditto "$BUILT_APP" "$BUILD_DIR/$(basename "$BUILT_APP")"
+        fi
+        APP_PATH=$(ls -d "$BUILD_DIR"/*.app | head -1)
         echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
+        echo "App: $APP_PATH"
 
     - name: Boot iOS Simulator
       if: inputs.platform == 'ios'
@@ -406,8 +422,9 @@ runs:
       run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
 
     # --- Android leg ---
-    # On a build cache hit only Java/licenses (the emulator runner's SDK tools
-    # need them), disk cleanup and KVM run; the build steps are skipped.
+    # On a build cache hit only Java (the emulator runner's SDK tools need it;
+    # the runner accepts licenses itself) and KVM run; the build steps and the
+    # disk cleanup (only the build needs the space) are skipped.
     - name: Install Java 17
       if: inputs.platform == 'android'
       uses: actions/setup-java@v4
@@ -417,7 +434,7 @@ runs:
         architecture: x86_64
 
     - name: Accept Android Licenses
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       uses: SimonMarquis/android-accept-licenses@8d8deab5b7ab2aaea9ed69f0b802e53173f21fd1 # v1
 
     # RN/AGP auto-installs the build-requested NDK at build time, and that
@@ -552,7 +569,7 @@ runs:
         cp "$APK" "$BUILD_DIR/app-internal.apk"
 
     - name: Free disk space
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       run: |
         sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/ndk /opt/ghc /usr/local/share/boost
