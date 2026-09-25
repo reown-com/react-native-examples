@@ -21,8 +21,21 @@ env:
 
 jobs:
   check-balance:
-    name: Check E2E Wallet Balances
+    name: Check E2E Wallet Balances (${{ matrix.platform }})
     runs-on: ubuntu-latest
+    # One funded account per E2E leg (see .github/actions/derive-e2e-wallet).
+    # Keep every balance under $9.99: pay_insufficient_funds expects a $9.99
+    # payment to be unaffordable on every chain.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: Android
+            address: ${{ vars.TEST_WALLET_ADDRESS_ANDROID }}
+          - platform: iOS
+            address: ${{ vars.TEST_WALLET_ADDRESS_IOS }}
+          - platform: Web
+            address: ${{ vars.TEST_WALLET_ADDRESS_WEB }}
     env:
       SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
     steps:
@@ -31,12 +44,21 @@ jobs:
         with:
           cache: false
 
+      - name: Check wallet address is configured
+        env:
+          ADDRESS: ${{ matrix.address }}
+        run: |
+          if [ -z "$ADDRESS" ]; then
+            echo "::error::No wallet address for ${{ matrix.platform }}: set the TEST_WALLET_ADDRESS_<PLATFORM> repo variable (see .github/actions/derive-e2e-wallet)."
+            exit 1
+          fi
+
       - name: Check USDC balance on Base
         id: usdc_balance
         run: |
           BALANCE=$(cast call --rpc-url "$BASE_RPC" "$BASE_USDC" \
             "balanceOf(address)(uint256)" \
-            "${{ vars.TEST_WALLET_ADDRESS }}" | sed 's/\[.*\]//' | tr -d '[:space:]')
+            "${{ matrix.address }}" | sed 's/\[.*\]//' | tr -d '[:space:]')
           echo "balance=$BALANCE" >> $GITHUB_OUTPUT
           BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
           echo "USDC on Base: $BALANCE_HUMAN ($BALANCE raw)"
@@ -50,7 +72,7 @@ jobs:
             BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
             THRESHOLD_HUMAN=$(echo "scale=2; $THRESHOLD / 1000000" | bc)
             ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} USDC on Base in wallet: \
-              ${{ vars.TEST_WALLET_ADDRESS }}"
+              ${{ matrix.address }}"
             echo "should_alert=true" >> "$GITHUB_OUTPUT"
             echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
             echo "::warning::$ALERT_TEXT"
@@ -81,7 +103,7 @@ jobs:
         run: |
           BALANCE=$(cast call --rpc-url "$OP_RPC" "$OP_USDC" \
             "balanceOf(address)(uint256)" \
-            "${{ vars.TEST_WALLET_ADDRESS }}" | sed 's/\[.*\]//' | tr -d '[:space:]')
+            "${{ matrix.address }}" | sed 's/\[.*\]//' | tr -d '[:space:]')
           echo "balance=$BALANCE" >> $GITHUB_OUTPUT
           BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
           echo "USDC on Optimism: $BALANCE_HUMAN ($BALANCE raw)"
@@ -95,7 +117,7 @@ jobs:
             BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
             THRESHOLD_HUMAN=$(echo "scale=2; $THRESHOLD / 1000000" | bc)
             ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} USDC on Optimism in wallet: \
-              ${{ vars.TEST_WALLET_ADDRESS }}"
+              ${{ matrix.address }}"
             echo "should_alert=true" >> "$GITHUB_OUTPUT"
             echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
             echo "::warning::$ALERT_TEXT"
@@ -127,7 +149,7 @@ jobs:
         run: |
           BALANCE=$(cast call --rpc-url "$POLYGON_RPC" "$POLYGON_USDT" \
             "balanceOf(address)(uint256)" \
-            "${{ vars.TEST_WALLET_ADDRESS }}" | sed 's/\[.*\]//' | tr -d '[:space:]')
+            "${{ matrix.address }}" | sed 's/\[.*\]//' | tr -d '[:space:]')
           echo "balance=$BALANCE" >> $GITHUB_OUTPUT
           BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
           echo "USDT0 on Polygon: $BALANCE_HUMAN ($BALANCE raw)"
@@ -141,7 +163,7 @@ jobs:
             BALANCE_HUMAN=$(echo "scale=2; $BALANCE / 1000000" | bc)
             THRESHOLD_HUMAN=$(echo "scale=2; $THRESHOLD / 1000000" | bc)
             ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} USDT0 on Polygon in wallet: \
-              ${{ vars.TEST_WALLET_ADDRESS }}"
+              ${{ matrix.address }}"
             echo "should_alert=true" >> "$GITHUB_OUTPUT"
             echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
             echo "::warning::$ALERT_TEXT"
@@ -172,7 +194,7 @@ jobs:
       - name: Check POL gas balance on Polygon
         id: poly_pol_balance
         run: |
-          BALANCE=$(cast balance --rpc-url "$POLYGON_RPC" "${{ vars.TEST_WALLET_ADDRESS }}" | tr -d '[:space:]')
+          BALANCE=$(cast balance --rpc-url "$POLYGON_RPC" "${{ matrix.address }}" | tr -d '[:space:]')
           echo "balance=$BALANCE" >> $GITHUB_OUTPUT
           BALANCE_HUMAN=$(echo "scale=6; $BALANCE / 1000000000000000000" | bc)
           echo "POL on Polygon: $BALANCE_HUMAN ($BALANCE wei)"
@@ -187,7 +209,7 @@ jobs:
             BALANCE_HUMAN=$(echo "scale=6; $BALANCE / 1000000000000000000" | bc)
             THRESHOLD_HUMAN=$(echo "scale=6; $THRESHOLD / 1000000000000000000" | bc)
             ALERT_TEXT="[request] Can i have ${THRESHOLD_HUMAN} POL (gas) on Polygon in wallet: \
-              ${{ vars.TEST_WALLET_ADDRESS }} (currently ${BALANCE_HUMAN})"
+              ${{ matrix.address }} (currently ${BALANCE_HUMAN})"
             echo "should_alert=true" >> "$GITHUB_OUTPUT"
             echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
             echo "::warning::$ALERT_TEXT"

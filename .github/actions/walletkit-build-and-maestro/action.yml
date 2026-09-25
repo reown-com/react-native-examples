@@ -670,6 +670,10 @@ runs:
 
     - name: Install Maestro
       uses: WalletConnect/actions/maestro/setup@444774bdc9c5b9669068d4c4f501bb298f52f5db
+      with:
+        # Pinned so run timings and multi-device behavior are comparable across
+        # runs; bump deliberately (the installer's default is latest).
+        version: '2.10.0'
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'

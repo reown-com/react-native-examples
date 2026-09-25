@@ -261,6 +261,14 @@ When set, the wallet auto-loads this private key on startup (if no stored wallet
 ### CI Workflow
 `.github/workflows/ci_e2e_walletkit.yaml` runs Maestro tests on both iOS (simulator) and Android (emulator). Triggers on PRs/pushes to main when `wallets/rn_cli_wallet/` or `.maestro/` files change.
 
+### E2E test wallets (one per platform)
+Each E2E leg pays from its own funded account, derived from the `TEST_WALLET_MNEMONIC` secret by `.github/actions/derive-e2e-wallet` (`m/44'/60'/0'/0/<index>`: 0 = Android, 1 = iOS, 2 = web). The derived key is masked and passed to the composite's `wallet-private-key` input, so cross-repo callers that pass their own key are unaffected.
+- **Why**: the legs run concurrently, and a shared account raced on the Polygon nonce and the USDT Permit2 allowance (one leg's post-suite reset revoked another leg's approval mid-flow). Base and Optimism payments are gasless EIP-3009 authorizations (random nonces), so they don't conflict.
+- **Queueing**: each leg's job is in a `e2e-wallet-<platform>` concurrency group, so runs on other refs wait instead of sharing the account. GitHub keeps one pending run per group; a newer one replaces it.
+- **Setup / rotation**: `./scripts/set-e2e-wallets.sh --generate <file>` (or `<file>` for an existing phrase) validates the mnemonic, then sets the secret and the three address variables together. Fund the printed addresses before the next run.
+- **Addresses**: repo variables `TEST_WALLET_ADDRESS_{ANDROID,IOS,WEB}`. The derive step fails on a mismatch, and `.github/workflows/e2e-balance-check.yml` checks each address (Base USDC, Optimism USDC, Polygon USDT, POL gas) with per-platform thresholds.
+- **Keep every token balance under $9.99**: `pay_insufficient_funds` creates a $9.99 payment and expects it to be unaffordable.
+
 ### E2E build cache (Android + iOS)
 The Android and iOS E2E jobs reuse the last build (APK / simulator `.app`) instead of rebuilding (`.github/actions/walletkit-build-and-maestro/scripts/build-cache.sh`). Saved only by main push/schedule/dispatch runs; every other run restores read-only.
 - **Key**: git tree hash of `wallets/rn_cli_wallet` + the build part of `action.yml` (everything above the `# --- Common: Maestro setup + run ---` marker; Maestro/upload edits below it don't invalidate) + the helper + runner OS/arch + hashes of the written `.env` and the passphrase, plus Android secrets/keystore or iOS root `fastlane/`, `Gemfile(.lock)` and `xcodebuild -version`; rotated twice a week (forced rebuild). Changes under `.maestro/` don't invalidate it; uncommitted build inputs and signed iOS builds disable the cache.

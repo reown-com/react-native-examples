@@ -1,0 +1,69 @@
+name: Derive E2E test wallet
+description: >-
+  Derives one platform's funded E2E test wallet (m/44'/60'/0'/0/<index>) from the
+  shared TEST_WALLET_MNEMONIC. Each E2E leg gets its own account, so concurrent
+  legs never share a Polygon nonce or a USDT Permit2 allowance.
+inputs:
+  mnemonic:
+    description: 'BIP-39 mnemonic (secrets.TEST_WALLET_MNEMONIC).'
+    required: true
+  index:
+    description: 'Account index: 0 = Android, 1 = iOS, 2 = web.'
+    required: true
+  expected-address:
+    description: >-
+      The funded address for this index (vars.TEST_WALLET_ADDRESS_<PLATFORM>).
+      When set, a mismatch fails the job instead of running against an unfunded
+      account.
+    required: false
+    default: ''
+outputs:
+  private-key:
+    description: 'Derived private key (masked in logs).'
+    value: ${{ steps.derive.outputs.private-key }}
+  address:
+    description: 'Derived address.'
+    value: ${{ steps.derive.outputs.address }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install Foundry
+      uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      with:
+        cache: false
+
+    - name: Derive wallet
+      id: derive
+      shell: bash
+      env:
+        MNEMONIC: ${{ inputs.mnemonic }}
+        INDEX: ${{ inputs.index }}
+        EXPECTED_ADDRESS: ${{ inputs.expected-address }}
+      run: |
+        set -euo pipefail
+        if [ -z "$MNEMONIC" ]; then
+          echo "::error::TEST_WALLET_MNEMONIC is not set (fork PRs don't get secrets)."
+          exit 1
+        fi
+        if ! [[ "$INDEX" =~ ^[0-9]+$ ]]; then
+          echo "::error::index must be a non-negative integer, got '$INDEX'."
+          exit 1
+        fi
+        # cast reads the mnemonic from a file, so neither the mnemonic nor the
+        # derived key ever appears on a command line.
+        MNEMONIC_FILE="$(mktemp "$RUNNER_TEMP/mnemonic.XXXXXX")"
+        trap 'rm -f "$MNEMONIC_FILE"' EXIT
+        printf '%s' "$MNEMONIC" > "$MNEMONIC_FILE"
+        DERIVATION_PATH="m/44'/60'/0'/0/$INDEX"
+        PRIVATE_KEY="$(cast wallet private-key --mnemonic "$MNEMONIC_FILE" --mnemonic-derivation-path "$DERIVATION_PATH")"
+        echo "::add-mask::$PRIVATE_KEY"
+        ADDRESS="$(cast wallet address --mnemonic "$MNEMONIC_FILE" --mnemonic-derivation-path "$DERIVATION_PATH")"
+        lower() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }
+        if [ -n "$EXPECTED_ADDRESS" ] && [ "$(lower "$ADDRESS")" != "$(lower "$EXPECTED_ADDRESS")" ]; then
+          echo "::error::Derived $ADDRESS at $DERIVATION_PATH, expected $EXPECTED_ADDRESS. Check the mnemonic secret and the TEST_WALLET_ADDRESS_* variable."
+          exit 1
+        fi
+        echo "private-key=$PRIVATE_KEY" >> "$GITHUB_OUTPUT"
+        echo "address=$ADDRESS" >> "$GITHUB_OUTPUT"
+        echo "E2E wallet ($DERIVATION_PATH): $ADDRESS"
