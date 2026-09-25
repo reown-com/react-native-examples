@@ -536,14 +536,15 @@ runs:
         curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
 
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions#114 (b6b52ae): the flows deliver each payment
-    # link via `openLink` to <DEEPLINK_PREFIX><encoded link> instead of typing it
-    # into the test-mode paste input. Each Maestro step below passes DEEPLINK_PREFIX.
+    # Pinned to WalletConnect/actions master (444774b = merge of #114): the flows
+    # deliver each payment link via `openLink` to <DEEPLINK_PREFIX><encoded link>
+    # instead of typing it into a paste input. Each Maestro step below passes
+    # DEEPLINK_PREFIX.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@b6b52aefbe65b73dc5fb7f8937436918b23a5ab5
+      uses: WalletConnect/actions/maestro/pay-tests@444774bdc9c5b9669068d4c4f501bb298f52f5db
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@b6b52aefbe65b73dc5fb7f8937436918b23a5ab5
+      uses: WalletConnect/actions/maestro/setup@444774bdc9c5b9669068d4c4f501bb298f52f5db
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -862,7 +863,7 @@ runs:
     # steps — actions/runner#1457).
     - name: Reset USDT Permit2 allowance (Polygon)
       if: always() && contains(inputs.maestro-tags, 'pay')
-      uses: WalletConnect/actions/maestro/permit2-reset@b6b52aefbe65b73dc5fb7f8937436918b23a5ab5
+      uses: WalletConnect/actions/maestro/permit2-reset@444774bdc9c5b9669068d4c4f501bb298f52f5db
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
