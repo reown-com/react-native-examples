@@ -1,0 +1,19 @@
+# Flow 3 — switch chain: dapp switches to a second EVM network (client-side; all
+# EVM chains are in the approved namespaces, so no wallet re-approval).
+# Web dapp: matched by text. The NetworkButton shows the current chain name;
+# "^Ethereum$" targets it (vs the "Chain: Ethereum" info text).
+appId: ${APP_ID}
+tags:
+  - relay-walletkit
+  - switch-chain
+---
+- runFlow: _connect_walletkit.yaml
+- extendedWaitUntil:
+    visible: 'Connected to'
+    timeout: 60000
+# Switch to Polygon via the dapp's TEST_MODE button (the AppKit NetworkButton
+# modal isn't reliably driveable by text on web).
+- tapOn: 'Switch to Polygon (E2E)'
+- extendedWaitUntil:
+    visible: 'Chain: Polygon'
+    timeout: 30000

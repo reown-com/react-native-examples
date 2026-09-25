@@ -56,11 +56,29 @@ Sentry.init({
 // 1. Get projectId
 const projectId = process.env.EXPO_PUBLIC_PROJECT_ID ?? '';
 
+// Feature the "React Native Sample Wallet" (WalletConnect Explorer id) so it's a
+// one-tap entry on the connect modal's first screen — used by the web relay E2E,
+// which connects by tapping the wallet by name (no QR).
+const RN_SAMPLE_WALLET_ID =
+  '6880782cf8ff712bf8772b585960346290fd2499c1f1c51df9fe713d9d2e9384';
+
 // 2. Create config
 const metadata = getMetadata();
 
 const clipboardClient = {
   setString: async (value: string) => {
+    // @react-native-clipboard/clipboard is native-only (no-ops on web), so
+    // AppKit's "Copy link" wouldn't actually copy the wc: URI on the web build.
+    // Use the Web Clipboard API on web (secure context: https / localhost) so
+    // the relay E2E can copy the URI and paste it into the native wallet.
+    if (
+      Platform.OS === 'web' &&
+      typeof navigator !== 'undefined' &&
+      navigator.clipboard
+    ) {
+      await navigator.clipboard.writeText(value);
+      return;
+    }
     Clipboard.setString(value);
   },
 };
@@ -84,6 +102,7 @@ const appKit = createAppKit({
   debug: __DEV__,
   storage,
   extraConnectors,
+  featuredWalletIds: [RN_SAMPLE_WALLET_ID],
 });
 
 const queryClient = new QueryClient();

@@ -79,6 +79,7 @@ export default function SessionDetailModal() {
       {/* Header Row */}
       <View style={styles.header}>
         <Button
+          testID="session-disconnect-button"
           style={[
             styles.disconnectButton,
             { backgroundColor: Theme['bg-invert'] },
