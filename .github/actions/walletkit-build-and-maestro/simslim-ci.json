@@ -1,0 +1,5 @@
+{
+  "name": "walletkit-e2e",
+  "description": "WalletKit Maestro E2E. icloud (account/keychain services) and web (Safari/web services) stay enabled for the first trial; trim them only after a green run without them.",
+  "except": ["icloud", "web"]
+}

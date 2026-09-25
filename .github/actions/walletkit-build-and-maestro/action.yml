@@ -144,6 +144,13 @@ inputs:
       trusted main-branch runs; other runs restore read-only.
     required: false
     default: 'false'
+  ios-slim-simulator:
+    description: |
+      'true' to slim the iOS simulator with simslim before its first boot:
+      ~140 background daemons disabled, ~4 GB less memory (profile:
+      simslim-ci.json).
+    required: false
+    default: 'false'
 
 outputs:
   maestro-outcome:
@@ -390,46 +397,6 @@ runs:
         echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
         echo "App: $APP_PATH"
 
-    - name: Boot iOS Simulator
-      if: inputs.platform == 'ios'
-      shell: bash
-      run: |
-        # Don't hardcode a model — Xcode/runner image bumps drop old devices
-        # (e.g. the Xcode 26 image ships iPhone 17-series, no iPhone 16). Create a
-        # fresh device from the newest iPhone device type, falling back to any
-        # already-available iPhone simulator. Mirrors reown-swift#322.
-        # `simctl list devicetypes` is newest-first, so take the first match. Filter
-        # by name too: the iPod touch also has productFamily "iPhone", and it sorts
-        # last (current runtimes can't create it).
-        DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
-          jq -r 'first(.devicetypes[] | select(.productFamily == "iPhone" and (.name | startswith("iPhone"))) | .identifier) // empty')
-        : > "$RUNNER_TEMP/simctl-create.err"
-        if [ -n "$DEVICE_TYPE" ] && DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>"$RUNNER_TEMP/simctl-create.err"); then
-          echo "Created E2E-iPhone from $DEVICE_TYPE"
-        else
-          echo "::warning::Could not create a simulator from '${DEVICE_TYPE:-<none>}' ($(cat "$RUNNER_TEMP/simctl-create.err" 2>/dev/null)); falling back to an existing iPhone simulator"
-          DEVICE_TYPE=""
-          DEVICE_ID=$(xcrun simctl list devices available -j | \
-            jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
-        fi
-        if [ -z "$DEVICE_ID" ]; then
-          echo "ERROR: no available iPhone simulator found"
-          xcrun simctl list devices available
-          exit 1
-        fi
-        echo "Using simulator device type: ${DEVICE_TYPE:-<fallback>}, id: $DEVICE_ID"
-        xcrun simctl boot "$DEVICE_ID" || true
-        # Wait for full boot so the steps below don't race a not-ready simulator
-        xcrun simctl bootstatus "$DEVICE_ID" -b
-        # Disable UIKit animations to reduce Maestro timing flakiness
-        xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
-        echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
-
-    - name: Install app on Simulator
-      if: inputs.platform == 'ios'
-      shell: bash
-      run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
-
     # --- Android leg ---
     # On a build cache hit only Java (the emulator runner's SDK tools need it;
     # the runner accepts licenses itself) and KVM run; the build steps and the
@@ -661,6 +628,104 @@ runs:
     # (scripts/build-cache.sh BUILD_KEY_MARKER): keep build-affecting steps
     # above it, and don't edit the marker line without updating the helper.
     # --- Common: Maestro setup + run ---
+    # --- iOS simulator ---
+    # Not a build input, so it sits below the cache-key marker: editing these
+    # steps doesn't force a rebuild.
+    - name: Install simslim
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        SLIM: ${{ inputs.ios-slim-simulator }}
+        # Pinned release + checksum: simslim is young and ships often.
+        SIMSLIM_VERSION: '0.11.0'
+        SIMSLIM_SHA256: d7ae4d0c834dfea9911f113cf60e98c25ee61f2a3a85ca22d0c28c43b39ccfaf
+      run: |
+        # Installed on every iOS run so `simslim measure` can report a stock
+        # simulator's memory too; only fatal when slimming was requested.
+        set -uo pipefail
+        DIR="$RUNNER_TEMP/simslim"
+        install_simslim() {
+          mkdir -p "$DIR" &&
+            curl -fsSL -o "$DIR/simslim.tar.gz" \
+              "https://github.com/MobAI-App/simslim/releases/download/v${SIMSLIM_VERSION}/simslim-v${SIMSLIM_VERSION}-macos-arm64.tar.gz" &&
+            echo "$SIMSLIM_SHA256  $DIR/simslim.tar.gz" | shasum -a 256 -c - &&
+            tar -xzf "$DIR/simslim.tar.gz" -C "$DIR" simslim
+        }
+        if install_simslim; then
+          echo "$DIR" >> "$GITHUB_PATH"
+          "$DIR/simslim" --version
+        elif [ "$SLIM" = "true" ]; then
+          echo "::error::Could not install simslim v$SIMSLIM_VERSION"
+          exit 1
+        else
+          echo "::warning::Could not install simslim v$SIMSLIM_VERSION; skipping memory measurement"
+        fi
+
+    - name: Boot iOS Simulator
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        SLIM: ${{ inputs.ios-slim-simulator }}
+        # The first boot on a standard (3-core) runner can be slow.
+        SIMSLIM_BOOT_TIMEOUT: 15m
+      run: |
+        # Don't hardcode a model — Xcode/runner image bumps drop old devices
+        # (e.g. the Xcode 26 image ships iPhone 17-series, no iPhone 16). Create a
+        # fresh device from the newest iPhone device type, falling back to any
+        # already-available iPhone simulator. Mirrors reown-swift#322.
+        # `simctl list devicetypes` is newest-first, so take the first match. Filter
+        # by name too: the iPod touch also has productFamily "iPhone", and it sorts
+        # last (current runtimes can't create it).
+        DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
+          jq -r 'first(.devicetypes[] | select(.productFamily == "iPhone" and (.name | startswith("iPhone"))) | .identifier) // empty')
+        : > "$RUNNER_TEMP/simctl-create.err"
+        if [ -n "$DEVICE_TYPE" ] && DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>"$RUNNER_TEMP/simctl-create.err"); then
+          echo "Created E2E-iPhone from $DEVICE_TYPE"
+        else
+          echo "::warning::Could not create a simulator from '${DEVICE_TYPE:-<none>}' ($(cat "$RUNNER_TEMP/simctl-create.err" 2>/dev/null)); falling back to an existing iPhone simulator"
+          DEVICE_TYPE=""
+          DEVICE_ID=$(xcrun simctl list devices available -j | \
+            jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
+        fi
+        if [ -z "$DEVICE_ID" ]; then
+          echo "ERROR: no available iPhone simulator found"
+          xcrun simctl list devices available
+          exit 1
+        fi
+        echo "Using simulator device type: ${DEVICE_TYPE:-<fallback>}, id: $DEVICE_ID"
+        SIMSLIM_PROFILE="$GITHUB_ACTION_PATH/simslim-ci.json"
+        if [ "$SLIM" = "true" ]; then
+          # Writes the disable overrides while the device is still off, then
+          # boots it slim (no extra reboot on a fresh device).
+          simslim on "$DEVICE_ID" --profile "$SIMSLIM_PROFILE"
+          # Fail on drift rather than silently testing on a stock simulator.
+          simslim verify "$DEVICE_ID" --profile "$SIMSLIM_PROFILE"
+        else
+          xcrun simctl boot "$DEVICE_ID" || true
+        fi
+        # Wait for full boot so the steps below don't race a not-ready simulator
+        xcrun simctl bootstatus "$DEVICE_ID" -b
+        # Disable UIKit animations to reduce Maestro timing flakiness
+        xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
+        echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+
+    - name: Install app on Simulator
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+
+    - name: Measure iOS simulator (before tests)
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        MODE: ${{ inputs.ios-slim-simulator == 'true' && 'slim' || 'stock' }}
+      run: |
+        command -v simslim >/dev/null || exit 0
+        HOST="$(sysctl -n hw.ncpu) cores, $(( $(sysctl -n hw.memsize) / 1073741824 )) GB RAM"
+        OUT=$(simslim measure "$DEVICE_ID" 2>&1) || { echo "::warning::simslim measure failed: $OUT"; exit 0; }
+        echo "$OUT"
+        echo "iOS simulator ($MODE, $HOST host), before tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
+
     # Pinned to WalletConnect/actions master (444774b = merge of #114): the flows
     # deliver each payment link via `openLink` to <DEEPLINK_PREFIX><encoded link>
     # instead of typing it into a paste input. Each Maestro step below passes
@@ -753,6 +818,17 @@ runs:
         find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true
         cat maestro-output.log
         exit "$maestro_exit_code"
+
+    - name: Measure iOS simulator (after tests)
+      if: ${{ !cancelled() && inputs.platform == 'ios' && env.DEVICE_ID != '' }}
+      shell: bash
+      env:
+        MODE: ${{ inputs.ios-slim-simulator == 'true' && 'slim' || 'stock' }}
+      run: |
+        command -v simslim >/dev/null || exit 0
+        OUT=$(simslim measure "$DEVICE_ID" 2>&1) || { echo "::warning::simslim measure failed: $OUT"; exit 0; }
+        echo "$OUT"
+        echo "iOS simulator ($MODE), after tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
 
     - name: Upload Maestro artifacts (iOS)
       # !cancelled() not always(): runs on success/failure, skipped on cancel.

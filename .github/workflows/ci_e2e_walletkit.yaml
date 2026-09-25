@@ -64,6 +64,19 @@ on:
         required: false
         default: true
         type: boolean
+      ios-slim:
+        description: 'iOS: slim the simulator with simslim'
+        required: false
+        default: true
+        type: boolean
+      ios-runner:
+        description: 'iOS runner'
+        required: false
+        default: macos-latest-xlarge
+        type: choice
+        options:
+          - macos-latest-xlarge
+          - macos-latest
 
 env:
   MAESTRO_TAGS: ${{ inputs.maestro-tags || 'pay' }}
@@ -95,7 +108,9 @@ jobs:
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - iOS
-    runs-on: macos-latest-xlarge
+    # Dispatch can pick the free standard macos-latest to compare against the
+    # billed xlarge runner; every other trigger uses xlarge.
+    runs-on: ${{ inputs.ios-runner || 'macos-latest-xlarge' }}
     timeout-minutes: 60
     # One wallet per platform (see derive-e2e-wallet): runs on other refs queue
     # instead of paying from the same account at the same time. GitHub keeps
@@ -120,6 +135,9 @@ jobs:
         uses: ./.github/actions/walletkit-build-and-maestro
         with:
           platform: ios
+          # Slim unless a dispatch unticks it. Inputs are unset on other triggers,
+          # and `null != false` is false in expressions, so check the event.
+          ios-slim-simulator: ${{ github.event_name != 'workflow_dispatch' || inputs.ios-slim }}
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
           wallet-private-key: ${{ steps.wallet.outputs.private-key }}
