@@ -79,7 +79,7 @@ export async function loadTonWallet(input: string): Promise<{
   await storage.setItem('TON_SECRET_KEY_1', newWallet.getSecretKey());
   if (__DEV__) {
     console.warn(
-      '[SECURITY] TON secret key stored unencrypted. Use secure enclave in production.',
+      '[SECURITY] TON secret key stored in encrypted MMKV on native (key in Keychain/Keystore); unencrypted localStorage on web.',
     );
   }
 
