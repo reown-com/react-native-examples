@@ -132,6 +132,12 @@
         }
       ],
       [
+        "expo-camera",
+        {
+          "cameraPermission": "WalletConnect Pay uses the camera to scan a Customer API key QR code."
+        }
+      ],
+      [
         "expo-secure-store",
         {
           "configureAndroidBackup": true,
