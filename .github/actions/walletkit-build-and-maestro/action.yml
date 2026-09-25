@@ -396,13 +396,22 @@ runs:
       run: |
         # Don't hardcode a model — Xcode/runner image bumps drop old devices
         # (e.g. the Xcode 26 image ships iPhone 17-series, no iPhone 16). Create a
-        # fresh device from whatever iPhone device type exists, falling back to any
+        # fresh device from the newest iPhone device type, falling back to any
         # already-available iPhone simulator. Mirrors reown-swift#322.
+        # `simctl list devicetypes` is newest-first, so take the first match. Filter
+        # by name too: the iPod touch also has productFamily "iPhone", and it sorts
+        # last (current runtimes can't create it).
         DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
-          jq -r '.devicetypes[] | select(.productFamily == "iPhone") | .identifier' | tail -1)
-        DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>/dev/null || \
-          xcrun simctl list devices available -j | \
-          jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
+          jq -r 'first(.devicetypes[] | select(.productFamily == "iPhone" and (.name | startswith("iPhone"))) | .identifier) // empty')
+        : > "$RUNNER_TEMP/simctl-create.err"
+        if [ -n "$DEVICE_TYPE" ] && DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>"$RUNNER_TEMP/simctl-create.err"); then
+          echo "Created E2E-iPhone from $DEVICE_TYPE"
+        else
+          echo "::warning::Could not create a simulator from '${DEVICE_TYPE:-<none>}' ($(cat "$RUNNER_TEMP/simctl-create.err" 2>/dev/null)); falling back to an existing iPhone simulator"
+          DEVICE_TYPE=""
+          DEVICE_ID=$(xcrun simctl list devices available -j | \
+            jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
+        fi
         if [ -z "$DEVICE_ID" ]; then
           echo "ERROR: no available iPhone simulator found"
           xcrun simctl list devices available
@@ -652,14 +661,15 @@ runs:
     # (scripts/build-cache.sh BUILD_KEY_MARKER): keep build-affecting steps
     # above it, and don't edit the marker line without updating the helper.
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions#114 (b6b52ae): the flows deliver each payment
-    # link via `openLink` to <DEEPLINK_PREFIX><encoded link> instead of typing it
-    # into the test-mode paste input. Each Maestro step below passes DEEPLINK_PREFIX.
+    # Pinned to WalletConnect/actions master (444774b = merge of #114): the flows
+    # deliver each payment link via `openLink` to <DEEPLINK_PREFIX><encoded link>
+    # instead of typing it into a paste input. Each Maestro step below passes
+    # DEEPLINK_PREFIX.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@b6b52aefbe65b73dc5fb7f8937436918b23a5ab5
+      uses: WalletConnect/actions/maestro/pay-tests@444774bdc9c5b9669068d4c4f501bb298f52f5db
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@b6b52aefbe65b73dc5fb7f8937436918b23a5ab5
+      uses: WalletConnect/actions/maestro/setup@444774bdc9c5b9669068d4c4f501bb298f52f5db
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -683,10 +693,13 @@ runs:
       run: |
         xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
         mkdir -p maestro-artifacts
+        # App-process-only syslog at the default level (no debug/info) — includes
+        # JS console output. Only uploaded on failure (see below). The process name
+        # is read from the built app so it tracks Expo's generated target name.
+        APP_PROCESS=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP_PATH/Info.plist" 2>/dev/null || echo ReactNWallet)
         xcrun simctl spawn "$DEVICE_ID" log stream \
-          --level=debug \
           --style=compact \
-          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\" OR process CONTAINS \"maestro\" OR process == \"xctest\" OR process == \"testmanagerd\" OR process == \"tccd\" OR process == \"SpringBoard\"" \
+          --predicate "process == \"$APP_PROCESS\"" \
           > maestro-artifacts/ios-syslog.log 2>&1 &
         SYSLOG_PID=$!
         set +e
@@ -752,7 +765,6 @@ runs:
           maestro-artifacts/**/*.mov
           maestro-artifacts/**/*.webm
           maestro-artifacts/**/*.gif
-          maestro-artifacts/ios-syslog.log
           maestro-artifacts/ios-crash-reports/**
           maestro-artifacts/maestro-debug/**/*.png
           maestro-artifacts/maestro-debug/**/*.jpg
@@ -763,6 +775,17 @@ runs:
         # (e.g. a retry wrapper) without the second upload 409'ing
         # against the first. Last-wins; combine with an out-of-action
         # download+rename step if both attempts' artifacts are needed.
+        overwrite: true
+
+    - name: Upload iOS syslog (on failure)
+      if: ${{ failure() && inputs.platform == 'ios' }}
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-ios-syslog
+        path: maestro-artifacts/ios-syslog.log
+        if-no-files-found: ignore
+        retention-days: 14
         overwrite: true
 
     - name: Run Maestro tests (Android)
@@ -978,7 +1001,7 @@ runs:
     # steps — actions/runner#1457).
     - name: Reset USDT Permit2 allowance (Polygon)
       if: always() && contains(inputs.maestro-tags, 'pay')
-      uses: WalletConnect/actions/maestro/permit2-reset@b6b52aefbe65b73dc5fb7f8937436918b23a5ab5
+      uses: WalletConnect/actions/maestro/permit2-reset@444774bdc9c5b9669068d4c4f501bb298f52f5db
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}
