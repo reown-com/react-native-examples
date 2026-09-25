@@ -112,6 +112,10 @@ jobs:
           merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
           merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
           maestro-tags: ${{ env.MAESTRO_TAGS }}
+          # Encrypted build cache: every run may restore (fork/Dependabot PRs get
+          # no secret, so it's off for them); only trusted main runs save.
+          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()
@@ -194,6 +198,10 @@ jobs:
           android-secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
           android-keystore-base64: ${{ secrets.WC_INTERNAL_KEYSTORE }}
           android-keystore-name: ${{ vars.WC_INTERNAL_KEYSTORE_NAME }}
+          # Encrypted build cache: every run may restore (fork/Dependabot PRs get
+          # no secret, so it's off for them); only trusted main runs save.
+          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()
