@@ -55,13 +55,11 @@ function formatTokenAmountLabel(
   const { value, display } = tokenAmount;
   const symbol = display?.assetSymbol;
 
-  let amount = display?.formatted;
-  if (!amount && value) {
-    amount =
-      display?.decimals != null
-        ? formatTokenAmount(value, display.decimals)
-        : value;
-  }
+  // Format it ourselves before trusting the API's `formatted`, so this matches the receipt.
+  const amount =
+    value && display?.decimals != null
+      ? formatTokenAmount(value, display.decimals)
+      : (display?.formatted ?? value);
 
   if (!amount) return symbol ?? "";
   return symbol ? `${amount} ${symbol}` : amount;

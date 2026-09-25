@@ -30,6 +30,7 @@
     "@sentry/react-native": "8.23.0",
     "@shopify/react-native-skia": "2.6.2",
     "@tanstack/react-query": "5.90.11",
+    "@walletconnect/pay-core": "0.7.0",
     "@walletconnect/safe-json": "1.0.2",
     "expo": "56.0.12",
     "expo-application": "56.0.3",
