@@ -77,6 +77,11 @@ on:
         options:
           - macos-latest-xlarge
           - macos-latest
+      ios-build-cache:
+        description: 'iOS: use the build cache (untick to time a from-source build)'
+        required: false
+        default: true
+        type: boolean
 
 env:
   MAESTRO_TAGS: ${{ inputs.maestro-tags || 'pay' }}
@@ -150,7 +155,8 @@ jobs:
           maestro-tags: ${{ env.MAESTRO_TAGS }}
           # Encrypted build cache: every run may restore (fork/Dependabot PRs get
           # no secret, so it's off for them); only trusted main runs save.
-          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          # A dispatch can untick ios-build-cache to time a from-source build.
+          build-cache-passphrase: ${{ (github.event_name != 'workflow_dispatch' || inputs.ios-build-cache) && secrets.E2E_BUILD_CACHE_PASSPHRASE || '' }}
           build-cache-save: ${{ github.event_name == 'workflow_dispatch' }} # TEMP: branch validation, revert before merge
 
       - name: Send Slack notification
