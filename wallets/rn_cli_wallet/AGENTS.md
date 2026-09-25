@@ -268,6 +268,7 @@ Each E2E leg pays from its own funded account, derived from the `TEST_WALLET_MNE
 - **Setup / rotation**: `./scripts/set-e2e-wallets.sh --generate <file>` (or `<file>` for an existing phrase) validates the mnemonic, then sets the secret and the three address variables together. Fund the printed addresses before the next run.
 - **Addresses**: repo variables `TEST_WALLET_ADDRESS_{ANDROID,IOS,WEB}`. The derive step fails on a mismatch, and `.github/workflows/e2e-balance-check.yml` checks each address (Base USDC, Optimism USDC, Polygon USDT, POL gas) with per-platform thresholds.
 - **Keep every token balance under $9.99**: `pay_insufficient_funds` creates a $9.99 payment and expects it to be unaffordable.
+- **New wallets need their compliance details on file once**: until an address has submitted Pay's "Add your personal details" form (a KYC flow such as `pay_multiple_options_kyc` / `pay_kyc_web`, or one manual payment), Pay returns `collectData` on options the no-KYC flows expect to pay directly, so those flows fail on the first run. After a rotation, expect one red run per wallet (attempt 2 usually passes) or submit the form manually first.
 
 ### E2E build cache (Android + iOS)
 The Android and iOS E2E jobs reuse the last build (APK / simulator `.app`) instead of rebuilding (`.github/actions/walletkit-build-and-maestro/scripts/build-cache.sh`). Saved only by main push/schedule/dispatch runs; every other run restores read-only.
