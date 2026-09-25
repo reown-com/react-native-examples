@@ -28,6 +28,10 @@ jobs:
     # payment to be unaffordable on every chain.
     strategy:
       fail-fast: false
+      # The faucet bot sends from one wallet and drops a same-chain request that
+      # arrives before its previous send is mined ("replacement transaction
+      # underpriced"), so check the wallets one at a time.
+      max-parallel: 1
       matrix:
         include:
           - platform: Android
@@ -214,6 +218,15 @@ jobs:
             echo "text=$ALERT_TEXT" >> "$GITHUB_OUTPUT"
             echo "::warning::$ALERT_TEXT"
           fi
+
+      # USDT and POL are both sent on Polygon; give the faucet's USDT send time
+      # to be mined first (see max-parallel above).
+      - name: Space out Polygon faucet requests
+        if: |
+          steps.poly_usdt_alert.outputs.should_alert == 'true' &&
+          steps.poly_pol_alert.outputs.should_alert == 'true' &&
+          env.SLACK_FAUCETBOT_WEBHOOK_URL != ''
+        run: sleep 20
 
       - name: Send Slack alert (Polygon POL gas)
         if: |
