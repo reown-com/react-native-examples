@@ -1,5 +1,5 @@
 {
   "name": "walletkit-e2e",
-  "description": "WalletKit Maestro E2E. icloud (account/keychain services) and web (Safari/web services) stay enabled for the first trial; trim them only after a green run without them.",
-  "except": ["icloud", "web"]
+  "description": "WalletKit Maestro E2E. siri stays enabled: with assistantd off, the app's Siri client spins logging 'No language code saved, but Assistant is enabled' and XCTest snapshots time out. icloud and web stay enabled for the first trial; trim them only after a green run without them.",
+  "except": ["icloud", "web", "siri"]
 }
