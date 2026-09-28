@@ -28,6 +28,7 @@ on:
       - '.maestro/**'
       - '.github/actions/walletkit-build-and-maestro/**'
       - '.github/actions/derive-e2e-wallet/**'
+      - '.github/actions/install-cast/**'
       - '.github/workflows/ci_e2e_walletkit.yaml'
       - '.github/workflows/e2e-balance-check.yml'
   push:
@@ -37,6 +38,7 @@ on:
       - '.maestro/**'
       - '.github/actions/walletkit-build-and-maestro/**'
       - '.github/actions/derive-e2e-wallet/**'
+      - '.github/actions/install-cast/**'
       - '.github/workflows/ci_e2e_walletkit.yaml'
       - '.github/workflows/e2e-balance-check.yml'
   workflow_dispatch:
@@ -77,6 +79,15 @@ jobs:
     if: >-
       github.actor != 'dependabot[bot]'
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
+    # Repo-wide, across refs: the faucet bot sends from one wallet and drops a
+    # same-chain request that lands before its previous send is mined, so
+    # overlapping runs must not request at the same time. The group is on this
+    # calling job (not the matrix inside) because GitHub keeps one pending job
+    # per group. A newer run can replace a pending check; the E2E jobs still
+    # run (`!cancelled()`), and the next run checks the balances again.
+    concurrency:
+      group: e2e-faucet-requests
+      cancel-in-progress: false
     uses: ./.github/workflows/e2e-balance-check.yml
     secrets:
       SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}

@@ -30,7 +30,8 @@ jobs:
       fail-fast: false
       # The faucet bot sends from one wallet and drops a same-chain request that
       # arrives before its previous send is mined ("replacement transaction
-      # underpriced"), so check the wallets one at a time.
+      # underpriced"), so check the wallets one at a time (the caller's
+      # e2e-faucet-requests concurrency group serializes runs).
       max-parallel: 1
       matrix:
         include:
@@ -43,10 +44,15 @@ jobs:
     env:
       SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
     steps:
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
+      # Only the shared install-cast action is needed from the repo.
+      - name: Checkout install-cast action
+        uses: actions/checkout@v4
         with:
-          cache: false
+          sparse-checkout: .github/actions/install-cast
+          sparse-checkout-cone-mode: false
+
+      - name: Install cast (Foundry)
+        uses: ./.github/actions/install-cast
 
       - name: Check wallet address is configured
         env:
@@ -247,3 +253,14 @@ jobs:
           env.SLACK_FAUCETBOT_WEBHOOK_URL == ''
         run: |
           echo "::warning::SLACK_FAUCETBOT_WEBHOOK_URL not configured, skipping Polygon POL gas alert"
+
+      # Leave the faucet time to mine its sends before the next wallet's check
+      # (next matrix job) or another run's check can request on the same chain.
+      - name: Cool down after faucet requests
+        if: |
+          env.SLACK_FAUCETBOT_WEBHOOK_URL != '' && (
+            steps.usdc_alert.outputs.should_alert == 'true' ||
+            steps.op_usdc_alert.outputs.should_alert == 'true' ||
+            steps.poly_usdt_alert.outputs.should_alert == 'true' ||
+            steps.poly_pol_alert.outputs.should_alert == 'true')
+        run: sleep 20
