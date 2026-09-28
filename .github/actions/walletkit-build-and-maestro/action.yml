@@ -151,6 +151,13 @@ inputs:
       simslim-ci.json).
     required: false
     default: 'false'
+  ios-simulators:
+    description: |
+      Number of iOS simulators to split the Maestro suite across
+      (`maestro test --shard-split`). Slim simulators peak at ~2.3 GB each,
+      stock ones at ~5.5 GB.
+    required: false
+    default: '1'
 
 outputs:
   maestro-outcome:
@@ -666,16 +673,11 @@ runs:
       shell: bash
       env:
         SLIM: ${{ inputs.ios-slim-simulator }}
-        # The first boot on a standard (3-core) runner can be slow.
+        SIMULATORS: ${{ inputs.ios-simulators }}
+        # A first boot can be slow on a loaded runner (10m default).
         SIMSLIM_BOOT_TIMEOUT: 15m
       run: |
         set -euo pipefail
-        # Number of simulators to split the Maestro suite across; slim simulators
-        # peak at ~2.3 GB each, stock ones at ~5.5 GB.
-        # TEMP (branch validation): read from the caller's env instead of an
-        # `ios-simulators` input, because adding an input changes the build-cache
-        # key (inputs sit above the marker). Turn into an input before merge.
-        SIMULATORS="${E2E_IOS_SIMULATORS:-1}"
         if ! [[ "$SIMULATORS" =~ ^[1-9]$ ]]; then
           echo "::error::ios-simulators must be 1-9, got '$SIMULATORS'"
           exit 1

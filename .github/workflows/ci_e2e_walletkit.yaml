@@ -64,33 +64,6 @@ on:
         required: false
         default: true
         type: boolean
-      ios-slim:
-        description: 'iOS: slim the simulator with simslim'
-        required: false
-        default: true
-        type: boolean
-      ios-runner:
-        description: 'iOS runner'
-        required: false
-        default: macos-latest-xlarge
-        type: choice
-        options:
-          - macos-latest-xlarge
-          - macos-latest
-      ios-build-cache:
-        description: 'iOS: use the build cache (untick to time a from-source build)'
-        required: false
-        default: true
-        type: boolean
-      ios-simulators:
-        description: 'iOS: simulators to split the suite across (stock simulators need ~5.5 GB each; keep 1 with ios-slim unticked)'
-        required: false
-        default: '2'
-        type: choice
-        options:
-          - '1'
-          - '2'
-          - '3'
 
 env:
   MAESTRO_TAGS: ${{ inputs.maestro-tags || 'pay' }}
@@ -122,9 +95,7 @@ jobs:
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - iOS
-    # Dispatch can pick the free standard macos-latest to compare against the
-    # billed xlarge runner; every other trigger uses xlarge.
-    runs-on: ${{ inputs.ios-runner || 'macos-latest-xlarge' }}
+    runs-on: macos-latest-xlarge
     timeout-minutes: 60
     # One wallet per platform (see derive-e2e-wallet): runs on other refs queue
     # instead of paying from the same account at the same time. GitHub keeps
@@ -147,16 +118,13 @@ jobs:
       - name: Build wallet and run Maestro tests (iOS)
         id: walletkit
         uses: ./.github/actions/walletkit-build-and-maestro
-        env:
-          # TEMP (branch validation): becomes the composite's ios-simulators input
-          # before merge. Two slim simulators: on the 5-core xlarge runner a third
-          # slows every flow 1.6-2x (CPU-bound) and saves nothing.
-          E2E_IOS_SIMULATORS: ${{ inputs.ios-simulators || '2' }}
         with:
           platform: ios
-          # Slim unless a dispatch unticks it. Inputs are unset on other triggers,
-          # and `null != false` is false in expressions, so check the event.
-          ios-slim-simulator: ${{ github.event_name != 'workflow_dispatch' || inputs.ios-slim }}
+          # Two slim simulators (~2.3 GB each at peak) share the suite. On the
+          # 5-core xlarge runner a third slows every flow 1.6-2x (CPU-bound) and
+          # saves nothing; a stock simulator peaks at ~5.5 GB.
+          ios-slim-simulator: 'true'
+          ios-simulators: '2'
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
           wallet-private-key: ${{ steps.wallet.outputs.private-key }}
@@ -169,9 +137,8 @@ jobs:
           maestro-tags: ${{ env.MAESTRO_TAGS }}
           # Encrypted build cache: every run may restore (fork/Dependabot PRs get
           # no secret, so it's off for them); only trusted main runs save.
-          # A dispatch can untick ios-build-cache to time a from-source build.
-          build-cache-passphrase: ${{ (github.event_name != 'workflow_dispatch' || inputs.ios-build-cache) && secrets.E2E_BUILD_CACHE_PASSPHRASE || '' }}
-          build-cache-save: ${{ github.event_name == 'workflow_dispatch' }} # TEMP: branch validation, revert before merge
+          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()
@@ -271,7 +238,7 @@ jobs:
           # Encrypted build cache: every run may restore (fork/Dependabot PRs get
           # no secret, so it's off for them); only trusted main runs save.
           build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
-          build-cache-save: ${{ github.event_name == 'workflow_dispatch' }} # TEMP: branch validation, revert before merge
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()
