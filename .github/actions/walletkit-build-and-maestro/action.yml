@@ -747,22 +747,9 @@ runs:
       run: |
         set -euo pipefail
         IFS=, read -ra IDS <<< "$DEVICE_IDS"
-        for ID in "${IDS[@]}"; do xcrun simctl install "$ID" "$APP_PATH"; done
-
-    - name: Measure iOS simulator (before tests)
-      if: inputs.platform == 'ios'
-      shell: bash
-      env:
-        MODE: ${{ inputs.ios-slim-simulator == 'true' && 'slim' || 'stock' }}
-      run: |
-        command -v simslim >/dev/null || exit 0
-        HOST="$(sysctl -n hw.ncpu) cores, $(( $(sysctl -n hw.memsize) / 1073741824 )) GB RAM"
-        IFS=, read -ra IDS <<< "$DEVICE_IDS"
-        for i in "${!IDS[@]}"; do
-          OUT=$(simslim measure "${IDS[$i]}" 2>&1) || { echo "::warning::simslim measure failed: $OUT"; continue; }
-          echo "$OUT"
-          echo "iOS simulator $((i + 1))/${#IDS[@]} ($MODE, $HOST host), before tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
-        done
+        PIDS=()
+        for ID in "${IDS[@]}"; do xcrun simctl install "$ID" "$APP_PATH" & PIDS+=($!); done
+        for PID in "${PIDS[@]}"; do wait "$PID"; done
 
     # Pinned to WalletConnect/actions master (444774b = merge of #114): the flows
     # deliver each payment link via `openLink` to <DEEPLINK_PREFIX><encoded link>
@@ -819,76 +806,11 @@ runs:
         # With several simulators, one Maestro process splits the flows across
         # them. Only pay_usdt_polygon sends txs from the wallet (Polygon Permit2
         # approve); Base/Optimism payments are gasless EIP-3009 authorizations, so
-        # any split is nonce-safe.
-        MAESTRO_DEVICE_ARGS=(--device "$DEVICE_IDS")
-        # Attempt 1 runs the tagged suite; a retry runs only the flows that failed.
-        FLOW_ARGS=(.maestro/)
-        TAG_ARGS=(--include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"})
+        # any split is nonce-safe. The syslog streams above keep capturing across
+        # both attempts.
         set +e
-        # Retry failed flows once to absorb transient cold-start flakes (e.g. an app
-        # process that fails to launch/attach) without rebuilding the app or
-        # rebooting the simulators. A genuine failure fails every attempt, so this
-        # does not mask regressions. The syslog streams above keep capturing
-        # across both attempts.
-        maestro_exit_code=0
-        # Clear any stale per-attempt logs (composite may be invoked twice per job).
-        rm -f maestro-output-attempt-*.log maestro-artifacts/junit-attempt-*.xml
-        for attempt in 1 2; do
-          echo "=== Maestro attempt $attempt/2 (iOS) ==="
-          # Split across the simulators, but never into more shards than flows.
-          SHARDS=${#IDS[@]}
-          if [ "$attempt" -gt 1 ] && [ "${#FLOW_ARGS[@]}" -lt "$SHARDS" ]; then SHARDS=${#FLOW_ARGS[@]}; fi
-          SHARD_ARGS=()
-          [ "${#IDS[@]}" -gt 1 ] && SHARD_ARGS=(--shard-split "$SHARDS")
-          JUNIT="maestro-artifacts/junit-attempt-${attempt}.xml"
-          $HOME/.maestro/bin/maestro "${MAESTRO_DEVICE_ARGS[@]}" test "${SHARD_ARGS[@]}" \
-            --env APP_ID="$APP_ID" \
-            --env DEEPLINK_PREFIX="$DEEPLINK_PREFIX" \
-            --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
-            --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
-            --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
-            --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
-            --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
-            --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
-            --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
-            --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
-            "${TAG_ARGS[@]}" \
-            --format junit --output "$JUNIT" \
-            --test-output-dir maestro-artifacts \
-            --debug-output "${RUNNER_TEMP}/maestro-debug" \
-            "${FLOW_ARGS[@]}" 2>&1 | tee "maestro-output-attempt-${attempt}.log"
-          # Streamed live (tee) so a hung run still shows its progress in the log.
-          maestro_exit_code=${PIPESTATUS[0]}
-          [ "$maestro_exit_code" -eq 0 ] && break
-          # >128 means killed by a signal (e.g. workflow cancel) — don't retry.
-          if [ "$maestro_exit_code" -gt 128 ]; then
-            echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"
-            break
-          fi
-          echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"
-          # The JUnit report covers every shard and names each flow's file; the
-          # console output interleaves shards, so don't parse that.
-          FAILED=()
-          if [ -f "$JUNIT" ]; then
-            while IFS= read -r f; do [ -n "$f" ] && FAILED+=("$f"); done < <(
-              grep -oE '<testcase [^>]*status="[A-Z]+"' "$JUNIT" |
-                grep -v 'status="SUCCESS"' | sed -E 's/.* file="([^"]*)".*/\1/')
-          fi
-          if [ "$attempt" -eq 2 ]; then
-            echo "iOS Maestro still failing after the retry: ${FAILED[*]:-see maestro-output.log}" >> "$GITHUB_STEP_SUMMARY"
-          elif [ "${#FAILED[@]}" -gt 0 ]; then
-            echo "Retrying only the ${#FAILED[@]} failed flow(s): ${FAILED[*]}"
-            echo "iOS Maestro attempt 1 failed: ${FAILED[*]}; retrying only those" >> "$GITHUB_STEP_SUMMARY"
-            FLOW_ARGS=("${FAILED[@]}")
-            # The failed-flow list is already tag-filtered.
-            TAG_ARGS=()
-          else
-            echo "No per-flow results in $JUNIT; retrying the full suite"
-          fi
-        done
-        # Join per-attempt logs so the uploaded artifact keeps attempt 1's output
-        # on a double failure (otherwise attempt 2 would have overwritten it).
-        for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
+        MAESTRO_DEVICES="$DEVICE_IDS" bash "$GITHUB_ACTION_PATH/scripts/maestro-suite.sh" iOS
+        maestro_exit_code=$?
         kill "${SYSLOG_PIDS[@]}" 2>/dev/null || true
         wait "${SYSLOG_PIDS[@]}" 2>/dev/null || true
         mkdir -p maestro-artifacts/ios-crash-reports
@@ -904,11 +826,14 @@ runs:
         MODE: ${{ inputs.ios-slim-simulator == 'true' && 'slim' || 'stock' }}
       run: |
         command -v simslim >/dev/null || exit 0
+        # Measured after the suite: the peak is what decides how many simulators
+        # fit on a runner (slim ~2.3 GB, stock ~5.5 GB).
+        HOST="$(sysctl -n hw.ncpu) cores, $(( $(sysctl -n hw.memsize) / 1073741824 )) GB RAM"
         IFS=, read -ra IDS <<< "$DEVICE_IDS"
         for i in "${!IDS[@]}"; do
           OUT=$(simslim measure "${IDS[$i]}" 2>&1) || { echo "::warning::simslim measure failed: $OUT"; continue; }
           echo "$OUT"
-          echo "iOS simulator $((i + 1))/${#IDS[@]} ($MODE), after tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
+          echo "iOS simulator $((i + 1))/${#IDS[@]} ($MODE, $HOST host), after tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
         done
 
     - name: Upload Maestro artifacts (iOS)
@@ -962,6 +887,8 @@ runs:
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
         APK_PATH: ${{ runner.temp }}/e2e-build/android/app-internal.apk
+        # Inside the emulator action, GITHUB_ACTION_PATH is that action's own dir.
+        MAESTRO_SCRIPTS: ${{ github.action_path }}/scripts
         WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
         WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
@@ -984,7 +911,7 @@ runs:
         disable-animations: true
         script: |
           adb install "$APK_PATH"
-          mkdir -p maestro-artifacts maestro-artifacts/maestro-debug; adb logcat -b all -c || true; adb logcat AndroidRuntime:E ActivityManager:I ActivityTaskManager:I ReactNativeJS:E '*:F' > maestro-artifacts/android-logcat.log 2>&1 & LOGCAT_PID=$!; adb logcat -b events > maestro-artifacts/android-logcat-events.log 2>&1 & EVENTS_PID=$!; set +e; maestro_exit_code=0; rm -f maestro-output-attempt-*.log; for attempt in 1 2; do echo "=== Maestro attempt $attempt/2 (Android) ==="; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env DEEPLINK_PREFIX="$DEEPLINK_PREFIX" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1; maestro_exit_code=$?; [ "$maestro_exit_code" -eq 0 ] && break; if [ "$maestro_exit_code" -gt 128 ]; then echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"; break; fi; echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"; done; for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log; kill "$LOGCAT_PID" "$EVENTS_PID" 2>/dev/null || true; wait "$LOGCAT_PID" "$EVENTS_PID" 2>/dev/null || true; adb logcat -d -b crash > maestro-artifacts/android-logcat-crash.log 2>&1 || true; cp -R "${RUNNER_TEMP}/maestro-debug/." maestro-artifacts/maestro-debug/ 2>/dev/null || true; cat maestro-output.log; exit "$maestro_exit_code"
+          bash "$MAESTRO_SCRIPTS/maestro-android.sh"
 
     # Besides media, keeps launch diagnostics: the logcat events buffer
     # (am_proc_start / am_proc_died / wm_on_resume_called) and Maestro's own
@@ -1009,6 +936,7 @@ runs:
           maestro-artifacts/android-logcat-crash.log
           maestro-artifacts/android-logcat-events.log
           maestro-artifacts/**/*.log
+          maestro-artifacts/junit-attempt-*.xml
           maestro-artifacts/maestro-debug/**/*.png
           maestro-artifacts/maestro-debug/**/*.jpg
           maestro-output.log

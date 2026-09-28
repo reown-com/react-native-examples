@@ -85,7 +85,7 @@ on:
       ios-simulators:
         description: 'iOS: simulators to split the suite across (stock simulators need ~5.5 GB each; keep 1 with ios-slim unticked)'
         required: false
-        default: '3'
+        default: '2'
         type: choice
         options:
           - '1'
@@ -149,8 +149,9 @@ jobs:
         uses: ./.github/actions/walletkit-build-and-maestro
         env:
           # TEMP (branch validation): becomes the composite's ios-simulators input
-          # before merge. Three slim simulators (~2.3 GB each at peak) fit xlarge.
-          E2E_IOS_SIMULATORS: ${{ inputs.ios-simulators || '3' }}
+          # before merge. Two slim simulators: on the 5-core xlarge runner a third
+          # slows every flow 1.6-2x (CPU-bound) and saves nothing.
+          E2E_IOS_SIMULATORS: ${{ inputs.ios-simulators || '2' }}
         with:
           platform: ios
           # Slim unless a dispatch unticks it. Inputs are unset on other triggers,
