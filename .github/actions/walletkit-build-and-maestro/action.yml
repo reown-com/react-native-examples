@@ -669,50 +669,85 @@ runs:
         # The first boot on a standard (3-core) runner can be slow.
         SIMSLIM_BOOT_TIMEOUT: 15m
       run: |
+        set -euo pipefail
+        # Number of simulators to split the Maestro suite across; slim simulators
+        # peak at ~2.3 GB each, stock ones at ~5.5 GB.
+        # TEMP (branch validation): read from the caller's env instead of an
+        # `ios-simulators` input, because adding an input changes the build-cache
+        # key (inputs sit above the marker). Turn into an input before merge.
+        SIMULATORS="${E2E_IOS_SIMULATORS:-1}"
+        if ! [[ "$SIMULATORS" =~ ^[1-9]$ ]]; then
+          echo "::error::ios-simulators must be 1-9, got '$SIMULATORS'"
+          exit 1
+        fi
         # Don't hardcode a model — Xcode/runner image bumps drop old devices
-        # (e.g. the Xcode 26 image ships iPhone 17-series, no iPhone 16). Create a
-        # fresh device from the newest iPhone device type, falling back to any
+        # (e.g. the Xcode 26 image ships iPhone 17-series, no iPhone 16). Create
+        # fresh devices from the newest iPhone device type, falling back to one
         # already-available iPhone simulator. Mirrors reown-swift#322.
         # `simctl list devicetypes` is newest-first, so take the first match. Filter
         # by name too: the iPod touch also has productFamily "iPhone", and it sorts
         # last (current runtimes can't create it).
         DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
           jq -r 'first(.devicetypes[] | select(.productFamily == "iPhone" and (.name | startswith("iPhone"))) | .identifier) // empty')
+        DEVICE_IDS=()
         : > "$RUNNER_TEMP/simctl-create.err"
-        if [ -n "$DEVICE_TYPE" ] && DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>"$RUNNER_TEMP/simctl-create.err"); then
-          echo "Created E2E-iPhone from $DEVICE_TYPE"
-        else
+        for i in $(seq 1 "$SIMULATORS"); do
+          if [ -n "$DEVICE_TYPE" ] && ID=$(xcrun simctl create "E2E-iPhone-$i" "$DEVICE_TYPE" 2>"$RUNNER_TEMP/simctl-create.err"); then
+            DEVICE_IDS+=("$ID")
+          else
+            break
+          fi
+        done
+        if [ "${#DEVICE_IDS[@]}" -eq 0 ]; then
           echo "::warning::Could not create a simulator from '${DEVICE_TYPE:-<none>}' ($(cat "$RUNNER_TEMP/simctl-create.err" 2>/dev/null)); falling back to an existing iPhone simulator"
           DEVICE_TYPE=""
-          DEVICE_ID=$(xcrun simctl list devices available -j | \
+          ID=$(xcrun simctl list devices available -j | \
             jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
+          [ -n "$ID" ] && DEVICE_IDS=("$ID")
         fi
-        if [ -z "$DEVICE_ID" ]; then
+        if [ "${#DEVICE_IDS[@]}" -eq 0 ]; then
           echo "ERROR: no available iPhone simulator found"
           xcrun simctl list devices available
           exit 1
         fi
-        echo "Using simulator device type: ${DEVICE_TYPE:-<fallback>}, id: $DEVICE_ID"
-        SIMSLIM_PROFILE="$GITHUB_ACTION_PATH/simslim-ci.json"
-        if [ "$SLIM" = "true" ]; then
-          # Writes the disable overrides while the device is still off, then
-          # boots it slim (no extra reboot on a fresh device).
-          simslim on "$DEVICE_ID" --profile "$SIMSLIM_PROFILE"
-          # Fail on drift rather than silently testing on a stock simulator.
-          simslim verify "$DEVICE_ID" --profile "$SIMSLIM_PROFILE"
-        else
-          xcrun simctl boot "$DEVICE_ID" || true
+        if [ "${#DEVICE_IDS[@]}" -lt "$SIMULATORS" ]; then
+          echo "::warning::Only ${#DEVICE_IDS[@]} of $SIMULATORS simulators available; running on ${#DEVICE_IDS[@]}"
         fi
-        # Wait for full boot so the steps below don't race a not-ready simulator
-        xcrun simctl bootstatus "$DEVICE_ID" -b
-        # Disable UIKit animations to reduce Maestro timing flakiness
-        xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
-        echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+        echo "Using simulator device type: ${DEVICE_TYPE:-<fallback>}, ids: ${DEVICE_IDS[*]}"
+        SIMSLIM_PROFILE="$GITHUB_ACTION_PATH/simslim-ci.json"
+        # Boot (or slim) all devices in parallel.
+        PIDS=()
+        for ID in "${DEVICE_IDS[@]}"; do
+          if [ "$SLIM" = "true" ]; then
+            # Writes the disable overrides while the device is still off, then
+            # boots it slim (no extra reboot on a fresh device). Fails on drift
+            # rather than silently testing on a stock simulator.
+            ( simslim on "$ID" --profile "$SIMSLIM_PROFILE" &&
+                simslim verify "$ID" --profile "$SIMSLIM_PROFILE" ) &
+          else
+            ( xcrun simctl boot "$ID" || true ) &
+          fi
+          PIDS+=($!)
+        done
+        for PID in "${PIDS[@]}"; do wait "$PID"; done
+        for ID in "${DEVICE_IDS[@]}"; do
+          # Wait for full boot so the steps below don't race a not-ready simulator
+          xcrun simctl bootstatus "$ID" -b
+          # Disable UIKit animations to reduce Maestro timing flakiness
+          xcrun simctl spawn "$ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
+        done
+        # DEVICE_ID (first device) is kept for single-device steps and callers.
+        echo "DEVICE_ID=${DEVICE_IDS[0]}" >> "$GITHUB_ENV"
+        echo "DEVICE_IDS=$(IFS=,; echo "${DEVICE_IDS[*]}")" >> "$GITHUB_ENV"
+        echo "DEVICE_COUNT=${#DEVICE_IDS[@]}" >> "$GITHUB_ENV"
 
     - name: Install app on Simulator
       if: inputs.platform == 'ios'
       shell: bash
-      run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+      run: |
+        set -euo pipefail
+        IFS=, read -ra IDS <<< "$DEVICE_IDS"
+        for ID in "${IDS[@]}"; do xcrun simctl install "$ID" "$APP_PATH"; done
 
     - name: Measure iOS simulator (before tests)
       if: inputs.platform == 'ios'
@@ -722,9 +757,12 @@ runs:
       run: |
         command -v simslim >/dev/null || exit 0
         HOST="$(sysctl -n hw.ncpu) cores, $(( $(sysctl -n hw.memsize) / 1073741824 )) GB RAM"
-        OUT=$(simslim measure "$DEVICE_ID" 2>&1) || { echo "::warning::simslim measure failed: $OUT"; exit 0; }
-        echo "$OUT"
-        echo "iOS simulator ($MODE, $HOST host), before tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
+        IFS=, read -ra IDS <<< "$DEVICE_IDS"
+        for i in "${!IDS[@]}"; do
+          OUT=$(simslim measure "${IDS[$i]}" 2>&1) || { echo "::warning::simslim measure failed: $OUT"; continue; }
+          echo "$OUT"
+          echo "iOS simulator $((i + 1))/${#IDS[@]} ($MODE, $HOST host), before tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
+        done
 
     # Pinned to WalletConnect/actions master (444774b = merge of #114): the flows
     # deliver each payment link via `openLink` to <DEEPLINK_PREFIX><encoded link>
@@ -760,29 +798,50 @@ runs:
         WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
         WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
       run: |
-        xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
+        IFS=, read -ra IDS <<< "$DEVICE_IDS"
         mkdir -p maestro-artifacts
         # App-process-only syslog at the default level (no debug/info) — includes
         # JS console output. Only uploaded on failure (see below). The process name
         # is read from the built app so it tracks Expo's generated target name.
+        # One log per simulator (ios-syslog.log is the first one).
         APP_PROCESS=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP_PATH/Info.plist" 2>/dev/null || echo ReactNWallet)
-        xcrun simctl spawn "$DEVICE_ID" log stream \
-          --style=compact \
-          --predicate "process == \"$APP_PROCESS\"" \
-          > maestro-artifacts/ios-syslog.log 2>&1 &
-        SYSLOG_PID=$!
+        SYSLOG_PIDS=()
+        for i in "${!IDS[@]}"; do
+          xcrun simctl launch "${IDS[$i]}" "$APP_ID" || true
+          LOG=maestro-artifacts/ios-syslog.log
+          [ "$i" -gt 0 ] && LOG="maestro-artifacts/ios-syslog-$((i + 1)).log"
+          xcrun simctl spawn "${IDS[$i]}" log stream \
+            --style=compact \
+            --predicate "process == \"$APP_PROCESS\"" \
+            > "$LOG" 2>&1 &
+          SYSLOG_PIDS+=($!)
+        done
+        # With several simulators, one Maestro process splits the flows across
+        # them. Only pay_usdt_polygon sends txs from the wallet (Polygon Permit2
+        # approve); Base/Optimism payments are gasless EIP-3009 authorizations, so
+        # any split is nonce-safe.
+        MAESTRO_DEVICE_ARGS=(--device "$DEVICE_IDS")
+        # Attempt 1 runs the tagged suite; a retry runs only the flows that failed.
+        FLOW_ARGS=(.maestro/)
+        TAG_ARGS=(--include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"})
         set +e
-        # Retry the suite once on failure to absorb transient cold-start flakes
-        # (e.g. an app process that fails to launch/attach) without rebuilding the
-        # app or rebooting the simulator. A genuine failure fails every attempt, so
-        # this does not mask regressions. The syslog stream above keeps capturing
+        # Retry failed flows once to absorb transient cold-start flakes (e.g. an app
+        # process that fails to launch/attach) without rebuilding the app or
+        # rebooting the simulators. A genuine failure fails every attempt, so this
+        # does not mask regressions. The syslog streams above keep capturing
         # across both attempts.
         maestro_exit_code=0
         # Clear any stale per-attempt logs (composite may be invoked twice per job).
-        rm -f maestro-output-attempt-*.log
+        rm -f maestro-output-attempt-*.log maestro-artifacts/junit-attempt-*.xml
         for attempt in 1 2; do
           echo "=== Maestro attempt $attempt/2 (iOS) ==="
-          $HOME/.maestro/bin/maestro test \
+          # Split across the simulators, but never into more shards than flows.
+          SHARDS=${#IDS[@]}
+          if [ "$attempt" -gt 1 ] && [ "${#FLOW_ARGS[@]}" -lt "$SHARDS" ]; then SHARDS=${#FLOW_ARGS[@]}; fi
+          SHARD_ARGS=()
+          [ "${#IDS[@]}" -gt 1 ] && SHARD_ARGS=(--shard-split "$SHARDS")
+          JUNIT="maestro-artifacts/junit-attempt-${attempt}.xml"
+          $HOME/.maestro/bin/maestro "${MAESTRO_DEVICE_ARGS[@]}" test "${SHARD_ARGS[@]}" \
             --env APP_ID="$APP_ID" \
             --env DEEPLINK_PREFIX="$DEEPLINK_PREFIX" \
             --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
@@ -793,12 +852,13 @@ runs:
             --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
             --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
             --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
-            --include-tags "$MAESTRO_TAGS" \
-            ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} \
+            "${TAG_ARGS[@]}" \
+            --format junit --output "$JUNIT" \
             --test-output-dir maestro-artifacts \
             --debug-output "${RUNNER_TEMP}/maestro-debug" \
-            .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1
-          maestro_exit_code=$?
+            "${FLOW_ARGS[@]}" 2>&1 | tee "maestro-output-attempt-${attempt}.log"
+          # Streamed live (tee) so a hung run still shows its progress in the log.
+          maestro_exit_code=${PIPESTATUS[0]}
           [ "$maestro_exit_code" -eq 0 ] && break
           # >128 means killed by a signal (e.g. workflow cancel) — don't retry.
           if [ "$maestro_exit_code" -gt 128 ]; then
@@ -806,29 +866,50 @@ runs:
             break
           fi
           echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"
+          # The JUnit report covers every shard and names each flow's file; the
+          # console output interleaves shards, so don't parse that.
+          FAILED=()
+          if [ -f "$JUNIT" ]; then
+            while IFS= read -r f; do [ -n "$f" ] && FAILED+=("$f"); done < <(
+              grep -oE '<testcase [^>]*status="[A-Z]+"' "$JUNIT" |
+                grep -v 'status="SUCCESS"' | sed -E 's/.* file="([^"]*)".*/\1/')
+          fi
+          if [ "$attempt" -eq 2 ]; then
+            echo "iOS Maestro still failing after the retry: ${FAILED[*]:-see maestro-output.log}" >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${#FAILED[@]}" -gt 0 ]; then
+            echo "Retrying only the ${#FAILED[@]} failed flow(s): ${FAILED[*]}"
+            echo "iOS Maestro attempt 1 failed: ${FAILED[*]}; retrying only those" >> "$GITHUB_STEP_SUMMARY"
+            FLOW_ARGS=("${FAILED[@]}")
+            # The failed-flow list is already tag-filtered.
+            TAG_ARGS=()
+          else
+            echo "No per-flow results in $JUNIT; retrying the full suite"
+          fi
         done
         # Join per-attempt logs so the uploaded artifact keeps attempt 1's output
         # on a double failure (otherwise attempt 2 would have overwritten it).
         for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
-        kill "$SYSLOG_PID" 2>/dev/null || true
-        wait "$SYSLOG_PID" 2>/dev/null || true
+        kill "${SYSLOG_PIDS[@]}" 2>/dev/null || true
+        wait "${SYSLOG_PIDS[@]}" 2>/dev/null || true
         mkdir -p maestro-artifacts/ios-crash-reports
         cp -R "$HOME/Library/Logs/DiagnosticReports/." maestro-artifacts/ios-crash-reports/ 2>/dev/null || true
         mkdir -p maestro-artifacts/maestro-debug
         find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true
-        cat maestro-output.log
         exit "$maestro_exit_code"
 
     - name: Measure iOS simulator (after tests)
-      if: ${{ !cancelled() && inputs.platform == 'ios' && env.DEVICE_ID != '' }}
+      if: ${{ !cancelled() && inputs.platform == 'ios' && env.DEVICE_IDS != '' }}
       shell: bash
       env:
         MODE: ${{ inputs.ios-slim-simulator == 'true' && 'slim' || 'stock' }}
       run: |
         command -v simslim >/dev/null || exit 0
-        OUT=$(simslim measure "$DEVICE_ID" 2>&1) || { echo "::warning::simslim measure failed: $OUT"; exit 0; }
-        echo "$OUT"
-        echo "iOS simulator ($MODE), after tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
+        IFS=, read -ra IDS <<< "$DEVICE_IDS"
+        for i in "${!IDS[@]}"; do
+          OUT=$(simslim measure "${IDS[$i]}" 2>&1) || { echo "::warning::simslim measure failed: $OUT"; continue; }
+          echo "$OUT"
+          echo "iOS simulator $((i + 1))/${#IDS[@]} ($MODE), after tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
+        done
 
     - name: Upload Maestro artifacts (iOS)
       # !cancelled() not always(): runs on success/failure, skipped on cancel.
@@ -846,6 +927,7 @@ runs:
           maestro-artifacts/**/*.webm
           maestro-artifacts/**/*.gif
           maestro-artifacts/ios-crash-reports/**
+          maestro-artifacts/junit-attempt-*.xml
           maestro-artifacts/maestro-debug/**/*.png
           maestro-artifacts/maestro-debug/**/*.jpg
           maestro-output.log
@@ -863,7 +945,7 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: maestro-ios-syslog
-        path: maestro-artifacts/ios-syslog.log
+        path: maestro-artifacts/ios-syslog*.log
         if-no-files-found: ignore
         retention-days: 14
         overwrite: true

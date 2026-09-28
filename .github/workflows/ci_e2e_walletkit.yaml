@@ -82,6 +82,15 @@ on:
         required: false
         default: true
         type: boolean
+      ios-simulators:
+        description: 'iOS: simulators to split the suite across (stock simulators need ~5.5 GB each; keep 1 with ios-slim unticked)'
+        required: false
+        default: '3'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
 
 env:
   MAESTRO_TAGS: ${{ inputs.maestro-tags || 'pay' }}
@@ -138,6 +147,10 @@ jobs:
       - name: Build wallet and run Maestro tests (iOS)
         id: walletkit
         uses: ./.github/actions/walletkit-build-and-maestro
+        env:
+          # TEMP (branch validation): becomes the composite's ios-simulators input
+          # before merge. Three slim simulators (~2.3 GB each at peak) fit xlarge.
+          E2E_IOS_SIMULATORS: ${{ inputs.ios-simulators || '3' }}
         with:
           platform: ios
           # Slim unless a dispatch unticks it. Inputs are unset on other triggers,
