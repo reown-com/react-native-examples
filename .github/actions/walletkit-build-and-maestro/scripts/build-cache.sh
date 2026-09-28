@@ -21,6 +21,25 @@ set -euo pipefail
 BUILD_CACHE_EPOCH=v1
 # action.yml line splitting the build part (hashed into the key) from the test part.
 BUILD_KEY_MARKER='# --- Common: Maestro setup + run ---'
+# Wallet files that never reach the native build (docs, tests, lint/editor
+# config, web-only code): editing them doesn't invalidate the key. Everything
+# else in wallets/rn_cli_wallet, new files included, is part of the key, so a
+# forgotten build input can't silently serve a stale build.
+WALLET_NON_BUILD_PATHS=(
+  ':(exclude,glob)wallets/rn_cli_wallet/**/*.md'
+  ':(exclude,glob)wallets/rn_cli_wallet/__tests__/**'
+  ':(exclude,glob)wallets/rn_cli_wallet/**/*.test.*'
+  ':(exclude)wallets/rn_cli_wallet/jest.config.js'
+  ':(exclude)wallets/rn_cli_wallet/jest.setup.js'
+  ':(exclude)wallets/rn_cli_wallet/.eslintrc.js'
+  ':(exclude)wallets/rn_cli_wallet/.prettierrc.js'
+  ':(exclude,glob)wallets/rn_cli_wallet/.vscode/**'
+  ':(exclude)wallets/rn_cli_wallet/.watchmanconfig'
+  # Web-only: Metro never bundles *.web.* files into a native build.
+  ':(exclude,glob)wallets/rn_cli_wallet/**/*.web.*'
+  ':(exclude)wallets/rn_cli_wallet/web-polyfills.js'
+  ':(exclude)wallets/rn_cli_wallet/vercel.json'
+)
 
 die() {
   echo "::error::$*" >&2
@@ -61,7 +80,7 @@ cmd_key() {
     reason="signed iOS builds are never cached"
   elif ! git -C "$SOURCE_DIR" rev-parse --verify -q HEAD >/dev/null; then
     reason="'$SOURCE_DIR' is not a git checkout"
-  elif [ -n "$(git -C "$SOURCE_DIR" status --porcelain -- wallets/rn_cli_wallet fastlane Gemfile Gemfile.lock)" ]; then
+  elif [ -n "$(git -C "$SOURCE_DIR" status --porcelain -- wallets/rn_cli_wallet fastlane Gemfile Gemfile.lock "${WALLET_NON_BUILD_PATHS[@]}")" ]; then
     # The key trusts the committed trees; local edits would be invisible to it.
     reason="build inputs have uncommitted changes"
   fi
@@ -72,12 +91,17 @@ cmd_key() {
     return 0
   fi
 
-  local wallet_tree action_digest env_digest week
-  wallet_tree="$(git -C "$SOURCE_DIR" rev-parse HEAD:wallets/rn_cli_wallet)"
+  local wallet_digest action_digest env_digest week
+  # Committed wallet files minus WALLET_NON_BUILD_PATHS (mode, blob and path per
+  # file). The index matches HEAD here: uncommitted build inputs disable the
+  # cache above.
+  wallet_digest="$(git -C "$SOURCE_DIR" ls-files -s -- wallets/rn_cli_wallet "${WALLET_NON_BUILD_PATHS[@]}" | sha256)"
   # This action's build part (everything above BUILD_KEY_MARKER: inputs, .env,
-  # cache steps, platform builds) and this helper (cached-payload schema). The
+  # cache steps, platform builds) and every file in scripts/ (this helper's
+  # cached-payload schema; any build script added there is covered too). The
   # Maestro/upload steps below the marker don't affect the build, so editing
-  # them doesn't invalidate it.
+  # them doesn't invalidate it; keep non-build helpers out of scripts/ (see
+  # maestro/).
   grep -qF "$BUILD_KEY_MARKER" "$GITHUB_ACTION_PATH/action.yml" ||
     die "build cache: '$BUILD_KEY_MARKER' not found in action.yml"
   action_digest="$({
@@ -96,7 +120,7 @@ cmd_key() {
   public_inputs="$(printf '%s\n' \
     "platform=$PLATFORM" \
     "runner=${RUNNER_OS:-}-${RUNNER_ARCH:-}" \
-    "wallet_tree=$wallet_tree" \
+    "wallet=$wallet_digest" \
     "action=$action_digest")"
   if [ "$PLATFORM" = "android" ]; then
     public_inputs+=$'\n'"android_keystore_name=${ANDROID_KEYSTORE_NAME:-}"

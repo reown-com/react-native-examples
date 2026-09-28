@@ -809,7 +809,9 @@ runs:
         # any split is nonce-safe. The syslog streams above keep capturing across
         # both attempts.
         set +e
-        MAESTRO_DEVICES="$DEVICE_IDS" bash "$GITHUB_ACTION_PATH/scripts/maestro-suite.sh" iOS
+        # Maestro helpers live in maestro/, not scripts/: build-cache.sh hashes
+        # every file in scripts/ into the build-cache key.
+        MAESTRO_DEVICES="$DEVICE_IDS" bash "$GITHUB_ACTION_PATH/maestro/maestro-suite.sh" iOS
         maestro_exit_code=$?
         kill "${SYSLOG_PIDS[@]}" 2>/dev/null || true
         wait "${SYSLOG_PIDS[@]}" 2>/dev/null || true
@@ -888,7 +890,8 @@ runs:
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
         APK_PATH: ${{ runner.temp }}/e2e-build/android/app-internal.apk
         # Inside the emulator action, GITHUB_ACTION_PATH is that action's own dir.
-        MAESTRO_SCRIPTS: ${{ github.action_path }}/scripts
+        # Not scripts/: build-cache.sh hashes every file there into the key.
+        MAESTRO_SCRIPTS: ${{ github.action_path }}/maestro
         WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
         WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
