@@ -69,11 +69,15 @@ for attempt in 1 2; do
   echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"
   # The JUnit report covers every shard and names each flow's file; the console
   # output interleaves shards, so don't parse that.
+  # Take each whole <testcase ...> opening tag (failed ones have a <failure>
+  # child, so they aren't self-closing), then read `file` wherever it sits in
+  # the attribute list. Only existing flow files count.
   FAILED=()
   if [ -f "$JUNIT" ]; then
-    while IFS= read -r f; do [ -n "$f" ] && FAILED+=("$f"); done < <(
-      grep -oE '<testcase [^>]*status="[A-Z]+"' "$JUNIT" |
-        grep -v 'status="SUCCESS"' | sed -E 's/.* file="([^"]*)".*/\1/')
+    while IFS= read -r f; do [ -f "$f" ] && FAILED+=("$f"); done < <(
+      grep -oE '<testcase [^>]*>' "$JUNIT" |
+        grep -v 'status="SUCCESS"' |
+        grep -oE ' file="[^"]*"' | sed -E 's/^ file="(.*)"$/\1/')
   fi
   if [ "$attempt" -eq 2 ]; then
     echo "$LABEL Maestro still failing after the retry: ${FAILED[*]:-see maestro-output.log}" >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
