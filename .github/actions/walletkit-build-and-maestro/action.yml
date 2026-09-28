@@ -653,7 +653,8 @@ runs:
         DIR="$RUNNER_TEMP/simslim"
         install_simslim() {
           mkdir -p "$DIR" &&
-            curl -fsSL -o "$DIR/simslim.tar.gz" \
+            curl -fsSL --retry 5 --retry-all-errors --retry-delay 3 \
+              --connect-timeout 20 --max-time 300 -o "$DIR/simslim.tar.gz" \
               "https://github.com/MobAI-App/simslim/releases/download/v${SIMSLIM_VERSION}/simslim-v${SIMSLIM_VERSION}-macos-arm64.tar.gz" &&
             echo "$SIMSLIM_SHA256  $DIR/simslim.tar.gz" | shasum -a 256 -c - &&
             tar -xzf "$DIR/simslim.tar.gz" -C "$DIR" simslim
