@@ -28,10 +28,35 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Install Foundry
-      uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1.9.1
-      with:
-        cache: false
+    # A pinned, checksum-verified cast instead of foundry-toolchain: its
+    # installer resolves "latest" and fetches extra release files with no retry,
+    # so one GitHub 500 failed a whole E2E leg. Only cast is needed here.
+    - name: Install cast (Foundry)
+      shell: bash
+      env:
+        FOUNDRY_VERSION: v1.8.3
+      run: |
+        set -euo pipefail
+        case "$RUNNER_OS-$RUNNER_ARCH" in
+          macOS-ARM64)
+            ASSET=darwin_arm64
+            SHA256=562f9c2f9094e512f1efc1e005c79de7642c27ffc1e7e9dcf8e31baa54577d6e ;;
+          Linux-X64)
+            ASSET=linux_amd64
+            SHA256=7ca48e6ca3cac1bce1403ca67e5bc1dc3bc1fd818199c9957c7165079c228568 ;;
+          *)
+            echo "::error::No pinned Foundry build for $RUNNER_OS-$RUNNER_ARCH"
+            exit 1 ;;
+        esac
+        DIR="$RUNNER_TEMP/foundry"
+        mkdir -p "$DIR"
+        curl -fsSL --retry 5 --retry-all-errors --retry-delay 3 -o "$DIR/foundry.tar.gz" \
+          "https://github.com/foundry-rs/foundry/releases/download/${FOUNDRY_VERSION}/foundry_${FOUNDRY_VERSION}_${ASSET}.tar.gz"
+        echo "$SHA256  $DIR/foundry.tar.gz" | shasum -a 256 -c -
+        tar -xzf "$DIR/foundry.tar.gz" -C "$DIR" cast
+        rm "$DIR/foundry.tar.gz"
+        echo "$DIR" >> "$GITHUB_PATH"
+        "$DIR/cast" --version
 
     - name: Derive wallet
       id: derive
