@@ -134,7 +134,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "WalletConnect Pay uses the camera to scan a Customer API key QR code."
+          "cameraPermission": "WalletConnect Pay uses the camera to scan the credentials QR code from your merchant dashboard."
         }
       ],
       [
