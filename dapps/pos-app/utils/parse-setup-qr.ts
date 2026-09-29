@@ -35,28 +35,14 @@ export function toSetupPayload(
   return key && id ? { apiKey: key, merchantId: id } : null;
 }
 
-// Decodes an application/x-www-form-urlencoded query (what the dashboard's
-// URLSearchParams emits). Parsed by hand because React Native's URL polyfill
-// doesn't implement `searchParams`.
-function parseQuery(query: string): Record<string, string> {
-  const params: Record<string, string> = {};
-  for (const pair of query.split("&")) {
-    if (!pair) continue;
-    const [rawName, ...rest] = pair.split("=");
-    try {
-      const decode = (s: string) => decodeURIComponent(s.replace(/\+/g, " "));
-      const name = decode(rawName);
-      if (!(name in params)) params[name] = decode(rest.join("="));
-    } catch {
-      // Malformed percent-encoding: skip the pair.
-    }
-  }
-  return params;
-}
-
 export function parseSetupQr(raw: string): SetupPayload | null {
   const match = SETUP_LINK_PATTERN.exec(raw.trim());
   if (!match) return null;
-  const params = parseQuery(match[1] ?? "");
-  return toSetupPayload(params.apiKey, params.merchantId);
+  try {
+    const params = new URLSearchParams(match[1] ?? "");
+    return toSetupPayload(params.get("apiKey"), params.get("merchantId"));
+  } catch {
+    // React Native's URLSearchParams throws on malformed percent-encoding.
+    return null;
+  }
 }

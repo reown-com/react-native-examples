@@ -101,13 +101,7 @@ export default function ScanSetupQrScreen() {
         <View style={styles.middleRow}>
           <View style={styles.mask} />
           <View style={styles.window}>
-            <ScanCorners
-              size={SCAN_AREA_SIZE}
-              color="#FFFFFF"
-              length={44}
-              thickness={4}
-              radius={BorderRadius["3"]}
-            />
+            <ScanCorners size={SCAN_AREA_SIZE} color="#FFFFFF" />
           </View>
           <View style={styles.mask} />
         </View>

@@ -1,78 +1,53 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import { BorderRadius } from "@/constants/spacing";
+import { StyleSheet, View, ViewStyle } from "react-native";
 
-interface ScanCornersProps {
-  // Side length of the square the corners are drawn around.
-  size: number;
-  color: string;
-  // Length of each corner's arm.
-  length?: number;
-  thickness?: number;
-  radius?: number;
-}
+const LENGTH = 44;
+const THICKNESS = 4;
+const RADIUS = BorderRadius["3"];
 
-// Four L-shaped corner brackets forming a viewfinder-style square. Built from
-// plain bordered Views (pos-app has no react-native-svg) so it renders the same
-// on iOS, Android and web. Reused at a small size as the "scan" input icon and
-// at a large size as the camera viewfinder frame.
-export function ScanCorners({
-  size,
-  color,
-  length = Math.round(size * 0.32),
-  thickness = 2,
-  radius = 4,
-}: ScanCornersProps) {
-  const corner = { width: length, height: length, borderColor: color };
+// Each corner is an L drawn with two borders of a square View.
+const CORNERS: ViewStyle[] = [
+  {
+    top: 0,
+    left: 0,
+    borderTopWidth: THICKNESS,
+    borderLeftWidth: THICKNESS,
+    borderTopLeftRadius: RADIUS,
+  },
+  {
+    top: 0,
+    right: 0,
+    borderTopWidth: THICKNESS,
+    borderRightWidth: THICKNESS,
+    borderTopRightRadius: RADIUS,
+  },
+  {
+    bottom: 0,
+    left: 0,
+    borderBottomWidth: THICKNESS,
+    borderLeftWidth: THICKNESS,
+    borderBottomLeftRadius: RADIUS,
+  },
+  {
+    bottom: 0,
+    right: 0,
+    borderBottomWidth: THICKNESS,
+    borderRightWidth: THICKNESS,
+    borderBottomRightRadius: RADIUS,
+  },
+];
+
+// Viewfinder corner brackets for the QR scanner, built from plain Views since
+// pos-app has no react-native-svg.
+export function ScanCorners({ size, color }: { size: number; color: string }) {
   return (
     <View style={{ width: size, height: size }}>
-      <View
-        style={[
-          styles.corner,
-          styles.topLeft,
-          corner,
-          {
-            borderTopWidth: thickness,
-            borderLeftWidth: thickness,
-            borderTopLeftRadius: radius,
-          },
-        ]}
-      />
-      <View
-        style={[
-          styles.corner,
-          styles.topRight,
-          corner,
-          {
-            borderTopWidth: thickness,
-            borderRightWidth: thickness,
-            borderTopRightRadius: radius,
-          },
-        ]}
-      />
-      <View
-        style={[
-          styles.corner,
-          styles.bottomLeft,
-          corner,
-          {
-            borderBottomWidth: thickness,
-            borderLeftWidth: thickness,
-            borderBottomLeftRadius: radius,
-          },
-        ]}
-      />
-      <View
-        style={[
-          styles.corner,
-          styles.bottomRight,
-          corner,
-          {
-            borderBottomWidth: thickness,
-            borderRightWidth: thickness,
-            borderBottomRightRadius: radius,
-          },
-        ]}
-      />
+      {CORNERS.map((corner, index) => (
+        <View
+          key={index}
+          style={[styles.corner, { borderColor: color }, corner]}
+        />
+      ))}
     </View>
   );
 }
@@ -80,21 +55,7 @@ export function ScanCorners({
 const styles = StyleSheet.create({
   corner: {
     position: "absolute",
-  },
-  topLeft: {
-    top: 0,
-    left: 0,
-  },
-  topRight: {
-    top: 0,
-    right: 0,
-  },
-  bottomLeft: {
-    bottom: 0,
-    left: 0,
-  },
-  bottomRight: {
-    bottom: 0,
-    right: 0,
+    width: LENGTH,
+    height: LENGTH,
   },
 });

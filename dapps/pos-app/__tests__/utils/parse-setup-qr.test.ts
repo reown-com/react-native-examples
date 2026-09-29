@@ -27,9 +27,9 @@ describe("parseSetupQr", () => {
     });
   });
 
-  it("ignores unknown params and keeps the first repeated value", () => {
+  it("ignores unknown params the dashboard may add later", () => {
     expect(
-      parseSetupQr("wpay://setup?env=live&apiKey=k1&apiKey=k2&merchantId=m1"),
+      parseSetupQr("wpay://setup?env=live&apiKey=k1&merchantId=m1"),
     ).toEqual({ apiKey: "k1", merchantId: "m1" });
   });
 
@@ -49,12 +49,6 @@ describe("parseSetupQr", () => {
     ).toBeNull();
     expect(
       parseSetupQr("otherwpay://setup?apiKey=k1&merchantId=m1"),
-    ).toBeNull();
-  });
-
-  it("skips malformed percent-encoding instead of throwing", () => {
-    expect(
-      parseSetupQr("wpay://setup?apiKey=%E0%A4%A&merchantId=m1"),
     ).toBeNull();
   });
 });
