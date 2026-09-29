@@ -87,7 +87,7 @@ describe("getPaymentErrorMessage", () => {
     it('returns validation message for "params_validation" status', () => {
       const result = getPaymentErrorMessage("params_validation");
       expect(result.title).toBe("This payment didn't go through");
-      expect(result.subtitle).toContain("Something's off with this payment");
+      expect(result.subtitle).toContain("Try the payment again");
       expect(result.subtitle).not.toContain("connection");
     });
   });

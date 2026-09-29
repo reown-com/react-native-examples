@@ -1,11 +1,17 @@
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { formatCountdown } from "@/utils/misc";
+import { SetupPayload } from "@/utils/parse-setup-qr";
 import { showErrorToast, showSuccessToast } from "@/utils/toast";
 import { useCallback, useEffect, useState } from "react";
 
 type ModalType = "none" | "pin-verify" | "pin-setup";
-type PendingAction = "merchant-id" | "customer-api-key" | null;
+// A protected save waiting on PIN/biometric auth. An empty `value` clears the
+// setting. "setup" saves both credentials from a scanned setup QR at once.
+type PendingSave =
+  | { action: "merchant-id"; value: string }
+  | { action: "customer-api-key"; value: string }
+  | ({ action: "setup" } & SetupPayload);
 
 interface MerchantFlowState {
   merchantIdInput: string;
@@ -15,8 +21,7 @@ interface MerchantFlowState {
   isEditingCustomerApiKey: boolean;
   activeModal: ModalType;
   pinError: string | null;
-  pendingValue: string | null;
-  pendingAction: PendingAction;
+  pendingSave: PendingSave | null;
   // When true, a protected save is waiting for the auto-triggered biometric
   // prompt to resolve. The PIN modal stays hidden while this is set.
   biometricPending: boolean;
@@ -28,8 +33,7 @@ const initialState: MerchantFlowState = {
   isEditingCustomerApiKey: false,
   activeModal: "none",
   pinError: null,
-  pendingValue: null,
-  pendingAction: null,
+  pendingSave: null,
   biometricPending: false,
 };
 
@@ -111,7 +115,7 @@ export function useMerchantFlow({
   }, []);
 
   const initiateSave = useCallback(
-    (value: string, action: PendingAction) => {
+    (pendingSave: PendingSave) => {
       // Check if locked out
       if (isLockedOut()) {
         showErrorToast(formatLockoutMessage());
@@ -122,14 +126,13 @@ export function useMerchantFlow({
 
       // With a PIN set and biometrics enabled, skip the PIN modal entirely and
       // auto-trigger the biometric prompt. The effect below picks up
-      // `biometricPending` once state commits (so the pending value/action are
+      // `biometricPending` once state commits (so the pending save is
       // available to `completeSave`). The PIN modal only appears if biometrics
       // fails or is cancelled.
       if (pinExists && canUseBiometric) {
         setState((prev) => ({
           ...prev,
-          pendingValue: value,
-          pendingAction: action,
+          pendingSave,
           pinError: null,
           biometricPending: true,
           activeModal: "none",
@@ -139,8 +142,7 @@ export function useMerchantFlow({
 
       setState((prev) => ({
         ...prev,
-        pendingValue: value,
-        pendingAction: action,
+        pendingSave,
         activeModal: pinExists ? "pin-verify" : "pin-setup",
       }));
     },
@@ -156,7 +158,7 @@ export function useMerchantFlow({
     }
 
     // Pass empty string to indicate clearing (will reset to default)
-    initiateSave(trimmedMerchantId || "", "merchant-id");
+    initiateSave({ action: "merchant-id", value: trimmedMerchantId });
   }, [state.merchantIdInput, storedMerchantId, initiateSave]);
 
   const handleCustomerApiKeyConfirm = useCallback(() => {
@@ -166,21 +168,29 @@ export function useMerchantFlow({
       if (!isCustomerApiKeySet) {
         return;
       }
-      initiateSave("", "customer-api-key");
+      initiateSave({ action: "customer-api-key", value: "" });
       return;
     }
 
-    initiateSave(trimmedApiKey, "customer-api-key");
+    initiateSave({ action: "customer-api-key", value: trimmedApiKey });
   }, [state.customerApiKeyInput, isCustomerApiKeySet, initiateSave]);
 
+  const handleScannedSetup = useCallback(
+    (payload: SetupPayload) => {
+      initiateSave({ action: "setup", ...payload });
+    },
+    [initiateSave],
+  );
+
   const completeSave = useCallback(async () => {
-    if (state.pendingValue === null || !state.pendingAction) {
+    const pending = state.pendingSave;
+    if (!pending) {
       return;
     }
 
     try {
-      if (state.pendingAction === "merchant-id") {
-        if (state.pendingValue === "") {
+      if (pending.action === "merchant-id") {
+        if (pending.value === "") {
           // Clear only the merchant ID, leaving the terminal unconfigured.
           await clearMerchantId();
           setState((prev) => ({
@@ -190,13 +200,13 @@ export function useMerchantFlow({
           showSuccessToast("Merchant ID cleared");
           addLog("info", "Merchant ID cleared", "settings", "completeSave");
         } else {
-          setMerchantId(state.pendingValue);
+          setMerchantId(pending.value);
           showSuccessToast("Merchant ID saved successfully");
           addLog("info", "Merchant ID updated", "settings", "completeSave");
         }
-      } else if (state.pendingAction === "customer-api-key") {
-        const isClearing = state.pendingValue === "";
-        await setCustomerApiKey(state.pendingValue);
+      } else if (pending.action === "customer-api-key") {
+        const isClearing = pending.value === "";
+        await setCustomerApiKey(pending.value);
         setState((prev) => ({
           ...prev,
           customerApiKeyInput: "", // Clear input after saving
@@ -213,12 +223,28 @@ export function useMerchantFlow({
           "settings",
           "completeSave",
         );
+      } else {
+        // Save the key first: it's the async step that can fail, and doing it
+        // before the merchant ID avoids leaving a half-applied setup behind.
+        await setCustomerApiKey(pending.apiKey);
+        setMerchantId(pending.merchantId);
+        setState((prev) => ({
+          ...prev,
+          customerApiKeyInput: "",
+          isEditingCustomerApiKey: false,
+        }));
+        showSuccessToast("Credentials saved");
+        addLog(
+          "info",
+          "Merchant ID and Customer API key updated from setup QR",
+          "settings",
+          "completeSave",
+        );
       }
 
       setState((prev) => ({
         ...prev,
-        pendingValue: null,
-        pendingAction: null,
+        pendingSave: null,
         activeModal: "none",
       }));
     } catch (error) {
@@ -228,8 +254,7 @@ export function useMerchantFlow({
       addLog("error", errorMessage, "settings", "completeSave");
     }
   }, [
-    state.pendingValue,
-    state.pendingAction,
+    state.pendingSave,
     setMerchantId,
     clearMerchantId,
     setCustomerApiKey,
@@ -307,8 +332,7 @@ export function useMerchantFlow({
       ...prev,
       activeModal: "none",
       pinError: null,
-      pendingValue: null,
-      pendingAction: null,
+      pendingSave: null,
       merchantIdInput: storedMerchantId ?? "",
       customerApiKeyInput: "", // Clear input on cancel
       isEditingCustomerApiKey: false,
@@ -345,6 +369,7 @@ export function useMerchantFlow({
     resetCustomerApiKeyInput,
     handleMerchantIdConfirm,
     handleCustomerApiKeyConfirm,
+    handleScannedSetup,
     handlePinVerifyComplete,
     handleBiometricPress: runBiometricAuth,
     handlePinSetupComplete,

@@ -10,10 +10,12 @@ import { SetupBanner } from "@/components/setup-banner";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useBiometricAuth } from "@/hooks/use-biometric-auth";
+import { useHasCamera } from "@/hooks/use-has-camera";
 import { useMerchantFlow } from "@/hooks/use-merchant-flow";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
+import { usePendingSetupStore } from "@/store/usePendingSetupStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
@@ -33,7 +35,7 @@ import * as Application from "expo-application";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -91,6 +93,7 @@ export default function SettingsScreen() {
   const isIframeBridgeConfigured = isIframeSession && isBridgeConfigured;
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
+  const hasCamera = useHasCamera();
 
   // Custom hooks for biometrics and merchant flow
   const {
@@ -118,6 +121,7 @@ export default function SettingsScreen() {
     resetCustomerApiKeyInput,
     handleMerchantIdConfirm,
     handleCustomerApiKeyConfirm,
+    handleScannedSetup,
     handlePinVerifyComplete,
     handleBiometricPress,
     handlePinSetupComplete,
@@ -127,6 +131,32 @@ export default function SettingsScreen() {
     authenticate,
     biometricLabel,
   });
+
+  // Pick up a setup QR (merchant ID + API key) from the in-app scanner or the
+  // `wpay://setup` deep link, then run the PIN/biometric-gated save here at the
+  // settings root. Rejected in the same states that disable the manual rows.
+  const pendingSetup = usePendingSetupStore((state) => state.pendingSetup);
+  const clearPendingSetup = usePendingSetupStore((state) => state.clear);
+
+  useEffect(() => {
+    if (!pendingSetup) return;
+    clearPendingSetup();
+    if (isIframeSession) {
+      showErrorToast("This terminal is connected through the dashboard.");
+      return;
+    }
+    if (testMode) {
+      showErrorToast("Turn off Test Mode to connect this terminal.");
+      return;
+    }
+    handleScannedSetup(pendingSetup);
+  }, [
+    pendingSetup,
+    clearPendingSetup,
+    isIframeSession,
+    testMode,
+    handleScannedSetup,
+  ]);
 
   const currencyOptions: RadioOption<CurrencyCode>[] = useMemo(
     () =>
@@ -172,6 +202,10 @@ export default function SettingsScreen() {
   const handleCustomerApiKeySave = () => {
     closeSheet();
     handleCustomerApiKeyConfirm();
+  };
+
+  const handleScanSetupPress = () => {
+    router.push("/scan-setup-qr");
   };
 
   const handleTestModeChange = (enabled: boolean) => {
@@ -342,6 +376,18 @@ export default function SettingsScreen() {
                 disabled={testActive}
                 onPress={() => setActiveSheet("customerApiKey")}
               />
+
+              {hasCamera && (
+                <SettingsItem
+                  testID="settings-scan-setup"
+                  icon={require("@/assets/images/scan.png")}
+                  title="Scan credentials QR"
+                  caret="right"
+                  showCaret
+                  disabled={testActive}
+                  onPress={handleScanSetupPress}
+                />
+              )}
             </>
           )}
 
