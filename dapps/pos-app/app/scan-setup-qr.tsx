@@ -14,8 +14,8 @@ import {
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router, useIsFocused } from "expo-router";
-import { useEffect, useRef } from "react";
-import { Linking, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Linking, Platform, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SCAN_AREA_SIZE = 260;
@@ -35,12 +35,25 @@ export default function ScanSetupQrScreen() {
   // unrecognized code once so the error toast doesn't spam.
   const lastRejectedRef = useRef<string | null>(null);
 
-  // Ask for camera access as soon as the screen mounts.
+  // Whether we've already shown the permission prompt on this screen. After
+  // that, a missing permission gets an explicit action instead of re-prompting.
+  const [hasAsked, setHasAsked] = useState(false);
+  const autoRequestedRef = useRef(false);
+
+  const askForPermission = useCallback(() => {
+    requestPermission().finally(() => setHasAsked(true));
+  }, [requestPermission]);
+
+  // Ask once on mount, and only while the permission is undetermined.
+  // `canAskAgain` can't gate this: expo-camera's web implementation always
+  // reports true, and Android keeps it true after a first denial, so it would
+  // re-prompt (on web, loop) right after the merchant denies.
   useEffect(() => {
-    if (permission && !permission.granted && permission.canAskAgain) {
-      requestPermission();
+    if (permission?.status === "undetermined" && !autoRequestedRef.current) {
+      autoRequestedRef.current = true;
+      askForPermission();
     }
-  }, [permission, requestPermission]);
+  }, [permission, askForPermission]);
 
   const handleBarcodeScanned = (result: BarcodeScanningResult) => {
     if (handledRef.current) return;
@@ -63,7 +76,13 @@ export default function ScanSetupQrScreen() {
 
   const close = () => router.back();
 
-  const isDenied = permission?.granted === false && !permission.canAskAgain;
+  const needsPermission =
+    !!permission &&
+    !permission.granted &&
+    (permission.status === "denied" || hasAsked);
+  // Native can only re-prompt while the OS allows it; otherwise the merchant has
+  // to enable it in Settings. On web, retrying re-runs the browser prompt.
+  const canPrompt = Platform.OS === "web" || !!permission?.canAskAgain;
 
   return (
     <View style={styles.container}>
@@ -99,8 +118,10 @@ export default function ScanSetupQrScreen() {
             color="text-white"
             style={styles.instruction}
           >
-            {isDenied
-              ? "Camera access is off. Enable it in your device settings to scan."
+            {needsPermission
+              ? canPrompt
+                ? "Camera access is off. Allow it to scan the credentials QR code."
+                : "Camera access is off. Enable it in your device settings to scan."
               : "Point your camera at the credentials QR code from your merchant dashboard"}
           </ThemedText>
         </View>
@@ -126,7 +147,7 @@ export default function ScanSetupQrScreen() {
         />
       </Pressable>
 
-      {isDenied ? (
+      {needsPermission ? (
         <View
           style={[
             styles.deniedActions,
@@ -136,9 +157,11 @@ export default function ScanSetupQrScreen() {
           <Button
             type="accent"
             variant="primary"
-            onPress={() => Linking.openSettings()}
+            onPress={
+              canPrompt ? askForPermission : () => Linking.openSettings()
+            }
           >
-            Open settings
+            {canPrompt ? "Allow camera" : "Open settings"}
           </Button>
         </View>
       ) : null}
