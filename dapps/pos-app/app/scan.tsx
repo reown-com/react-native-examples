@@ -34,6 +34,7 @@ import * as Sentry from "@sentry/react-native";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
+import { useKeepAwake } from "expo-keep-awake";
 import {
   router,
   Stack,
@@ -72,6 +73,12 @@ export default function ScanScreen() {
   const hasCancelledRef = useRef(false);
   const hasLeftRef = useRef(false);
   const navigation = useNavigation();
+
+  // Keep the screen on while the payment is open. If the POS sleeps, the
+  // customer can't scan the QR and the merchant never sees the result.
+  // Deactivating after a failed activation (e.g. web without wake-lock
+  // permission) rejects, so suppress that instead of surfacing it.
+  useKeepAwake(undefined, { suppressDeactivateWarnings: true });
 
   const deviceId = useSettingsStore((state) => state.deviceId);
   const storedMerchantId = useSettingsStore((state) => state.merchantId);

@@ -40,6 +40,7 @@
     "expo-crypto": "56.0.4",
     "expo-font": "56.0.7",
     "expo-image": "56.0.11",
+    "expo-keep-awake": "56.0.3",
     "expo-linear-gradient": "56.0.4",
     "expo-linking": "56.0.14",
     "expo-local-authentication": "56.0.4",
