@@ -6,6 +6,29 @@ import { getBuildVariant } from "./build-variant";
 const BUILD_VARIANT = getBuildVariant();
 const IS_PRODUCTION = BUILD_VARIANT === "production";
 
+const stripQuery = (value: unknown) =>
+  typeof value === "string" ? value.replace(/[?#].*$/, "") : value;
+
+// Keeps navigation breadcrumbs (enough context for automatic errors) and drops
+// the rest, so network and console activity don't become a second logging
+// pipeline. On web, history breadcrumbs record full URLs, including the query
+// string. The `wpay://setup?apiKey=…` deep link lands on `/setup?apiKey=…`, so
+// queries are stripped to keep secrets out of Sentry.
+export function filterBreadcrumb(
+  breadcrumb: Sentry.Breadcrumb | null,
+): Sentry.Breadcrumb | null {
+  if (breadcrumb?.category !== "navigation") return null;
+  if (!breadcrumb.data) return breadcrumb;
+  return {
+    ...breadcrumb,
+    data: {
+      ...breadcrumb.data,
+      from: stripQuery(breadcrumb.data.from),
+      to: stripQuery(breadcrumb.data.to),
+    },
+  };
+}
+
 // Call once at module scope in the root layout, before the app renders.
 export function initSentry(): void {
   const tracePropagationTargets = [
@@ -50,15 +73,18 @@ export function initSentry(): void {
       delete event.request;
       return event;
     },
+    // Transactions skip `beforeSend`; on web their request URL can still hold
+    // a deep link's query (e.g. the setup API key).
+    beforeSendTransaction: (event) => {
+      delete event.request;
+      return event;
+    },
     beforeSendSpan: (span) => {
       if (span.op?.startsWith("http") && span.description) {
         span.description = maskPathIds(span.description);
       }
       return span;
     },
-    // Navigation gives enough context for automatic errors. Avoid turning
-    // network and console activity into a second logging pipeline.
-    beforeBreadcrumb: (breadcrumb) =>
-      breadcrumb?.category === "navigation" ? breadcrumb : null,
+    beforeBreadcrumb: filterBreadcrumb,
   });
 }
