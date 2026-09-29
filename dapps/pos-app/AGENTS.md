@@ -19,6 +19,8 @@ pos-app/
 │   ├── payment-success.tsx # Success screen with receipt printing
 │   ├── payment-failure.tsx # Failure screen
 │   ├── settings.tsx       # Settings & configuration
+│   ├── scan-setup-qr.tsx  # Camera scanner for the dashboard setup QR
+│   ├── setup.tsx          # `wpay://setup` deep link target (no UI)
 │   ├── activity.tsx       # Transaction history screen
 │   └── logs.tsx           # Debug logs viewer
 ├── api/                   # Vercel serverless proxies (web only)
@@ -54,6 +56,10 @@ All Payment API requests include:
 - `Sdk-Name`: "pos-device"
 - `Sdk-Version`: "1.0.0"
 - `Sdk-Platform`: "react-native" (native) or "web" (Vercel proxies)
+
+## Terminal Setup QR
+
+The merchant dashboard's API key reveal dialog shows a QR encoding `wpay://setup?apiKey=<key>&merchantId=<id>`. It reaches the app two ways, both parsed by `utils/parse-setup-qr.ts`: the in-app scanner (Settings → "Scan credentials QR", `app/scan-setup-qr.tsx`) or the OS camera opening the deep link (`app/setup.tsx`). Both hand the payload to `store/usePendingSetupStore.ts`; the settings screen consumes it and saves both values behind a single PIN/biometric check (`handleScannedSetup` in `hooks/use-merchant-flow.ts`). It's rejected in Test Mode and in the dashboard iframe session.
 
 ## Environment Variables
 

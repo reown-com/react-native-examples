@@ -1,6 +1,7 @@
 import {
   formatCountdown,
   formatCountdownSpoken,
+  formatShortId,
   getDate,
   getDeviceIdentifier,
 } from "./misc";
@@ -118,5 +119,20 @@ describe("formatCountdownSpoken", () => {
   it("reads zero (and negatives) as 0 seconds", () => {
     expect(formatCountdownSpoken(0)).toBe("0 seconds");
     expect(formatCountdownSpoken(-5)).toBe("0 seconds");
+  });
+});
+
+describe("formatShortId", () => {
+  it("keeps the type prefix and shows the first and last 4 characters", () => {
+    expect(formatShortId("mrch_v2jjQ7OVkP21n37GAWJnb")).toBe("mrch_v2jj…WJnb");
+  });
+
+  it("shortens IDs without a prefix", () => {
+    expect(formatShortId("abcdefghijklmnop")).toBe("abcd…mnop");
+  });
+
+  it("leaves short IDs unchanged", () => {
+    expect(formatShortId("mrch_abc123")).toBe("mrch_abc123");
+    expect(formatShortId("merchant1")).toBe("merchant1");
   });
 });

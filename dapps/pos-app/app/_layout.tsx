@@ -35,6 +35,10 @@ initSentry();
 
 const queryClient = new QueryClient();
 
+// Keep home at the bottom of the stack when the app is cold-started from a deep
+// link (e.g. `wpay://setup`), so the linked screen has somewhere to go back to.
+export const unstable_settings = { initialRouteName: "index" };
+
 const renderHeaderTitle = (title: string) => {
   const HeaderTitle = () => (
     <ThemedText fontSize={18} style={{ fontWeight: "500" }}>
@@ -234,11 +238,15 @@ export default Sentry.wrap(function RootLayout() {
                 options={{ headerTitle: SettingsHeaderTitle }}
               />
               <Stack.Screen
-                name="scan-api-key"
+                name="scan-setup-qr"
                 options={{
                   headerShown: false,
                   contentStyle: { backgroundColor: "black", paddingBottom: 0 },
                 }}
+              />
+              <Stack.Screen
+                name="setup"
+                options={{ headerShown: false, animation: "none" }}
               />
               <Stack.Screen
                 name="activity"

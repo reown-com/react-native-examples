@@ -1,7 +1,6 @@
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
 import { PinModal } from "@/components/pin-modal";
-import { Pressable } from "@/components/pressable";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
 import { SettingsItem } from "@/components/settings-item";
@@ -16,7 +15,7 @@ import { useMerchantFlow } from "@/hooks/use-merchant-flow";
 import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
-import { usePendingApiKeyScanStore } from "@/store/usePendingApiKeyScanStore";
+import { usePendingSetupStore } from "@/store/usePendingSetupStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
@@ -25,6 +24,7 @@ import { getConnectionSetupRemaining } from "@/utils/pos-bridge-ui";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
+import { formatShortId } from "@/utils/misc";
 import { isNfcHceEnabled } from "@/utils/feature-flags";
 import {
   connectPrinter,
@@ -117,12 +117,13 @@ export default function SettingsScreen() {
     isMerchantIdConfirmDisabled,
     isCustomerApiKeyConfirmDisabled,
     hasStoredCustomerApiKey,
+    pendingSetupMerchantId,
     handleMerchantIdInputChange,
     handleCustomerApiKeyInputChange,
     resetCustomerApiKeyInput,
     handleMerchantIdConfirm,
     handleCustomerApiKeyConfirm,
-    handleScannedCustomerApiKey,
+    handleScannedSetup,
     handlePinVerifyComplete,
     handleBiometricPress,
     handlePinSetupComplete,
@@ -133,18 +134,31 @@ export default function SettingsScreen() {
     biometricLabel,
   });
 
-  // Pick up an API key scanned by the full-screen scan route once it pops back,
-  // then run the auto-save flow (PIN/biometric) here at the settings root.
-  const scannedApiKey = usePendingApiKeyScanStore(
-    (state) => state.scannedValue,
-  );
-  const clearScannedApiKey = usePendingApiKeyScanStore((state) => state.clear);
+  // Pick up a setup QR (merchant ID + API key) from the in-app scanner or the
+  // `wpay://setup` deep link, then run the PIN/biometric-gated save here at the
+  // settings root. Rejected in the same states that disable the manual rows.
+  const pendingSetup = usePendingSetupStore((state) => state.pendingSetup);
+  const clearPendingSetup = usePendingSetupStore((state) => state.clear);
 
   useEffect(() => {
-    if (!scannedApiKey) return;
-    handleScannedCustomerApiKey(scannedApiKey);
-    clearScannedApiKey();
-  }, [scannedApiKey, handleScannedCustomerApiKey, clearScannedApiKey]);
+    if (!pendingSetup) return;
+    clearPendingSetup();
+    if (isIframeSession) {
+      showErrorToast("This terminal is connected through the dashboard.");
+      return;
+    }
+    if (testMode) {
+      showErrorToast("Turn off Test Mode to connect this terminal.");
+      return;
+    }
+    handleScannedSetup(pendingSetup);
+  }, [
+    pendingSetup,
+    clearPendingSetup,
+    isIframeSession,
+    testMode,
+    handleScannedSetup,
+  ]);
 
   const currencyOptions: RadioOption<CurrencyCode>[] = useMemo(
     () =>
@@ -192,9 +206,8 @@ export default function SettingsScreen() {
     handleCustomerApiKeyConfirm();
   };
 
-  const handleScanApiKeyPress = () => {
-    closeSheet();
-    router.push("/scan-api-key");
+  const handleScanSetupPress = () => {
+    router.push("/scan-setup-qr");
   };
 
   const handleTestModeChange = (enabled: boolean) => {
@@ -365,6 +378,18 @@ export default function SettingsScreen() {
                 disabled={testActive}
                 onPress={() => setActiveSheet("customerApiKey")}
               />
+
+              {hasCamera && (
+                <SettingsItem
+                  testID="settings-scan-setup"
+                  icon={require("@/assets/images/scan.png")}
+                  title="Scan credentials QR"
+                  caret="right"
+                  showCaret
+                  disabled={testActive}
+                  onPress={handleScanSetupPress}
+                />
+              )}
             </>
           )}
 
@@ -511,53 +536,29 @@ export default function SettingsScreen() {
           onClose={closeSheet}
         >
           <View style={styles.inputContent}>
-            <View style={styles.inputRow}>
-              <TextInput
-                value={
-                  isEditingCustomerApiKey
-                    ? customerApiKeyInput
-                    : hasStoredCustomerApiKey
-                      ? "********"
-                      : ""
-                }
-                onChangeText={handleCustomerApiKeyInputChange}
-                placeholder="Enter customer API key"
-                placeholderTextColor={theme["text-tertiary"]}
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry={true}
-                style={[
-                  styles.sheetInput,
-                  styles.inputWithAction,
-                  {
-                    borderColor: theme["border-primary"],
-                    color: theme["text-primary"],
-                    backgroundColor: theme["foreground-primary"],
-                  },
-                ]}
-              />
-              {hasCamera && (
-                <Pressable
-                  onPress={handleScanApiKeyPress}
-                  testID="settings-customer-scan"
-                  accessibilityLabel="Scan API key QR code"
-                  style={[
-                    styles.scanButton,
-                    {
-                      borderColor: theme["border-primary"],
-                      backgroundColor: theme["foreground-primary"],
-                    },
-                  ]}
-                >
-                  <Image
-                    source={require("@/assets/images/scan.png")}
-                    style={styles.scanIcon}
-                    tintColor={theme["text-primary"]}
-                    cachePolicy="memory-disk"
-                  />
-                </Pressable>
-              )}
-            </View>
+            <TextInput
+              value={
+                isEditingCustomerApiKey
+                  ? customerApiKeyInput
+                  : hasStoredCustomerApiKey
+                    ? "********"
+                    : ""
+              }
+              onChangeText={handleCustomerApiKeyInputChange}
+              placeholder="Enter customer API key"
+              placeholderTextColor={theme["text-tertiary"]}
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={true}
+              style={[
+                styles.sheetInput,
+                {
+                  borderColor: theme["border-primary"],
+                  color: theme["text-primary"],
+                  backgroundColor: theme["foreground-primary"],
+                },
+              ]}
+            />
             <Button
               type="accent"
               variant="primary"
@@ -577,7 +578,9 @@ export default function SettingsScreen() {
         title={activeModal === "pin-verify" ? "Enter PIN" : "Create PIN"}
         subtitle={
           activeModal === "pin-verify"
-            ? "Enter your PIN to save these settings."
+            ? pendingSetupMerchantId
+              ? `Enter your PIN to save the credentials for merchant ${formatShortId(pendingSetupMerchantId)}.`
+              : "Enter your PIN to save these settings."
             : "Set a 4-digit PIN to protect your settings."
         }
         onComplete={
@@ -615,26 +618,6 @@ const styles = StyleSheet.create({
   },
   inputContent: {
     gap: Spacing["spacing-3"],
-  },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing["spacing-3"],
-  },
-  inputWithAction: {
-    flex: 1,
-  },
-  scanButton: {
-    width: 60,
-    height: 60,
-    borderWidth: 1,
-    borderRadius: BorderRadius["4"],
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  scanIcon: {
-    width: 24,
-    height: 24,
   },
   sheetInput: {
     borderWidth: 1,

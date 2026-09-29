@@ -3,7 +3,9 @@ import { Pressable } from "@/components/pressable";
 import { ScanCorners } from "@/components/scan-corners";
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
-import { usePendingApiKeyScanStore } from "@/store/usePendingApiKeyScanStore";
+import { usePendingSetupStore } from "@/store/usePendingSetupStore";
+import { parseSetupQr } from "@/utils/parse-setup-qr";
+import { showErrorToast } from "@/utils/toast";
 import {
   BarcodeScanningResult,
   CameraView,
@@ -18,17 +20,20 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SCAN_AREA_SIZE = 260;
 
-export default function ScanApiKeyScreen() {
+export default function ScanSetupQrScreen() {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
   const [permission, requestPermission] = useCameraPermissions();
-  const setScannedValue = usePendingApiKeyScanStore(
-    (state) => state.setScannedValue,
+  const setPendingSetup = usePendingSetupStore(
+    (state) => state.setPendingSetup,
   );
   const [assets] = useAssets([require("@/assets/images/close.png")]);
 
   // Guards against the scanner firing multiple times before the screen pops.
   const handledRef = useRef(false);
+  // The scanner fires continuously while a QR is in frame; only flag each
+  // unrecognized code once so the error toast doesn't spam.
+  const lastRejectedRef = useRef<string | null>(null);
 
   // Ask for camera access as soon as the screen mounts.
   useEffect(() => {
@@ -41,8 +46,18 @@ export default function ScanApiKeyScreen() {
     if (handledRef.current) return;
     const value = result.data?.trim();
     if (!value) return;
+    const payload = parseSetupQr(value);
+    if (!payload) {
+      if (lastRejectedRef.current !== value) {
+        lastRejectedRef.current = value;
+        showErrorToast(
+          "This isn't a credentials QR code. Use the one from your merchant dashboard.",
+        );
+      }
+      return;
+    }
     handledRef.current = true;
-    setScannedValue(value);
+    setPendingSetup(payload);
     router.back();
   };
 
@@ -86,7 +101,7 @@ export default function ScanApiKeyScreen() {
           >
             {isDenied
               ? "Camera access is off. Enable it in your device settings to scan."
-              : "Point your camera at the API key QR code"}
+              : "Point your camera at the credentials QR code from your merchant dashboard"}
           </ThemedText>
         </View>
       </View>
