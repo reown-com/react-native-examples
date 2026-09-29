@@ -225,7 +225,7 @@ EXPO_PUBLIC_SENTRY_DSN=""        # Sentry error tracking (optional)
 EXPO_PUBLIC_TON_CENTER_API_KEY="" # TON blockchain API key (optional)
 EXPO_PUBLIC_BLOCKCHAIN_API_URL="" # Blockchain API URL (to get wallet balances)
 EXPO_PUBLIC_TEST_PRIVATE_KEY=""  # Private key for funded test wallet (Maestro E2E only)
-EXPO_PUBLIC_TEST_MODE=""         # "true" shows test-only UI / disables pay animations
+EXPO_PUBLIC_TEST_MODE=""         # "true" disables pay animations + the web last-paid-token shortcut (Maestro E2E)
 EXPO_PUBLIC_PAY_API_BASE_URL=""  # Override WCPay API base URL (blank = walletkit default)
 SENTRY_DISABLE_AUTO_UPLOAD=true  # Build-time only: disable Sentry auto upload (Android)
 ```
@@ -243,7 +243,7 @@ The app uses standardized `testID` props for Maestro E2E testing. These IDs are 
 - `.maestro/pay_multiple_options_nokyc.yaml`: Multiple payment options, no KYC — option selection then review
 - `.maestro/pay_multiple_options_kyc.yaml`: Multiple payment options with KYC — option selection, webview KYC flow, then review
 - `.maestro/pay_usdt_polygon.yaml`: USDT on Polygon — a plain ERC-20 (no EIP-3009/2612), so WC Pay uses the Permit2 path: the wallet sends an `approve` (allowance) tx then the payment tx. Best-effort observes the setup step via the `pay-loading-setup-note` testID (soft screenshot), then asserts the success screen. The allowance is reset to 0 after the run (see below) so each run re-exercises `approve`. (Note: USDT on Arbitrum is EIP-3009 / signature-based, so it never needs an on-chain approve — Polygon is used precisely because it does.)
-- `.maestro/flows/pay_open_and_paste_url.yaml`: Shared sub-flow — opens wallet, pastes payment URL, waits for merchant info
+- `.maestro/flows/pay_open_payment_link.yaml`: Shared sub-flow — launches the wallet, then opens the payment link as a deep link (`<DEEPLINK_PREFIX><encoded link>`, e.g. `rn-web3wallet-internal://wc?uri=…`; `scripts/run-maestro-pay-tests.sh` derives the prefix from `APP_ID`)
 - `.maestro/flows/pay_confirm_and_verify.yaml`: Shared sub-flow — taps Pay, verifies success screen
 - `.maestro/scripts/create-payment.js`: Creates a payment via the WalletConnect Pay API (called via `runScript`)
 
@@ -260,6 +260,13 @@ When set, the wallet auto-loads this private key on startup (if no stored wallet
 
 ### CI Workflow
 `.github/workflows/ci_e2e_walletkit.yaml` runs Maestro tests on both iOS (simulator) and Android (emulator). Triggers on PRs/pushes to main when `wallets/rn_cli_wallet/` or `.maestro/` files change.
+
+### E2E build cache (Android + iOS)
+The Android and iOS E2E jobs reuse the last build (APK / simulator `.app`) instead of rebuilding (`.github/actions/walletkit-build-and-maestro/scripts/build-cache.sh`). Saved only by main push/schedule/dispatch runs; every other run restores read-only.
+- **Key**: git tree hash of `wallets/rn_cli_wallet` + the build part of `action.yml` (everything above the `# --- Common: Maestro setup + run ---` marker; Maestro/upload edits below it don't invalidate) + the helper + runner OS/arch + hashes of the written `.env` and the passphrase, plus Android secrets/keystore or iOS root `fastlane/`, `Gemfile(.lock)` and `xcodebuild -version`; rotated twice a week (forced rebuild). Changes under `.maestro/` don't invalidate it; uncommitted build inputs and signed iOS builds disable the cache.
+- **Encrypted**: the build inlines `EXPO_PUBLIC_TEST_PRIVATE_KEY`, and fork PRs can restore main's caches, so the blob is gpg-encrypted (AES-256) with the `E2E_BUILD_CACHE_PASSPHRASE` secret. Without the secret (fork/Dependabot PRs, cross-repo callers) the cache is off. Never cache or upload an unencrypted build.
+- **Fails closed**: an exact hit that fails to decrypt/extract fails the job, since cache entries are immutable. Fix with `gh cache delete <key>` or bump `BUILD_CACHE_EPOCH` in the helper. Rotating the passphrase is safe: its fingerprint is in the key, so the next run just misses.
+- **Web is not cached**, on purpose: a hit would save only ~40s. The web job also has no Metro transform cache, because `node_modules/.cache/metro` holds the inlined test key in plain text. Don't add either back unencrypted.
 
 ### Permit2 allowance reset (USDT)
 After the suite runs, the composite action (`.github/actions/walletkit-build-and-maestro`) calls the shared `WalletConnect/actions/maestro/permit2-reset` action to reset the USDT-on-Polygon Permit2 allowance back to 0, so `pay_usdt_polygon` always re-exercises the `approve` step. It signs a transaction (so it's a Node step, not a Maestro `runScript`); the private key is passed via env, never the CLI. `.github/workflows/e2e-balance-check.yml` also monitors USDT + POL (gas) on Polygon and pings the faucet bot on Slack when low.

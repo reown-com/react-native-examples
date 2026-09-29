@@ -7,7 +7,11 @@ import {
   ReactNativePosPrinter,
   TextOptions,
 } from "react-native-thermal-pos-printer";
-import { Currency, formatAmountWithSymbol } from "./currency";
+import {
+  Currency,
+  formatAmountWithSymbol,
+  formatTokenAmount,
+} from "./currency";
 import { getDate } from "./misc";
 
 export const requestBluetoothPermission = async () => {
@@ -90,49 +94,13 @@ interface PrintReceiptProps {
 const formatReceiptTransactionId = (txnId: string): string => {
   const prefixCharactersToKeep = 8;
   const suffixCharactersToKeep = 5;
-  const truncatedLength =
-    prefixCharactersToKeep + suffixCharactersToKeep + 3;
+  const truncatedLength = prefixCharactersToKeep + suffixCharactersToKeep + 3;
 
   if (txnId.length <= truncatedLength) return txnId;
 
   const prefix = txnId.slice(0, prefixCharactersToKeep);
   const suffix = txnId.slice(-suffixCharactersToKeep);
   return `${prefix}...${suffix}`;
-};
-
-const STANDARD_RECEIPT_DECIMALS = 2;
-const SMALL_AMOUNT_RECEIPT_DECIMALS = 4;
-
-const formatReceiptTokenAmount = (
-  tokenAmount: string,
-  tokenDecimals: number,
-): string => {
-  const rawAmount = BigInt(tokenAmount);
-  const standardPrecisionThreshold =
-    tokenDecimals > STANDARD_RECEIPT_DECIMALS
-      ? BigInt(10) ** BigInt(tokenDecimals - STANDARD_RECEIPT_DECIMALS)
-      : BigInt(1);
-  const displayDecimals =
-    tokenDecimals > STANDARD_RECEIPT_DECIMALS &&
-    rawAmount < standardPrecisionThreshold
-      ? SMALL_AMOUNT_RECEIPT_DECIMALS
-      : STANDARD_RECEIPT_DECIMALS;
-
-  const roundedAmount =
-    tokenDecimals > displayDecimals
-      ? (() => {
-          const scale = BigInt(10) ** BigInt(tokenDecimals - displayDecimals);
-          return (rawAmount + scale / BigInt(2)) / scale;
-        })()
-      : rawAmount * BigInt(10) ** BigInt(displayDecimals - tokenDecimals);
-
-  const paddedAmount = roundedAmount
-    .toString()
-    .padStart(displayDecimals + 1, "0");
-  const integerPart = paddedAmount.slice(0, -displayDecimals);
-  const fractionalPart = paddedAmount.slice(-displayDecimals);
-
-  return `${integerPart}.${fractionalPart}`;
 };
 
 export const printReceipt = async ({
@@ -192,7 +160,7 @@ export const printReceipt = async ({
 
         if (tokenSymbol && tokenAmount && tokenDecimals != null) {
           await ReactNativePosPrinter.printText("PAID WITH ", normal);
-          const formattedTokenAmount = formatReceiptTokenAmount(
+          const formattedTokenAmount = formatTokenAmount(
             tokenAmount,
             tokenDecimals,
           );

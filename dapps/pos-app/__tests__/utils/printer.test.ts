@@ -2,6 +2,13 @@ import { ReactNativePosPrinter } from "react-native-thermal-pos-printer";
 import { getCurrency } from "@/utils/currency";
 import { printReceipt } from "@/utils/printer";
 
+// The real module needs a native TurboModule, so the suite can't load without this.
+jest.mock("react-native-permissions", () => ({
+  PERMISSIONS: { ANDROID: { BLUETOOTH_CONNECT: "bluetooth_connect" } },
+  RESULTS: { GRANTED: "granted", LIMITED: "limited" },
+  request: jest.fn(() => Promise.resolve("granted")),
+}));
+
 describe("printReceipt", () => {
   const printer = ReactNativePosPrinter as jest.Mocked<
     typeof ReactNativePosPrinter
@@ -65,19 +72,31 @@ describe("printReceipt", () => {
     );
   });
 
-  it("rounds a small token amount to four decimals", async () => {
+  // The receipt must show the same amount as the payment page and the email,
+  // and must never print a rounded amount as if it were exact.
+  it.each([
+    [
+      "an exact small amount without rounding",
+      "4560",
+      6,
+      "USDC",
+      "0.00456 USDC",
+    ],
+    ["a cut amount with ≈", "412345678901234567", 18, "ETH", "≈0.412345 ETH"],
+    ["dust instead of zero", "123", 18, "ETH", "<0.000001 ETH"],
+  ])("prints %s", async (_, tokenAmount, tokenDecimals, tokenSymbol, line) => {
     await printReceipt({
       txnId: "pay_123",
       amountFiat: 15,
       currency: getCurrency("USD"),
-      tokenAmount: "4560",
-      tokenSymbol: "USDC",
-      tokenDecimals: 6,
+      tokenAmount,
+      tokenSymbol,
+      tokenDecimals,
       date: "10/09/2026",
     });
 
     expect(printer.printText).toHaveBeenCalledWith(
-      "0.0046 USDC\n",
+      `${line}\n`,
       expect.any(Object),
     );
   });

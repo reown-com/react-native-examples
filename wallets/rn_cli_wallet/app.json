@@ -49,6 +49,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "@rnrepo/expo-config-plugin",
       [
         "react-native-bootsplash",
         {

@@ -7,6 +7,7 @@ import { Spacing } from "@/constants/spacing";
 import { useCountdown } from "@/hooks/use-countdown";
 import { useDisableBackButton } from "@/hooks/use-disable-back-button";
 import { useIsTablet } from "@/hooks/use-is-tablet";
+import { useLatchedFlag } from "@/hooks/use-latched-flag";
 import { useNfcPayment } from "@/hooks/use-nfc-payment";
 import { useTheme } from "@/hooks/use-theme-color";
 import { usePaymentStatus } from "@/services/hooks";
@@ -33,6 +34,7 @@ import * as Sentry from "@sentry/react-native";
 import { useAssets } from "expo-asset";
 import * as Clipboard from "expo-clipboard";
 import { Image } from "expo-image";
+import { useKeepAwake } from "expo-keep-awake";
 import {
   router,
   Stack,
@@ -71,6 +73,12 @@ export default function ScanScreen() {
   const hasCancelledRef = useRef(false);
   const hasLeftRef = useRef(false);
   const navigation = useNavigation();
+
+  // Keep the screen on while the payment is open. If the POS sleeps, the
+  // customer can't scan the QR and the merchant never sees the result.
+  // Deactivating after a failed activation (e.g. web without wake-lock
+  // permission) rejects, so suppress that instead of surfacing it.
+  useKeepAwake(undefined, { suppressDeactivateWarnings: true });
 
   const deviceId = useSettingsStore((state) => state.deviceId);
   const storedMerchantId = useSettingsStore((state) => state.merchantId);
@@ -371,17 +379,16 @@ export default function ScanScreen() {
   const isProcessing = paymentStatusData?.status === "processing";
   const showNfc = isNfcHceEnabled && nfcEnabled && nfcMode === "hce";
 
-  // Hide the header back button (and swipe-back) once the payment leaves the
-  // interactive QR state. We derive this from the status rather than binding it
-  // to `isProcessing`: a terminal status flips `isProcessing` back to false
-  // *and* navigates away in the same tick, and reviving the header back-button
-  // config while the screen is detaching crashes react-native-screens on Android
-  // with "ScreenStackFragment added into a non-stack container". Keeping it
-  // hidden for every status past `requires_action` means the option never flips
-  // back during that transition. (Derived value only — a ref/effect latch trips
-  // the react-hooks lint rules.)
-  const backHidden =
-    !!paymentStatusData && paymentStatusData.status !== "requires_action";
+  // Hide the header back button (and swipe-back) once the payment reaches
+  // `processing`, and keep it hidden. A terminal status navigates away in the
+  // same tick it arrives, and any change to the header back-button config while
+  // the screen is detaching crashes react-native-screens on Android with
+  // "ScreenStackFragment added into a non-stack container". Latching on
+  // `processing` means the option never changes when the terminal status lands:
+  // it stays hidden after `processing`, and stays visible when a poll goes
+  // straight from `requires_action` to terminal. That second case happens when
+  // the POS sleeps mid-payment and wakes to a finished payment.
+  const backHidden = useLatchedFlag(isProcessing);
 
   // Block the Android hardware back button whenever the header back and gesture
   // are hidden, so it can't pop the screen mid-confirmation.

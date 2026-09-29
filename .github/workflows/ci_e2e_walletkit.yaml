@@ -82,8 +82,10 @@ jobs:
     # Balance alert should not block tests. On schedule, iOS (macOS, expensive)
     # runs only on the once-daily cron; the 6h cadence stays Android-only. On
     # dispatch, gated by the `ios` checkbox.
+    # `!cancelled()` (not `always()`): still runs when check-balance fails, but a
+    # job-level `always()` makes GitHub ignore Cancel, so the run keeps going to the end.
     if: >-
-      always()
+      !cancelled()
       && github.actor != 'dependabot[bot]'
       && (github.event_name != 'workflow_dispatch' || inputs.ios)
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
@@ -110,6 +112,10 @@ jobs:
           merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
           merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
           maestro-tags: ${{ env.MAESTRO_TAGS }}
+          # Encrypted build cache: every run may restore (fork/Dependabot PRs get
+          # no secret, so it's off for them); only trusted main runs save.
+          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()
@@ -164,7 +170,7 @@ jobs:
     # Balance alert should not block tests. Android runs on every trigger (it's
     # the cheap 6h canary); on dispatch, gated by the `android` checkbox.
     if: >-
-      always() && github.actor != 'dependabot[bot]'
+      !cancelled() && github.actor != 'dependabot[bot]'
       && (github.event_name != 'workflow_dispatch' || inputs.android)
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - Android
@@ -192,6 +198,10 @@ jobs:
           android-secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
           android-keystore-base64: ${{ secrets.WC_INTERNAL_KEYSTORE }}
           android-keystore-name: ${{ vars.WC_INTERNAL_KEYSTORE_NAME }}
+          # Encrypted build cache: every run may restore (fork/Dependabot PRs get
+          # no secret, so it's off for them); only trusted main runs save.
+          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()
@@ -247,7 +257,7 @@ jobs:
     # `web` checkbox is set). Cheap (ubuntu), so kept off the 6h Android canary
     # for parity with iOS's daily-only schedule gate.
     if: >-
-      always()
+      !cancelled()
       && github.actor != 'dependabot[bot]'
       && (github.event_name != 'workflow_dispatch' || inputs.web)
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')

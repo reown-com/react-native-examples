@@ -35,13 +35,14 @@
         "android.permission.BLUETOOTH_ADVERTISE",
         "android.permission.USB_PERMISSION"
       ],
-      "versionCode": 7
+      "versionCode": 9
     },
     "web": {
       "output": "static",
       "favicon": "./assets/app_icons/icon.png"
     },
     "plugins": [
+      "@rnrepo/expo-config-plugin",
       "expo-router",
       [
         "expo-splash-screen",

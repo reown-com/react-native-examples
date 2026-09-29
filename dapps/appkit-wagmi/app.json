@@ -98,6 +98,7 @@
       "favicon": "./assets/icon.png"
     },
     "plugins": [
+      "@rnrepo/expo-config-plugin",
       [
         "@sentry/react-native/expo",
         {
