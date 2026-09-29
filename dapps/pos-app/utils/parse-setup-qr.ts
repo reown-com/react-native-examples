@@ -6,8 +6,8 @@
 // It's a deep link (not plain JSON) so a phone camera offers to open the app
 // instead of sending the secret to a web search. The same link reaches the app
 // two ways: scanned in-app (`app/scan-setup-qr.tsx`) or opened by the OS
-// (`app/setup.tsx`). Any `wpay` scheme variant is accepted (e.g. the internal
-// build's `wpay-internal`), since the dashboard always emits `wpay://`.
+// (`app/setup.tsx`). The dashboard and both app variants use `wpay://`; suffixed
+// schemes remain accepted here so an in-app scan also tolerates older QR links.
 
 export interface SetupPayload {
   merchantId: string;

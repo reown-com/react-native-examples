@@ -17,8 +17,9 @@
 // Replaces the old scripts/withAndroidReleaseSigningConfig.js (release-only signing).
 // The internal buildType's badged launcher icon + "WPay Dev" label come from a
 // buildType res overlay written by plugins/withAndroidVariantIcons.js. pos-app has
-// no WalletConnect deep-link-back / redirect scheme, so — unlike rn_cli_wallet — no
-// internal AndroidManifest.xml scheme overlay is needed.
+// The setup deep link intentionally uses the same `wpay` scheme in both variants,
+// so — unlike rn_cli_wallet — no internal AndroidManifest.xml scheme overlay is
+// needed.
 const { withAppBuildGradle } = require("@expo/config-plugins");
 
 function addAndroidVariants(buildGradle) {

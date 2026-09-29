@@ -9,6 +9,21 @@ const IS_PRODUCTION = BUILD_VARIANT === "production";
 const stripQuery = (value: unknown) =>
   typeof value === "string" ? value.replace(/[?#].*$/, "") : value;
 
+const URL_DATA_KEYS = ["url.full", "http.url", "route.url"] as const;
+type SentrySpan = Parameters<
+  NonNullable<Sentry.ReactNativeOptions["beforeSendSpan"]>
+>[0];
+
+function stripQueriesFromSpanData(
+  data: Record<string, unknown> | undefined,
+): void {
+  if (!data) return;
+  for (const key of URL_DATA_KEYS) {
+    const value = data[key];
+    if (typeof value === "string") data[key] = stripQuery(value);
+  }
+}
+
 // Keeps navigation breadcrumbs (enough context for automatic errors) and drops
 // the rest, so network and console activity don't become a second logging
 // pipeline. On web, history breadcrumbs record full URLs, including the query
@@ -27,6 +42,26 @@ export function filterBreadcrumb(
       to: stripQuery(breadcrumb.data.to),
     },
   };
+}
+
+// On web, Sentry's HttpContext integration stores the current page URL in the
+// root span's `url.full` attribute as well as in `event.request`. Scrub both the
+// root trace and child spans so setup credentials cannot survive in trace data.
+export function filterTransaction(
+  event: Sentry.TransactionEvent,
+): Sentry.TransactionEvent {
+  delete event.request;
+  stripQueriesFromSpanData(event.contexts?.trace?.data);
+  event.spans?.forEach((span) => stripQueriesFromSpanData(span.data));
+  return event;
+}
+
+export function filterSpan(span: SentrySpan): SentrySpan {
+  stripQueriesFromSpanData(span.data);
+  if (span.op?.startsWith("http") && span.description) {
+    span.description = maskPathIds(span.description);
+  }
+  return span;
 }
 
 // Call once at module scope in the root layout, before the app renders.
@@ -75,16 +110,8 @@ export function initSentry(): void {
     },
     // Transactions skip `beforeSend`; on web their request URL can still hold
     // a deep link's query (e.g. the setup API key).
-    beforeSendTransaction: (event) => {
-      delete event.request;
-      return event;
-    },
-    beforeSendSpan: (span) => {
-      if (span.op?.startsWith("http") && span.description) {
-        span.description = maskPathIds(span.description);
-      }
-      return span;
-    },
+    beforeSendTransaction: filterTransaction,
+    beforeSendSpan: filterSpan,
     beforeBreadcrumb: filterBreadcrumb,
   });
 }

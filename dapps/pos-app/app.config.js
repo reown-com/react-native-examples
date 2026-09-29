@@ -24,11 +24,6 @@ const VARIANT_ID_SUFFIX = {
   internal: ".internal",
 };
 
-const VARIANT_SCHEME_SUFFIX = {
-  production: "",
-  internal: "-internal",
-};
-
 // Human-readable display name per variant (iOS CFBundleDisplayName via `name`; the
 // Android label is overlaid per-buildType via plugins/withAndroidVariantIcons.js
 // strings.xml).
@@ -48,7 +43,9 @@ module.exports = ({ config }) => {
     ...config,
     name: VARIANT_NAME[variant],
     icon: `${iconDir}/icon.png`,
-    scheme: `${BASE_SCHEME}${VARIANT_SCHEME_SUFFIX[variant]}`,
+    // The merchant dashboard always emits wpay:// setup links. Keep one scheme
+    // across variants so both production and internal builds can open them.
+    scheme: BASE_SCHEME,
     ios: {
       ...config.ios,
       bundleIdentifier: `${BASE_APP_ID}${VARIANT_ID_SUFFIX[variant]}`,
