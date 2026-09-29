@@ -24,7 +24,6 @@ import { getConnectionSetupRemaining } from "@/utils/pos-bridge-ui";
 import { getBiometricLabel } from "@/utils/biometrics";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { CURRENCIES, CurrencyCode, getCurrency } from "@/utils/currency";
-import { formatShortId } from "@/utils/misc";
 import { isNfcHceEnabled } from "@/utils/feature-flags";
 import {
   connectPrinter,
@@ -117,7 +116,6 @@ export default function SettingsScreen() {
     isMerchantIdConfirmDisabled,
     isCustomerApiKeyConfirmDisabled,
     hasStoredCustomerApiKey,
-    pendingSetupMerchantId,
     handleMerchantIdInputChange,
     handleCustomerApiKeyInputChange,
     resetCustomerApiKeyInput,
@@ -578,9 +576,7 @@ export default function SettingsScreen() {
         title={activeModal === "pin-verify" ? "Enter PIN" : "Create PIN"}
         subtitle={
           activeModal === "pin-verify"
-            ? pendingSetupMerchantId
-              ? `Enter your PIN to save the credentials for merchant ${formatShortId(pendingSetupMerchantId)}.`
-              : "Enter your PIN to save these settings."
+            ? "Enter your PIN to save these settings."
             : "Set a 4-digit PIN to protect your settings."
         }
         onComplete={

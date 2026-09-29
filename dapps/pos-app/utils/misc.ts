@@ -70,12 +70,3 @@ export function formatCountdownSpoken(totalSeconds: number): string {
   }
   return parts.join(" ");
 }
-
-// Shortens an ID for display as its first and last 4 characters, keeping a
-// type prefix like `mrch_` intact: "mrch_v2jjQ7OVkP21n37GAWJnb" -> "mrch_v2jj…WJnb".
-// IDs too short to benefit are returned unchanged.
-export function formatShortId(id: string): string {
-  const [, prefix = "", rest] = /^([a-z]+_)?(.*)$/.exec(id) ?? [];
-  if (rest.length <= 9) return id;
-  return `${prefix}${rest.slice(0, 4)}…${rest.slice(-4)}`;
-}

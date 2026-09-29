@@ -351,11 +351,6 @@ export function useMerchantFlow({
 
   const hasStoredCustomerApiKey = isCustomerApiKeySet;
 
-  // The merchant a scanned setup QR is about to save, so the PIN prompt can name
-  // it (the merchant never sees the values before confirming).
-  const pendingSetupMerchantId =
-    state.pendingSave?.action === "setup" ? state.pendingSave.merchantId : null;
-
   return {
     // State
     merchantIdInput: state.merchantIdInput,
@@ -367,7 +362,6 @@ export function useMerchantFlow({
     isMerchantIdConfirmDisabled,
     isCustomerApiKeyConfirmDisabled,
     hasStoredCustomerApiKey,
-    pendingSetupMerchantId,
 
     // Handlers
     handleMerchantIdInputChange,
