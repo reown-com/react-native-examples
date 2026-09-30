@@ -25,6 +25,12 @@
     "lint": "expo lint",
     "test": "jest"
   },
+  "reanimated": {
+    "staticFeatureFlags": {
+      "ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS": true,
+      "IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS": true
+    }
+  },
   "dependencies": {
     "@rnrepo/expo-config-plugin": "0.3.6",
     "@sentry/react-native": "8.23.0",
@@ -53,7 +59,6 @@
     "pressto": "0.6.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-hook-form": "7.71.2",
     "react-native": "0.85.3",
     "react-native-device-info": "14.1.1",
     "react-native-gesture-handler": "2.31.2",
