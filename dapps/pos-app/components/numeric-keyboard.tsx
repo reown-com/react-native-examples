@@ -24,9 +24,6 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
   const Theme = useTheme();
   const isTablet = useIsTablet();
   const [assets] = useAssets([require("@/assets/images/backspace.png")]);
-  const handlePress = (key: string) => {
-    onKeyPress(key);
-  };
 
   return (
     <View style={[styles.container, isTablet && styles.containerTablet, style]}>
@@ -38,7 +35,7 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
           {row.map((key) => (
             <Pressable
               key={key}
-              onPress={() => handlePress(key)}
+              onPress={() => onKeyPress(key)}
               testID={key === "." ? "key-decimal" : `key-${key}`}
               accessibilityRole="button"
               accessibilityLabel={key === "erase" ? "Backspace" : key}
