@@ -35,7 +35,14 @@ if [ "$1" = "--generate" ]; then
     echo "$FILE already exists; refusing to overwrite it."
     exit 1
   fi
-  (umask 077; cast wallet new-mnemonic --json | jq -r '.mnemonic' > "$FILE")
+  # cast >= 1.8 nests the JSON payload under `data` (older versions don't).
+  (umask 077; cast wallet new-mnemonic --json | jq -r '.data.mnemonic // .mnemonic // empty' > "$FILE")
+  # Check it derives before asking anyone to save it.
+  if [ ! -s "$FILE" ] || ! cast wallet address --mnemonic "$FILE" --mnemonic-index 0 >/dev/null 2>&1; then
+    rm -f "$FILE"
+    echo "Couldn't read a valid mnemonic from 'cast wallet new-mnemonic --json' ($(cast --version | head -1))."
+    exit 1
+  fi
   echo "Wrote a new mnemonic to $FILE."
   echo "Save it in 1Password now: it's the only copy, and it controls the funded wallets."
   read -r -p "Saved? [y/N] " SAVED
@@ -55,7 +62,7 @@ tr -s '[:space:]' ' ' < "$FILE" | sed 's/^ //; s/ $//' > "$TMP"
 WORD_COUNT="$(wc -w < "$TMP" | tr -d ' ')"
 case "$WORD_COUNT" in
   12|15|18|21|24) ;;
-  *) echo "$FILE doesn't look like a mnemonic ($WORD_COUNT words; expected 12 or 24)."; exit 1 ;;
+  *) echo "$FILE doesn't look like a mnemonic ($WORD_COUNT words; expected 12, 15, 18, 21 or 24)."; exit 1 ;;
 esac
 if ! grep -qE '^[a-z]+( [a-z]+)*$' "$TMP"; then
   echo "$FILE doesn't look like a mnemonic (expected lowercase words only)."
