@@ -1,7 +1,9 @@
 name: E2E Wallet Balance Check
 
+# Reusable only: callers must run it from a job in the e2e-faucet-requests
+# concurrency group (ci_e2e_walletkit.yaml, e2e-balance-check-manual.yml), so
+# faucet requests from different runs never overlap.
 on:
-  workflow_dispatch: {}
   workflow_call:
     secrets:
       SLACK_FAUCETBOT_WEBHOOK_URL:
@@ -30,7 +32,7 @@ jobs:
       fail-fast: false
       # The faucet bot sends from one wallet and drops a same-chain request that
       # arrives before its previous send is mined ("replacement transaction
-      # underpriced"), so check the wallets one at a time (the caller's
+      # underpriced"), so check the wallets one at a time (callers' shared
       # e2e-faucet-requests concurrency group serializes runs).
       max-parallel: 1
       matrix:
