@@ -27,14 +27,20 @@ on:
       - 'wallets/rn_cli_wallet/**'
       - '.maestro/**'
       - '.github/actions/walletkit-build-and-maestro/**'
+      - '.github/actions/derive-e2e-wallet/**'
+      - '.github/actions/install-cast/**'
       - '.github/workflows/ci_e2e_walletkit.yaml'
+      - '.github/workflows/e2e-balance-check.yml'
   push:
     branches: [main]
     paths:
       - 'wallets/rn_cli_wallet/**'
       - '.maestro/**'
       - '.github/actions/walletkit-build-and-maestro/**'
+      - '.github/actions/derive-e2e-wallet/**'
+      - '.github/actions/install-cast/**'
       - '.github/workflows/ci_e2e_walletkit.yaml'
+      - '.github/workflows/e2e-balance-check.yml'
   workflow_dispatch:
     inputs:
       maestro-tags:
@@ -73,6 +79,15 @@ jobs:
     if: >-
       github.actor != 'dependabot[bot]'
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
+    # Repo-wide, across refs: the faucet bot sends from one wallet and drops a
+    # same-chain request that lands before its previous send is mined, so
+    # overlapping runs must not request at the same time. The group is on this
+    # calling job (not the matrix inside) because GitHub keeps one pending job
+    # per group. A newer run can replace a pending check; the E2E jobs still
+    # run (`!cancelled()`), and the next run checks the balances again.
+    concurrency:
+      group: e2e-faucet-requests
+      cancel-in-progress: false
     uses: ./.github/workflows/e2e-balance-check.yml
     secrets:
       SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
@@ -93,18 +108,37 @@ jobs:
     name: E2E Tests - iOS
     runs-on: macos-latest-xlarge
     timeout-minutes: 60
+    # One wallet per platform (see derive-e2e-wallet): runs on other refs queue
+    # instead of paying from the same account at the same time. GitHub keeps
+    # one pending run per group; a newer one replaces it.
+    concurrency:
+      group: e2e-wallet-ios
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Derive E2E wallet (iOS)
+        id: wallet
+        uses: ./.github/actions/derive-e2e-wallet
+        with:
+          mnemonic: ${{ secrets.TEST_WALLET_MNEMONIC }}
+          index: 1
+          expected-address: ${{ vars.TEST_WALLET_ADDRESS_IOS }}
 
       - name: Build wallet and run Maestro tests (iOS)
         id: walletkit
         uses: ./.github/actions/walletkit-build-and-maestro
         with:
           platform: ios
+          # Two slim simulators (~2.3 GB each at peak) share the suite. On the
+          # 5-core xlarge runner a third slows every flow 1.6-2x (CPU-bound) and
+          # saves nothing; a stock simulator peaks at ~5.5 GB.
+          ios-slim-simulator: 'true'
+          ios-simulators: '2'
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
-          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          wallet-private-key: ${{ steps.wallet.outputs.private-key }}
           merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
           merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
           merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
@@ -176,9 +210,23 @@ jobs:
     name: E2E Tests - Android
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    # One wallet per platform (see derive-e2e-wallet): runs on other refs queue
+    # instead of paying from the same account at the same time. GitHub keeps
+    # one pending run per group; a newer one replaces it.
+    concurrency:
+      group: e2e-wallet-android
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Derive E2E wallet (Android)
+        id: wallet
+        uses: ./.github/actions/derive-e2e-wallet
+        with:
+          mnemonic: ${{ secrets.TEST_WALLET_MNEMONIC }}
+          index: 0
+          expected-address: ${{ vars.TEST_WALLET_ADDRESS_ANDROID }}
 
       - name: Build wallet and run Maestro tests (Android)
         id: walletkit
@@ -187,7 +235,7 @@ jobs:
           platform: android
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
-          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          wallet-private-key: ${{ steps.wallet.outputs.private-key }}
           merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
           merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
           merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
@@ -265,9 +313,23 @@ jobs:
     name: E2E Tests - Web
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # One wallet per platform (see derive-e2e-wallet): runs on other refs queue
+    # instead of paying from the same account at the same time. GitHub keeps
+    # one pending run per group; a newer one replaces it.
+    concurrency:
+      group: e2e-wallet-web
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Derive E2E wallet (Web)
+        id: wallet
+        uses: ./.github/actions/derive-e2e-wallet
+        with:
+          mnemonic: ${{ secrets.TEST_WALLET_MNEMONIC }}
+          index: 2
+          expected-address: ${{ vars.TEST_WALLET_ADDRESS_WEB }}
 
       - name: Build wallet and run Maestro tests (Web)
         id: walletkit
@@ -276,7 +338,7 @@ jobs:
           platform: web
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
-          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          wallet-private-key: ${{ steps.wallet.outputs.private-key }}
           merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
           merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
           merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}

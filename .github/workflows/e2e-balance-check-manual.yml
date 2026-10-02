@@ -1,0 +1,20 @@
+name: E2E Wallet Balance Check (manual)
+
+# Manual entry point for the E2E wallet balance check (e.g. to request a
+# faucet top-up). It calls the same reusable workflow as ci_e2e_walletkit.yaml
+# from a job in the same repo-wide e2e-faucet-requests concurrency group, so a
+# manual check can't send faucet requests at the same time as a CI run's.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  check-balance:
+    concurrency:
+      group: e2e-faucet-requests
+      cancel-in-progress: false
+    uses: ./.github/workflows/e2e-balance-check.yml
+    secrets:
+      SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
