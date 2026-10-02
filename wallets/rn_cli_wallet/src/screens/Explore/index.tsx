@@ -5,33 +5,26 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useSnapshot } from 'valtio';
 
 import { Text } from '@/components/Text';
 import { useTheme } from '@/hooks/useTheme';
 import SettingsStore from '@/store/SettingsStore';
-import {
-  buildPickerDappUrl,
-  PICKER_DAPPS,
-  PickerDapp,
-} from '@/utils/PickerUtil';
+import { PICKER_DAPPS, PickerDapp } from '@/utils/PickerUtil';
 import { HomeTabScreenProps } from '@/utils/TypesUtil';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 
 type Props = HomeTabScreenProps<'Explore'>;
 
 /**
- * Dapp Picker POC (H2b): a curated directory of fee-honoring dapps. Tapping a
- * tile opens the dapp in a webview with a monetized WC session
- * pre-established — the user lands already connected.
+ * Explore (H2b): a curated directory of apps. Tapping a tile opens the app in
+ * a webview that auto-connects to this wallet — the user lands connected.
  */
 export default function Explore({ navigation }: Props) {
   const Theme = useTheme();
-  const { pickerHeadless } = useSnapshot(SettingsStore.state);
 
   const openDapp = (dapp: PickerDapp) => {
     navigation.navigate('DappBrowser', {
-      url: buildPickerDappUrl(dapp),
+      url: dapp.url,
       name: dapp.name,
     });
   };
@@ -73,7 +66,7 @@ export default function Explore({ navigation }: Props) {
         Explore
       </Text>
       <Text variant="sm-400" color="text-secondary" style={styles.subtitle}>
-        Fee-sharing dapps — tap to open connected ({pickerHeadless ? 'headless' : 'provider'} mode)
+        Tap an app to open it already connected
       </Text>
       <View style={styles.grid}>
         {PICKER_DAPPS.map(dapp => (

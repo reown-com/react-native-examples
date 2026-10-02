@@ -86,13 +86,9 @@ function ToggleCard({
 }
 
 export default function Settings() {
-  const {
-    socketStatus,
-    themeMode,
-    testNets,
-    pickerHeadless,
-    pickerAutoConnect,
-  } = useSnapshot(SettingsStore.state);
+  const { socketStatus, themeMode, testNets, pickerAutoConnect } = useSnapshot(
+    SettingsStore.state,
+  );
   const [clientId, setClientId] = useState('');
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const Theme = useTheme();
@@ -144,11 +140,6 @@ export default function Settings() {
           label="Explore: auto-connect"
           value={pickerAutoConnect}
           onToggle={() => SettingsStore.setPickerConsent(!pickerAutoConnect)}
-        />
-        <ToggleCard
-          label="Explore: headless connect"
-          value={pickerHeadless}
-          onToggle={() => SettingsStore.togglePickerHeadless()}
         />
         <Card
           title="Secret keys & phrases"

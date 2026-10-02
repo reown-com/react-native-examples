@@ -14,10 +14,7 @@ import { TON_SIGNING_METHODS } from '@/constants/Ton';
 import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
 import { approveCantonRequest } from '@/utils/CantonRequestHandlerUtil';
 import { getRequestConfig } from '@/modals/requestConfig';
-import {
-  autoApprovePickerProposal,
-  isPickerPairing,
-} from '@/utils/PickerUtil';
+import { autoApprovePickerProposal, isPickerPairing } from '@/utils/PickerUtil';
 import {
   ensureWalletForChainId,
   ensureWalletReady,
@@ -41,9 +38,9 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(proposal.verifyContext);
 
-      // Dapp Picker POC: proposals arriving on a pairing initiated from the
-      // Explore webview are auto-approved (with wc_feeTerms) when the user
-      // has granted the one-time consent. Everything else keeps the modal.
+      // Explore (H2b): proposals arriving on a pairing the Explore webview
+      // offered are auto-approved (with wallet_guide_id) when the user has
+      // granted the one-time consent. Everything else keeps the modal.
       if (
         isPickerPairing(proposal.params.pairingTopic) &&
         SettingsStore.state.pickerAutoConnect

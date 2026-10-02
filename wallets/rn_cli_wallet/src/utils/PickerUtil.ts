@@ -4,67 +4,28 @@ import { buildApprovedNamespaces } from '@walletconnect/utils';
 import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 import { walletKit } from '@/utils/WalletKitUtil';
-import { eip155Addresses } from '@/utils/EIP155WalletUtil';
-import { suiAddresses } from '@/utils/SuiWalletUtil';
-import { getWallet, tonAddresses } from '@/utils/TonWalletUtil';
-import { tronAddresses } from '@/utils/TronWalletUtil';
-import { cantonAddresses } from '@/utils/CantonWalletUtil';
-import { solanaAddresses } from '@/utils/SolanaWalletUtil';
-import { bitcoinAddresses } from '@/utils/BitcoinWalletUtil';
-import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
-import { SUI_CHAINS, SUI_EVENTS, SUI_SIGNING_METHODS } from '@/constants/Sui';
-import { TON_CHAINS, TON_SIGNING_METHODS } from '@/constants/Ton';
-import { TRON_CHAINS, TRON_SIGNING_METHODS } from '@/constants/Tron';
+import { getWallet } from '@/utils/TonWalletUtil';
+import { getSupportedChains } from '@/utils/HelperUtil';
+import { ensureWalletsForChainIds } from '@/utils/WalletInitializationUtil';
 import {
-  CANTON_CHAINS,
-  CANTON_SIGNING_METHODS,
-  CANTON_EVENTS,
-} from '@/constants/Canton';
-import {
-  SOLANA_CHAINS,
-  SOLANA_EVENTS,
-  SOLANA_SIGNING_METHODS,
-} from '@/constants/Solana';
-import {
-  BIP122_CHAINS,
-  BIP122_EVENTS,
-  BIP122_SIGNING_METHODS,
-} from '@/constants/Bitcoin';
+  buildSupportedNamespaces,
+  filterNamespacesByChains,
+  getCurrentWalletAddresses,
+} from '@/utils/SupportedNamespacesUtil';
 import { ENV } from '@/utils/env';
 
 /**
- * Dapp Picker POC (H2b): a curated Explore directory of fee-honoring dapps.
- * Every tile opens the Session Fees POC dapp in a webview with a different
- * default aggregator; the dapp hands back a WC pairing URI which we pair and
- * auto-approve (with wc_feeTerms attached) — the user lands connected.
+ * Explore (H2b): a curated directory of apps that auto-connect when opened
+ * inside the wallet. DappBrowser injects the walletConnectHost bridge, the
+ * app hands back a pairing URI ({type:'wc_session_offer', uri}), and the
+ * resulting proposal is auto-approved with this wallet's wallet_guide_id.
  */
 
-// Session-fees demo recipients (see web-examples SESSION-FEES-POC.md):
-// - Solana: USDC ATA already initialized (Jupiter silently skips fees otherwise)
-// - EVM: the address KyberSwap/Uniswap fees already accumulate on
-const FEE_RECIPIENT_SOLANA =
-  ENV.FEE_RECIPIENT_SOLANA || '9zYtGz2nuUMe8yb9EJNNWdh2MNgMjAoWFuNgzjDm2nua';
-const FEE_RECIPIENT_EVM =
-  ENV.FEE_RECIPIENT_EVM || '0x879d5d9f48391b07525453F00e6690F851048E46';
-const FEE_BPS = Number(ENV.FEE_BPS || 50);
-
-const PICKER_DAPP_BASE_URL =
-  ENV.PICKER_DAPP_URL ||
-  'https://react-dapp-v2-git-session-fees-poc-reown-com.vercel.app';
-
-// The stake dapp carries the dapp-side auto-connect changes (walletconnect-apps
-// apps/portal). Until they ship to production, the default is the portal
-// preview (Vercel share link — tracks the PR branch's latest deployment), so
-// CI builds work without EXPO_PUBLIC_STAKE_DAPP_URL in the env file. Override
-// via the env var for a local dev server.
-const STAKE_DAPP_URL =
-  ENV.STAKE_DAPP_URL ||
-  'https://portal-git-feat-h2b-stake-auto-connect-poc-walletconnect.vercel.app/stake?_vercel_share=esDVgpyqZ03Gg6obtfqgsY154bMY7zZh';
-
 /**
- * Explore tile data — shaped like a future registry entry: a fee-honoring
- * dapp per aggregator. All four point at the same POC dapp with a different
- * default aggregator (the "picker illusion").
+ * Explore tile data — shaped like a future registry entry. Tiles open their
+ * URL as-is: the auto-connect signal is the injected
+ * walletConnectHost.autoConnect bridge flag (see DappBrowser), not a URL
+ * parameter.
  */
 export interface PickerDapp {
   id: string;
@@ -73,43 +34,18 @@ export interface PickerDapp {
   description: string;
   color: string;
   glyph: string;
-  /** Legacy POC tiles: default aggregator of the shared Session Fees dapp. */
-  aggregator?: string;
-  /**
-   * Real dapps: opened as-is. No wc_auto/aggregator params — the
-   * auto-connect signal is the injected walletConnectHost.autoConnect bridge
-   * flag (see DappBrowser), per the H2b technical design.
-   */
-  url?: string;
+  url: string;
 }
 
 export const PICKER_DAPPS: PickerDapp[] = [
   {
-    id: 'jupiter',
-    name: 'Jupiter',
-    chainLabel: 'Solana',
-    description: 'Swap SOL → USDC',
-    color: '#14F195',
-    glyph: '◎',
-    aggregator: 'jupiter',
-  },
-  {
-    id: 'oneinch',
-    name: '1inch',
-    chainLabel: 'Arbitrum',
-    description: 'Swap ETH → USDC',
-    color: '#627EEA',
-    glyph: '🦄',
-    aggregator: 'oneinch',
-  },
-  {
-    id: 'kyberswap',
-    name: 'KyberSwap',
-    chainLabel: 'Arbitrum',
-    description: 'Swap ETH → USDC',
-    color: '#31CB9E',
-    glyph: 'K',
-    aggregator: 'kyberswap',
+    id: 'react-app',
+    name: 'React App',
+    chainLabel: 'Multichain',
+    description: 'WalletConnect test app',
+    color: '#61DAFB',
+    glyph: 'R',
+    url: ENV.REACT_APP_URL || 'https://react-app.walletconnect.com',
   },
   {
     id: 'wc-stake',
@@ -118,44 +54,32 @@ export const PICKER_DAPPS: PickerDapp[] = [
     description: 'Stake WCT',
     color: '#0988F0',
     glyph: 'W',
-    url: STAKE_DAPP_URL,
-  },
-  {
-    id: 'uniswap',
-    name: 'Uniswap',
-    chainLabel: 'Arbitrum',
-    description: 'Swap ETH → USDC',
-    color: '#FC72FF',
-    glyph: '🦄',
-    aggregator: 'uniswap',
+    url: ENV.STAKE_DAPP_URL || 'https://app.walletconnect.com',
   },
 ];
 
-export function buildPickerDappUrl(dapp: PickerDapp): string {
-  // Real dapps (e.g. WalletConnect Stake) implement the production
-  // auto-connect approach: the wallet injects the walletConnectHost bridge
-  // flag before the page loads, so the URL stays untouched.
-  if (dapp.url) {
-    return dapp.url;
+/**
+ * `scheme://host[:port]`, lowercased, default port dropped — the same shape as
+ * `window.location.origin`. Parsed by hand because the React Native URL
+ * implementation doesn't support `origin`.
+ */
+export function getOrigin(url: string): string | undefined {
+  const match = url.match(/^(https?):\/\/([^/?#]+)/i);
+  if (!match) {
+    return undefined;
   }
-  // Legacy POC tiles keep the wc_auto=1 URL signal + aggregator/variant params.
-  const variant = SettingsStore.state.pickerHeadless ? 'headless' : 'provider';
-  return `${PICKER_DAPP_BASE_URL}/?wc_auto=1&aggregator=${dapp.aggregator}&connect=${variant}`;
+  const scheme = match[1].toLowerCase();
+  // Drop any userinfo: the host of `https://a.com@b.com` is b.com.
+  const host = match[2]
+    .slice(match[2].lastIndexOf('@') + 1)
+    .toLowerCase()
+    .replace(scheme === 'https' ? /:443$/ : /:80$/, '');
+  return `${scheme}://${host}`;
 }
 
-/**
- * Fee terms attached to every session this wallet approves — same shape the
- * Session Fees POC dapp already parses (helpers/feeTerms.ts).
- */
-export function buildFeeTermsProperties(): Record<string, string> {
-  return {
-    wc_feeTerms: JSON.stringify({
-      version: 1,
-      feeRecipient: FEE_RECIPIENT_SOLANA,
-      feeRecipientEip155: FEE_RECIPIENT_EVM,
-      feeBps: FEE_BPS,
-    }),
-  };
+export function isSameOrigin(url: string, expectedOrigin: string): boolean {
+  const origin = getOrigin(url);
+  return !!origin && origin === expectedOrigin;
 }
 
 // -------- picker-initiated pairing tracking --------
@@ -183,106 +107,63 @@ export function isPickerPairing(pairingTopic?: string): boolean {
 }
 
 /**
- * The wallet's full supported-namespaces map — extracted from
- * SessionProposalModal so the picker auto-approve path approves exactly what
- * the modal would.
+ * Session properties for an Explore auto-approval: the TON props every
+ * approval carries, plus wallet_guide_id so the app's Universal Provider can
+ * load this wallet's fee config. Only this path sets wallet_guide_id —
+ * QR / deep-link approvals (SessionProposalModal) never do.
  */
-export function buildSupportedNamespaces() {
-  return {
-    eip155: {
-      chains: Object.keys(EIP155_CHAINS),
-      methods: Object.values(EIP155_SIGNING_METHODS),
-      events: ['accountsChanged', 'chainChanged'],
-      accounts: Object.keys(EIP155_CHAINS).map(
-        chain => `${chain}:${eip155Addresses[0]}`,
-      ),
-    },
-    sui: {
-      chains: Object.keys(SUI_CHAINS),
-      methods: Object.values(SUI_SIGNING_METHODS),
-      events: Object.values(SUI_EVENTS),
-      accounts: Object.keys(SUI_CHAINS).map(
-        chain => `${chain}:${suiAddresses[0]}`,
-      ),
-    },
-    ton: {
-      chains: Object.keys(TON_CHAINS),
-      methods: Object.values(TON_SIGNING_METHODS),
-      events: [] as string[],
-      accounts: Object.keys(TON_CHAINS).map(
-        chain => `${chain}:${tonAddresses[0]}`,
-      ),
-    },
-    tron: {
-      chains: Object.keys(TRON_CHAINS),
-      methods: Object.values(TRON_SIGNING_METHODS),
-      events: [] as string[],
-      accounts: Object.keys(TRON_CHAINS).map(
-        chain => `${chain}:${tronAddresses[0]}`,
-      ),
-    },
-    canton: {
-      chains: Object.keys(CANTON_CHAINS),
-      methods: Object.values(CANTON_SIGNING_METHODS),
-      events: Object.values(CANTON_EVENTS),
-      accounts: Object.keys(CANTON_CHAINS).map(
-        chain => `${chain}:${cantonAddresses[0]}`,
-      ),
-    },
-    solana: {
-      chains: Object.keys(SOLANA_CHAINS),
-      methods: Object.values(SOLANA_SIGNING_METHODS),
-      events: Object.values(SOLANA_EVENTS),
-      accounts: solanaAddresses?.[0]
-        ? Object.keys(SOLANA_CHAINS).map(
-            chain => `${chain}:${solanaAddresses[0]}`,
-          )
-        : [],
-    },
-    bip122: {
-      chains: Object.keys(BIP122_CHAINS),
-      methods: Object.values(BIP122_SIGNING_METHODS),
-      events: Object.values(BIP122_EVENTS),
-      accounts: bitcoinAddresses?.[0]
-        ? Object.keys(BIP122_CHAINS).flatMap(chain =>
-            bitcoinAddresses.map(address => `${chain}:${address}`),
-          )
-        : [],
-    },
-  };
-}
-
-/**
- * Builds the sessionProperties every approval carries: TON props (existing
- * behavior) + wc_feeTerms (Session Fees / Dapp Picker POC).
- */
-export async function buildSessionProperties(namespaces: {
+export async function buildPickerSessionProperties(namespaces: {
   ton?: unknown;
-}): Promise<Record<string, string>> {
-  const sessionProperties: Record<string, string> = {
-    ...buildFeeTermsProperties(),
-  };
+}): Promise<Record<string, string> | undefined> {
+  const sessionProperties: Record<string, string> = {};
   if (namespaces.ton) {
     const tonWallet = await getWallet();
     sessionProperties.ton_getPublicKey = tonWallet.getPublicKey();
     sessionProperties.ton_getStateInit = tonWallet.getStateInit();
   }
-  return sessionProperties;
+  if (ENV.WALLET_GUIDE_ID) {
+    sessionProperties.wallet_guide_id = ENV.WALLET_GUIDE_ID;
+  } else {
+    LogStore.warn(
+      'EXPO_PUBLIC_WALLET_GUIDE_ID is not set; approving without wallet_guide_id',
+      'PickerUtil',
+      'buildPickerSessionProperties',
+    );
+  }
+  return Object.keys(sessionProperties).length > 0
+    ? sessionProperties
+    : undefined;
 }
 
 /**
- * Auto-approves a picker-initiated proposal with the wallet's full supported
- * namespaces + fee terms. Throws on failure — the caller falls back to the
- * normal proposal modal.
+ * Auto-approves a picker-initiated proposal with the same namespaces the
+ * modal would approve when every supported chain is selected. Throws on
+ * failure — the caller falls back to the normal proposal modal.
  */
 export async function autoApprovePickerProposal(
   proposal: SignClientTypes.EventArguments['session_proposal'],
 ): Promise<void> {
+  const chainIds = getSupportedChains(
+    proposal.params.requiredNamespaces,
+    proposal.params.optionalNamespaces,
+  ).map(chain => `${chain.namespace}:${chain.chainId}`);
+  if (chainIds.length === 0) {
+    throw new Error('No supported chains in proposal');
+  }
+  // Signers restore lazily; make sure the requested ones are ready before
+  // advertising their accounts.
+  await ensureWalletsForChainIds(chainIds);
   const namespaces = buildApprovedNamespaces({
     proposal: proposal.params,
-    supportedNamespaces: buildSupportedNamespaces(),
+    supportedNamespaces: filterNamespacesByChains(
+      buildSupportedNamespaces(
+        SettingsStore.state.testNets,
+        getCurrentWalletAddresses(),
+      ),
+      chainIds,
+    ),
   });
-  const sessionProperties = await buildSessionProperties(namespaces);
+  const sessionProperties = await buildPickerSessionProperties(namespaces);
   await walletKit.approveSession({
     id: proposal.id,
     namespaces,
@@ -292,5 +173,6 @@ export async function autoApprovePickerProposal(
   LogStore.info('Picker session auto-approved', 'PickerUtil', 'autoApprove', {
     proposalId: proposal.id,
     proposer: proposal.params.proposer?.metadata?.name,
+    walletGuideId: sessionProperties?.wallet_guide_id ?? null,
   });
 }

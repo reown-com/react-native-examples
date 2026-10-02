@@ -85,7 +85,6 @@ interface State {
   // Dapp Picker POC
   pickerAutoConnect: boolean;
   pickerConsentAsked: boolean;
-  pickerHeadless: boolean;
 }
 
 /**
@@ -130,7 +129,6 @@ const state = proxy<State>({
   themeMode: getInitialThemeMode(),
   pickerAutoConnect: new MMKV().getBoolean('PICKER_AUTO_CONNECT') ?? false,
   pickerConsentAsked: new MMKV().getBoolean('PICKER_CONSENT_ASKED') ?? false,
-  pickerHeadless: new MMKV().getBoolean('PICKER_HEADLESS') ?? true,
 });
 
 /**
@@ -196,11 +194,6 @@ const SettingsStore = {
       // alert shows again on next app start.
       mmkv.delete('PICKER_CONSENT_ASKED');
     }
-  },
-
-  togglePickerHeadless() {
-    state.pickerHeadless = !state.pickerHeadless;
-    new MMKV().set('PICKER_HEADLESS', state.pickerHeadless);
   },
 
   toggleTestNets() {

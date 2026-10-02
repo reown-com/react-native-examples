@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
@@ -7,54 +7,65 @@ import LogStore from '@/store/LogStore';
 import SettingsStore from '@/store/SettingsStore';
 import { useTheme } from '@/hooks/useTheme';
 import { walletKit } from '@/utils/WalletKitUtil';
-import { registerPickerPairing } from '@/utils/PickerUtil';
+import {
+  getOrigin,
+  isSameOrigin,
+  registerPickerPairing,
+} from '@/utils/PickerUtil';
 import { RootStackScreenProps } from '@/utils/TypesUtil';
 
 type Props = RootStackScreenProps<'DappBrowser'>;
 
 /**
- * H2b bridge wrapper, injected at document start on every page load (per the
- * technical design, "How wallets expose the bridge"). It gives the dapp:
- * - autoConnect: the wallet-originated launch signal. Always true here
- *   because this webview only hosts Explore launches; a generic in-wallet
- *   browser must NOT set it. User consent still gates auto-approval on the
- *   wallet side (SettingsStore.pickerAutoConnect) — without it the dapp still
- *   connects, but through the normal proposal modal.
- * - postMessage: one wallet-agnostic channel the dapp uses to hand back the
- *   pairing URI as {type:'wc_session_offer', uri}.
- * The flag is a trigger, not proof of origin: pairing topics are recorded and
- * only picker-initiated proposals are auto-approved (PickerUtil).
+ * H2b bridge, injected at document start on every page load (per the
+ * technical design, "How wallets expose the bridge"). It gives the app:
+ * - autoConnect: the wallet-originated launch signal. This screen only hosts
+ *   Explore launches; a generic in-wallet browser must NOT set it. The flag
+ *   is only set on the tile's origin, so a page the user navigates to on
+ *   another site keeps its normal connect flow.
+ * - postMessage: the channel the app uses to hand back the pairing URI as
+ *   {type:'wc_session_offer', uri}.
+ * The flag is a trigger, not proof of origin: onMessage re-checks the
+ * origin natively and only recorded pairing topics are auto-approved
+ * (PickerUtil).
  */
-const WALLET_CONNECT_HOST_BRIDGE = `
-  window.walletConnectHost = {
-    autoConnect: true,
-    postMessage: function (message) {
-      window.ReactNativeWebView.postMessage(JSON.stringify(message));
-    }
-  };
+function buildBridgeScript(origin: string) {
+  return `
+  if (window.location.origin === ${JSON.stringify(origin)}) {
+    window.walletConnectHost = {
+      autoConnect: true,
+      postMessage: function (message) {
+        window.ReactNativeWebView.postMessage(JSON.stringify(message));
+      }
+    };
+  }
   true;
 `;
+}
 
 /**
- * Dapp Picker POC (H2b): webview host for Explore-launched dapps. The dapp
- * posts {type:'wc_session_offer', uri} via window.ReactNativeWebView; we pair
- * silently and the proposal is auto-approved (see useWalletKitEventsManager).
- * A wc: navigation intercept covers hosts/pages where postMessage fails.
+ * Explore (H2b): webview host for Explore-launched apps. A same-origin
+ * {type:'wc_session_offer', uri} is paired silently and the proposal is
+ * auto-approved (see useWalletKitEventsManager). A wc: navigation is paired
+ * too, but goes through the normal proposal modal.
  */
 export default function DappBrowser({ route }: Props) {
   const Theme = useTheme();
   const { url } = route.params;
+  const tileOrigin = useMemo(() => getOrigin(url), [url]);
   const [isLoading, setIsLoading] = useState(true);
   const pairedUris = useRef(new Set<string>());
 
-  const pairFromDapp = useCallback(async (uri: string) => {
+  const pair = useCallback(async (uri: string, autoApprove: boolean) => {
     if (!uri.startsWith('wc:') || pairedUris.current.has(uri)) {
       return;
     }
     pairedUris.current.add(uri);
     // Mark this pairing as picker-initiated BEFORE pairing so the proposal
     // handler can recognize it.
-    registerPickerPairing(uri);
+    if (autoApprove) {
+      registerPickerPairing(uri);
+    }
     try {
       await SettingsStore.state.initPromise;
       await walletKit.pair({ uri });
@@ -65,37 +76,56 @@ export default function DappBrowser({ route }: Props) {
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
+      let message;
       try {
-        const message = JSON.parse(event.nativeEvent.data);
-        if (message?.type === 'wc_session_offer' && message.uri) {
-          LogStore.info('wc_session_offer received', 'DappBrowser', 'onMessage');
-          pairFromDapp(message.uri);
-        }
+        message = JSON.parse(event.nativeEvent.data);
       } catch {
         // Non-JSON messages from the page are ignored.
+        return;
       }
+      if (message?.type !== 'wc_session_offer' || !message.uri) {
+        return;
+      }
+      // Only the tile's own origin may offer a session to auto-approve.
+      const pageUrl = event.nativeEvent.url;
+      if (!tileOrigin || !isSameOrigin(pageUrl, tileOrigin)) {
+        LogStore.warn(
+          'wc_session_offer ignored: page origin differs from tile',
+          'DappBrowser',
+          'onMessage',
+          { pageOrigin: getOrigin(pageUrl) ?? pageUrl, tileOrigin },
+        );
+        return;
+      }
+      LogStore.info('wc_session_offer received', 'DappBrowser', 'onMessage');
+      pair(message.uri, true);
     },
-    [pairFromDapp],
+    [pair, tileOrigin],
   );
 
   const onShouldStartLoadWithRequest = useCallback(
     (request: ShouldStartLoadRequest) => {
-      // Fallback URI handoff: the dapp navigates to wc:… when the
-      // postMessage bridge is unavailable.
+      // A wc: navigation (e.g. the app's own "open wallet" link) carries no
+      // origin we can verify, so it pairs through the normal modal.
       if (request.url.startsWith('wc:')) {
-        pairFromDapp(request.url);
+        pair(request.url, false);
         return false;
       }
       return true;
     },
-    [pairFromDapp],
+    [pair],
+  );
+
+  const bridgeScript = useMemo(
+    () => (tileOrigin ? buildBridgeScript(tileOrigin) : undefined),
+    [tileOrigin],
   );
 
   return (
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
       <WebView
         source={{ uri: url }}
-        injectedJavaScriptBeforeContentLoaded={WALLET_CONNECT_HOST_BRIDGE}
+        injectedJavaScriptBeforeContentLoaded={bridgeScript}
         onMessage={onMessage}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onLoadEnd={() => setIsLoading(false)}
@@ -105,7 +135,10 @@ export default function DappBrowser({ route }: Props) {
       />
       {isLoading && (
         <View style={styles.loading} pointerEvents="none">
-          <ActivityIndicator size="large" color={Theme['text-accent-primary']} />
+          <ActivityIndicator
+            size="large"
+            color={Theme['text-accent-primary']}
+          />
         </View>
       )}
     </View>
@@ -120,7 +153,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loading: {
-    ...StyleSheet.absoluteFill as object,
+    ...(StyleSheet.absoluteFill as object),
     alignItems: 'center',
     justifyContent: 'center',
   },
