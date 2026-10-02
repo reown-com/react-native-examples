@@ -38,6 +38,7 @@ import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ActiveSheet =
   | "theme"
@@ -94,6 +95,7 @@ export default function SettingsScreen() {
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const hasCamera = useHasCamera();
+  const { bottom: bottomInset } = useSafeAreaInsets();
 
   // Custom hooks for biometrics and merchant flow
   const {
@@ -290,7 +292,10 @@ export default function SettingsScreen() {
   return (
     <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: bottomInset + Spacing["spacing-6"] },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {setupRemaining > 0 && (
@@ -601,7 +606,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: Spacing["spacing-5"],
-    paddingBottom: Spacing["spacing-6"],
     gap: Spacing["spacing-7"],
   },
   printerIcon: {

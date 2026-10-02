@@ -235,7 +235,13 @@ export default Sentry.wrap(function RootLayout() {
               />
               <Stack.Screen
                 name="settings"
-                options={{ headerTitle: SettingsHeaderTitle }}
+                options={{
+                  headerTitle: SettingsHeaderTitle,
+                  contentStyle: {
+                    backgroundColor: Theme["bg-primary"],
+                    paddingBottom: 0,
+                  },
+                }}
               />
               <Stack.Screen
                 name="scan-setup-qr"
