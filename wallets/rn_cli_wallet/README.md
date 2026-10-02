@@ -74,6 +74,25 @@ If everything is set up _correctly_, you should see your new app running in your
 
 This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
 
+## Explore tab (wallet-originated auto-connect)
+
+The **Explore** tab opens curated apps in a WebView that connects to this wallet automatically, with no QR code, connect modal or approval screen. Signing requests still show the normal approval screen.
+
+**Bridge contract** (`src/screens/DappBrowser`):
+
+1. Before any page script runs, the wallet injects `window.walletConnectHost = { autoConnect: true, postMessage }`. It's set only in Explore WebViews, and only on the tile's origin. Tile URLs carry no `wc_auto=1` or other parameters: this flag is the signal.
+2. The app (Universal Provider / AppKit) creates a pairing and calls `walletConnectHost.postMessage({ type: 'wc_session_offer', uri })` instead of showing a QR code.
+3. The wallet accepts the offer only if the WebView's current URL has the same origin as the tile. It records the pairing topic, then calls `walletKit.pair({ uri })`.
+4. A proposal on a recorded topic is auto-approved when the user has allowed auto-connect (a one-time prompt, then **Settings → Explore: auto-connect**). Its `sessionProperties` carry `wallet_guide_id`, plus the usual TON fields. Other proposals, including any from a QR code, a deep link or a `wc:` link inside the WebView, open the normal modal without `wallet_guide_id`. If auto-approval fails, the normal modal opens.
+
+**Env** (all optional, see `.env.example`):
+
+- `EXPO_PUBLIC_WALLET_GUIDE_ID`: this wallet's Wallet Guide ID in the target environment (the dev DB's ID for staging). If it's unset, sessions are auto-approved without `wallet_guide_id` and a warning is logged.
+- `EXPO_PUBLIC_REACT_APP_URL`: the React App tile URL (default `https://react-app.walletconnect.com`).
+- `EXPO_PUBLIC_STAKE_DAPP_URL`: the Stake WCT tile URL (default `https://app.walletconnect.com`).
+
+To test a local app on the Android emulator, use `http://10.0.2.2:<port>`, not `localhost`. Testnet-only apps (e.g. Sepolia) also need **Settings → Enable testnets**.
+
 ## Permit2 Revoke Script (Test Utility)
 
 The wallet UI no longer includes a Permit2 reset button. For testing, use the script below to send `approve(PERMIT2, 0)` directly.
