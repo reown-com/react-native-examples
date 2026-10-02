@@ -22,11 +22,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Platform,
   RefreshControl,
   StyleSheet,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ActiveSheet = "status" | "dateRange" | null;
 
@@ -49,6 +49,7 @@ const DATE_RANGE_LABELS: Record<DateRangeFilterType, string> = {
 
 export default function ActivityScreen() {
   const theme = useTheme();
+  const { bottom: bottomInset } = useSafeAreaInsets();
   const testMode = useSettingsStore((state) => state.testMode);
   const isTestPayment = testMode;
   const transactionFilter = useSettingsStore(
@@ -277,6 +278,7 @@ export default function ActivityScreen() {
         style={styles.list}
         contentContainerStyle={[
           styles.listContent,
+          { paddingBottom: bottomInset + Spacing["spacing-6"] },
           isEmpty && styles.emptyListContent,
         ]}
         scrollEnabled={!isEmpty}
@@ -341,7 +343,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-6"],
     gap: Spacing["spacing-2"],
   },
   emptyListContent: {

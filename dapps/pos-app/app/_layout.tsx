@@ -256,7 +256,14 @@ export default Sentry.wrap(function RootLayout() {
               />
               <Stack.Screen
                 name="activity"
-                options={{ headerTitle: TransactionsHeaderTitle }}
+                // Same as settings: the list pads its own bottom inset.
+                options={{
+                  headerTitle: TransactionsHeaderTitle,
+                  contentStyle: {
+                    backgroundColor: Theme["bg-primary"],
+                    paddingBottom: 0,
+                  },
+                }}
               />
               <Stack.Screen
                 name="logs"
