@@ -85,11 +85,7 @@ The **Explore** tab opens curated apps in a WebView that connects to this wallet
 3. The wallet accepts the offer only if the WebView's current URL has the same origin as the tile. It records the pairing topic, then calls `walletKit.pair({ uri })`.
 4. A proposal on a recorded topic is auto-approved when the user has allowed auto-connect (a one-time prompt, then **Settings → Explore: auto-connect**). Its `sessionProperties` carry `wallet_guide_id`, plus the usual TON fields. Other proposals, including any from a QR code, a deep link or a `wc:` link inside the WebView, open the normal modal without `wallet_guide_id`. If auto-approval fails, the normal modal opens.
 
-**Env** (all optional, see `.env.example`):
-
-- `EXPO_PUBLIC_WALLET_GUIDE_ID`: this wallet's Wallet Guide ID in the target environment (the dev DB's ID for staging). If it's unset, sessions are auto-approved without `wallet_guide_id` and a warning is logged.
-- `EXPO_PUBLIC_REACT_APP_URL`: the React App tile URL (default `https://react-app.walletconnect.com`).
-- `EXPO_PUBLIC_STAKE_DAPP_URL`: the Stake WCT tile URL (default `https://app.walletconnect.com`).
+The Wallet Guide ID is the `WALLET_GUIDE_ID` constant in `src/utils/misc.ts`, and the tile URLs are in `PICKER_DAPPS` (`src/utils/PickerUtil.ts`).
 
 To test a local app on the Android emulator, use `http://10.0.2.2:<port>`, not `localhost`. Testnet-only apps (e.g. Sepolia) also need **Settings → Enable testnets**.
 

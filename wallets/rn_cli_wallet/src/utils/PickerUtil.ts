@@ -12,7 +12,7 @@ import {
   filterNamespacesByChains,
   getCurrentWalletAddresses,
 } from '@/utils/SupportedNamespacesUtil';
-import { ENV } from '@/utils/env';
+import { WALLET_GUIDE_ID } from '@/utils/misc';
 
 /**
  * Explore (H2b): a curated directory of apps that auto-connect when opened
@@ -37,6 +37,9 @@ export interface PickerDapp {
   url: string;
 }
 
+// Draft-PR preview deploys, until the app-side auto-connect ships to
+// production: React App -> https://react-app.walletconnect.com (WCP4-185),
+// Stake WCT -> https://app.walletconnect.com/stake (walletconnect-apps#508).
 export const PICKER_DAPPS: PickerDapp[] = [
   {
     id: 'react-app',
@@ -45,7 +48,7 @@ export const PICKER_DAPPS: PickerDapp[] = [
     description: 'WalletConnect test app',
     color: '#61DAFB',
     glyph: 'R',
-    url: ENV.REACT_APP_URL || 'https://react-app.walletconnect.com',
+    url: 'https://react-dapp-v2-git-wcp4-185-react-app-host-auto-45784c-reown-com.vercel.app/',
   },
   {
     id: 'wc-stake',
@@ -54,7 +57,7 @@ export const PICKER_DAPPS: PickerDapp[] = [
     description: 'Stake WCT',
     color: '#0988F0',
     glyph: 'W',
-    url: ENV.STAKE_DAPP_URL || 'https://app.walletconnect.com',
+    url: 'https://portal-git-feat-h2b-stake-auto-connect-poc-walletconnect.vercel.app/stake?_vercel_share=esDVgpyqZ03Gg6obtfqgsY154bMY7zZh',
   },
 ];
 
@@ -114,25 +117,15 @@ export function isPickerPairing(pairingTopic?: string): boolean {
  */
 export async function buildPickerSessionProperties(namespaces: {
   ton?: unknown;
-}): Promise<Record<string, string> | undefined> {
+}): Promise<Record<string, string>> {
   const sessionProperties: Record<string, string> = {};
   if (namespaces.ton) {
     const tonWallet = await getWallet();
     sessionProperties.ton_getPublicKey = tonWallet.getPublicKey();
     sessionProperties.ton_getStateInit = tonWallet.getStateInit();
   }
-  if (ENV.WALLET_GUIDE_ID) {
-    sessionProperties.wallet_guide_id = ENV.WALLET_GUIDE_ID;
-  } else {
-    LogStore.warn(
-      'EXPO_PUBLIC_WALLET_GUIDE_ID is not set; approving without wallet_guide_id',
-      'PickerUtil',
-      'buildPickerSessionProperties',
-    );
-  }
-  return Object.keys(sessionProperties).length > 0
-    ? sessionProperties
-    : undefined;
+  sessionProperties.wallet_guide_id = WALLET_GUIDE_ID;
+  return sessionProperties;
 }
 
 /**
@@ -173,6 +166,6 @@ export async function autoApprovePickerProposal(
   LogStore.info('Picker session auto-approved', 'PickerUtil', 'autoApprove', {
     proposalId: proposal.id,
     proposer: proposal.params.proposer?.metadata?.name,
-    walletGuideId: sessionProperties?.wallet_guide_id ?? null,
+    walletGuideId: sessionProperties.wallet_guide_id,
   });
 }

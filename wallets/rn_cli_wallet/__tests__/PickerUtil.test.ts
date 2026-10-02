@@ -3,9 +3,7 @@ jest.mock('../src/store/LogStore', () => ({
   default: { info: jest.fn(), warn: jest.fn(), error: jest.fn() },
 }));
 
-jest.mock('../src/utils/env', () => ({
-  ENV: { WALLET_GUIDE_ID: 'guide-id' },
-}));
+jest.mock('../src/utils/misc', () => ({ WALLET_GUIDE_ID: 'guide-id' }));
 
 jest.mock('../src/utils/WalletKitUtil', () => ({ walletKit: {} }));
 
@@ -16,8 +14,6 @@ jest.mock('../src/utils/TonWalletUtil', () => ({
   })),
 }));
 
-import LogStore from '../src/store/LogStore';
-import { ENV } from '../src/utils/env';
 import {
   buildPickerSessionProperties,
   getOrigin,
@@ -64,10 +60,6 @@ describe('picker pairing topics', () => {
 });
 
 describe('buildPickerSessionProperties', () => {
-  afterEach(() => {
-    ENV.WALLET_GUIDE_ID = 'guide-id';
-  });
-
   it('merges wallet_guide_id with the TON properties', async () => {
     expect(await buildPickerSessionProperties({ ton: {} })).toEqual({
       ton_getPublicKey: 'ton-pubkey',
@@ -76,9 +68,9 @@ describe('buildPickerSessionProperties', () => {
     });
   });
 
-  it('warns and omits wallet_guide_id when unset', async () => {
-    ENV.WALLET_GUIDE_ID = undefined;
-    expect(await buildPickerSessionProperties({})).toBeUndefined();
-    expect(LogStore.warn).toHaveBeenCalled();
+  it('sends wallet_guide_id without TON', async () => {
+    expect(await buildPickerSessionProperties({})).toEqual({
+      wallet_guide_id: 'guide-id',
+    });
   });
 });
