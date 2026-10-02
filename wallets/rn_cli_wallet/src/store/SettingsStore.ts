@@ -82,6 +82,9 @@ interface State {
   logs: string[];
   isLinkModeRequest: boolean;
   themeMode: 'light' | 'dark';
+  // Dapp Picker POC
+  pickerAutoConnect: boolean;
+  pickerConsentAsked: boolean;
 }
 
 /**
@@ -124,6 +127,8 @@ const state = proxy<State>({
   logs: [],
   isLinkModeRequest: false,
   themeMode: getInitialThemeMode(),
+  pickerAutoConnect: new MMKV().getBoolean('PICKER_AUTO_CONNECT') ?? false,
+  pickerConsentAsked: new MMKV().getBoolean('PICKER_CONSENT_ASKED') ?? false,
 });
 
 /**
@@ -175,6 +180,20 @@ const SettingsStore = {
 
   setIsLinkModeRequest(value: State['isLinkModeRequest']) {
     state.isLinkModeRequest = value;
+  },
+
+  setPickerConsent(granted: boolean) {
+    state.pickerAutoConnect = granted;
+    state.pickerConsentAsked = true;
+    const mmkv = new MMKV();
+    mmkv.set('PICKER_AUTO_CONNECT', granted);
+    if (granted) {
+      mmkv.set('PICKER_CONSENT_ASKED', true);
+    } else {
+      // "Not now" applies to the current app run only — the consent
+      // alert shows again on next app start.
+      mmkv.delete('PICKER_CONSENT_ASKED');
+    }
   },
 
   toggleTestNets() {

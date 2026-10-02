@@ -14,6 +14,7 @@ import { TON_SIGNING_METHODS } from '@/constants/Ton';
 import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
 import { approveCantonRequest } from '@/utils/CantonRequestHandlerUtil';
 import { getRequestConfig } from '@/modals/requestConfig';
+import { autoApprovePickerProposal, isPickerPairing } from '@/utils/PickerUtil';
 import {
   ensureWalletForChainId,
   ensureWalletReady,
@@ -36,6 +37,25 @@ export default function useWalletKitEventsManager(initialized: boolean) {
       );
       // set the verify context so it can be displayed in the projectInfoCard
       SettingsStore.setCurrentRequestVerifyContext(proposal.verifyContext);
+
+      // Explore (H2b): proposals arriving on a pairing the Explore webview
+      // offered are auto-approved (with wallet_guide_id) when the user has
+      // granted the one-time consent. Everything else keeps the modal.
+      if (
+        isPickerPairing(proposal.params.pairingTopic) &&
+        SettingsStore.state.pickerAutoConnect
+      ) {
+        autoApprovePickerProposal(proposal).catch(e => {
+          LogStore.error(
+            (e as Error).message,
+            'WalletKitEvents',
+            'pickerAutoApprove',
+          );
+          // Fall back to the normal consent modal.
+          ModalStore.open('SessionProposalModal', { proposal });
+        });
+        return;
+      }
 
       const chains = getSupportedChains(
         proposal.params.requiredNamespaces,
