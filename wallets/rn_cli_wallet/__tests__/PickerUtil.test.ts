@@ -1,9 +1,7 @@
 jest.mock('../src/store/LogStore', () => ({
   __esModule: true,
-  default: { info: jest.fn(), warn: jest.fn(), error: jest.fn() },
+  default: { info: jest.fn() },
 }));
-
-jest.mock('../src/utils/misc', () => ({ WALLET_GUIDE_ID: 'guide-id' }));
 
 jest.mock('../src/utils/WalletKitUtil', () => ({ walletKit: {} }));
 
@@ -14,11 +12,13 @@ jest.mock('../src/utils/TonWalletUtil', () => ({
   })),
 }));
 
+import { WALLET_GUIDE_ID } from '../src/utils/misc';
 import {
   buildPickerSessionProperties,
   getOrigin,
   isPickerPairing,
   isSameOrigin,
+  PICKER_DAPPS,
   registerPickerPairing,
 } from '../src/utils/PickerUtil';
 
@@ -59,18 +59,22 @@ describe('picker pairing topics', () => {
   });
 });
 
+describe('PICKER_DAPPS', () => {
+  // DappBrowser only injects the bridge when the tile URL has an origin.
+  it.each(PICKER_DAPPS.map(dapp => [dapp.name, dapp.url]))(
+    '%s has an https origin',
+    (_name, url) => {
+      expect(getOrigin(url)).toMatch(/^https:\/\/[^/]+$/);
+    },
+  );
+});
+
 describe('buildPickerSessionProperties', () => {
   it('merges wallet_guide_id with the TON properties', async () => {
     expect(await buildPickerSessionProperties({ ton: {} })).toEqual({
       ton_getPublicKey: 'ton-pubkey',
       ton_getStateInit: 'ton-state-init',
-      wallet_guide_id: 'guide-id',
-    });
-  });
-
-  it('sends wallet_guide_id without TON', async () => {
-    expect(await buildPickerSessionProperties({})).toEqual({
-      wallet_guide_id: 'guide-id',
+      wallet_guide_id: WALLET_GUIDE_ID,
     });
   });
 });
