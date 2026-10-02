@@ -73,7 +73,7 @@ export async function loadBitcoinWallet(input: string): Promise<{
 
   if (__DEV__) {
     console.warn(
-      '[SECURITY] Bitcoin key material stored unencrypted. Use secure enclave in production.',
+      '[SECURITY] Bitcoin mnemonic stored in encrypted MMKV on native (key in Keychain/Keystore); unencrypted localStorage on web.',
     );
   }
 
