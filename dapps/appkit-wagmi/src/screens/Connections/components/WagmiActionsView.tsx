@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Text, FlexView } from '@reown/appkit-ui-react-native';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text as RNText } from 'react-native';
 import { useSignMessage, useAccount, useSendTransaction, useEstimateGas, useSignTypedData } from 'wagmi';
 import { Hex, parseEther } from 'viem';
 import { SendTransactionData, SignMessageData, SignTypedDataData } from 'wagmi/query';
@@ -10,11 +10,17 @@ import { eip712 } from '@/utils/eip712';
 export function WagmiActionsView() {
   const { isConnected } = useAccount();
 
+  // Persistent, testID'd sign result for Maestro (the toasts below are
+  // ephemeral and racy to assert on). Cleared on each new sign attempt.
+  const [signResult, setSignResult] = useState<string | null>(null);
+
   const onSignSuccess = (data: SignMessageData) => {
+    setSignResult('Sign success');
     ToastUtils.showSuccessToast('Signature successful', data);
   };
 
   const onSignError = (error: Error) => {
+    setSignResult('Sign failed');
     ToastUtils.showErrorToast('Signature failed', error.message);
   };
 
@@ -73,10 +79,14 @@ export function WagmiActionsView() {
         disabled={isPending}
         loading={isPending}
         testID="sign-message-button"
-        onPress={() => signMessage({ message: 'Hello AppKit!' })}
+        onPress={() => {
+          setSignResult(null);
+          signMessage({ message: 'Hello AppKit!' });
+        }}
       >
         Sign
       </Button>
+      {signResult && <RNText testID="sign-result">{signResult}</RNText>}
       {isGasError && <Text>Error estimating gas</Text>}
       <Button disabled={isSending} loading={isSending} onPress={() => sendTransaction({ ...TX, gas })}>
         Send

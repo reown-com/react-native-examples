@@ -1,0 +1,28 @@
+# Resume the device browser tab (NOT relaunch) so the dapp's live WalletConnect
+# client receives the queued session settlement / response. Relaunching
+# (openLink/launchApp) reloads the tab and drops the pending in-memory state.
+#
+#   iOS: Home, then tap the Safari icon (resumes the app + tab).
+#   Android: Home, then tap the Chrome icon (resumes Chrome + tab). Back isn't
+#            reliable here — the wallet's own navigation consumes it instead of
+#            returning to the browser.
+appId: ${APP_ID}
+---
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - pressKey: Home
+      - extendedWaitUntil:
+          visible: 'Safari'
+          timeout: 10000
+      - tapOn: 'Safari'
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - pressKey: Home
+      - extendedWaitUntil:
+          visible: 'Chrome'
+          timeout: 10000
+      - tapOn: 'Chrome'

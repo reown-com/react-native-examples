@@ -1,0 +1,21 @@
+# Flow 7 — restore sessions: after a full restart (no clearState) the wallet
+# rehydrates its active sessions from storage.
+appId: ${APP_ID}
+tags:
+  - relay-walletkit
+  - restore
+---
+- runFlow: _connect_walletkit.yaml
+# Foreground the wallet, then full stop + relaunch WITHOUT clearing state.
+- launchApp:
+    appId: ${APP_ID}
+- stopApp:
+    appId: ${APP_ID}
+- launchApp:
+    appId: ${APP_ID}
+    clearState: false
+- tapOn: 'Connected apps'
+- extendedWaitUntil:
+    visible:
+      id: 'session-item'
+    timeout: 30000
