@@ -12,12 +12,23 @@ export type FormatAmountOptions = {
 
 const DEFAULT_LOCALE: SupportedLocale = "en-US";
 
+// Separators are fixed per locale, and constructing Intl.NumberFormat is slow on
+// Android Hermes (ICU locale resolution over JNI), so resolve each locale once
+// instead of on every keypress.
+const decimalSeparators = new Map<SupportedLocale, string>();
+const groupSeparators = new Map<SupportedLocale, string>();
+
 export function getDecimalSeparator(
   locale: SupportedLocale = DEFAULT_LOCALE,
 ): string {
-  const numberWithDecimal = 1.1;
-  const formatted = new Intl.NumberFormat(locale).format(numberWithDecimal);
-  return formatted.charAt(1);
+  let separator = decimalSeparators.get(locale);
+  if (separator === undefined) {
+    const numberWithDecimal = 1.1;
+    const formatted = new Intl.NumberFormat(locale).format(numberWithDecimal);
+    separator = formatted.charAt(1);
+    decimalSeparators.set(locale, separator);
+  }
+  return separator;
 }
 
 export function getDefaultLocale(): SupportedLocale {
@@ -32,11 +43,15 @@ export function parseRawValue(rawValue: string): number {
 }
 
 function getGroupSeparator(locale: SupportedLocale): string {
-  // Avoid formatToParts — not supported in Hermes
-  const formatted = new Intl.NumberFormat(locale).format(10000);
-  // Strip all digits — what remains is the group separator (e.g. "," or ".")
-  const sep = formatted.replace(/\d/g, "");
-  return sep.charAt(0) || ",";
+  let separator = groupSeparators.get(locale);
+  if (separator === undefined) {
+    // Avoid formatToParts — not supported in Hermes
+    const formatted = new Intl.NumberFormat(locale).format(10000);
+    // Strip all digits — what remains is the group separator (e.g. "," or ".")
+    separator = formatted.replace(/\d/g, "").charAt(0) || ",";
+    groupSeparators.set(locale, separator);
+  }
+  return separator;
 }
 
 function addThousandsSeparators(integerStr: string, separator: string): string {

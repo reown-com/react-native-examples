@@ -1,6 +1,6 @@
 import type { CharacterItem } from "../utils/getCharactersArray";
 import { memo, useEffect, useRef } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -113,9 +113,9 @@ function AnimatedCharacterComponent({
           animatedStyle,
         ]}
       >
-        <Animated.Text style={[styles.text, { color: textColor, fontSize }]}>
+        <Text style={[styles.text, { color: textColor, fontSize }]}>
           {item.char}
-        </Animated.Text>
+        </Text>
       </Animated.View>
     </Animated.View>
   );
