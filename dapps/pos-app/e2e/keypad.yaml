@@ -1,0 +1,44 @@
+url: ${APP_URL}
+name: POS Keypad — decimal handling and backspace
+tags:
+  - amount
+---
+# Requires a configured merchant (see common/create-payment-qr.yaml) so
+# "Start payment" reaches the amount screen.
+- launchApp:
+    clearState: true
+
+- tapOn:
+    id: "start-payment-button"
+
+# "12" -> $12.00
+- tapOn:
+    id: "key-1"
+- tapOn:
+    id: "key-2"
+- assertVisible:
+    text: "Charge \\$12.00"
+
+# "12.34" -> $12.34
+- tapOn:
+    id: "key-decimal"
+- tapOn:
+    id: "key-3"
+- tapOn:
+    id: "key-4"
+- assertVisible:
+    text: "Charge \\$12.34"
+
+# A second decimal point and a 3rd fractional digit are both ignored
+- tapOn:
+    id: "key-decimal"
+- tapOn:
+    id: "key-5"
+- assertVisible:
+    text: "Charge \\$12.34"
+
+# Backspace removes the last character: "12.3" -> $12.30
+- tapOn:
+    id: "key-erase"
+- assertVisible:
+    text: "Charge \\$12.30"

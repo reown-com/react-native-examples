@@ -1,0 +1,18 @@
+url: ${APP_URL}
+name: POS Payment — create a $0.01 payment, load the QR, then cancel
+tags:
+  - payment
+---
+- launchApp:
+    clearState: true
+
+# Start a $0.01 sale and wait for the gateway QR (see the subflow for the
+# merchant-credential requirements).
+- runFlow: common/create-payment-qr.yaml
+
+# Cancel returns to a fresh amount screen (empty amount -> "Enter amount")
+# and cancels the open payment at the gateway.
+- tapOn:
+    id: "cancel-button"
+- assertVisible:
+    text: "Enter amount"

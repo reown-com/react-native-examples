@@ -78,7 +78,7 @@ export async function loadBitcoinWallet(input: string): Promise<{
   }
 
   // Update store
-  SettingsStore.setBitcoinAddress(newAddress);
+  SettingsStore.setBitcoinAddresses(bitcoinAddresses);
   SettingsStore.setBitcoinWallet(newWallet);
 
   return { address: newAddress, wallet: newWallet };

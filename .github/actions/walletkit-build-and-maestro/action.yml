@@ -130,6 +130,34 @@ inputs:
       should seed an expired payment and pass its gateway URL here.
     required: false
     default: ''
+  build-cache-passphrase:
+    description: |
+      Random passphrase (E2E_BUILD_CACHE_PASSPHRASE) that encrypts the cached
+      wallet build. When empty (the default: fork/Dependabot PRs, cross-repo
+      callers) the build cache is disabled and every run builds from source.
+      Android and unsigned iOS simulator builds. See scripts/build-cache.sh.
+    required: false
+    default: ''
+  build-cache-save:
+    description: |
+      'true' to save the build to the cache on a miss. Only pass 'true' from
+      trusted main-branch runs; other runs restore read-only.
+    required: false
+    default: 'false'
+  ios-slim-simulator:
+    description: |
+      'true' to slim the iOS simulator with simslim before its first boot:
+      ~140 background daemons disabled, ~4 GB less memory (profile:
+      simslim-ci.json).
+    required: false
+    default: 'false'
+  ios-simulators:
+    description: |
+      Number of iOS simulators to split the Maestro suite across
+      (`maestro test --shard-split`). Slim simulators peak at ~2.3 GB each,
+      stock ones at ~5.5 GB.
+    required: false
+    default: '1'
 
 outputs:
   maestro-outcome:
@@ -158,18 +186,8 @@ runs:
         echo "wallet_root=$ROOT" >> "$GITHUB_OUTPUT"
         echo "Resolved wallet root - $ROOT"
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
-        cache: yarn
-        cache-dependency-path: ${{ steps.paths.outputs.wallet_root }}/yarn.lock
-
-    - name: Install dependencies
-      shell: bash
-      working-directory: ${{ steps.paths.outputs.wallet_root }}
-      run: yarn install --immutable
-
+    # Written before the build cache key (the key hashes it) and before
+    # `yarn install` (it needs no node_modules).
     - name: Write wallet .env
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
@@ -199,7 +217,7 @@ runs:
         } >> .env
         echo "Wrote $(pwd)/.env"
 
-    # --- iOS leg ---
+    # Before the build cache key: it includes `xcodebuild -version`.
     - name: Select Xcode 26.2
       if: inputs.platform == 'ios'
       shell: bash
@@ -213,17 +231,87 @@ runs:
         sudo xcode-select -s "$XCODE_PATH"
         xcodebuild -version
 
+    # --- Encrypted build cache (scripts/build-cache.sh) ---
+    # Reuses the last build of this exact wallet tree + build config instead of
+    # rebuilding. The build inlines the test private key, so the cached blob is
+    # gpg-encrypted with build-cache-passphrase: fork PRs can restore main's
+    # caches but never get the secret. Exact key only (no restore-keys). On a
+    # hit, the build lands in the same staged dir a fresh build is copied to
+    # ($RUNNER_TEMP/e2e-build/<platform>), so later steps don't care which.
+    - name: Compute build cache key
+      id: build-cache
+      shell: bash
+      env:
+        BUILD_CACHE_PASSPHRASE: ${{ inputs.build-cache-passphrase }}
+        PLATFORM: ${{ inputs.platform }}
+        SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+        WALLET_ROOT: ${{ steps.paths.outputs.wallet_root }}
+        ANDROID_SECRETS_FILE: ${{ inputs.android-secrets-file }}
+        ANDROID_KEYSTORE_BASE64: ${{ inputs.android-keystore-base64 }}
+        ANDROID_KEYSTORE_NAME: ${{ inputs.android-keystore-name }}
+        IOS_SIGNING: ${{ inputs.match-git-url != '' || inputs.match-ssh-key != '' || inputs.apple-key-id != '' }}
+      run: bash "$GITHUB_ACTION_PATH/scripts/build-cache.sh" key
+
+    - name: Restore build cache
+      id: build-cache-restore
+      if: steps.build-cache.outputs.enabled == 'true'
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ runner.temp }}/e2e-build-cache/build.tar.gpg
+        key: ${{ steps.build-cache.outputs.key }}
+
+    # Fails the job on a corrupt hit rather than rebuilding: the entry is
+    # immutable, so a silent fallback would rebuild on every run forever.
+    - name: Unpack cached build
+      id: cached-build
+      if: steps.build-cache.outputs.enabled == 'true'
+      shell: bash
+      env:
+        BUILD_CACHE_PASSPHRASE: ${{ inputs.build-cache-passphrase }}
+        CACHE_HIT: ${{ steps.build-cache-restore.outputs.cache-hit }}
+        CACHE_KEY: ${{ steps.build-cache.outputs.key }}
+        CACHE_FILE: ${{ runner.temp }}/e2e-build-cache/build.tar.gpg
+        BUILD_DIR: ${{ runner.temp }}/e2e-build/${{ inputs.platform }}
+        EXPECTED: ${{ inputs.platform == 'android' && 'app-internal.apk' || '*.app/Info.plist' }}
+      run: |
+        set -euo pipefail
+        if [ "$CACHE_HIT" != "true" ]; then
+          echo "Build cache miss ($CACHE_KEY): building from source"
+          echo "Build cache: miss (\`$CACHE_KEY\`)" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+        fi
+        bash "$GITHUB_ACTION_PATH/scripts/build-cache.sh" unpack "$CACHE_FILE" "$BUILD_DIR" "$EXPECTED"
+        echo "Build cache: hit (\`$CACHE_KEY\`)" >> "$GITHUB_STEP_SUMMARY"
+        echo "hit=true" >> "$GITHUB_OUTPUT"
+
+    - name: Setup Node.js
+      if: steps.cached-build.outputs.hit != 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: yarn
+        cache-dependency-path: ${{ steps.paths.outputs.wallet_root }}/yarn.lock
+
+    - name: Install dependencies
+      if: steps.cached-build.outputs.hit != 'true'
+      shell: bash
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
+      run: yarn install --immutable
+
+    # --- iOS leg ---
+    # On a build cache hit only the simulator boot + install run; the build
+    # steps are skipped.
     # Only when a match SSH key is actually provided. The Maestro simulator build
     # is unsigned by default (no match), and webfactory/ssh-agent errors on an
     # empty ssh-private-key — so skip the step unless a signing caller passes one.
     - name: Setup SSH for Match
-      if: inputs.platform == 'ios' && inputs.match-ssh-key != ''
+      if: inputs.platform == 'ios' && inputs.match-ssh-key != '' && steps.cached-build.outputs.hit != 'true'
       uses: webfactory/ssh-agent@v0.9.0
       with:
         ssh-private-key: ${{ inputs.match-ssh-key }}
 
     - name: Install Ruby
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 3.3.0
@@ -231,16 +319,13 @@ runs:
         working-directory: ${{ inputs.wallet-source-dir }}
 
     - name: Expo Prebuild (iOS)
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
-      # ios/ is generated (Continuous Native Generation). APP_VARIANT=internal so
-      # app.config.js sets the .internal bundle id; pods are installed by the
-      # fastlane lane (honoring the Pods cache below), hence --no-install.
       run: APP_VARIANT=internal npx expo prebuild --platform ios --no-install
 
     - name: Set Xcode paths
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       env:
         WALLET_ROOT: ${{ steps.paths.outputs.wallet_root }}
@@ -253,19 +338,30 @@ runs:
         echo "XCODE_PROJECT_PATH=$XCODEPROJ" >> "$GITHUB_ENV"
         echo "XCWORKSPACE_PATH=$WALLET_ROOT/ios/ReactNWallet.xcworkspace" >> "$GITHUB_ENV"
 
+    - name: Cache RNRepo frameworks
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
+      uses: actions/cache@v4
+      with:
+        path: ~/.rnrepo-cache
+        # Same key as release-ios-base's WalletKit cache (scoped by the in-repo
+        # wallet path, independent of wallet-source-dir) so both share it.
+        key: ${{ runner.os }}-rnrepo-ios-wallets/rn_cli_wallet-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root)) }}
+        restore-keys: |
+          ${{ runner.os }}-rnrepo-ios-wallets/rn_cli_wallet-
+
     - name: Cache Pods
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       id: pods-cache
       uses: actions/cache@v4
       with:
         path: ${{ steps.paths.outputs.wallet_root }}/ios/Pods
-        # No restore-keys: a prefix match restores a stale Pods/ on a Podfile.lock
-        # bump (hermes-engine podspec mismatch) and breaks `pod install` (#515).
-        # Exact Podfile.lock match only; otherwise start clean and reinstall.
-        key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/ios/Podfile.lock', steps.paths.outputs.wallet_root)) }}
+        # Prebuild intentionally skips pod install, so Podfile.lock does not
+        # exist yet. Hash every tracked input that can affect the generated
+        # Podfile instead, and avoid restore-key fallbacks to stale Pods.
+        key: ${{ runner.os }}-pods-${{ github.ref_name }}-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root), format('{0}/app.json', steps.paths.outputs.wallet_root), format('{0}/app.config.js', steps.paths.outputs.wallet_root), format('{0}/plugins/**', steps.paths.outputs.wallet_root)) }}
 
     - name: Build for Simulator
-      if: inputs.platform == 'ios'
+      if: inputs.platform == 'ios' && steps.cached-build.outputs.hit != 'true'
       uses: maierj/fastlane-action@v3.0.0
       with:
         lane: build_for_simulator
@@ -287,47 +383,31 @@ runs:
         MATCH_GIT_URL: ${{ inputs.match-git-url }}
         MATCH_PASSWORD: ${{ inputs.match-password }}
 
-    - name: Find .app path
+    # Copies a fresh build into the same location as a cache hit, so the
+    # simulator always installs from here. ditto keeps the bundle intact.
+    - name: Stage build output (iOS)
       if: inputs.platform == 'ios'
       shell: bash
       env:
         SOURCE_DIR: ${{ inputs.wallet-source-dir }}
+        CACHE_HIT: ${{ steps.cached-build.outputs.hit }}
+        BUILD_DIR: ${{ runner.temp }}/e2e-build/ios
       run: |
-        APP_PATH=$(cat "$SOURCE_DIR/build/app_path.txt")
-        echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
-
-    - name: Boot iOS Simulator
-      if: inputs.platform == 'ios'
-      shell: bash
-      run: |
-        # Don't hardcode a model — Xcode/runner image bumps drop old devices
-        # (e.g. the Xcode 26 image ships iPhone 17-series, no iPhone 16). Create a
-        # fresh device from whatever iPhone device type exists, falling back to any
-        # already-available iPhone simulator. Mirrors reown-swift#322.
-        DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
-          jq -r '.devicetypes[] | select(.productFamily == "iPhone") | .identifier' | tail -1)
-        DEVICE_ID=$(xcrun simctl create "E2E-iPhone" "$DEVICE_TYPE" 2>/dev/null || \
-          xcrun simctl list devices available -j | \
-          jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
-        if [ -z "$DEVICE_ID" ]; then
-          echo "ERROR: no available iPhone simulator found"
-          xcrun simctl list devices available
-          exit 1
+        set -euo pipefail
+        if [ "$CACHE_HIT" != "true" ]; then
+          BUILT_APP=$(cat "$SOURCE_DIR/build/app_path.txt")
+          rm -rf "$BUILD_DIR"
+          mkdir -p "$BUILD_DIR"
+          ditto "$BUILT_APP" "$BUILD_DIR/$(basename "$BUILT_APP")"
         fi
-        echo "Using simulator device type: ${DEVICE_TYPE:-<fallback>}, id: $DEVICE_ID"
-        xcrun simctl boot "$DEVICE_ID" || true
-        # Wait for full boot so the steps below don't race a not-ready simulator
-        xcrun simctl bootstatus "$DEVICE_ID" -b
-        # Disable UIKit animations to reduce Maestro timing flakiness
-        xcrun simctl spawn "$DEVICE_ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
-        echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
-
-    - name: Install app on Simulator
-      if: inputs.platform == 'ios'
-      shell: bash
-      run: xcrun simctl install "$DEVICE_ID" "$APP_PATH"
+        APP_PATH=$(ls -d "$BUILD_DIR"/*.app | head -1)
+        echo "APP_PATH=$APP_PATH" >> "$GITHUB_ENV"
+        echo "App: $APP_PATH"
 
     # --- Android leg ---
+    # On a build cache hit only Java (the emulator runner's SDK tools need it;
+    # the runner accepts licenses itself) and KVM run; the build steps and the
+    # disk cleanup (only the build needs the space) are skipped.
     - name: Install Java 17
       if: inputs.platform == 'android'
       uses: actions/setup-java@v4
@@ -337,27 +417,60 @@ runs:
         architecture: x86_64
 
     - name: Accept Android Licenses
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       uses: SimonMarquis/android-accept-licenses@8d8deab5b7ab2aaea9ed69f0b802e53173f21fd1 # v1
 
-    # Gradle/AGP auto-installs the build.gradle-requested NDK at build time, and
-    # that download fails on the CI runner (InstallFailedException: ndk;27.0.12077973).
-    # Pre-install it explicitly via the cmdline-tools sdkmanager (licenses accepted
-    # above) so the build finds it instead of trying — and failing — to fetch it.
-    # Keep the version in lockstep with the wallet's build.gradle ndkVersion.
-    - name: Install Android NDK 27.0.12077973
-      if: inputs.platform == 'android'
+    # RN/AGP auto-installs the build-requested NDK at build time, and that
+    # on-the-fly download intermittently lands corrupted on CI runners
+    # ("Archive is not a ZIP archive" -> InstallFailedException), failing the
+    # build but passing on rerun. Pre-install it via the cmdline-tools sdkmanager
+    # (licenses accepted above) so the build finds it locally instead of fetching.
+    #
+    # The version is pinned once, in the wallet's app.json via the
+    # withAndroidNdkVersion config plugin. That single source of truth drives
+    # both the native build (the plugin injects ext.ndkVersion into the generated
+    # android/build.gradle at prebuild) and this pre-install (read below), so the
+    # installed NDK can't drift from the one the build wants — the drift that
+    # broke CI when the version was hardcoded separately here. Retry the install
+    # so a corrupted archive self-heals instead of failing the run.
+    - name: Install Android NDK
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
-      # Licenses are accepted by the previous step, so `sdkmanager` reads little
-      # stdin and `yes` takes SIGPIPE when it exits. Disable pipefail (the default
-      # shell runs with -e -o pipefail) so that broken pipe doesn't fail the step —
-      # `sdkmanager`'s own exit code (last in the pipe) is what governs.
+      working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: |
-        set +o pipefail
-        yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;27.0.12077973"
+        set -euo pipefail
+        # Read ndkVersion from the withAndroidNdkVersion plugin entry in app.json
+        # (the same value the plugin applies to the build).
+        NDK_VERSION="$(node -e "const p=(require('./app.json').expo.plugins||[]).find(x=>Array.isArray(x)&&x[0]==='./plugins/withAndroidNdkVersion.js');process.stdout.write((p&&p[1]&&p[1].ndkVersion)||'')")"
+        if [ -z "${NDK_VERSION:-}" ]; then
+          echo "Error: ndkVersion not set via ./plugins/withAndroidNdkVersion.js in app.json"
+          exit 1
+        fi
+        echo "Resolved ndkVersion=$NDK_VERSION (from app.json withAndroidNdkVersion plugin)"
+        SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+        status=1
+        for attempt in 1 2 3; do
+          echo "=== sdkmanager NDK install attempt $attempt/3 (ndk;$NDK_VERSION) ==="
+          # Licenses accepted above, so `sdkmanager` reads little stdin and `yes`
+          # takes SIGPIPE when it exits — disable pipefail so that broken pipe
+          # doesn't mask sdkmanager's own (last-in-pipe) exit code. The `if`
+          # condition is also exempt from `set -e`, so a failed install is
+          # captured and retried instead of aborting the step.
+          set +o pipefail
+          if yes | "$SDKMANAGER" --install "ndk;$NDK_VERSION"; then
+            status=0
+          else
+            status=$?
+          fi
+          set -o pipefail
+          [ "$status" -eq 0 ] && break
+          echo "NDK install attempt $attempt failed (exit $status); clearing partial download and retrying"
+          rm -rf "$ANDROID_HOME/ndk/$NDK_VERSION"
+        done
+        [ "$status" -eq 0 ] || { echo "Error: NDK install failed after 3 attempts"; exit 1; }
 
     - name: Expo Prebuild (Android)
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       # android/ is generated (Continuous Native Generation). Production prebuild;
@@ -367,7 +480,7 @@ runs:
       run: npx expo prebuild --platform android --no-install
 
     - name: Add Secrets file
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       env:
@@ -380,7 +493,7 @@ runs:
         printf '%s\n' "$ANDROID_SECRETS_FILE" > android/secrets.properties
 
     - name: Add Keystore file
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       env:
@@ -394,7 +507,7 @@ runs:
         printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode >> "android/app/${ANDROID_KEYSTORE_NAME}.keystore"
 
     - name: Optimize Gradle for CI
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: |
@@ -405,22 +518,20 @@ runs:
           echo "reactNativeArchitectures=x86_64"
         } >> android/gradle.properties
 
-    - name: Cache Gradle
-      if: inputs.platform == 'android'
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-          ${{ steps.paths.outputs.wallet_root }}/android/.gradle
-          ${{ steps.paths.outputs.wallet_root }}/android/app/.cxx
-          ${{ steps.paths.outputs.wallet_root }}/android/app/build/generated
-        key: ${{ runner.os }}-gradle-walletkit-${{ hashFiles(format('{0}/android/**/*.gradle*', steps.paths.outputs.wallet_root), format('{0}/android/**/gradle-wrapper.properties', steps.paths.outputs.wallet_root)) }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-walletkit-
+    # setup-gradle caches Gradle User Home (dependencies, wrapper, transforms,
+    # build cache). It only writes from the default branch; other branches
+    # restore main's latest entry read-only. Release builds (release-android-base)
+    # restore this job's main entry too. Build cache hits skip this step; the
+    # twice-weekly forced rebuild (scripts/build-cache.sh) keeps it warm.
+    # Project dirs (android/.gradle, app/.cxx, app/build/generated) are not
+    # cached: they saved no measurable time (the app's CMake build recompiles
+    # anyway) and aren't content-keyed, so they could go stale.
+    - name: Setup Gradle
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
+      uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
     - name: Build APK
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       id: build
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
@@ -428,8 +539,20 @@ runs:
         export SENTRY_DISABLE_AUTO_UPLOAD=true
         yarn run android:build:internal
 
+    # Same location as a cache hit, so the emulator step always installs from here.
+    - name: Stage build output (Android)
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
+      shell: bash
+      env:
+        APK: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
+        BUILD_DIR: ${{ runner.temp }}/e2e-build/android
+      run: |
+        set -euo pipefail
+        mkdir -p "$BUILD_DIR"
+        cp "$APK" "$BUILD_DIR/app-internal.apk"
+
     - name: Free disk space
-      if: inputs.platform == 'android'
+      if: inputs.platform == 'android' && steps.cached-build.outputs.hit != 'true'
       shell: bash
       run: |
         sudo rm -rf /usr/share/dotnet /usr/local/lib/android/sdk/ndk /opt/ghc /usr/local/share/boost
@@ -453,35 +576,22 @@ runs:
     # runner. The IC/KYC form is in-app on web, so plain http is sufficient (no
     # HTTPS callback leg). EXPO_PUBLIC_* (project id, TEST_MODE) are inlined at
     # export time from the .env written above — same as the native builds.
+    #
+    # Deliberately no Metro transform cache (node_modules/.cache): its entries
+    # hold the inlined EXPO_PUBLIC_TEST_PRIVATE_KEY in plain text, and fork PRs
+    # can restore main's caches. Cost: a cold export is ~75s slower on CI.
+    # Don't re-add it unencrypted (scripts/build-cache.sh could wrap it).
     - name: Install xvfb (web)
       if: inputs.platform == 'web'
       shell: bash
       run: sudo apt-get update && sudo apt-get install -y xvfb
-
-    - name: Cache Metro web build cache
-      if: inputs.platform == 'web'
-      uses: actions/cache@v4
-      with:
-        # find-cache-dir default (babel-loader / metro transform cache). Warming
-        # this across runs cuts most of the `expo export` transform time.
-        #
-        # The key hashes the written .env too: Expo inlines EXPO_PUBLIC_* into
-        # the bundle at Babel transform time, and Metro's transform cache is NOT
-        # keyed on env values — so reusing a cache built with different
-        # EXPO_PUBLIC_* (e.g. a caller injecting per-run ephemeral creds) bakes
-        # stale key/creds into the bundle. No restore-keys: any prefix fallback
-        # would span different .env values and re-introduce that poisoning.
-        # Stable-creds callers still get a full hit (identical .env => identical
-        # key); per-run-creds callers cold-build each run, which is correct.
-        path: ${{ steps.paths.outputs.wallet_root }}/node_modules/.cache
-        key: ${{ runner.os }}-web-metro-${{ hashFiles(format('{0}/yarn.lock', steps.paths.outputs.wallet_root), format('{0}/.env', steps.paths.outputs.wallet_root)) }}
 
     - name: Export web build
       if: inputs.platform == 'web'
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       # Static SPA (app.json web.output: single) -> dist/. TEST_MODE (from .env)
-      # keeps the paste-URL test input and disables the last-paid-token shortcut.
+      # disables pay animations and the last-paid-token shortcut.
       run: npx expo export --platform web --output-dir dist
 
     - name: Serve web build
@@ -497,15 +607,166 @@ runs:
         done
         curl -fsS -o /dev/null http://localhost:8081 || { echo "Static web server failed:"; cat "${RUNNER_TEMP}/web-serve.log"; exit 1; }
 
+    # Saved right after the build, before Maestro, so a flaky test run still
+    # stores it. Best-effort: a failed save never fails the job.
+    - name: Pack build cache
+      id: build-cache-pack
+      if: >-
+        steps.build-cache.outputs.enabled == 'true'
+        && steps.cached-build.outputs.hit != 'true'
+        && inputs.build-cache-save == 'true'
+      continue-on-error: true
+      shell: bash
+      env:
+        BUILD_CACHE_PASSPHRASE: ${{ inputs.build-cache-passphrase }}
+        BUILD_DIR: ${{ runner.temp }}/e2e-build/${{ inputs.platform }}
+        CACHE_FILE: ${{ runner.temp }}/e2e-build-cache/build.tar.gpg
+      run: bash "$GITHUB_ACTION_PATH/scripts/build-cache.sh" pack "$BUILD_DIR" "$CACHE_FILE"
+
+    - name: Save build cache
+      if: steps.build-cache-pack.outcome == 'success'
+      continue-on-error: true
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ runner.temp }}/e2e-build-cache/build.tar.gpg
+        key: ${{ steps.build-cache.outputs.key }}
+
+    # Everything ABOVE the next line is hashed into the build cache key
+    # (scripts/build-cache.sh BUILD_KEY_MARKER): keep build-affecting steps
+    # above it, and don't edit the marker line without updating the helper.
     # --- Common: Maestro setup + run ---
-    # Pinned to WalletConnect/actions master (4be7c01 = merge of #109, which removes
-    # the Universal Link / deeplink pay flow), so pay_single_option_nokyc_deeplink is
-    # no longer copied.
+    # --- iOS simulator ---
+    # Not a build input, so it sits below the cache-key marker: editing these
+    # steps doesn't force a rebuild.
+    - name: Install simslim
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        SLIM: ${{ inputs.ios-slim-simulator }}
+        # Pinned release + checksum: simslim is young and ships often.
+        SIMSLIM_VERSION: '0.11.0'
+        SIMSLIM_SHA256: d7ae4d0c834dfea9911f113cf60e98c25ee61f2a3a85ca22d0c28c43b39ccfaf
+      run: |
+        # Installed on every iOS run so `simslim measure` can report a stock
+        # simulator's memory too; only fatal when slimming was requested.
+        set -uo pipefail
+        DIR="$RUNNER_TEMP/simslim"
+        install_simslim() {
+          mkdir -p "$DIR" &&
+            curl -fsSL --retry 5 --retry-all-errors --retry-delay 3 \
+              --connect-timeout 20 --max-time 300 -o "$DIR/simslim.tar.gz" \
+              "https://github.com/MobAI-App/simslim/releases/download/v${SIMSLIM_VERSION}/simslim-v${SIMSLIM_VERSION}-macos-arm64.tar.gz" &&
+            echo "$SIMSLIM_SHA256  $DIR/simslim.tar.gz" | shasum -a 256 -c - &&
+            tar -xzf "$DIR/simslim.tar.gz" -C "$DIR" simslim
+        }
+        if install_simslim; then
+          echo "$DIR" >> "$GITHUB_PATH"
+          "$DIR/simslim" --version
+        elif [ "$SLIM" = "true" ]; then
+          echo "::error::Could not install simslim v$SIMSLIM_VERSION"
+          exit 1
+        else
+          echo "::warning::Could not install simslim v$SIMSLIM_VERSION; skipping memory measurement"
+        fi
+
+    - name: Boot iOS Simulator
+      if: inputs.platform == 'ios'
+      shell: bash
+      env:
+        SLIM: ${{ inputs.ios-slim-simulator }}
+        SIMULATORS: ${{ inputs.ios-simulators }}
+        # A first boot can be slow on a loaded runner (10m default).
+        SIMSLIM_BOOT_TIMEOUT: 15m
+      run: |
+        set -euo pipefail
+        if ! [[ "$SIMULATORS" =~ ^[1-9]$ ]]; then
+          echo "::error::ios-simulators must be 1-9, got '$SIMULATORS'"
+          exit 1
+        fi
+        # Don't hardcode a model — Xcode/runner image bumps drop old devices
+        # (e.g. the Xcode 26 image ships iPhone 17-series, no iPhone 16). Create
+        # fresh devices from the newest iPhone device type, falling back to one
+        # already-available iPhone simulator. Mirrors reown-swift#322.
+        # `simctl list devicetypes` is newest-first, so take the first match. Filter
+        # by name too: the iPod touch also has productFamily "iPhone", and it sorts
+        # last (current runtimes can't create it).
+        DEVICE_TYPE=$(xcrun simctl list devicetypes -j | \
+          jq -r 'first(.devicetypes[] | select(.productFamily == "iPhone" and (.name | startswith("iPhone"))) | .identifier) // empty')
+        DEVICE_IDS=()
+        : > "$RUNNER_TEMP/simctl-create.err"
+        for i in $(seq 1 "$SIMULATORS"); do
+          if [ -n "$DEVICE_TYPE" ] && ID=$(xcrun simctl create "E2E-iPhone-$i" "$DEVICE_TYPE" 2>"$RUNNER_TEMP/simctl-create.err"); then
+            DEVICE_IDS+=("$ID")
+          else
+            break
+          fi
+        done
+        if [ "${#DEVICE_IDS[@]}" -eq 0 ]; then
+          echo "::warning::Could not create a simulator from '${DEVICE_TYPE:-<none>}' ($(cat "$RUNNER_TEMP/simctl-create.err" 2>/dev/null)); falling back to an existing iPhone simulator"
+          DEVICE_TYPE=""
+          ID=$(xcrun simctl list devices available -j | \
+            jq -r '.devices | to_entries[] | select(.key | contains("iOS")) | .value[] | select(.name | startswith("iPhone")) | .udid' | head -1)
+          [ -n "$ID" ] && DEVICE_IDS=("$ID")
+        fi
+        if [ "${#DEVICE_IDS[@]}" -eq 0 ]; then
+          echo "ERROR: no available iPhone simulator found"
+          xcrun simctl list devices available
+          exit 1
+        fi
+        if [ "${#DEVICE_IDS[@]}" -lt "$SIMULATORS" ]; then
+          echo "::warning::Only ${#DEVICE_IDS[@]} of $SIMULATORS simulators available; running on ${#DEVICE_IDS[@]}"
+        fi
+        echo "Using simulator device type: ${DEVICE_TYPE:-<fallback>}, ids: ${DEVICE_IDS[*]}"
+        SIMSLIM_PROFILE="$GITHUB_ACTION_PATH/simslim-ci.json"
+        # Boot (or slim) all devices in parallel.
+        PIDS=()
+        for ID in "${DEVICE_IDS[@]}"; do
+          if [ "$SLIM" = "true" ]; then
+            # Writes the disable overrides while the device is still off, then
+            # boots it slim (no extra reboot on a fresh device). Fails on drift
+            # rather than silently testing on a stock simulator.
+            ( simslim on "$ID" --profile "$SIMSLIM_PROFILE" &&
+                simslim verify "$ID" --profile "$SIMSLIM_PROFILE" ) &
+          else
+            ( xcrun simctl boot "$ID" || true ) &
+          fi
+          PIDS+=($!)
+        done
+        for PID in "${PIDS[@]}"; do wait "$PID"; done
+        for ID in "${DEVICE_IDS[@]}"; do
+          # Wait for full boot so the steps below don't race a not-ready simulator
+          xcrun simctl bootstatus "$ID" -b
+          # Disable UIKit animations to reduce Maestro timing flakiness
+          xcrun simctl spawn "$ID" defaults write com.apple.UIKit UIAnimationDragCoefficient 0 || true
+        done
+        # DEVICE_ID (first device) is kept for single-device steps and callers.
+        echo "DEVICE_ID=${DEVICE_IDS[0]}" >> "$GITHUB_ENV"
+        echo "DEVICE_IDS=$(IFS=,; echo "${DEVICE_IDS[*]}")" >> "$GITHUB_ENV"
+        echo "DEVICE_COUNT=${#DEVICE_IDS[@]}" >> "$GITHUB_ENV"
+
+    - name: Install app on Simulator
+      if: inputs.platform == 'ios'
+      shell: bash
+      run: |
+        set -euo pipefail
+        IFS=, read -ra IDS <<< "$DEVICE_IDS"
+        PIDS=()
+        for ID in "${IDS[@]}"; do xcrun simctl install "$ID" "$APP_PATH" & PIDS+=($!); done
+        for PID in "${PIDS[@]}"; do wait "$PID"; done
+
+    # Pinned to WalletConnect/actions master (444774b = merge of #114): the flows
+    # deliver each payment link via `openLink` to <DEEPLINK_PREFIX><encoded link>
+    # instead of typing it into a paste input. Each Maestro step below passes
+    # DEEPLINK_PREFIX.
     - name: Copy shared Pay test flows
-      uses: WalletConnect/actions/maestro/pay-tests@4be7c0112f9651fc63b18c137650b75d2fc9b200
+      uses: WalletConnect/actions/maestro/pay-tests@444774bdc9c5b9669068d4c4f501bb298f52f5db
 
     - name: Install Maestro
-      uses: WalletConnect/actions/maestro/setup@4be7c0112f9651fc63b18c137650b75d2fc9b200
+      uses: WalletConnect/actions/maestro/setup@444774bdc9c5b9669068d4c4f501bb298f52f5db
+      with:
+        # Pinned so run timings and multi-device behavior are comparable across
+        # runs; bump deliberately (the installer's default is latest).
+        version: '2.10.0'
 
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
@@ -513,6 +774,9 @@ runs:
       shell: bash
       env:
         APP_ID: com.walletconnect.web3wallet.rnsample.internal
+        # Deep-link prefix the shared flows append the encoded payment link to
+        # (the internal build's custom scheme; see app.config.js).
+        DEEPLINK_PREFIX: rn-web3wallet-internal://wc?uri=
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
         WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
@@ -524,60 +788,58 @@ runs:
         WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
         WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
       run: |
-        xcrun simctl launch "$DEVICE_ID" "$APP_ID" || true
+        IFS=, read -ra IDS <<< "$DEVICE_IDS"
         mkdir -p maestro-artifacts
-        xcrun simctl spawn "$DEVICE_ID" log stream \
-          --level=debug \
-          --style=compact \
-          --predicate "process == \"RNWallet-Internal\" OR senderImagePath CONTAINS \"RNWallet\" OR process CONTAINS \"maestro\" OR process == \"xctest\" OR process == \"testmanagerd\" OR process == \"tccd\" OR process == \"SpringBoard\"" \
-          > maestro-artifacts/ios-syslog.log 2>&1 &
-        SYSLOG_PID=$!
-        set +e
-        # Retry the suite once on failure to absorb transient cold-start flakes
-        # (e.g. an app process that fails to launch/attach) without rebuilding the
-        # app or rebooting the simulator. A genuine failure fails every attempt, so
-        # this does not mask regressions. The syslog stream above keeps capturing
-        # across both attempts.
-        maestro_exit_code=0
-        # Clear any stale per-attempt logs (composite may be invoked twice per job).
-        rm -f maestro-output-attempt-*.log
-        for attempt in 1 2; do
-          echo "=== Maestro attempt $attempt/2 (iOS) ==="
-          $HOME/.maestro/bin/maestro test \
-            --env APP_ID="$APP_ID" \
-            --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
-            --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
-            --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
-            --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" \
-            --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" \
-            --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" \
-            --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" \
-            --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" \
-            --include-tags "$MAESTRO_TAGS" \
-            ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} \
-            --test-output-dir maestro-artifacts \
-            --debug-output "${RUNNER_TEMP}/maestro-debug" \
-            .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1
-          maestro_exit_code=$?
-          [ "$maestro_exit_code" -eq 0 ] && break
-          # >128 means killed by a signal (e.g. workflow cancel) — don't retry.
-          if [ "$maestro_exit_code" -gt 128 ]; then
-            echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"
-            break
-          fi
-          echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"
+        # App-process-only syslog at the default level (no debug/info) — includes
+        # JS console output. Only uploaded on failure (see below). The process name
+        # is read from the built app so it tracks Expo's generated target name.
+        # One log per simulator (ios-syslog.log is the first one).
+        APP_PROCESS=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP_PATH/Info.plist" 2>/dev/null || echo ReactNWallet)
+        SYSLOG_PIDS=()
+        for i in "${!IDS[@]}"; do
+          xcrun simctl launch "${IDS[$i]}" "$APP_ID" || true
+          LOG=maestro-artifacts/ios-syslog.log
+          [ "$i" -gt 0 ] && LOG="maestro-artifacts/ios-syslog-$((i + 1)).log"
+          xcrun simctl spawn "${IDS[$i]}" log stream \
+            --style=compact \
+            --predicate "process == \"$APP_PROCESS\"" \
+            > "$LOG" 2>&1 &
+          SYSLOG_PIDS+=($!)
         done
-        # Join per-attempt logs so the uploaded artifact keeps attempt 1's output
-        # on a double failure (otherwise attempt 2 would have overwritten it).
-        for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log
-        kill "$SYSLOG_PID" 2>/dev/null || true
-        wait "$SYSLOG_PID" 2>/dev/null || true
+        # With several simulators, one Maestro process splits the flows across
+        # them. Only pay_usdt_polygon sends txs from the wallet (Polygon Permit2
+        # approve); Base/Optimism payments are gasless EIP-3009 authorizations, so
+        # any split is nonce-safe. The syslog streams above keep capturing across
+        # both attempts.
+        set +e
+        # Maestro helpers live in maestro/, not scripts/: build-cache.sh hashes
+        # every file in scripts/ into the build-cache key.
+        MAESTRO_DEVICES="$DEVICE_IDS" bash "$GITHUB_ACTION_PATH/maestro/maestro-suite.sh" iOS
+        maestro_exit_code=$?
+        kill "${SYSLOG_PIDS[@]}" 2>/dev/null || true
+        wait "${SYSLOG_PIDS[@]}" 2>/dev/null || true
         mkdir -p maestro-artifacts/ios-crash-reports
         cp -R "$HOME/Library/Logs/DiagnosticReports/." maestro-artifacts/ios-crash-reports/ 2>/dev/null || true
         mkdir -p maestro-artifacts/maestro-debug
         find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true
-        cat maestro-output.log
         exit "$maestro_exit_code"
+
+    - name: Measure iOS simulator (after tests)
+      if: ${{ !cancelled() && inputs.platform == 'ios' && env.DEVICE_IDS != '' }}
+      shell: bash
+      env:
+        MODE: ${{ inputs.ios-slim-simulator == 'true' && 'slim' || 'stock' }}
+      run: |
+        command -v simslim >/dev/null || exit 0
+        # Measured after the suite: the peak is what decides how many simulators
+        # fit on a runner (slim ~2.3 GB, stock ~5.5 GB).
+        HOST="$(sysctl -n hw.ncpu) cores, $(( $(sysctl -n hw.memsize) / 1073741824 )) GB RAM"
+        IFS=, read -ra IDS <<< "$DEVICE_IDS"
+        for i in "${!IDS[@]}"; do
+          OUT=$(simslim measure "${IDS[$i]}" 2>&1) || { echo "::warning::simslim measure failed: $OUT"; continue; }
+          echo "$OUT"
+          echo "iOS simulator $((i + 1))/${#IDS[@]} ($MODE, $HOST host), after tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
+        done
 
     - name: Upload Maestro artifacts (iOS)
       # !cancelled() not always(): runs on success/failure, skipped on cancel.
@@ -594,8 +856,8 @@ runs:
           maestro-artifacts/**/*.mov
           maestro-artifacts/**/*.webm
           maestro-artifacts/**/*.gif
-          maestro-artifacts/ios-syslog.log
           maestro-artifacts/ios-crash-reports/**
+          maestro-artifacts/junit-attempt-*.xml
           maestro-artifacts/maestro-debug/**/*.png
           maestro-artifacts/maestro-debug/**/*.jpg
           maestro-output.log
@@ -607,15 +869,32 @@ runs:
         # download+rename step if both attempts' artifacts are needed.
         overwrite: true
 
+    - name: Upload iOS syslog (on failure)
+      if: ${{ failure() && inputs.platform == 'ios' }}
+      continue-on-error: true
+      uses: actions/upload-artifact@v4
+      with:
+        name: maestro-ios-syslog
+        path: maestro-artifacts/ios-syslog*.log
+        if-no-files-found: ignore
+        retention-days: 14
+        overwrite: true
+
     - name: Run Maestro tests (Android)
       if: inputs.platform == 'android'
       id: maestro-android
       uses: reactivecircus/android-emulator-runner@70f4dee990796918b78d040e3278474bdbd348a7 # v2
       env:
         APP_ID: com.walletconnect.web3wallet.rnsample.internal
+        # Deep-link prefix the shared flows append the encoded payment link to
+        # (the internal build's custom scheme; see app.config.js).
+        DEEPLINK_PREFIX: rn-web3wallet-internal://wc?uri=
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
-        APK_PATH: ${{ steps.paths.outputs.wallet_root }}/android/app/build/outputs/apk/internal/app-internal.apk
+        APK_PATH: ${{ runner.temp }}/e2e-build/android/app-internal.apk
+        # Inside the emulator action, GITHUB_ACTION_PATH is that action's own dir.
+        # Not scripts/: build-cache.sh hashes every file there into the key.
+        MAESTRO_SCRIPTS: ${{ github.action_path }}/maestro
         WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
         WPAY_MERCHANT_ID_SINGLE_NOKYC: ${{ inputs.merchant-id-single-nokyc }}
         WPAY_CUSTOMER_KEY_MULTI_NOKYC: ${{ inputs.merchant-api-key-multi-nokyc }}
@@ -634,12 +913,17 @@ runs:
         heap-size: 576M
         emulator-boot-timeout: 900
         force-avd-creation: false
-        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-load -dns-server 8.8.8.8,8.8.4.4
         disable-animations: true
         script: |
           adb install "$APK_PATH"
-          mkdir -p maestro-artifacts maestro-artifacts/maestro-debug; adb logcat -c || true; adb logcat AndroidRuntime:E ActivityManager:W ReactNativeJS:E '*:F' > maestro-artifacts/android-logcat.log 2>&1 & LOGCAT_PID=$!; set +e; maestro_exit_code=0; rm -f maestro-output-attempt-*.log; for attempt in 1 2; do echo "=== Maestro attempt $attempt/2 (Android) ==="; $HOME/.maestro/bin/maestro test --env APP_ID="$APP_ID" --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" --env WPAY_MERCHANT_ID_MULTI_NOKYC="$WPAY_MERCHANT_ID_MULTI_NOKYC" --env WPAY_CUSTOMER_KEY_MULTI_KYC="$WPAY_CUSTOMER_KEY_MULTI_KYC" --env WPAY_MERCHANT_ID_MULTI_KYC="$WPAY_MERCHANT_ID_MULTI_KYC" --env WPAY_PAY_API_URL="$WPAY_PAY_API_URL" --env WPAY_EXPIRED_GATEWAY_URL="$WPAY_EXPIRED_GATEWAY_URL" --include-tags "$MAESTRO_TAGS" ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"} --test-output-dir maestro-artifacts --debug-output "${RUNNER_TEMP}/maestro-debug" .maestro/ >"maestro-output-attempt-${attempt}.log" 2>&1; maestro_exit_code=$?; [ "$maestro_exit_code" -eq 0 ] && break; if [ "$maestro_exit_code" -gt 128 ]; then echo "Maestro killed by signal (exit $maestro_exit_code) — not retrying"; break; fi; echo "Maestro attempt $attempt failed (exit $maestro_exit_code)"; done; for f in maestro-output-attempt-*.log; do echo "=== $f ==="; cat "$f"; done > maestro-output.log; kill "$LOGCAT_PID" 2>/dev/null || true; wait "$LOGCAT_PID" 2>/dev/null || true; adb logcat -d -b crash > maestro-artifacts/android-logcat-crash.log 2>&1 || true; find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true; cat maestro-output.log; exit "$maestro_exit_code"
+          bash "$MAESTRO_SCRIPTS/maestro-android.sh"
 
+    # Besides media, keeps launch diagnostics: the logcat events buffer
+    # (am_proc_start / am_proc_died / wm_on_resume_called) and Maestro's own
+    # maestro.log. Never upload Maestro's commands*.json: it records every
+    # command with its resolved --env values (merchant API keys) in plain text,
+    # and artifacts on this public repo are downloadable by anyone.
     - name: Upload Maestro artifacts (Android)
       if: ${{ !cancelled() && inputs.platform == 'android' }}
       continue-on-error: true
@@ -656,6 +940,9 @@ runs:
           maestro-artifacts/**/*.gif
           maestro-artifacts/android-logcat.log
           maestro-artifacts/android-logcat-crash.log
+          maestro-artifacts/android-logcat-events.log
+          maestro-artifacts/**/*.log
+          maestro-artifacts/junit-attempt-*.xml
           maestro-artifacts/maestro-debug/**/*.png
           maestro-artifacts/maestro-debug/**/*.jpg
           maestro-output.log
@@ -673,6 +960,9 @@ runs:
       shell: bash
       env:
         APP_URL: http://localhost:8081
+        # Web entry point for payment links: the SPA reads the initial URL and
+        # routes wc?uri=<encoded link> like the native deep link.
+        DEEPLINK_PREFIX: http://localhost:8081/wc?uri=
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
         WPAY_CUSTOMER_KEY_SINGLE_NOKYC: ${{ inputs.merchant-api-key-single-nokyc }}
@@ -717,6 +1007,7 @@ runs:
             xvfb-run -a "$HOME/.maestro/bin/maestro" test \
               "$@" \
               --env APP_ID="$APP_URL" \
+              --env DEEPLINK_PREFIX="$DEEPLINK_PREFIX" \
               --env WPAY_CUSTOMER_KEY_SINGLE_NOKYC="$WPAY_CUSTOMER_KEY_SINGLE_NOKYC" \
               --env WPAY_MERCHANT_ID_SINGLE_NOKYC="$WPAY_MERCHANT_ID_SINGLE_NOKYC" \
               --env WPAY_CUSTOMER_KEY_MULTI_NOKYC="$WPAY_CUSTOMER_KEY_MULTI_NOKYC" \
@@ -757,6 +1048,10 @@ runs:
         run_polygon()  { run_maestro polygon  --include-tags pay-chain-polygon ${MAESTRO_EXCLUDE_TAGS:+--exclude-tags "$MAESTRO_EXCLUDE_TAGS"}; }
 
         if [ "${WEB_PARALLEL:-1}" = "1" ]; then
+          # Unpack Maestro's bundled deps (~/.maestro/deps) once up front: on a
+          # fresh runner the three concurrent processes race to create them and
+          # one dies at startup ("Unable to create file .../simulator-server").
+          "$HOME/.maestro/bin/maestro" --version >/dev/null 2>&1 || true
           run_readonly & ro_pid=$!
           run_base     & base_pid=$!
           run_polygon  & poly_pid=$!
@@ -802,7 +1097,7 @@ runs:
     # steps — actions/runner#1457).
     - name: Reset USDT Permit2 allowance (Polygon)
       if: always() && contains(inputs.maestro-tags, 'pay')
-      uses: WalletConnect/actions/maestro/permit2-reset@4be7c0112f9651fc63b18c137650b75d2fc9b200
+      uses: WalletConnect/actions/maestro/permit2-reset@444774bdc9c5b9669068d4c4f501bb298f52f5db
       with:
         chain-id: eip155:137
         rpc-url: ${{ inputs.polygon-rpc-url }}

@@ -5,6 +5,9 @@ module.exports = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
+    // pay-core only exports an "import" condition, which Jest doesn't resolve.
+    "^@walletconnect/pay-core$":
+      "<rootDir>/node_modules/@walletconnect/pay-core/dist/index.js",
   },
   transformIgnorePatterns: [
     "node_modules/(?!(react-native|@react-native|expo|@expo|@react-navigation|@tanstack|zustand|@shopify|react-native-qrcode-skia|react-native-thermal-pos-printer|react-native-mmkv|react-native-device-info|react-native-reanimated|react-native-worklets|pressto|@walletconnect|uuid)/)",

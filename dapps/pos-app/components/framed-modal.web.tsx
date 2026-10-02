@@ -176,10 +176,17 @@ export function FramedModal({
 
   if (!isRendered) return null;
 
+  // While the close animation plays the modal is still mounted; without this,
+  // its full-screen overlay swallows clicks meant for the screen underneath.
+  const pointerEvents = visible ? "auto" : "none";
+
   // If we have a container ref (desktop web), use portal into the frame
   if (frameContainer) {
     const modalContent = (
-      <Animated.View style={[styles.container, containerAnimatedStyle]}>
+      <Animated.View
+        pointerEvents={pointerEvents}
+        style={[styles.container, containerAnimatedStyle]}
+      >
         {children}
       </Animated.View>
     );
@@ -187,7 +194,10 @@ export function FramedModal({
   }
 
   const modalContent = (
-    <Animated.View style={[mobileWebContainer, containerAnimatedStyle]}>
+    <Animated.View
+      pointerEvents={pointerEvents}
+      style={[mobileWebContainer, containerAnimatedStyle]}
+    >
       {children}
     </Animated.View>
   );

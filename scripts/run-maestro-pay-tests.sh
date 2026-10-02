@@ -81,6 +81,19 @@ fi
 
 APP_ID="${MAESTRO_APP_ID:-${APP_ID:-com.walletconnect.web3wallet.rnsample.internal}}"
 
+# Deep-link prefix the shared flows append the URL-encoded payment link to
+# (they `openLink` it instead of typing into the paste input). Derived from the
+# target: web -> <url>/wc?uri=, native -> the variant's custom scheme
+# (app.config.js). Override with DEEPLINK_PREFIX=... if needed.
+if [ -z "${DEEPLINK_PREFIX:-}" ]; then
+  case "$APP_ID" in
+    http://*|https://*) DEEPLINK_PREFIX="${APP_ID%/}/wc?uri=" ;;
+    *.internal) DEEPLINK_PREFIX="rn-web3wallet-internal://wc?uri=" ;;
+    *.debug) DEEPLINK_PREFIX="rn-web3wallet-debug://wc?uri=" ;;
+    *) DEEPLINK_PREFIX="rn-web3wallet://wc?uri=" ;;
+  esac
+fi
+
 # Tags included on a default (no-args) run. Web adds `pay-web` — flows that only
 # run in a browser (e.g. the in-app KYC form, which replaces the hosted webview
 # on web). Native runs use `pay` only, so they never pick up `pay-web` flows.
@@ -135,6 +148,7 @@ fi
 
 MAESTRO_ARGS=(
   --env "APP_ID=$APP_ID"
+  --env "DEEPLINK_PREFIX=$DEEPLINK_PREFIX"
   --env "WPAY_CUSTOMER_KEY_SINGLE_NOKYC=$WPAY_CUSTOMER_KEY_SINGLE_NOKYC"
   --env "WPAY_MERCHANT_ID_SINGLE_NOKYC=$WPAY_MERCHANT_ID_SINGLE_NOKYC"
   --env "WPAY_CUSTOMER_KEY_MULTI_NOKYC=$WPAY_CUSTOMER_KEY_MULTI_NOKYC"
@@ -160,6 +174,7 @@ done
 
 echo "Running Maestro Pay E2E tests..."
 echo "  App ID: $APP_ID"
+echo "  Deep-link prefix: $DEEPLINK_PREFIX"
 echo "  Args: ${RESOLVED_ARGS[*]}"
 
 maestro test "${MAESTRO_ARGS[@]}" "${RESOLVED_ARGS[@]}"

@@ -1,4 +1,5 @@
 import { useSnapshot } from 'valtio';
+import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { showToast } from '@/utils/ToastUtil';
@@ -11,6 +12,10 @@ import { Text } from '@/components/Text';
 import { Spacing, BorderRadius } from '@/utils/ThemeUtil';
 import CopySvg from '@/assets/Copy';
 import { Button } from '@/components/Button';
+import {
+  ensureWalletReady,
+  WALLET_NAMESPACES,
+} from '@/utils/WalletInitializationUtil';
 
 interface SecretSectionProps {
   title: string;
@@ -122,11 +127,20 @@ export default function SecretPhrase() {
     cantonWallet,
     solanaWallet,
     bitcoinWallet,
+    stellarWallet,
   } = useSnapshot(SettingsStore.state);
   const Theme = useTheme();
 
+  // The idle queue may still be restoring signers. Ensure every secret-backed
+  // section is ready when this screen is opened.
+  useEffect(() => {
+    Promise.all(WALLET_NAMESPACES.map(ensureWalletReady)).catch(() => {
+      // Individual sections retain their unavailable state if one restore fails.
+    });
+  }, []);
+
   // Get EVM mnemonic
-  const evmMnemonic = eip155Wallets[eip155Address]?.getMnemonic?.() ?? null;
+  const evmMnemonic = eip155Wallets?.[eip155Address]?.getMnemonic?.() ?? null;
 
   // Get SUI mnemonic
   const suiMnemonic = suiWallet?.getMnemonic?.() ?? null;
@@ -148,6 +162,11 @@ export default function SecretPhrase() {
 
   // Get Bitcoin mnemonic
   const bitcoinMnemonic = bitcoinWallet?.getMnemonic?.() ?? null;
+
+  // Get Stellar mnemonic (or the strkey `S…` secret when imported from a raw
+  // secret — like Solana, the secret is not hex; `type` only drives layout).
+  const stellarMnemonic = stellarWallet?.getMnemonic?.() || null;
+  const stellarSecret = stellarWallet?.getSecret?.() ?? null;
 
   return (
     <ScrollView
@@ -222,6 +241,22 @@ export default function SecretPhrase() {
         type="mnemonic"
         notAvailableMessage="Bitcoin wallet not initialized"
       />
+
+      {stellarMnemonic ? (
+        <SecretSection
+          title="Stellar"
+          secret={stellarMnemonic}
+          type="mnemonic"
+          notAvailableMessage="Stellar wallet not initialized"
+        />
+      ) : (
+        <SecretSection
+          title="Stellar (secret key)"
+          secret={stellarSecret}
+          type="hex"
+          notAvailableMessage="Stellar wallet not initialized"
+        />
+      )}
     </ScrollView>
   );
 }

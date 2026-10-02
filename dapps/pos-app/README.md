@@ -26,6 +26,10 @@ Follow the official React Native documentation to set up your environment:
 
    Update the `.env` file with your configuration values.
 
+   To simulate payments without merchant credentials or a wallet, enable Test
+   Mode in Settings. In Test Mode, `0.02` is declined, every other valid amount
+   succeeds, and Transactions shows local sample records.
+
 3. Create native folders
 
    ```bash

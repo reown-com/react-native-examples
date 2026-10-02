@@ -1,0 +1,34 @@
+url: ${APP_URL}
+name: POS Amount — charge disabled until a non-zero amount is entered
+tags:
+  - amount
+---
+# Requires a configured merchant (see common/create-payment-qr.yaml) so
+# "Start payment" reaches the amount screen.
+- launchApp:
+    clearState: true
+
+- tapOn:
+    id: "start-payment-button"
+
+# Empty amount: the charge button shows the placeholder label
+- assertVisible:
+    text: "Enter amount"
+
+# Entering "0" is still invalid (amount required)
+- tapOn:
+    id: "key-0"
+- assertVisible:
+    text: "Enter amount"
+
+# Tapping the disabled charge button must NOT navigate away — keypad still shown
+- tapOn:
+    id: "charge-button"
+- assertVisible:
+    id: "key-1"
+
+# A non-zero amount enables the charge button (0 -> 5 replaces the leading zero)
+- tapOn:
+    id: "key-5"
+- assertVisible:
+    text: "Charge \\$5.00"

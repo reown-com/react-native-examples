@@ -1,4 +1,4 @@
-name: CI E2E WalletKit
+name: 🧪 WalletKit - E2E Tests
 # The "(skip-metrics)" suffix is consumed by the E2E KPI metrics job (WalletConnect/actions)
 # to exclude those runs from stats. Don't change/remove it.
 # The platform label mirrors which jobs actually run (see each job's `if:`):
@@ -27,14 +27,20 @@ on:
       - 'wallets/rn_cli_wallet/**'
       - '.maestro/**'
       - '.github/actions/walletkit-build-and-maestro/**'
+      - '.github/actions/derive-e2e-wallet/**'
+      - '.github/actions/install-cast/**'
       - '.github/workflows/ci_e2e_walletkit.yaml'
+      - '.github/workflows/e2e-balance-check.yml'
   push:
     branches: [main]
     paths:
       - 'wallets/rn_cli_wallet/**'
       - '.maestro/**'
       - '.github/actions/walletkit-build-and-maestro/**'
+      - '.github/actions/derive-e2e-wallet/**'
+      - '.github/actions/install-cast/**'
       - '.github/workflows/ci_e2e_walletkit.yaml'
+      - '.github/workflows/e2e-balance-check.yml'
   workflow_dispatch:
     inputs:
       maestro-tags:
@@ -68,7 +74,20 @@ jobs:
   check-balance:
     # Skip the faucet/balance check on draft PRs too — the E2E jobs that need it
     # are skipped while a PR is a draft, so there's nothing to check for.
-    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    # Dependabot PRs can't read repo secrets (wallet env, faucet webhook), so the
+    # E2E jobs would always fail — skip the whole workflow for them.
+    if: >-
+      github.actor != 'dependabot[bot]'
+      && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
+    # Repo-wide, across refs: the faucet bot sends from one wallet and drops a
+    # same-chain request that lands before its previous send is mined, so
+    # overlapping runs must not request at the same time. The group is on this
+    # calling job (not the matrix inside) because GitHub keeps one pending job
+    # per group. A newer run can replace a pending check; the E2E jobs still
+    # run (`!cancelled()`), and the next run checks the balances again.
+    concurrency:
+      group: e2e-faucet-requests
+      cancel-in-progress: false
     uses: ./.github/workflows/e2e-balance-check.yml
     secrets:
       SLACK_FAUCETBOT_WEBHOOK_URL: ${{ secrets.SLACK_FAUCETBOT_WEBHOOK_URL }}
@@ -78,26 +97,48 @@ jobs:
     # Balance alert should not block tests. On schedule, iOS (macOS, expensive)
     # runs only on the once-daily cron; the 6h cadence stays Android-only. On
     # dispatch, gated by the `ios` checkbox.
+    # `!cancelled()` (not `always()`): still runs when check-balance fails, but a
+    # job-level `always()` makes GitHub ignore Cancel, so the run keeps going to the end.
     if: >-
-      always()
+      !cancelled()
+      && github.actor != 'dependabot[bot]'
       && (github.event_name != 'workflow_dispatch' || inputs.ios)
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - iOS
     runs-on: macos-latest-xlarge
     timeout-minutes: 60
+    # One wallet per platform (see derive-e2e-wallet): runs on other refs queue
+    # instead of paying from the same account at the same time. GitHub keeps
+    # one pending run per group; a newer one replaces it.
+    concurrency:
+      group: e2e-wallet-ios
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Derive E2E wallet (iOS)
+        id: wallet
+        uses: ./.github/actions/derive-e2e-wallet
+        with:
+          mnemonic: ${{ secrets.TEST_WALLET_MNEMONIC }}
+          index: 1
+          expected-address: ${{ vars.TEST_WALLET_ADDRESS_IOS }}
 
       - name: Build wallet and run Maestro tests (iOS)
         id: walletkit
         uses: ./.github/actions/walletkit-build-and-maestro
         with:
           platform: ios
+          # Two slim simulators (~2.3 GB each at peak) share the suite. On the
+          # 5-core xlarge runner a third slows every flow 1.6-2x (CPU-bound) and
+          # saves nothing; a stock simulator peaks at ~5.5 GB.
+          ios-slim-simulator: 'true'
+          ios-simulators: '2'
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
-          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          wallet-private-key: ${{ steps.wallet.outputs.private-key }}
           merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
           merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
           merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
@@ -105,6 +146,10 @@ jobs:
           merchant-api-key-multi-kyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_KYC }}
           merchant-id-multi-kyc: ${{ secrets.WPAY_MERCHANT_ID_MULTI_KYC }}
           maestro-tags: ${{ env.MAESTRO_TAGS }}
+          # Encrypted build cache: every run may restore (fork/Dependabot PRs get
+          # no secret, so it's off for them); only trusted main runs save.
+          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()
@@ -159,14 +204,29 @@ jobs:
     # Balance alert should not block tests. Android runs on every trigger (it's
     # the cheap 6h canary); on dispatch, gated by the `android` checkbox.
     if: >-
-      always() && (github.event_name != 'workflow_dispatch' || inputs.android)
+      !cancelled() && github.actor != 'dependabot[bot]'
+      && (github.event_name != 'workflow_dispatch' || inputs.android)
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - Android
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    # One wallet per platform (see derive-e2e-wallet): runs on other refs queue
+    # instead of paying from the same account at the same time. GitHub keeps
+    # one pending run per group; a newer one replaces it.
+    concurrency:
+      group: e2e-wallet-android
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Derive E2E wallet (Android)
+        id: wallet
+        uses: ./.github/actions/derive-e2e-wallet
+        with:
+          mnemonic: ${{ secrets.TEST_WALLET_MNEMONIC }}
+          index: 0
+          expected-address: ${{ vars.TEST_WALLET_ADDRESS_ANDROID }}
 
       - name: Build wallet and run Maestro tests (Android)
         id: walletkit
@@ -175,7 +235,7 @@ jobs:
           platform: android
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
-          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          wallet-private-key: ${{ steps.wallet.outputs.private-key }}
           merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
           merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
           merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}
@@ -186,6 +246,10 @@ jobs:
           android-secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
           android-keystore-base64: ${{ secrets.WC_INTERNAL_KEYSTORE }}
           android-keystore-name: ${{ vars.WC_INTERNAL_KEYSTORE_NAME }}
+          # Encrypted build cache: every run may restore (fork/Dependabot PRs get
+          # no secret, so it's off for them); only trusted main runs save.
+          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
 
       - name: Send Slack notification
         if: failure()
@@ -241,16 +305,31 @@ jobs:
     # `web` checkbox is set). Cheap (ubuntu), so kept off the 6h Android canary
     # for parity with iOS's daily-only schedule gate.
     if: >-
-      always()
+      !cancelled()
+      && github.actor != 'dependabot[bot]'
       && (github.event_name != 'workflow_dispatch' || inputs.web)
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - Web
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # One wallet per platform (see derive-e2e-wallet): runs on other refs queue
+    # instead of paying from the same account at the same time. GitHub keeps
+    # one pending run per group; a newer one replaces it.
+    concurrency:
+      group: e2e-wallet-web
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Derive E2E wallet (Web)
+        id: wallet
+        uses: ./.github/actions/derive-e2e-wallet
+        with:
+          mnemonic: ${{ secrets.TEST_WALLET_MNEMONIC }}
+          index: 2
+          expected-address: ${{ vars.TEST_WALLET_ADDRESS_WEB }}
 
       - name: Build wallet and run Maestro tests (Web)
         id: walletkit
@@ -259,7 +338,7 @@ jobs:
           platform: web
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
-          wallet-private-key: ${{ secrets.TEST_WALLET_PRIVATE_KEY }}
+          wallet-private-key: ${{ steps.wallet.outputs.private-key }}
           merchant-api-key-single-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_SINGLE_NOKYC }}
           merchant-id-single-nokyc: ${{ secrets.WPAY_MERCHANT_ID_SINGLE_NOKYC }}
           merchant-api-key-multi-nokyc: ${{ secrets.WPAY_CUSTOMER_KEY_MULTI_NOKYC }}

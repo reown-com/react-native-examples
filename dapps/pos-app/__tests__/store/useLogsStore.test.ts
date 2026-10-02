@@ -1,4 +1,6 @@
 import { useLogsStore } from "@/store/useLogsStore";
+import { storage } from "@/utils/storage";
+import { Platform } from "react-native";
 import { resetLogsStore } from "../utils/store-helpers";
 
 describe("useLogsStore", () => {
@@ -227,6 +229,29 @@ describe("useLogsStore", () => {
 
       // Hydration state should be preserved
       expect(useLogsStore.getState()._hasHydrated).toBe(true);
+    });
+
+    it("keeps iframe logs out of shared storage", async () => {
+      const originalWindow = global.window;
+      const originalPlatform = Platform.OS;
+      const getItem = jest.spyOn(storage, "getItem");
+      const setItem = jest.spyOn(storage, "setItem");
+      (Platform as any).OS = "web";
+      (global as any).window = { self: {}, top: {} };
+
+      try {
+        await useLogsStore.persist.rehydrate();
+        useLogsStore.getState().addLog("info", "Iframe log");
+
+        expect(useLogsStore.getState().logs).toHaveLength(1);
+        expect(getItem).not.toHaveBeenCalled();
+        expect(setItem).not.toHaveBeenCalled();
+      } finally {
+        (global as any).window = originalWindow;
+        (Platform as any).OS = originalPlatform;
+        getItem.mockRestore();
+        setItem.mockRestore();
+      }
     });
   });
 });

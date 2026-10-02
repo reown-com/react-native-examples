@@ -28,12 +28,17 @@ import {
   approveCantonRequest,
   rejectCantonRequest,
 } from '@/utils/CantonRequestHandlerUtil';
+import {
+  approveStellarRequest,
+  rejectStellarRequest,
+} from '@/utils/StellarRequestHandlerUtil';
 import { EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SOLANA_SIGNING_METHODS } from '@/constants/Solana';
 import { SUI_SIGNING_METHODS } from '@/constants/Sui';
 import { BIP122_SIGNING_METHODS } from '@/constants/Bitcoin';
 import { TRON_SIGNING_METHODS } from '@/constants/Tron';
 import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
+import { STELLAR_SIGNING_METHODS } from '@/constants/Stellar';
 
 /**
  * PoC — single source of truth for "simple" approve/reject session requests.
@@ -340,6 +345,45 @@ export const REQUEST_CONFIG: Record<string, RequestConfig> = {
     renderPayload: request => JSON.stringify(request.params, null, 2),
     respondErrorOnApproveFailure: true,
     logScope: 'SessionRequestModal:canton_prepareSignExecute',
+  },
+
+  // ── Stellar ───────────────────────────────────────────────────────────────
+  [STELLAR_SIGNING_METHODS.STELLAR_SIGN_XDR]: {
+    // Signs only (does not broadcast).
+    approve: approveStellarRequest,
+    reject: rejectStellarRequest,
+    intention: 'Sign a transaction for',
+    renderPayload: request => request.params?.xdr || '',
+    approveErrorTitle: 'Couldn’t sign transaction',
+    rejectRedirectError: 'User rejected Stellar transaction request',
+    logScope: 'SessionRequestModal:stellar_signXDR',
+  },
+  [STELLAR_SIGNING_METHODS.STELLAR_SIGN_AND_SUBMIT_XDR]: {
+    approve: approveStellarRequest,
+    reject: rejectStellarRequest,
+    intention: 'Sign & submit a transaction for',
+    renderPayload: request => request.params?.xdr || '',
+    approveErrorTitle: 'Couldn’t submit transaction',
+    rejectRedirectError: 'User rejected Stellar transaction request',
+    logScope: 'SessionRequestModal:stellar_signAndSubmitXDR',
+  },
+  [STELLAR_SIGNING_METHODS.STELLAR_SIGN_MESSAGE]: {
+    approve: approveStellarRequest,
+    reject: rejectStellarRequest,
+    intention: 'Sign a message for',
+    renderPayload: request => request.params?.message || '',
+    approveErrorTitle: 'Couldn’t sign message',
+    rejectRedirectError: 'User rejected Stellar message request',
+    logScope: 'SessionRequestModal:stellar_signMessage',
+  },
+  [STELLAR_SIGNING_METHODS.STELLAR_SIGN_AUTH_ENTRY]: {
+    approve: approveStellarRequest,
+    reject: rejectStellarRequest,
+    intention: 'Sign an authorization entry for',
+    renderPayload: request => request.params?.authEntry || '',
+    approveErrorTitle: 'Couldn’t sign authorization entry',
+    rejectRedirectError: 'User rejected Stellar authorization request',
+    logScope: 'SessionRequestModal:stellar_signAuthEntry',
   },
 };
 

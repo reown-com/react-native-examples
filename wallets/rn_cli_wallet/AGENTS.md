@@ -225,7 +225,7 @@ EXPO_PUBLIC_SENTRY_DSN=""        # Sentry error tracking (optional)
 EXPO_PUBLIC_TON_CENTER_API_KEY="" # TON blockchain API key (optional)
 EXPO_PUBLIC_BLOCKCHAIN_API_URL="" # Blockchain API URL (to get wallet balances)
 EXPO_PUBLIC_TEST_PRIVATE_KEY=""  # Private key for funded test wallet (Maestro E2E only)
-EXPO_PUBLIC_TEST_MODE=""         # "true" shows test-only UI / disables pay animations
+EXPO_PUBLIC_TEST_MODE=""         # "true" disables pay animations + the web last-paid-token shortcut (Maestro E2E)
 EXPO_PUBLIC_PAY_API_BASE_URL=""  # Override WCPay API base URL (blank = walletkit default)
 SENTRY_DISABLE_AUTO_UPLOAD=true  # Build-time only: disable Sentry auto upload (Android)
 ```
@@ -243,7 +243,7 @@ The app uses standardized `testID` props for Maestro E2E testing. These IDs are 
 - `.maestro/pay_multiple_options_nokyc.yaml`: Multiple payment options, no KYC — option selection then review
 - `.maestro/pay_multiple_options_kyc.yaml`: Multiple payment options with KYC — option selection, webview KYC flow, then review
 - `.maestro/pay_usdt_polygon.yaml`: USDT on Polygon — a plain ERC-20 (no EIP-3009/2612), so WC Pay uses the Permit2 path: the wallet sends an `approve` (allowance) tx then the payment tx. Best-effort observes the setup step via the `pay-loading-setup-note` testID (soft screenshot), then asserts the success screen. The allowance is reset to 0 after the run (see below) so each run re-exercises `approve`. (Note: USDT on Arbitrum is EIP-3009 / signature-based, so it never needs an on-chain approve — Polygon is used precisely because it does.)
-- `.maestro/flows/pay_open_and_paste_url.yaml`: Shared sub-flow — opens wallet, pastes payment URL, waits for merchant info
+- `.maestro/flows/pay_open_payment_link.yaml`: Shared sub-flow — launches the wallet, then opens the payment link as a deep link (`<DEEPLINK_PREFIX><encoded link>`, e.g. `rn-web3wallet-internal://wc?uri=…`; `scripts/run-maestro-pay-tests.sh` derives the prefix from `APP_ID`)
 - `.maestro/flows/pay_confirm_and_verify.yaml`: Shared sub-flow — taps Pay, verifies success screen
 - `.maestro/scripts/create-payment.js`: Creates a payment via the WalletConnect Pay API (called via `runScript`)
 
@@ -261,6 +261,33 @@ When set, the wallet auto-loads this private key on startup (if no stored wallet
 ### CI Workflow
 `.github/workflows/ci_e2e_walletkit.yaml` runs Maestro tests on both iOS (simulator) and Android (emulator). Triggers on PRs/pushes to main when `wallets/rn_cli_wallet/` or `.maestro/` files change.
 
+### E2E test wallets (one per platform)
+Each E2E leg pays from its own funded account, derived from the `TEST_WALLET_MNEMONIC` secret by `.github/actions/derive-e2e-wallet` (`m/44'/60'/0'/0/<index>`: 0 = Android, 1 = iOS, 2 = web). The derived key is masked and passed to the composite's `wallet-private-key` input, so cross-repo callers that pass their own key are unaffected.
+- **Why**: the legs run concurrently, and a shared account raced on the Polygon nonce and the USDT Permit2 allowance (one leg's post-suite reset revoked another leg's approval mid-flow). Base and Optimism payments are gasless EIP-3009 authorizations (random nonces), so they don't conflict.
+- **Queueing**: each leg's job is in a `e2e-wallet-<platform>` concurrency group, so runs on other refs wait instead of sharing the account. GitHub keeps one pending run per group; a newer one replaces it.
+- **Setup / rotation**: `./scripts/set-e2e-wallets.sh --generate <file>` (or `<file>` for an existing phrase) validates the mnemonic, then sets the secret and the three address variables together. Fund the printed addresses before the next run.
+- **Addresses**: repo variables `TEST_WALLET_ADDRESS_{ANDROID,IOS,WEB}`. The derive step fails on a mismatch, and `.github/workflows/e2e-balance-check.yml` checks each address (Base USDC, Optimism USDC, Polygon USDT, POL gas), one at a time: the faucet bot sends from a single wallet and drops same-chain requests that arrive before its previous send is mined. Every caller runs it from a job in the repo-wide `e2e-faucet-requests` concurrency group; for a manual top-up, dispatch **E2E Wallet Balance Check (manual)** (`e2e-balance-check-manual.yml`) rather than adding a `workflow_dispatch` to the reusable workflow.
+- **Keep every token balance under $9.99**: `pay_insufficient_funds` creates a $9.99 payment and expects it to be unaffordable.
+- **New wallets need their compliance details on file once**: until an address has submitted Pay's "Add your personal details" form (a KYC flow such as `pay_multiple_options_kyc` / `pay_kyc_web`, or one manual payment), Pay returns `collectData` on options the no-KYC flows expect to pay directly, so those flows fail on the first run. After a rotation, expect one red run per wallet (attempt 2 usually passes) or submit the form manually first.
+
+### E2E build cache (Android + iOS)
+The Android and iOS E2E jobs reuse the last build (APK / simulator `.app`) instead of rebuilding (`.github/actions/walletkit-build-and-maestro/scripts/build-cache.sh`). Saved only by main push/schedule/dispatch runs; every other run restores read-only.
+- **Key**: the committed `wallets/rn_cli_wallet` files minus a non-build denylist (`WALLET_NON_BUILD_PATHS` in the helper: docs, tests, lint/editor config, web-only `*.web.*` / `web-polyfills.js` / `vercel.json`; new files count by default, so a forgotten build input can't serve a stale build) + the build part of `action.yml` (everything above the `# --- Common: Maestro setup + run ---` marker, inputs included; Maestro/simulator/upload edits below it don't invalidate) + every file in the action's `scripts/` (keep non-build helpers in `maestro/`) + runner OS/arch + hashes of the written `.env` (each leg's derived test key) and the passphrase, plus Android secrets/keystore or iOS root `fastlane/`, `Gemfile(.lock)` and `xcodebuild -version`; rotated each half-week (Mon–Wed / Thu–Sun, forced rebuild). Changes under `.maestro/` don't invalidate it; uncommitted build inputs and signed iOS builds disable the cache.
+- **Encrypted**: the build inlines `EXPO_PUBLIC_TEST_PRIVATE_KEY`, and fork PRs can restore main's caches, so the blob is gpg-encrypted (AES-256) with the `E2E_BUILD_CACHE_PASSPHRASE` secret. Without the secret (fork/Dependabot PRs, cross-repo callers) the cache is off. Never cache or upload an unencrypted build.
+- **Fails closed**: an exact hit that fails to decrypt/extract fails the job, since cache entries are immutable. Fix with `gh cache delete <key>` or bump `BUILD_CACHE_EPOCH` in the helper. Rotating the passphrase is safe: its fingerprint is in the key, so the next run just misses.
+- **Web is not cached**, on purpose: a hit would save only ~40s. The web job also has no Metro transform cache, because `node_modules/.cache/metro` holds the inlined test key in plain text. Don't add either back unencrypted.
+
+### iOS simulators (simslim, 2 in parallel)
+The WalletKit workflow passes `ios-slim-simulator: 'true'` and `ios-simulators: '2'` (composite defaults: off / 1, so other callers are unchanged). The composite creates the simulators, slims each with [simslim](https://github.com/MobAI-App/simslim) before its first boot, and one Maestro process splits the suite across them (`--shard-split`). Only `pay_usdt_polygon` sends txs from the wallet (Polygon Permit2 approve), so any split is nonce-safe.
+- **Measured on `macos-latest-xlarge`**: slim ~1.3 → ~2.3 GB per simulator (before → after the suite) vs stock ~3.9 → ~5.5 GB. Boot-to-end of tests: 7m40s with 1 simulator, 6m10s with 2, 6m38s with 3: on the 5-core runner a third simulator slows every flow 1.6–2× (CPU-bound).
+- **Profile** `.github/actions/walletkit-build-and-maestro/simslim-ci.json` keeps `icloud`, `web` and `siri` enabled. With `siri` off (assistantd stopped) while the simulator still reports "Assistant is enabled", iOS's in-app keyboard/text-input setup loops on Siri preference lookups (~300k `No language code saved, but Assistant is enabled` log lines per launch) and Maestro's XCTest snapshots time out.
+- The release is pinned with a sha256; `simslim verify` fails the job on drift; `simslim measure` writes each simulator's post-suite memory to the job summary (stock runs too). Use `simslim clone`, not `simctl clone`, for extra devices: `simctl clone` drops the slim overrides.
+- The simulator steps sit below the cache-key marker, so editing them doesn't force a rebuild.
+- **Free `macos-latest`** (3-core M1, 7 GB) passed the slim suite on a cache hit (~14 min), but a from-source build there was 2.5–3× slower and its tests then hung, and two simulators don't fit. Stay on xlarge.
+
+### Maestro retries (iOS + Android)
+`.github/actions/walletkit-build-and-maestro/maestro/maestro-suite.sh` runs the tagged suite (split across the simulators on iOS), then retries once with only the flows its JUnit report (`maestro-artifacts/junit-attempt-<n>.xml`) marks as failed, falling back to the full suite when the report has no results. Output streams live, so a hung run still shows progress. Android wraps it in `maestro/maestro-android.sh` (logcat captures); web keeps its per-group runner. The helpers live in `maestro/`, not `scripts/`, because every file in `scripts/` is part of the build-cache key. Never upload Maestro's `commands*.json`: it records the resolved `--env` values (merchant API keys).
+
 ### Permit2 allowance reset (USDT)
 After the suite runs, the composite action (`.github/actions/walletkit-build-and-maestro`) calls the shared `WalletConnect/actions/maestro/permit2-reset` action to reset the USDT-on-Polygon Permit2 allowance back to 0, so `pay_usdt_polygon` always re-exercises the `approve` step. It signs a transaction (so it's a Node step, not a Maestro `runScript`); the private key is passed via env, never the CLI. `.github/workflows/e2e-balance-check.yml` also monitors USDT + POL (gas) on Polygon and pings the faucet bot on Slack when low.
 
@@ -277,6 +304,26 @@ After the suite runs, the composite action (`.github/actions/walletkit-build-and
 from `app.json` / `app.config.js` / `plugins/` / `assets/`. `yarn ios` / `yarn android`
 run prebuild automatically when the folders are missing. Never hand-edit `ios/`
 or `android/`; change the Expo config or a config plugin and re-run prebuild.
+
+### Android NDK version — re-check on every RN/Expo upgrade
+The Android NDK version is pinned in `app.json` via `plugins/withAndroidNdkVersion.js`
+(a plugin arg: `["./plugins/withAndroidNdkVersion.js", { "ndkVersion": "…" }]`). This
+one value is the single source of truth: the plugin injects it into the generated
+`android/build.gradle`, and the E2E workflow
+(`.github/actions/walletkit-build-and-maestro`) reads the same `app.json` entry to
+pre-install that exact NDK via `sdkmanager`. The pre-install exists because RN
+otherwise fetches the NDK on the fly at build time, and that download intermittently
+lands corrupted on CI runners (`Archive is not a ZIP archive` →
+`InstallFailedException`) — failing the build but passing on rerun.
+
+**On any `react-native` / `expo` bump, verify this value still matches Expo's default
+NDK and update it if not.** Expo owns the default (`ExpoRootProjectPlugin`:
+`setIfNotExist("ndkVersion") { … }`) and bumps it across SDK versions. If our pin
+drifts below what the new build wants, the pre-install seeds the wrong NDK, Gradle
+re-fetches the right one at build time, and the corrupt-download flake returns. To
+confirm the current default: run `yarn prebuild` and check the `ndkVersion` line in
+`android/build.gradle`, or read the default in
+`node_modules/expo-modules-autolinking/.../ExpoRootProjectPlugin.kt`.
 
 ### Setup
 ```bash
@@ -421,13 +468,17 @@ import { Button } from '@/components/Button';
 
 **Always increment the `versionCode` when creating a new feature, fix, or PR:**
 
-The Android `versionCode` is located in `android/app/build.gradle`. Before submitting a PR, increment this value by 1:
+The Android `versionCode` is located in `app.json` under `expo.android`. The native
+`android/` directory is generated by `expo prebuild` (CNG), so it is not the source of
+truth. Before submitting a PR, increment this value by 1:
 
-```gradle
-android {
-    defaultConfig {
-        versionCode 57  // Increment this value
+```json
+{
+  "expo": {
+    "android": {
+      "versionCode": 74
     }
+  }
 }
 ```
 

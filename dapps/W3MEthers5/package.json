@@ -56,13 +56,12 @@
   "resolutions": {
     "@babel/plugin-transform-modules-systemjs": "7.29.4",
     "image-size": "1.2.1",
-    "nanoid": "5.1.3",
     "micromatch": "4.0.8",
     "cross-spawn": "7.0.6",
     "ip": "2.0.1",
     "ws": "8.18.1",
-    "shell-quote": "1.8.4",
-    "joi": "17.13.4",
+    "shell-quote": "1.9.0",
+    "joi": "17.13.6",
     "uuid": "11.1.1",
     "@babel/core": "7.29.6",
     "@babel/runtime": "7.29.7",
@@ -73,10 +72,10 @@
     "on-headers": "1.1.0",
     "fast-redact": "3.5.0",
     "node-forge": "1.4.0",
-    "js-yaml": "4.2.0",
+    "js-yaml": "4.3.2",
     "h3": "1.15.9",
     "lodash": "4.18.1",
-    "tar": "7.5.16",
+    "tar": "7.5.21",
     "fast-xml-parser": "5.7.0",
     "bn.js": "5.2.3",
     "minimatch": "9.0.9",
@@ -85,7 +84,10 @@
     "picomatch": "4.0.4",
     "defu": "6.1.5",
     "ajv": "6.14.0",
-    "undici": "6.27.0",
-    "@xmldom/xmldom": "0.8.13"
+    "undici": "6.28.0",
+    "@xmldom/xmldom": "0.8.15",
+    "baseline-browser-mapping": "2.11.0",
+    "brace-expansion": "2.1.4",
+    "browserslist": "4.28.7"
   }
 }

@@ -24,7 +24,7 @@
     },
     "android": {
       "package": "com.walletconnect.web3wallet.rnsample",
-      "versionCode": 73,
+      "versionCode": 74,
       "permissions": ["android.permission.POST_NOTIFICATIONS"],
       "intentFilters": [
         {
@@ -49,6 +49,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "@rnrepo/expo-config-plugin",
       [
         "react-native-bootsplash",
         {
@@ -82,6 +83,10 @@
           "organization": "walletconnect",
           "project": "w3w-react-native"
         }
+      ],
+      [
+        "./plugins/withAndroidNdkVersion.js",
+        { "ndkVersion": "27.1.12297006" }
       ],
       "./plugins/withAndroidVariants.js",
       "./plugins/withAndroidVariantIcons.js"

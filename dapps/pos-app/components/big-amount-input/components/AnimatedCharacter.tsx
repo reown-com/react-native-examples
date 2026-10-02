@@ -31,6 +31,7 @@ type AnimatedCharacterProps = {
   scale: number;
   characterWidth: number;
   itemHeight: number;
+  fontSize: number;
   positionX: number;
   isPlaceholder?: boolean;
   textPrimaryColor: string;
@@ -43,6 +44,7 @@ function AnimatedCharacterComponent({
   scale,
   characterWidth,
   itemHeight,
+  fontSize,
   positionX,
   isPlaceholder = false,
   textPrimaryColor,
@@ -111,7 +113,7 @@ function AnimatedCharacterComponent({
           animatedStyle,
         ]}
       >
-        <Animated.Text style={[styles.text, { color: textColor }]}>
+        <Animated.Text style={[styles.text, { color: textColor, fontSize }]}>
           {item.char}
         </Animated.Text>
       </Animated.View>
@@ -128,7 +130,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "KH Teka Medium",
-    fontSize: 64,
     letterSpacing: -1,
     position: "absolute",
     textAlign: "center",

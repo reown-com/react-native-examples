@@ -1,8 +1,9 @@
 import { BigAmountInput } from "@/components/big-amount-input";
 import { Button } from "@/components/button";
 import { NumericKeyboard } from "@/components/numeric-keyboard";
-import { ThemedText } from "@/components/themed-text";
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { TestModeOverlay } from "@/components/test-mode-pill";
+import { Spacing } from "@/constants/spacing";
+import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import {
@@ -37,6 +38,9 @@ const formatAmount = (amount: string) => {
 
 export default function AmountScreen() {
   const Theme = useTheme();
+  const testMode = useSettingsStore((state) => state.testMode);
+  const isTestPayment = testMode;
+  const isTablet = useIsTablet();
   const currencyCode = useSettingsStore((state) => state.currency);
   const currency = getCurrency(currencyCode);
   const {
@@ -62,7 +66,8 @@ export default function AmountScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isTablet && styles.containerTablet]}>
+      {isTestPayment && <TestModeOverlay />}
       <View
         style={[
           styles.amountContainer,
@@ -70,9 +75,11 @@ export default function AmountScreen() {
         ]}
       >
         <BigAmountInput
+          testID="amount-display"
           value={watchAmount}
           currency={currency.symbol}
           symbolPosition={currency.symbolPosition}
+          size={isTablet ? "lg" : "md"}
         />
       </View>
       <Controller
@@ -121,25 +128,17 @@ export default function AmountScreen() {
         )}
       />
       <Button
+        type="accent"
+        variant="primary"
+        testID="charge-button"
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid}
-        style={[
-          styles.button,
-          {
-            backgroundColor: Theme["bg-accent-primary"],
-            opacity: isValid ? 1 : 0.6,
-          },
-        ]}
+        size={isTablet ? "lg" : "md"}
+        style={[styles.button, isTablet && styles.buttonTablet]}
       >
-        <ThemedText
-          fontSize={16}
-          lineHeight={18}
-          style={{ color: Theme["text-invert"] }}
-        >
-          {isValid
-            ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
-            : "Enter amount"}
-        </ThemedText>
+        {isValid
+          ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
+          : "Enter amount"}
       </Button>
     </View>
   );
@@ -148,11 +147,16 @@ export default function AmountScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: Spacing["spacing-5"],
     paddingTop: Spacing["spacing-5"],
     paddingBottom: Platform.OS === "web" ? 0 : Spacing["spacing-5"],
+  },
+  containerTablet: {
+    paddingHorizontal: Spacing["spacing-8"],
+    paddingTop: Spacing["spacing-8"],
   },
   amountContainer: {
     flex: 1,
@@ -163,11 +167,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing["spacing-5"],
   },
   button: {
-    width: "100%",
     marginTop: Spacing["spacing-6"],
-    paddingVertical: Spacing["spacing-4"],
-    paddingHorizontal: Spacing["spacing-5"],
-    alignItems: "center",
-    borderRadius: BorderRadius["5"],
+  },
+  buttonTablet: {
+    marginTop: Spacing["spacing-8"],
   },
 });

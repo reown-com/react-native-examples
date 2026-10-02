@@ -1,4 +1,5 @@
 import { ImageSourcePropType } from 'react-native';
+import { Chain } from '@/utils/TypesUtil';
 import { TON_CHAINS, TON_NETWORKS_IMAGES } from '@/constants/Ton';
 import { SUI_CHAINS, SUI_NETWORKS_IMAGES } from '@/constants/Sui';
 import { EIP155_CHAINS, EIP155_NETWORK_IMAGES } from '@/constants/Eip155';
@@ -6,6 +7,7 @@ import { TRON_CHAINS, TRON_NETWORKS_IMAGES } from '@/constants/Tron';
 import { CANTON_CHAINS, CANTON_NETWORKS_IMAGES } from '@/constants/Canton';
 import { SOLANA_CHAINS, SOLANA_NETWORKS_IMAGES } from '@/constants/Solana';
 import { BIP122_CHAINS, BIP122_NETWORKS_IMAGES } from '@/constants/Bitcoin';
+import { STELLAR_CHAINS, STELLAR_NETWORKS_IMAGES } from '@/constants/Stellar';
 
 const NetworkImages: Record<string, ImageSourcePropType> = {
   ...EIP155_NETWORK_IMAGES,
@@ -15,9 +17,10 @@ const NetworkImages: Record<string, ImageSourcePropType> = {
   ...CANTON_NETWORKS_IMAGES,
   ...SOLANA_NETWORKS_IMAGES,
   ...BIP122_NETWORKS_IMAGES,
+  ...STELLAR_NETWORKS_IMAGES,
 };
 
-export const ALL_CHAINS = {
+export const ALL_CHAINS: Record<string, Chain> = {
   ...EIP155_CHAINS,
   ...SUI_CHAINS,
   ...TON_CHAINS,
@@ -25,6 +28,7 @@ export const ALL_CHAINS = {
   ...CANTON_CHAINS,
   ...SOLANA_CHAINS,
   ...BIP122_CHAINS,
+  ...STELLAR_CHAINS,
 };
 
 export const PresetsUtil = {
@@ -33,27 +37,6 @@ export const PresetsUtil = {
     if (!logo) {
       return undefined;
     }
-    return logo;
-  },
-  getIconLogoByName: (name?: string) => {
-    if (!name) {
-      return undefined;
-    }
-
-    const chainData = Object.values(ALL_CHAINS).find(
-      chain => chain.name?.toLowerCase() === name.toLowerCase(),
-    );
-
-    const chainId = `${chainData?.namespace}:${chainData?.chainId}`;
-    if (!chainId) {
-      return undefined;
-    }
-
-    const logo = NetworkImages[chainId];
-    if (!logo) {
-      return undefined;
-    }
-
     return logo;
   },
   getChainDataById: (chainId?: string) => {

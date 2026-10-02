@@ -12,17 +12,22 @@ export const BigAmountInput = ({
   symbolPosition = "left",
   locale,
   placeholder = "0.00",
+  size = "md",
   testID,
   style,
 }: BigAmountInputProps) => {
   return (
-    <View style={[styles.container, style]} testID={testID}>
+    <View
+      style={[styles.container, size === "lg" && styles.containerLarge, style]}
+      testID={testID}
+    >
       <AnimatedNumber
         value={value}
         currency={currency}
         symbolPosition={symbolPosition}
         locale={locale}
         placeholder={placeholder}
+        size={size}
       />
     </View>
   );
@@ -35,5 +40,8 @@ const styles = StyleSheet.create({
     minHeight: 80,
     flex: 1,
     width: "100%",
+  },
+  containerLarge: {
+    minHeight: 100,
   },
 });

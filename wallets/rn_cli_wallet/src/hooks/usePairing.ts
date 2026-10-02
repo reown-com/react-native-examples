@@ -7,6 +7,8 @@ import SettingsStore from '@/store/SettingsStore';
 import PaymentStore from '@/store/PaymentStore';
 import { EIP155_CHAINS } from '@/constants/Eip155';
 import { SOLANA_CHAINS } from '@/constants/Solana';
+import { TRON_MAINNET_CHAINS } from '@/constants/Tron';
+import { ensureWalletReady } from '@/utils/WalletInitializationUtil';
 
 export { isPaymentLink };
 
@@ -24,8 +26,21 @@ export function usePairing() {
     }
 
     try {
+      // Payment options are account-specific. Restore the Pay-supported
+      // namespaces before advertising accounts, rather than exposing an
+      // address whose signer is not ready yet.
+      const readiness = await Promise.allSettled([
+        ensureWalletReady('eip155'),
+        ensureWalletReady('solana'),
+        ensureWalletReady('tron'),
+      ]);
+      if (readiness.every(result => result.status === 'rejected')) {
+        throw new Error('No payment wallet could be initialized');
+      }
+
       const eip155Address = SettingsStore.state.eip155Address;
       const solanaAddress = SettingsStore.state.solanaAddress;
+      const tronAddress = SettingsStore.state.tronAddress;
       const accounts = [
         ...(eip155Address
           ? Object.keys(EIP155_CHAINS).map(
@@ -35,6 +50,11 @@ export function usePairing() {
         ...(solanaAddress
           ? Object.keys(SOLANA_CHAINS).map(
               chainKey => `${chainKey}:${solanaAddress}`,
+            )
+          : []),
+        ...(tronAddress
+          ? Object.keys(TRON_MAINNET_CHAINS).map(
+              chainKey => `${chainKey}:${tronAddress}`,
             )
           : []),
       ];

@@ -1,13 +1,8 @@
 import React, {useCallback, useState} from 'react';
 import {Linking, StyleSheet} from 'react-native';
-import {
-  WebView,
-  WebViewMessageEvent
-} from 'react-native-webview';
-import type {
-  ShouldStartLoadRequest,
-  WebViewOpenWindowEvent,
-} from 'react-native-webview/lib/WebViewTypes';
+import {WebView} from 'react-native-webview';
+import type {WebViewMessageEvent} from 'react-native-webview';
+import type {ShouldStartLoadRequest} from 'react-native-webview/lib/WebViewTypes';
 import {RootStackScreenProps} from '@/utils/TypesUtil';
 import {ToastUtils} from '@/utils/ToastUtils';
 import {PaySuccessView} from './PaySuccessView';
@@ -34,7 +29,7 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
   const {url} = route.params;
 
   // Once the Pay page reports success we swap the WebView for the success
-  // result screen (Lottie checkmark), mirroring the wallet sample's Pay flow.
+  // result screen (Lottie checkmark).
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const onShouldStartLoadWithRequest = useCallback(
@@ -52,26 +47,6 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
     },
     [],
   );
-
-  // Some pages open the wallet via window.open() (a new window) rather than a
-  // same-frame navigation, which routes here instead of onShouldStartLoadWithRequest.
-  // Only hand wallet deeplinks off to the OS — ignore any other window.open()
-  // target so a page can't drive Linking.openURL to arbitrary native schemes
-  // (tel:/sms:/intent:...). This mirrors the isWalletDeeplink gate above, which
-  // also matches https universal links (they carry the same `uri=wc:` param),
-  // so preferUniversalLinks wallets keep working.
-  const onOpenWindow = useCallback((event: WebViewOpenWindowEvent) => {
-    const {targetUrl} = event.nativeEvent;
-    if (!isWalletDeeplink(targetUrl)) {
-      return;
-    }
-    Linking.openURL(targetUrl).catch(() => {
-      ToastUtils.showErrorToast(
-        "Couldn't open wallet",
-        'The wallet app may not be installed.',
-      );
-    });
-  }, []);
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
@@ -128,9 +103,7 @@ function PayWebView({route, navigation}: RootStackScreenProps<'PayWebView'>) {
       startInLoadingState
       javaScriptEnabled
       domStorageEnabled
-      setSupportMultipleWindows
       onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-      onOpenWindow={onOpenWindow}
       onMessage={onMessage}
       onError={onLoadError}
     />

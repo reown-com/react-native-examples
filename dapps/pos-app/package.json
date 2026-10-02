@@ -6,11 +6,16 @@
     "start": "expo start",
     "android": "expo run:android",
     "android:pos": "expo run:android --port 8082",
+    "android:internal": "expo run:android --variant internal --app-id com.walletconnect.mobilepos.internal",
     "android:build": "cd android && ./gradlew assembleRelease",
+    "android:build:internal": "cd android && ./gradlew assembleInternal",
+    "android:build:aab": "cd android && ./gradlew bundleRelease",
     "prebuild": "expo prebuild",
     "postprebuild": "node scripts/setup-secrets.js",
     "postinstall": "patch-package && npm run web:setup",
     "ios": "expo run:ios",
+    "ios:internal": "APP_VARIANT=internal expo run:ios",
+    "ios:prod": "APP_VARIANT=production expo run:ios",
     "web": "npm run web:setup && expo start --web",
     "web:serve": "npm run web:setup && expo serve",
     "web:build": "npm run web:setup && expo export -p web",
@@ -21,18 +26,22 @@
     "test": "jest"
   },
   "dependencies": {
-    "@sentry/react-native": "7.11.0",
+    "@rnrepo/expo-config-plugin": "0.3.6",
+    "@sentry/react-native": "8.23.0",
     "@shopify/react-native-skia": "2.6.2",
     "@tanstack/react-query": "5.90.11",
+    "@walletconnect/pay-core": "0.7.0",
     "@walletconnect/safe-json": "1.0.2",
     "expo": "56.0.12",
     "expo-application": "56.0.3",
     "expo-asset": "56.0.17",
+    "expo-camera": "56.0.8",
     "expo-clipboard": "56.0.4",
     "expo-constants": "56.0.18",
     "expo-crypto": "56.0.4",
     "expo-font": "56.0.7",
     "expo-image": "56.0.11",
+    "expo-keep-awake": "56.0.3",
     "expo-linear-gradient": "56.0.4",
     "expo-linking": "56.0.14",
     "expo-local-authentication": "56.0.4",
@@ -81,20 +90,19 @@
     "typescript": "6.0.3"
   },
   "overrides": {
-    "hono": "4.12.25",
-    "tar": "7.5.16",
+    "tar": "7.5.21",
     "node-forge": "1.4.0",
     "glob": "10.5.0",
-    "js-yaml": "4.2.0",
+    "js-yaml": "4.3.2",
     "esbuild": "0.25.0",
-    "shell-quote": "1.8.4",
+    "shell-quote": "1.9.0",
     "@babel/core": "7.29.6",
     "tmp": "0.2.7",
     "xcode": {
       "uuid": "11.1.1"
     },
     "@vercel/node": {
-      "undici": "6.27.0"
+      "undici": "6.28.0"
     },
     "minimatch": "9.0.9",
     "h3": "1.15.9",
@@ -102,14 +110,19 @@
     "flatted": "3.4.2",
     "picomatch": "4.0.4",
     "yaml": "2.8.3",
-    "@xmldom/xmldom": "0.8.13",
+    "@xmldom/xmldom": "0.8.15",
     "cross-spawn": "7.0.6",
     "diff": "4.0.4",
     "path-to-regexp": "6.3.0",
     "lodash": "4.18.1",
     "defu": "6.1.5",
-    "undici": "6.27.0",
-    "postcss": "8.5.10"
+    "undici": "6.28.0",
+    "postcss": "8.5.23",
+    "@humanfs/node": "0.16.8",
+    "baseline-browser-mapping": "2.11.0",
+    "brace-expansion": "2.1.4",
+    "browserslist": "4.28.7",
+    "nanoid": "3.3.18"
   },
   "private": true
 }

@@ -1,8 +1,14 @@
+import {Platform} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
+import Constants from 'expo-constants';
 
 type Environment = 'debug' | 'internal' | 'production';
 
 export function getEnvironment(): Environment {
+  // No native bundle id on web (device-info is native-only); treat as production.
+  if (Platform.OS === 'web') {
+    return 'production';
+  }
   try {
     const bundleId = DeviceInfo.getBundleId();
     if (!bundleId || typeof bundleId !== 'string') {
@@ -58,4 +64,16 @@ export const getMetadata = () => {
 export function getEnvironmentLabel(): string {
   const env = getEnvironment();
   return env.charAt(0).toUpperCase() + env.slice(1);
+}
+
+// "<version> (<build>) - <Environment>". On web, react-native-device-info's
+// getVersion/getBuildNumber return "unknown", so read the version from the Expo
+// config and use "web" for the build (matching pos-app).
+export function getAppVersionLabel(): string {
+  const label = getEnvironmentLabel();
+  if (Platform.OS === 'web') {
+    const version = Constants.expoConfig?.version ?? 'unknown';
+    return `${version} (web) - ${label}`;
+  }
+  return `${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()}) - ${label}`;
 }
