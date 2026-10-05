@@ -26,6 +26,7 @@ export function Message({
   return (
     <ScrollView
       bounces={false}
+      nestedScrollEnabled
       style={[
         styles.container,
         { backgroundColor: Theme['foreground-primary'] },
