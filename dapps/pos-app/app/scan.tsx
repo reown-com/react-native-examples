@@ -80,7 +80,6 @@ export default function ScanScreen() {
   // permission) rejects, so suppress that instead of surfacing it.
   useKeepAwake(undefined, { suppressDeactivateWarnings: true });
 
-  const deviceId = useSettingsStore((state) => state.deviceId);
   const storedMerchantId = useSettingsStore((state) => state.merchantId);
   const testMode = useSettingsStore((state) => state.testMode);
   const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
@@ -165,7 +164,7 @@ export default function ScanScreen() {
   };
 
   useEffect(() => {
-    if (!deviceId || !amount) return;
+    if (!amount) return;
 
     async function initiatePayment() {
       if (!isTestPayment && !merchantId) {
@@ -257,7 +256,7 @@ export default function ScanScreen() {
 
     initiatePayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deviceId, amount, merchantId, isTestPayment]);
+  }, [amount, merchantId, isTestPayment]);
 
   useEffect(() => {
     if (!isTestPayment || !paymentId) return;

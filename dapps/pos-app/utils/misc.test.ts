@@ -1,15 +1,4 @@
-import {
-  formatCountdown,
-  formatCountdownSpoken,
-  getDate,
-  getDeviceIdentifier,
-} from "./misc";
-
-// Mock react-native-device-info
-const mockGetUniqueId = jest.fn();
-jest.mock("react-native-device-info", () => ({
-  getUniqueId: () => mockGetUniqueId(),
-}));
+import { formatCountdown, formatCountdownSpoken, getDate } from "./misc";
 
 describe("getDate", () => {
   beforeEach(() => {
@@ -49,36 +38,6 @@ describe("getDate", () => {
   it("handles different years", () => {
     jest.setSystemTime(new Date("2030-07-22T12:00:00"));
     expect(getDate()).toBe("2030-07-22");
-  });
-});
-
-describe("getDeviceIdentifier", () => {
-  beforeEach(() => {
-    mockGetUniqueId.mockReset();
-  });
-
-  it("returns device id as string when successful", async () => {
-    mockGetUniqueId.mockResolvedValue("device-123-abc");
-    const result = await getDeviceIdentifier();
-    expect(result).toBe("device-123-abc");
-  });
-
-  it("converts numeric device id to string", async () => {
-    mockGetUniqueId.mockResolvedValue(123456);
-    const result = await getDeviceIdentifier();
-    expect(result).toBe("123456");
-  });
-
-  it('returns "unknown" when getUniqueId throws an error', async () => {
-    mockGetUniqueId.mockRejectedValue(new Error("Device not available"));
-    const result = await getDeviceIdentifier();
-    expect(result).toBe("unknown");
-  });
-
-  it('returns "unknown" when getUniqueId rejects with non-Error', async () => {
-    mockGetUniqueId.mockRejectedValue("Some string error");
-    const result = await getDeviceIdentifier();
-    expect(result).toBe("unknown");
   });
 });
 
