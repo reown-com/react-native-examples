@@ -70,8 +70,11 @@ export function EthTransactionBody({ request, chainId }: RequestBodyProps) {
           <Text variant="lg-400" color="text-tertiary">
             Amount
           </Text>
-          <Text variant="lg-400" color="text-primary">
-            {amount != null ? `${amount} ${symbol}` : String(tx.value)}
+          <Text
+            variant="lg-400"
+            color={amount != null ? 'text-primary' : 'text-secondary'}
+          >
+            {amount != null ? `${amount} ${symbol}` : 'Invalid amount'}
           </Text>
         </View>
         <View>
