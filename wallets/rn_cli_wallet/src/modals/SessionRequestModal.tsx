@@ -195,7 +195,14 @@ export default function SessionRequestModal() {
           isScam={isScam}
         />
         <NetworkInfoCard chainId={requestEvent.params.chainId} />
-        <Message message={payload} />
+        {config.Body ? (
+          <config.Body
+            request={requestEvent.params.request}
+            chainId={requestEvent.params.chainId}
+          />
+        ) : (
+          <Message message={payload} />
+        )}
       </View>
     </RequestModal>
   );

@@ -56,7 +56,6 @@ const LOCKOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
 interface SettingsStore {
   themeMode: ThemeMode;
-  deviceId: string;
   variant: VariantName;
   currency: CurrencyCode;
   _hasHydrated: boolean;
@@ -82,7 +81,6 @@ interface SettingsStore {
 
   // Actions
   setThemeMode: (themeMode: ThemeMode) => void;
-  setDeviceId: (deviceId: string) => void;
   setHasHydrated: (state: boolean) => void;
   setVariant: (variant: VariantName) => void;
   getVariantPrinterLogo: () => string;
@@ -113,7 +111,6 @@ export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set, get) => ({
       themeMode: "system" as ThemeMode,
-      deviceId: "",
       variant: "default",
       currency: "USD",
       _hasHydrated: false,
@@ -129,7 +126,6 @@ export const useSettingsStore = create<SettingsStore>()(
       nfcEnabled: true,
       testMode: false,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
-      setDeviceId: (deviceId: string) => set({ deviceId }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
       setVariant: (variant: VariantName) => {
         const variantData = Variants[variant];
@@ -261,7 +257,7 @@ export const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings",
-      version: 20,
+      version: 21,
       storage,
       migrate: (persistedState: any, version: number) => {
         if (!persistedState || typeof persistedState !== "object") {
@@ -350,6 +346,12 @@ export const useSettingsStore = create<SettingsStore>()(
 
         if (version < 20) {
           persistedState.testMode = false;
+        }
+
+        if (version < 21) {
+          // The device ID was a leftover from the old POS client and is no
+          // longer read anywhere; drop the persisted value.
+          delete persistedState.deviceId;
         }
 
         return persistedState;

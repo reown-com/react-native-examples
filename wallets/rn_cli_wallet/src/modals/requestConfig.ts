@@ -1,3 +1,4 @@
+import type { ComponentType } from 'react';
 import { SignClientTypes } from '@walletconnect/types';
 import bs58 from 'bs58';
 
@@ -39,6 +40,7 @@ import { BIP122_SIGNING_METHODS } from '@/constants/Bitcoin';
 import { TRON_SIGNING_METHODS } from '@/constants/Tron';
 import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
 import { STELLAR_SIGNING_METHODS } from '@/constants/Stellar';
+import { EthTransactionBody } from './EthTransactionBody';
 
 /**
  * PoC — single source of truth for "simple" approve/reject session requests.
@@ -57,6 +59,11 @@ type WcRequest = RequestEvent['params']['request'];
 
 // Handlers return a formatted JSON-RPC response (sync or async).
 type HandlerFn = (event: RequestEvent) => Promise<any> | any;
+
+export interface RequestBodyProps {
+  request: WcRequest;
+  chainId: string;
+}
 
 // Defaults applied by SessionRequestModal when a config omits these fields, so
 // entries only spell out what deviates from the common case.
@@ -86,6 +93,11 @@ export interface RequestConfig {
   renderPayload?: (request: WcRequest) => string;
   /** Async variant of `renderPayload`; takes precedence when present. */
   resolvePayload?: (request: WcRequest) => Promise<string>;
+  /**
+   * Custom body rendered in place of <Message /> (e.g. a transaction summary).
+   * When set, `renderPayload` / `resolvePayload` aren't displayed.
+   */
+  Body?: ComponentType<RequestBodyProps>;
   /**
    * Toast title shown if approve throws or the response carries an error.
    * Defaults to "Couldn’t complete request"; set a specific one for better UX.
@@ -184,18 +196,18 @@ export const REQUEST_CONFIG: Record<string, RequestConfig> = {
     reject: rejectEIP155Request,
     intention: 'Send a transaction for',
     approveLabel: 'Send',
-    renderPayload: request => JSON.stringify(request.params[0], null, 2),
     approveErrorTitle: 'Couldn’t send transaction',
     logScope: 'SessionRequestModal:eth_sendTransaction',
+    Body: EthTransactionBody,
   },
   [EIP155_SIGNING_METHODS.ETH_SIGN_TRANSACTION]: {
     // Signs only (does not broadcast), so it reads "Sign", unlike eth_sendTransaction.
     approve: approveEIP155Request,
     reject: rejectEIP155Request,
     intention: 'Sign a transaction for',
-    renderPayload: request => JSON.stringify(request.params[0], null, 2),
     approveErrorTitle: 'Couldn’t sign transaction',
     logScope: 'SessionRequestModal:eth_signTransaction',
+    Body: EthTransactionBody,
   },
 
   // ── Solana ──────────────────────────────────────────────────────────────
