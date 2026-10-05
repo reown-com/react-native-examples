@@ -12,12 +12,8 @@ import {
   getCurrency,
 } from "@/utils/currency";
 import { router } from "expo-router";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { useCallback, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
-
-interface FormData {
-  amount: string;
-}
 
 const formatAmount = (amount: string) => {
   if (!amount.includes(".")) {
@@ -36,6 +32,21 @@ const formatAmount = (amount: string) => {
   return `${whole}.${paddedDecimal}`;
 };
 
+const getNextAmount = (prev: string, key: string) => {
+  if (key === "erase") return prev.slice(0, -1);
+  if (key === ".") {
+    if (prev.includes(".")) return prev; // Don't add multiple decimal separators
+    return prev === "" ? "0." : `${prev}.`;
+  }
+  // Limit to 2 decimal places
+  const decimalPart = prev.split(".")[1];
+  if (decimalPart !== undefined && decimalPart.length >= 2) return prev;
+  const next = prev === "0" ? key : prev + key;
+  return exceedsU64Max(next) ? prev : next;
+};
+
+const isValidAmount = (amount: string) => !!amount && Number(amount) !== 0;
+
 export default function AmountScreen() {
   const Theme = useTheme();
   const testMode = useSettingsStore((state) => state.testMode);
@@ -43,24 +54,20 @@ export default function AmountScreen() {
   const isTablet = useIsTablet();
   const currencyCode = useSettingsStore((state) => state.currency);
   const currency = getCurrency(currencyCode);
-  const {
-    control,
-    handleSubmit,
-    formState: { isValid },
-  } = useForm<FormData>({
-    defaultValues: {
-      amount: "",
-    },
-  });
-  const watchAmount = useWatch({ control, name: "amount" });
+  const [amount, setAmount] = useState("");
+  const isValid = isValidAmount(amount);
 
-  const onSubmit = ({ amount }: FormData) => {
-    const formattedAmount = formatAmount(amount);
+  // Stable identity so the memoized NumericKeyboard doesn't re-render per key.
+  const handleKeyPress = useCallback((key: string) => {
+    setAmount((prev) => getNextAmount(prev, key));
+  }, []);
 
+  const onSubmit = () => {
+    if (!isValid) return;
     router.push({
       pathname: "/scan",
       params: {
-        amount: formattedAmount,
+        amount: formatAmount(amount),
       },
     });
   };
@@ -76,68 +83,24 @@ export default function AmountScreen() {
       >
         <BigAmountInput
           testID="amount-display"
-          value={watchAmount}
+          value={amount}
           currency={currency.symbol}
           symbolPosition={currency.symbolPosition}
           size={isTablet ? "lg" : "md"}
         />
       </View>
-      <Controller
-        control={control}
-        name="amount"
-        rules={{
-          validate: (value) => {
-            if (
-              !value ||
-              value === "0" ||
-              value === "" ||
-              Number(value) === 0
-            ) {
-              return "Amount is required";
-            }
-            return true;
-          },
-        }}
-        render={({ field: { onChange, value: prev } }) => (
-          <NumericKeyboard
-            onKeyPress={(key) => {
-              let newDisplay;
-              if (key === "erase") {
-                newDisplay = prev?.slice(0, -1) || "";
-                onChange?.(newDisplay);
-              } else if (key === ".") {
-                if (prev.includes(".")) return; // Don't add multiple decimal separators
-                if (prev === "") {
-                  newDisplay = "0.";
-                } else {
-                  newDisplay = prev + ".";
-                }
-                onChange?.(newDisplay);
-              } else {
-                // Limit to 2 decimal places
-                if (prev.includes(".")) {
-                  const decimalPart = prev.split(".")[1] || "";
-                  if (decimalPart.length >= 2) return;
-                }
-                const newDisplay = prev === "0" ? key : prev + key;
-                if (exceedsU64Max(newDisplay)) return;
-                onChange?.(newDisplay);
-              }
-            }}
-          />
-        )}
-      />
+      <NumericKeyboard onKeyPress={handleKeyPress} />
       <Button
         type="accent"
         variant="primary"
         testID="charge-button"
-        onPress={handleSubmit(onSubmit)}
+        onPress={onSubmit}
         disabled={!isValid}
         size={isTablet ? "lg" : "md"}
         style={[styles.button, isTablet && styles.buttonTablet]}
       >
         {isValid
-          ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
+          ? `Charge ${formatAmountWithSymbol(formatAmount(amount), currency)}`
           : "Enter amount"}
       </Button>
     </View>
