@@ -46,7 +46,16 @@ function loadEnabledNetworkIds(): string[] {
 
 function loadSiwxEnabled(): boolean {
   const stored = mmkv.getBoolean(SIWX_KEY);
-  return typeof stored === 'boolean' ? stored : true;
+  if (typeof stored === 'boolean') {
+    return stored;
+  }
+  // Default OFF in E2E/test mode: SIWX adds a mandatory SIWE signature after
+  // connect, which is orthogonal to the relay connect/sign/chain tests and would
+  // otherwise gate every flow. Real builds still default it ON.
+  if (process.env.EXPO_PUBLIC_TEST_MODE === 'true') {
+    return false;
+  }
+  return true;
 }
 
 interface State {
