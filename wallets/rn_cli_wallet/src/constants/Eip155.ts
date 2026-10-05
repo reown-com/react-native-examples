@@ -28,7 +28,7 @@ export const EIP155_CHAINS: Record<string, Chain> = {
     chainId: '1',
     namespace: 'eip155',
     name: 'Ethereum',
-    rpcUrl: 'https://eth.llamarpc.com',
+    rpcUrl: 'https://ethereum-rpc.publicnode.com',
   },
   'eip155:42161': {
     chainId: '42161',
