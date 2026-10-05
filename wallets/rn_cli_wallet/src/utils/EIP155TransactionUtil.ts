@@ -3,6 +3,7 @@ import { JsonRpcProvider, Network, formatEther } from 'ethers';
 import { PresetsUtil } from '@/utils/PresetsUtil';
 import {
   NATIVE_SYMBOL_BY_CHAIN_ID,
+  toBigInt,
   withTimeout,
 } from '@/utils/PaymentTransactionUtil';
 
@@ -32,15 +33,6 @@ export interface EthTransactionParams {
   gasLimit?: string;
   gasPrice?: string;
   maxFeePerGas?: string;
-}
-
-function toBigInt(value: unknown): bigint | null {
-  if (value == null || value === '') return null;
-  try {
-    return BigInt(value as string | number | bigint);
-  } catch {
-    return null;
-  }
 }
 
 export function isRollupChain(chainId: string): boolean {

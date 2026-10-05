@@ -126,8 +126,9 @@ function getHighestBigInt(
   }, null);
 }
 
-function toBigInt(value: unknown): bigint | null {
-  if (value == null) return null;
+/** Parses a bigint-like value; null for missing, empty or invalid input. */
+export function toBigInt(value: unknown): bigint | null {
+  if (value == null || value === '') return null;
   try {
     return BigInt(value as string | number | bigint);
   } catch {
