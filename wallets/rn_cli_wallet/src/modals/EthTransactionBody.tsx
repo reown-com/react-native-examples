@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { AccordionCard } from '@/components/AccordionCard';
 import { Shimmer } from '@/components/Shimmer';
@@ -18,8 +18,6 @@ import {
   isRollupChain,
 } from '@/utils/EIP155TransactionUtil';
 import type { RequestBodyProps } from './requestConfig';
-
-const DETAILS_EXPANDED_HEIGHT = 180;
 
 type FeeState =
   | { status: 'loading' }
@@ -119,18 +117,13 @@ export function EthTransactionBody({ request, chainId }: RequestBodyProps) {
           </Text>
         }
         isExpanded={isDetailsExpanded}
+        // No expandedHeight: Details grows to fit all the params; the modal
+        // itself scrolls, so there's no nested scroll view.
         onPress={() => setIsDetailsExpanded(prev => !prev)}
-        expandedHeight={DETAILS_EXPANDED_HEIGHT}
       >
-        <ScrollView
-          bounces={false}
-          nestedScrollEnabled
-          style={styles.details}
-        >
-          <Text variant="md-400" color="text-primary">
-            {JSON.stringify(tx, null, 2)}
-          </Text>
-        </ScrollView>
+        <Text variant="md-400" color="text-primary">
+          {JSON.stringify(tx, null, 2)}
+        </Text>
       </AccordionCard>
     </>
   );
@@ -147,9 +140,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     columnGap: Spacing[2],
-  },
-  details: {
-    // AccordionCard's content adds Spacing[5] of bottom padding.
-    height: DETAILS_EXPANDED_HEIGHT - Spacing[5],
   },
 });
