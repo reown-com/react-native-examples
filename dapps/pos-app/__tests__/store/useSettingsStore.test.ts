@@ -20,11 +20,6 @@ describe("useSettingsStore", () => {
       expect(themeMode).toBe("system");
     });
 
-    it("should have empty device ID", () => {
-      const { deviceId } = useSettingsStore.getState();
-      expect(deviceId).toBe("");
-    });
-
     it("should have default variant", () => {
       const { variant } = useSettingsStore.getState();
       expect(variant).toBe("default");
@@ -87,16 +82,6 @@ describe("useSettingsStore", () => {
 
       useSettingsStore.getState().setTestMode(false);
       expect(useSettingsStore.getState().testMode).toBe(false);
-    });
-  });
-
-  describe("setDeviceId", () => {
-    it("should set device ID", () => {
-      const { setDeviceId } = useSettingsStore.getState();
-
-      setDeviceId("device-123-abc");
-
-      expect(useSettingsStore.getState().deviceId).toBe("device-123-abc");
     });
   });
 
@@ -484,14 +469,12 @@ describe("useSettingsStore", () => {
       // Set multiple state values
       useSettingsStore.getState().setThemeMode("dark");
       useSettingsStore.getState().setMerchantId("merchant-persist-123");
-      useSettingsStore.getState().setDeviceId("device-persist-456");
       useSettingsStore.getState().setVariant("default");
 
       // Verify all values are maintained
       const state = useSettingsStore.getState();
       expect(state.themeMode).toBe("dark");
       expect(state.merchantId).toBe("merchant-persist-123");
-      expect(state.deviceId).toBe("device-persist-456");
       expect(state.variant).toBe("default");
     });
 
@@ -553,7 +536,7 @@ describe("useSettingsStore", () => {
 
       // Check persist name and version are set (for storage key)
       expect(persistOptions?.name).toBe("settings");
-      expect(persistOptions?.version).toBe(20);
+      expect(persistOptions?.version).toBe(21);
 
       // Verify storage is configured (MMKV in production, mock in tests)
       expect(persistOptions?.storage).toBeDefined();
@@ -595,6 +578,18 @@ describe("useSettingsStore", () => {
       const migrated: any = migrate!({ variant: "default" }, 19);
 
       expect(migrated.testMode).toBe(false);
+    });
+
+    it("drops the persisted device ID on migration", () => {
+      const migrate = useSettingsStore.persist?.getOptions?.().migrate;
+      expect(migrate).toBeDefined();
+
+      const migrated: any = migrate!(
+        { variant: "default", deviceId: "device-123-abc" },
+        20,
+      );
+
+      expect(migrated).not.toHaveProperty("deviceId");
     });
   });
 });

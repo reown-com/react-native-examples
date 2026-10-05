@@ -18,7 +18,6 @@ import { WalletConnectLoading } from "@/components/walletconnect-loading";
 import { Spacing } from "@/constants/spacing";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { getDeviceIdentifier } from "@/utils/misc";
 import { requestBluetoothPermission } from "@/utils/printer";
 import { initSentry } from "@/utils/sentry";
 import { showInfoToast } from "@/utils/toast";
@@ -60,8 +59,6 @@ export default Sentry.wrap(function RootLayout() {
 
   const appLoadedReported = useRef(false);
 
-  const setDeviceId = useSettingsStore((state) => state.setDeviceId);
-  const deviceId = useSettingsStore((state) => state.deviceId);
   const _hasHydrated = useSettingsStore((state) => state._hasHydrated);
   const Theme = useTheme();
   const [fontsLoaded] = useFonts({
@@ -78,17 +75,6 @@ export default Sentry.wrap(function RootLayout() {
       appLoadedReported.current = true;
     }
   }, [_hasHydrated, fontsLoaded]);
-
-  useEffect(() => {
-    async function getDeviceId() {
-      const deviceId = await getDeviceIdentifier();
-      setDeviceId(deviceId);
-    }
-    if (!deviceId) {
-      getDeviceId();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deviceId]);
 
   // Request Bluetooth permission on first app load (Android only)
   // Configure the dashboard bridge after web settings hydration.
