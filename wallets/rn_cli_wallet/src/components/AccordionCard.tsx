@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
@@ -20,7 +20,8 @@ interface AccordionCardProps {
   children: ReactNode;
   isExpanded: boolean;
   onPress: () => void;
-  expandedHeight: number;
+  /** Omit to size the expanded card to its content. */
+  expandedHeight?: number;
   hideExpand?: boolean;
 }
 
@@ -35,13 +36,16 @@ export function AccordionCard({
 }: AccordionCardProps) {
   const Theme = useTheme();
   const heightValue = useSharedValue(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const isAutoHeight = expandedHeight == null;
+  const targetHeight = expandedHeight ?? contentHeight;
 
   useEffect(() => {
-    heightValue.value = withTiming(isExpanded ? expandedHeight : 0, {
+    heightValue.value = withTiming(isExpanded ? targetHeight : 0, {
       duration: ANIMATION_DURATION,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
-  }, [isExpanded, expandedHeight, heightValue]);
+  }, [isExpanded, targetHeight, heightValue]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: heightValue.value,
@@ -70,7 +74,18 @@ export function AccordionCard({
         </View>
       </Button>
       <Animated.View style={animatedStyle}>
-        <View style={styles.content}>{children}</View>
+        {/* Auto height: absolutely positioned so the clipped (animating)
+            parent doesn't cap the measured height. */}
+        <View
+          style={[styles.content, isAutoHeight && styles.autoHeightContent]}
+          onLayout={
+            isAutoHeight
+              ? e => setContentHeight(e.nativeEvent.layout.height)
+              : undefined
+          }
+        >
+          {children}
+        </View>
       </Animated.View>
     </View>
   );
@@ -98,5 +113,11 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: Spacing[5],
     paddingBottom: Spacing[5],
+  },
+  autoHeightContent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
   },
 });

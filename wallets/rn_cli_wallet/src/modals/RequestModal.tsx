@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { CoreTypes } from '@walletconnect/types';
 
 import { ModalHeader } from '@/components/Modal/ModalHeader';
@@ -42,13 +42,22 @@ export function RequestModal({
 
   return (
     <View style={[styles.container, { backgroundColor: Theme['bg-primary'] }]}>
-      <ModalHeader
-        metadata={metadata}
-        intention={intention}
-        isLinkMode={isLinkMode}
-        onClose={onClose}
-      />
-      {children}
+      {/* Header + body scroll; the footer stays pinned so the CTAs are always visible. */}
+      <ScrollView
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <ModalHeader
+          metadata={metadata}
+          intention={intention}
+          isLinkMode={isLinkMode}
+          onClose={onClose}
+        />
+        {children}
+      </ScrollView>
       <ModalFooter
         onApprove={onApprove}
         onReject={onReject}
@@ -69,5 +78,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 34,
     width: '100%',
     maxHeight: '80%',
+  },
+  scroll: {
+    flexShrink: 1,
+    width: '100%',
+  },
+  scrollContent: {
+    alignItems: 'center',
   },
 });
