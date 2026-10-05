@@ -23,7 +23,7 @@ const PRICE_ESTIMATION_TIMEOUT_MS = 10_000;
 const PRICE_CACHE_TTL_MS = 60_000;
 const DEFAULT_FIAT_CURRENCY = 'USD';
 
-const NATIVE_SYMBOL_BY_CHAIN_ID: Record<string, string> = {
+export const NATIVE_SYMBOL_BY_CHAIN_ID: Record<string, string> = {
   'eip155:1': 'ETH',
   'eip155:10': 'ETH',
   'eip155:11155420': 'ETH',
@@ -46,6 +46,7 @@ const NATIVE_SYMBOL_BY_CHAIN_ID: Record<string, string> = {
   'eip155:1285': 'MOVR',
   'eip155:42220': 'CELO',
   'eip155:143': 'MON',
+  'eip155:4663': 'ETH',
 };
 
 const SUPPORTED_FIAT_CURRENCIES = new Set(['USD', 'EUR']);
@@ -427,7 +428,7 @@ function buildGasEstimate({
   };
 }
 
-function withTimeout<T>(
+export function withTimeout<T>(
   promise: Promise<T>,
   timeoutMs: number,
   timeoutMessage: string,
