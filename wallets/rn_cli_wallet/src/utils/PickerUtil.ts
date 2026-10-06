@@ -39,6 +39,7 @@ export interface PickerDapp {
 
 // Draft-PR preview deploys, until the app-side auto-connect ships to
 // production: React App -> https://react-app.walletconnect.com (WCP4-185),
+// AppKit Lab -> https://appkit-lab.reown.com (WCP4-188),
 // Stake WCT -> https://app.walletconnect.com/stake (walletconnect-apps#508).
 export const PICKER_DAPPS: PickerDapp[] = [
   {
@@ -49,6 +50,15 @@ export const PICKER_DAPPS: PickerDapp[] = [
     color: '#61DAFB',
     glyph: 'R',
     url: 'https://react-dapp-v2-git-wcp4-185-react-app-host-auto-45784c-reown-com.vercel.app/',
+  },
+  {
+    id: 'appkit-lab',
+    name: 'AppKit Lab',
+    chainLabel: 'Multichain',
+    description: 'AppKit test app',
+    color: '#202020',
+    glyph: 'A',
+    url: 'https://appkit-laboratory-git-wcp4-188-appkit-host-launch-reown-com.vercel.app/',
   },
   {
     id: 'wc-stake',
