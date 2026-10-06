@@ -10,11 +10,11 @@ import { walletKit } from '@/utils/WalletKitUtil';
 import {
   getOrigin,
   isSameOrigin,
-  registerPickerPairing,
-} from '@/utils/PickerUtil';
+  registerExplorePairing,
+} from '@/utils/ExploreUtil';
 import { RootStackScreenProps } from '@/utils/TypesUtil';
 
-type Props = RootStackScreenProps<'DappBrowser'>;
+type Props = RootStackScreenProps<'AppBrowser'>;
 
 /**
  * H2b bridge, injected at document start on every page load (per the
@@ -27,7 +27,7 @@ type Props = RootStackScreenProps<'DappBrowser'>;
  *   {type:'wc_session_offer', uri}.
  * The flag is a trigger, not proof of origin: onMessage re-checks the
  * origin natively and only recorded pairing topics are auto-approved
- * (PickerUtil).
+ * (ExploreUtil).
  */
 function buildBridgeScript(origin: string) {
   return `
@@ -49,28 +49,23 @@ function buildBridgeScript(origin: string) {
  * auto-approved (see useWalletKitEventsManager). A wc: navigation is paired
  * too, but goes through the normal proposal modal.
  */
-export default function DappBrowser({ route }: Props) {
+export default function AppBrowser({ route }: Props) {
   const Theme = useTheme();
   const { url } = route.params;
   const tileOrigin = useMemo(() => getOrigin(url), [url]);
   const [isLoading, setIsLoading] = useState(true);
   const pairedUris = useRef(new Set<string>());
 
-  const pair = useCallback(async (uri: string, autoApprove: boolean) => {
+  const pair = useCallback(async (uri: string) => {
     if (!uri.startsWith('wc:') || pairedUris.current.has(uri)) {
       return;
     }
     pairedUris.current.add(uri);
-    // Mark this pairing as picker-initiated BEFORE pairing so the proposal
-    // handler can recognize it.
-    if (autoApprove) {
-      registerPickerPairing(uri);
-    }
     try {
       await SettingsStore.state.initPromise;
       await walletKit.pair({ uri });
     } catch (e) {
-      LogStore.error((e as Error).message, 'DappBrowser', 'pair');
+      LogStore.error((e as Error).message, 'AppBrowser', 'pair');
     }
   }, []);
 
@@ -91,14 +86,16 @@ export default function DappBrowser({ route }: Props) {
       if (!tileOrigin || !isSameOrigin(pageUrl, tileOrigin)) {
         LogStore.warn(
           'wc_session_offer ignored: page origin differs from tile',
-          'DappBrowser',
+          'AppBrowser',
           'onMessage',
           { pageOrigin: getOrigin(pageUrl) ?? pageUrl, tileOrigin },
         );
         return;
       }
-      LogStore.info('wc_session_offer received', 'DappBrowser', 'onMessage');
-      pair(message.uri, true);
+      LogStore.info('wc_session_offer received', 'AppBrowser', 'onMessage');
+      // Record the topic BEFORE pairing so the proposal handler recognizes it.
+      registerExplorePairing(message.uri);
+      pair(message.uri);
     },
     [pair, tileOrigin],
   );
@@ -108,7 +105,7 @@ export default function DappBrowser({ route }: Props) {
       // A wc: navigation (e.g. the app's own "open wallet" link) carries no
       // origin we can verify, so it pairs through the normal modal.
       if (request.url.startsWith('wc:')) {
-        pair(request.url, false);
+        pair(request.url);
         return false;
       }
       return true;

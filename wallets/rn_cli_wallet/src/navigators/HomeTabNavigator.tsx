@@ -22,8 +22,7 @@ const tabConnectionsIcon = Platform.select({
 
 const tabExploreIcon = Platform.select({
   ios: { sfSymbol: 'safari.fill' },
-  // POC corner cut: reuse the connections svg on Android
-  default: require('@/assets/icons/tab-connections.svg'),
+  default: require('@/assets/icons/tab-explore.svg'),
 });
 
 const tabSettingsIcon = Platform.select({

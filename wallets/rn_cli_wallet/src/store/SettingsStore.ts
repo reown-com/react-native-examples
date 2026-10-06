@@ -82,9 +82,8 @@ interface State {
   logs: string[];
   isLinkModeRequest: boolean;
   themeMode: 'light' | 'dark';
-  // Dapp Picker POC
-  pickerAutoConnect: boolean;
-  pickerConsentAsked: boolean;
+  // Explore (H2b): auto-approve proposals from Explore-launched apps
+  exploreAutoConnect: boolean;
 }
 
 /**
@@ -127,8 +126,7 @@ const state = proxy<State>({
   logs: [],
   isLinkModeRequest: false,
   themeMode: getInitialThemeMode(),
-  pickerAutoConnect: new MMKV().getBoolean('PICKER_AUTO_CONNECT') ?? false,
-  pickerConsentAsked: new MMKV().getBoolean('PICKER_CONSENT_ASKED') ?? false,
+  exploreAutoConnect: new MMKV().getBoolean('EXPLORE_AUTO_CONNECT') ?? true,
 });
 
 /**
@@ -182,18 +180,9 @@ const SettingsStore = {
     state.isLinkModeRequest = value;
   },
 
-  setPickerConsent(granted: boolean) {
-    state.pickerAutoConnect = granted;
-    state.pickerConsentAsked = true;
-    const mmkv = new MMKV();
-    mmkv.set('PICKER_AUTO_CONNECT', granted);
-    if (granted) {
-      mmkv.set('PICKER_CONSENT_ASKED', true);
-    } else {
-      // "Not now" applies to the current app run only — the consent
-      // alert shows again on next app start.
-      mmkv.delete('PICKER_CONSENT_ASKED');
-    }
+  toggleExploreAutoConnect() {
+    state.exploreAutoConnect = !state.exploreAutoConnect;
+    new MMKV().set('EXPLORE_AUTO_CONNECT', state.exploreAutoConnect);
   },
 
   toggleTestNets() {

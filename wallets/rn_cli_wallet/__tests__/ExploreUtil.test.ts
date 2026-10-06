@@ -3,24 +3,20 @@ jest.mock('../src/store/LogStore', () => ({
   default: { info: jest.fn() },
 }));
 
-jest.mock('../src/utils/WalletKitUtil', () => ({ walletKit: {} }));
-
-jest.mock('../src/utils/TonWalletUtil', () => ({
-  getWallet: jest.fn(async () => ({
-    getPublicKey: () => 'ton-pubkey',
-    getStateInit: () => 'ton-state-init',
-  })),
+jest.mock('../src/utils/SessionProposalUtil', () => ({
+  approveSessionProposal: jest.fn(async () => ({})),
 }));
 
 import { WALLET_GUIDE_ID } from '../src/utils/misc';
+import { approveSessionProposal } from '../src/utils/SessionProposalUtil';
 import {
-  buildPickerSessionProperties,
+  autoApproveExploreProposal,
+  EXPLORE_APPS,
   getOrigin,
-  isPickerPairing,
+  isExplorePairing,
   isSameOrigin,
-  PICKER_DAPPS,
-  registerPickerPairing,
-} from '../src/utils/PickerUtil';
+  registerExplorePairing,
+} from '../src/utils/ExploreUtil';
 
 describe('origin check', () => {
   it('normalizes scheme, host case and default ports', () => {
@@ -50,18 +46,18 @@ describe('origin check', () => {
   });
 });
 
-describe('picker pairing topics', () => {
+describe('Explore pairing topics', () => {
   it('only recognizes registered topics', () => {
-    registerPickerPairing('wc:abc123@2?relay-protocol=irn&symKey=k');
-    expect(isPickerPairing('abc123')).toBe(true);
-    expect(isPickerPairing('def456')).toBe(false);
-    expect(isPickerPairing(undefined)).toBe(false);
+    registerExplorePairing('wc:abc123@2?relay-protocol=irn&symKey=k');
+    expect(isExplorePairing('abc123')).toBe(true);
+    expect(isExplorePairing('def456')).toBe(false);
+    expect(isExplorePairing(undefined)).toBe(false);
   });
 });
 
-describe('PICKER_DAPPS', () => {
-  // DappBrowser only injects the bridge when the tile URL has an origin.
-  it.each(PICKER_DAPPS.map(dapp => [dapp.name, dapp.url]))(
+describe('EXPLORE_APPS', () => {
+  // AppBrowser only injects the bridge when the tile URL has an origin.
+  it.each(EXPLORE_APPS.map(app => [app.name, app.url]))(
     '%s has an https origin',
     (_name, url) => {
       expect(getOrigin(url)).toMatch(/^https:\/\/[^/]+$/);
@@ -69,12 +65,16 @@ describe('PICKER_DAPPS', () => {
   );
 });
 
-describe('buildPickerSessionProperties', () => {
-  it('merges wallet_guide_id with the TON properties', async () => {
-    expect(await buildPickerSessionProperties({ ton: {} })).toEqual({
-      ton_getPublicKey: 'ton-pubkey',
-      ton_getStateInit: 'ton-state-init',
-      wallet_guide_id: WALLET_GUIDE_ID,
-    });
+describe('autoApproveExploreProposal', () => {
+  it('approves the given chains with wallet_guide_id', async () => {
+    const proposal = { id: 1, params: {} } as Parameters<
+      typeof autoApproveExploreProposal
+    >[0];
+    await autoApproveExploreProposal(proposal, ['eip155:1']);
+    expect(approveSessionProposal).toHaveBeenCalledWith(
+      proposal,
+      ['eip155:1'],
+      { wallet_guide_id: WALLET_GUIDE_ID },
+    );
   });
 });

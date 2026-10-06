@@ -2,23 +2,17 @@ import { useSnapshot } from 'valtio';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { SignClientTypes } from '@walletconnect/types';
-import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils';
+import { getSdkError } from '@walletconnect/utils';
 import { showToast } from '@/utils/ToastUtil';
 
 import LogStore from '@/store/LogStore';
 import ModalStore from '@/store/ModalStore';
 import { walletKit } from '@/utils/WalletKitUtil';
 import SettingsStore from '@/store/SettingsStore';
-import { ensureWalletsForChainIds } from '@/utils/WalletInitializationUtil';
 import { handleRedirect } from '@/utils/LinkingUtils';
 import { RequestModal } from './RequestModal';
 import { getSupportedChains } from '@/utils/HelperUtil';
-import {
-  buildSupportedNamespaces,
-  filterNamespacesByChains,
-  getCurrentWalletAddresses,
-} from '@/utils/SupportedNamespacesUtil';
-import { getWallet } from '@/utils/TonWalletUtil';
+import { approveSessionProposal } from '@/utils/SessionProposalUtil';
 import { AccordionCard } from '@/components/AccordionCard';
 import { AppInfoCard } from '@/components/AppInfoCard';
 import { NetworkSelector } from '@/components/NetworkSelector';
@@ -36,9 +30,7 @@ type AccordionType = 'app' | 'network' | null;
 
 export default function SessionProposalModal() {
   const { data } = useSnapshot(ModalStore.state);
-  const { currentRequestVerifyContext, testNets } = useSnapshot(
-    SettingsStore.state,
-  );
+  const { currentRequestVerifyContext } = useSnapshot(SettingsStore.state);
   const proposal =
     data?.proposal as SignClientTypes.EventArguments['session_proposal'];
 
@@ -96,41 +88,11 @@ export default function SessionProposalModal() {
       setIsLoadingApprove(true);
 
       try {
-        // The idle queue may not have reached every requested namespace yet.
-        // Restore selected signers before advertising their accounts.
-        await ensureWalletsForChainIds(selectedChainIds);
-        const refreshedNamespaces = buildSupportedNamespaces(
-          testNets,
-          getCurrentWalletAddresses(),
-        );
-        const filteredNamespaces = filterNamespacesByChains(
-          refreshedNamespaces,
+        const session = await approveSessionProposal(
+          proposal,
           selectedChainIds,
         );
-        const namespaces = buildApprovedNamespaces({
-          proposal: proposal.params,
-          supportedNamespaces: filteredNamespaces,
-        });
-
-        // Build session properties for TON
-        const sessionProperties: Record<string, string> = {};
-
-        if (namespaces.ton) {
-          const tonWallet = await getWallet();
-          sessionProperties.ton_getPublicKey = tonWallet.getPublicKey();
-          sessionProperties.ton_getStateInit = tonWallet.getStateInit();
-        }
-
-        const session = await walletKit.approveSession({
-          id: proposal.id,
-          namespaces,
-          sessionProperties:
-            Object.keys(sessionProperties).length > 0
-              ? sessionProperties
-              : undefined,
-        });
         haptics.requestResponse();
-        SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
 
         handleRedirect({
           peerRedirect: session.peer.metadata.redirect,
@@ -152,7 +114,7 @@ export default function SessionProposalModal() {
         ModalStore.close();
       }
     }
-  }, [proposal, selectedChainIds, testNets]);
+  }, [proposal, selectedChainIds]);
 
   const onReject = useCallback(async () => {
     if (proposal) {

@@ -5,7 +5,7 @@ import { HomeTabNavigator } from './HomeTabNavigator';
 import Scan from '@/screens/Scan';
 import { useTheme } from '@/hooks/useTheme';
 import { LogList } from '@/screens/LogList';
-import DappBrowser from '@/screens/DappBrowser';
+import AppBrowser from '@/screens/AppBrowser';
 import SecretPhrase from '@/screens/SecretPhrase';
 import { useLogs } from '@/hooks/useLogs';
 import { FontFamily } from '@/utils/ThemeUtil';
@@ -51,8 +51,8 @@ export function RootStackNavigator() {
         options={{ headerShown: false }}
       />
       <StackNavigator.Screen
-        name="DappBrowser"
-        component={DappBrowser}
+        name="AppBrowser"
+        component={AppBrowser}
         options={({ route }) => ({
           headerShown: true,
           title: route.params.name,

@@ -1,4 +1,10 @@
+import { SignClientTypes } from '@walletconnect/types';
+import { buildApprovedNamespaces } from '@walletconnect/utils';
+
 import SettingsStore from '@/store/SettingsStore';
+import { walletKit } from '@/utils/WalletKitUtil';
+import { getWallet } from '@/utils/TonWalletUtil';
+import { ensureWalletsForChainIds } from '@/utils/WalletInitializationUtil';
 import { ALL_CHAINS } from '@/utils/PresetsUtil';
 import { EIP155_CHAINS, EIP155_SIGNING_METHODS } from '@/constants/Eip155';
 import { SUI_CHAINS, SUI_EVENTS, SUI_SIGNING_METHODS } from '@/constants/Sui';
@@ -25,9 +31,6 @@ import {
   STELLAR_SIGNING_METHODS,
 } from '@/constants/Stellar';
 
-// Shared by SessionProposalModal and the Explore auto-approve path
-// (PickerUtil), so both approve the same namespaces.
-
 interface WalletAddresses {
   eip155Address: string;
   suiAddress: string;
@@ -39,7 +42,7 @@ interface WalletAddresses {
   stellarAddress: string;
 }
 
-export function buildSupportedNamespaces(
+function buildSupportedNamespaces(
   testNets: boolean,
   addresses: WalletAddresses,
 ) {
@@ -114,7 +117,7 @@ export function buildSupportedNamespaces(
   };
 }
 
-export function getCurrentWalletAddresses(): WalletAddresses {
+function getCurrentWalletAddresses(): WalletAddresses {
   const state = SettingsStore.state;
   return {
     eip155Address: state.eip155Address,
@@ -128,10 +131,10 @@ export function getCurrentWalletAddresses(): WalletAddresses {
   };
 }
 
-export type SupportedNamespaces = ReturnType<typeof buildSupportedNamespaces>;
+type SupportedNamespaces = ReturnType<typeof buildSupportedNamespaces>;
 
 // Filter namespaces based on selected chains
-export function filterNamespacesByChains(
+function filterNamespacesByChains(
   namespaces: SupportedNamespaces,
   selectedIds: string[],
 ): SupportedNamespaces {
@@ -155,4 +158,46 @@ export function filterNamespacesByChains(
   });
 
   return filtered;
+}
+
+/**
+ * Approves a session proposal for the given chain ids. Shared by
+ * SessionProposalModal and the Explore auto-approve path (ExploreUtil), so
+ * both approve the same namespaces. `extraSessionProperties` are merged with
+ * the TON properties every approval carries.
+ */
+export async function approveSessionProposal(
+  proposal: SignClientTypes.EventArguments['session_proposal'],
+  chainIds: string[],
+  extraSessionProperties: Record<string, string> = {},
+) {
+  // The idle queue may not have reached every requested namespace yet.
+  // Restore selected signers before advertising their accounts.
+  await ensureWalletsForChainIds(chainIds);
+  const namespaces = buildApprovedNamespaces({
+    proposal: proposal.params,
+    supportedNamespaces: filterNamespacesByChains(
+      buildSupportedNamespaces(
+        SettingsStore.state.testNets,
+        getCurrentWalletAddresses(),
+      ),
+      chainIds,
+    ),
+  });
+
+  const sessionProperties = { ...extraSessionProperties };
+  if (namespaces.ton) {
+    const tonWallet = await getWallet();
+    sessionProperties.ton_getPublicKey = tonWallet.getPublicKey();
+    sessionProperties.ton_getStateInit = tonWallet.getStateInit();
+  }
+
+  const session = await walletKit.approveSession({
+    id: proposal.id,
+    namespaces,
+    sessionProperties:
+      Object.keys(sessionProperties).length > 0 ? sessionProperties : undefined,
+  });
+  SettingsStore.setSessions(Object.values(walletKit.getActiveSessions()));
+  return session;
 }

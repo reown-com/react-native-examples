@@ -44,7 +44,7 @@ const ENV_CONFIG = {
 };
 
 // This wallet's Wallet Guide ID, the same for every build variant. Sent as
-// sessionProperties.wallet_guide_id on Explore auto-approvals (PickerUtil).
+// sessionProperties.wallet_guide_id on Explore auto-approvals (ExploreUtil).
 export const WALLET_GUIDE_ID =
   '6880782cf8ff712bf8772b585960346290fd2499c1f1c51df9fe713d9d2e9384';
 

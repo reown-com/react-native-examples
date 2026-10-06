@@ -86,7 +86,7 @@ function ToggleCard({
 }
 
 export default function Settings() {
-  const { socketStatus, themeMode, testNets, pickerAutoConnect } = useSnapshot(
+  const { socketStatus, themeMode, testNets, exploreAutoConnect } = useSnapshot(
     SettingsStore.state,
   );
   const [clientId, setClientId] = useState('');
@@ -138,8 +138,8 @@ export default function Settings() {
         />
         <ToggleCard
           label="Explore: auto-connect"
-          value={pickerAutoConnect}
-          onToggle={() => SettingsStore.setPickerConsent(!pickerAutoConnect)}
+          value={exploreAutoConnect}
+          onToggle={() => SettingsStore.toggleExploreAutoConnect()}
         />
         <Card
           title="Secret keys & phrases"

@@ -66,7 +66,7 @@ export type RootStackParamList = {
   Scan: undefined;
   Logs: undefined;
   SecretPhrase: undefined;
-  DappBrowser: { url: string; name: string };
+  AppBrowser: { url: string; name: string };
 };
 
 export type HomeTabParamList = {

@@ -78,14 +78,14 @@ This is one way to run your app — you can also run it directly from within And
 
 The **Explore** tab opens curated apps in a WebView that connects to this wallet automatically, with no QR code, connect modal or approval screen. Signing requests still show the normal approval screen.
 
-**Bridge contract** (`src/screens/DappBrowser`):
+**Bridge contract** (`src/screens/AppBrowser`):
 
 1. Before any page script runs, the wallet injects `window.walletConnectHost = { autoConnect: true, postMessage }`. It's set only in Explore WebViews, and only on the tile's origin. Tile URLs carry no `wc_auto=1` or other parameters: this flag is the signal.
 2. The app (Universal Provider / AppKit) creates a pairing and calls `walletConnectHost.postMessage({ type: 'wc_session_offer', uri })` instead of showing a QR code.
 3. The wallet accepts the offer only if the WebView's current URL has the same origin as the tile. It records the pairing topic, then calls `walletKit.pair({ uri })`.
-4. A proposal on a recorded topic is auto-approved when the user has allowed auto-connect (a one-time prompt, then **Settings → Explore: auto-connect**). Its `sessionProperties` carry `wallet_guide_id`, plus the usual TON fields. Other proposals, including any from a QR code, a deep link or a `wc:` link inside the WebView, open the normal modal without `wallet_guide_id`. If auto-approval fails, the normal modal opens.
+4. A proposal on a recorded topic is auto-approved while **Settings → Explore: auto-connect** is on (the default). Its `sessionProperties` carry `wallet_guide_id`, plus the usual TON fields. Other proposals, including any from a QR code, a deep link or a `wc:` link inside the WebView, open the normal modal without `wallet_guide_id`. If auto-approval fails, the normal modal opens.
 
-The Wallet Guide ID is the `WALLET_GUIDE_ID` constant in `src/utils/misc.ts`, and the tile URLs are in `PICKER_DAPPS` (`src/utils/PickerUtil.ts`).
+The Wallet Guide ID is the `WALLET_GUIDE_ID` constant in `src/utils/misc.ts`, and the tile URLs are in `EXPLORE_APPS` (`src/utils/ExploreUtil.ts`).
 
 To test a local app on the Android emulator, use `http://10.0.2.2:<port>`, not `localhost`. Testnet-only apps (e.g. Sepolia) also need **Settings → Enable testnets**.
 
