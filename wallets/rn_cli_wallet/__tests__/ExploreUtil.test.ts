@@ -12,6 +12,7 @@ import { approveSessionProposal } from '../src/utils/SessionProposalUtil';
 import {
   autoApproveExploreProposal,
   EXPLORE_APPS,
+  getAppIconUrl,
   getOrigin,
   isExplorePairing,
   isSameOrigin,
@@ -58,11 +59,31 @@ describe('Explore pairing topics', () => {
 describe('EXPLORE_APPS', () => {
   // AppBrowser only injects the bridge when the tile URL has an origin.
   it.each(EXPLORE_APPS.map(app => [app.name, app.url]))(
-    '%s has an https origin',
+    '%s has an origin',
     (_name, url) => {
-      expect(getOrigin(url)).toMatch(/^https:\/\/[^/]+$/);
+      expect(getOrigin(url)).toMatch(/^https?:\/\/[^/]+$/);
     },
   );
+});
+
+describe('getAppIconUrl', () => {
+  const app = EXPLORE_APPS[0];
+
+  it('prefers the explicit icon', () => {
+    expect(getAppIconUrl({ ...app, icon: 'https://x.com/logo.png' })).toBe(
+      'https://x.com/logo.png',
+    );
+  });
+
+  it("falls back to the site's favicon", () => {
+    expect(
+      getAppIconUrl({
+        ...app,
+        icon: undefined,
+        url: 'http://localhost:5173/?a=b',
+      }),
+    ).toBe('http://localhost:5173/favicon.ico');
+  });
 });
 
 describe('autoApproveExploreProposal', () => {

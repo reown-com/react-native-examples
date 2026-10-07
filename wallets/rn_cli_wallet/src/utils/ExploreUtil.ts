@@ -21,11 +21,11 @@ import { WALLET_GUIDE_ID } from '@/utils/misc';
 export interface ExploreApp {
   id: string;
   name: string;
-  chainLabel: string;
-  description: string;
   color: string;
   glyph: string;
   url: string;
+  // Logo URL. Falls back to the site's /favicon.ico, then to `glyph`.
+  icon?: string;
 }
 
 // Draft-PR preview deploys, until the app-side auto-connect ships to
@@ -36,31 +36,61 @@ export const EXPLORE_APPS: ExploreApp[] = [
   {
     id: 'react-app',
     name: 'React App',
-    chainLabel: 'Multichain',
-    description: 'WalletConnect test app',
     color: '#61DAFB',
     glyph: 'R',
     url: 'https://react-dapp-v2-git-wcp4-185-react-app-host-auto-45784c-reown-com.vercel.app/',
+    icon: 'https://avatars.githubusercontent.com/u/37784886',
   },
   {
     id: 'appkit-lab',
     name: 'AppKit Lab',
-    chainLabel: 'Multichain',
-    description: 'AppKit test app',
     color: '#202020',
     glyph: 'A',
-    url: 'https://appkit-laboratory-git-wcp4-188-appkit-host-launch-reown-com.vercel.app/',
+    url: 'https://appkit-laboratory-git-wcp4-188-appkit-host-launch-reown-com.vercel.app/appkit/?name=wagmi',
+    icon: 'https://appkit-laboratory-git-wcp4-188-appkit-host-launch-reown-com.vercel.app/logo.png',
   },
   {
     id: 'wc-stake',
-    name: 'WalletConnect',
-    chainLabel: 'Optimism',
-    description: 'Stake WCT',
+    name: 'Stake WCT',
     color: '#0988F0',
     glyph: 'W',
     url: 'https://portal-git-feat-h2b-stake-auto-connect-poc-walletconnect.vercel.app/stake?_vercel_share=esDVgpyqZ03Gg6obtfqgsY154bMY7zZh',
+    // The protected preview redirects /favicon.ico, so use the public logo.
+    icon: 'https://walletconnect.com/icon.png',
+  },
+  {
+    id: 'swap-demo',
+    name: 'Swap demo',
+    color: '#00E28D',
+    glyph: 'S',
+    url: 'https://walletconnect.github.io/app-fees-demo-public/',
+    icon: 'https://walletconnect.github.io/app-fees-demo-public/icon.svg',
+  },
+  {
+    id: 'swap-demo-no-terms',
+    name: 'Swap demo (no T&C)',
+    color: '#00E28D',
+    glyph: 'S',
+    url: 'https://walletconnect.github.io/app-fees-demo-public/?terms=0',
+    icon: 'https://walletconnect.github.io/app-fees-demo-public/icon.svg',
+  },
+  {
+    id: 'swap-demo-referral',
+    name: 'Swap demo (with referral code)',
+    color: '#00E28D',
+    glyph: 'S',
+    url: 'https://walletconnect.github.io/app-fees-demo-public/?referrer=rn-sample-ref',
+    icon: 'https://walletconnect.github.io/app-fees-demo-public/icon.svg',
   },
 ];
+
+export function getAppIconUrl(app: ExploreApp): string | undefined {
+  if (app.icon) {
+    return app.icon;
+  }
+  const origin = getOrigin(app.url);
+  return origin ? `${origin}/favicon.ico` : undefined;
+}
 
 /**
  * `scheme://host[:port]`, lowercased, default port dropped — the same shape as
