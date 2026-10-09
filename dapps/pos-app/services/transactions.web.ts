@@ -9,6 +9,7 @@ import {
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { TransactionsResponse } from "@/utils/types";
 import { getTestTransactions } from "./test-transactions";
+import { readProxyResponse } from "./web-response";
 
 export type GetTransactionsOptions = GetTransactionsBridgeOptions;
 
@@ -96,5 +97,5 @@ export async function getTransactions(
     );
   }
 
-  return response.json();
+  return readProxyResponse<TransactionsResponse>(response);
 }

@@ -28,6 +28,18 @@ function setEmbeddedWindow() {
   };
 }
 
+function proxyResponse(status: number, body: unknown) {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    text: jest
+      .fn()
+      .mockResolvedValue(
+        typeof body === "string" ? body : JSON.stringify(body),
+      ),
+  };
+}
+
 function respondWithSuccess(data: unknown) {
   const message = parentPostMessage.mock.calls[
     parentPostMessage.mock.calls.length - 1
@@ -139,14 +151,13 @@ describe("web services with the POS bridge", () => {
 
   it("keeps direct proxy behavior when bridge mode is disabled", async () => {
     await setupTestMerchant("merchant-direct", "local-key");
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValue({
+    (global.fetch as jest.Mock).mockResolvedValueOnce(
+      proxyResponse(200, {
         paymentId: "pay-direct",
         expiresAt: null,
         gatewayUrl: "url",
       }),
-    });
+    );
 
     await expect(
       startPayment({
@@ -167,10 +178,7 @@ describe("web services with the POS bridge", () => {
 
   it("posts email receipts through the proxy when bridge mode is disabled", async () => {
     await setupTestMerchant("merchant-direct", "local-key");
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValue({}),
-    });
+    (global.fetch as jest.Mock).mockResolvedValueOnce(proxyResponse(200, ""));
 
     await expect(
       sendReceipt("pay-direct", "lea@example.com"),
@@ -215,11 +223,9 @@ describe("web services with the POS bridge", () => {
 
   it("surfaces proxy errors when sending an email receipt", async () => {
     await setupTestMerchant("merchant-direct", "local-key");
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: false,
-      status: 404,
-      json: jest.fn().mockResolvedValue({ message: "Not found" }),
-    });
+    (global.fetch as jest.Mock).mockResolvedValueOnce(
+      proxyResponse(404, { message: "Not found" }),
+    );
 
     await expect(sendReceipt("pay-missing", "lea@example.com")).rejects.toEqual(
       { message: "Not found", code: undefined, status: 404 },
@@ -259,16 +265,26 @@ describe("web services with the POS bridge", () => {
 
   it("keeps the HTTP status when a cancel hits an HTML error page", async () => {
     await setupTestMerchant("merchant-direct", "local-key");
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: false,
-      status: 502,
-      json: jest.fn().mockRejectedValue(new Error("Unexpected token <")),
-    });
+    (global.fetch as jest.Mock).mockResolvedValueOnce(
+      proxyResponse(502, "<html>Bad gateway</html>"),
+    );
 
     await expect(cancelPayment("pay-direct")).rejects.toEqual({
       message: "HTTP error! status: 502",
-      code: undefined,
       status: 502,
+    });
+  });
+
+  it("reports a non-JSON success body from the proxy as an invalid response", async () => {
+    await setupTestMerchant("merchant-direct", "local-key");
+    (global.fetch as jest.Mock).mockResolvedValueOnce(
+      proxyResponse(200, "<html>Maintenance</html>"),
+    );
+
+    await expect(getPaymentStatus("pay-direct")).rejects.toEqual({
+      message: "Invalid JSON response (status 200)",
+      code: "INVALID_RESPONSE",
+      status: 200,
     });
   });
 

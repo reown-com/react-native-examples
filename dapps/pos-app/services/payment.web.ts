@@ -1,5 +1,6 @@
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { requestBridge } from "@/services/pos-bridge";
+import { readProxyResponse } from "@/services/web-response";
 import { isTestPaymentId, simulateTestReceipt } from "@/services/test-payment";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import {
@@ -60,18 +61,7 @@ export async function startPayment(
     body: JSON.stringify(request),
   });
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    const error: ApiError = {
-      message: data.message || `HTTP error! status: ${response.status}`,
-      code: data.code,
-      status: response.status,
-    };
-    throw error;
-  }
-
-  return data as StartPaymentResponse;
+  return readProxyResponse<StartPaymentResponse>(response);
 }
 
 /**
@@ -106,18 +96,7 @@ export async function getPaymentStatus(
     },
   );
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    const error: ApiError = {
-      message: data.message || `HTTP error! status: ${response.status}`,
-      code: data.code,
-      status: response.status,
-    };
-    throw error;
-  }
-
-  return data as PaymentStatusResponse;
+  return readProxyResponse<PaymentStatusResponse>(response);
 }
 
 /**
@@ -152,16 +131,7 @@ export async function cancelPayment(paymentId: string): Promise<void> {
     },
   );
 
-  if (!response.ok) {
-    // Gateways can answer with an HTML error page; keep the HTTP status.
-    const data = await response.json().catch(() => ({}));
-    const error: ApiError = {
-      message: data.message || `HTTP error! status: ${response.status}`,
-      code: data.code,
-      status: response.status,
-    };
-    throw error;
-  }
+  await readProxyResponse<void>(response);
 }
 
 const SEND_RECEIPT_TIMEOUT_MS = 30000;
@@ -225,13 +195,5 @@ export async function sendReceipt(
     clearTimeout(timeoutId);
   }
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    const error: ApiError = {
-      message: data.message || `HTTP error! status: ${response.status}`,
-      code: data.code,
-      status: response.status,
-    };
-    throw error;
-  }
+  await readProxyResponse<void>(response);
 }

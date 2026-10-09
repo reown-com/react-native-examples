@@ -50,3 +50,37 @@ export function getApiHeaders(apiKey: string, merchantId: string) {
     "Sdk-Platform": "web",
   };
 }
+
+/**
+ * Read an upstream response without trusting it to be JSON. Gateways can
+ * answer with an HTML error page: a failed request keeps its real status, and
+ * a "successful" non-JSON reply is reported as a 502 instead of being passed
+ * on as data.
+ */
+export async function readUpstreamResponse(
+  response: Response,
+): Promise<{ ok: boolean; status: number; data: unknown }> {
+  const text = await response.text();
+  if (!text) {
+    return { ok: response.ok, status: response.status, data: {} };
+  }
+  try {
+    return { ok: response.ok, status: response.status, data: JSON.parse(text) };
+  } catch {
+    if (response.ok) {
+      return {
+        ok: false,
+        status: 502,
+        data: {
+          message: "Invalid upstream response",
+          code: "INVALID_RESPONSE",
+        },
+      };
+    }
+    return {
+      ok: false,
+      status: response.status,
+      data: { message: `Upstream error (${response.status})` },
+    };
+  }
+}

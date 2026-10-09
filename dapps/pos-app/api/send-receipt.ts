@@ -1,5 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { extractCredentials, getApiBaseUrl, getApiHeaders } from "./_utils";
+import {
+  extractCredentials,
+  getApiBaseUrl,
+  getApiHeaders,
+  readUpstreamResponse,
+} from "./_utils";
 
 /**
  * Vercel Serverless Function to proxy email receipt requests
@@ -48,18 +53,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     );
 
-    // Gateways can answer with an HTML error page; keep the upstream status
-    // instead of failing the parse and reporting a 500.
-    const text = await response.text();
-    let data: unknown = {};
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch {
-      data = { message: `Upstream error (${response.status})` };
-    }
+    const { ok, status, data } = await readUpstreamResponse(response);
 
-    if (!response.ok) {
-      return res.status(response.status).json(data);
+    if (!ok) {
+      return res.status(status).json(data);
     }
 
     return res.status(200).json(data);

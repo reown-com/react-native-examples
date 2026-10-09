@@ -1,5 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { extractCredentials, getApiBaseUrl, getApiHeaders } from "./_utils";
+import {
+  extractCredentials,
+  getApiBaseUrl,
+  getApiHeaders,
+  readUpstreamResponse,
+} from "./_utils";
 
 /**
  * Vercel Serverless Function to proxy payment cancellation requests
@@ -39,11 +44,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     );
 
-    const text = await response.text();
-    const data = text ? JSON.parse(text) : {};
+    const { ok, status, data } = await readUpstreamResponse(response);
 
-    if (!response.ok) {
-      return res.status(response.status).json(data);
+    if (!ok) {
+      return res.status(status).json(data);
     }
 
     return res.status(200).json(data);
