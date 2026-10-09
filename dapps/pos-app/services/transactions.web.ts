@@ -1,4 +1,7 @@
-import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  selectTestModeActive,
+  useSettingsStore,
+} from "@/store/useSettingsStore";
 import {
   GetTransactionsBridgeOptions,
   requestBridge,
@@ -6,6 +9,7 @@ import {
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { TransactionsResponse } from "@/utils/types";
 import { getTestTransactions } from "./test-transactions";
+import { readProxyResponse } from "./web-response";
 
 export type GetTransactionsOptions = GetTransactionsBridgeOptions;
 
@@ -17,7 +21,7 @@ export type GetTransactionsOptions = GetTransactionsBridgeOptions;
 export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
-  if (useSettingsStore.getState().testMode) {
+  if (selectTestModeActive(useSettingsStore.getState())) {
     return getTestTransactions(options);
   }
 
@@ -93,5 +97,5 @@ export async function getTransactions(
     );
   }
 
-  return response.json();
+  return readProxyResponse<TransactionsResponse>(response);
 }

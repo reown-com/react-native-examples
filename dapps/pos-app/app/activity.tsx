@@ -9,7 +9,10 @@ import { Spacing } from "@/constants/spacing";
 import { DATE_RANGE_OPTIONS } from "@/utils/date-range";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useTransactions } from "@/services/hooks";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  selectTestModeActive,
+  useSettingsStore,
+} from "@/store/useSettingsStore";
 import {
   DateRangeFilterType,
   PaymentRecord,
@@ -49,7 +52,7 @@ const DATE_RANGE_LABELS: Record<DateRangeFilterType, string> = {
 
 export default function ActivityScreen() {
   const theme = useTheme();
-  const testMode = useSettingsStore((state) => state.testMode);
+  const testMode = useSettingsStore(selectTestModeActive);
   const isTestPayment = testMode;
   const transactionFilter = useSettingsStore(
     (state) => state.transactionFilter,

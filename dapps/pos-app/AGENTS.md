@@ -16,7 +16,8 @@ pos-app/
 │   ├── index.tsx          # Home screen
 │   ├── amount.tsx         # Amount input screen
 │   ├── scan.tsx           # QR code display & payment polling
-│   ├── payment-success.tsx # Success screen with receipt printing
+│   ├── payment-success.tsx # Success screen with receipt printing / emailing
+│   ├── email-receipt.tsx  # Customer email entry for email receipts
 │   ├── payment-failure.tsx # Failure screen
 │   ├── settings.tsx       # Settings & configuration
 │   ├── scan-setup-qr.tsx  # Camera scanner for the dashboard setup QR

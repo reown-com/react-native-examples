@@ -11,6 +11,15 @@ import { resetLogsStore } from "../utils/store-helpers";
 // Import the client - environment variable is set in jest.setup.js
 import { apiClient } from "@/services/client";
 
+function okResponse(data: unknown, status = 200) {
+  return {
+    ok: true,
+    status,
+    json: jest.fn().mockResolvedValue(data),
+    text: jest.fn().mockResolvedValue(JSON.stringify(data)),
+  };
+}
+
 describe("ApiClient", () => {
   beforeEach(() => {
     // Reset state
@@ -21,11 +30,9 @@ describe("ApiClient", () => {
   describe("GET requests", () => {
     it("should make a GET request with correct URL", async () => {
       const mockData = { id: 1, name: "Test" };
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: jest.fn().mockResolvedValue(mockData),
-      });
+      (global.fetch as jest.Mock).mockResolvedValueOnce(
+        okResponse(mockData, 200),
+      );
 
       const result = await apiClient.get("/test-endpoint");
 
@@ -43,11 +50,9 @@ describe("ApiClient", () => {
 
     it("should normalize URL - handle endpoint without leading slash", async () => {
       const mockData = { success: true };
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: jest.fn().mockResolvedValue(mockData),
-      });
+      (global.fetch as jest.Mock).mockResolvedValueOnce(
+        okResponse(mockData, 200),
+      );
 
       await apiClient.get("endpoint-without-slash");
 
@@ -58,11 +63,7 @@ describe("ApiClient", () => {
     });
 
     it("should pass custom headers", async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: jest.fn().mockResolvedValue({}),
-      });
+      (global.fetch as jest.Mock).mockResolvedValueOnce(okResponse({}, 200));
 
       await apiClient.get("/test", {
         headers: { Authorization: "Bearer token123" },
@@ -85,11 +86,9 @@ describe("ApiClient", () => {
       const requestBody = { amount: "10.00", currency: "USD" };
       const mockResponse = { paymentId: "pay_123" };
 
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: jest.fn().mockResolvedValue(mockResponse),
-      });
+      (global.fetch as jest.Mock).mockResolvedValueOnce(
+        okResponse(mockResponse, 200),
+      );
 
       const result = await apiClient.post("/payments", requestBody);
 
@@ -107,11 +106,9 @@ describe("ApiClient", () => {
     });
 
     it("should handle POST request without body", async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: jest.fn().mockResolvedValue({ success: true }),
-      });
+      (global.fetch as jest.Mock).mockResolvedValueOnce(
+        okResponse({ success: true }, 200),
+      );
 
       await apiClient.post("/empty-post");
 
@@ -141,11 +138,7 @@ describe("ApiClient", () => {
           expect(typeof parsedBody.enabled).toBe("boolean");
           expect(typeof parsedBody.metadata).toBe("object");
 
-          return Promise.resolve({
-            ok: true,
-            status: 200,
-            json: jest.fn().mockResolvedValue({ success: true }),
-          });
+          return Promise.resolve(okResponse({ success: true }, 200));
         },
       );
 
@@ -159,11 +152,9 @@ describe("ApiClient", () => {
       const requestBody = { name: "Updated Name" };
       const mockResponse = { id: 1, name: "Updated Name" };
 
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: jest.fn().mockResolvedValue(mockResponse),
-      });
+      (global.fetch as jest.Mock).mockResolvedValueOnce(
+        okResponse(mockResponse, 200),
+      );
 
       const result = await apiClient.put("/resource/1", requestBody);
 
@@ -180,11 +171,9 @@ describe("ApiClient", () => {
 
   describe("DELETE requests", () => {
     it("should make a DELETE request", async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: jest.fn().mockResolvedValue({ deleted: true }),
-      });
+      (global.fetch as jest.Mock).mockResolvedValueOnce(
+        okResponse({ deleted: true }, 200),
+      );
 
       const result = await apiClient.delete("/resource/1");
 
@@ -265,11 +254,9 @@ describe("ApiClient", () => {
 
   describe("timeout handling", () => {
     it("should use AbortController signal for fetch", async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: jest.fn().mockResolvedValue({ success: true }),
-      });
+      (global.fetch as jest.Mock).mockResolvedValueOnce(
+        okResponse({ success: true }, 200),
+      );
 
       await apiClient.get("/test");
 
@@ -316,11 +303,9 @@ describe("ApiClient", () => {
 
   describe("logging", () => {
     it("should log successful API requests", async () => {
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: jest.fn().mockResolvedValue({ success: true }),
-      });
+      (global.fetch as jest.Mock).mockResolvedValueOnce(
+        okResponse({ success: true }, 200),
+      );
 
       await apiClient.get("/test");
 
@@ -350,6 +335,112 @@ describe("ApiClient", () => {
       const errorLog = logs.find((log) => log.level === "error");
       expect(errorLog).toBeDefined();
       expect(errorLog?.view).toBe("api");
+    });
+
+    it("should keep redacted request and response bodies out of the logs", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce(
+        okResponse({ email: "lea@example.com" }),
+      );
+
+      await apiClient.post(
+        "/receipt",
+        { email: "lea@example.com" },
+        { redactLogBodies: true },
+      );
+
+      const logs = useLogsStore.getState().logs;
+      expect(JSON.stringify(logs)).not.toContain("lea@example.com");
+      const apiLog = logs.find((log) => log.message === "POST /receipt");
+      expect(apiLog?.data?.body).toBe("[redacted]");
+    });
+
+    it("should keep redacted bodies out of error logs", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        statusText: "Bad Request",
+        json: jest.fn().mockResolvedValue({
+          message: "Bad email",
+          email: "lea@example.com",
+        }),
+      });
+
+      await expect(
+        apiClient.post(
+          "/receipt",
+          { email: "lea@example.com" },
+          { redactLogBodies: true },
+        ),
+      ).rejects.toMatchObject({ status: 400 });
+
+      const logs = useLogsStore.getState().logs;
+      expect(JSON.stringify(logs)).not.toContain("lea@example.com");
+    });
+
+    it("should not log a server message that echoes a redacted body", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 422,
+        statusText: "Unprocessable",
+        json: jest
+          .fn()
+          .mockResolvedValue({ message: "Invalid email: lea@example.com" }),
+      });
+
+      await expect(
+        apiClient.post(
+          "/receipt",
+          { email: "lea@example.com" },
+          { redactLogBodies: true },
+        ),
+      ).rejects.toMatchObject({ status: 422 });
+
+      const logs = useLogsStore.getState().logs;
+      expect(JSON.stringify(logs)).not.toContain("lea@example.com");
+      expect(
+        logs.some((log) => log.message === "API request failed (422)"),
+      ).toBe(true);
+    });
+  });
+
+  describe("empty responses", () => {
+    it("should resolve undefined for 204 No Content", async () => {
+      const text = jest.fn();
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        status: 204,
+        json: jest.fn().mockRejectedValue(new Error("no body")),
+        text,
+      });
+
+      await expect(apiClient.post("/receipt", {})).resolves.toBeUndefined();
+      expect(text).not.toHaveBeenCalled();
+    });
+
+    it("should reject a non-JSON 200 body as an API error with its status", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockRejectedValue(new Error("Unexpected token <")),
+        text: jest.fn().mockResolvedValue("<html>Bad gateway</html>"),
+      });
+
+      await expect(apiClient.get("/test")).rejects.toEqual({
+        message: "Invalid JSON response (status 200)",
+        code: "INVALID_RESPONSE",
+        status: 200,
+      });
+    });
+
+    it("should resolve undefined for an empty 200 body", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockRejectedValue(new Error("Unexpected end of JSON")),
+        text: jest.fn().mockResolvedValue(""),
+      });
+
+      await expect(apiClient.post("/receipt", {})).resolves.toBeUndefined();
     });
   });
 });

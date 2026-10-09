@@ -15,7 +15,10 @@ import { cancelPayment, startPayment } from "@/services/payment";
 import { isTestPaymentFailure } from "@/services/test-payment";
 import { useLogsStore } from "@/store/useLogsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  selectTestModeActive,
+  useSettingsStore,
+} from "@/store/useSettingsStore";
 import {
   amountToCents,
   formatAmountWithSymbol,
@@ -81,7 +84,7 @@ export default function ScanScreen() {
   useKeepAwake(undefined, { suppressDeactivateWarnings: true });
 
   const storedMerchantId = useSettingsStore((state) => state.merchantId);
-  const testMode = useSettingsStore((state) => state.testMode);
+  const testMode = useSettingsStore(selectTestModeActive);
   const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
   const merchantId = getMerchantIdForSession(
     isRunningInIframe(),

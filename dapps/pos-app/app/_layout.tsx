@@ -220,6 +220,16 @@ export default Sentry.wrap(function RootLayout() {
                 }}
               />
               <Stack.Screen
+                name="email-receipt"
+                options={{
+                  headerShown: false,
+                  contentStyle: {
+                    backgroundColor: Theme["bg-primary"],
+                    paddingBottom: 0,
+                  },
+                }}
+              />
+              <Stack.Screen
                 name="settings"
                 options={{ headerTitle: SettingsHeaderTitle }}
               />
