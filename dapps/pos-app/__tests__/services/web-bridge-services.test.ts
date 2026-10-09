@@ -6,6 +6,7 @@ import {
 import {
   cancelPayment,
   getPaymentStatus,
+  sendReceipt,
   startPayment,
 } from "@/services/payment.web";
 import { getTransactions } from "@/services/transactions.web";
@@ -164,9 +165,68 @@ describe("web services with the POS bridge", () => {
     );
   });
 
-  it("uses local test transactions instead of the bridge or proxy", async () => {
+  it("posts email receipts through the proxy when bridge mode is disabled", async () => {
+    await setupTestMerchant("merchant-direct", "local-key");
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: jest.fn().mockResolvedValue({}),
+    });
+
+    await expect(
+      sendReceipt("pay-direct", "lea@example.com"),
+    ).resolves.toBeUndefined();
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/send-receipt?paymentId=pay-direct",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ email: "lea@example.com" }),
+        headers: expect.objectContaining({
+          "x-api-key": "local-key",
+          "x-merchant-id": "merchant-direct",
+        }),
+      }),
+    );
+  });
+
+  it("rejects email receipts in the dashboard iframe without calling the bridge or proxy", async () => {
     setEmbeddedWindow();
     configureBridge(parentWindow, parentOrigin, "merchant-bridge");
+
+    await expect(sendReceipt("pay-1", "lea@example.com")).rejects.toThrow(
+      "Email receipts aren't available in the dashboard",
+    );
+    expect(parentPostMessage).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("simulates email receipts for Test Mode payments", async () => {
+    setEmbeddedWindow();
+    configureBridge(parentWindow, parentOrigin, "merchant-bridge");
+    jest.useFakeTimers();
+
+    const promise = sendReceipt("test_123", "lea@example.com");
+    await jest.advanceTimersByTimeAsync(1000);
+    await expect(promise).resolves.toBeUndefined();
+    jest.useRealTimers();
+
+    expect(parentPostMessage).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("surfaces proxy errors when sending an email receipt", async () => {
+    await setupTestMerchant("merchant-direct", "local-key");
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+      json: jest.fn().mockResolvedValue({ message: "Not found" }),
+    });
+
+    await expect(sendReceipt("pay-missing", "lea@example.com")).rejects.toEqual(
+      { message: "Not found", code: undefined, status: 404 },
+    );
+  });
+
+  it("uses local test transactions instead of the proxy in standalone Test Mode", async () => {
     useSettingsStore.setState({ testMode: true });
 
     await expect(
@@ -175,8 +235,49 @@ describe("web services with the POS bridge", () => {
       data: [expect.objectContaining({ paymentId: "test_succeeded" })],
       nextCursor: null,
     });
-    expect(parentPostMessage).not.toHaveBeenCalled();
     expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("ignores a saved Test Mode in the dashboard iframe and uses the bridge", async () => {
+    setEmbeddedWindow();
+    configureBridge(parentWindow, parentOrigin, "merchant-bridge");
+    useSettingsStore.setState({ testMode: true });
+
+    const transactions = getTransactions({ status: ["succeeded"] });
+    expect(
+      parentPostMessage.mock.calls[parentPostMessage.mock.calls.length - 1]?.[0]
+        .request,
+    ).toEqual({
+      operation: "get-transactions",
+      payload: { status: ["succeeded"] },
+    });
+    respondWithSuccess({ data: [] });
+    await expect(transactions).resolves.toEqual({ data: [] });
+    // The saved flag is left alone for the standalone POS.
+    expect(useSettingsStore.getState().testMode).toBe(true);
+  });
+
+  it("times out a hung email receipt request", async () => {
+    await setupTestMerchant("merchant-direct", "local-key");
+    (global.fetch as jest.Mock).mockImplementationOnce(
+      (_url: string, init: RequestInit) =>
+        new Promise((_resolve, reject) => {
+          init.signal?.addEventListener("abort", () => {
+            const abortError = new Error("Aborted");
+            abortError.name = "AbortError";
+            reject(abortError);
+          });
+        }),
+    );
+    jest.useFakeTimers();
+
+    const promise = sendReceipt("pay-hung", "lea@example.com");
+    const assertion = expect(promise).rejects.toMatchObject({
+      code: "TIMEOUT",
+    });
+    await jest.advanceTimersByTimeAsync(30000);
+    await assertion;
+    jest.useRealTimers();
   });
 
   it("does not fall back to standalone credentials while an iframe awaits bridge configuration", async () => {

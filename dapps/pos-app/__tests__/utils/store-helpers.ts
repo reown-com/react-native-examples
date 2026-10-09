@@ -21,6 +21,7 @@ export function resetSettingsStore() {
     pinLockoutUntil: null,
     biometricEnabled: false,
     testMode: false,
+    emailReceiptEnabled: false,
   });
 }
 

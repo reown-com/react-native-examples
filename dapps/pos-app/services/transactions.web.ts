@@ -1,4 +1,7 @@
-import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  selectTestModeActive,
+  useSettingsStore,
+} from "@/store/useSettingsStore";
 import {
   GetTransactionsBridgeOptions,
   requestBridge,
@@ -17,7 +20,7 @@ export type GetTransactionsOptions = GetTransactionsBridgeOptions;
 export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
-  if (useSettingsStore.getState().testMode) {
+  if (selectTestModeActive(useSettingsStore.getState())) {
     return getTestTransactions(options);
   }
 

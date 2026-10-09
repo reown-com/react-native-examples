@@ -70,9 +70,6 @@ export function initSentry(): void {
     ...(process.env.EXPO_PUBLIC_API_URL
       ? [process.env.EXPO_PUBLIC_API_URL]
       : []),
-    ...(process.env.EXPO_PUBLIC_MERCHANT_DEV_API_URL
-      ? [process.env.EXPO_PUBLIC_MERCHANT_DEV_API_URL]
-      : []),
     /^\/api\//,
   ];
 

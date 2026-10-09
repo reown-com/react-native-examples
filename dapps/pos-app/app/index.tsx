@@ -3,7 +3,10 @@ import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Spacing } from "@/constants/spacing";
 import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  selectTestModeActive,
+  useSettingsStore,
+} from "@/store/useSettingsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import {
@@ -46,7 +49,7 @@ export default function HomeScreen() {
   const isCustomerApiKeySet = useSettingsStore(
     (state) => state.isCustomerApiKeySet,
   );
-  const testMode = useSettingsStore((state) => state.testMode);
+  const testMode = useSettingsStore(selectTestModeActive);
   const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
   const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
   const isIframeSession = isRunningInIframe();

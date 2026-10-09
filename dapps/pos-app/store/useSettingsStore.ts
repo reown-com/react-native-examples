@@ -79,6 +79,9 @@ interface SettingsStore {
   // Test
   testMode: boolean;
 
+  // Email receipt
+  emailReceiptEnabled: boolean;
+
   // Actions
   setThemeMode: (themeMode: ThemeMode) => void;
   setHasHydrated: (state: boolean) => void;
@@ -101,11 +104,20 @@ interface SettingsStore {
   setBiometricEnabled: (enabled: boolean) => void;
   setNfcEnabled: (enabled: boolean) => void;
   setTestMode: (enabled: boolean) => void;
+  setEmailReceiptEnabled: (enabled: boolean) => void;
 
   // Transaction filters
   setTransactionFilter: (filter: TransactionFilterType) => void;
   setDateRangeFilter: (filter: DateRangeFilterType) => void;
 }
+
+/**
+ * Test Mode as the app should honour it. The dashboard iframe shares storage
+ * with the standalone web POS but doesn't offer Test Mode, so it ignores the
+ * saved flag instead of overwriting it.
+ */
+export const selectTestModeActive = (state: SettingsStore): boolean =>
+  state.testMode && !isRunningInIframe();
 
 export const useSettingsStore = create<SettingsStore>()(
   persist(
@@ -125,6 +137,7 @@ export const useSettingsStore = create<SettingsStore>()(
       biometricEnabled: false,
       nfcEnabled: true,
       testMode: false,
+      emailReceiptEnabled: false,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
       setVariant: (variant: VariantName) => {
@@ -249,6 +262,8 @@ export const useSettingsStore = create<SettingsStore>()(
         set({ biometricEnabled: enabled }),
       setNfcEnabled: (enabled: boolean) => set({ nfcEnabled: enabled }),
       setTestMode: (enabled: boolean) => set({ testMode: enabled }),
+      setEmailReceiptEnabled: (enabled: boolean) =>
+        set({ emailReceiptEnabled: enabled }),
 
       setTransactionFilter: (filter: TransactionFilterType) =>
         set({ transactionFilter: filter }),

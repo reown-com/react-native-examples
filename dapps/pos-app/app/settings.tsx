@@ -16,7 +16,10 @@ import { useNfcCapabilities } from "@/hooks/use-nfc-capabilities";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { usePendingSetupStore } from "@/store/usePendingSetupStore";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  selectTestModeActive,
+  useSettingsStore,
+} from "@/store/useSettingsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { ThemeMode } from "@/utils/types";
@@ -31,6 +34,7 @@ import {
   requestBluetoothPermission,
 } from "@/utils/printer";
 import { showErrorToast, showInfoToast } from "@/utils/toast";
+import { webInputReset } from "@/utils/web-input-reset";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
@@ -82,7 +86,14 @@ export default function SettingsScreen() {
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const setNfcEnabled = useSettingsStore((state) => state.setNfcEnabled);
   const testMode = useSettingsStore((state) => state.testMode);
+  const testModeActive = useSettingsStore(selectTestModeActive);
   const setTestMode = useSettingsStore((state) => state.setTestMode);
+  const emailReceiptEnabled = useSettingsStore(
+    (state) => state.emailReceiptEnabled,
+  );
+  const setEmailReceiptEnabled = useSettingsStore(
+    (state) => state.setEmailReceiptEnabled,
+  );
   const nfcCapabilities = useNfcCapabilities();
   const addLog = useLogsStore((state) => state.addLog);
   const logsCount = useLogsStore((state) => state.logs.length);
@@ -94,6 +105,9 @@ export default function SettingsScreen() {
 
   const [activeSheet, setActiveSheet] = useState<ActiveSheet>(null);
   const hasCamera = useHasCamera();
+  const [focusedInput, setFocusedInput] = useState<
+    "merchantId" | "customerApiKey" | null
+  >(null);
 
   // Custom hooks for biometrics and merchant flow
   const {
@@ -145,7 +159,7 @@ export default function SettingsScreen() {
       showErrorToast("This terminal is connected through the dashboard.");
       return;
     }
-    if (testMode) {
+    if (testModeActive) {
       showErrorToast("Turn off Test Mode to connect this terminal.");
       return;
     }
@@ -154,7 +168,7 @@ export default function SettingsScreen() {
     pendingSetup,
     clearPendingSetup,
     isIframeSession,
-    testMode,
+    testModeActive,
     handleScannedSetup,
   ]);
 
@@ -226,7 +240,7 @@ export default function SettingsScreen() {
   const showBiometricToggle = shouldShowBiometricOption && !!biometricStatus;
 
   const hasMerchantId = !!storedMerchantId?.trim();
-  const testActive = testMode;
+  const testActive = testModeActive;
   const setupRemaining =
     testActive || isIframeSession
       ? 0
@@ -401,13 +415,26 @@ export default function SettingsScreen() {
             />
           )}
 
-          <SettingsToggleItem
-            testID="settings-test-mode-toggle"
-            title="Enable Test Mode"
-            description="Simulate payments"
-            value={testMode}
-            onValueChange={handleTestModeChange}
-          />
+          {/* Email receipts and Test Mode aren't offered in the dashboard iframe. */}
+          {!isIframeSession && (
+            <>
+              <SettingsToggleItem
+                testID="settings-email-receipt-toggle"
+                title="Email receipt"
+                description="Show button"
+                value={emailReceiptEnabled}
+                onValueChange={setEmailReceiptEnabled}
+              />
+
+              <SettingsToggleItem
+                testID="settings-test-mode-toggle"
+                title="Enable Test Mode"
+                description="Simulate payments"
+                value={testMode}
+                onValueChange={handleTestModeChange}
+              />
+            </>
+          )}
 
           {/* Biometric toggle - only show if PIN is set and biometrics available */}
           {showBiometricToggle && (
@@ -504,10 +531,16 @@ export default function SettingsScreen() {
               placeholderTextColor={theme["text-tertiary"]}
               autoCapitalize="none"
               autoCorrect={false}
+              onFocus={() => setFocusedInput("merchantId")}
+              onBlur={() => setFocusedInput(null)}
               style={[
                 styles.sheetInput,
+                webInputReset,
                 {
-                  borderColor: theme["border-primary"],
+                  borderColor:
+                    focusedInput === "merchantId"
+                      ? theme["border-accent-primary"]
+                      : theme["border-primary"],
                   color: theme["text-primary"],
                   backgroundColor: theme["foreground-primary"],
                 },
@@ -548,10 +581,16 @@ export default function SettingsScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               secureTextEntry={true}
+              onFocus={() => setFocusedInput("customerApiKey")}
+              onBlur={() => setFocusedInput(null)}
               style={[
                 styles.sheetInput,
+                webInputReset,
                 {
-                  borderColor: theme["border-primary"],
+                  borderColor:
+                    focusedInput === "customerApiKey"
+                      ? theme["border-accent-primary"]
+                      : theme["border-primary"],
                   color: theme["text-primary"],
                   backgroundColor: theme["foreground-primary"],
                 },

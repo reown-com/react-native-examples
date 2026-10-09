@@ -1,9 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import {
-  extractCredentials,
-  getMerchantApiBaseUrl,
-  getApiHeaders,
-} from "./_utils";
+import { extractCredentials, getApiBaseUrl, getApiHeaders } from "./_utils";
 
 /**
  * Vercel Serverless Function to proxy transaction list requests
@@ -21,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const credentials = extractCredentials(req, res);
     if (!credentials) return;
 
-    const apiBaseUrl = getMerchantApiBaseUrl(res);
+    const apiBaseUrl = getApiBaseUrl(res);
     if (!apiBaseUrl) return;
 
     // Forward query params as-is (already camelCase from client)

@@ -1,4 +1,8 @@
-import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  selectTestModeActive,
+  useSettingsStore,
+} from "@/store/useSettingsStore";
+import * as iframe from "@/utils/is-running-in-iframe";
 import { DEFAULT_LOGO_BASE64 } from "@/constants/printer-logos";
 import { resetSettingsStore } from "../utils/store-helpers";
 
@@ -53,6 +57,10 @@ describe("useSettingsStore", () => {
     it("should have Test Mode disabled", () => {
       expect(useSettingsStore.getState().testMode).toBe(false);
     });
+
+    it("should have email receipt disabled", () => {
+      expect(useSettingsStore.getState().emailReceiptEnabled).toBe(false);
+    });
   });
 
   describe("setThemeMode", () => {
@@ -82,6 +90,35 @@ describe("useSettingsStore", () => {
 
       useSettingsStore.getState().setTestMode(false);
       expect(useSettingsStore.getState().testMode).toBe(false);
+    });
+  });
+
+  describe("selectTestModeActive", () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("follows the saved flag outside an iframe", () => {
+      useSettingsStore.getState().setTestMode(true);
+      expect(selectTestModeActive(useSettingsStore.getState())).toBe(true);
+    });
+
+    it("ignores the saved flag in the dashboard iframe without changing it", () => {
+      jest.spyOn(iframe, "isRunningInIframe").mockReturnValue(true);
+      useSettingsStore.getState().setTestMode(true);
+
+      expect(selectTestModeActive(useSettingsStore.getState())).toBe(false);
+      expect(useSettingsStore.getState().testMode).toBe(true);
+    });
+  });
+
+  describe("setEmailReceiptEnabled", () => {
+    it("enables and disables the email receipt button", () => {
+      useSettingsStore.getState().setEmailReceiptEnabled(true);
+      expect(useSettingsStore.getState().emailReceiptEnabled).toBe(true);
+
+      useSettingsStore.getState().setEmailReceiptEnabled(false);
+      expect(useSettingsStore.getState().emailReceiptEnabled).toBe(false);
     });
   });
 
