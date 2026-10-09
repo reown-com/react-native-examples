@@ -66,14 +66,6 @@ export const EXPLORE_APPS: ExploreApp[] = [
     url: 'https://walletconnect.github.io/app-fees-demo-public/',
     icon: 'https://walletconnect.github.io/app-fees-demo-public/icon.svg',
   },
-  {
-    id: 'swap-demo-referral',
-    name: 'Swap demo (with referral code)',
-    color: '#00E28D',
-    glyph: 'S',
-    url: 'https://walletconnect.github.io/app-fees-demo-public/?referrer=rn-sample-ref',
-    icon: 'https://walletconnect.github.io/app-fees-demo-public/icon.svg',
-  },
 ];
 
 export function getAppIconUrl(app: ExploreApp): string | undefined {
