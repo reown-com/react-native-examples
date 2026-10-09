@@ -257,6 +257,21 @@ describe("web services with the POS bridge", () => {
     expect(useSettingsStore.getState().testMode).toBe(true);
   });
 
+  it("keeps the HTTP status when a cancel hits an HTML error page", async () => {
+    await setupTestMerchant("merchant-direct", "local-key");
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+      json: jest.fn().mockRejectedValue(new Error("Unexpected token <")),
+    });
+
+    await expect(cancelPayment("pay-direct")).rejects.toEqual({
+      message: "HTTP error! status: 502",
+      code: undefined,
+      status: 502,
+    });
+  });
+
   it("times out a hung email receipt request", async () => {
     await setupTestMerchant("merchant-direct", "local-key");
     (global.fetch as jest.Mock).mockImplementationOnce(

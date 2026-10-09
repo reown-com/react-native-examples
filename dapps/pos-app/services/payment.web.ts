@@ -153,7 +153,8 @@ export async function cancelPayment(paymentId: string): Promise<void> {
   );
 
   if (!response.ok) {
-    const data = await response.json();
+    // Gateways can answer with an HTML error page; keep the HTTP status.
+    const data = await response.json().catch(() => ({}));
     const error: ApiError = {
       message: data.message || `HTTP error! status: ${response.status}`,
       code: data.code,

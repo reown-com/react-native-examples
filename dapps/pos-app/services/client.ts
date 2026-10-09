@@ -147,11 +147,23 @@ class ApiClient {
   }
 
   // Some endpoints answer 204 or an empty 200; treat both as no body rather
-  // than failing a request that already succeeded.
+  // than failing a request that already succeeded. A body that isn't JSON
+  // (e.g. a gateway HTML page sent with 200) becomes an ApiError that keeps
+  // the status, instead of a bare SyntaxError.
   private async parseSuccessResponse(response: Response): Promise<unknown> {
     if (response.status === 204) return undefined;
     const text = await response.text();
-    return text ? JSON.parse(text) : undefined;
+    if (!text) return undefined;
+    try {
+      return JSON.parse(text);
+    } catch {
+      const error: ApiError = {
+        message: `Invalid JSON response (status ${response.status})`,
+        code: "INVALID_RESPONSE",
+        status: response.status,
+      };
+      throw error;
+    }
   }
 
   private async parseErrorResponse(

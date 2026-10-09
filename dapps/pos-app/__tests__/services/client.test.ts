@@ -417,6 +417,21 @@ describe("ApiClient", () => {
       expect(text).not.toHaveBeenCalled();
     });
 
+    it("should reject a non-JSON 200 body as an API error with its status", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: jest.fn().mockRejectedValue(new Error("Unexpected token <")),
+        text: jest.fn().mockResolvedValue("<html>Bad gateway</html>"),
+      });
+
+      await expect(apiClient.get("/test")).rejects.toEqual({
+        message: "Invalid JSON response (status 200)",
+        code: "INVALID_RESPONSE",
+        status: 200,
+      });
+    });
+
     it("should resolve undefined for an empty 200 body", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
