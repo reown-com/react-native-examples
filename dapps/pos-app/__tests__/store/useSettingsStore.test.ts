@@ -58,8 +58,13 @@ describe("useSettingsStore", () => {
       expect(useSettingsStore.getState().testMode).toBe(false);
     });
 
-    it("should have email receipt disabled", () => {
-      expect(useSettingsStore.getState().emailReceiptEnabled).toBe(false);
+    it("should have email receipt enabled", () => {
+      expect(useSettingsStore.getState().emailReceiptEnabled).toBe(true);
+    });
+
+    it("should default email receipt to on in the store itself", () => {
+      // Installs that never saved the setting fall back to this value.
+      expect(useSettingsStore.getInitialState().emailReceiptEnabled).toBe(true);
     });
   });
 

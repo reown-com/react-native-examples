@@ -137,7 +137,7 @@ export const useSettingsStore = create<SettingsStore>()(
       biometricEnabled: false,
       nfcEnabled: true,
       testMode: false,
-      emailReceiptEnabled: false,
+      emailReceiptEnabled: true,
       setThemeMode: (themeMode: ThemeMode) => set({ themeMode }),
       setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
       setVariant: (variant: VariantName) => {
