@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 import { HomeTabParamList } from '@/utils/TypesUtil';
 import Wallets from '@/screens/Wallets';
 import Connections from '@/screens/Connections';
+import Explore from '@/screens/Explore';
 import Settings from '@/screens/Settings';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -17,6 +18,11 @@ const tabWalletIcon = Platform.select({
 const tabConnectionsIcon = Platform.select({
   ios: { sfSymbol: 'square.stack.3d.up.fill' },
   default: require('@/assets/icons/tab-connections.svg'),
+});
+
+const tabExploreIcon = Platform.select({
+  ios: { sfSymbol: 'safari.fill' },
+  default: require('@/assets/icons/tab-explore.svg'),
 });
 
 const tabSettingsIcon = Platform.select({
@@ -59,6 +65,15 @@ export function HomeTabNavigator() {
           tabBarLabel: 'Connected apps',
           tabBarIcon: () => tabConnectionsIcon,
           lazy: false,
+          sceneStyle,
+        }}
+      />
+      <TabNav.Screen
+        name="Explore"
+        component={Explore}
+        options={{
+          tabBarLabel: 'Explore',
+          tabBarIcon: () => tabExploreIcon,
           sceneStyle,
         }}
       />

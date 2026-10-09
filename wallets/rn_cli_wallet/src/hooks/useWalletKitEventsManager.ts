@@ -15,6 +15,10 @@ import { CANTON_SIGNING_METHODS } from '@/constants/Canton';
 import { approveCantonRequest } from '@/utils/CantonRequestHandlerUtil';
 import { getRequestConfig } from '@/modals/requestConfig';
 import {
+  autoApproveExploreProposal,
+  isExplorePairing,
+} from '@/utils/ExploreUtil';
+import {
   ensureWalletForChainId,
   ensureWalletReady,
 } from '@/utils/WalletInitializationUtil';
@@ -47,6 +51,25 @@ export default function useWalletKitEventsManager(initialized: boolean) {
           errorTitle: 'These networks aren’t supported',
           errorMessage:
             'This wallet doesn’t support any of the networks this app requested. Try connecting to a different app.',
+        });
+      } else if (
+        // Explore (H2b): proposals arriving on a pairing the Explore webview
+        // offered are auto-approved (with wallet_guide_id) when Settings →
+        // Explore: auto-connect is on. Everything else keeps the modal.
+        isExplorePairing(proposal.params.pairingTopic) &&
+        SettingsStore.state.exploreAutoConnect
+      ) {
+        autoApproveExploreProposal(
+          proposal,
+          chains.map(chain => `${chain.namespace}:${chain.chainId}`),
+        ).catch(e => {
+          LogStore.error(
+            (e as Error).message,
+            'WalletKitEvents',
+            'exploreAutoApprove',
+          );
+          // Fall back to the normal consent modal.
+          ModalStore.open('SessionProposalModal', { proposal });
         });
       } else {
         ModalStore.open('SessionProposalModal', { proposal });
