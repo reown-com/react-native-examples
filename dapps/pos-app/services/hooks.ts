@@ -1,5 +1,8 @@
 import { useLogsStore } from "@/store/useLogsStore";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  selectTestModeActive,
+  useSettingsStore,
+} from "@/store/useSettingsStore";
 import { getDateRange } from "@/utils/date-range";
 import {
   DateRangeFilterType,
@@ -11,7 +14,12 @@ import {
 } from "@/utils/types";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
-import { cancelPayment, getPaymentStatus, startPayment } from "./payment";
+import {
+  cancelPayment,
+  getPaymentStatus,
+  sendReceipt,
+  startPayment,
+} from "./payment";
 import { getTransactions } from "./transactions";
 
 const KNOWN_STATUSES: string[] = [
@@ -62,6 +70,16 @@ export function useStartPayment() {
 export function useCancelPayment() {
   return useMutation<void, Error, string>({
     mutationFn: cancelPayment,
+  });
+}
+
+/**
+ * Hook to email the customer a receipt
+ * @returns Mutation hook for sending email receipts
+ */
+export function useSendReceipt() {
+  return useMutation<void, Error, { paymentId: string; email: string }>({
+    mutationFn: ({ paymentId, email }) => sendReceipt(paymentId, email),
   });
 }
 
@@ -203,7 +221,7 @@ function filterToStatusArray(
  */
 export function useTransactions(options: UseTransactionsOptions = {}) {
   const { enabled = true, filter = "all", dateRangeFilter = "today" } = options;
-  const testMode = useSettingsStore((state) => state.testMode);
+  const testMode = useSettingsStore(selectTestModeActive);
   const testActive = testMode;
 
   const addLog = useLogsStore.getState().addLog;

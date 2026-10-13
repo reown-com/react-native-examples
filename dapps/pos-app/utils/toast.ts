@@ -2,15 +2,22 @@ import Toast from "react-native-toast-message";
 
 interface ToastProps {
   message?: string;
-  type: "success" | "error" | "info" | "warning";
+  type: "success" | "error" | "info" | "warning" | "loading";
   visibilityTime?: number;
+  autoHide?: boolean;
 }
 
-export const showToast = ({ message, type, visibilityTime }: ToastProps) => {
+export const showToast = ({
+  message,
+  type,
+  visibilityTime,
+  autoHide,
+}: ToastProps) => {
   Toast.show({
     type,
     text1: message,
     ...(visibilityTime && { visibilityTime }),
+    ...(autoHide !== undefined && { autoHide }),
   });
 };
 

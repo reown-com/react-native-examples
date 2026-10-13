@@ -1,5 +1,10 @@
-import { UnknownOutputParams, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import {
+  router,
+  UnknownOutputParams,
+  useFocusEffect,
+  useLocalSearchParams,
+} from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -21,6 +26,7 @@ import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { formatAmountWithSymbol, getCurrency } from "@/utils/currency";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
 import { Image } from "expo-image";
@@ -58,10 +64,16 @@ export default function PaymentSuccessScreen() {
   const getVariantPrinterLogo = useSettingsStore(
     (state) => state.getVariantPrinterLogo,
   );
+  const emailReceiptEnabled = useSettingsStore(
+    (state) => state.emailReceiptEnabled,
+  );
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
   const { top, bottom } = useSafeAreaInsets();
-  const { amount = "" } = params;
+  const { amount = "", paymentId } = params;
+  // Email receipts aren't offered in the dashboard iframe.
+  const canSendReceipt =
+    emailReceiptEnabled && !!paymentId && !isRunningInIframe();
   const [isPrinterConnected, setIsPrinterConnected] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const [isSuccessAnimationVisible, setIsSuccessAnimationVisible] =
@@ -79,6 +91,20 @@ export default function PaymentSuccessScreen() {
 
   const handleNewPayment = () => {
     resetNavigation("/amount");
+  };
+
+  // A quick double tap would otherwise push two email screens.
+  const isOpeningReceiptRef = useRef(false);
+  useFocusEffect(
+    useCallback(() => {
+      isOpeningReceiptRef.current = false;
+    }, []),
+  );
+
+  const handleSendReceipt = () => {
+    if (isOpeningReceiptRef.current) return;
+    isOpeningReceiptRef.current = true;
+    router.push({ pathname: "/email-receipt", params: { paymentId } });
   };
 
   const handlePrintReceipt = async () => {
@@ -263,21 +289,44 @@ export default function PaymentSuccessScreen() {
             isTablet && styles.buttonContainerTablet,
           ]}
         >
+          {canSendReceipt && (
+            <Button
+              type="neutral"
+              variant="secondary"
+              testID="send-receipt-button"
+              onPress={handleSendReceipt}
+              size={isTablet ? "lg" : "md"}
+              icon={
+                <Image
+                  source={require("@/assets/images/paper-plane.png")}
+                  style={[
+                    styles.buttonIcon,
+                    isTablet && styles.buttonIconTablet,
+                  ]}
+                  tintColor={Theme["text-secondary"]}
+                />
+              }
+            >
+              Send receipt
+            </Button>
+          )}
+
           {isPrinterConnected && (
             <Button
               type="neutral"
-              variant="tertiary"
+              variant="secondary"
+              testID="print-receipt-button"
               onPress={handlePrintReceipt}
               disabled={isPrinting}
               size={isTablet ? "lg" : "md"}
               icon={
                 <Image
-                  source={require("@/assets/images/receipt.png")}
+                  source={require("@/assets/images/printer.png")}
                   style={[
                     styles.buttonIcon,
                     isTablet && styles.buttonIconTablet,
                   ]}
-                  tintColor={Theme["bg-primary"]}
+                  tintColor={Theme["text-secondary"]}
                 />
               }
             >

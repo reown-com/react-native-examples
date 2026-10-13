@@ -1,8 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   extractCredentials,
-  getMerchantApiBaseUrl,
+  getApiBaseUrl,
   getApiHeaders,
+  readUpstreamResponse,
 } from "./_utils";
 
 /**
@@ -21,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const credentials = extractCredentials(req, res);
     if (!credentials) return;
 
-    const apiBaseUrl = getMerchantApiBaseUrl(res);
+    const apiBaseUrl = getApiBaseUrl(res);
     if (!apiBaseUrl) return;
 
     // Forward query params as-is (already camelCase from client)
@@ -65,14 +66,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: getApiHeaders(credentials.apiKey, credentials.merchantId),
     });
 
-    const text = await response.text();
-    const data = text ? JSON.parse(text) : {};
+    const upstream = await readUpstreamResponse(response);
 
-    if (!response.ok) {
-      return res.status(response.status).json(data);
+    if (!upstream.ok) {
+      return res.status(upstream.status).json(upstream.data);
     }
 
-    return res.status(200).json(data);
+    return res.status(200).json(upstream.data);
   } catch (error) {
     console.error("Transactions proxy error:", error);
     return res.status(500).json({

@@ -1,8 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
-const MERCHANT_API_BASE_URL =
-  process.env.EXPO_PUBLIC_MERCHANT_DEV_API_URL || API_BASE_URL;
 
 /**
  * Extract and validate merchant credentials from a proxied request.
@@ -39,19 +37,6 @@ export function getApiBaseUrl(res: VercelResponse): string | null {
 }
 
 /**
- * Get the merchant API base URL (uses dev override when set, otherwise falls back to default).
- */
-export function getMerchantApiBaseUrl(res: VercelResponse): string | null {
-  if (!MERCHANT_API_BASE_URL) {
-    res.status(500).json({
-      message: "API_BASE_URL is not configured",
-    });
-    return null;
-  }
-  return MERCHANT_API_BASE_URL;
-}
-
-/**
  * Build the headers for forwarding a request to the merchant API.
  */
 export function getApiHeaders(apiKey: string, merchantId: string) {
@@ -64,4 +49,38 @@ export function getApiHeaders(apiKey: string, merchantId: string) {
     "Sdk-Version": "1.0.0",
     "Sdk-Platform": "web",
   };
+}
+
+/**
+ * Read an upstream response without trusting it to be JSON. Gateways can
+ * answer with an HTML error page: a failed request keeps its real status, and
+ * a "successful" non-JSON reply is reported as a 502 instead of being passed
+ * on as data.
+ */
+export async function readUpstreamResponse(
+  response: Response,
+): Promise<{ ok: boolean; status: number; data: unknown }> {
+  const text = await response.text();
+  if (!text) {
+    return { ok: response.ok, status: response.status, data: {} };
+  }
+  try {
+    return { ok: response.ok, status: response.status, data: JSON.parse(text) };
+  } catch {
+    if (response.ok) {
+      return {
+        ok: false,
+        status: 502,
+        data: {
+          message: "Invalid upstream response",
+          code: "INVALID_RESPONSE",
+        },
+      };
+    }
+    return {
+      ok: false,
+      status: response.status,
+      data: { message: `Upstream error (${response.status})` },
+    };
+  }
 }

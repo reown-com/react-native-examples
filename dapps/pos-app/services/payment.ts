@@ -5,6 +5,7 @@ import {
 } from "@/utils/types";
 import * as Sentry from "@sentry/react-native";
 import { apiClient, getApiHeaders } from "./client";
+import { isTestPaymentId, simulateTestReceipt } from "./test-payment";
 
 /**
  * Start a new payment
@@ -59,6 +60,34 @@ export async function cancelPayment(paymentId: string): Promise<void> {
     async () => {
       const headers = await getApiHeaders();
       await apiClient.post(`/payments/${paymentId}/cancel`, {}, { headers });
+    },
+  );
+}
+
+/**
+ * Email the customer a receipt for a completed payment
+ * @param paymentId - The payment ID to send the receipt for
+ * @param email - Customer email address
+ */
+export async function sendReceipt(
+  paymentId: string,
+  email: string,
+): Promise<void> {
+  if (!paymentId?.trim()) {
+    throw new Error("paymentId is required");
+  }
+  if (isTestPaymentId(paymentId)) {
+    return simulateTestReceipt();
+  }
+  await Sentry.startSpan(
+    { name: "payment.receipt", op: "payment.receipt" },
+    async () => {
+      const headers = await getApiHeaders();
+      await apiClient.post(
+        `/merchants/payments/${encodeURIComponent(paymentId)}/receipt`,
+        { email },
+        { headers, redactLogBodies: true },
+      );
     },
   );
 }

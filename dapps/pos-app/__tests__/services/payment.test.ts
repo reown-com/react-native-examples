@@ -7,6 +7,7 @@
 import {
   cancelPayment,
   getPaymentStatus,
+  sendReceipt,
   startPayment,
 } from "@/services/payment";
 import { normalizePaymentStatus } from "@/services/hooks";
@@ -355,6 +356,67 @@ describe("Payment Service", () => {
 
       await expect(cancelPayment("pay_processing")).rejects.toThrow(
         "Payment cannot be cancelled",
+      );
+    });
+  });
+
+  describe("sendReceipt", () => {
+    beforeEach(async () => {
+      await setupTestMerchant("merchant-123", "api-key-456");
+    });
+
+    it("should post the email to the receipt endpoint", async () => {
+      (apiClient.post as jest.Mock).mockResolvedValueOnce(undefined);
+
+      await sendReceipt("pay_123", "lea@example.com");
+
+      expect(apiClient.post).toHaveBeenCalledWith(
+        "/merchants/payments/pay_123/receipt",
+        { email: "lea@example.com" },
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            "Api-Key": "api-key-456",
+            "Merchant-Id": "merchant-123",
+          }),
+        }),
+      );
+    });
+
+    it("should encode the payment ID in the path", async () => {
+      (apiClient.post as jest.Mock).mockResolvedValueOnce(undefined);
+
+      await sendReceipt("pay/../123", "lea@example.com");
+
+      expect(apiClient.post).toHaveBeenCalledWith(
+        "/merchants/payments/pay%2F..%2F123/receipt",
+        expect.any(Object),
+        expect.any(Object),
+      );
+    });
+
+    it("should simulate the send for Test Mode payments", async () => {
+      jest.useFakeTimers();
+      const promise = sendReceipt("test_123", "lea@example.com");
+      await jest.advanceTimersByTimeAsync(1000);
+      await expect(promise).resolves.toBeUndefined();
+      jest.useRealTimers();
+
+      expect(apiClient.post).not.toHaveBeenCalled();
+    });
+
+    it("should throw error when paymentId is empty", async () => {
+      await expect(sendReceipt("", "lea@example.com")).rejects.toThrow(
+        "paymentId is required",
+      );
+    });
+
+    it("should handle API errors", async () => {
+      (apiClient.post as jest.Mock).mockRejectedValueOnce(
+        new Error("Payment not found"),
+      );
+
+      await expect(sendReceipt("pay_404", "lea@example.com")).rejects.toThrow(
+        "Payment not found",
       );
     });
   });

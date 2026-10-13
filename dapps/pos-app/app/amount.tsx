@@ -5,7 +5,10 @@ import { TestModeOverlay } from "@/components/test-mode-pill";
 import { Spacing } from "@/constants/spacing";
 import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
-import { useSettingsStore } from "@/store/useSettingsStore";
+import {
+  selectTestModeActive,
+  useSettingsStore,
+} from "@/store/useSettingsStore";
 import {
   exceedsU64Max,
   formatAmountWithSymbol,
@@ -38,7 +41,7 @@ const formatAmount = (amount: string) => {
 
 export default function AmountScreen() {
   const Theme = useTheme();
-  const testMode = useSettingsStore((state) => state.testMode);
+  const testMode = useSettingsStore(selectTestModeActive);
   const isTestPayment = testMode;
   const isTablet = useIsTablet();
   const currencyCode = useSettingsStore((state) => state.currency);

@@ -11,6 +11,11 @@ if (!API_BASE_URL) {
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
   timeout?: number;
+  /**
+   * Keep the request and response bodies out of the persisted logs, for
+   * requests that carry personal data (e.g. a customer's email).
+   */
+  redactLogBodies?: boolean;
 }
 
 const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds
@@ -26,7 +31,11 @@ class ApiClient {
     endpoint: string,
     options: RequestOptions = {},
   ): Promise<T> {
-    const { body, headers, timeout, ...fetchOptions } = options;
+    const { body, headers, timeout, redactLogBodies, ...fetchOptions } =
+      options;
+    const loggedBody = redactLogBodies ? "[redacted]" : body;
+    const logResponse = (response: unknown) =>
+      redactLogBodies ? "[redacted]" : response;
 
     // Normalize URL construction: remove trailing slash from baseUrl and ensure endpoint starts with /
     const normalizedBaseUrl = this.baseUrl.replace(/\/+$/, "");
@@ -71,7 +80,7 @@ class ApiClient {
         throw error;
       }
 
-      const data = await response.json();
+      const data = await this.parseSuccessResponse(response);
       useLogsStore
         .getState()
         .addLog(
@@ -82,8 +91,8 @@ class ApiClient {
           {
             method,
             endpoint,
-            body,
-            response: data,
+            body: loggedBody,
+            response: logResponse(data),
           },
         );
       return data as T;
@@ -101,22 +110,28 @@ class ApiClient {
           .addLog("error", timeoutError.message, "api", "request", {
             method,
             endpoint,
-            body,
+            body: loggedBody,
           });
         throw timeoutError;
       }
 
       if (error && typeof error === "object" && "status" in error) {
         const apiError = error as ApiError;
-        useLogsStore
-          .getState()
-          .addLog(
-            "error",
-            apiError.message || "API request failed",
-            "api",
-            "request",
-            { method, endpoint, body, response: error },
-          );
+        useLogsStore.getState().addLog(
+          "error",
+          // Server messages can echo the request (e.g. an invalid email).
+          redactLogBodies
+            ? `API request failed (${apiError.status})`
+            : apiError.message || "API request failed",
+          "api",
+          "request",
+          {
+            method,
+            endpoint,
+            body: loggedBody,
+            response: logResponse(error),
+          },
+        );
         throw error;
       }
       const errorMessage =
@@ -128,6 +143,26 @@ class ApiClient {
         message: errorMessage,
       };
       throw apiError;
+    }
+  }
+
+  // Some endpoints answer 204 or an empty 200; treat both as no body rather
+  // than failing a request that already succeeded. A body that isn't JSON
+  // (e.g. a gateway HTML page sent with 200) becomes an ApiError that keeps
+  // the status, instead of a bare SyntaxError.
+  private async parseSuccessResponse(response: Response): Promise<unknown> {
+    if (response.status === 204) return undefined;
+    const text = await response.text();
+    if (!text) return undefined;
+    try {
+      return JSON.parse(text);
+    } catch {
+      const error: ApiError = {
+        message: `Invalid JSON response (status ${response.status})`,
+        code: "INVALID_RESPONSE",
+        status: response.status,
+      };
+      throw error;
     }
   }
 
@@ -167,10 +202,6 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);
-
-const MERCHANT_API_BASE_URL =
-  process.env.EXPO_PUBLIC_MERCHANT_DEV_API_URL || API_BASE_URL;
-export const merchantApiClient = new ApiClient(MERCHANT_API_BASE_URL);
 
 /**
  * Get API headers for authenticated requests

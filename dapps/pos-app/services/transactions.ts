@@ -1,6 +1,9 @@
 import { TransactionsResponse } from "@/utils/types";
-import { useSettingsStore } from "@/store/useSettingsStore";
-import { merchantApiClient, getApiHeaders } from "./client";
+import {
+  selectTestModeActive,
+  useSettingsStore,
+} from "@/store/useSettingsStore";
+import { apiClient, getApiHeaders } from "./client";
 import { getTestTransactions } from "./test-transactions";
 
 export interface GetTransactionsOptions {
@@ -21,7 +24,7 @@ export interface GetTransactionsOptions {
 export async function getTransactions(
   options: GetTransactionsOptions = {},
 ): Promise<TransactionsResponse> {
-  if (useSettingsStore.getState().testMode) {
+  if (selectTestModeActive(useSettingsStore.getState())) {
     return getTestTransactions(options);
   }
 
@@ -65,7 +68,7 @@ export async function getTransactions(
   const queryString = params.toString();
   const endpoint = `/merchants/payments${queryString ? `?${queryString}` : ""}`;
 
-  return merchantApiClient.get<TransactionsResponse>(endpoint, {
+  return apiClient.get<TransactionsResponse>(endpoint, {
     headers,
   });
 }
