@@ -6,6 +6,9 @@ tags:
 - launchApp:
     clearState: true
 
+# Fresh installs default to Test Mode; this flow needs the real gateway.
+- runFlow: common/disable-test-mode.yaml
+
 # Start a $0.01 sale and wait for the gateway QR (see the subflow for the
 # merchant-credential requirements).
 - runFlow: common/create-payment-qr.yaml
