@@ -5,13 +5,15 @@ interface Props {
   style?: StyleProp<ViewStyle>;
   value: boolean;
   onValueChange: (value: boolean) => void;
+  testID?: string;
 }
 
-export function Switch({ style, value, onValueChange }: Props) {
+export function Switch({ style, value, onValueChange, testID }: Props) {
   const Theme = useTheme();
 
   return (
     <RNSwitch
+      testID={testID}
       style={style}
       value={value}
       onValueChange={onValueChange}

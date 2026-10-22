@@ -54,6 +54,7 @@ export function SettingsToggleItem({
         value={value}
         onValueChange={onValueChange}
         style={styles.switch}
+        testID={testID ? `${testID}-switch` : undefined}
       />
     </View>
   );

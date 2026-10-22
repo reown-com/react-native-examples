@@ -1,0 +1,23 @@
+# Subflow (not run standalone — lives under common/ so the CI *.yaml glob and
+# `maestro test e2e/` skip it): fresh installs start in Test Mode, which
+# simulates payments locally instead of calling the gateway. Payment flows run
+# this right after `launchApp: clearState: true` to switch it off in Settings,
+# then relaunch (keeping state) so they start from Home in live mode.
+#
+# Maestro requires every flow file (incl. runFlow subflows) to open with a
+# config section; the url is inherited from the calling flow at runtime.
+url: ${APP_URL}
+---
+- tapOn:
+    id: "settings-button"
+
+- scrollUntilVisible:
+    element:
+      id: "settings-test-mode-toggle-switch"
+
+- tapOn:
+    id: "settings-test-mode-toggle-switch"
+
+# Relaunch without clearing state: the setting is persisted, so this returns
+# to Home with Test Mode off.
+- launchApp
