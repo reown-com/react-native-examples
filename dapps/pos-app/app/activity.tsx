@@ -15,9 +15,11 @@ import {
   useSettingsStore,
 } from "@/store/useSettingsStore";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
+import { isInvalidApiKeyError } from "@/utils/payment-errors";
 import {
   getMerchantIdForSession,
   isTerminalConfigured,
+  shouldRouteInvalidApiKeyToSettings,
 } from "@/utils/pos-bridge-ui";
 import {
   DateRangeFilterType,
@@ -141,16 +143,25 @@ export default function ActivityScreen() {
   const hasLoadedData = transactionData !== undefined;
   const errorMessage = error?.message;
   const isInitialLoadError = isError && !hasLoadedData;
+  const isInvalidApiKey = isError && isInvalidApiKeyError(error);
+  // Bridge credentials belong to the dashboard, so only direct POS credentials
+  // can be fixed from Settings.
+  const canFixApiKeyInSettings = shouldRouteInvalidApiKeyToSettings(
+    isInvalidApiKey,
+    isIframeSession && isBridgeConfigured,
+  );
 
   // An initial failure replaces the list with an error state. If data is
   // already visible, retain it and give the merchant lightweight feedback.
   useEffect(() => {
     if (isError && errorMessage && hasLoadedData) {
       showErrorToast(
-        "We couldn't refresh payments. Check your internet connection and try again.",
+        isInvalidApiKey
+          ? "We couldn't refresh payments. The API key is incorrect."
+          : "We couldn't refresh payments. Check your internet connection and try again.",
       );
     }
-  }, [isError, errorMessage, hasLoadedData]);
+  }, [isError, errorMessage, hasLoadedData, isInvalidApiKey]);
 
   const closeSheet = useCallback(() => {
     setActiveSheet(null);
@@ -228,6 +239,27 @@ export default function ActivityScreen() {
       );
     }
 
+    if (isInitialLoadError && isInvalidApiKey) {
+      return (
+        <EmptyState
+          title="Incorrect API key"
+          subtitle={
+            canFixApiKeyInSettings
+              ? "Check the merchant ID and customer API key in Settings."
+              : "Check that the merchant ID and customer API key are correct."
+          }
+          cta={
+            canFixApiKeyInSettings
+              ? {
+                  label: "Go to Settings",
+                  onPress: () => router.push("/settings"),
+                }
+              : { label: "Try again", onPress: () => void refetch() }
+          }
+        />
+      );
+    }
+
     if (isInitialLoadError) {
       return (
         <EmptyState
@@ -262,6 +294,8 @@ export default function ActivityScreen() {
     isLoading,
     needsSetup,
     isInitialLoadError,
+    isInvalidApiKey,
+    canFixApiKeyInSettings,
     theme,
     filtersActive,
     handleClearFilters,

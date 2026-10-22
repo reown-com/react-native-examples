@@ -90,12 +90,6 @@ export async function getTransactions(
     },
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message || `Failed to fetch transactions: ${response.status}`,
-    );
-  }
-
+  // Keeps the HTTP status and API error code (e.g. invalid_api_key) on failure.
   return readProxyResponse<TransactionsResponse>(response);
 }

@@ -5,6 +5,7 @@ import React from "react";
 import ActivityScreen from "@/app/activity";
 import { useTransactions } from "@/services/hooks";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { showErrorToast } from "@/utils/toast";
 
 import { resetSettingsStore } from "../utils/store-helpers";
 
@@ -38,6 +39,8 @@ jest.mock("react-native", () => {
         : null,
   };
 });
+
+jest.mock("@/utils/toast", () => ({ showErrorToast: jest.fn() }));
 
 jest.mock("@/services/hooks", () => ({
   useTransactions: jest.fn(),
@@ -166,6 +169,56 @@ describe("ActivityScreen", () => {
 
     fireEvent.press(getByText("Try again"));
     expect(refetch).toHaveBeenCalled();
+  });
+
+  describe("when the API rejects the credentials", () => {
+    const invalidApiKey = {
+      message: "Invalid API key",
+      code: "invalid_api_key",
+      status: 401,
+    };
+
+    beforeEach(() => {
+      useSettingsStore.setState({
+        testMode: false,
+        merchantId: "merchant-1",
+        isCustomerApiKeySet: true,
+      });
+    });
+
+    it("says the API key is incorrect and links to Settings", () => {
+      mockTransactionsResult({ isError: true, error: invalidApiKey });
+      const { getByText, queryByText } = render(<ActivityScreen />);
+
+      expect(getByText("Incorrect API key")).toBeTruthy();
+      expect(queryByText("We couldn't load payments")).toBeNull();
+
+      fireEvent.press(getByText("Go to Settings"));
+      expect(router.push).toHaveBeenCalledWith("/settings");
+    });
+
+    it("treats a bare 401 as an incorrect API key", () => {
+      mockTransactionsResult({
+        isError: true,
+        error: { message: "Unauthorized", status: 401 },
+      });
+      const { getByText } = render(<ActivityScreen />);
+
+      expect(getByText("Incorrect API key")).toBeTruthy();
+    });
+
+    it("mentions the API key when a refresh is rejected", () => {
+      mockTransactionsResult({
+        isError: true,
+        error: invalidApiKey,
+        data: { pages: [] },
+      });
+      render(<ActivityScreen />);
+
+      expect(showErrorToast).toHaveBeenCalledWith(
+        "We couldn't refresh payments. The API key is incorrect.",
+      );
+    });
   });
 
   it("does not ask for setup in Test Mode", () => {

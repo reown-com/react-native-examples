@@ -1,8 +1,28 @@
 import {
   AMOUNT_TOO_LOW,
   getPaymentErrorMessage,
+  isInvalidApiKeyError,
   parseMinAmountCents,
 } from "./payment-errors";
+
+describe("isInvalidApiKeyError", () => {
+  it.each([
+    [{ message: "Invalid API key", code: "invalid_api_key", status: 401 }],
+    [{ message: "Invalid API key", code: "invalid_api_key" }],
+    [{ message: "Unauthorized", status: 401 }],
+  ])("detects rejected credentials: %j", (error) => {
+    expect(isInvalidApiKeyError(error)).toBe(true);
+  });
+
+  it.each([
+    [{ message: "Not found", code: "not_found", status: 404 }],
+    [{ message: "HTTP error! status: 502", status: 502 }],
+    [new Error("Network request failed")],
+    [undefined],
+  ])("ignores other failures: %j", (error) => {
+    expect(isInvalidApiKeyError(error)).toBe(false);
+  });
+});
 
 describe("parseMinAmountCents", () => {
   it("extracts the minimum in cents from the API validation message", () => {
@@ -74,8 +94,8 @@ describe("getPaymentErrorMessage", () => {
 
     it('returns invalid API key message for "invalid_api_key" status', () => {
       const result = getPaymentErrorMessage("invalid_api_key");
-      expect(result.title).toBe("This terminal can't take payments");
-      expect(result.subtitle).toContain("lost access");
+      expect(result.title).toBe("Incorrect API key");
+      expect(result.subtitle).toContain("customer API key");
     });
 
     it('returns cancelled message for "cancelled" status', () => {
