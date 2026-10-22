@@ -125,9 +125,11 @@ inputs:
     default: ''
   expired-gateway-url:
     description: |
-      Pre-expired payment gateway URL used by pay_expired_link.yaml. When unset,
-      the flow falls back to a hardcoded prod-expired link. Local pay-core CI
-      should seed an expired payment and pass its gateway URL here.
+      Pre-expired payment gateway URL used by pay_expired_link.yaml. When unset
+      (and pay-api-url is prod), one is taken from a pool of payments earlier
+      runs created (scripts/expired-payment.sh); with an empty pool the flow
+      falls back to its hardcoded link. Local pay-core CI should seed an
+      expired payment and pass its gateway URL here.
     required: false
     default: ''
   build-cache-passphrase:
@@ -775,6 +777,37 @@ runs:
         # runs; bump deliberately (the installer's default is latest).
         version: '2.10.0'
 
+    # pay_expired_link needs a payment that has already expired (15 min after
+    # creation). Each prod run takes one an earlier run created and seeds a new
+    # one; see scripts/expired-payment.sh. Skipped when the caller passes its
+    # own expired-gateway-url or targets a non-prod pay-api-url.
+    - name: Restore expired-payment pool
+      if: inputs.expired-gateway-url == '' && inputs.pay-api-url == '' && inputs.merchant-api-key-single-nokyc != ''
+      continue-on-error: true
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ runner.temp }}/pay-expired-pool/pool.tsv
+        key: pay-expired-pool-${{ inputs.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: pay-expired-pool-
+
+    - name: Pick and seed expired payment
+      id: expired-payment
+      if: inputs.expired-gateway-url == '' && inputs.pay-api-url == '' && inputs.merchant-api-key-single-nokyc != ''
+      continue-on-error: true
+      shell: bash
+      env:
+        WPAY_CUSTOMER_KEY: ${{ inputs.merchant-api-key-single-nokyc }}
+        WPAY_MERCHANT_ID: ${{ inputs.merchant-id-single-nokyc }}
+      run: bash "$GITHUB_ACTION_PATH/scripts/expired-payment.sh" "$RUNNER_TEMP/pay-expired-pool/pool.tsv"
+
+    - name: Save expired-payment pool
+      if: steps.expired-payment.outcome == 'success'
+      continue-on-error: true
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ runner.temp }}/pay-expired-pool/pool.tsv
+        key: pay-expired-pool-${{ inputs.platform }}-${{ github.run_id }}-${{ github.run_attempt }}
+
     - name: Run Maestro tests (iOS)
       if: inputs.platform == 'ios'
       id: maestro-ios
@@ -793,7 +826,7 @@ runs:
         WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
         WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
         WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
-        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url || steps.expired-payment.outputs.url }}
       run: |
         IFS=, read -ra IDS <<< "$DEVICE_IDS"
         mkdir -p maestro-artifacts
@@ -909,7 +942,7 @@ runs:
         WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
         WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
         WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
-        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url || steps.expired-payment.outputs.url }}
       with:
         api-level: 34
         arch: x86_64
@@ -979,7 +1012,7 @@ runs:
         WPAY_CUSTOMER_KEY_MULTI_KYC: ${{ inputs.merchant-api-key-multi-kyc }}
         WPAY_MERCHANT_ID_MULTI_KYC: ${{ inputs.merchant-id-multi-kyc }}
         WPAY_PAY_API_URL: ${{ inputs.pay-api-url }}
-        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url }}
+        WPAY_EXPIRED_GATEWAY_URL: ${{ inputs.expired-gateway-url || steps.expired-payment.outputs.url }}
       run: |
         # Rewrite the shared flows for web: appId:->url: (Maestro targets the
         # browser via the URL), strip start/stopRecording (unsupported on web),
