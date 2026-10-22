@@ -2,6 +2,8 @@ name: 🧪 POS - E2E Tests
 
 permissions:
   contents: read
+  # Read Vercel's deployment statuses to wait for this commit's preview.
+  deployments: read
 
 on:
   # Run on the PR. We don't build in CI — Vercel builds the POS preview (project
@@ -78,12 +80,40 @@ jobs:
       - name: Install xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
 
+      - name: Wait for the Vercel deployment of this commit
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -uo pipefail
+          # The branch alias keeps serving the previous deployment (or a
+          # "Deployment is building" page, with a 200) until this push is ready,
+          # so a plain reachability check can test stale code. Wait for Vercel's
+          # pos-demo deployment of the PR head commit to report success instead.
+          env_name="Preview – pos-demo"
+          for i in $(seq 1 90); do
+            state=""
+            id="$(gh api "repos/$REPO/deployments?sha=$HEAD_SHA" \
+              --jq "[.[] | select(.environment == \"$env_name\")][0].id // empty")"
+            if [ -n "$id" ]; then
+              state="$(gh api "repos/$REPO/deployments/$id/statuses" --jq '.[0].state // empty')"
+              case "$state" in
+                success) echo "Deployment $id for $HEAD_SHA is ready"; exit 0 ;;
+                failure|error) echo "Vercel deployment $id for $HEAD_SHA ended in '$state'"; exit 1 ;;
+              esac
+            fi
+            echo "  ...waiting for $env_name deployment of $HEAD_SHA (${state:-not created}) ($i/90)"
+            sleep 10
+          done
+          echo "No successful $env_name deployment for $HEAD_SHA after ~15m"; exit 1
+
       - name: Wait for preview to be reachable
         env:
           APP_URL: ${{ steps.target.outputs.app_url }}
         run: |
-          # The branch alias serves the latest ready deployment for the branch;
-          # give Vercel time to finish building this push.
+          # The branch alias serves the latest ready deployment for the branch.
           for i in $(seq 1 60); do
             curl -fsS -o /dev/null "$APP_URL" && { echo "Preview reachable"; exit 0; }
             echo "  ...waiting for preview ($i/60)"; sleep 10
