@@ -1,6 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+// `/merchants/*` routes (payment list, receipts) can live on a different host
+// than payment creation, e.g. on staging. Falls back to the main API.
+const MERCHANT_API_BASE_URL =
+  process.env.EXPO_PUBLIC_MERCHANT_DEV_API_URL || API_BASE_URL;
 
 /**
  * Extract and validate merchant credentials from a proxied request.
@@ -34,6 +38,20 @@ export function getApiBaseUrl(res: VercelResponse): string | null {
     return null;
   }
   return API_BASE_URL;
+}
+
+/**
+ * Get the validated base URL for `/merchants/*` routes, or send a 500 error
+ * and return null.
+ */
+export function getMerchantApiBaseUrl(res: VercelResponse): string | null {
+  if (!MERCHANT_API_BASE_URL) {
+    res.status(500).json({
+      message: "API_BASE_URL is not configured",
+    });
+    return null;
+  }
+  return MERCHANT_API_BASE_URL;
 }
 
 /**

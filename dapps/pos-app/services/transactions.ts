@@ -3,7 +3,7 @@ import {
   selectTestModeActive,
   useSettingsStore,
 } from "@/store/useSettingsStore";
-import { apiClient, getApiHeaders } from "./client";
+import { getApiHeaders, merchantApiClient } from "./client";
 import { getTestTransactions } from "./test-transactions";
 
 export interface GetTransactionsOptions {
@@ -68,7 +68,7 @@ export async function getTransactions(
   const queryString = params.toString();
   const endpoint = `/merchants/payments${queryString ? `?${queryString}` : ""}`;
 
-  return apiClient.get<TransactionsResponse>(endpoint, {
+  return merchantApiClient.get<TransactionsResponse>(endpoint, {
     headers,
   });
 }

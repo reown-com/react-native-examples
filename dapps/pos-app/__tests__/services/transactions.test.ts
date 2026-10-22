@@ -1,10 +1,11 @@
 jest.mock("@/services/client", () => ({
   getApiHeaders: jest.fn(async () => ({ "Api-Key": "local-key" })),
   apiClient: { get: jest.fn() },
+  merchantApiClient: { get: jest.fn() },
 }));
 
 import { getTransactions } from "@/services/transactions";
-import { apiClient } from "@/services/client";
+import { apiClient, merchantApiClient } from "@/services/client";
 import { useSettingsStore } from "@/store/useSettingsStore";
 
 describe("native transaction service", () => {
@@ -22,16 +23,17 @@ describe("native transaction service", () => {
       data: [expect.objectContaining({ paymentId: "test_succeeded" })],
       nextCursor: null,
     });
-    expect(apiClient.get).not.toHaveBeenCalled();
+    expect(merchantApiClient.get).not.toHaveBeenCalled();
   });
 
   it("uses the merchant API while Test Mode is disabled", async () => {
-    (apiClient.get as jest.Mock).mockResolvedValueOnce({ data: [] });
+    (merchantApiClient.get as jest.Mock).mockResolvedValueOnce({ data: [] });
 
     await expect(getTransactions()).resolves.toEqual({ data: [] });
-    expect(apiClient.get).toHaveBeenCalledWith(
+    expect(merchantApiClient.get).toHaveBeenCalledWith(
       "/merchants/payments",
       expect.objectContaining({ headers: { "Api-Key": "local-key" } }),
     );
+    expect(apiClient.get).not.toHaveBeenCalled();
   });
 });

@@ -4,7 +4,7 @@ import {
   StartPaymentResponse,
 } from "@/utils/types";
 import * as Sentry from "@sentry/react-native";
-import { apiClient, getApiHeaders } from "./client";
+import { apiClient, getApiHeaders, merchantApiClient } from "./client";
 import { isTestPaymentId, simulateTestReceipt } from "./test-payment";
 
 /**
@@ -83,7 +83,7 @@ export async function sendReceipt(
     { name: "payment.receipt", op: "payment.receipt" },
     async () => {
       const headers = await getApiHeaders();
-      await apiClient.post(
+      await merchantApiClient.post(
         `/merchants/payments/${encodeURIComponent(paymentId)}/receipt`,
         { email },
         { headers, redactLogBodies: true },
