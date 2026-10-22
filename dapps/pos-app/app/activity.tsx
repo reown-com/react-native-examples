@@ -9,10 +9,16 @@ import { Spacing } from "@/constants/spacing";
 import { DATE_RANGE_OPTIONS } from "@/utils/date-range";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useTransactions } from "@/services/hooks";
+import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import {
   selectTestModeActive,
   useSettingsStore,
 } from "@/store/useSettingsStore";
+import { isRunningInIframe } from "@/utils/is-running-in-iframe";
+import {
+  getMerchantIdForSession,
+  isTerminalConfigured,
+} from "@/utils/pos-bridge-ui";
 import {
   DateRangeFilterType,
   PaymentRecord,
@@ -54,6 +60,22 @@ export default function ActivityScreen() {
   const theme = useTheme();
   const testMode = useSettingsStore(selectTestModeActive);
   const isTestPayment = testMode;
+  const merchantId = useSettingsStore((state) => state.merchantId);
+  const isCustomerApiKeySet = useSettingsStore(
+    (state) => state.isCustomerApiKeySet,
+  );
+  const isBridgeConfigured = usePosBridgeStore((state) => state.isConfigured);
+  const bridgeMerchantId = usePosBridgeStore((state) => state.merchantId);
+  const isIframeSession = isRunningInIframe();
+  // Without merchant credentials the payments request can only fail, so point
+  // the merchant at Settings instead of suggesting a network problem.
+  const needsSetup =
+    !testMode &&
+    !isTerminalConfigured(
+      getMerchantIdForSession(isIframeSession, merchantId, bridgeMerchantId),
+      isIframeSession ? false : isCustomerApiKeySet,
+      isIframeSession && isBridgeConfigured,
+    );
   const transactionFilter = useSettingsStore(
     (state) => state.transactionFilter,
   );
@@ -110,6 +132,7 @@ export default function ActivityScreen() {
     hasNextPage,
     isFetchingNextPage,
   } = useTransactions({
+    enabled: !needsSetup,
     filter: transactionFilter,
     dateRangeFilter,
   });
@@ -192,6 +215,19 @@ export default function ActivityScreen() {
       );
     }
 
+    if (needsSetup) {
+      return (
+        <EmptyState
+          title="Set up your merchant details"
+          subtitle="Add your merchant ID and customer API key in Settings to see payments."
+          cta={{
+            label: "Go to Settings",
+            onPress: () => router.push("/settings"),
+          }}
+        />
+      );
+    }
+
     if (isInitialLoadError) {
       return (
         <EmptyState
@@ -224,6 +260,7 @@ export default function ActivityScreen() {
     );
   }, [
     isLoading,
+    needsSetup,
     isInitialLoadError,
     theme,
     filtersActive,
@@ -251,7 +288,7 @@ export default function ActivityScreen() {
     <View style={styles.container}>
       {isTestPayment && <TestModeOverlay />}
       <Sentry.TimeToFullDisplay ready={!isLoading} />
-      {!isInitialLoadError && (
+      {!needsSetup && !isInitialLoadError && (
         <>
           <FilterButtons
             buttons={[
