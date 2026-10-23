@@ -73,6 +73,7 @@ EXPO_PUBLIC_API_URL=""                 # Payment API base URL
 Optional:
 
 ```bash
+EXPO_PUBLIC_MERCHANT_DEV_API_URL=""    # Base URL for /merchants/* (payment list, receipts) when it differs from EXPO_PUBLIC_API_URL; defaults to it
 EXPO_PUBLIC_SENTRY_DSN=""              # Sentry error tracking DSN
 SENTRY_AUTH_TOKEN=""                   # Sentry authentication token for release builds
 EXPO_PUBLIC_DEFAULT_MERCHANT_ID=""     # Default merchant ID (optional)

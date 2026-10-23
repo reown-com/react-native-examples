@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   extractCredentials,
-  getApiBaseUrl,
   getApiHeaders,
+  getMerchantApiBaseUrl,
   readUpstreamResponse,
 } from "./_utils";
 
@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const credentials = extractCredentials(req, res);
     if (!credentials) return;
 
-    const apiBaseUrl = getApiBaseUrl(res);
+    const apiBaseUrl = getMerchantApiBaseUrl(res);
     if (!apiBaseUrl) return;
 
     // Forward query params as-is (already camelCase from client)

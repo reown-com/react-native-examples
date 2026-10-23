@@ -18,15 +18,19 @@ import {
   clearTestMerchant,
 } from "../utils/store-helpers";
 
-import { apiClient } from "@/services/client";
+import { apiClient, merchantApiClient } from "@/services/client";
 
 // Get the mocked secure store
 const SecureStore = require("expo-secure-store");
 
-// Mock only apiClient, keep real getApiHeaders so header logic is tested
+// Mock only the API clients, keep real getApiHeaders so header logic is tested
 jest.mock("@/services/client", () => ({
   ...jest.requireActual("@/services/client"),
   apiClient: {
+    get: jest.fn(),
+    post: jest.fn(),
+  },
+  merchantApiClient: {
     get: jest.fn(),
     post: jest.fn(),
   },
@@ -366,11 +370,11 @@ describe("Payment Service", () => {
     });
 
     it("should post the email to the receipt endpoint", async () => {
-      (apiClient.post as jest.Mock).mockResolvedValueOnce(undefined);
+      (merchantApiClient.post as jest.Mock).mockResolvedValueOnce(undefined);
 
       await sendReceipt("pay_123", "lea@example.com");
 
-      expect(apiClient.post).toHaveBeenCalledWith(
+      expect(merchantApiClient.post).toHaveBeenCalledWith(
         "/merchants/payments/pay_123/receipt",
         { email: "lea@example.com" },
         expect.objectContaining({
@@ -383,11 +387,11 @@ describe("Payment Service", () => {
     });
 
     it("should encode the payment ID in the path", async () => {
-      (apiClient.post as jest.Mock).mockResolvedValueOnce(undefined);
+      (merchantApiClient.post as jest.Mock).mockResolvedValueOnce(undefined);
 
       await sendReceipt("pay/../123", "lea@example.com");
 
-      expect(apiClient.post).toHaveBeenCalledWith(
+      expect(merchantApiClient.post).toHaveBeenCalledWith(
         "/merchants/payments/pay%2F..%2F123/receipt",
         expect.any(Object),
         expect.any(Object),
@@ -401,7 +405,7 @@ describe("Payment Service", () => {
       await expect(promise).resolves.toBeUndefined();
       jest.useRealTimers();
 
-      expect(apiClient.post).not.toHaveBeenCalled();
+      expect(merchantApiClient.post).not.toHaveBeenCalled();
     });
 
     it("should throw error when paymentId is empty", async () => {
@@ -411,7 +415,7 @@ describe("Payment Service", () => {
     });
 
     it("should handle API errors", async () => {
-      (apiClient.post as jest.Mock).mockRejectedValueOnce(
+      (merchantApiClient.post as jest.Mock).mockRejectedValueOnce(
         new Error("Payment not found"),
       );
 

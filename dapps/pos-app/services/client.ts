@@ -203,6 +203,12 @@ class ApiClient {
 
 export const apiClient = new ApiClient(API_BASE_URL);
 
+// `/merchants/*` routes (payment list, receipts) can live on a different host
+// than payment creation, e.g. on staging. Falls back to the main API.
+export const merchantApiClient = new ApiClient(
+  process.env.EXPO_PUBLIC_MERCHANT_DEV_API_URL || API_BASE_URL,
+);
+
 /**
  * Get API headers for authenticated requests
  * @returns Headers object with Api-Key, Merchant-Id, and SDK headers
