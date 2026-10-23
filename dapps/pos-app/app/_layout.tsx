@@ -201,6 +201,7 @@ export default Sentry.wrap(function RootLayout() {
                 options={{ animationTypeForReplace: "pop" }}
               />
               <Stack.Screen name="scan" />
+              <Stack.Screen name="merchant-setup" />
               <Stack.Screen
                 name="payment-failure"
                 options={{
