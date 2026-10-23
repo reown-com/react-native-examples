@@ -232,6 +232,22 @@ describe("web services with the POS bridge", () => {
     );
   });
 
+  it("keeps the status and code when the transactions proxy rejects the API key", async () => {
+    await setupTestMerchant("merchant-direct", "local-key");
+    (global.fetch as jest.Mock).mockResolvedValueOnce(
+      proxyResponse(401, {
+        message: "Invalid API key",
+        code: "invalid_api_key",
+      }),
+    );
+
+    await expect(getTransactions({ limit: 20 })).rejects.toEqual({
+      message: "Invalid API key",
+      code: "invalid_api_key",
+      status: 401,
+    });
+  });
+
   it("uses local test transactions instead of the proxy in standalone Test Mode", async () => {
     useSettingsStore.setState({ testMode: true });
 

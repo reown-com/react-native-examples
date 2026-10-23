@@ -21,9 +21,9 @@ const ERROR_MESSAGES: Record<string, PaymentErrorMessage> = {
     subtitle: "No funds were moved.",
   },
   invalid_api_key: {
-    title: "This terminal can't take payments",
+    title: "Incorrect API key",
     subtitle:
-      "No funds were moved. This terminal has lost access and needs attention before it can take payments.",
+      "No funds were moved. Check that the merchant ID and customer API key are correct.",
   },
   params_validation: {
     title: "This payment didn't go through",
@@ -37,6 +37,16 @@ export const AMOUNT_TOO_LOW = "amount_too_low";
 
 /** API error code: the terminal's API key is invalid or has lost access. */
 export const INVALID_API_KEY = "invalid_api_key";
+
+/**
+ * Whether an API or bridge error means the credentials were rejected: the
+ * `invalid_api_key` code, or a bare 401 from a gateway that didn't send one.
+ */
+export function isInvalidApiKeyError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const { code, status } = error as { code?: unknown; status?: unknown };
+  return code === INVALID_API_KEY || status === 401;
+}
 
 // "Validation error: Amount must be at least 14 to cover fees" (14 = cents)
 const MIN_AMOUNT_PATTERN = /amount must be at least\s+(\d+)/i;

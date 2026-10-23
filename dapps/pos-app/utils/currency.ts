@@ -106,6 +106,47 @@ export function formatFiatAmount(amount?: string, currency?: string): string {
   return formatAmountWithSymbol(formattedValue, currencyData);
 }
 
-// Same formatter as the payment page and the receipt email, so a token amount
-// reads the same everywhere: 2-6 decimals, "≈" only when digits were cut.
-export { formatTokenAmount } from "@walletconnect/pay-core";
+const MAX_TOKEN_DECIMALS = 6;
+
+/**
+ * Format a raw token amount (base units) for display. Same output as
+ * `formatTokenAmount` from @walletconnect/pay-core, which the payment page and
+ * the receipt email use, so a token amount reads the same everywhere: 2-6
+ * decimals, "≈" only when digits were cut.
+ *
+ * Not re-exported from pay-core because it reads the decimal separator with
+ * `Intl.NumberFormat#formatToParts`, which Hermes doesn't implement on iOS
+ * (`llvm_unreachable`) — calling it crashes the app.
+ * @param value - Raw amount in base units (e.g., "1500000")
+ * @param decimals - Token decimals (e.g., 6 for USDC)
+ */
+export function formatTokenAmount(value: string, decimals: number): string {
+  if (!/^\d+$/.test(value) || !decimals) return value;
+
+  const raw = BigInt(value);
+  const divisor = BigInt(10) ** BigInt(decimals);
+  const wholePart = raw / divisor;
+  const fractional = (raw % divisor)
+    .toString()
+    .padStart(decimals, "0")
+    .replace(/0+$/, "")
+    .padEnd(2, "0");
+  const wasCapped = fractional.length > MAX_TOKEN_DECIMALS;
+  const capped = fractional
+    .slice(0, MAX_TOKEN_DECIMALS)
+    .replace(/0+$/, "")
+    .padEnd(2, "0");
+
+  if (wasCapped && /^0+$/.test(capped)) return "<0.000001";
+
+  const formatted = `${wholePart.toLocaleString()}${getDecimalSeparator()}${capped}`;
+  return wasCapped ? `≈${formatted}` : formatted;
+}
+
+let decimalSeparator: string | undefined;
+
+/** The device locale's decimal separator, read without `formatToParts`. */
+function getDecimalSeparator(): string {
+  decimalSeparator ??= (1.5).toLocaleString().replace(/\d/g, "") || ".";
+  return decimalSeparator;
+}

@@ -28,7 +28,12 @@ import { formatCountdown, formatCountdownSpoken } from "@/utils/misc";
 import { resetNavigation } from "@/utils/navigation";
 import { isNfcHceEnabled } from "@/utils/feature-flags";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
-import { AMOUNT_TOO_LOW, parseMinAmountCents } from "@/utils/payment-errors";
+import {
+  AMOUNT_TOO_LOW,
+  INVALID_API_KEY,
+  isInvalidApiKeyError,
+  parseMinAmountCents,
+} from "@/utils/payment-errors";
 import { getMerchantIdForSession } from "@/utils/pos-bridge-ui";
 import { buildPaymentSuccessParams } from "@/utils/payment-success-params";
 import { PaymentStatusResponse } from "@/utils/types";
@@ -252,7 +257,7 @@ export default function ScanScreen() {
         if (minAmountCents) {
           onFailure(AMOUNT_TOO_LOW, minAmountCents);
         } else {
-          onFailure(error.code);
+          onFailure(isInvalidApiKeyError(error) ? INVALID_API_KEY : error.code);
         }
       }
     }
