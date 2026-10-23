@@ -54,5 +54,10 @@ describe("proxy base URLs", () => {
 
     expect(utils.getMerchantApiBaseUrl(res)).toBeNull();
     expect(res.status).toHaveBeenCalledWith(500);
+    // Names both variables so the misconfiguration is clear from the logs.
+    expect(res.json).toHaveBeenCalledWith({
+      message:
+        "Merchant API base URL is not configured (set EXPO_PUBLIC_MERCHANT_DEV_API_URL or EXPO_PUBLIC_API_URL)",
+    });
   });
 });

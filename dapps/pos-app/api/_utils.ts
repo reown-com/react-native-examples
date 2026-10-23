@@ -47,7 +47,8 @@ export function getApiBaseUrl(res: VercelResponse): string | null {
 export function getMerchantApiBaseUrl(res: VercelResponse): string | null {
   if (!MERCHANT_API_BASE_URL) {
     res.status(500).json({
-      message: "API_BASE_URL is not configured",
+      message:
+        "Merchant API base URL is not configured (set EXPO_PUBLIC_MERCHANT_DEV_API_URL or EXPO_PUBLIC_API_URL)",
     });
     return null;
   }
