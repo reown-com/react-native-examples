@@ -13,7 +13,6 @@ import {
   getMerchantIdForSession,
   isTerminalConfigured,
 } from "@/utils/pos-bridge-ui";
-import { showErrorToast } from "@/utils/toast";
 import { useAssets } from "expo-asset";
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -63,8 +62,7 @@ export default function HomeScreen() {
         isIframeSession && isBridgeConfigured,
       )
     ) {
-      router.push("/settings");
-      showErrorToast("Finish setup in Settings before starting a payment.");
+      router.push("/merchant-setup");
       return;
     }
 
