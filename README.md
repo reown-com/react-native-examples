@@ -18,7 +18,6 @@ A collection of React Native example apps showcasing [Reown](https://reown.com) 
 ### POS Apps
 
 - Point of Sale App: `dapps/pos-app`
-- PoC Point of Sale App (legacy): `dapps/poc-pos-app`
 
 
 ## Getting Started
