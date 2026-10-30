@@ -146,18 +146,12 @@ inputs:
       trusted main-branch runs; other runs restore read-only.
     required: false
     default: 'false'
-  ios-slim-simulator:
-    description: |
-      'true' to slim the iOS simulator with simslim before its first boot:
-      ~140 background daemons disabled, ~4 GB less memory (profile:
-      simslim-ci.json).
-    required: false
-    default: 'false'
   ios-simulators:
     description: |
       Number of iOS simulators to split the Maestro suite across
-      (`maestro test --shard-split`). Slim simulators peak at ~2.3 GB each,
-      stock ones at ~5.5 GB.
+      (`maestro test --shard-split`). Each is slimmed with simslim before its
+      first boot (~140 background daemons disabled, profile: simslim-ci.json)
+      and peaks at ~2.3 GB (a stock one peaks at ~5.5 GB).
     required: false
     default: '1'
 
@@ -644,38 +638,25 @@ runs:
       if: inputs.platform == 'ios'
       shell: bash
       env:
-        SLIM: ${{ inputs.ios-slim-simulator }}
         # Pinned release + checksum: simslim is young and ships often.
         SIMSLIM_VERSION: '0.11.0'
         SIMSLIM_SHA256: d7ae4d0c834dfea9911f113cf60e98c25ee61f2a3a85ca22d0c28c43b39ccfaf
       run: |
-        # Installed on every iOS run so `simslim measure` can report a stock
-        # simulator's memory too; only fatal when slimming was requested.
-        set -uo pipefail
+        set -euo pipefail
         DIR="$RUNNER_TEMP/simslim"
-        install_simslim() {
-          mkdir -p "$DIR" &&
-            curl -fsSL --retry 5 --retry-all-errors --retry-delay 3 \
-              --connect-timeout 20 --max-time 300 -o "$DIR/simslim.tar.gz" \
-              "https://github.com/MobAI-App/simslim/releases/download/v${SIMSLIM_VERSION}/simslim-v${SIMSLIM_VERSION}-macos-arm64.tar.gz" &&
-            echo "$SIMSLIM_SHA256  $DIR/simslim.tar.gz" | shasum -a 256 -c - &&
-            tar -xzf "$DIR/simslim.tar.gz" -C "$DIR" simslim
-        }
-        if install_simslim; then
-          echo "$DIR" >> "$GITHUB_PATH"
-          "$DIR/simslim" --version
-        elif [ "$SLIM" = "true" ]; then
-          echo "::error::Could not install simslim v$SIMSLIM_VERSION"
-          exit 1
-        else
-          echo "::warning::Could not install simslim v$SIMSLIM_VERSION; skipping memory measurement"
-        fi
+        mkdir -p "$DIR"
+        curl -fsSL --retry 5 --retry-all-errors --retry-delay 3 \
+          --connect-timeout 20 --max-time 300 -o "$DIR/simslim.tar.gz" \
+          "https://github.com/MobAI-App/simslim/releases/download/v${SIMSLIM_VERSION}/simslim-v${SIMSLIM_VERSION}-macos-arm64.tar.gz"
+        echo "$SIMSLIM_SHA256  $DIR/simslim.tar.gz" | shasum -a 256 -c -
+        tar -xzf "$DIR/simslim.tar.gz" -C "$DIR" simslim
+        echo "$DIR" >> "$GITHUB_PATH"
+        "$DIR/simslim" --version
 
     - name: Boot iOS Simulator
       if: inputs.platform == 'ios'
       shell: bash
       env:
-        SLIM: ${{ inputs.ios-slim-simulator }}
         SIMULATORS: ${{ inputs.ios-simulators }}
         # A first boot can be slow on a loaded runner (10m default).
         SIMSLIM_BOOT_TIMEOUT: 15m
@@ -720,18 +701,14 @@ runs:
         fi
         echo "Using simulator device type: ${DEVICE_TYPE:-<fallback>}, ids: ${DEVICE_IDS[*]}"
         SIMSLIM_PROFILE="$GITHUB_ACTION_PATH/simslim-ci.json"
-        # Boot (or slim) all devices in parallel.
+        # Slim and boot all devices in parallel. simslim writes the disable
+        # overrides while the device is still off, then boots it slim (no extra
+        # reboot on a fresh device). Fails on drift rather than silently testing
+        # on a stock simulator.
         PIDS=()
         for ID in "${DEVICE_IDS[@]}"; do
-          if [ "$SLIM" = "true" ]; then
-            # Writes the disable overrides while the device is still off, then
-            # boots it slim (no extra reboot on a fresh device). Fails on drift
-            # rather than silently testing on a stock simulator.
-            ( simslim on "$ID" --profile "$SIMSLIM_PROFILE" &&
-                simslim verify "$ID" --profile "$SIMSLIM_PROFILE" ) &
-          else
-            ( xcrun simctl boot "$ID" || true ) &
-          fi
+          ( simslim on "$ID" --profile "$SIMSLIM_PROFILE" &&
+              simslim verify "$ID" --profile "$SIMSLIM_PROFILE" ) &
           PIDS+=($!)
         done
         for PID in "${PIDS[@]}"; do wait "$PID"; done
@@ -832,23 +809,6 @@ runs:
         mkdir -p maestro-artifacts/maestro-debug
         find "${RUNNER_TEMP}/maestro-debug" -type f \( -name '*.png' -o -name '*.jpg' \) -exec cp {} maestro-artifacts/maestro-debug/ \; 2>/dev/null || true
         exit "$maestro_exit_code"
-
-    - name: Measure iOS simulator (after tests)
-      if: ${{ !cancelled() && inputs.platform == 'ios' && env.DEVICE_IDS != '' }}
-      shell: bash
-      env:
-        MODE: ${{ inputs.ios-slim-simulator == 'true' && 'slim' || 'stock' }}
-      run: |
-        command -v simslim >/dev/null || exit 0
-        # Measured after the suite: the peak is what decides how many simulators
-        # fit on a runner (slim ~2.3 GB, stock ~5.5 GB).
-        HOST="$(sysctl -n hw.ncpu) cores, $(( $(sysctl -n hw.memsize) / 1073741824 )) GB RAM"
-        IFS=, read -ra IDS <<< "$DEVICE_IDS"
-        for i in "${!IDS[@]}"; do
-          OUT=$(simslim measure "${IDS[$i]}" 2>&1) || { echo "::warning::simslim measure failed: $OUT"; continue; }
-          echo "$OUT"
-          echo "iOS simulator $((i + 1))/${#IDS[@]} ($MODE, $HOST host), after tests: ${OUT#*: }" >> "$GITHUB_STEP_SUMMARY"
-        done
 
     - name: Upload Maestro artifacts (iOS)
       # !cancelled() not always(): runs on success/failure, skipped on cancel.

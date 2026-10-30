@@ -133,8 +133,7 @@ jobs:
           platform: ios
           # Two slim simulators (~2.3 GB each at peak) share the suite. On the
           # 5-core xlarge runner a third slows every flow 1.6-2x (CPU-bound) and
-          # saves nothing; a stock simulator peaks at ~5.5 GB.
-          ios-slim-simulator: 'true'
+          # saves nothing.
           ios-simulators: '2'
           pay-core-url: https://api.pay.walletconnect.com
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
