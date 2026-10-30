@@ -68,7 +68,7 @@ export async function loadTronWallet(input: string): Promise<{
   storage.setItem('TRON_PrivateKey_1', trimmedInput);
   if (__DEV__) {
     console.warn(
-      '[SECURITY] TRON private key stored unencrypted. Use secure enclave in production.',
+      '[SECURITY] TRON private key stored in encrypted MMKV on native (key in Keychain/Keystore); unencrypted localStorage on web.',
     );
   }
 
