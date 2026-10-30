@@ -36,7 +36,6 @@ symlink_file() {
 
 # Projects to setup
 PROJECTS=(
-    "dapps/poc-pos-app"
     "dapps/pos-app"
     "dapps/appkit-wagmi"
     "wallets/rn_cli_wallet"
