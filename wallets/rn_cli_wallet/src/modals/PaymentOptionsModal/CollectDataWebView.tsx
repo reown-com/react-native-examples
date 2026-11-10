@@ -3,7 +3,6 @@ import { View, StyleSheet, Linking } from 'react-native';
 import type { CollectDataField, CollectDataFieldResult } from '@walletconnect/pay';
 import { WebView, WebViewNavigation } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
-import { btoa } from 'react-native-quick-base64';
 
 import { useSnapshot } from 'valtio';
 
@@ -75,6 +74,7 @@ function buildUrlWithPrefill(
   themeMode: 'light' | 'dark',
 ): string {
   const prefillJson = JSON.stringify(PREFILL_DATA);
+  // Global btoa (Hermes / browser); PREFILL_DATA is ASCII-only.
   const prefillBase64 = btoa(prefillJson);
 
   let result = baseUrl;
