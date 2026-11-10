@@ -8523,11 +8523,11 @@ __metadata:
   linkType: hard
 
 "expo-modules-jsi@npm:~56.0.10":
-  version: 56.0.10
-  resolution: "expo-modules-jsi@npm:56.0.10"
+  version: 56.0.14
+  resolution: "expo-modules-jsi@npm:56.0.14"
   peerDependencies:
     react-native: "*"
-  checksum: 332b944b5d9f18652154953a012122afe8e9a14824ee72eb5fb36cb306145179f958257f48a5bac8338a68f1322f55198c9dc05dd022ca6c86a270079280e3e9
+  checksum: 2138e7fd7c78110e85f6ffb195b1b9a7f48350823d0085b0c18cd70e26c12565b5b8991fcaf39122332eb32da5645fe8c7b84a2a6f698b58073e4ede1299ea00
   languageName: node
   linkType: hard
 
