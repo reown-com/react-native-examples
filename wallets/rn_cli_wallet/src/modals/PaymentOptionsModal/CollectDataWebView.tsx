@@ -110,7 +110,9 @@ export function CollectDataWebView({
 }: CollectDataWebViewProps) {
   const Theme = useTheme();
   const { themeMode } = useSnapshot(SettingsStore.state);
-  const webViewRef = useRef<WebView>(null);
+  // react-native-webview 14 defaults its props generic to `undefined`, which
+  // collapses `WebViewProps & P` to `never`; pass `object` explicitly.
+  const webViewRef = useRef<WebView<object>>(null);
   const [isLoading, setIsLoading] = useState(true);
   const isMountedRef = useRef(true);
 
@@ -241,7 +243,7 @@ export function CollectDataWebView({
           <WalletConnectLoading size={120} />
         </View>
       )}
-      <WebView
+      <WebView<object>
         ref={webViewRef}
         source={{ uri: finalUrl }}
         originWhitelist={[
