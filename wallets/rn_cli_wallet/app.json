@@ -90,7 +90,7 @@
       ],
       "./plugins/withAndroidVariants.js",
       "./plugins/withAndroidVariantIcons.js",
-      ["./plugins/withAndroidReleaseMinify.js", { "enabled": false }]
+      "./plugins/withAndroidProguardRules.js"
     ]
   }
 }

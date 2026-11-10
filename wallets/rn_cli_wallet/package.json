@@ -190,7 +190,8 @@
     "brace-expansion": "2.1.4",
     "browserslist": "4.28.7",
     "postcss": "8.5.23",
-    "react-native-modal@14.0.0-rc.1": "patch:react-native-modal@npm%3A14.0.0-rc.1#./.yarn/patches/react-native-modal-npm-14.0.0-rc.1-e522ba0672.patch"
+    "react-native-modal@14.0.0-rc.1": "patch:react-native-modal@npm%3A14.0.0-rc.1#./.yarn/patches/react-native-modal-npm-14.0.0-rc.1-e522ba0672.patch",
+    "@walletconnect/react-native-compat@2.25.0": "patch:@walletconnect/react-native-compat@npm%3A2.25.0#./.yarn/patches/@walletconnect-react-native-compat-npm-2.25.0-b4e9283922.patch"
   },
   "packageManager": "yarn@3.8.7"
 }

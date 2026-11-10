@@ -1,0 +1,33 @@
+diff --git a/android/build.gradle b/android/build.gradle
+index c18a7c0684b05a669776ab41f9916abad2937310..abd18061b6b6bbcca6576acec27322e6fd8686a6 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -59,6 +59,7 @@ android {
+     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
+     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
++    consumerProguardFiles "consumer-rules.pro"
+ 
+   }
+ 
+diff --git a/android/consumer-rules.pro b/android/consumer-rules.pro
+new file mode 100644
+index 0000000000000000000000000000000000000000..c0431a21c43c848aa48d3872e52d4edc496d1f84
+--- /dev/null
++++ b/android/consumer-rules.pro
+@@ -0,0 +1,15 @@
++# Consumer ProGuard/R8 rules, applied automatically to apps that minify
++# (Expo SDK 58+ enables R8 for release builds by default).
++
++# JNA backs the yttrium (WalletConnect Pay) uniffi bindings. It references
++# desktop-only AWT classes that don't exist on Android, and it binds native
++# functions, Structure fields and Callback methods by reflection.
++-dontwarn java.awt.**
++-keep class com.sun.jna.** { *; }
++-keepclassmembers class * extends com.sun.jna.** { public *; }
++
++# uniffi-generated Kotlin bindings, called from native code through JNA.
++-keep class uniffi.** { *; }
++
++# This module's own classes, which drive the bindings above.
++-keep class com.walletconnect.reactnativemodule.** { *; }
