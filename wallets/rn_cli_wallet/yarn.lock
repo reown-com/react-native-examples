@@ -5396,7 +5396,7 @@ __metadata:
     babel-preset-expo: 56.0.15
     bip32: 4.0.0
     bip39: 3.1.0
-    bitcoinjs-lib: 6.1.7
+    bitcoinjs-lib: 6.1.8
     bitcoinjs-message: 2.2.0
     bs58: 6.0.0
     crc-32: 1.2.2
@@ -6272,9 +6272,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bitcoinjs-lib@npm:6.1.7":
-  version: 6.1.7
-  resolution: "bitcoinjs-lib@npm:6.1.7"
+"bitcoinjs-lib@npm:6.1.8":
+  version: 6.1.8
+  resolution: "bitcoinjs-lib@npm:6.1.8"
   dependencies:
     "@noble/hashes": ^1.2.0
     bech32: ^2.0.0
@@ -6282,7 +6282,7 @@ __metadata:
     bs58check: ^3.0.1
     typeforce: ^1.11.3
     varuint-bitcoin: ^1.1.2
-  checksum: 2fbac2bffc2fe0e1d5441fc09f092fa8a83a4572b10fd2601c960e19a60cdcab81b6bff8cefcefda80b952fe8795387c97219fc4676995bf554f26f3d9aadc58
+  checksum: d07ff15e15a2761256a7359476ae58a165a5d8141745660ba97c4bc23ae67c96f525af3f5ba2a976eefe28a1e964aa72a554f5f07b164eec8066a9949fcf1393
   languageName: node
   linkType: hard
 
