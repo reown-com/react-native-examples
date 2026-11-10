@@ -2157,17 +2157,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@craftzdog/react-native-buffer@npm:6.1.1":
-  version: 6.1.1
-  resolution: "@craftzdog/react-native-buffer@npm:6.1.1"
-  dependencies:
-    ieee754: ^1.2.1
-    react-native-quick-base64: ^2.2.2
-  checksum: bf8ae64b9631b14677d667c07c82fe6397ef5f317f58ab3d3617a716da757bd0eaf9cc092687103bc3f1448f095305be9672fb10d036331ed0ad4590b3036959
-  languageName: node
-  linkType: hard
-
-"@craftzdog/react-native-buffer@npm:^6.1.2":
+"@craftzdog/react-native-buffer@npm:6.1.2, @craftzdog/react-native-buffer@npm:^6.1.2":
   version: 6.1.2
   resolution: "@craftzdog/react-native-buffer@npm:6.1.2"
   dependencies:
@@ -6211,7 +6201,7 @@ __metadata:
     "@babel/runtime": ^7.25.0
     "@bitcoinerlab/secp256k1": 1.2.0
     "@bottom-tabs/react-navigation": 1.5.0
-    "@craftzdog/react-native-buffer": 6.1.1
+    "@craftzdog/react-native-buffer": 6.1.2
     "@expo/metro-runtime": 58.0.17
     "@json-rpc-tools/utils": 1.7.6
     "@lottiefiles/dotlottie-react": ^0.13.5
@@ -14384,16 +14374,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 3eef519d0cf4b08d9550fd99be02831e49de300fc0098e84fa0074e133a8c7539d2464f8f8503e270d33b9b9dae64486a269bcf0d88684aacb72d62180cc9899
-  languageName: node
-  linkType: hard
-
-"react-native-quick-base64@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "react-native-quick-base64@npm:2.2.2"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 51cd8df0b7f78d4c10996f157927cc075b8a9e85f7d0e48790a4247a033ca335e440c96572969fb6f6b49135d51dbf87c6d659fba509b51b9237957d41a6c580
   languageName: node
   linkType: hard
 

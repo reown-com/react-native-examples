@@ -33,7 +33,7 @@
   "dependencies": {
     "@bitcoinerlab/secp256k1": "1.2.0",
     "@bottom-tabs/react-navigation": "1.5.0",
-    "@craftzdog/react-native-buffer": "6.1.1",
+    "@craftzdog/react-native-buffer": "6.1.2",
     "@expo/metro-runtime": "58.0.17",
     "@json-rpc-tools/utils": "1.7.6",
     "@lottiefiles/dotlottie-react": "^0.13.5",
