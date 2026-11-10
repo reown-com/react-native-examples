@@ -89,7 +89,8 @@
         { "ndkVersion": "27.1.12297006" }
       ],
       "./plugins/withAndroidVariants.js",
-      "./plugins/withAndroidVariantIcons.js"
+      "./plugins/withAndroidVariantIcons.js",
+      ["./plugins/withAndroidReleaseMinify.js", { "enabled": false }]
     ]
   }
 }
