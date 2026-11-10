@@ -189,7 +189,8 @@
     "baseline-browser-mapping": "2.11.0",
     "brace-expansion": "2.1.4",
     "browserslist": "4.28.7",
-    "postcss": "8.5.23"
+    "postcss": "8.5.23",
+    "react-native-modal@14.0.0-rc.1": "patch:react-native-modal@npm%3A14.0.0-rc.1#./.yarn/patches/react-native-modal-npm-14.0.0-rc.1-e522ba0672.patch"
   },
   "packageManager": "yarn@3.8.7"
 }

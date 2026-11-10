@@ -14345,6 +14345,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-modal@patch:react-native-modal@npm%3A14.0.0-rc.1#./.yarn/patches/react-native-modal-npm-14.0.0-rc.1-e522ba0672.patch::locator=RNWeb3Wallet%40workspace%3A.":
+  version: 14.0.0-rc.1
+  resolution: "react-native-modal@patch:react-native-modal@npm%3A14.0.0-rc.1#./.yarn/patches/react-native-modal-npm-14.0.0-rc.1-e522ba0672.patch::version=14.0.0-rc.1&hash=d106a0&locator=RNWeb3Wallet%40workspace%3A."
+  dependencies:
+    react-native-animatable: 1.4.0
+  peerDependencies:
+    react: "*"
+    react-native: ">=0.70.0"
+  checksum: 3ac8f52a75fbdb1d8358e42e8f45856db98dfb93686127f3ea642df1fc78434e2d5a23089a8405fc7b48c567e3c2bb3b07c27f9b6e69f1c0d75207f9d2e8a7ac
+  languageName: node
+  linkType: hard
+
 "react-native-nfc-manager@npm:3.17.2":
   version: 3.17.2
   resolution: "react-native-nfc-manager@npm:3.17.2"
