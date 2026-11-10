@@ -4172,17 +4172,17 @@ bip174@^3.0.0:
     uint8array-tools "^0.0.9"
     varuint-bitcoin "^2.0.0"
 
-bitcoinjs-lib@7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/bitcoinjs-lib/-/bitcoinjs-lib-7.0.0.tgz#0bea06c164b9048b4453914507514ed7ee3018c2"
-  integrity sha512-2W6dGXFd1KG3Bs90Bzb5+ViCeSKNIYkCUWZ4cvUzUgwnneiNNZ6Sk8twGNcjlesmxC0JyLc/958QycfpvXLg7A==
+bitcoinjs-lib@7.0.2:
+  version "7.0.2"
+  resolved "https://registry.yarnpkg.com/bitcoinjs-lib/-/bitcoinjs-lib-7.0.2.tgz#d7e83894a449381807a31f6f89f6f8a61efd4e5e"
+  integrity sha512-ugLk9SR+2gvhpNA7kqQL1eVDKyBNo/rbr+df72nrZj4OOdZvQRHDVtyogPGXAU2MLQimLL7EbUdz95QGh6Th5Q==
   dependencies:
     "@noble/hashes" "^1.2.0"
     bech32 "^2.0.0"
     bip174 "^3.0.0"
     bs58check "^4.0.0"
     uint8array-tools "^0.0.9"
-    valibot "^0.38.0"
+    valibot "^1.2.0"
     varuint-bitcoin "^2.0.0"
 
 bl@^4.1.0:
@@ -10511,7 +10511,7 @@ v8-to-istanbul@^9.0.1:
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^2.0.0"
 
-valibot@1.4.2, valibot@^0.38.0:
+valibot@1.4.2, valibot@^1.2.0:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/valibot/-/valibot-1.4.2.tgz#da857781187f170aeaf4498d463d25028615b0d6"
   integrity sha512-gjdCvJ6d3RyHAneqxMYMW9QMCwYMb3jpOO0IyHZV1bnRHFBHrX3VkIILt5XYR0WhwHiH7Mty8ovuPZ/O3gamrg==
