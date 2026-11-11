@@ -228,11 +228,11 @@ runs:
         echo "Wrote $(pwd)/.env"
 
     # Before the build cache key: it includes `xcodebuild -version`.
-    - name: Select Xcode 26.2
+    - name: Select Xcode 26.6
       if: inputs.platform == 'ios'
       shell: bash
       run: |
-        XCODE_PATH=/Applications/Xcode_26.2.app/Contents/Developer
+        XCODE_PATH=/Applications/Xcode_26.6.app/Contents/Developer
         if [ ! -d "$XCODE_PATH" ]; then
           echo "Available Xcode versions:"
           ls /Applications/Xcode*.app 2>/dev/null || echo "None found"

@@ -44,9 +44,12 @@ function loadEnabledNetworkIds(): string[] {
   return [...ALL_NETWORK_IDS];
 }
 
+// Off by default: connecting is then a plain session proposal (no extra
+// "Sign in" signature), which is also what the WalletKit connect E2E flows
+// expect. Turn it on in Settings > AppKit settings & networks.
 function loadSiwxEnabled(): boolean {
   const stored = mmkv.getBoolean(SIWX_KEY);
-  return typeof stored === 'boolean' ? stored : true;
+  return typeof stored === 'boolean' ? stored : false;
 }
 
 interface State {

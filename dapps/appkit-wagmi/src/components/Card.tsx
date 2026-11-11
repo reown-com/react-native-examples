@@ -10,10 +10,9 @@ export interface CardProps {
   onPress?: () => void;
   icon?: IconProps['name'];
   style?: StyleProp<ViewStyle>;
-  testID?: string;
 }
 
-export function Card({title, value, onPress, icon, style, testID}: CardProps) {
+export function Card({title, value, onPress, icon, style}: CardProps) {
   const Theme = useTheme();
   const backgroundColor = Theme['gray-glass-005'];
 
@@ -22,7 +21,6 @@ export function Card({title, value, onPress, icon, style, testID}: CardProps) {
       disabled={!onPress}
       style={[styles.container, {backgroundColor}, style]}
       bounceScale={0.98}
-      testID={testID}
       onPress={onPress}>
       <View style={styles.textColumn}>
         <Text variant="small-600" style={{color: Theme['fg-100']}}>
