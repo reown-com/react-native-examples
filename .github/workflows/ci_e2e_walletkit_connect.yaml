@@ -1,0 +1,152 @@
+name: 🧪 WalletKit - E2E Connect
+# WX SLO 2 ("WalletKit connect flow works"): dApp → pairing → session proposal →
+# wallet approves → session settled → sign request handled, on the sample
+# wallet, against the AppKit sample dApp (dapps/appkit-wagmi, native internal
+# build) installed on the same emulator.
+# Kept apart from ci_e2e_walletkit.yaml (Pay) so the E2E KPI job
+# (WalletConnect/actions metrics/config/workflows.json) reports the Connect pass
+# rate separately from the Pay one.
+# The "(skip-metrics)" suffix is consumed by that KPI job to exclude runs from
+# stats (draft PRs, dispatches off main). Don't change/remove it.
+run-name: "E2E WalletKit Connect - Android${{ ((github.event_name == 'pull_request' && github.event.pull_request.draft) || (github.event_name == 'workflow_dispatch' && github.ref_name != 'main')) && ' (skip-metrics)' || '' }}"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # Nightly, UTC — offset from the Pay suite's 09:00 run
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'wallets/rn_cli_wallet/**'
+      - 'dapps/appkit-wagmi/**'
+      - '.maestro/connect_*.yaml'
+      - '.maestro/sign_*.yaml'
+      - '.maestro/flows/connect_*.yaml'
+      - '.github/actions/walletkit-build-and-maestro/**'
+      - '.github/actions/derive-e2e-wallet/**'
+      - '.github/actions/appkit-build-android/**'
+      - '.github/workflows/ci_e2e_walletkit_connect.yaml'
+  push:
+    branches: [main]
+    paths:
+      - 'wallets/rn_cli_wallet/**'
+      - 'dapps/appkit-wagmi/**'
+      - '.maestro/connect_*.yaml'
+      - '.maestro/sign_*.yaml'
+      - '.maestro/flows/connect_*.yaml'
+      - '.github/actions/walletkit-build-and-maestro/**'
+      - '.github/actions/derive-e2e-wallet/**'
+      - '.github/actions/appkit-build-android/**'
+      - '.github/workflows/ci_e2e_walletkit_connect.yaml'
+  workflow_dispatch:
+
+jobs:
+  e2e-connect-android:
+    # Dependabot PRs can't read repo secrets (wallet env, keystore), so the
+    # build would always fail. Draft PRs wait until ready for review.
+    if: >-
+      github.actor != 'dependabot[bot]'
+      && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
+    # The KPI job matches this name (job_pattern) to get a per-platform rate.
+    name: E2E Connect - Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    concurrency:
+      group: e2e-connect-android
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Own account (index 3), unfunded: personal_sign needs no gas, and the
+      # Pay legs' accounts stay untouched.
+      - name: Derive E2E wallet (Connect)
+        id: wallet
+        uses: ./.github/actions/derive-e2e-wallet
+        with:
+          mnemonic: ${{ secrets.TEST_WALLET_MNEMONIC }}
+          index: 3
+
+      # The dApp side of the connect flows (dapps/appkit-wagmi, internal).
+      - name: Build AppKit sample dApp (Android)
+        id: dapp
+        uses: ./.github/actions/appkit-build-android
+        with:
+          env-file: ${{ secrets.APPKIT_ENV_FILE }}
+          android-secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+          android-keystore-base64: ${{ secrets.WC_INTERNAL_KEYSTORE }}
+          android-keystore-name: ${{ vars.WC_INTERNAL_KEYSTORE_NAME }}
+          cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+
+      - name: Build wallet and run Maestro connect tests (Android)
+        id: walletkit
+        uses: ./.github/actions/walletkit-build-and-maestro
+        with:
+          platform: android
+          pay-core-url: https://api.pay.walletconnect.com
+          wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
+          wallet-private-key: ${{ steps.wallet.outputs.private-key }}
+          maestro-tags: connect
+          extra-apks: ${{ steps.dapp.outputs.apk-path }}
+          android-secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
+          android-keystore-base64: ${{ secrets.WC_INTERNAL_KEYSTORE }}
+          android-keystore-name: ${{ vars.WC_INTERNAL_KEYSTORE_NAME }}
+          # Same encrypted build cache as the Pay suite (same APK): restore
+          # anywhere secrets exist, save only from trusted main runs.
+          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+
+      - name: Send Slack notification
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "E2E Test Report - Android - WalletKit Connect",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🧪 E2E Test Report - Android (connect)" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
+                    { "type": "mrkdwn", "text": "*Platform:*\n`Android`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.walletkit.outputs.maestro-outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "Download Artifacts" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts"
+                    }
+                  ]
+                }
+              ]
+            }

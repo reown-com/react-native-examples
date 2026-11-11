@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Text, FlexView } from '@reown/appkit-ui-react-native';
 import { StyleSheet } from 'react-native';
 import { useSignMessage, useAccount, useSendTransaction, useEstimateGas, useSignTypedData } from 'wagmi';
@@ -9,12 +9,18 @@ import { eip712 } from '@/utils/eip712';
 
 export function WagmiActionsView() {
   const { isConnected } = useAccount();
+  // Persistent outcome of the last personal_sign. The toast auto-hides, often
+  // before E2E (Maestro) gets back from the wallet to the browser, so the
+  // connect flows assert on this line instead.
+  const [signResult, setSignResult] = useState<'success' | 'failed'>();
 
   const onSignSuccess = (data: SignMessageData) => {
+    setSignResult('success');
     ToastUtils.showSuccessToast('Signature successful', data);
   };
 
   const onSignError = (error: Error) => {
+    setSignResult('failed');
     ToastUtils.showErrorToast('Signature failed', error.message);
   };
 
@@ -73,10 +79,18 @@ export function WagmiActionsView() {
         disabled={isPending}
         loading={isPending}
         testID="sign-message-button"
-        onPress={() => signMessage({ message: 'Hello AppKit!' })}
+        onPress={() => {
+          setSignResult(undefined);
+          signMessage({ message: 'Hello AppKit!' });
+        }}
       >
         Sign
       </Button>
+      {signResult && (
+        <Text testID="sign-message-result" variant="small-400">
+          {signResult === 'success' ? 'Sign message: success' : 'Sign message: failed'}
+        </Text>
+      )}
       {isGasError && <Text>Error estimating gas</Text>}
       <Button disabled={isSending} loading={isSending} onPress={() => sendTransaction({ ...TX, gas })}>
         Send

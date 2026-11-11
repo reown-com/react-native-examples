@@ -74,7 +74,12 @@ function NetworkSettingsScreen({navigation}: Props) {
           <Text style={[styles.rowLabel, {color: Theme['fg-100']}]}>
             SIWX (One-Click Auth)
           </Text>
+          {/* State in the label too: Chrome on Android doesn't expose a
+              react-native-web Switch's checked state to UI automation, and
+              the E2E connect flows turn SIWX off here. */}
           <Switch
+            testID="siwx-switch"
+            accessibilityLabel={siwxEnabled ? 'SIWX on' : 'SIWX off'}
             value={siwxEnabled}
             onValueChange={() => AppKitConfigStore.toggleSiwx()}
             trackColor={{true: Theme['accent-100']}}

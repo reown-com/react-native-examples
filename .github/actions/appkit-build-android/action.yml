@@ -1,0 +1,139 @@
+name: Build AppKit sample dApp (Android, internal)
+description: >-
+  Builds the internal variant of dapps/appkit-wagmi as an x86_64 APK for the
+  E2E emulator. It is the dApp side of the WalletKit connect E2E flows
+  (.maestro/connect_*.yaml). Cached by the dApp's sources: the APK only embeds
+  the public project id / Sentry DSN (also shipped in the public web build), so
+  a plain actions/cache is used, saved from trusted main runs only.
+
+inputs:
+  env-file:
+    description: 'dApp .env contents (secrets.APPKIT_ENV_FILE).'
+    required: true
+  android-secrets-file:
+    description: 'android/secrets.properties contents (secrets.ANDROID_SECRETS_FILE).'
+    required: true
+  android-keystore-base64:
+    description: 'Internal signing keystore, base64 (secrets.WC_INTERNAL_KEYSTORE).'
+    required: true
+  android-keystore-name:
+    description: 'Keystore file name without extension (vars.WC_INTERNAL_KEYSTORE_NAME).'
+    required: true
+  cache-save:
+    description: "'true' to save the built APK to the cache (trusted main runs only)."
+    required: false
+    default: 'false'
+
+outputs:
+  apk-path:
+    description: 'Absolute path of the built (or restored) APK.'
+    value: ${{ steps.out.outputs.apk-path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Cache key
+      id: key
+      shell: bash
+      run: |
+        set -euo pipefail
+        # Every tracked dApp file except web-only/docs, plus this action.
+        HASH=$(git ls-files -s -- dapps/appkit-wagmi \
+          ':(exclude,glob)dapps/appkit-wagmi/**/*.md' \
+          ':(exclude,glob)dapps/appkit-wagmi/**/*.web.*' \
+          ':(exclude,glob)dapps/appkit-wagmi/__tests__/**' \
+          "$GITHUB_ACTION_PATH/action.yml" | sha256sum | cut -d' ' -f1)
+        echo "key=appkit-android-internal-x86_64-v1-$HASH" >> "$GITHUB_OUTPUT"
+
+    - name: Restore cached APK
+      id: cache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ runner.temp }}/appkit-build/app-internal.apk
+        key: ${{ steps.key.outputs.key }}
+
+    - name: Setup Node.js
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: yarn
+        cache-dependency-path: dapps/appkit-wagmi/yarn.lock
+
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: dapps/appkit-wagmi
+      run: yarn install --immutable
+
+    - name: Write .env
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: dapps/appkit-wagmi
+      env:
+        ENV_FILE: ${{ inputs.env-file }}
+      run: |
+        [ -n "$ENV_FILE" ] || { echo "Error: env-file input is empty"; exit 1; }
+        printf '%s\n' "$ENV_FILE" > .env
+
+    - name: Install Java 17
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        architecture: x86_64
+
+    - name: Expo Prebuild (Android)
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: dapps/appkit-wagmi
+      run: npx expo prebuild --platform android --no-install
+
+    - name: Add secrets and keystore
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: dapps/appkit-wagmi
+      env:
+        SECRETS_FILE: ${{ inputs.android-secrets-file }}
+        KEYSTORE_BASE64: ${{ inputs.android-keystore-base64 }}
+        KEYSTORE_NAME: ${{ inputs.android-keystore-name }}
+      run: |
+        set -euo pipefail
+        [ -n "$SECRETS_FILE" ] || { echo "Error: android-secrets-file input is empty"; exit 1; }
+        [ -n "$KEYSTORE_BASE64" ] || { echo "Error: android-keystore-base64 input is empty"; exit 1; }
+        printf '%s\n' "$SECRETS_FILE" > android/secrets.properties
+        printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "android/app/${KEYSTORE_NAME}.keystore"
+        {
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
+          echo "org.gradle.parallel=true"
+          echo "org.gradle.caching=true"
+          echo "reactNativeArchitectures=x86_64"
+        } >> android/gradle.properties
+
+    - name: Setup Gradle
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+
+    - name: Build APK
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: dapps/appkit-wagmi
+      run: |
+        set -euo pipefail
+        export SENTRY_DISABLE_AUTO_UPLOAD=true
+        yarn run android:build:internal
+        mkdir -p "$RUNNER_TEMP/appkit-build"
+        cp android/app/build/outputs/apk/internal/app-internal.apk "$RUNNER_TEMP/appkit-build/app-internal.apk"
+
+    - name: Save APK to cache
+      if: steps.cache.outputs.cache-hit != 'true' && inputs.cache-save == 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ runner.temp }}/appkit-build/app-internal.apk
+        key: ${{ steps.key.outputs.key }}
+
+    - name: Output APK path
+      id: out
+      shell: bash
+      run: echo "apk-path=$RUNNER_TEMP/appkit-build/app-internal.apk" >> "$GITHUB_OUTPUT"

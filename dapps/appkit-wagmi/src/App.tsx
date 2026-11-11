@@ -57,7 +57,13 @@ Sentry.init({
 const projectId = process.env.EXPO_PUBLIC_PROJECT_ID ?? '';
 
 // 2. Create config
-const metadata = getMetadata();
+// On web, don't advertise the native app's redirect: after approving, a wallet
+// would open lab.reown.com/rn_appkit (the native app's universal link) in a new
+// browser tab instead of returning the user to this tab.
+const metadata =
+  Platform.OS === 'web'
+    ? {...getMetadata(), redirect: undefined}
+    : getMetadata();
 
 const clipboardClient = {
   setString: async (value: string) => {

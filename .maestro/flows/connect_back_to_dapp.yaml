@@ -1,0 +1,8 @@
+appId: ${APP_ID}
+---
+# Shared flow: bring the dApp back to the front as it was (no restart). The
+# wallet usually redirects back by itself (the dApp's metadata.redirect); this
+# covers the case where it doesn't.
+- launchApp:
+    appId: ${output.dappAppId}
+    stopApp: false

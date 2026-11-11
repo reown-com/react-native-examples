@@ -1,0 +1,34 @@
+appId: ${APP_ID}
+---
+# Shared flow: cold-start the wallet and wait until it is ready, so WalletKit is
+# initialised (relay connected) before the dApp hands it a pairing URI.
+# The caller runs `clearState` first. Same launch/retry pattern as the shared
+# Pay flow (WalletConnect/actions maestro/pay-tests/.maestro/flows/pay_open_payment_link.yaml):
+
+# Android: the caller's clearState tears the old task down ~1s later and can
+# kill a process forked before then. Maestro has no sleep, so wait
+# (optionally) for an id that never appears.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - extendedWaitUntil:
+          visible:
+            id: "maestro-wait-for-task-teardown"
+          timeout: 1000
+          optional: true
+
+# 45s per attempt covers a slow cold start on a contended CI emulator.
+- retry:
+    maxRetries: 3
+    commands:
+      - stopApp:
+          appId: ${APP_ID}
+      - launchApp:
+          appId: ${APP_ID}
+          permissions:
+            all: allow
+      - extendedWaitUntil:
+          visible:
+            id: "button-scan"
+          timeout: 45000

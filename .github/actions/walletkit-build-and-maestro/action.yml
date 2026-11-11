@@ -52,23 +52,29 @@ inputs:
     required: false
     default: 'https://polygon.drpc.org'
   merchant-api-key-single-nokyc:
-    description: 'Partner API key for the single-option no-KYC merchant (WPAY_CUSTOMER_KEY_SINGLE_NOKYC).'
-    required: true
+    description: 'Partner API key for the single-option no-KYC merchant (WPAY_CUSTOMER_KEY_SINGLE_NOKYC). Pay flows only.'
+    required: false
+    default: ''
   merchant-id-single-nokyc:
-    description: 'Merchant id for the single-option no-KYC merchant (WPAY_MERCHANT_ID_SINGLE_NOKYC).'
-    required: true
+    description: 'Merchant id for the single-option no-KYC merchant (WPAY_MERCHANT_ID_SINGLE_NOKYC). Pay flows only.'
+    required: false
+    default: ''
   merchant-api-key-multi-nokyc:
-    description: 'Partner API key for the multi-option no-KYC merchant (WPAY_CUSTOMER_KEY_MULTI_NOKYC).'
-    required: true
+    description: 'Partner API key for the multi-option no-KYC merchant (WPAY_CUSTOMER_KEY_MULTI_NOKYC). Pay flows only.'
+    required: false
+    default: ''
   merchant-id-multi-nokyc:
-    description: 'Merchant id for the multi-option no-KYC merchant (WPAY_MERCHANT_ID_MULTI_NOKYC).'
-    required: true
+    description: 'Merchant id for the multi-option no-KYC merchant (WPAY_MERCHANT_ID_MULTI_NOKYC). Pay flows only.'
+    required: false
+    default: ''
   merchant-api-key-multi-kyc:
-    description: 'Partner API key for the multi-option KYC merchant (WPAY_CUSTOMER_KEY_MULTI_KYC).'
-    required: true
+    description: 'Partner API key for the multi-option KYC merchant (WPAY_CUSTOMER_KEY_MULTI_KYC). Pay flows only.'
+    required: false
+    default: ''
   merchant-id-multi-kyc:
-    description: 'Merchant id for the multi-option KYC merchant (WPAY_MERCHANT_ID_MULTI_KYC).'
-    required: true
+    description: 'Merchant id for the multi-option KYC merchant (WPAY_MERCHANT_ID_MULTI_KYC). Pay flows only.'
+    required: false
+    default: ''
   maestro-tags:
     description: 'Maestro test tags to run (comma-separated).'
     required: false
@@ -79,6 +85,13 @@ inputs:
       callers running against a local pay-core that can't satisfy certain
       flows (e.g. pay-needs-kyc-backend skips the two flows that submit
       personal-details data through the prod KYC webview).
+    required: false
+    default: ''
+  extra-apks:
+    description: |
+      Android only: newline-separated paths of other APKs to install on the
+      emulator next to the wallet, e.g. the AppKit sample dApp that the
+      WalletKit connect flows (tag `connect`) pair with.
     required: false
     default: ''
   apple-key-id:
@@ -741,7 +754,10 @@ runs:
     # (payments only expire 15 min after creation, so each run uses one an
     # earlier run created). Left empty when the caller targets a non-prod
     # pay-api-url or passes its own expired-gateway-url (e.g. pay-core).
+    # Connect-only runs (tag `connect`) use the local .maestro/connect_*.yaml
+    # flows and don't need the Pay ones.
     - name: Copy shared Pay test flows
+      if: contains(inputs.maestro-tags, 'pay')
       uses: WalletConnect/actions/maestro/pay-tests@390045a88d335d438c972b422090144158df6823
       with:
         merchant-api-key: ${{ inputs.pay-api-url == '' && inputs.expired-gateway-url == '' && inputs.merchant-api-key-single-nokyc || '' }}
@@ -860,6 +876,7 @@ runs:
         DEEPLINK_PREFIX: rn-web3wallet-internal://wc?uri=
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
+        EXTRA_APKS: ${{ inputs.extra-apks }}
         APK_PATH: ${{ runner.temp }}/e2e-build/android/app-internal.apk
         # Inside the emulator action, GITHUB_ACTION_PATH is that action's own dir.
         # Not scripts/: build-cache.sh hashes every file there into the key.
@@ -886,6 +903,7 @@ runs:
         disable-animations: true
         script: |
           adb install "$APK_PATH"
+          printf '%s\n' "$EXTRA_APKS" | while IFS= read -r apk; do [ -z "$apk" ] || adb install "$apk"; done
           bash "$MAESTRO_SCRIPTS/maestro-android.sh"
 
     # Besides media, keeps launch diagnostics: the logcat events buffer

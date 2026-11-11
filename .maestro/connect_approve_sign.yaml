@@ -1,0 +1,55 @@
+appId: ${APP_ID}
+name: WalletKit Connect - Connect, sign message and disconnect
+tags:
+  - connect
+---
+# SLO 2 critical path: dApp → pairing → session proposal → wallet approves →
+# session settled → sign request handled.
+# Env: APP_ID (wallet), DAPP_APP_ID (dApp, optional).
+
+- clearState
+- runFlow: flows/connect_launch_wallet.yaml
+- runFlow: flows/connect_open_dapp.yaml
+
+- startRecording: "Connect - Connect, sign message and disconnect"
+
+# Pairing + session proposal
+- runFlow: flows/connect_select_wallet.yaml
+- tapOn:
+    id: "wallet-request-approve"
+- extendedWaitUntil:
+    notVisible:
+      id: "wallet-request-approve"
+    timeout: 30000
+
+# Session settled on the dApp side
+- runFlow: flows/connect_back_to_dapp.yaml
+- extendedWaitUntil:
+    visible: "Connected to"
+    timeout: 30000
+- assertVisible: "React Native.*"
+
+# Sign request (personal_sign)
+- scrollUntilVisible:
+    element:
+      id: "sign-message-button"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: "sign-message-button"
+- runFlow: flows/connect_wallet_request.yaml
+- tapOn:
+    id: "wallet-request-approve"
+- extendedWaitUntil:
+    notVisible:
+      id: "wallet-request-approve"
+    timeout: 30000
+
+- runFlow: flows/connect_back_to_dapp.yaml
+- extendedWaitUntil:
+    visible: "Sign message: success"
+    timeout: 30000
+
+- runFlow: flows/connect_disconnect_dapp.yaml
+
+- stopRecording

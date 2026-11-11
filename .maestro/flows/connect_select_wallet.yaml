@@ -1,0 +1,66 @@
+appId: ${APP_ID}
+---
+# Shared flow: from the dApp, open the AppKit modal and pick "React Native
+# Sample Wallet". The explorer lists it with the internal build's deep link
+# (rn-web3wallet-internal://), so AppKit hands the pairing URI straight to the
+# wallet installed by CI. Ends with the session proposal showing in the wallet.
+#
+# The dApp starts from a cleared state (connect_open_dapp.yaml), so there's no
+# "recent" row and the wallet is found through All wallets → search.
+#
+# Each tap inside the modal waits for it to settle (connect_settle.yaml) and
+# is retried until the screen it opens shows up.
+
+- tapOn:
+    id: "connect-button"
+- extendedWaitUntil:
+    visible:
+      id: "all-wallets"
+    timeout: 30000
+
+- retry:
+    maxRetries: 3
+    commands:
+      - runFlow: connect_settle.yaml
+      # Only while still on the first screen: if an earlier tap landed late,
+      # this spot now holds a wallet tile.
+      - runFlow:
+          when:
+            visible:
+              id: "all-wallets"
+          commands:
+            - tapOn:
+                id: "all-wallets"
+      - extendedWaitUntil:
+          visible: "Search wallet"
+          timeout: 5000
+
+- retry:
+    maxRetries: 3
+    commands:
+      - runFlow: connect_settle.yaml
+      - tapOn: "Search wallet|React Native Sample"
+      - eraseText
+      - inputText: "React Native Sample"
+      # The wallet tile truncates its label to the first word; an exact
+      # "React" match never hits the search box (its value is the query).
+      - extendedWaitUntil:
+          visible: "React"
+          timeout: 15000
+
+# Done once the wallet shows the session proposal. A tap that lands moves
+# AppKit to its "connecting" screen, so the tap is repeated only while the
+# search result is still on screen (the first tap is sometimes ignored).
+- retry:
+    maxRetries: 3
+    commands:
+      - runFlow: connect_settle.yaml
+      - runFlow:
+          when:
+            visible: "React"
+          commands:
+            - tapOn: "React"
+      - extendedWaitUntil:
+          visible:
+            id: "wallet-request-approve"
+          timeout: 20000
