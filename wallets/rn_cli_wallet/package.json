@@ -55,7 +55,7 @@
     "@ton/core": "0.62.0",
     "@ton/crypto": "3.3.0",
     "@ton/ton": "15.4.0",
-    "@walletconnect/react-native-compat": "2.25.0",
+    "@walletconnect/react-native-compat": "2.27.0-canary.3",
     "@zxing/browser": "0.2.1",
     "@zxing/library": "0.23.0",
     "bip32": "4.0.0",
@@ -190,8 +190,7 @@
     "brace-expansion": "2.1.4",
     "browserslist": "4.28.7",
     "postcss": "8.5.23",
-    "react-native-modal@14.0.0-rc.1": "patch:react-native-modal@npm%3A14.0.0-rc.1#./.yarn/patches/react-native-modal-npm-14.0.0-rc.1-e522ba0672.patch",
-    "@walletconnect/react-native-compat@2.25.0": "patch:@walletconnect/react-native-compat@npm%3A2.25.0#./.yarn/patches/@walletconnect-react-native-compat-npm-2.25.0-b4e9283922.patch"
+    "react-native-modal@14.0.0-rc.1": "patch:react-native-modal@npm%3A14.0.0-rc.1#./.yarn/patches/react-native-modal-npm-14.0.0-rc.1-e522ba0672.patch"
   },
   "packageManager": "yarn@3.8.7"
 }

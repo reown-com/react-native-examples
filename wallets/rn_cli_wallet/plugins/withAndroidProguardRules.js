@@ -2,9 +2,8 @@
 // android/app/proguard-rules.pro.
 //
 // Why: Expo SDK 58 enables R8 for release builds by default. Libraries should
-// ship their own consumer rules (react-native-compat's JNA/uniffi rules are
-// patched in .yarn/patches until they land upstream), but some don't keep
-// enough for R8 full mode. Rules that belong to the app go here.
+// ship their own consumer rules (react-native-compat ships its JNA/uniffi
+// rules since 2.27.0), but some don't keep enough for R8 full mode. Rules that belong to the app go here.
 //
 // ML Kit (barcode scanning for react-native-vision-camera's code scanner):
 // its Firebase-style ComponentRegistrar classes are instantiated by reflection

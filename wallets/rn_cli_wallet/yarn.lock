@@ -6018,9 +6018,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.25.0":
-  version: 2.25.0
-  resolution: "@walletconnect/react-native-compat@npm:2.25.0"
+"@walletconnect/react-native-compat@npm:2.27.0-canary.3":
+  version: 2.27.0-canary.3
+  resolution: "@walletconnect/react-native-compat@npm:2.27.0-canary.3"
   dependencies:
     fast-text-encoding: 1.0.6
     react-native-url-polyfill: 2.0.0
@@ -6033,26 +6033,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: 98b964b6f20a0326051839861cbca0e7ebd0fe842d3006fc15131eef71d5323e446968056893d853baa53b001d02286364cf7a8b1ec53f29beb5936084e688bf
-  languageName: node
-  linkType: hard
-
-"@walletconnect/react-native-compat@patch:@walletconnect/react-native-compat@npm%3A2.25.0#./.yarn/patches/@walletconnect-react-native-compat-npm-2.25.0-b4e9283922.patch::locator=RNWeb3Wallet%40workspace%3A.":
-  version: 2.25.0
-  resolution: "@walletconnect/react-native-compat@patch:@walletconnect/react-native-compat@npm%3A2.25.0#./.yarn/patches/@walletconnect-react-native-compat-npm-2.25.0-b4e9283922.patch::version=2.25.0&hash=a88afc&locator=RNWeb3Wallet%40workspace%3A."
-  dependencies:
-    fast-text-encoding: 1.0.6
-    react-native-url-polyfill: 2.0.0
-  peerDependencies:
-    "@react-native-async-storage/async-storage": "*"
-    "@react-native-community/netinfo": "*"
-    expo-application: "*"
-    react-native: "*"
-    react-native-get-random-values: "*"
-  peerDependenciesMeta:
-    expo-application:
-      optional: true
-  checksum: 745a3d92008f97554b4bb42747f4cb1453debba0f07a2ea5338b33aa95eed9c9720609a6fb299e03a54c15470da31cef29e7508e772a7bcc8d33a5314b6dee30
+  checksum: c166305394deed23be1ba4be3c84b5b979e387124947d1502f3d6c41fe171a0f15e863873ca0174c43f54714bbef778516bcc315bf97787803bd64228fe99fbb
   languageName: node
   linkType: hard
 
@@ -6254,7 +6235,7 @@ __metadata:
     "@types/lodash.clonedeep": ^4.5.9
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
-    "@walletconnect/react-native-compat": 2.25.0
+    "@walletconnect/react-native-compat": 2.27.0-canary.3
     "@zxing/browser": 0.2.1
     "@zxing/library": 0.23.0
     babel-plugin-module-resolver: ^5.0.0
