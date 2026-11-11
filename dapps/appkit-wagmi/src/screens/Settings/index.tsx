@@ -66,6 +66,7 @@ function SettingsScreen({navigation}: Props) {
         <Card title="Socket status" value={socketStatus} />
         <Card
           title="AppKit settings & networks"
+          testID="settings-appkit-networks"
           value="Configure SIWX and choose which networks to connect with"
           onPress={() => navigation.navigate('NetworkSettings')}
           icon="chevronRight"

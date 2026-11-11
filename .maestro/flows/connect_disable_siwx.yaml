@@ -11,10 +11,13 @@ appId: ${APP_ID}
     commands:
       - tapOn:
           id: "tab-settings"
+      # By id: on iOS the card's title and subtitle form one label.
       - extendedWaitUntil:
-          visible: "AppKit settings & networks"
+          visible:
+            id: "settings-appkit-networks"
           timeout: 5000
-- tapOn: "AppKit settings & networks"
+- tapOn:
+    id: "settings-appkit-networks"
 - extendedWaitUntil:
     visible:
       id: "siwx-switch"

@@ -32,34 +32,40 @@ appId: ${APP_ID}
             - tapOn:
                 id: "all-wallets"
       - extendedWaitUntil:
-          visible: "Search wallet"
+          visible:
+            id: "wui-input-text"
           timeout: 5000
 
 - retry:
     maxRetries: 3
     commands:
       - runFlow: connect_settle.yaml
-      - tapOn: "Search wallet|React Native Sample"
+      # AppKit's search input and result tiles, by id: on iOS a tile's
+      # texts form one accessibility label.
+      - tapOn:
+          id: "wui-input-text"
       - eraseText
       - inputText: "React Native Sample"
-      # The wallet tile truncates its label to the first word; an exact
-      # "React" match never hits the search box (its value is the query).
       - extendedWaitUntil:
-          visible: "React"
+          visible:
+            id: "wallet-search-item-.*"
           timeout: 15000
 
 # Done once the wallet shows the session proposal. A tap that lands moves
 # AppKit to its "connecting" screen, so the tap is repeated only while the
 # search result is still on screen (the first tap is sometimes ignored).
+# The search returns only this wallet, so the single result tile is it.
 - retry:
     maxRetries: 3
     commands:
       - runFlow: connect_settle.yaml
       - runFlow:
           when:
-            visible: "React"
+            visible:
+              id: "wallet-search-item-.*"
           commands:
-            - tapOn: "React"
+            - tapOn:
+                id: "wallet-search-item-.*"
       - runFlow: connect_ios_open_prompt.yaml
       - extendedWaitUntil:
           visible:
