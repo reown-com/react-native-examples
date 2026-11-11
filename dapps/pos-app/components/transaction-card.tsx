@@ -25,10 +25,17 @@ function TransactionCardBase({
 }: TransactionCardProps) {
   const theme = useTheme();
   const meta = getTransactionStatusMeta(payment.status);
+  const amount = formatFiatAmount(
+    payment.fiatAmount?.value,
+    payment.fiatAmount?.unit,
+  );
+  const dateTime = formatDateTime(payment.createdAt);
 
   return (
     <Pressable
       onPress={onPress}
+      accessibilityLabel={`${meta.label} payment, ${amount}, ${dateTime}`}
+      accessibilityHint="Shows payment details"
       style={[
         styles.container,
         { backgroundColor: theme["foreground-primary-fix"] },
@@ -57,16 +64,18 @@ function TransactionCardBase({
           {meta.label}
         </ThemedText>
         <ThemedText fontSize={14} lineHeight={18} color="text-secondary">
-          {formatDateTime(payment.createdAt)}
+          {dateTime}
         </ThemedText>
       </View>
 
       <View style={styles.trailing}>
-        <ThemedText fontSize={16} lineHeight={18} color="text-primary">
-          {formatFiatAmount(
-            payment.fiatAmount?.value,
-            payment.fiatAmount?.unit,
-          )}
+        <ThemedText
+          fontSize={16}
+          lineHeight={18}
+          color="text-primary"
+          style={styles.amount}
+        >
+          {amount}
         </ThemedText>
         <Image
           source={CHEVRON}
@@ -117,5 +126,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "500",
+  },
+  amount: {
+    fontVariant: ["tabular-nums"],
   },
 });

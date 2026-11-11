@@ -10,6 +10,8 @@ import { ThemedText } from "./themed-text";
 export interface FilterButtonConfig {
   label: string;
   onPress: () => void;
+  /** Spoken name; the visible label alone ("Status", "Today") lacks context. */
+  accessibilityLabel?: string;
 }
 
 interface FilterButtonsProps {
@@ -26,6 +28,7 @@ function FilterButtonsBase({ buttons }: FilterButtonsProps) {
         <Pressable
           key={`${button.label}-${index}`}
           onPress={button.onPress}
+          accessibilityLabel={button.accessibilityLabel ?? button.label}
           style={[styles.button, { borderColor: theme["border-secondary"] }]}
         >
           <ThemedText fontSize={16} lineHeight={18} color="text-primary">

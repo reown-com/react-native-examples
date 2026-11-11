@@ -51,6 +51,9 @@ export function SettingsItem({
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      accessibilityLabel={[title, value, bullet ? "not set up" : undefined]
+        .filter(Boolean)
+        .join(", ")}
       testID={testID}
       style={[
         styles.container,

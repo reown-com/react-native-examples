@@ -6,14 +6,24 @@ interface Props {
   value: boolean;
   onValueChange: (value: boolean) => void;
   testID?: string;
+  /** Names the setting; without it screen readers announce only "on"/"off". */
+  accessibilityLabel?: string;
 }
 
-export function Switch({ style, value, onValueChange, testID }: Props) {
+export function Switch({
+  style,
+  value,
+  onValueChange,
+  testID,
+  accessibilityLabel,
+}: Props) {
   const Theme = useTheme();
 
   return (
     <RNSwitch
       testID={testID}
+      accessibilityLabel={accessibilityLabel}
+      aria-label={accessibilityLabel}
       style={style}
       value={value}
       onValueChange={onValueChange}

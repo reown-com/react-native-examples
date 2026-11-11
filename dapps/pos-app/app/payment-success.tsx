@@ -397,6 +397,7 @@ const styles = StyleSheet.create({
   },
   amountValue: {
     textAlign: "center",
+    fontVariant: ["tabular-nums"],
   },
   buttonContainer: {
     width: "100%",

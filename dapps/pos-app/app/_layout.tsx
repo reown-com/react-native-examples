@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import Toast from "react-native-toast-message";
 
+import { DocumentTitle } from "@/components/document-title";
 import HeaderImage from "@/components/header-image";
 import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -146,6 +147,7 @@ export default Sentry.wrap(function RootLayout() {
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider value={navigationTheme}>
+            <DocumentTitle />
             <Stack
               screenOptions={({ route }) => {
                 return {
@@ -159,6 +161,9 @@ export default Sentry.wrap(function RootLayout() {
                   headerShadowVisible: false,
                   headerTintColor: Theme["text-primary"],
                   headerBackButtonDisplayMode: "minimal",
+                  // Not shown (minimal mode); gives the back button the
+                  // accessible name "Go back" instead of "index, back".
+                  headerBackTitle: "Back",
                   headerTitleAlign: "center",
                   headerStyle: {
                     backgroundColor: Theme["bg-primary"],

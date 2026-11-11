@@ -4,6 +4,7 @@ import { AppState, AppStateStatus } from "react-native";
 import {
   useDerivedValue,
   useFrameCallback,
+  useReducedMotion,
   useSharedValue,
 } from "react-native-reanimated";
 
@@ -39,7 +40,9 @@ export function SuccessAnimation({
   // clock) so pausing and resuming is seamless: while the callback is inactive
   // no frames fire, so `frame` stops changing, the Skottie holds its last frame
   // and Skia stops redrawing. Starts inactive; the effect below activates it.
-  const elapsedMs = useSharedValue(0);
+  // With Reduce Motion on, skip the playback and show the finished check.
+  const reduceMotion = useReducedMotion();
+  const elapsedMs = useSharedValue(reduceMotion ? Number.MAX_SAFE_INTEGER : 0);
   const frameCallback = useFrameCallback((info) => {
     "worklet";
     elapsedMs.value += info.timeSincePreviousFrame ?? 0;
@@ -56,6 +59,8 @@ export function SuccessAnimation({
   // not visible) so it doesn't keep burning CPU/GPU on the UI thread. Resumes
   // automatically when the app returns to the foreground.
   useEffect(() => {
+    // Reduce Motion: elapsedMs starts past the end, so never run the clock.
+    if (reduceMotion) return;
     const syncActive = (state: AppStateStatus = AppState.currentState) =>
       frameCallback.setActive(!!animation && state === "active");
     syncActive();
@@ -64,7 +69,7 @@ export function SuccessAnimation({
       subscription.remove();
       frameCallback.setActive(false);
     };
-  }, [frameCallback, animation]);
+  }, [frameCallback, animation, reduceMotion]);
 
   // Scale the square source artwork uniformly (contain) into the target box so
   // it is never squashed, then center it within the canvas.

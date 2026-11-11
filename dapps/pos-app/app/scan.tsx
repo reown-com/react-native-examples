@@ -643,6 +643,7 @@ const styles = StyleSheet.create({
     fontFamily: "KH Teka Medium",
     fontSize: 50,
     textAlign: "center",
+    fontVariant: ["tabular-nums"],
     letterSpacing: -1,
     lineHeight: 50,
   },

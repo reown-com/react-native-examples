@@ -53,6 +53,7 @@ export function SettingsToggleItem({
       <Switch
         value={value}
         onValueChange={onValueChange}
+        accessibilityLabel={title}
         style={styles.switch}
         testID={testID ? `${testID}-switch` : undefined}
       />

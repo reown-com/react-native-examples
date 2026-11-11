@@ -328,10 +328,18 @@ export default function ActivityScreen() {
             buttons={[
               {
                 label: STATUS_LABELS[transactionFilter],
+                accessibilityLabel:
+                  transactionFilter === "all"
+                    ? "Status filter, all statuses"
+                    : `Status filter, ${STATUS_LABELS[transactionFilter]}`,
                 onPress: () => setActiveSheet("status"),
               },
               {
                 label: DATE_RANGE_LABELS[dateRangeFilter],
+                accessibilityLabel:
+                  dateRangeFilter === "all_time"
+                    ? "Date range filter, all time"
+                    : `Date range filter, ${DATE_RANGE_LABELS[dateRangeFilter]}`,
                 onPress: () => setActiveSheet("dateRange"),
               },
             ]}

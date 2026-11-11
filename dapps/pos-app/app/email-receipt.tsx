@@ -44,7 +44,7 @@ export default function EmailReceiptScreen() {
   const { mutateAsync: sendReceipt, isPending } = useSendReceipt();
 
   const [email, setEmail] = useState("");
-  const [hasError, setHasError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const isSendingRef = useRef(false);
 
@@ -52,7 +52,7 @@ export default function EmailReceiptScreen() {
     bottom + Spacing["spacing-3"],
     Spacing["spacing-5"],
   );
-  const isSubmitDisabled = !email.trim() || hasError || isPending;
+  const hasError = error !== null;
 
   const handleClose = () => {
     if (isSendingRef.current) return;
@@ -75,18 +75,32 @@ export default function EmailReceiptScreen() {
 
   const handleChangeText = (text: string) => {
     setEmail(text);
-    if (hasError) setHasError(false);
+    if (hasError) setError(null);
   };
 
   const handleClear = () => {
     setEmail("");
-    setHasError(false);
+    setError(null);
+  };
+
+  /** Returns the message to show for the current value, or null if valid. */
+  const validate = (value: string): string | null => {
+    if (!value.trim()) return "Enter the customer's email address";
+    if (!isValidEmail(value)) return "Enter a valid email address";
+    return null;
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    // Only flag a typed value; leaving the field empty isn't an error yet.
+    if (email.trim()) setError(validate(email));
   };
 
   const handleSend = async () => {
-    if (isSendingRef.current || !email.trim()) return;
-    if (!isValidEmail(email)) {
-      setHasError(true);
+    if (isSendingRef.current) return;
+    const validationError = validate(email);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -170,11 +184,22 @@ export default function EmailReceiptScreen() {
             fontSize={isTablet ? 24 : 18}
             lineHeight={isTablet ? 28 : 20}
             color="text-primary"
+            accessibilityRole="header"
+            aria-level={1}
             style={styles.title}
           >
             Enter customer email
           </ThemedText>
           <View>
+            <ThemedText
+              nativeID="email-receipt-label"
+              fontSize={14}
+              lineHeight={18}
+              color="text-secondary"
+              style={styles.label}
+            >
+              Email address
+            </ThemedText>
             <View
               style={[
                 styles.inputContainer,
@@ -189,9 +214,13 @@ export default function EmailReceiptScreen() {
                 value={email}
                 onChangeText={handleChangeText}
                 onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
+                onBlur={handleBlur}
                 onSubmitEditing={handleSend}
-                placeholder="Customer email"
+                accessibilityLabelledBy="email-receipt-label"
+                aria-labelledby="email-receipt-label"
+                aria-describedby={hasError ? "email-receipt-error" : undefined}
+                aria-invalid={hasError}
+                placeholder="name@company.com"
                 placeholderTextColor={Theme["text-tertiary"]}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -234,12 +263,15 @@ export default function EmailReceiptScreen() {
             {hasError && (
               <ThemedText
                 testID="email-receipt-error"
+                nativeID="email-receipt-error"
+                accessibilityLiveRegion="polite"
+                role="alert"
                 fontSize={14}
                 lineHeight={18}
                 color="icon-error"
                 style={styles.errorText}
               >
-                Enter a valid email address
+                {error}
               </ThemedText>
             )}
           </View>
@@ -251,7 +283,8 @@ export default function EmailReceiptScreen() {
           testID="email-receipt-submit"
           size={isTablet ? "lg" : "md"}
           onPress={handleSend}
-          disabled={isSubmitDisabled}
+          // Not pre-disabled: tapping with an empty or invalid email shows why.
+          disabled={isPending}
         >
           Email receipt
         </Button>
@@ -333,6 +366,9 @@ const styles = StyleSheet.create({
   clearIcon: {
     width: 10,
     height: 10,
+  },
+  label: {
+    marginBottom: Spacing["spacing-2"],
   },
   errorText: {
     marginTop: Spacing["spacing-2"],

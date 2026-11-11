@@ -320,6 +320,7 @@ const styles = StyleSheet.create({
   valueText: {
     textAlign: "right",
     flex: 1,
+    fontVariant: ["tabular-nums"],
   },
   closeButton: {
     borderRadius: BorderRadius["3"],
