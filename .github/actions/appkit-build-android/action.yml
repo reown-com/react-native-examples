@@ -124,7 +124,19 @@ runs:
         export SENTRY_DISABLE_AUTO_UPLOAD=true
         # --stacktrace: a failing configure-time `node` call otherwise only
         # says "Process 'command node' finished with non-zero exit value".
-        (cd android && ./gradlew app:assembleInternal --stacktrace)
+        if ! (cd android && ./gradlew app:assembleInternal --stacktrace); then
+          # TEMP diagnostic: Gradle hides the stderr of Expo's configure-time
+          # autolinking command (ExpoAutolinkingPlugin.kt), so run it again.
+          echo "::group::expo-modules-autolinking mirror-kotlin-inline-modules"
+          (cd android && node --eval "require('expo/bin/autolinking')" expo-modules-autolinking mirror-kotlin-inline-modules \
+            --kotlin-files-mirror-directory "$PWD/../node_modules/expo/android/src/main/java/inline/modules/" \
+            --inline-modules-list-directory "$PWD/../node_modules/expo/android/build/inline/modules/" \
+            --watched-directories-serialized "[]") || echo "exit=$?"
+          node --version
+          grep -n "inlineModules" android/gradle.properties || true
+          echo "::endgroup::"
+          exit 1
+        fi
         mkdir -p "$RUNNER_TEMP/appkit-build"
         cp android/app/build/outputs/apk/internal/app-internal.apk "$RUNNER_TEMP/appkit-build/app-internal.apk"
 
