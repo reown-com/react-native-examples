@@ -1,0 +1,20 @@
+name: 🧪 WalletKit - E2E Connect
+# Placeholder so the workflow exists on main: GitHub only lets you dispatch a
+# workflow that is on the default branch. Dispatching it with
+# `--ref <branch>` runs that branch's version of this file, which is how the
+# real suite (reown-com/react-native-examples#667) gets CI runs before merging.
+# That PR replaces this file.
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+
+jobs:
+  placeholder:
+    name: E2E Connect - Android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "Placeholder for the WalletKit connect E2E suite (see #667). Dispatch it with --ref <branch>."
