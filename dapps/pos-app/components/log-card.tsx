@@ -98,14 +98,7 @@ function LogCardBase({ item }: { item: LogEntry }) {
           size="sm"
           fullWidth={false}
           onPress={handleCopy}
-          icon={
-            <Image
-              source={require("@/assets/images/copy.png")}
-              tintColor={theme["text-primary"]}
-              contentFit="contain"
-              style={styles.copyIcon}
-            />
-          }
+          iconLeft={require("@/assets/images/copy.png")}
         >
           Copy entry
         </Button>
@@ -195,10 +188,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing["spacing-2"],
     flexShrink: 1,
-  },
-  copyIcon: {
-    width: 14,
-    height: 14,
   },
   levelBadge: {
     padding: Spacing["spacing-1"] + Spacing["spacing-05"],

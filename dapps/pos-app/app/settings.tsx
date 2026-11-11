@@ -38,7 +38,6 @@ import { showErrorToast, showInfoToast } from "@/utils/toast";
 import { webInputReset } from "@/utils/web-input-reset";
 import * as Application from "expo-application";
 import Constants from "expo-constants";
-import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
@@ -468,14 +467,7 @@ export default function SettingsScreen() {
               variant="secondary"
               testID="settings-test-printer"
               onPress={handleTestPrinterPress}
-              icon={
-                <Image
-                  source={require("@/assets/images/printer.png")}
-                  style={styles.printerIcon}
-                  tintColor={theme["text-primary"]}
-                  cachePolicy="memory-disk"
-                />
-              }
+              iconLeft={require("@/assets/images/printer.png")}
             >
               Print test receipt
             </Button>
@@ -661,10 +653,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing["spacing-6"],
     gap: Spacing["spacing-7"],
   },
-  printerIcon: {
-    width: 16,
-    height: 16,
-  },
   versionText: {
     alignSelf: "flex-end",
     marginVertical: Spacing["spacing-2"],
@@ -674,7 +662,7 @@ const styles = StyleSheet.create({
   },
   sheetInput: {
     borderWidth: 1,
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["2"],
     paddingHorizontal: Spacing["spacing-5"],
     paddingVertical: Spacing["spacing-4"],
     fontSize: 16,

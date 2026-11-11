@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 54,
     paddingHorizontal: Spacing["spacing-5"],
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["3"],
     gap: Spacing["spacing-2"],
   },
   label: {

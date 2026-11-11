@@ -82,7 +82,6 @@ export default function AmountScreen() {
           value={watchAmount}
           currency={currency.symbol}
           symbolPosition={currency.symbolPosition}
-          size={isTablet ? "lg" : "md"}
         />
       </View>
       <Controller
@@ -136,7 +135,6 @@ export default function AmountScreen() {
         testID="charge-button"
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid}
-        size={isTablet ? "lg" : "md"}
         style={[styles.button, isTablet && styles.buttonTablet]}
       >
         {`Charge ${formatAmountWithSymbol(

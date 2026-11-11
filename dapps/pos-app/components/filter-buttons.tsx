@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 48,
     paddingHorizontal: Spacing["spacing-5"],
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["full"],
     borderWidth: 1,
     gap: Spacing["spacing-2"],
   },

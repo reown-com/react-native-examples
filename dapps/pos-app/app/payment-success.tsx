@@ -33,7 +33,6 @@ import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
-import { Image } from "expo-image";
 
 // The params can't be declared optional here: `UnknownOutputParams` indexes to
 // `string | string[]`, so `?` widens to undefined and breaks the constraint.
@@ -323,17 +322,7 @@ export default function PaymentSuccessScreen() {
               variant="secondary"
               testID="send-receipt-button"
               onPress={handleSendReceipt}
-              size={isTablet ? "lg" : "md"}
-              icon={
-                <Image
-                  source={require("@/assets/images/paper-plane.png")}
-                  style={[
-                    styles.buttonIcon,
-                    isTablet && styles.buttonIconTablet,
-                  ]}
-                  tintColor={Theme["text-secondary"]}
-                />
-              }
+              iconLeft={require("@/assets/images/paper-plane.png")}
             >
               Send receipt
             </Button>
@@ -346,28 +335,13 @@ export default function PaymentSuccessScreen() {
               testID="print-receipt-button"
               onPress={handlePrintReceipt}
               disabled={isPrinting}
-              size={isTablet ? "lg" : "md"}
-              icon={
-                <Image
-                  source={require("@/assets/images/printer.png")}
-                  style={[
-                    styles.buttonIcon,
-                    isTablet && styles.buttonIconTablet,
-                  ]}
-                  tintColor={Theme["text-secondary"]}
-                />
-              }
+              iconLeft={require("@/assets/images/printer.png")}
             >
               {isPrinting ? "Printing receipt…" : "Print receipt"}
             </Button>
           )}
 
-          <Button
-            type="accent"
-            variant="primary"
-            size={isTablet ? "lg" : "md"}
-            onPress={handleNewPayment}
-          >
+          <Button type="accent" variant="primary" onPress={handleNewPayment}>
             Start new payment
           </Button>
         </View>
@@ -435,13 +409,5 @@ const styles = StyleSheet.create({
   },
   buttonContainerTablet: {
     gap: Spacing["spacing-5"],
-  },
-  buttonIcon: {
-    width: 16,
-    height: 16,
-  },
-  buttonIconTablet: {
-    width: 20,
-    height: 20,
   },
 });

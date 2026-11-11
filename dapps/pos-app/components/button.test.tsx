@@ -22,6 +22,8 @@ jest.mock("react-native", () => ({
   View: "View",
 }));
 
+jest.mock("expo-image", () => ({ Image: "Image" }));
+
 jest.mock("@/hooks/use-theme-color", () => ({
   useTheme: () => mockColors.light,
   useThemeColor: (colorName: keyof typeof mockColors.light) =>
@@ -48,13 +50,13 @@ function getButtonStyle(testID: string) {
 }
 
 describe("Button", () => {
-  it("applies shared dimensions and full width by default", () => {
+  it("defaults to the design system lg size, fully round and full width", () => {
     const { style } = getButtonStyle("default-button");
 
     expect(style).toMatchObject({
       height: 54,
       width: "100%",
-      borderRadius: 16,
+      borderRadius: 999,
       backgroundColor: Colors.light["bg-accent-primary"],
     });
   });
@@ -77,49 +79,56 @@ describe("Button", () => {
     expect(flattenedStyle.borderWidth).toBe(1);
   });
 
-  it("supports the large tablet size", () => {
-    const screen = render(
-      <Button
-        type="accent"
-        variant="primary"
-        size="lg"
-        testID="large-button"
-        onPress={() => {}}
-      >
-        Charge
-      </Button>,
-    );
+  it.each([
+    ["lg", 54, 18, 24],
+    ["md", 44, 16, 20],
+    ["sm", 32, 14, 16],
+  ] as const)(
+    "uses the design system %s size",
+    (size, height, fontSize, lineHeight) => {
+      const screen = render(
+        <Button
+          type="accent"
+          variant="primary"
+          size={size}
+          testID="sized-button"
+          onPress={() => {}}
+        >
+          Charge
+        </Button>,
+      );
 
-    const button = screen.getByTestId("large-button");
-    const label = screen.getByText("Charge");
+      const button = screen.getByTestId("sized-button");
+      const label = screen.getByText("Charge");
 
-    expect(StyleSheet.flatten(button.props.style).height).toBe(64);
-    expect(StyleSheet.flatten(label.props.style)).toMatchObject({
-      fontSize: 22,
-      lineHeight: 24,
-    });
-  });
+      expect(StyleSheet.flatten(button.props.style).height).toBe(height);
+      expect(StyleSheet.flatten(label.props.style)).toMatchObject({
+        fontSize,
+        lineHeight,
+      });
+    },
+  );
 
-  it("supports the neutral tertiary variant and compact width", () => {
+  it("supports Primary Neutral and compact width", () => {
     const button = render(
       <Button
         type="neutral"
-        variant="tertiary"
+        variant="primary"
         fullWidth={false}
-        testID="tertiary-button"
+        testID="neutral-primary-button"
         onPress={() => {}}
       >
         Print
       </Button>,
-    ).getByTestId("tertiary-button");
+    ).getByTestId("neutral-primary-button");
 
     const style = StyleSheet.flatten(button.props.style);
     expect(style.width).toBeUndefined();
     expect(style.backgroundColor).toBe(Colors.light["bg-invert"]);
   });
 
-  it("passes disabled state through and applies the disabled treatment", () => {
-    const button = render(
+  it("uses the design system disabled colours, not opacity", () => {
+    const screen = render(
       <Button
         type="accent"
         variant="primary"
@@ -129,9 +138,38 @@ describe("Button", () => {
       >
         Disabled
       </Button>,
-    ).getByTestId("disabled-button");
+    );
+    const button = screen.getByTestId("disabled-button");
+    const style = StyleSheet.flatten(button.props.style);
 
     expect(button.props.disabled).toBe(true);
-    expect(StyleSheet.flatten(button.props.style).opacity).toBe(0.6);
+    expect(style.opacity).toBeUndefined();
+    expect(style.backgroundColor).toBe(Colors.light["bg-button-disabled"]);
+    expect(
+      StyleSheet.flatten(screen.getByText("Disabled").props.style).color,
+    ).toBe(Colors.light["text-disabled"]);
+  });
+
+  it("renders icons in the left and right slots around the label", () => {
+    const screen = render(
+      <Button
+        type="neutral"
+        variant="secondary"
+        size="md"
+        iconLeft={1}
+        iconRight={2}
+        testID="icon-button"
+        onPress={() => {}}
+      >
+        Print
+      </Button>,
+    );
+    const content = screen.getByTestId("icon-button").props.children;
+    const [left, label, right] = content.props.children;
+
+    expect(left.props.source).toBe(1);
+    expect(left.props.style).toMatchObject({ width: 20, height: 20 });
+    expect(label.props.children).toBe("Print");
+    expect(right.props.source).toBe(2);
   });
 });

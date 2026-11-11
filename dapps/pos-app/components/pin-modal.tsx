@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   container: {
     width: "85%",
     maxWidth: 340,
-    borderRadius: BorderRadius["5"],
+    borderRadius: BorderRadius["4"],
     padding: Spacing["spacing-6"],
     alignItems: "center",
   },

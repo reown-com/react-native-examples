@@ -577,7 +577,6 @@ export default function ScanScreen() {
           testID="cancel-button"
           onPress={handleOnCancelPress}
           fullWidth={false}
-          size={isTablet ? "lg" : "md"}
           style={[styles.cancelButton, isTablet && styles.cancelButtonTablet]}
         >
           Cancel

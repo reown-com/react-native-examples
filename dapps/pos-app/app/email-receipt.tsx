@@ -274,7 +274,6 @@ export default function EmailReceiptScreen() {
           type="accent"
           variant="primary"
           testID="email-receipt-submit"
-          size={isTablet ? "lg" : "md"}
           onPress={handleSend}
           // Not pre-disabled: tapping with an empty or invalid email shows why.
           disabled={isPending}
@@ -323,7 +322,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 60,
     borderWidth: 1,
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["2"],
     paddingHorizontal: Spacing["spacing-5"],
     gap: Spacing["spacing-3"],
   },

@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 68,
     paddingHorizontal: Spacing["spacing-5"],
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["3"],
     borderWidth: 1,
   },
   labelRow: {

@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     minHeight: 68,
     paddingHorizontal: Spacing["spacing-5"],
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["3"],
     gap: Spacing["spacing-2"],
   },
   labelRow: {

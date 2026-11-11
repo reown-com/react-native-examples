@@ -163,8 +163,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   sheet: {
-    borderTopLeftRadius: BorderRadius["8"],
-    borderTopRightRadius: BorderRadius["8"],
+    borderTopLeftRadius: BorderRadius["4"],
+    borderTopRightRadius: BorderRadius["4"],
     shadowColor: "#000",
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.04,

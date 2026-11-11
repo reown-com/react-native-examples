@@ -108,12 +108,7 @@ export default function PaymentFailureScreen() {
           {subtitle}
         </ThemedText>
       </View>
-      <Button
-        type="accent"
-        variant="primary"
-        size={isTablet ? "lg" : "md"}
-        onPress={handlePrimaryPress}
-      >
+      <Button type="accent" variant="primary" onPress={handlePrimaryPress}>
         {shouldRouteToSettings ? "Go to Settings" : "Start new payment"}
       </Button>
     </View>

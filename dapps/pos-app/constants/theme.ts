@@ -50,6 +50,12 @@ export const Colors = {
     "bg-warning-strong": "#FFBA24", // fill/warning/strong
     "text-on-warning": "#1C180D", // content/warning/on-warning
 
+    // Disabled buttons (design system Button, disabled state)
+    "bg-button-disabled": "#F1F4F7", // fill/primary/disabled
+    "bg-button-neutral-disabled": "#F1F4F7", // fill/inverse/disabled
+    "border-button-disabled": "#F4F4F5", // border/neutral/disabled
+    "text-disabled": "#BABCBE", // content/disabled
+
     // Text colors
     "text-primary": "#1C180D", // content/default
     "text-secondary": "#697077", // content/subtle
@@ -97,6 +103,12 @@ export const Colors = {
     // Warning count badge ("N Left"): strong fill with its paired content.
     "bg-warning-strong": "#FFBA24", // fill/warning/strong
     "text-on-warning": "#1C180D", // content/warning/on-warning
+
+    // Disabled buttons (see light)
+    "bg-button-disabled": "#2A2F35", // fill/primary/disabled
+    "bg-button-neutral-disabled": "#212326", // fill/inverse/disabled
+    "border-button-disabled": "#252525", // border/neutral/disabled
+    "text-disabled": "#4D5358", // content/disabled
 
     // Text colors
     "text-primary": "#F4F4F5", // content/default

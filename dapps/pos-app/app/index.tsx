@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   baseActionButton: {
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: BorderRadius["5"],
+    borderRadius: BorderRadius["3"],
     gap: Spacing["spacing-4"],
   },
   actionButton: {

@@ -156,8 +156,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   container: {
-    borderTopLeftRadius: BorderRadius["8"],
-    borderTopRightRadius: BorderRadius["8"],
+    borderTopLeftRadius: BorderRadius["4"],
+    borderTopRightRadius: BorderRadius["4"],
   },
   containerInner: {
     paddingTop: Spacing["spacing-4"],
