@@ -294,7 +294,7 @@ After the suite runs, the composite action (`.github/actions/walletkit-build-and
 ## Development
 
 ### Prerequisites
-- Node.js >= 20
+- Node.js >= 22.13 (React Native 0.88 requirement)
 - Yarn 3.8.7
 - Ruby 3.3.0 (for iOS/CocoaPods)
 - Xcode & Android Studio

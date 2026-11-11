@@ -3,7 +3,6 @@ import { View, StyleSheet, Linking } from 'react-native';
 import type { CollectDataField, CollectDataFieldResult } from '@walletconnect/pay';
 import { WebView, WebViewNavigation } from 'react-native-webview';
 import type { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
-import { btoa } from 'react-native-quick-base64';
 
 import { useSnapshot } from 'valtio';
 
@@ -75,6 +74,7 @@ function buildUrlWithPrefill(
   themeMode: 'light' | 'dark',
 ): string {
   const prefillJson = JSON.stringify(PREFILL_DATA);
+  // Global btoa (Hermes / browser); PREFILL_DATA is ASCII-only.
   const prefillBase64 = btoa(prefillJson);
 
   let result = baseUrl;
@@ -110,7 +110,9 @@ export function CollectDataWebView({
 }: CollectDataWebViewProps) {
   const Theme = useTheme();
   const { themeMode } = useSnapshot(SettingsStore.state);
-  const webViewRef = useRef<WebView>(null);
+  // react-native-webview 14 defaults its props generic to `undefined`, which
+  // collapses `WebViewProps & P` to `never`; pass `object` explicitly.
+  const webViewRef = useRef<WebView<object>>(null);
   const [isLoading, setIsLoading] = useState(true);
   const isMountedRef = useRef(true);
 
@@ -241,7 +243,7 @@ export function CollectDataWebView({
           <WalletConnectLoading size={120} />
         </View>
       )}
-      <WebView
+      <WebView<object>
         ref={webViewRef}
         source={{ uri: finalUrl }}
         originWhitelist={[
