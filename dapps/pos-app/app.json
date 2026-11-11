@@ -43,7 +43,7 @@
     },
     "plugins": [
       "@rnrepo/expo-config-plugin",
-      "expo-router",
+      ["expo-router", { "asyncRoutes": false }],
       [
         "expo-splash-screen",
         {
