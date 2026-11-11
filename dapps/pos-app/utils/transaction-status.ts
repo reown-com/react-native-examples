@@ -1,5 +1,5 @@
 import { Colors } from "@/constants/theme";
-import { ImageSourcePropType } from "react-native";
+import type { ImageProps } from "expo-image";
 import { TransactionStatus } from "./types";
 
 type ColorKey = keyof typeof Colors.light;
@@ -14,12 +14,12 @@ export interface TransactionStatusMeta {
   /** Theme key for the icon tint (rendered on top of `iconBgKey`). */
   iconTintKey: ColorKey;
   /** PNG glyph rendered inside the icon square (tinted via `iconTintKey`). */
-  icon: ImageSourcePropType;
+  icon: ImageProps["source"];
   /**
    * Optional bolder glyph for the small (14px) status pill, where the regular
    * icon reads too thin. Falls back to `icon` when unset.
    */
-  badgeIcon?: ImageSourcePropType;
+  badgeIcon?: ImageProps["source"];
 }
 
 /**

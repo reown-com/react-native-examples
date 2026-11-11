@@ -337,7 +337,7 @@ export default function ScanScreen() {
     }
   }, [paymentId, paymentStatusData?.status, addLog, isTestPayment]);
 
-  // Hold the latest callback in a ref so the `beforeRemove` listener stays
+  // Hold the latest callback in a ref so the `removed` listener stays
   // registered once for the screen's lifetime instead of being torn down and
   // re-added on every status poll (which changes `cancelPendingPayment`).
   const cancelPendingPaymentRef = useRef(cancelPendingPayment);
@@ -345,11 +345,15 @@ export default function ScanScreen() {
     cancelPendingPaymentRef.current = cancelPendingPayment;
   }, [cancelPendingPayment]);
 
+  // React Navigation 8 (expo-router 58) dropped `beforeRemove`; `removed` fires
+  // after the screen unmounts. Effect cleanup runs before that event, so the
+  // unsubscribe is deferred a microtask or the listener would never fire.
+  // The callback only touches refs, which is safe after unmount.
   useEffect(() => {
-    const unsubscribe = navigation.addListener("beforeRemove", () => {
+    const unsubscribe = navigation.addListener("removed", () => {
       cancelPendingPaymentRef.current();
     });
-    return unsubscribe;
+    return () => queueMicrotask(unsubscribe);
   }, [navigation]);
 
   const { remainingSeconds, isActive: isCountdownActive } = useCountdown({

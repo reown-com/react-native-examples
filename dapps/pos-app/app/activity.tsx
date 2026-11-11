@@ -366,7 +366,9 @@ export default function ActivityScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={refetch}
+            onRefresh={() => {
+              void refetch();
+            }}
             tintColor={theme["icon-accent-primary"]}
           />
         }

@@ -17,7 +17,7 @@ function getTheme(theme: ColorScheme) {
 
 function resolveTheme(
   themeMode: string,
-  systemScheme: ColorSchemeName,
+  systemScheme: ColorSchemeName | null,
 ): ColorScheme {
   if (themeMode === "system") {
     return systemScheme === "dark" ? "dark" : "light";

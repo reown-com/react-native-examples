@@ -47,8 +47,12 @@ export function WalletConnectLoading({ size = 120 }: { size?: number }) {
   // not visible) so it doesn't keep burning CPU/GPU on the UI thread. Resumes
   // automatically when the app returns to the foreground.
   useEffect(() => {
-    const syncActive = (state: AppStateStatus = AppState.currentState) =>
-      frameCallback.setActive(!!animation && state === "active");
+    const syncActive = (
+      state: AppStateStatus | null | undefined = AppState.currentState as
+        | AppStateStatus
+        | null
+        | undefined,
+    ) => frameCallback.setActive(!!animation && state === "active");
     syncActive();
     const subscription = AppState.addEventListener("change", syncActive);
     return () => {
