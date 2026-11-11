@@ -60,6 +60,7 @@ appId: ${APP_ID}
             visible: "React"
           commands:
             - tapOn: "React"
+      - runFlow: connect_ios_open_prompt.yaml
       - extendedWaitUntil:
           visible:
             id: "wallet-request-approve"

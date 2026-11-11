@@ -87,11 +87,12 @@ inputs:
       personal-details data through the prod KYC webview).
     required: false
     default: ''
-  extra-apks:
+  extra-apps:
     description: |
-      Android only: newline-separated paths of other APKs to install on the
-      emulator next to the wallet, e.g. the AppKit sample dApp that the
-      WalletKit connect flows (tag `connect`) pair with.
+      Newline-separated paths of other apps to install next to the wallet (an
+      .apk on Android, a simulator .app on iOS, installed on every simulator),
+      e.g. the AppKit sample dApp that the WalletKit connect flows
+      (tag `connect`) pair with.
     required: false
     default: ''
   apple-key-id:
@@ -743,11 +744,18 @@ runs:
     - name: Install app on Simulator
       if: inputs.platform == 'ios'
       shell: bash
+      env:
+        EXTRA_APPS: ${{ inputs.extra-apps }}
       run: |
         set -euo pipefail
         IFS=, read -ra IDS <<< "$DEVICE_IDS"
+        APPS=("$APP_PATH")
+        while IFS= read -r app; do [ -z "$app" ] || APPS+=("$app"); done <<< "$EXTRA_APPS"
         PIDS=()
-        for ID in "${IDS[@]}"; do xcrun simctl install "$ID" "$APP_PATH" & PIDS+=($!); done
+        for ID in "${IDS[@]}"; do
+          # One background job per simulator; its apps install one after another.
+          ( for app in "${APPS[@]}"; do xcrun simctl install "$ID" "$app"; done ) & PIDS+=($!)
+        done
         for PID in "${PIDS[@]}"; do wait "$PID"; done
 
     # Pinned to WalletConnect/actions master (390045a = merge of #116): the flows
@@ -880,7 +888,7 @@ runs:
         DEEPLINK_PREFIX: rn-web3wallet-internal://wc?uri=
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
-        EXTRA_APKS: ${{ inputs.extra-apks }}
+        EXTRA_APPS: ${{ inputs.extra-apps }}
         APK_PATH: ${{ runner.temp }}/e2e-build/android/app-internal.apk
         # Inside the emulator action, GITHUB_ACTION_PATH is that action's own dir.
         # Not scripts/: build-cache.sh hashes every file there into the key.
@@ -907,7 +915,7 @@ runs:
         disable-animations: true
         script: |
           adb install "$APK_PATH"
-          printf '%s\n' "$EXTRA_APKS" | while IFS= read -r apk; do [ -z "$apk" ] || adb install "$apk"; done
+          printf '%s\n' "$EXTRA_APPS" | while IFS= read -r apk; do [ -z "$apk" ] || adb install "$apk"; done
           bash "$MAESTRO_SCRIPTS/maestro-android.sh"
 
     # Besides media, keeps launch diagnostics: the logcat events buffer

@@ -4,6 +4,7 @@ appId: ${APP_ID}
 # for the request modal. The dApp may deep link to the wallet by itself; if it
 # doesn't within 10s, open the wallet (no restart) so it picks the request up
 # from the relay.
+- runFlow: connect_ios_open_prompt.yaml
 - extendedWaitUntil:
     visible:
       id: "wallet-request-approve"
