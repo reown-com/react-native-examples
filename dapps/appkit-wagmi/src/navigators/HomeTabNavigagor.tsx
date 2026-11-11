@@ -52,6 +52,9 @@ export function HomeTabNavigator() {
         component={ConnectionsScreen}
         options={{
           tabBarLabel: 'Connections',
+          // E2E: on iOS the tab button's accessibility label is
+          // "<label>, tab, n of m", so flows tap tabs by these ids.
+          tabBarButtonTestID: 'tab-connections',
           tabBarIcon: ConnectionsIcon,
           headerStyle: {
             backgroundColor: Theme['bg-100'],
@@ -63,6 +66,7 @@ export function HomeTabNavigator() {
         component={SettingsScreen}
         options={{
           tabBarLabel: 'Settings',
+          tabBarButtonTestID: 'tab-settings',
           tabBarIcon: SettingsIcon,
         }}
       />

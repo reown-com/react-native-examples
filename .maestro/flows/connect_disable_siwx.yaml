@@ -9,7 +9,8 @@ appId: ${APP_ID}
 - retry:
     maxRetries: 3
     commands:
-      - tapOn: "Settings"
+      - tapOn:
+          id: "tab-settings"
       - extendedWaitUntil:
           visible: "AppKit settings & networks"
           timeout: 5000
