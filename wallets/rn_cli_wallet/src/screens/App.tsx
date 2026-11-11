@@ -265,8 +265,6 @@ const App = () => {
               documentTitle={{ formatter: () => 'React N. Wallet' }}
             >
               <StatusBar
-                translucent
-                backgroundColor="transparent"
                 barStyle={
                   themeMode === 'dark' ? 'light-content' : 'dark-content'
                 }

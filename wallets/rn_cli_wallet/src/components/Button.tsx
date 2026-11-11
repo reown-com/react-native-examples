@@ -29,6 +29,11 @@ export const Button: React.FC<ButtonProps> = ({
       hitSlop={hitSlop}
       testID={testID}
       accessibilityLabel={accessibilityLabel}
+      // RNGH 3's BaseButton fires onPress on release even when the finger has
+      // left the button (pressto ignores `pointerInside`), so a drag/swipe that
+      // starts on a button would trigger it. Cancel the gesture once the
+      // pointer leaves the bounds, matching RN Pressable / RNGH 2 behavior.
+      shouldCancelWhenOutside
     >
       {children}
     </PressableScale>
