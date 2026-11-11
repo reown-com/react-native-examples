@@ -122,7 +122,9 @@ runs:
       run: |
         set -euo pipefail
         export SENTRY_DISABLE_AUTO_UPLOAD=true
-        yarn run android:build:internal
+        # --stacktrace: a failing configure-time `node` call otherwise only
+        # says "Process 'command node' finished with non-zero exit value".
+        (cd android && ./gradlew app:assembleInternal --stacktrace)
         mkdir -p "$RUNNER_TEMP/appkit-build"
         cp android/app/build/outputs/apk/internal/app-internal.apk "$RUNNER_TEMP/appkit-build/app-internal.apk"
 
