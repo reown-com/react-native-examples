@@ -14,6 +14,7 @@ import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
 import { isTestPaymentFailure } from "@/services/test-payment";
 import { useLogsStore } from "@/store/useLogsStore";
+import { useTestPaymentsStore } from "@/store/useTestPaymentsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import {
   selectTestModeActive,
@@ -100,6 +101,7 @@ export default function ScanScreen() {
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
+  const addTestPayment = useTestPaymentsStore((state) => state.addTestPayment);
   const Theme = useTheme();
   const isTablet = useIsTablet();
 
@@ -273,15 +275,25 @@ export default function ScanScreen() {
       setTestProcessing(false);
       if (isTestPaymentFailure(amount)) {
         addLog("info", "Test payment declined", "scan", "testPayment");
+        addTestPayment({ paymentId, amount, status: "failed" });
         onFailure("failed");
       } else {
         addLog("info", "Test payment completed", "scan", "testPayment");
+        addTestPayment({ paymentId, amount, status: "succeeded" });
         onSuccess(paymentId);
       }
     }, 3000);
 
     return () => clearTimeout(timeout);
-  }, [addLog, amount, isTestPayment, onFailure, onSuccess, paymentId]);
+  }, [
+    addLog,
+    addTestPayment,
+    amount,
+    isTestPayment,
+    onFailure,
+    onSuccess,
+    paymentId,
+  ]);
 
   const { data: paymentStatusData } = usePaymentStatus(paymentId, {
     enabled: !isTestPayment && !!paymentId && !!qrUri,
@@ -318,7 +330,14 @@ export default function ScanScreen() {
   // resolved yet — cancel then too.
   const cancelPendingPayment = useCallback(() => {
     if (hasNavigatedRef.current || hasCancelledRef.current) return;
-    if (isTestPayment) return;
+    if (isTestPayment) {
+      // No API call to cancel, but record it so Transactions shows it.
+      if (paymentId) {
+        hasCancelledRef.current = true;
+        addTestPayment({ paymentId, amount, status: "cancelled" });
+      }
+      return;
+    }
     // Record the leave so an in-flight `startPayment` cancels the payment it
     // creates instead of leaking it (see `initiatePayment`).
     hasLeftRef.current = true;
@@ -335,7 +354,14 @@ export default function ScanScreen() {
         showErrorToast("We couldn't cancel this payment.");
       });
     }
-  }, [paymentId, paymentStatusData?.status, addLog, isTestPayment]);
+  }, [
+    paymentId,
+    paymentStatusData?.status,
+    addLog,
+    addTestPayment,
+    amount,
+    isTestPayment,
+  ]);
 
   // Hold the latest callback in a ref so the `beforeRemove` listener stays
   // registered once for the screen's lifetime instead of being torn down and
@@ -354,7 +380,12 @@ export default function ScanScreen() {
 
   const { remainingSeconds, isActive: isCountdownActive } = useCountdown({
     expiresAt,
-    onExpired: () => onFailure("expired"),
+    onExpired: () => {
+      if (isTestPayment && paymentId) {
+        addTestPayment({ paymentId, amount, status: "expired" });
+      }
+      onFailure("expired");
+    },
   });
 
   // The visible countdown is plain (non-live) text so screen readers don't

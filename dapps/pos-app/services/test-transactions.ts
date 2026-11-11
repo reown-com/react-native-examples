@@ -1,6 +1,7 @@
 import { getCurrency } from "@/utils/currency";
 import { PaymentRecord, TransactionsResponse } from "@/utils/types";
 import { useSettingsStore } from "@/store/useSettingsStore";
+import { useTestPaymentsStore } from "@/store/useTestPaymentsStore";
 
 export interface TestTransactionsOptions {
   status?: string | string[];
@@ -24,7 +25,7 @@ export function getTestTransactions(
     ? new Set(Array.isArray(options.status) ? options.status : [options.status])
     : null;
 
-  const records: PaymentRecord[] = [
+  const sampleRecords: PaymentRecord[] = [
     "requires_action",
     "processing",
     "succeeded",
@@ -62,6 +63,14 @@ export function getTestTransactions(
       settledAt: status === "succeeded" ? createdAt : undefined,
     };
   });
+
+  // Payments the merchant ran in Test Mode this session (already newest
+  // first) go above the sample rows. The samples are stamped relative to
+  // "now" on every call, so sorting by date would bury real test payments.
+  const records = [
+    ...useTestPaymentsStore.getState().payments,
+    ...sampleRecords,
+  ];
 
   const start = options.startTs ? Date.parse(options.startTs) : undefined;
   const end = options.endTs ? Date.parse(options.endTs) : undefined;
