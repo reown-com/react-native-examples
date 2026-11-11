@@ -399,7 +399,13 @@ export default function ScanScreen() {
   // it stays hidden after `processing`, and stays visible when a poll goes
   // straight from `requires_action` to terminal. That second case happens when
   // the POS sleeps mid-payment and wakes to a finished payment.
-  const backHidden = useLatchedFlag(isProcessing);
+  //
+  // The same latch keeps the confirmation loader up and the Cancel button
+  // hidden: `succeeded` renders once more before the navigation to the success
+  // screen lands, and without the latch that render briefly flashes the scan
+  // view, its QR box and the Cancel button.
+  const hasReachedProcessing = useLatchedFlag(isProcessing);
+  const backHidden = hasReachedProcessing;
 
   // Block the Android hardware back button whenever the header back and gesture
   // are hidden, so it can't pop the screen mid-confirmation.
@@ -415,7 +421,7 @@ export default function ScanScreen() {
         }}
       />
       {isTestPayment && <TestModeOverlay spacerHeight={Spacing["spacing-9"]} />}
-      {isProcessing ? (
+      {hasReachedProcessing ? (
         <View
           style={[
             styles.loadingContainer,
@@ -543,7 +549,7 @@ export default function ScanScreen() {
           <View style={{ flex: 1 }} />
         </View>
       )}
-      {!isProcessing && (
+      {!hasReachedProcessing && (
         <Button
           type="neutral"
           variant="secondary"
