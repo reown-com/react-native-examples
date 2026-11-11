@@ -1,87 +1,86 @@
 import { Platform } from "react-native";
 
+/**
+ * Colour values come from the WalletConnect design system semantic tokens
+ * (@walletconnect/ui-tokens), resolved from the published guidelines site:
+ * https://walletconnect-design-system-guidelines.vercel.app/tokens-semantic.css
+ * The token each key maps to is in the comment next to it. The keys keep their
+ * existing names so screens don't change; when a token changes upstream,
+ * update the value here.
+ */
 export const Colors = {
   light: {
-    // Foreground colors
-    "foreground-primary": "#F3F3F3",
-    // Same as foreground-primary in light; steps up to foreground-secondary in
-    // dark so card/keyboard surfaces stay distinguishable from bg-primary.
-    "foreground-primary-fix": "#F3F3F3",
-    "foreground-secondary": "#E9E9E9",
-    "foreground-tertiary": "#D0D0D0",
-    "foreground-accent-primary-10": "#0666FF1A", // 10% opacity
-    "foreground-accent-primary-40": "#0666FF40", // 40% opacity
-    "foreground-accent-primary-60": "#0666FF60", // 60% opacity
+    // Foreground colors (controls, tiles, keypad)
+    "foreground-primary": "#F4F4F5", // fill/default/strong
+    "foreground-primary-fix": "#F4F4F5", // fill/default/strong
+    "foreground-secondary": "#E3E3E3", // fill/default/off
+    "foreground-tertiary": "#BABCBE", // border/default
+    "foreground-accent-primary-10": "#E4EEFF", // fill/selected/default
+    // No token yet: Test Mode pill. The design system's test-environment cue
+    // is fill/environment/test/default (peach), which is a design decision.
+    "foreground-accent-primary-60": "#0666FF60",
 
     // Icon colors
-    "icon-default": "#9A9A9A",
-    "icon-invert": "#202020",
-    "icon-success": "#30A46B",
-    "icon-accent-primary": "#0666FF",
-    "icon-error": "#DF4A34",
-    "icon-warning": "#F3A13F",
+    "icon-default": "#697077", // icon/subtle
+    "icon-invert": "#1C180D", // icon/default
+    "icon-success": "#008056", // icon/success/default
+    "icon-accent-primary": "#0666FF", // icon/primary/default
+    "icon-error": "#D40912", // icon/error/default
+    "icon-warning": "#B35005", // icon/warning/default
 
     // Background colors
-    "bg-primary": "#FFFFFF",
-    "bg-invert": "#202020",
-    "bg-accent-primary": "#0666FF",
-    "bg-payment-success": "#0666FF",
-    "bg-warning": "#F3A13F33", // 20% opacity
+    "bg-primary": "#FFFFFF", // surface/default
+    "bg-invert": "#1C180D", // fill/inverse/default
+    "bg-accent-primary": "#0666FF", // fill/primary/default
+    "bg-warning": "#FFFBE6", // fill/warning/default
 
     // Text colors
-    "text-primary": "#202020",
-    "text-secondary": "#9A9A9A",
-    "text-tertiary": "#6C6C6C",
-    "text-invert": "#FFFFFF",
-    "text-white": "#FFFFFF",
-    "text-payment-success": "#FFFFFF",
+    "text-primary": "#1C180D", // content/default
+    "text-secondary": "#697077", // content/subtle
+    "text-tertiary": "#697077", // content/subtle
+    "text-invert": "#FFFFFF", // content/inverse
+    "text-white": "#FFFFFF", // content/primary/on-primary
 
     // Border colors
-    "border-primary": "#E9E9E9",
-    "border-secondary": "#D0D0D0",
-    "border-payment-success": "#E9E9E9",
-    "border-accent-primary": "#0666FF",
+    "border-primary": "#E3E3E3", // border/subtle
+    "border-secondary": "#BABCBE", // border/default
+    "border-accent-primary": "#0666FF", // border/primary/default
   },
   dark: {
-    // Foreground colors
-    "foreground-primary": "#252525",
-    // Stepped up to foreground-secondary so card/keyboard surfaces read against
-    // the near-black bg-primary (#252525 was effectively invisible).
-    "foreground-primary-fix": "#2A2A2A",
-    "foreground-secondary": "#2A2A2A",
-    "foreground-tertiary": "#363636",
-    "foreground-accent-primary-10": "#0666FF1A", // 10% opacity
-    "foreground-accent-primary-40": "#0666FF40", // 40% opacity
-    "foreground-accent-primary-60": "#0666FF60", // 60% opacity
+    // Foreground colors (controls, tiles, keypad)
+    "foreground-primary": "#212326", // fill/default/strong
+    "foreground-primary-fix": "#212326", // fill/default/strong
+    "foreground-secondary": "#2A2F35", // fill/default/off
+    "foreground-tertiary": "#3B424C", // border/default
+    "foreground-accent-primary-10": "#0666FF24", // fill/selected/default
+    // No token yet: Test Mode pill (see light).
+    "foreground-accent-primary-60": "#0666FF60",
 
     // Icon colors
-    "icon-default": "#9A9A9A",
-    "icon-invert": "#FFFFFF",
-    "icon-success": "#30A46B",
-    "icon-accent-primary": "#0666FF",
-    "icon-error": "#DF4A34",
-    "icon-warning": "#F3A13F",
+    "icon-default": "#878D96", // icon/subtle
+    "icon-invert": "#F4F4F5", // icon/default
+    "icon-success": "#20A96B", // icon/success/default
+    "icon-accent-primary": "#2B7DFF", // icon/primary/default
+    "icon-error": "#FF4646", // icon/error/default
+    "icon-warning": "#FFBA24", // icon/warning/default
 
     // Background colors
-    "bg-primary": "#202020",
-    "bg-invert": "#FFFFFF",
-    "bg-accent-primary": "#0666FF",
-    "bg-payment-success": "#0666FF",
-    "bg-warning": "#F3A13F33", // 20% opacity
+    "bg-primary": "#0E0E0E", // surface/default
+    "bg-invert": "#F8F9FB", // fill/inverse/default
+    "bg-accent-primary": "#0666FF", // fill/primary/default
+    "bg-warning": "#874D0099", // fill/warning/default
 
     // Text colors
-    "text-primary": "#FFFFFF",
-    "text-secondary": "#9A9A9A",
-    "text-tertiary": "#BBBBBB",
-    "text-invert": "#181818",
-    "text-white": "#FFFFFF",
-    "text-payment-success": "#FFFFFF",
+    "text-primary": "#F4F4F5", // content/default
+    "text-secondary": "#878D96", // content/subtle
+    "text-tertiary": "#878D96", // content/subtle
+    "text-invert": "#1C180D", // content/inverse
+    "text-white": "#FFFFFF", // content/primary/on-primary
 
     // Border colors
-    "border-primary": "#363636",
-    "border-secondary": "#4F4F4F",
-    "border-payment-success": "#E9E9E9",
-    "border-accent-primary": "#0666FF",
+    "border-primary": "#2A2F35", // border/subtle
+    "border-secondary": "#3B424C", // border/default
+    "border-accent-primary": "#0666FF", // border/primary/default
   },
 };
 
