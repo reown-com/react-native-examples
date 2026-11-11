@@ -520,7 +520,11 @@ runs:
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: |
+        # Leading newline: prebuild's gradle.properties doesn't end with one,
+        # so without it the first line here is glued onto its last property
+        # (VisionCamera_enableCodeScanner=trueorg.gradle.jvmargs=...).
         {
+          echo ""
           echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
           echo "org.gradle.parallel=true"
           echo "org.gradle.caching=true"

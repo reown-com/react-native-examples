@@ -104,7 +104,11 @@ runs:
         [ -n "$KEYSTORE_BASE64" ] || { echo "Error: android-keystore-base64 input is empty"; exit 1; }
         printf '%s\n' "$SECRETS_FILE" > android/secrets.properties
         printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "android/app/${KEYSTORE_NAME}.keystore"
+        # Leading newline: prebuild's gradle.properties doesn't end with one,
+        # and its last line (expo.inlineModules.watchedDirectories=[]) must stay
+        # valid JSON for Expo's autolinking.
         {
+          echo ""
           echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
           echo "org.gradle.parallel=true"
           echo "org.gradle.caching=true"
@@ -124,19 +128,7 @@ runs:
         export SENTRY_DISABLE_AUTO_UPLOAD=true
         # --stacktrace: a failing configure-time `node` call otherwise only
         # says "Process 'command node' finished with non-zero exit value".
-        if ! (cd android && ./gradlew app:assembleInternal --stacktrace); then
-          # TEMP diagnostic: Gradle hides the stderr of Expo's configure-time
-          # autolinking command (ExpoAutolinkingPlugin.kt), so run it again.
-          echo "::group::expo-modules-autolinking mirror-kotlin-inline-modules"
-          (cd android && node --eval "require('expo/bin/autolinking')" expo-modules-autolinking mirror-kotlin-inline-modules \
-            --kotlin-files-mirror-directory "$PWD/../node_modules/expo/android/src/main/java/inline/modules/" \
-            --inline-modules-list-directory "$PWD/../node_modules/expo/android/build/inline/modules/" \
-            --watched-directories-serialized "[]") || echo "exit=$?"
-          node --version
-          grep -n "inlineModules" android/gradle.properties || true
-          echo "::endgroup::"
-          exit 1
-        fi
+        (cd android && ./gradlew app:assembleInternal --stacktrace)
         mkdir -p "$RUNNER_TEMP/appkit-build"
         cp android/app/build/outputs/apk/internal/app-internal.apk "$RUNNER_TEMP/appkit-build/app-internal.apk"
 
