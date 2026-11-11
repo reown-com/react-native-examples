@@ -1,3 +1,17 @@
+diff --git a/node_modules/react-native-thermal-pos-printer/android/consumer-rules.pro b/node_modules/react-native-thermal-pos-printer/android/consumer-rules.pro
+new file mode 100644
+index 0000000..7740cc9
+--- /dev/null
++++ b/node_modules/react-native-thermal-pos-printer/android/consumer-rules.pro
+@@ -0,0 +1,8 @@
++# build.gradle declares consumerProguardFiles "consumer-rules.pro" but the
++# published package doesn't ship it, which fails :mergeReleaseConsumerProguardFiles
++# (added by pos-app's patch-package patch).
++#
++# PosPrinter is a legacy NativeModules module: React Native looks up its
++# @ReactMethod methods by reflection, so keep the module and package intact
++# when the app is shrunk with R8.
++-keep class com.reactnativeposprinter.** { *; }
 diff --git a/node_modules/react-native-thermal-pos-printer/ios/PosPrinter.m b/node_modules/react-native-thermal-pos-printer/ios/PosPrinter.m
 index bdbd51d..54c3117 100644
 --- a/node_modules/react-native-thermal-pos-printer/ios/PosPrinter.m
