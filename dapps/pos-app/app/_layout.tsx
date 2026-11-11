@@ -36,7 +36,7 @@ const queryClient = new QueryClient();
 
 // Keep home at the bottom of the stack when the app is cold-started from a deep
 // link (e.g. `wpay://setup`), so the linked screen has somewhere to go back to.
-export const unstable_settings = { initialRouteName: "index" };
+export const unstable_settings = { anchor: "index" };
 
 const renderHeaderTitle = (title: string) => {
   const HeaderTitle = () => (

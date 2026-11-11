@@ -160,7 +160,7 @@ export default function ScanScreen() {
     if (isTestPayment) {
       setTestProcessing(false);
     }
-    // The `beforeRemove` listener below cancels the payment on leave.
+    // The `removed` listener below cancels the payment on leave.
     resetNavigation("/amount");
   };
 
@@ -217,7 +217,7 @@ export default function ScanScreen() {
         const data = await startPayment(paymentRequest);
 
         // The user can back out while this create call is in flight, before
-        // `paymentId` state exists for the `beforeRemove` listener to cancel.
+        // `paymentId` state exists for the `removed` listener to cancel.
         // Cancel the freshly opened payment here instead of rendering a QR for
         // a screen that's already gone.
         if (hasLeftRef.current) {
