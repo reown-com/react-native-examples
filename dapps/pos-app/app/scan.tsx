@@ -456,7 +456,7 @@ export default function ScanScreen() {
               fontSize={isTablet ? 24 : 20}
               lineHeight={isTablet ? 26 : 22}
             >
-              Waiting for confirmation...
+              Waiting for confirmation…
             </ThemedText>
             <ThemedText
               style={{ color: Theme["text-secondary"], textAlign: "center" }}
@@ -508,7 +508,7 @@ export default function ScanScreen() {
             ]}
           >
             {testProcessing
-              ? "Waiting for confirmation..."
+              ? "Waiting for confirmation…"
               : showNfc
                 ? "Scan or tap to pay"
                 : "Scan to pay"}
@@ -643,7 +643,6 @@ const styles = StyleSheet.create({
     fontFamily: "KH Teka Medium",
     fontSize: 50,
     textAlign: "center",
-    fontVariant: ["tabular-nums"],
     letterSpacing: -1,
     lineHeight: 50,
   },

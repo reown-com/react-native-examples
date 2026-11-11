@@ -139,9 +139,10 @@ export default function AmountScreen() {
         size={isTablet ? "lg" : "md"}
         style={[styles.button, isTablet && styles.buttonTablet]}
       >
-        {isValid
-          ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
-          : "Enter amount"}
+        {`Charge ${formatAmountWithSymbol(
+          formatAmount(isValid ? watchAmount : "0"),
+          currency,
+        )}`}
       </Button>
     </View>
   );

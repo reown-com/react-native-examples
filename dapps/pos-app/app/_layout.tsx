@@ -9,6 +9,7 @@ import { DocumentTitle } from "@/components/document-title";
 import HeaderImage from "@/components/header-image";
 import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useAssets } from "expo-asset";
 import { useFonts } from "expo-font";
 
 import { useTheme } from "@/hooks/use-theme-color";
@@ -16,6 +17,7 @@ import { usePosBridge } from "@/hooks/use-pos-bridge";
 import * as Sentry from "@sentry/react-native";
 
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
+import { PRELOAD_IMAGES } from "@/constants/preload-images";
 import { Spacing } from "@/constants/spacing";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -41,7 +43,12 @@ export const unstable_settings = { initialRouteName: "index" };
 
 const renderHeaderTitle = (title: string) => {
   const HeaderTitle = () => (
-    <ThemedText fontSize={18} style={{ fontWeight: "500" }}>
+    <ThemedText
+      fontSize={18}
+      accessibilityRole="header"
+      aria-level={1}
+      style={{ fontWeight: "500" }}
+    >
       {title}
     </ThemedText>
   );
@@ -68,6 +75,10 @@ export default Sentry.wrap(function RootLayout() {
     "KH Teka Medium": require("@/assets/fonts/KHTeka-Medium.otf"),
     "KH Teka Mono": require("@/assets/fonts/KHTekaMono-Regular.otf"),
   });
+  // Resolves to the assets, or sets an error; either way stop waiting so a
+  // failed icon download never blocks the app.
+  const [preloadedImages, preloadError] = useAssets(PRELOAD_IMAGES);
+  const imagesReady = !!preloadedImages || !!preloadError;
 
   // Ends Sentry's app-start span once real UI can render (after hydration + fonts).
   useEffect(() => {
@@ -111,7 +122,7 @@ export default Sentry.wrap(function RootLayout() {
     checkBluetoothPermission();
   }, []);
 
-  if (!_hasHydrated || !fontsLoaded) {
+  if (!_hasHydrated || !fontsLoaded || !imagesReady) {
     return (
       <View
         style={{

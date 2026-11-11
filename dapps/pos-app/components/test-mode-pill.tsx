@@ -16,7 +16,7 @@ export function TestModePill({ style }: TestModePillProps) {
       accessibilityLabel="Test mode active. Payments are simulated."
       style={[
         styles.container,
-        { backgroundColor: theme["foreground-accent-primary-60"] },
+        { backgroundColor: theme["bg-environment-test"] },
         style,
       ]}
     >
@@ -24,7 +24,7 @@ export function TestModePill({ style }: TestModePillProps) {
         fontSize={14}
         lineHeight={18}
         style={{
-          color: theme["text-primary"],
+          color: theme["text-on-environment-test"],
           fontFamily: "KH Teka Medium",
           fontWeight: "500",
         }}

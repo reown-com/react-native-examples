@@ -1,5 +1,6 @@
 import { Badge } from "@/components/badge";
 import { Button } from "@/components/button";
+import { ConfirmModal } from "@/components/confirm-modal";
 import { PinModal } from "@/components/pin-modal";
 import { RadioList, RadioOption } from "@/components/radio-list";
 import { SettingsBottomSheet } from "@/components/settings-bottom-sheet";
@@ -39,7 +40,7 @@ import * as Application from "expo-application";
 import Constants from "expo-constants";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Platform, StyleSheet, TextInput, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -120,6 +121,20 @@ export default function SettingsScreen() {
     authenticate,
   } = useBiometricAuth();
 
+  // After credentials are saved in Test Mode, offer to switch to live payments
+  // once both the merchant ID and API key are set.
+  const [showTestModeOffPrompt, setShowTestModeOffPrompt] = useState(false);
+  const handleCredentialsSaved = useCallback(() => {
+    const settings = useSettingsStore.getState();
+    if (
+      selectTestModeActive(settings) &&
+      !!settings.merchantId?.trim() &&
+      settings.isCustomerApiKeySet
+    ) {
+      setShowTestModeOffPrompt(true);
+    }
+  }, []);
+
   const {
     merchantIdInput,
     customerApiKeyInput,
@@ -144,6 +159,7 @@ export default function SettingsScreen() {
     canUseBiometric: !!canUseBiometric,
     authenticate,
     biometricLabel,
+    onCredentialsSaved: handleCredentialsSaved,
   });
 
   // Pick up a setup QR (merchant ID + API key) from the in-app scanner or the
@@ -159,18 +175,8 @@ export default function SettingsScreen() {
       showErrorToast("This terminal is connected through the dashboard.");
       return;
     }
-    if (testModeActive) {
-      showErrorToast("Turn off Test Mode to connect this terminal.");
-      return;
-    }
     handleScannedSetup(pendingSetup);
-  }, [
-    pendingSetup,
-    clearPendingSetup,
-    isIframeSession,
-    testModeActive,
-    handleScannedSetup,
-  ]);
+  }, [pendingSetup, clearPendingSetup, isIframeSession, handleScannedSetup]);
 
   const currencyOptions: RadioOption<CurrencyCode>[] = useMemo(
     () =>
@@ -367,13 +373,12 @@ export default function SettingsScreen() {
                 }
                 caret="right"
                 showCaret
-                disabled={testActive}
                 onPress={() => setActiveSheet("merchantId")}
               />
 
               <SettingsItem
                 testID="settings-customer-api-key"
-                title="Customer API KEY"
+                title="Customer API key"
                 value={hasStoredCustomerApiKey ? "**********" : undefined}
                 bullet={!hasStoredCustomerApiKey}
                 badge={
@@ -387,7 +392,6 @@ export default function SettingsScreen() {
                 }
                 caret="right"
                 showCaret
-                disabled={testActive}
                 onPress={() => setActiveSheet("customerApiKey")}
               />
 
@@ -398,7 +402,6 @@ export default function SettingsScreen() {
                   title="Scan credentials QR"
                   caret="right"
                   showCaret
-                  disabled={testActive}
                   onPress={handleScanSetupPress}
                 />
               )}
@@ -428,7 +431,7 @@ export default function SettingsScreen() {
 
               <SettingsToggleItem
                 testID="settings-test-mode-toggle"
-                title="Enable Test Mode"
+                title="Test mode"
                 description="Simulate payments"
                 value={testMode}
                 onValueChange={handleTestModeChange}
@@ -608,6 +611,21 @@ export default function SettingsScreen() {
           </View>
         </SettingsBottomSheet>
       )}
+
+      <ConfirmModal
+        testID="test-mode-off-prompt"
+        visible={showTestModeOffPrompt}
+        icon={require("@/assets/images/warning_circle.png")}
+        title="Turn off Test Mode?"
+        description="Your merchant account is set up. Turn off Test Mode to take real payments."
+        confirmLabel="Turn off Test Mode"
+        cancelLabel="Keep Test Mode on"
+        onConfirm={() => {
+          setTestMode(false);
+          setShowTestModeOffPrompt(false);
+        }}
+        onClose={() => setShowTestModeOffPrompt(false)}
+      />
 
       {/* PIN Modal */}
       <PinModal

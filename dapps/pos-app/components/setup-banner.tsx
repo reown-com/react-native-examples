@@ -36,8 +36,8 @@ export function SetupBanner({ remaining, testID }: SetupBannerProps) {
       </View>
       <Badge
         label={`${remaining} Left`}
-        backgroundColor="icon-warning"
-        color="text-white"
+        backgroundColor="bg-warning-strong"
+        color="text-on-warning"
       />
     </View>
   );

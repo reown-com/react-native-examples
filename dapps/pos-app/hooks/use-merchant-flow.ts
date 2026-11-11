@@ -45,12 +45,15 @@ interface MerchantFlowOptions {
   authenticate: (promptMessage: string) => Promise<boolean>;
   // Label for the current biometric type (e.g. "Face ID"), used in the prompt.
   biometricLabel: string;
+  // Called after a merchant ID, API key or setup QR is saved (not cleared).
+  onCredentialsSaved?: () => void;
 }
 
 export function useMerchantFlow({
   canUseBiometric,
   authenticate,
   biometricLabel,
+  onCredentialsSaved,
 }: MerchantFlowOptions) {
   const storedMerchantId = useSettingsStore((state) => state.merchantId);
   const setMerchantId = useSettingsStore((state) => state.setMerchantId);
@@ -188,6 +191,12 @@ export function useMerchantFlow({
       return;
     }
 
+    // Clearing a credential isn't "setting" one, so it doesn't notify.
+    const isClearing =
+      (pending.action === "merchant-id" ||
+        pending.action === "customer-api-key") &&
+      pending.value === "";
+
     try {
       if (pending.action === "merchant-id") {
         if (pending.value === "") {
@@ -205,7 +214,6 @@ export function useMerchantFlow({
           addLog("info", "Merchant ID updated", "settings", "completeSave");
         }
       } else if (pending.action === "customer-api-key") {
-        const isClearing = pending.value === "";
         await setCustomerApiKey(pending.value);
         setState((prev) => ({
           ...prev,
@@ -247,6 +255,7 @@ export function useMerchantFlow({
         pendingSave: null,
         activeModal: "none",
       }));
+      if (!isClearing) onCredentialsSaved?.();
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to save";
@@ -259,6 +268,7 @@ export function useMerchantFlow({
     clearMerchantId,
     setCustomerApiKey,
     addLog,
+    onCredentialsSaved,
   ]);
 
   const handlePinVerifyComplete = useCallback(

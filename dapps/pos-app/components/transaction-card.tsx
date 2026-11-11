@@ -69,12 +69,7 @@ function TransactionCardBase({
       </View>
 
       <View style={styles.trailing}>
-        <ThemedText
-          fontSize={16}
-          lineHeight={18}
-          color="text-primary"
-          style={styles.amount}
-        >
+        <ThemedText fontSize={16} lineHeight={18} color="text-primary">
           {amount}
         </ThemedText>
         <Image
@@ -126,8 +121,5 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "500",
-  },
-  amount: {
-    fontVariant: ["tabular-nums"],
   },
 });

@@ -78,7 +78,7 @@ Add `--headless` to run without a visible browser window (as CI does under xvfb)
 | --------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `payment-flow.yaml`   | `payment`  | Start payment → enter $0.01 → charge → wait for QR → tap QR copies the payment link. Needs valid merchant creds + network. |
 | `payment-cancel.yaml` | `payment`  | Same prelude as `payment-flow`, then cancel returns to a fresh amount screen (and cancels the payment at the gateway).     |
-| `invalid-amount.yaml` | `amount`   | Charge button stays "Enter amount"/disabled at empty/`0`; enables once a non-zero amount is entered.                       |
+| `invalid-amount.yaml` | `amount`   | Charge button reads "Charge $0.00" and stays disabled at empty/`0`; enables once a non-zero amount is entered.             |
 | `keypad.yaml`         | `amount`   | Keypad decimal handling (single decimal, max 2 fractional digits) and backspace.                                           |
 | `settings-theme.yaml` | `settings` | Opens the Theme bottom sheet, selects Dark, and verifies the updated setting.                                              |
 

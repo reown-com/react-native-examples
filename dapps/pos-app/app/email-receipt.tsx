@@ -5,6 +5,7 @@ import {
   useNavigation,
 } from "expo-router";
 import { Image } from "expo-image";
+import { HeaderBackButton } from "expo-router/react-navigation";
 import React, { useEffect, useRef, useState } from "react";
 import {
   BackHandler,
@@ -157,24 +158,16 @@ export default function EmailReceiptScreen() {
         ]}
       >
         <View style={styles.header}>
-          <ScalePressable
+          {/* Same back arrow as the stack header on other screens. */}
+          <HeaderBackButton
             testID="email-receipt-close"
-            accessibilityRole="button"
-            accessibilityLabel="Close"
+            accessibilityLabel="Go back"
             onPress={handleClose}
             disabled={isPending}
-            style={[
-              styles.closeButton,
-              { borderColor: Theme["border-secondary"] },
-            ]}
-          >
-            <Image
-              source={require("@/assets/images/close.png")}
-              style={styles.closeIcon}
-              tintColor={Theme["text-primary"]}
-              cachePolicy="memory-disk"
-            />
-          </ScalePressable>
+            tintColor={Theme["text-primary"]}
+            displayMode="minimal"
+            style={styles.backButton}
+          />
           <HeaderImage tintColor={Theme["text-primary"]} />
           <View style={styles.headerSpacer} />
         </View>
@@ -314,17 +307,8 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
   },
-  closeButton: {
-    width: 38,
-    height: 38,
-    borderRadius: BorderRadius["3"],
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  closeIcon: {
-    width: 20,
-    height: 20,
+  backButton: {
+    marginLeft: 0,
   },
   form: {
     flex: 1,

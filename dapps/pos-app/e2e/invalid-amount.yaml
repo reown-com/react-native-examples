@@ -11,15 +11,15 @@ tags:
 - tapOn:
     id: "start-payment-button"
 
-# Empty amount: the charge button shows the placeholder label
+# Empty amount: the charge button shows a zero amount
 - assertVisible:
-    text: "Enter amount"
+    text: "Charge \\$0.00"
 
 # Entering "0" is still invalid (amount required)
 - tapOn:
     id: "key-0"
 - assertVisible:
-    text: "Enter amount"
+    text: "Charge \\$0.00"
 
 # Tapping the disabled charge button must NOT navigate away — keypad still shown
 - tapOn:

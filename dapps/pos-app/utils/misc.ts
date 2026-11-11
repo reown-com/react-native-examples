@@ -7,7 +7,7 @@ export const getDate = () => {
 };
 
 /**
- * Format a date with time (e.g., "14 Oct 2025 - 14:45").
+ * Format a date with time in the device timezone (e.g., "14 Oct 2025 · 14:45").
  * Accepts an ISO string or an epoch-ms timestamp.
  */
 export function formatDateTime(input?: string | number): string {
@@ -26,7 +26,7 @@ export function formatDateTime(input?: string | number): string {
     minute: "2-digit",
   });
 
-  return `${datePart} - ${timePart}`;
+  return `${datePart} · ${timePart}`;
 }
 
 /**

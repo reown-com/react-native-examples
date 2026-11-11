@@ -24,7 +24,11 @@ import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { formatAmountWithSymbol, getCurrency } from "@/utils/currency";
+import {
+  formatAmountWithSymbol,
+  formatTokenAmount,
+  getCurrency,
+} from "@/utils/currency";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { resetNavigation } from "@/utils/navigation";
@@ -71,6 +75,21 @@ export default function PaymentSuccessScreen() {
   const addLog = useLogsStore((state) => state.addLog);
   const { top, bottom } = useSafeAreaInsets();
   const { amount = "", paymentId } = params;
+  // Settlement detail under the title, e.g. "15.50 USDC · 14:12". The time is
+  // when this screen opened, in the device's timezone.
+  const [confirmedAt] = useState(() =>
+    new Date().toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  );
+  const tokenLabel =
+    params.tokenAmount && params.token && params.tokenDecimals
+      ? `${formatTokenAmount(params.tokenAmount, Number(params.tokenDecimals))} ${params.token}`
+      : null;
+  const confirmationDetail = tokenLabel
+    ? `${tokenLabel} · ${confirmedAt}`
+    : confirmedAt;
   // Email receipts aren't offered in the dashboard iframe.
   const canSendReceipt =
     emailReceiptEnabled && !!paymentId && !isRunningInIframe();
@@ -280,7 +299,16 @@ export default function PaymentSuccessScreen() {
             lineHeight={isTablet ? 28 : 20}
             style={[styles.amountDescription, { color: Theme["text-primary"] }]}
           >
-            Payment successful
+            Payment confirmed
+          </ThemedText>
+          <ThemedText
+            testID="payment-success-detail"
+            fontSize={isTablet ? 18 : 16}
+            lineHeight={isTablet ? 22 : 20}
+            color="text-secondary"
+            style={styles.amountDetail}
+          >
+            {confirmationDetail}
           </ThemedText>
         </View>
         <View
@@ -395,9 +423,11 @@ const styles = StyleSheet.create({
   amountDescription: {
     textAlign: "center",
   },
+  amountDetail: {
+    textAlign: "center",
+  },
   amountValue: {
     textAlign: "center",
-    fontVariant: ["tabular-nums"],
   },
   buttonContainer: {
     width: "100%",

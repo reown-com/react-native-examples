@@ -16,9 +16,10 @@ export const Colors = {
     "foreground-secondary": "#E3E3E3", // fill/default/off
     "foreground-tertiary": "#BABCBE", // border/default
     "foreground-accent-primary-10": "#E4EEFF", // fill/selected/default
-    // No token yet: Test Mode pill. The design system's test-environment cue
-    // is fill/environment/test/default (peach), which is a design decision.
-    "foreground-accent-primary-60": "#0666FF60",
+    // Test Mode pill. The design system has no "content on test" token, so
+    // the text is neutral/900 in both modes (4.68:1; white is only 3.79:1).
+    "bg-environment-test": "#DB5B2E", // fill/environment/test/default
+    "text-on-environment-test": "#1C180D", // neutral/900
 
     // Icon colors
     "icon-default": "#697077", // icon/subtle
@@ -33,6 +34,21 @@ export const Colors = {
     "bg-invert": "#1C180D", // fill/inverse/default
     "bg-accent-primary": "#0666FF", // fill/primary/default
     "bg-warning": "#FFFBE6", // fill/warning/default
+
+    // Status (design system "Status" component): soft fill per type, with
+    // the icon and label in that type's colour. Contrast is validated by
+    // design in both modes; the fill against the surface is decorative.
+    "bg-status-success": "#F6FEF9", // fill/success/subtle
+    "bg-status-error": "#FEF3F2", // fill/error/subtle
+    "bg-status-warning": "#FFFBE6", // fill/warning/subtle
+    "bg-status-primary": "#E4EEFF", // fill/selected/default
+    // One step up from the Status spec's fill/default/strong: that is also
+    // the row card's colour, so the neutral tile would vanish on the card.
+    "bg-status-neutral": "#E3E3E3", // fill/default/off
+    "content-status-primary": "#0057E2", // content/primary/on-selected
+    // Warning count badge ("N Left"): strong fill with its paired content.
+    "bg-warning-strong": "#FFBA24", // fill/warning/strong
+    "text-on-warning": "#1C180D", // content/warning/on-warning
 
     // Text colors
     "text-primary": "#1C180D", // content/default
@@ -53,8 +69,9 @@ export const Colors = {
     "foreground-secondary": "#2A2F35", // fill/default/off
     "foreground-tertiary": "#3B424C", // border/default
     "foreground-accent-primary-10": "#0666FF24", // fill/selected/default
-    // No token yet: Test Mode pill (see light).
-    "foreground-accent-primary-60": "#0666FF60",
+    // Test Mode pill (see light).
+    "bg-environment-test": "#DB5B2E", // fill/environment/test/default
+    "text-on-environment-test": "#1C180D", // neutral/900
 
     // Icon colors
     "icon-default": "#878D96", // icon/subtle
@@ -69,6 +86,17 @@ export const Colors = {
     "bg-invert": "#F8F9FB", // fill/inverse/default
     "bg-accent-primary": "#0666FF", // fill/primary/default
     "bg-warning": "#874D0099", // fill/warning/default
+
+    // Status (see light).
+    "bg-status-success": "#134E484D", // fill/success/subtle
+    "bg-status-error": "#8D151B4D", // fill/error/subtle
+    "bg-status-warning": "#874D004D", // fill/warning/subtle
+    "bg-status-primary": "#0666FF24", // fill/selected/default
+    "bg-status-neutral": "#2A2F35", // fill/default/off (see light)
+    "content-status-primary": "#3E88FF", // content/primary/on-selected
+    // Warning count badge ("N Left"): strong fill with its paired content.
+    "bg-warning-strong": "#FFBA24", // fill/warning/strong
+    "text-on-warning": "#1C180D", // content/warning/on-warning
 
     // Text colors
     "text-primary": "#F4F4F5", // content/default

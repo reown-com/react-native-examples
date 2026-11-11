@@ -9,7 +9,7 @@ export interface TransactionStatusMeta {
   label: string;
   /** Theme key for the title text color. */
   titleColorKey: ColorKey;
-  /** Theme key for the icon square background. */
+  /** Theme key for the icon square / pill background (Status fill). */
   iconBgKey: ColorKey;
   /** Theme key for the icon tint (rendered on top of `iconBgKey`). */
   iconTintKey: ColorKey;
@@ -24,7 +24,8 @@ export interface TransactionStatusMeta {
 
 /**
  * Single source of truth mapping a raw `TransactionStatus` to its display label,
- * colors and icon. Consumed by both the transaction card and the status pill so
+ * colors and icon, following the design system's Status component: success,
+ * error, warning, primary (in progress) and neutral types. Consumed by both the transaction card and the status pill so
  * the two never drift apart.
  */
 export function getTransactionStatusMeta(
@@ -35,33 +36,33 @@ export function getTransactionStatusMeta(
       return {
         label: "Confirmed",
         titleColorKey: "icon-success",
-        iconBgKey: "icon-success",
-        iconTintKey: "text-white",
+        iconBgKey: "bg-status-success",
+        iconTintKey: "icon-success",
         icon: require("@/assets/images/check.png"),
         badgeIcon: require("@/assets/images/check-bold.png"),
       };
     case "cancelled":
       return {
         label: "Cancelled",
-        titleColorKey: "text-tertiary",
-        iconBgKey: "icon-default",
-        iconTintKey: "text-white",
+        titleColorKey: "text-primary",
+        iconBgKey: "bg-status-neutral",
+        iconTintKey: "icon-default",
         icon: require("@/assets/images/close.png"),
       };
     case "failed":
       return {
         label: "Failed",
         titleColorKey: "icon-error",
-        iconBgKey: "icon-error",
-        iconTintKey: "text-white",
+        iconBgKey: "bg-status-error",
+        iconTintKey: "icon-error",
         icon: require("@/assets/images/receipt-x.png"),
       };
     case "expired":
       return {
         label: "Expired",
         titleColorKey: "icon-warning",
-        iconBgKey: "icon-warning",
-        iconTintKey: "text-white",
+        iconBgKey: "bg-status-warning",
+        iconTintKey: "icon-warning",
         icon: require("@/assets/images/warning_circle.png"),
       };
     case "requires_action":
@@ -69,9 +70,9 @@ export function getTransactionStatusMeta(
     default:
       return {
         label: "Pending",
-        titleColorKey: "text-primary",
-        iconBgKey: "bg-invert",
-        iconTintKey: "text-invert",
+        titleColorKey: "content-status-primary",
+        iconBgKey: "bg-status-primary",
+        iconTintKey: "content-status-primary",
         icon: require("@/assets/images/clock.png"),
       };
   }
