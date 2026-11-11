@@ -1,4 +1,5 @@
-import { Canvas, Group, Skia, Skottie } from "@shopify/react-native-skia";
+import { Canvas, Group, Skottie } from "@shopify/react-native-skia";
+import { makeSkottieAnimation } from "@/utils/skottie";
 import { useEffect, useMemo } from "react";
 import { AppState, AppStateStatus } from "react-native";
 import {
@@ -21,10 +22,7 @@ export function SuccessAnimation({
 }) {
   // Create the Skottie animation during render (not at module scope) so it
   // happens after LoadSkiaWeb() resolves on web (see index.web.tsx).
-  const animation = useMemo(
-    () => Skia.Skottie.Make(JSON.stringify(SUCCESS)),
-    [],
-  );
+  const animation = useMemo(() => makeSkottieAnimation(SUCCESS), []);
 
   // Read the (constant) frame rate / length on the JS thread so the worklet
   // below only does arithmetic — no per-frame JSI calls into the Skottie
