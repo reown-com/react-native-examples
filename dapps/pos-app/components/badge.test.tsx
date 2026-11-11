@@ -28,8 +28,8 @@ jest.mock("@/hooks/use-theme-color", () => ({
 }));
 
 describe("Badge", () => {
-  it("renders the label and applies the background token", () => {
-    const { getByText, getByTestId } = render(
+  it("renders the label and applies the background token", async () => {
+    const { getByText, getByTestId } = await render(
       <Badge
         testID="badge"
         label="Not set"

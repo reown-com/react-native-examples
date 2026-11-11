@@ -70,8 +70,8 @@ describe("NumericKeyboard", () => {
     mockTablet = false;
   });
 
-  it("keeps the existing phone metrics", () => {
-    const screen = render(<NumericKeyboard onKeyPress={() => {}} />);
+  it("keeps the existing phone metrics", async () => {
+    const screen = await render(<NumericKeyboard onKeyPress={() => {}} />);
 
     expect(
       StyleSheet.flatten(screen.getByTestId("key-1").props.style),
@@ -84,9 +84,9 @@ describe("NumericKeyboard", () => {
     );
   });
 
-  it("uses larger keys, labels, and backspace icon on tablets", () => {
+  it("uses larger keys, labels, and backspace icon on tablets", async () => {
     mockTablet = true;
-    const screen = render(<NumericKeyboard onKeyPress={() => {}} />);
+    const screen = await render(<NumericKeyboard onKeyPress={() => {}} />);
 
     expect(
       StyleSheet.flatten(screen.getByTestId("key-1").props.style),
@@ -98,21 +98,23 @@ describe("NumericKeyboard", () => {
       },
     );
 
-    const backspaceIcon = screen
+    const backspaceIcons = screen
       .getByLabelText("Backspace")
-      .findByType("Image");
+      .queryAll((instance) => instance.type === "Image");
+    expect(backspaceIcons).toHaveLength(1);
+    const [backspaceIcon] = backspaceIcons;
     expect(StyleSheet.flatten(backspaceIcon.props.style)).toMatchObject({
       width: 28,
       height: 28,
     });
   });
 
-  it("emits decimal and backspace input", () => {
+  it("emits decimal and backspace input", async () => {
     const onKeyPress = jest.fn();
-    const screen = render(<NumericKeyboard onKeyPress={onKeyPress} />);
+    const screen = await render(<NumericKeyboard onKeyPress={onKeyPress} />);
 
-    fireEvent.press(screen.getByTestId("key-decimal"));
-    fireEvent.press(screen.getByTestId("key-erase"));
+    await fireEvent.press(screen.getByTestId("key-decimal"));
+    await fireEvent.press(screen.getByTestId("key-erase"));
 
     expect(onKeyPress).toHaveBeenNthCalledWith(1, ".");
     expect(onKeyPress).toHaveBeenNthCalledWith(2, "erase");

@@ -87,42 +87,42 @@ describe("HomeScreen New payment", () => {
     resetSettingsStore();
   });
 
-  it("shows the merchant setup screen when credentials are missing", () => {
+  it("shows the merchant setup screen when credentials are missing", async () => {
     useSettingsStore.setState({
       testMode: false,
       merchantId: null,
       isCustomerApiKeySet: false,
     });
-    const { getByTestId } = render(<HomeScreen />);
+    const { getByTestId } = await render(<HomeScreen />);
 
-    fireEvent.press(getByTestId("start-payment-button"));
+    await fireEvent.press(getByTestId("start-payment-button"));
 
     expect(router.push).toHaveBeenCalledWith("/merchant-setup");
     expect(router.push).not.toHaveBeenCalledWith("/amount");
   });
 
-  it("starts a payment when the terminal is configured", () => {
+  it("starts a payment when the terminal is configured", async () => {
     useSettingsStore.setState({
       testMode: false,
       merchantId: "merchant-1",
       isCustomerApiKeySet: true,
     });
-    const { getByTestId } = render(<HomeScreen />);
+    const { getByTestId } = await render(<HomeScreen />);
 
-    fireEvent.press(getByTestId("start-payment-button"));
+    await fireEvent.press(getByTestId("start-payment-button"));
 
     expect(router.push).toHaveBeenCalledWith("/amount");
   });
 
-  it("starts a payment in Test Mode without credentials", () => {
+  it("starts a payment in Test Mode without credentials", async () => {
     useSettingsStore.setState({
       testMode: true,
       merchantId: null,
       isCustomerApiKeySet: false,
     });
-    const { getByTestId } = render(<HomeScreen />);
+    const { getByTestId } = await render(<HomeScreen />);
 
-    fireEvent.press(getByTestId("start-payment-button"));
+    await fireEvent.press(getByTestId("start-payment-button"));
 
     expect(router.push).toHaveBeenCalledWith("/amount");
   });
@@ -133,12 +133,12 @@ describe("MerchantSetupScreen", () => {
     jest.clearAllMocks();
   });
 
-  it("asks for merchant details and replaces itself with Settings", () => {
-    const { getByText } = render(<MerchantSetupScreen />);
+  it("asks for merchant details and replaces itself with Settings", async () => {
+    const { getByText } = await render(<MerchantSetupScreen />);
 
     expect(getByText("Set up your merchant details")).toBeTruthy();
 
-    fireEvent.press(getByText("Go to Settings"));
+    await fireEvent.press(getByText("Go to Settings"));
     expect(router.replace).toHaveBeenCalledWith("/settings");
   });
 });

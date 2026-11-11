@@ -46,22 +46,24 @@ jest.mock("expo-image", () => {
 });
 
 describe("TransactionCard", () => {
-  it("invokes its detail callback through the shared Pressable", () => {
+  it("invokes its detail callback through the shared Pressable", async () => {
     const onPress = jest.fn();
-    const card = render(
-      <TransactionCard
-        payment={{
-          paymentId: "payment-1",
-          status: "succeeded",
-          isTerminal: true,
-          fiatAmount: { value: "1250", unit: "iso4217/USD" },
-          createdAt: "2026-08-21T12:00:00.000Z",
-        }}
-        onPress={onPress}
-      />,
+    const card = (
+      await render(
+        <TransactionCard
+          payment={{
+            paymentId: "payment-1",
+            status: "succeeded",
+            isTerminal: true,
+            fiatAmount: { value: "1250", unit: "iso4217/USD" },
+            createdAt: "2026-08-21T12:00:00.000Z",
+          }}
+          onPress={onPress}
+        />,
+      )
     ).getByTestId("transaction-card-pressable");
 
-    fireEvent.press(card);
+    await fireEvent.press(card);
 
     expect(onPress).toHaveBeenCalledTimes(1);
   });

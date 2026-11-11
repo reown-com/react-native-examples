@@ -18,9 +18,9 @@ describe("useMerchantFlow scanned setup", () => {
   });
 
   it("saves the merchant ID and API key together behind one PIN setup", async () => {
-    const { result } = renderFlow();
+    const { result } = await renderFlow();
 
-    act(() => {
+    await act(() => {
       result.current.handleScannedSetup({
         apiKey: "scanned-key",
         merchantId: "scanned-merchant",
@@ -44,9 +44,9 @@ describe("useMerchantFlow scanned setup", () => {
 
   it("asks for the existing PIN and saves nothing when cancelled", async () => {
     await useSettingsStore.getState().setPin("1234");
-    const { result } = renderFlow();
+    const { result } = await renderFlow();
 
-    act(() => {
+    await act(() => {
       result.current.handleScannedSetup({
         apiKey: "scanned-key",
         merchantId: "scanned-merchant",
@@ -54,7 +54,7 @@ describe("useMerchantFlow scanned setup", () => {
     });
     expect(result.current.activeModal).toBe("pin-verify");
 
-    act(() => {
+    await act(() => {
       result.current.handleCancelSecurityFlow();
     });
 

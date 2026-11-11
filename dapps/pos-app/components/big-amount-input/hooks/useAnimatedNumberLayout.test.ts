@@ -4,9 +4,9 @@ import { getCharactersArray } from "../utils/getCharactersArray";
 import { useAnimatedNumberLayout } from "./useAnimatedNumberLayout";
 
 describe("useAnimatedNumberLayout", () => {
-  it("preserves the existing medium metrics", () => {
+  it("preserves the existing medium metrics", async () => {
     const parsed = getCharactersArray("$123.45");
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useAnimatedNumberLayout({ ...parsed, size: "md" }),
     );
 
@@ -15,13 +15,13 @@ describe("useAnimatedNumberLayout", () => {
     expect(result.current.scale).toBe(1);
   });
 
-  it("scales every layout metric proportionally for tablets", () => {
+  it("scales every layout metric proportionally for tablets", async () => {
     const parsed = getCharactersArray("$123.45");
-    const medium = renderHook(() =>
-      useAnimatedNumberLayout({ ...parsed, size: "md" }),
+    const medium = (
+      await renderHook(() => useAnimatedNumberLayout({ ...parsed, size: "md" }))
     ).result.current;
-    const large = renderHook(() =>
-      useAnimatedNumberLayout({ ...parsed, size: "lg" }),
+    const large = (
+      await renderHook(() => useAnimatedNumberLayout({ ...parsed, size: "lg" }))
     ).result.current;
 
     expect(large.fontSize).toBe(80);
@@ -31,9 +31,9 @@ describe("useAnimatedNumberLayout", () => {
     );
   });
 
-  it("retains digit-count compression for long tablet amounts", () => {
+  it("retains digit-count compression for long tablet amounts", async () => {
     const parsed = getCharactersArray("$123,456.78");
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useAnimatedNumberLayout({ ...parsed, size: "lg" }),
     );
 

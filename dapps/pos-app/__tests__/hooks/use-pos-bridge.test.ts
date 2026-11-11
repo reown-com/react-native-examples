@@ -69,7 +69,7 @@ describe("usePosBridge", () => {
     useSettingsStore.getState().setMerchantId("merchant-standalone");
     useSettingsStore.setState({ _hasHydrated: true });
 
-    renderHook(() => usePosBridge());
+    await renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     expect(useSettingsStore.getState()).toMatchObject({
@@ -89,7 +89,7 @@ describe("usePosBridge", () => {
     await useSettingsStore.getState().setCustomerApiKey("stale-key");
     useSettingsStore.getState().setMerchantId("merchant-standalone");
     useSettingsStore.setState({ _hasHydrated: true });
-    renderHook(() => usePosBridge());
+    await renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     await act(async () => {
@@ -113,7 +113,7 @@ describe("usePosBridge", () => {
 
   it("ignores malformed, wrong-version, wrong-window, and subsequent configs", async () => {
     useSettingsStore.setState({ _hasHydrated: true });
-    renderHook(() => usePosBridge());
+    await renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     await act(async () => {
@@ -158,7 +158,7 @@ describe("usePosBridge", () => {
   it("rejects bridge configuration from a standalone window", async () => {
     setWindowLocation("", false);
     useSettingsStore.setState({ _hasHydrated: true });
-    renderHook(() => usePosBridge());
+    await renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     await act(async () => {
@@ -181,7 +181,7 @@ describe("usePosBridge", () => {
       "?merchantId=bGVnYWN5LW1lcmNoYW50JmN1c3RvbWVyQXBpS2V5PWxlZ2FjeS1rZXk=",
     );
     useSettingsStore.setState({ _hasHydrated: true });
-    renderHook(() => usePosBridge());
+    await renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     await act(async () => {
@@ -203,7 +203,7 @@ describe("usePosBridge", () => {
   it("does nothing on native platforms", async () => {
     (Platform as any).OS = "ios";
     useSettingsStore.setState({ _hasHydrated: true });
-    renderHook(() => usePosBridge());
+    await renderHook(() => usePosBridge());
     await act(() => waitForAsync());
 
     expect(parentPostMessage).not.toHaveBeenCalled();
@@ -211,7 +211,7 @@ describe("usePosBridge", () => {
 
   it("resets bridge mode when the listener unmounts", async () => {
     useSettingsStore.setState({ _hasHydrated: true });
-    const { unmount } = renderHook(() => usePosBridge());
+    const { unmount } = await renderHook(() => usePosBridge());
     await act(() => waitForAsync());
     await act(async () => {
       dispatchMessage({
@@ -222,7 +222,7 @@ describe("usePosBridge", () => {
       await waitForAsync();
     });
 
-    unmount();
+    await unmount();
     expect(usePosBridgeStore.getState().isConfigured).toBe(false);
   });
 });

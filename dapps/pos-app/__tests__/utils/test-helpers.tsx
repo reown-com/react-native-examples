@@ -25,10 +25,10 @@ export function createTestQueryClient() {
 }
 
 /**
- * Custom render function that includes providers
+ * Custom render function that includes providers (async in RNTL v14 — await it)
  * Use this instead of the default render from @testing-library/react-native
  */
-export function renderWithProviders(
+export async function renderWithProviders(
   ui: React.ReactElement,
   options?: Omit<RenderOptions, "wrapper">,
 ) {
@@ -41,7 +41,7 @@ export function renderWithProviders(
   };
 
   return {
-    ...render(ui, { wrapper: Wrapper, ...options }),
+    ...(await render(ui, { wrapper: Wrapper, ...options })),
     queryClient,
   };
 }
