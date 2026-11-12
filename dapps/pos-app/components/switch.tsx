@@ -31,8 +31,8 @@ export function Switch({
       // @ts-ignore - activeThumbColor is a valid prop for Web Switch
       activeThumbColor="white"
       trackColor={{
-        true: Theme["icon-accent-primary"],
-        false: Theme["foreground-tertiary"],
+        true: Theme["icon-primary-default"],
+        false: Theme["border-default"],
       }}
     />
   );

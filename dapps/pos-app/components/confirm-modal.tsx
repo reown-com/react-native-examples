@@ -69,7 +69,7 @@ function ConfirmModalBase({
         <Animated.View
           style={[
             styles.container,
-            { backgroundColor: theme["bg-primary"] },
+            { backgroundColor: theme["surface-default"] },
             sheetAnimatedStyle,
           ]}
         >
@@ -87,12 +87,12 @@ function ConfirmModalBase({
                 accessibilityLabel="Close"
                 style={[
                   styles.closeButton,
-                  { borderColor: theme["border-secondary"] },
+                  { borderColor: theme["border-default"] },
                 ]}
               >
                 <Image
                   style={styles.closeIcon}
-                  tintColor={theme["icon-invert"]}
+                  tintColor={theme["icon-default"]}
                   source={require("@/assets/images/close.png")}
                 />
               </ScalePressable>
@@ -101,13 +101,13 @@ function ConfirmModalBase({
             <View style={styles.body}>
               <Image
                 style={styles.icon}
-                tintColor={theme["icon-accent-primary"]}
+                tintColor={theme["icon-primary-default"]}
                 source={icon}
               />
               <ThemedText
                 fontSize={20}
                 lineHeight={24}
-                color="text-primary"
+                color="content-default"
                 style={styles.title}
               >
                 {title}
@@ -115,7 +115,7 @@ function ConfirmModalBase({
               <ThemedText
                 fontSize={16}
                 lineHeight={20}
-                color="text-secondary"
+                color="content-subtle"
                 style={styles.description}
               >
                 {description}

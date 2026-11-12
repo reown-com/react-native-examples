@@ -35,34 +35,34 @@ export function getTransactionStatusMeta(
     case "succeeded":
       return {
         label: "Confirmed",
-        titleColorKey: "icon-success",
-        iconBgKey: "bg-status-success",
-        iconTintKey: "icon-success",
+        titleColorKey: "icon-success-default",
+        iconBgKey: "fill-success-subtle",
+        iconTintKey: "icon-success-default",
         icon: require("@/assets/images/check.png"),
         badgeIcon: require("@/assets/images/check-bold.png"),
       };
     case "cancelled":
       return {
         label: "Cancelled",
-        titleColorKey: "text-primary",
-        iconBgKey: "bg-status-neutral",
-        iconTintKey: "icon-default",
+        titleColorKey: "content-default",
+        iconBgKey: "fill-default-off",
+        iconTintKey: "icon-subtle",
         icon: require("@/assets/images/close.png"),
       };
     case "failed":
       return {
         label: "Failed",
-        titleColorKey: "icon-error",
-        iconBgKey: "bg-status-error",
-        iconTintKey: "icon-error",
+        titleColorKey: "icon-error-default",
+        iconBgKey: "fill-error-subtle",
+        iconTintKey: "icon-error-default",
         icon: require("@/assets/images/receipt-x.png"),
       };
     case "expired":
       return {
         label: "Expired",
-        titleColorKey: "icon-warning",
-        iconBgKey: "bg-status-warning",
-        iconTintKey: "icon-warning",
+        titleColorKey: "icon-warning-default",
+        iconBgKey: "fill-warning-subtle",
+        iconTintKey: "icon-warning-default",
         icon: require("@/assets/images/warning_circle.png"),
       };
     case "requires_action":
@@ -70,9 +70,9 @@ export function getTransactionStatusMeta(
     default:
       return {
         label: "Pending",
-        titleColorKey: "content-status-primary",
-        iconBgKey: "bg-status-primary",
-        iconTintKey: "content-status-primary",
+        titleColorKey: "content-primary-on-selected",
+        iconBgKey: "fill-selected-default",
+        iconTintKey: "content-primary-on-selected",
         icon: require("@/assets/images/clock.png"),
       };
   }

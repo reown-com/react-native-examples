@@ -21,7 +21,7 @@ function EmptyStateBase({ title, subtitle, icon, cta }: EmptyStateProps) {
       <ThemedText
         fontSize={20}
         lineHeight={24}
-        color="text-primary"
+        color="content-default"
         style={styles.title}
       >
         {title}
@@ -29,7 +29,7 @@ function EmptyStateBase({ title, subtitle, icon, cta }: EmptyStateProps) {
       <ThemedText
         fontSize={16}
         lineHeight={20}
-        color="text-secondary"
+        color="content-subtle"
         style={styles.subtitle}
       >
         {subtitle}

@@ -452,14 +452,14 @@ export default function ScanScreen() {
           <WalletConnectLoading size={isTablet ? 220 : 180} />
           <View style={styles.loadingTextContainer}>
             <ThemedText
-              style={{ color: Theme["text-primary"] }}
+              style={{ color: Theme["content-default"] }}
               fontSize={isTablet ? 24 : 20}
               lineHeight={isTablet ? 26 : 22}
             >
               Waiting for confirmation…
             </ThemedText>
             <ThemedText
-              style={{ color: Theme["text-secondary"], textAlign: "center" }}
+              style={{ color: Theme["content-subtle"], textAlign: "center" }}
               fontSize={isTablet ? 20 : 16}
               lineHeight={isTablet ? 22 : 18}
             >
@@ -485,7 +485,7 @@ export default function ScanScreen() {
                 style={[
                   styles.nfcIcon,
                   isTablet && styles.nfcIconTablet,
-                  { tintColor: Theme["icon-default"] },
+                  { tintColor: Theme["icon-subtle"] },
                 ]}
               />
             )}
@@ -493,7 +493,7 @@ export default function ScanScreen() {
               style={[
                 styles.amountValue,
                 isTablet && styles.amountValueTablet,
-                { color: Theme["text-primary"], textTransform: "uppercase" },
+                { color: Theme["content-default"], textTransform: "uppercase" },
               ]}
             >
               {formatAmountWithSymbol(amount, currency)}
@@ -504,7 +504,7 @@ export default function ScanScreen() {
             style={[
               styles.instructionText,
               isTablet && styles.instructionTextTablet,
-              { color: Theme["text-secondary"] },
+              { color: Theme["content-subtle"] },
             ]}
           >
             {testProcessing
@@ -551,7 +551,7 @@ export default function ScanScreen() {
               <ThemedText
                 fontSize={isTablet ? 20 : undefined}
                 lineHeight={isTablet ? 22 : undefined}
-                style={{ color: Theme["text-secondary"] }}
+                style={{ color: Theme["content-subtle"] }}
               >
                 Expires in
               </ThemedText>
@@ -559,7 +559,7 @@ export default function ScanScreen() {
                 fontSize={isTablet ? 20 : undefined}
                 lineHeight={isTablet ? 22 : undefined}
                 style={{
-                  color: Theme["bg-accent-primary"],
+                  color: Theme["fill-primary-default"],
                   fontVariant: ["tabular-nums"],
                 }}
               >

@@ -230,7 +230,7 @@ export default function PaymentSuccessScreen() {
         style={[
           styles.circle,
           {
-            backgroundColor: Theme["bg-accent-primary"],
+            backgroundColor: Theme["fill-primary-default"],
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
@@ -243,7 +243,7 @@ export default function PaymentSuccessScreen() {
         pointerEvents="none"
         style={[
           styles.backgroundOverlay,
-          { backgroundColor: Theme["bg-primary"] },
+          { backgroundColor: Theme["surface-default"] },
           backgroundOverlayAnimatedStyle,
         ]}
       />
@@ -263,7 +263,7 @@ export default function PaymentSuccessScreen() {
         ]}
       >
         <View style={styles.header}>
-          <HeaderImage tintColor={Theme["text-primary"]} />
+          <HeaderImage tintColor={Theme["content-default"]} />
         </View>
         <View
           testID="pos-payment-success"
@@ -289,14 +289,17 @@ export default function PaymentSuccessScreen() {
           <ThemedText
             fontSize={isTablet ? 52 : 38}
             lineHeight={isTablet ? 54 : 38}
-            style={[styles.amountValue, { color: Theme["text-primary"] }]}
+            style={[styles.amountValue, { color: Theme["content-default"] }]}
           >
             {formatAmountWithSymbol(amount, currency)}
           </ThemedText>
           <ThemedText
             fontSize={isTablet ? 24 : 18}
             lineHeight={isTablet ? 28 : 20}
-            style={[styles.amountDescription, { color: Theme["text-primary"] }]}
+            style={[
+              styles.amountDescription,
+              { color: Theme["content-default"] },
+            ]}
           >
             Payment confirmed
           </ThemedText>
@@ -304,7 +307,7 @@ export default function PaymentSuccessScreen() {
             testID="payment-success-detail"
             fontSize={isTablet ? 18 : 16}
             lineHeight={isTablet ? 22 : 20}
-            color="text-secondary"
+            color="content-subtle"
             style={styles.amountDetail}
           >
             {confirmationDetail}

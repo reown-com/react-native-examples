@@ -29,16 +29,19 @@ function FilterButtonsBase({ buttons }: FilterButtonsProps) {
           key={`${button.label}-${index}`}
           onPress={button.onPress}
           accessibilityLabel={button.accessibilityLabel ?? button.label}
-          style={[styles.button, { borderColor: theme["border-secondary"] }]}
+          style={[styles.button, { borderColor: theme["border-default"] }]}
         >
-          <ThemedText fontSize={16} lineHeight={18} color="text-primary">
+          <ThemedText fontSize={16} lineHeight={18} color="content-default">
             {button.label}
           </ThemedText>
           {assets?.[0] && (
             <Image
               source={assets[0]}
-              style={[styles.caretIcon, { tintColor: theme["text-primary"] }]}
-              tintColor={theme["text-primary"]}
+              style={[
+                styles.caretIcon,
+                { tintColor: theme["content-default"] },
+              ]}
+              tintColor={theme["content-default"]}
               cachePolicy="memory-disk"
             />
           )}

@@ -16,7 +16,7 @@ export function ThemedText({
   color,
   ...rest
 }: ThemedTextProps) {
-  const _color = useThemeColor(color ?? "text-primary");
+  const _color = useThemeColor(color ?? "content-default");
 
   return (
     <Text

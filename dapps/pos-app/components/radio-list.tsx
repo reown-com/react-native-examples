@@ -38,10 +38,10 @@ export function RadioList<T extends string = string>({
               styles.item,
               {
                 backgroundColor: isSelected
-                  ? Theme["foreground-accent-primary-10"]
-                  : Theme["foreground-primary-fix"],
+                  ? Theme["fill-selected-default"]
+                  : Theme["fill-default-strong"],
                 borderColor: isSelected
-                  ? Theme["bg-accent-primary"]
+                  ? Theme["fill-primary-default"]
                   : "transparent",
               },
             ]}
@@ -54,14 +54,14 @@ export function RadioList<T extends string = string>({
                     styles.icon,
                     {
                       tintColor: isSelected
-                        ? Theme["icon-accent-primary"]
-                        : Theme["text-primary"],
+                        ? Theme["icon-primary-default"]
+                        : Theme["content-default"],
                     },
                   ]}
                   tintColor={
                     isSelected
-                      ? Theme["icon-accent-primary"]
-                      : Theme["text-primary"]
+                      ? Theme["icon-primary-default"]
+                      : Theme["content-default"]
                   }
                   cachePolicy="memory-disk"
                 />
@@ -71,7 +71,7 @@ export function RadioList<T extends string = string>({
                   style={[styles.dot, { backgroundColor: option.dotColor }]}
                 />
               )}
-              <ThemedText fontSize={16} lineHeight={18} color="text-primary">
+              <ThemedText fontSize={16} lineHeight={18} color="content-default">
                 {option.label}
               </ThemedText>
             </View>
@@ -79,13 +79,13 @@ export function RadioList<T extends string = string>({
               <View
                 style={[
                   styles.radioOuter,
-                  { borderColor: Theme["icon-accent-primary"] },
+                  { borderColor: Theme["icon-primary-default"] },
                 ]}
               >
                 <View
                   style={[
                     styles.radioInner,
-                    { backgroundColor: Theme["icon-accent-primary"] },
+                    { backgroundColor: Theme["icon-primary-default"] },
                   ]}
                 />
               </View>

@@ -129,7 +129,7 @@ export default Sentry.wrap(function RootLayout() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: Theme["bg-primary"],
+          backgroundColor: Theme["surface-default"],
         }}
       >
         <WalletConnectLoading size={180} />
@@ -140,20 +140,20 @@ export default Sentry.wrap(function RootLayout() {
   // Match the navigator's background (shown behind screens during transitions)
   // to the app background so iOS native-stack push/pop doesn't flash the white
   // window underneath. react-navigation's DarkTheme background is pure black
-  // (rgb(1,1,1)), not our bg-primary.
+  // (rgb(1,1,1)), not our surface-default.
   const baseNavTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
   const navigationTheme = {
     ...baseNavTheme,
     colors: {
       ...baseNavTheme.colors,
-      background: Theme["bg-primary"],
-      card: Theme["bg-primary"],
+      background: Theme["surface-default"],
+      card: Theme["surface-default"],
     },
   };
 
   return (
     <GestureHandlerRootView
-      style={{ flex: 1, backgroundColor: Theme["bg-primary"] }}
+      style={{ flex: 1, backgroundColor: Theme["surface-default"] }}
     >
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <QueryClientProvider client={queryClient}>
@@ -170,14 +170,14 @@ export default Sentry.wrap(function RootLayout() {
                     />
                   ),
                   headerShadowVisible: false,
-                  headerTintColor: Theme["text-primary"],
+                  headerTintColor: Theme["content-default"],
                   headerBackButtonDisplayMode: "minimal",
                   // Not shown (minimal mode); gives the back button the
                   // accessible name "Go back" instead of "index, back".
                   headerBackTitle: "Back",
                   headerTitleAlign: "center",
                   headerStyle: {
-                    backgroundColor: Theme["bg-primary"],
+                    backgroundColor: Theme["surface-default"],
                   },
                   headerRightContainerStyle: {
                     ...(Platform.OS === "web" && {
@@ -190,7 +190,7 @@ export default Sentry.wrap(function RootLayout() {
                     }),
                   },
                   contentStyle: {
-                    backgroundColor: Theme["bg-primary"],
+                    backgroundColor: Theme["surface-default"],
                     paddingBottom: Platform.select({
                       ios: Spacing["spacing-6"],
                       android: Spacing["spacing-12"],
@@ -204,7 +204,7 @@ export default Sentry.wrap(function RootLayout() {
                 name="index"
                 options={{
                   contentStyle: {
-                    backgroundColor: Theme["bg-primary"],
+                    backgroundColor: Theme["surface-default"],
                     paddingBottom: 0,
                   },
                 }}
@@ -231,7 +231,7 @@ export default Sentry.wrap(function RootLayout() {
                   headerShown: false,
                   gestureEnabled: false,
                   contentStyle: {
-                    backgroundColor: Theme["bg-primary"],
+                    backgroundColor: Theme["surface-default"],
                     paddingBottom: 0,
                   },
                 }}
@@ -241,7 +241,7 @@ export default Sentry.wrap(function RootLayout() {
                 options={{
                   headerShown: false,
                   contentStyle: {
-                    backgroundColor: Theme["bg-primary"],
+                    backgroundColor: Theme["surface-default"],
                     paddingBottom: 0,
                   },
                 }}

@@ -109,7 +109,7 @@ export default function ScanSetupQrScreen() {
           <ThemedText
             fontSize={16}
             lineHeight={22}
-            color="text-white"
+            color="content-primary-on-primary"
             style={styles.instruction}
           >
             {needsPermission

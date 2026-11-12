@@ -134,14 +134,14 @@ export default function EmailReceiptScreen() {
   };
 
   const borderColor = hasError
-    ? Theme["icon-error"]
+    ? Theme["icon-error-default"]
     : isFocused
-      ? Theme["border-accent-primary"]
-      : Theme["border-primary"];
+      ? Theme["border-primary-default"]
+      : Theme["border-subtle"];
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: Theme["bg-primary"] }]}
+      style={[styles.container, { backgroundColor: Theme["surface-default"] }]}
       // Padding on Android too: older versions (e.g. Android 10) don't resize
       // the window for the keyboard under edge-to-edge. Where the window does
       // resize, the keyboard no longer overlaps the view, so no padding is added.
@@ -164,11 +164,11 @@ export default function EmailReceiptScreen() {
             accessibilityLabel="Go back"
             onPress={handleClose}
             disabled={isPending}
-            tintColor={Theme["text-primary"]}
+            tintColor={Theme["content-default"]}
             displayMode="minimal"
             style={styles.backButton}
           />
-          <HeaderImage tintColor={Theme["text-primary"]} />
+          <HeaderImage tintColor={Theme["content-default"]} />
           <View style={styles.headerSpacer} />
         </View>
 
@@ -176,7 +176,7 @@ export default function EmailReceiptScreen() {
           <ThemedText
             fontSize={isTablet ? 24 : 18}
             lineHeight={isTablet ? 28 : 20}
-            color="text-primary"
+            color="content-default"
             accessibilityRole="header"
             aria-level={1}
             style={styles.title}
@@ -188,7 +188,7 @@ export default function EmailReceiptScreen() {
               nativeID="email-receipt-label"
               fontSize={14}
               lineHeight={18}
-              color="text-secondary"
+              color="content-subtle"
               style={styles.label}
             >
               Email address
@@ -198,7 +198,7 @@ export default function EmailReceiptScreen() {
                 styles.inputContainer,
                 {
                   borderColor,
-                  backgroundColor: Theme["foreground-primary"],
+                  backgroundColor: Theme["fill-default-strong"],
                 },
               ]}
             >
@@ -214,7 +214,7 @@ export default function EmailReceiptScreen() {
                 aria-describedby={hasError ? "email-receipt-error" : undefined}
                 aria-invalid={hasError}
                 placeholder="name@company.com"
-                placeholderTextColor={Theme["text-tertiary"]}
+                placeholderTextColor={Theme["content-subtle"]}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -226,7 +226,7 @@ export default function EmailReceiptScreen() {
                 style={[
                   styles.input,
                   webInputReset,
-                  { color: Theme["text-primary"] },
+                  { color: Theme["content-default"] },
                 ]}
               />
               {email.length > 0 && !isPending && (
@@ -240,13 +240,13 @@ export default function EmailReceiptScreen() {
                   <View
                     style={[
                       styles.clearCircle,
-                      { backgroundColor: Theme["text-secondary"] },
+                      { backgroundColor: Theme["content-subtle"] },
                     ]}
                   >
                     <Image
                       source={require("@/assets/images/close.png")}
                       style={styles.clearIcon}
-                      tintColor={Theme["bg-primary"]}
+                      tintColor={Theme["surface-default"]}
                       cachePolicy="memory-disk"
                     />
                   </View>
@@ -261,7 +261,7 @@ export default function EmailReceiptScreen() {
                 role="alert"
                 fontSize={14}
                 lineHeight={18}
-                color="icon-error"
+                color="icon-error-default"
                 style={styles.errorText}
               >
                 {error}

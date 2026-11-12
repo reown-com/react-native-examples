@@ -26,14 +26,14 @@ export function SettingsToggleItem({
       testID={testID}
       style={[
         styles.container,
-        { backgroundColor: Theme["foreground-primary-fix"] },
+        { backgroundColor: Theme["fill-default-strong"] },
       ]}
     >
       <View style={styles.labelRow}>
         <ThemedText
           fontSize={16}
           lineHeight={18}
-          color="text-primary"
+          color="content-default"
           style={styles.title}
         >
           {title}
@@ -42,7 +42,7 @@ export function SettingsToggleItem({
           <ThemedText
             fontSize={16}
             lineHeight={18}
-            color="text-tertiary"
+            color="content-subtle"
             numberOfLines={1}
             style={styles.description}
           >

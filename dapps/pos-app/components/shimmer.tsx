@@ -52,8 +52,8 @@ function Shimmer_({
     translateX.value = withRepeat(withTiming(1, { duration }), -1, false);
   }, [duration, measuredWidth, translateX]);
 
-  const baseColor = backgroundColor ?? Theme["foreground-secondary"];
-  const highlightColor = foregroundColor ?? Theme["foreground-tertiary"];
+  const baseColor = backgroundColor ?? Theme["fill-default-off"];
+  const highlightColor = foregroundColor ?? Theme["border-default"];
 
   const onLayout = (event: any) => {
     const { width: w, height: h } = event.nativeEvent.layout;
@@ -92,7 +92,7 @@ function Shimmer_({
     borderRadius,
     overflow: "hidden",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Theme["border-primary"],
+    borderColor: Theme["border-subtle"],
     backgroundColor: baseColor,
   };
 

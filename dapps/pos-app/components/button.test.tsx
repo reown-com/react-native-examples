@@ -57,7 +57,7 @@ describe("Button", () => {
       height: 54,
       width: "100%",
       borderRadius: 999,
-      backgroundColor: Colors.light["bg-accent-primary"],
+      backgroundColor: Colors.light["fill-primary-default"],
     });
   });
 
@@ -75,7 +75,7 @@ describe("Button", () => {
 
     const flattenedStyle = StyleSheet.flatten(button.props.style);
     expect(flattenedStyle.backgroundColor).toBeUndefined();
-    expect(flattenedStyle.borderColor).toBe(Colors.light["border-secondary"]);
+    expect(flattenedStyle.borderColor).toBe(Colors.light["border-default"]);
     expect(flattenedStyle.borderWidth).toBe(1);
   });
 
@@ -124,7 +124,7 @@ describe("Button", () => {
 
     const style = StyleSheet.flatten(button.props.style);
     expect(style.width).toBeUndefined();
-    expect(style.backgroundColor).toBe(Colors.light["bg-invert"]);
+    expect(style.backgroundColor).toBe(Colors.light["fill-inverse-default"]);
   });
 
   it("uses the design system disabled colours, not opacity", () => {
@@ -144,10 +144,10 @@ describe("Button", () => {
 
     expect(button.props.disabled).toBe(true);
     expect(style.opacity).toBeUndefined();
-    expect(style.backgroundColor).toBe(Colors.light["bg-button-disabled"]);
+    expect(style.backgroundColor).toBe(Colors.light["fill-primary-disabled"]);
     expect(
       StyleSheet.flatten(screen.getByText("Disabled").props.style).color,
-    ).toBe(Colors.light["text-disabled"]);
+    ).toBe(Colors.light["content-disabled"]);
   });
 
   it("renders icons in the left and right slots around the label", () => {

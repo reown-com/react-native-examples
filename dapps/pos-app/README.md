@@ -137,11 +137,10 @@ To create a branded variant for a specific client:
        defaultTheme: "light", // or "dark"
        colors: {
          light: {
-           "icon-accent-primary": "#HEXCOLOR",
-           "bg-accent-primary": "#HEXCOLOR",
-           "bg-payment-success": "#HEXCOLOR",
-           "text-payment-success": "#HEXCOLOR",
-           "border-payment-success": "#HEXCOLOR",
+           // Any key from constants/theme.ts (design system token names)
+           "icon-primary-default": "#HEXCOLOR",
+           "fill-primary-default": "#HEXCOLOR",
+           "border-primary-default": "#HEXCOLOR",
          },
          dark: {
            // Same color keys as light theme

@@ -39,9 +39,9 @@ export default function LogsScreen() {
 
   const typeOptions: RadioOption<LogLevelFilterType>[] = useMemo(
     () => [
-      { value: "all", label: "All", dotColor: theme["icon-accent-primary"] },
-      { value: "info", label: "Info", dotColor: theme["bg-invert"] },
-      { value: "error", label: "Error", dotColor: theme["icon-error"] },
+      { value: "all", label: "All", dotColor: theme["icon-primary-default"] },
+      { value: "info", label: "Info", dotColor: theme["fill-inverse-default"] },
+      { value: "error", label: "Error", dotColor: theme["icon-error-default"] },
     ],
     [theme],
   );
@@ -102,7 +102,7 @@ export default function LogsScreen() {
             <Image
               source={require("@/assets/images/scroll.png")}
               contentFit="contain"
-              tintColor={theme["icon-accent-primary"]}
+              tintColor={theme["icon-primary-default"]}
               style={styles.emptyIcon}
             />
           }
@@ -121,7 +121,7 @@ export default function LogsScreen() {
           <View
             style={[
               styles.divider,
-              { backgroundColor: theme["border-primary"] },
+              { backgroundColor: theme["border-subtle"] },
             ]}
           />
           <FlatList

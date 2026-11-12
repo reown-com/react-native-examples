@@ -74,7 +74,7 @@ export default function AmountScreen() {
       <View
         style={[
           styles.amountContainer,
-          { borderColor: Theme["border-primary"] },
+          { borderColor: Theme["border-subtle"] },
         ]}
       >
         <BigAmountInput

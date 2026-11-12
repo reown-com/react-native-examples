@@ -365,8 +365,8 @@ export default function SettingsScreen() {
                   hasMerchantId ? undefined : (
                     <Badge
                       label="Not set"
-                      backgroundColor="bg-warning"
-                      color="text-tertiary"
+                      backgroundColor="fill-warning-default"
+                      color="content-subtle"
                     />
                   )
                 }
@@ -384,8 +384,8 @@ export default function SettingsScreen() {
                   hasStoredCustomerApiKey ? undefined : (
                     <Badge
                       label="Not set"
-                      backgroundColor="bg-warning"
-                      color="text-tertiary"
+                      backgroundColor="fill-warning-default"
+                      color="content-subtle"
                     />
                   )
                 }
@@ -477,7 +477,7 @@ export default function SettingsScreen() {
         <ThemedText
           fontSize={12}
           lineHeight={14}
-          color="text-tertiary"
+          color="content-subtle"
           style={styles.versionText}
         >
           Version {appVersion} ({buildVersion})
@@ -523,7 +523,7 @@ export default function SettingsScreen() {
               value={merchantIdInput}
               onChangeText={handleMerchantIdInputChange}
               placeholder="Enter merchant ID"
-              placeholderTextColor={theme["text-tertiary"]}
+              placeholderTextColor={theme["content-subtle"]}
               autoCapitalize="none"
               autoCorrect={false}
               onFocus={() => setFocusedInput("merchantId")}
@@ -534,10 +534,10 @@ export default function SettingsScreen() {
                 {
                   borderColor:
                     focusedInput === "merchantId"
-                      ? theme["border-accent-primary"]
-                      : theme["border-primary"],
-                  color: theme["text-primary"],
-                  backgroundColor: theme["foreground-primary"],
+                      ? theme["border-primary-default"]
+                      : theme["border-subtle"],
+                  color: theme["content-default"],
+                  backgroundColor: theme["fill-default-strong"],
                 },
               ]}
             />
@@ -572,7 +572,7 @@ export default function SettingsScreen() {
               }
               onChangeText={handleCustomerApiKeyInputChange}
               placeholder="Enter customer API key"
-              placeholderTextColor={theme["text-tertiary"]}
+              placeholderTextColor={theme["content-subtle"]}
               autoCapitalize="none"
               autoCorrect={false}
               secureTextEntry={true}
@@ -584,10 +584,10 @@ export default function SettingsScreen() {
                 {
                   borderColor:
                     focusedInput === "customerApiKey"
-                      ? theme["border-accent-primary"]
-                      : theme["border-primary"],
-                  color: theme["text-primary"],
-                  backgroundColor: theme["foreground-primary"],
+                      ? theme["border-primary-default"]
+                      : theme["border-subtle"],
+                  color: theme["content-default"],
+                  backgroundColor: theme["fill-default-strong"],
                 },
               ]}
             />

@@ -79,20 +79,23 @@ function getColors(
 ): VariantColors {
   if (type === "accent") {
     return disabled
-      ? { backgroundColor: "bg-button-disabled", label: "text-disabled" }
-      : { backgroundColor: "bg-accent-primary", label: "text-white" };
+      ? { backgroundColor: "fill-primary-disabled", label: "content-disabled" }
+      : {
+          backgroundColor: "fill-primary-default",
+          label: "content-primary-on-primary",
+        };
   }
   if (variant === "primary") {
     return disabled
       ? {
-          backgroundColor: "bg-button-neutral-disabled",
-          label: "text-disabled",
+          backgroundColor: "fill-inverse-disabled",
+          label: "content-disabled",
         }
-      : { backgroundColor: "bg-invert", label: "text-invert" };
+      : { backgroundColor: "fill-inverse-default", label: "content-inverse" };
   }
   return disabled
-    ? { borderColor: "border-button-disabled", label: "text-disabled" }
-    : { borderColor: "border-secondary", label: "text-primary" };
+    ? { borderColor: "border-neutral-disabled", label: "content-disabled" }
+    : { borderColor: "border-default", label: "content-default" };
 }
 
 export function Button({

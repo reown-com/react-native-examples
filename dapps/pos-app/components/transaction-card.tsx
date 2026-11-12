@@ -38,7 +38,7 @@ function TransactionCardBase({
       accessibilityHint="Shows payment details"
       style={[
         styles.container,
-        { backgroundColor: theme["foreground-primary-fix"] },
+        { backgroundColor: theme["fill-default-strong"] },
         style,
       ]}
     >
@@ -63,19 +63,19 @@ function TransactionCardBase({
         >
           {meta.label}
         </ThemedText>
-        <ThemedText fontSize={14} lineHeight={18} color="text-secondary">
+        <ThemedText fontSize={14} lineHeight={18} color="content-subtle">
           {dateTime}
         </ThemedText>
       </View>
 
       <View style={styles.trailing}>
-        <ThemedText fontSize={16} lineHeight={18} color="text-primary">
+        <ThemedText fontSize={16} lineHeight={18} color="content-default">
           {amount}
         </ThemedText>
         <Image
           source={CHEVRON}
           style={styles.chevron}
-          tintColor={theme["icon-invert"]}
+          tintColor={theme["icon-default"]}
           contentFit="contain"
           cachePolicy="memory-disk"
         />

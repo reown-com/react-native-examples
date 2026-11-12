@@ -16,19 +16,22 @@ export function SetupBanner({ remaining, testID }: SetupBannerProps) {
   return (
     <View
       testID={testID}
-      style={[styles.container, { backgroundColor: Theme["bg-warning"] }]}
+      style={[
+        styles.container,
+        { backgroundColor: Theme["fill-warning-default"] },
+      ]}
     >
       <View style={styles.label}>
         <Image
           source={require("@/assets/images/warning_circle.png")}
           style={styles.icon}
-          tintColor={Theme["icon-warning"]}
+          tintColor={Theme["icon-warning-default"]}
           cachePolicy="memory-disk"
         />
         <ThemedText
           fontSize={14}
           lineHeight={18}
-          color="text-primary"
+          color="content-default"
           style={styles.title}
         >
           Finish setting up
@@ -36,8 +39,8 @@ export function SetupBanner({ remaining, testID }: SetupBannerProps) {
       </View>
       <Badge
         label={`${remaining} Left`}
-        backgroundColor="bg-warning-strong"
-        color="text-on-warning"
+        backgroundColor="fill-warning-strong"
+        color="content-warning-on-warning"
       />
     </View>
   );
