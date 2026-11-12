@@ -63,6 +63,14 @@ describe("getPaymentErrorMessage", () => {
       expect(result.subtitle).toContain("0.14€");
     });
 
+    it("formats the minimum in GBP with the symbol on the left", () => {
+      const result = getPaymentErrorMessage(AMOUNT_TOO_LOW, {
+        minAmountCents: "14",
+        currencyCode: "GBP",
+      });
+      expect(result.subtitle).toContain("£0.14");
+    });
+
     it("uses the minimum reported by the API rather than a hardcoded one", () => {
       const result = getPaymentErrorMessage(AMOUNT_TOO_LOW, {
         minAmountCents: "250",

@@ -11,7 +11,7 @@ export interface Currency {
   symbolPosition: SymbolPosition;
 }
 
-export type CurrencyCode = "USD" | "EUR";
+export type CurrencyCode = "USD" | "EUR" | "GBP";
 
 export const CURRENCIES: Currency[] = [
   {
@@ -28,6 +28,13 @@ export const CURRENCIES: Currency[] = [
     unit: "iso4217/EUR",
     symbolPosition: "right",
   },
+  {
+    code: "GBP",
+    name: "British Pound",
+    symbol: "£",
+    unit: "iso4217/GBP",
+    symbolPosition: "left",
+  },
 ];
 
 export function getCurrency(code: string): Currency {
@@ -38,7 +45,7 @@ export function getCurrency(code: string): Currency {
  * Format amount with currency symbol in correct position
  * @param amount - The numeric amount as a string (e.g., "10.00")
  * @param currency - Currency object with symbol and position info
- * @returns Formatted string (e.g., "$10.00" for USD, "10.00€" for EUR)
+ * @returns Formatted string (e.g., "$10.00" for USD, "10.00€" for EUR, "£10.00" for GBP)
  */
 export function formatAmountWithSymbol(
   amount: string,
@@ -86,7 +93,7 @@ export function extractCurrencyCode(currency?: string): string {
  * Format fiat amount from cents to display string
  * @param amount - Amount in cents as a string (e.g., "1000" = $10.00)
  * @param currency - Currency in CAIP format (e.g., "iso4217/USD")
- * @returns Formatted string (e.g., "$10.00" for USD, "10.00€" for EUR)
+ * @returns Formatted string (e.g., "$10.00" for USD, "10.00€" for EUR, "£10.00" for GBP)
  */
 export function formatFiatAmount(amount?: string, currency?: string): string {
   if (!amount) return "-";
