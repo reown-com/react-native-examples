@@ -18,6 +18,15 @@ appId: ${APP_ID}
           timeout: 1000
           optional: true
 
+# iOS: a dApp <-> wallet "wants to open" alert left over from an earlier flow
+# survives clearState and covers the wallet; dismiss it before launching.
+- runFlow:
+    when:
+      platform: iOS
+      visible: ".*wants to open.*|Open in .*"
+    commands:
+      - tapOn: "Cancel"
+
 # 45s per attempt covers a slow cold start on a contended CI emulator.
 - retry:
     maxRetries: 3

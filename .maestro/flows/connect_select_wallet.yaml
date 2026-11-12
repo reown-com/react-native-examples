@@ -26,6 +26,7 @@ appId: ${APP_ID}
             visible: "React Native Sample Wallet.*"
           commands:
             - tapOn: "React Native Sample Wallet.*"
+      - runFlow: connect_ios_open_prompt.yaml
       - extendedWaitUntil:
           visible:
             id: "wallet-request-approve"

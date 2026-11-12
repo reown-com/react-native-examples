@@ -4,6 +4,8 @@ appId: ${APP_ID}
 # wallet usually redirects back by itself (the dApp's metadata.redirect); this
 # covers the case where it doesn't.
 - runFlow: connect_dapp_id.yaml
+# iOS may be asking to open the dApp from the wallet's redirect.
+- runFlow: connect_ios_open_prompt.yaml
 - launchApp:
     appId: ${output.dappAppId}
     stopApp: false

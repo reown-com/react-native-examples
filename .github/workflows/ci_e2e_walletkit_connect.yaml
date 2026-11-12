@@ -2,13 +2,14 @@ name: 🧪 WalletKit - E2E Connect
 # WX SLO 2 ("WalletKit connect flow works"): dApp → pairing → session proposal →
 # wallet approves → session settled → sign request handled, on the sample
 # wallet, against the AppKit sample dApp (dapps/appkit-wagmi, native internal
-# build) installed on the same emulator.
+# build) installed on the same emulator/simulator. Android runs nightly and
+# on PRs; iOS (macOS runner, expensive) runs nightly and on dispatch only.
 # Kept apart from ci_e2e_walletkit.yaml (Pay) so the E2E KPI job
 # (WalletConnect/actions metrics/config/workflows.json) reports the Connect pass
 # rate separately from the Pay one.
 # The "(skip-metrics)" suffix is consumed by that KPI job to exclude runs from
 # stats (draft PRs, dispatches off main). Don't change/remove it.
-run-name: "E2E WalletKit Connect - Android${{ ((github.event_name == 'pull_request' && github.event.pull_request.draft) || (github.event_name == 'workflow_dispatch' && github.ref_name != 'main')) && ' (skip-metrics)' || '' }}"
+run-name: "E2E WalletKit Connect -${{ github.event_name == 'workflow_dispatch' && format('{0}{1}', inputs.android && ' Android' || '', inputs.ios && ' iOS' || '') || (github.event_name == 'schedule' && ' Android iOS' || ' Android') }}${{ ((github.event_name == 'pull_request' && github.event.pull_request.draft) || (github.event_name == 'workflow_dispatch' && github.ref_name != 'main')) && ' (skip-metrics)' || '' }}"
 
 permissions:
   contents: read
@@ -32,6 +33,7 @@ on:
       - '.github/actions/walletkit-build-and-maestro/**'
       - '.github/actions/derive-e2e-wallet/**'
       - '.github/actions/appkit-build-android/**'
+      - '.github/actions/appkit-build-ios/**'
       - '.github/workflows/ci_e2e_walletkit_connect.yaml'
   push:
     branches: [main]
@@ -44,8 +46,22 @@ on:
       - '.github/actions/walletkit-build-and-maestro/**'
       - '.github/actions/derive-e2e-wallet/**'
       - '.github/actions/appkit-build-android/**'
+      - '.github/actions/appkit-build-ios/**'
       - '.github/workflows/ci_e2e_walletkit_connect.yaml'
   workflow_dispatch:
+    inputs:
+      # Checkboxes in the dispatch UI. On other triggers inputs are unset, so
+      # each job gates on the event type instead.
+      android:
+        description: 'Run Android E2E'
+        required: false
+        default: true
+        type: boolean
+      ios:
+        description: 'Run iOS E2E'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   e2e-connect-android:
@@ -53,6 +69,7 @@ jobs:
     # build would always fail. Draft PRs wait until ready for review.
     if: >-
       github.actor != 'dependabot[bot]'
+      && (github.event_name != 'workflow_dispatch' || inputs.android)
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     # The KPI job matches this name (job_pattern) to get a per-platform rate.
     name: E2E Connect - Android
@@ -94,7 +111,7 @@ jobs:
           wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
           wallet-private-key: ${{ steps.wallet.outputs.private-key }}
           maestro-tags: connect
-          extra-apks: ${{ steps.dapp.outputs.apk-path }}
+          extra-apps: ${{ steps.dapp.outputs.apk-path }}
           android-secrets-file: ${{ secrets.ANDROID_SECRETS_FILE }}
           android-keystore-base64: ${{ secrets.WC_INTERNAL_KEYSTORE }}
           android-keystore-name: ${{ vars.WC_INTERNAL_KEYSTORE_NAME }}
@@ -122,6 +139,106 @@ jobs:
                   "fields": [
                     { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
                     { "type": "mrkdwn", "text": "*Platform:*\n`Android`" },
+                    { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                    { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Maestro Tests:*\n`${{ steps.walletkit.outputs.maestro-outcome == 'success' && '✅ Passed' || '❌ Failed' }}`" },
+                    { "type": "mrkdwn", "text": "*Overall Status:*\n`${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}`" }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "View Workflow Run" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "Download Artifacts" },
+                      "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts"
+                    }
+                  ]
+                }
+              ]
+            }
+
+  e2e-connect-ios:
+    # macOS xlarge is expensive: nightly and dispatch only (like the Pay
+    # suite's iOS leg), never on PRs/pushes.
+    if: >-
+      github.actor != 'dependabot[bot]'
+      && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.ios))
+    # The KPI job matches this name (job_pattern) to get a per-platform rate.
+    name: E2E Connect - iOS
+    runs-on: macos-latest-xlarge
+    timeout-minutes: 60
+    concurrency:
+      group: e2e-connect-ios
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Own account (index 3), unfunded: personal_sign needs no gas, and the
+      # Pay legs' accounts stay untouched.
+      - name: Derive E2E wallet (Connect)
+        id: wallet
+        uses: ./.github/actions/derive-e2e-wallet
+        with:
+          mnemonic: ${{ secrets.TEST_WALLET_MNEMONIC }}
+          index: 3
+
+      # The dApp side of the connect flows (dapps/appkit-wagmi, internal).
+      - name: Build AppKit sample dApp (iOS simulator)
+        id: dapp
+        uses: ./.github/actions/appkit-build-ios
+        with:
+          env-file: ${{ secrets.APPKIT_ENV_FILE }}
+          cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+
+      - name: Build wallet and run Maestro connect tests (iOS)
+        id: walletkit
+        uses: ./.github/actions/walletkit-build-and-maestro
+        with:
+          platform: ios
+          # Two slim simulators share the suite (same as the Pay iOS leg); each
+          # gets the wallet and the dApp.
+          ios-simulators: '2'
+          pay-core-url: https://api.pay.walletconnect.com
+          wallet-env-file: ${{ secrets.WALLETKIT_ENV_FILE }}
+          wallet-private-key: ${{ steps.wallet.outputs.private-key }}
+          maestro-tags: connect
+          extra-apps: ${{ steps.dapp.outputs.app-path }}
+          # Same encrypted build cache as the Pay suite (same simulator app):
+          # restore anywhere secrets exist, save only from trusted main runs.
+          build-cache-passphrase: ${{ secrets.E2E_BUILD_CACHE_PASSPHRASE }}
+          build-cache-save: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+
+      - name: Send Slack notification
+        if: failure()
+        uses: slackapi/slack-github-action@b0fa283ad8fea605de13dc3f449259339835fc52 # v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "E2E Test Report - iOS - WalletKit Connect",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🧪 E2E Test Report - iOS (connect)" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Project:*\n`WalletKit RN`" },
+                    { "type": "mrkdwn", "text": "*Platform:*\n`iOS`" },
                     { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
                     { "type": "mrkdwn", "text": "*Trigger:*\n`${{ github.event_name }}`" }
                   ]
