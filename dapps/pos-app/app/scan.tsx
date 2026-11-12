@@ -160,7 +160,7 @@ export default function ScanScreen() {
     if (isTestPayment) {
       setTestProcessing(false);
     }
-    // The `beforeRemove` listener below cancels the payment on leave.
+    // The `removed` listener below cancels the payment on leave.
     resetNavigation("/amount");
   };
 
@@ -217,7 +217,7 @@ export default function ScanScreen() {
         const data = await startPayment(paymentRequest);
 
         // The user can back out while this create call is in flight, before
-        // `paymentId` state exists for the `beforeRemove` listener to cancel.
+        // `paymentId` state exists for the `removed` listener to cancel.
         // Cancel the freshly opened payment here instead of rendering a QR for
         // a screen that's already gone.
         if (hasLeftRef.current) {
@@ -337,7 +337,7 @@ export default function ScanScreen() {
     }
   }, [paymentId, paymentStatusData?.status, addLog, isTestPayment]);
 
-  // Hold the latest callback in a ref so the `beforeRemove` listener stays
+  // Hold the latest callback in a ref so the `removed` listener stays
   // registered once for the screen's lifetime instead of being torn down and
   // re-added on every status poll (which changes `cancelPendingPayment`).
   const cancelPendingPaymentRef = useRef(cancelPendingPayment);
@@ -345,11 +345,15 @@ export default function ScanScreen() {
     cancelPendingPaymentRef.current = cancelPendingPayment;
   }, [cancelPendingPayment]);
 
+  // React Navigation 8 (expo-router 58) dropped `beforeRemove`; `removed` fires
+  // after the screen unmounts. Effect cleanup runs before that event, so the
+  // unsubscribe is deferred a microtask or the listener would never fire.
+  // The callback only touches refs, which is safe after unmount.
   useEffect(() => {
-    const unsubscribe = navigation.addListener("beforeRemove", () => {
+    const unsubscribe = navigation.addListener("removed", () => {
       cancelPendingPaymentRef.current();
     });
-    return unsubscribe;
+    return () => queueMicrotask(unsubscribe);
   }, [navigation]);
 
   const { remainingSeconds, isActive: isCountdownActive } = useCountdown({
@@ -395,7 +399,13 @@ export default function ScanScreen() {
   // it stays hidden after `processing`, and stays visible when a poll goes
   // straight from `requires_action` to terminal. That second case happens when
   // the POS sleeps mid-payment and wakes to a finished payment.
-  const backHidden = useLatchedFlag(isProcessing);
+  //
+  // The same latch keeps the confirmation loader up and the Cancel button
+  // hidden: `succeeded` renders once more before the navigation to the success
+  // screen lands, and without the latch that render briefly flashes the scan
+  // view, its QR box and the Cancel button.
+  const hasReachedProcessing = useLatchedFlag(isProcessing);
+  const backHidden = hasReachedProcessing;
 
   // Block the Android hardware back button whenever the header back and gesture
   // are hidden, so it can't pop the screen mid-confirmation.
@@ -411,7 +421,7 @@ export default function ScanScreen() {
         }}
       />
       {isTestPayment && <TestModeOverlay spacerHeight={Spacing["spacing-9"]} />}
-      {isProcessing ? (
+      {hasReachedProcessing ? (
         <View
           style={[
             styles.loadingContainer,
@@ -539,7 +549,7 @@ export default function ScanScreen() {
           <View style={{ flex: 1 }} />
         </View>
       )}
-      {!isProcessing && (
+      {!hasReachedProcessing && (
         <Button
           type="neutral"
           variant="secondary"

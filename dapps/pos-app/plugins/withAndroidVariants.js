@@ -8,7 +8,7 @@
 // It loads credentials from android/secrets.properties and adds:
 //   - signingConfigs.internal (WC_*_INTERNAL) and signingConfigs.release (WC_*_UPLOAD)
 //   - an `internal` buildType (.internal applicationId + -internal versionName,
-//     internal signing, matchingFallbacks release)
+//     internal signing, matchingFallbacks release, R8 like release)
 //   - points the `release` buildType at signingConfigs.release
 //
 // (debug stays on Expo's default debug keystore. iOS variants are handled by
@@ -64,12 +64,17 @@ function addAndroidVariants(buildGradle) {
     `$1\n${signingConfigs}\n    $2`,
   );
 
-  // 3. Add the `internal` buildType at the top of the buildTypes block.
+  // 3. Add the `internal` buildType at the top of the buildTypes block. It
+  // minifies like `release` (R8, same ProGuard files; Expo SDK 58 turns
+  // enableMinifyInReleaseBuilds on) so internal testers run the same shrunk
+  // code that ships to production.
   const internalBuildType = `        internal {
             applicationIdSuffix ".internal"
             versionNameSuffix "-internal"
             signingConfig signingConfigs.internal
             matchingFallbacks = ['release']
+            minifyEnabled enableMinifyInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }`;
   buildGradle = buildGradle.replace(
     /(\n\s*buildTypes\s*\{)/,

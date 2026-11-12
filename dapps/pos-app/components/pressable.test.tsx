@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react-native";
 import React from "react";
+import { Text } from "react-native";
 
 import { Pressable } from "./pressable";
 
@@ -7,6 +8,7 @@ jest.mock("react-native", () => ({
   StyleSheet: {
     flatten: (style: unknown) => style,
   },
+  Text: "Text",
   View: "View",
 }));
 
@@ -20,31 +22,41 @@ jest.mock("pressto", () => {
 });
 
 describe("Pressable", () => {
-  it("defaults to the button accessibility role", () => {
-    const pressable = render(
-      <Pressable testID="pressable" onPress={() => {}}>
-        Content
-      </Pressable>,
+  it("defaults to the button accessibility role", async () => {
+    const pressable = (
+      await render(
+        <Pressable testID="pressable" onPress={() => {}}>
+          <Text>Content</Text>
+        </Pressable>,
+      )
     ).getByTestId("pressable");
 
     expect(pressable.props.accessibilityRole).toBe("button");
   });
 
-  it("preserves an explicit accessibility role", () => {
-    const pressable = render(
-      <Pressable testID="pressable" accessibilityRole="link" onPress={() => {}}>
-        Content
-      </Pressable>,
+  it("preserves an explicit accessibility role", async () => {
+    const pressable = (
+      await render(
+        <Pressable
+          testID="pressable"
+          accessibilityRole="link"
+          onPress={() => {}}
+        >
+          <Text>Content</Text>
+        </Pressable>,
+      )
     ).getByTestId("pressable");
 
     expect(pressable.props.accessibilityRole).toBe("link");
   });
 
-  it("maps disabled state to Pressto and accessibility props", () => {
-    const pressable = render(
-      <Pressable testID="pressable" disabled onPress={() => {}}>
-        Content
-      </Pressable>,
+  it("maps disabled state to Pressto and accessibility props", async () => {
+    const pressable = (
+      await render(
+        <Pressable testID="pressable" disabled onPress={() => {}}>
+          <Text>Content</Text>
+        </Pressable>,
+      )
     ).getByTestId("pressable");
 
     expect(pressable.props.enabled).toBe(false);

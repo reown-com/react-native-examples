@@ -36,8 +36,8 @@ Provides utilities for testing Zustand stores:
 import { renderWithProviders } from "@/__tests__/utils";
 import { MyComponent } from "@/components/my-component";
 
-test("renders component", () => {
-  const { getByText } = renderWithProviders(<MyComponent />);
+test("renders component", async () => {
+  const { getByText } = await renderWithProviders(<MyComponent />);
   expect(getByText("Hello")).toBeTruthy();
 });
 ```
@@ -112,7 +112,7 @@ The following modules are automatically mocked in `jest.setup.js`:
 2. **Use `renderWithProviders` for components that use React Query**:
 
    ```typescript
-   const { queryClient } = renderWithProviders(<Component />);
+   const { queryClient } = await renderWithProviders(<Component />);
    ```
 
 3. **Mock API calls at the test level**:

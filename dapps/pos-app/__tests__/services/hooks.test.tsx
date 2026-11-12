@@ -74,8 +74,8 @@ describe("Payment Hooks", () => {
   });
 
   describe("useStartPayment", () => {
-    it("should return a mutation object with expected properties", () => {
-      const { result } = renderHook(() => useStartPayment(), {
+    it("should return a mutation object with expected properties", async () => {
+      const { result } = await renderHook(() => useStartPayment(), {
         wrapper: createWrapper(),
       });
 
@@ -85,8 +85,8 @@ describe("Payment Hooks", () => {
       expect(typeof result.current.mutateAsync).toBe("function");
     });
 
-    it("should have idle state initially", () => {
-      const { result } = renderHook(() => useStartPayment(), {
+    it("should have idle state initially", async () => {
+      const { result } = await renderHook(() => useStartPayment(), {
         wrapper: createWrapper(),
       });
 
@@ -101,7 +101,7 @@ describe("Payment Hooks", () => {
         paymentId: "pay_123",
       });
 
-      const { result } = renderHook(() => useStartPayment(), {
+      const { result } = await renderHook(() => useStartPayment(), {
         wrapper: createWrapper(),
       });
 
@@ -126,7 +126,7 @@ describe("Payment Hooks", () => {
         paymentId: "pay_success",
       });
 
-      const { result } = renderHook(() => useStartPayment(), {
+      const { result } = await renderHook(() => useStartPayment(), {
         wrapper: createWrapper(),
       });
 
@@ -146,7 +146,7 @@ describe("Payment Hooks", () => {
       const error = new Error("Payment failed");
       (startPayment as jest.Mock).mockRejectedValue(error);
 
-      const { result } = renderHook(() => useStartPayment(), {
+      const { result } = await renderHook(() => useStartPayment(), {
         wrapper: createWrapper(),
       });
 
@@ -171,7 +171,7 @@ describe("Payment Hooks", () => {
     it("should call sendReceipt with the payment ID and email", async () => {
       (sendReceipt as jest.Mock).mockResolvedValueOnce(undefined);
 
-      const { result } = renderHook(() => useSendReceipt(), {
+      const { result } = await renderHook(() => useSendReceipt(), {
         wrapper: createWrapper(),
       });
 
@@ -189,7 +189,7 @@ describe("Payment Hooks", () => {
     it("should surface errors", async () => {
       (sendReceipt as jest.Mock).mockRejectedValueOnce(new Error("boom"));
 
-      const { result } = renderHook(() => useSendReceipt(), {
+      const { result } = await renderHook(() => useSendReceipt(), {
         wrapper: createWrapper(),
       });
 
@@ -207,8 +207,8 @@ describe("Payment Hooks", () => {
   });
 
   describe("usePaymentStatus", () => {
-    it("should not fetch when paymentId is null", () => {
-      const { result } = renderHook(
+    it("should not fetch when paymentId is null", async () => {
+      const { result } = await renderHook(
         () => usePaymentStatus(null, { enabled: true }),
         { wrapper: createWrapper() },
       );
@@ -218,8 +218,8 @@ describe("Payment Hooks", () => {
       expect(result.current.isFetching).toBe(false);
     });
 
-    it("should not fetch when paymentId is undefined", () => {
-      const { result } = renderHook(
+    it("should not fetch when paymentId is undefined", async () => {
+      const { result } = await renderHook(
         () => usePaymentStatus(undefined, { enabled: true }),
         { wrapper: createWrapper() },
       );
@@ -228,8 +228,8 @@ describe("Payment Hooks", () => {
       expect(result.current.data).toBeUndefined();
     });
 
-    it("should not fetch when enabled is false", () => {
-      const { result } = renderHook(
+    it("should not fetch when enabled is false", async () => {
+      const { result } = await renderHook(
         () => usePaymentStatus("pay_123", { enabled: false }),
         { wrapper: createWrapper() },
       );
@@ -239,19 +239,31 @@ describe("Payment Hooks", () => {
     });
 
     it("should start fetching when paymentId is provided and enabled", async () => {
-      (getPaymentStatus as jest.Mock).mockResolvedValue({
-        status: "processing",
-        isFinal: false,
-        pollInMs: 2000,
-      });
+      // Keep the request in flight until after the initial render so the
+      // loading state is observable (RNTL v14's async render flushes
+      // already-resolved promises before returning).
+      let resolveStatus!: (value: unknown) => void;
+      (getPaymentStatus as jest.Mock).mockReturnValue(
+        new Promise((resolve) => {
+          resolveStatus = resolve;
+        }),
+      );
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => usePaymentStatus("pay_123", { enabled: true }),
         { wrapper: createWrapper() },
       );
 
       // Initially should be loading
       expect(result.current.isPending || result.current.isFetching).toBe(true);
+
+      await act(async () => {
+        resolveStatus({
+          status: "processing",
+          isFinal: false,
+          pollInMs: 2000,
+        });
+      });
 
       // Wait for the fetch to complete
       await waitFor(
@@ -272,9 +284,12 @@ describe("Payment Hooks", () => {
         pollInMs: 0,
       });
 
-      const { result } = renderHook(() => usePaymentStatus("pay_success"), {
-        wrapper: createWrapper(),
-      });
+      const { result } = await renderHook(
+        () => usePaymentStatus("pay_success"),
+        {
+          wrapper: createWrapper(),
+        },
+      );
 
       await waitFor(
         () => {
@@ -294,9 +309,12 @@ describe("Payment Hooks", () => {
         pollInMs: 0,
       });
 
-      const { result } = renderHook(() => usePaymentStatus("pay_failed"), {
-        wrapper: createWrapper(),
-      });
+      const { result } = await renderHook(
+        () => usePaymentStatus("pay_failed"),
+        {
+          wrapper: createWrapper(),
+        },
+      );
 
       await waitFor(
         () => {
@@ -315,9 +333,12 @@ describe("Payment Hooks", () => {
         pollInMs: 0,
       });
 
-      const { result } = renderHook(() => usePaymentStatus("pay_expired"), {
-        wrapper: createWrapper(),
-      });
+      const { result } = await renderHook(
+        () => usePaymentStatus("pay_expired"),
+        {
+          wrapper: createWrapper(),
+        },
+      );
 
       await waitFor(
         () => {
@@ -368,9 +389,12 @@ describe("Payment Hooks", () => {
           });
         });
 
-        const { result } = renderHook(() => usePaymentStatus("pay_polling"), {
-          wrapper: createWrapper(),
-        });
+        const { result } = await renderHook(
+          () => usePaymentStatus("pay_polling"),
+          {
+            wrapper: createWrapper(),
+          },
+        );
 
         // Initial fetch should happen immediately
         await waitFor(
@@ -448,9 +472,12 @@ describe("Payment Hooks", () => {
           });
         });
 
-        const { result } = renderHook(() => usePaymentStatus("pay_fail_poll"), {
-          wrapper: createWrapper(),
-        });
+        const { result } = await renderHook(
+          () => usePaymentStatus("pay_fail_poll"),
+          {
+            wrapper: createWrapper(),
+          },
+        );
 
         // Initial fetch should happen immediately
         await waitFor(
@@ -524,7 +551,7 @@ describe("Payment Hooks", () => {
           });
         });
 
-        renderHook(
+        await renderHook(
           () =>
             usePaymentStatus("pay_callback", {
               onTerminalState,

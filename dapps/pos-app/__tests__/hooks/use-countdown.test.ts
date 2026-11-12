@@ -10,118 +10,122 @@ describe("useCountdown", () => {
     jest.useRealTimers();
   });
 
-  it("returns inactive state when expiresAt is null", () => {
-    const { result } = renderHook(() => useCountdown({ expiresAt: null }));
+  it("returns inactive state when expiresAt is null", async () => {
+    const { result } = await renderHook(() =>
+      useCountdown({ expiresAt: null }),
+    );
 
     expect(result.current.remainingSeconds).toBe(0);
     expect(result.current.isExpired).toBe(false);
     expect(result.current.isActive).toBe(false);
   });
 
-  it("calculates remaining seconds from expiresAt", () => {
+  it("calculates remaining seconds from expiresAt", async () => {
     const now = Date.now() / 1000;
     const expiresAt = now + 120; // 2 minutes from now
 
-    const { result } = renderHook(() => useCountdown({ expiresAt }));
+    const { result } = await renderHook(() => useCountdown({ expiresAt }));
 
     expect(result.current.remainingSeconds).toBe(120);
     expect(result.current.isActive).toBe(true);
     expect(result.current.isExpired).toBe(false);
   });
 
-  it("counts down every second", () => {
+  it("counts down every second", async () => {
     const now = Date.now() / 1000;
     const expiresAt = now + 10;
 
-    const { result } = renderHook(() => useCountdown({ expiresAt }));
+    const { result } = await renderHook(() => useCountdown({ expiresAt }));
 
     expect(result.current.remainingSeconds).toBe(10);
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(1000);
     });
     expect(result.current.remainingSeconds).toBe(9);
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(3000);
     });
     expect(result.current.remainingSeconds).toBe(6);
   });
 
-  it("calls onExpired exactly once when timer reaches zero", () => {
+  it("calls onExpired exactly once when timer reaches zero", async () => {
     const onExpired = jest.fn();
     const now = Date.now() / 1000;
     const expiresAt = now + 3;
 
-    renderHook(() => useCountdown({ expiresAt, onExpired }));
+    await renderHook(() => useCountdown({ expiresAt, onExpired }));
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(3000);
     });
 
     expect(onExpired).toHaveBeenCalledTimes(1);
 
     // Advancing further should not call again
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(5000);
     });
 
     expect(onExpired).toHaveBeenCalledTimes(1);
   });
 
-  it("does not call onExpired when expiresAt is null", () => {
+  it("does not call onExpired when expiresAt is null", async () => {
     const onExpired = jest.fn();
 
-    renderHook(() => useCountdown({ expiresAt: null, onExpired }));
+    await renderHook(() => useCountdown({ expiresAt: null, onExpired }));
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(5000);
     });
 
     expect(onExpired).not.toHaveBeenCalled();
   });
 
-  it("returns isExpired true when expiresAt is in the past", () => {
+  it("returns isExpired true when expiresAt is in the past", async () => {
     const now = Date.now() / 1000;
     const expiresAt = now - 10; // 10 seconds ago
 
-    const { result } = renderHook(() => useCountdown({ expiresAt }));
+    const { result } = await renderHook(() => useCountdown({ expiresAt }));
 
     expect(result.current.remainingSeconds).toBe(0);
     expect(result.current.isExpired).toBe(true);
     expect(result.current.isActive).toBe(false);
   });
 
-  it("fires onExpired when expiresAt is already in the past", () => {
+  it("fires onExpired when expiresAt is already in the past", async () => {
     const onExpired = jest.fn();
     const now = Date.now() / 1000;
     const expiresAt = now - 5;
 
-    renderHook(() => useCountdown({ expiresAt, onExpired }));
+    await renderHook(() => useCountdown({ expiresAt, onExpired }));
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(1000);
     });
 
     expect(onExpired).toHaveBeenCalledTimes(1);
   });
 
-  it("resets when expiresAt changes", () => {
+  it("resets when expiresAt changes", async () => {
     const now = Date.now() / 1000;
     let expiresAt: number | null = now + 10;
 
-    const { result, rerender } = renderHook(() => useCountdown({ expiresAt }));
+    const { result, rerender } = await renderHook(() =>
+      useCountdown({ expiresAt }),
+    );
 
     expect(result.current.remainingSeconds).toBe(10);
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(5000);
     });
     expect(result.current.remainingSeconds).toBe(5);
 
     // Change expiresAt to a new value
     expiresAt = now + 60;
-    rerender({});
+    await rerender({});
 
     expect(result.current.remainingSeconds).toBe(55); // 60 - 5 seconds elapsed
     expect(result.current.isActive).toBe(true);

@@ -125,41 +125,41 @@ describe("ActivityScreen", () => {
       });
     });
 
-    it("points the merchant to Settings instead of a network error", () => {
+    it("points the merchant to Settings instead of a network error", async () => {
       mockTransactionsResult({ isError: true, error: new Error("401") });
-      const { getByText, queryByText } = render(<ActivityScreen />);
+      const { getByText, queryByText } = await render(<ActivityScreen />);
 
       expect(getByText("Set up your merchant details")).toBeTruthy();
       expect(queryByText("We couldn't load payments")).toBeNull();
 
-      fireEvent.press(getByText("Go to Settings"));
+      await fireEvent.press(getByText("Go to Settings"));
       expect(router.push).toHaveBeenCalledWith("/settings");
     });
 
-    it("does not request payments", () => {
-      render(<ActivityScreen />);
+    it("does not request payments", async () => {
+      await render(<ActivityScreen />);
 
       expect(mockUseTransactions).toHaveBeenCalledWith(
         expect.objectContaining({ enabled: false }),
       );
     });
 
-    it("still needs setup with only a merchant ID", () => {
+    it("still needs setup with only a merchant ID", async () => {
       useSettingsStore.setState({ merchantId: "merchant-1" });
-      const { getByText } = render(<ActivityScreen />);
+      const { getByText } = await render(<ActivityScreen />);
 
       expect(getByText("Set up your merchant details")).toBeTruthy();
     });
   });
 
-  it("keeps the retry error when credentials are set and the fetch fails", () => {
+  it("keeps the retry error when credentials are set and the fetch fails", async () => {
     useSettingsStore.setState({
       testMode: false,
       merchantId: "merchant-1",
       isCustomerApiKeySet: true,
     });
     mockTransactionsResult({ isError: true, error: new Error("Network") });
-    const { getByText, queryByText } = render(<ActivityScreen />);
+    const { getByText, queryByText } = await render(<ActivityScreen />);
 
     expect(getByText("We couldn't load payments")).toBeTruthy();
     expect(queryByText("Set up your merchant details")).toBeNull();
@@ -167,7 +167,7 @@ describe("ActivityScreen", () => {
       expect.objectContaining({ enabled: true }),
     );
 
-    fireEvent.press(getByText("Try again"));
+    await fireEvent.press(getByText("Try again"));
     expect(refetch).toHaveBeenCalled();
   });
 
@@ -186,34 +186,34 @@ describe("ActivityScreen", () => {
       });
     });
 
-    it("says the API key is incorrect and links to Settings", () => {
+    it("says the API key is incorrect and links to Settings", async () => {
       mockTransactionsResult({ isError: true, error: invalidApiKey });
-      const { getByText, queryByText } = render(<ActivityScreen />);
+      const { getByText, queryByText } = await render(<ActivityScreen />);
 
       expect(getByText("Incorrect API key")).toBeTruthy();
       expect(queryByText("We couldn't load payments")).toBeNull();
 
-      fireEvent.press(getByText("Go to Settings"));
+      await fireEvent.press(getByText("Go to Settings"));
       expect(router.push).toHaveBeenCalledWith("/settings");
     });
 
-    it("treats a bare 401 as an incorrect API key", () => {
+    it("treats a bare 401 as an incorrect API key", async () => {
       mockTransactionsResult({
         isError: true,
         error: { message: "Unauthorized", status: 401 },
       });
-      const { getByText } = render(<ActivityScreen />);
+      const { getByText } = await render(<ActivityScreen />);
 
       expect(getByText("Incorrect API key")).toBeTruthy();
     });
 
-    it("mentions the API key when a refresh is rejected", () => {
+    it("mentions the API key when a refresh is rejected", async () => {
       mockTransactionsResult({
         isError: true,
         error: invalidApiKey,
         data: { pages: [] },
       });
-      render(<ActivityScreen />);
+      await render(<ActivityScreen />);
 
       expect(showErrorToast).toHaveBeenCalledWith(
         "We couldn't refresh payments. The API key is incorrect.",
@@ -221,13 +221,13 @@ describe("ActivityScreen", () => {
     });
   });
 
-  it("does not ask for setup in Test Mode", () => {
+  it("does not ask for setup in Test Mode", async () => {
     useSettingsStore.setState({
       testMode: true,
       merchantId: null,
       isCustomerApiKeySet: false,
     });
-    const { getByText, queryByText } = render(<ActivityScreen />);
+    const { getByText, queryByText } = await render(<ActivityScreen />);
 
     expect(getByText("No payments yet")).toBeTruthy();
     expect(queryByText("Set up your merchant details")).toBeNull();
