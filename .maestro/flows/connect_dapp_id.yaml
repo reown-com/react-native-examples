@@ -1,0 +1,6 @@
+appId: ${APP_ID}
+---
+# Shared flow: resolve the dApp's app id into output.dappAppId (DAPP_APP_ID,
+# else the internal build's package). Every sub-flow that launches the dApp
+# runs this first, so each one also works on its own (e.g. while debugging).
+- evalScript: ${output.dappAppId = output.dappAppId || (typeof DAPP_APP_ID !== 'undefined' && DAPP_APP_ID) || 'com.walletconnect.web3modal.rnsample.internal'}
