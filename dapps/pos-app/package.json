@@ -1,7 +1,7 @@
 {
   "name": "pos-app",
   "main": "index",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
