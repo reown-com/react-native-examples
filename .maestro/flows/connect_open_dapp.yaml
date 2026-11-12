@@ -5,7 +5,7 @@ appId: ${APP_ID}
 # session proposal.
 # Env: DAPP_APP_ID (defaults to the internal build's package).
 
-- evalScript: ${output.dappAppId = (typeof DAPP_APP_ID !== 'undefined' && DAPP_APP_ID) || 'com.walletconnect.web3modal.rnsample.internal'}
+- runFlow: connect_dapp_id.yaml
 
 - clearState: ${output.dappAppId}
 - runFlow:

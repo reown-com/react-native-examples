@@ -21,7 +21,7 @@ tags:
 # session never settles.
 - runFlow: flows/connect_back_to_dapp.yaml
 - extendedWaitUntil:
-    visible: ".*[Rr]ejected.*|.*[Dd]eclined.*"
+    visible: "(?i).*(rejected|declined|denied).*"
     timeout: 30000
 - assertNotVisible: "Connected to"
 
