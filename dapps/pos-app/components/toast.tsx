@@ -30,9 +30,14 @@ export function Toast({ message = "", type }: ToastProps) {
   }[type];
 
   return (
-    <View style={[styles.container, { backgroundColor: Theme["bg-invert"] }]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: Theme["fill-inverse-default"] },
+      ]}
+    >
       <ThemedText
-        color="text-invert"
+        color="content-inverse"
         fontSize={16}
         lineHeight={18}
         style={styles.label}
@@ -44,7 +49,7 @@ export function Toast({ message = "", type }: ToastProps) {
         {type === "loading" ? (
           <ActivityIndicator
             size="small"
-            color={Theme["icon-accent-primary"]}
+            color={Theme["icon-primary-default"]}
           />
         ) : (
           <Image source={icon} style={styles.iconImage} contentFit="contain" />

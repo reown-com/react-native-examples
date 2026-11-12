@@ -17,7 +17,7 @@ interface SettingsItemProps {
    * "right" drills into an editor.
    */
   caret?: "up-down" | "right";
-  /** Optional leading icon rendered before the title (tinted to text-primary). */
+  /** Optional leading icon rendered before the title (tinted to content-default). */
   icon?: ImageSource;
   /** Renders an amber dot after the title to flag an unconfigured value. */
   bullet?: boolean;
@@ -51,10 +51,13 @@ export function SettingsItem({
     <Pressable
       onPress={onPress}
       disabled={disabled}
+      accessibilityLabel={[title, value, bullet ? "not set up" : undefined]
+        .filter(Boolean)
+        .join(", ")}
       testID={testID}
       style={[
         styles.container,
-        { backgroundColor: Theme["foreground-primary-fix"] },
+        { backgroundColor: Theme["fill-default-strong"] },
         disabled && { opacity: 0.4 },
       ]}
     >
@@ -62,29 +65,35 @@ export function SettingsItem({
         {icon && (
           <Image
             source={icon}
-            style={[styles.leadingIcon, { tintColor: Theme["text-primary"] }]}
-            tintColor={Theme["text-primary"]}
+            style={[
+              styles.leadingIcon,
+              { tintColor: Theme["content-default"] },
+            ]}
+            tintColor={Theme["content-default"]}
             cachePolicy="memory-disk"
           />
         )}
         <ThemedText
           fontSize={16}
           lineHeight={18}
-          color="text-primary"
+          color="content-default"
           style={styles.title}
         >
           {title}
         </ThemedText>
         {bullet && (
           <View
-            style={[styles.bullet, { backgroundColor: Theme["icon-warning"] }]}
+            style={[
+              styles.bullet,
+              { backgroundColor: Theme["icon-warning-default"] },
+            ]}
           />
         )}
         {value && (
           <ThemedText
             fontSize={16}
             lineHeight={18}
-            color="text-tertiary"
+            color="content-subtle"
             numberOfLines={1}
             style={styles.value}
           >
@@ -96,8 +105,8 @@ export function SettingsItem({
       {shouldShowCaret && caretAsset && (
         <Image
           source={caretAsset}
-          style={[styles.caretIcon, { tintColor: Theme["text-primary"] }]}
-          tintColor={Theme["text-primary"]}
+          style={[styles.caretIcon, { tintColor: Theme["content-default"] }]}
+          tintColor={Theme["content-default"]}
           cachePolicy="memory-disk"
         />
       )}
@@ -112,7 +121,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 68,
     paddingHorizontal: Spacing["spacing-5"],
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["3"],
     gap: Spacing["spacing-2"],
   },
   labelRow: {

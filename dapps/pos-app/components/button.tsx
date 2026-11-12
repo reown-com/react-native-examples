@@ -1,36 +1,112 @@
-import { BorderRadius, Spacing } from "@/constants/spacing";
+import { ColorKey } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme-color";
+import { Image, ImageSource } from "expo-image";
 import React from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { Pressable } from "./pressable";
 import { ThemedText } from "./themed-text";
 
+/**
+ * Sizes from the design system Button: height from button/size/*, label from
+ * typography/component/button-*, icon from icon/size/*. The height never
+ * changes with the viewport (no bigger buttons on tablet). lg is the default;
+ * md is for dense layouts, sm for in-row actions.
+ */
+const SIZES = {
+  lg: {
+    height: 54,
+    paddingX: 40,
+    gap: 8,
+    fontSize: 18,
+    lineHeight: 24,
+    icon: 24,
+  },
+  md: {
+    height: 44,
+    paddingX: 24,
+    gap: 8,
+    fontSize: 16,
+    lineHeight: 20,
+    icon: 20,
+  },
+  sm: {
+    height: 32,
+    paddingX: 16,
+    gap: 4,
+    fontSize: 14,
+    lineHeight: 16,
+    icon: 16,
+  },
+} as const;
+
 interface ButtonBaseProps {
   children: string;
-  icon?: React.ReactNode;
+  /** Icon before the label: what the action is about. */
+  iconLeft?: ImageSource;
+  /** Icon after the label: where the action goes (chevron, arrow, external). */
+  iconRight?: ImageSource;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
   disabled?: boolean;
   fullWidth?: boolean;
-  size?: "lg" | "md" | "sm";
+  size?: keyof typeof SIZES;
   testID?: string;
   /** Overrides the accessible name (defaults to the button's text label). */
   accessibilityLabel?: string;
   accessibilityHint?: string;
 }
 
+/**
+ * Design system roles:
+ * - accent / primary    → Primary Default: the screen's commit, one per screen.
+ * - neutral / primary   → Primary Neutral: advances without being the decision.
+ * - neutral / secondary → Secondary Default: no fill, 1px border.
+ */
 export type ButtonProps =
   | (ButtonBaseProps & { type: "accent"; variant: "primary" })
-  | (ButtonBaseProps & { type: "neutral"; variant: "secondary" | "tertiary" });
+  | (ButtonBaseProps & { type: "neutral"; variant: "primary" | "secondary" });
+
+interface VariantColors {
+  backgroundColor?: ColorKey;
+  borderColor?: ColorKey;
+  label: ColorKey;
+}
+
+function getColors(
+  type: ButtonProps["type"],
+  variant: ButtonProps["variant"],
+  disabled: boolean,
+): VariantColors {
+  if (type === "accent") {
+    return disabled
+      ? { backgroundColor: "fill-primary-disabled", label: "content-disabled" }
+      : {
+          backgroundColor: "fill-primary-default",
+          label: "content-primary-on-primary",
+        };
+  }
+  if (variant === "primary") {
+    return disabled
+      ? {
+          backgroundColor: "fill-inverse-disabled",
+          label: "content-disabled",
+        }
+      : { backgroundColor: "fill-inverse-default", label: "content-inverse" };
+  }
+  return disabled
+    ? { borderColor: "border-neutral-disabled", label: "content-disabled" }
+    : { borderColor: "border-default", label: "content-default" };
+}
 
 export function Button({
   children,
-  icon,
+  iconLeft,
+  iconRight,
   style,
   onPress,
   disabled = false,
   fullWidth = true,
-  size = "md",
+  size = "lg",
   testID,
   accessibilityLabel,
   accessibilityHint,
@@ -38,29 +114,20 @@ export function Button({
   variant,
 }: ButtonProps) {
   const theme = useTheme();
-  const isSmall = size === "sm";
-  const isLarge = size === "lg";
+  const spec = SIZES[size];
+  const colors = getColors(type, variant, disabled);
+  const labelColor = theme[colors.label];
 
-  const variantStyle =
-    type === "accent"
-      ? {
-          backgroundColor: theme["bg-accent-primary"],
-        }
-      : variant === "secondary"
-        ? {
-            borderColor: theme["border-secondary"],
-            borderWidth: 1,
-          }
-        : {
-            backgroundColor: theme["bg-invert"],
-          };
-
-  const textColor =
-    type === "accent"
-      ? "text-white"
-      : variant === "secondary"
-        ? "text-primary"
-        : "text-invert";
+  const renderIcon = (source: ImageSource) => (
+    <Image
+      source={source}
+      style={{ width: spec.icon, height: spec.icon }}
+      tintColor={labelColor}
+      contentFit="contain"
+      cachePolicy="memory-disk"
+      accessible={false}
+    />
+  );
 
   return (
     <Pressable
@@ -72,30 +139,29 @@ export function Button({
       accessibilityHint={accessibilityHint}
       style={[
         styles.button,
-        isSmall && styles.buttonSmall,
-        isLarge && styles.buttonLarge,
+        { height: spec.height, paddingHorizontal: spec.paddingX },
         fullWidth && styles.fullWidth,
-        variantStyle,
-        disabled && styles.disabled,
+        colors.backgroundColor && {
+          backgroundColor: theme[colors.backgroundColor],
+        },
+        colors.borderColor && {
+          borderColor: theme[colors.borderColor],
+          borderWidth: 1,
+        },
         style,
       ]}
     >
-      <View
-        style={[
-          styles.content,
-          isSmall && styles.contentSmall,
-          isLarge && styles.contentLarge,
-        ]}
-      >
+      <View style={[styles.content, { gap: spec.gap }]}>
+        {iconLeft && renderIcon(iconLeft)}
         <ThemedText
-          color={textColor}
-          fontSize={isSmall ? 12 : isLarge ? 22 : 18}
-          lineHeight={isSmall ? 14 : isLarge ? 24 : 20}
+          fontSize={spec.fontSize}
+          lineHeight={spec.lineHeight}
+          color={colors.label}
           style={styles.label}
         >
           {children}
         </ThemedText>
-        {icon}
+        {iconRight && renderIcon(iconRight)}
       </View>
     </Pressable>
   );
@@ -103,38 +169,20 @@ export function Button({
 
 const styles = StyleSheet.create({
   button: {
-    height: 54,
-    borderRadius: BorderRadius["4"],
+    // radius/button → radius/full: every button is fully round, in all sizes.
+    borderRadius: 999,
     alignItems: "center",
     justifyContent: "center",
-  },
-  buttonSmall: {
-    height: 28,
-    borderRadius: 10,
-    paddingHorizontal: Spacing["spacing-3"],
-  },
-  buttonLarge: {
-    height: 64,
   },
   content: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: Spacing["spacing-2"],
-  },
-  contentSmall: {
-    gap: Spacing["spacing-1"],
-  },
-  contentLarge: {
-    gap: Spacing["spacing-3"],
   },
   label: {
     textAlign: "center",
   },
   fullWidth: {
     width: "100%",
-  },
-  disabled: {
-    opacity: 0.6,
   },
 });

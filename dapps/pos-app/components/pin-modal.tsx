@@ -124,12 +124,15 @@ function PinModalBase({
     <View style={styles.overlay}>
       <Pressable style={StyleSheet.absoluteFill} onPress={onCancel} />
       <View
-        style={[styles.container, { backgroundColor: theme["bg-primary"] }]}
+        style={[
+          styles.container,
+          { backgroundColor: theme["surface-default"] },
+        ]}
       >
         <ThemedText
           fontSize={20}
           lineHeight={24}
-          color="text-primary"
+          color="content-default"
           style={styles.title}
         >
           {title}
@@ -139,7 +142,7 @@ function PinModalBase({
           <ThemedText
             fontSize={14}
             lineHeight={18}
-            color="text-secondary"
+            color="content-subtle"
             style={styles.subtitle}
           >
             {subtitle}
@@ -161,9 +164,9 @@ function PinModalBase({
                   backgroundColor:
                     index < pin.length
                       ? error
-                        ? theme["icon-error"]
-                        : theme["bg-accent-primary"]
-                      : theme["foreground-tertiary"],
+                        ? theme["icon-error-default"]
+                        : theme["fill-primary-default"]
+                      : theme["border-default"],
                 },
               ]}
             />
@@ -174,7 +177,7 @@ function PinModalBase({
           <ThemedText
             fontSize={12}
             lineHeight={14}
-            style={[styles.errorText, { color: theme["icon-error"] }]}
+            style={[styles.errorText, { color: theme["icon-error-default"] }]}
           >
             {error}
           </ThemedText>
@@ -202,13 +205,13 @@ function PinModalBase({
                       }
                       style={[
                         styles.key,
-                        { backgroundColor: theme["foreground-primary-fix"] },
+                        { backgroundColor: theme["fill-default-strong"] },
                       ]}
                     >
                       <Image
                         source={isFaceLike ? FACE_ID_ICON : TOUCH_ID_ICON}
                         style={styles.biometricIcon}
-                        tintColor={theme["text-primary"]}
+                        tintColor={theme["content-default"]}
                         contentFit="contain"
                       />
                     </TouchableOpacity>
@@ -224,21 +227,21 @@ function PinModalBase({
                     accessibilityLabel={key === "erase" ? "Delete" : key}
                     style={[
                       styles.key,
-                      { backgroundColor: theme["foreground-primary-fix"] },
+                      { backgroundColor: theme["fill-default-strong"] },
                     ]}
                   >
                     {key === "erase" ? (
                       <Image
                         source={BACKSPACE_ICON}
                         style={styles.eraseIcon}
-                        tintColor={theme["text-primary"]}
+                        tintColor={theme["content-default"]}
                         contentFit="contain"
                       />
                     ) : (
                       <ThemedText
                         style={[
                           styles.keyText,
-                          { color: theme["text-primary"] },
+                          { color: theme["content-default"] },
                         ]}
                       >
                         {key}
@@ -256,10 +259,10 @@ function PinModalBase({
           activeOpacity={0.7}
           style={[
             styles.cancelButton,
-            { borderColor: theme["border-secondary"], borderWidth: 1 },
+            { borderColor: theme["border-default"], borderWidth: 1 },
           ]}
         >
-          <ThemedText fontSize={18} lineHeight={20} color="text-primary">
+          <ThemedText fontSize={18} lineHeight={20} color="content-default">
             Cancel
           </ThemedText>
         </TouchableOpacity>
@@ -298,7 +301,7 @@ const styles = StyleSheet.create({
   container: {
     width: "85%",
     maxWidth: 340,
-    borderRadius: BorderRadius["5"],
+    borderRadius: BorderRadius["4"],
     padding: Spacing["spacing-6"],
     alignItems: "center",
   },

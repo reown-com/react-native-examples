@@ -5,6 +5,7 @@ import {
   useNavigation,
 } from "expo-router";
 import { Image } from "expo-image";
+import { HeaderBackButton } from "expo-router/react-navigation";
 import React, { useEffect, useRef, useState } from "react";
 import {
   BackHandler,
@@ -44,7 +45,7 @@ export default function EmailReceiptScreen() {
   const { mutateAsync: sendReceipt, isPending } = useSendReceipt();
 
   const [email, setEmail] = useState("");
-  const [hasError, setHasError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const isSendingRef = useRef(false);
 
@@ -52,7 +53,7 @@ export default function EmailReceiptScreen() {
     bottom + Spacing["spacing-3"],
     Spacing["spacing-5"],
   );
-  const isSubmitDisabled = !email.trim() || hasError || isPending;
+  const hasError = error !== null;
 
   const handleClose = () => {
     if (isSendingRef.current) return;
@@ -75,18 +76,32 @@ export default function EmailReceiptScreen() {
 
   const handleChangeText = (text: string) => {
     setEmail(text);
-    if (hasError) setHasError(false);
+    if (hasError) setError(null);
   };
 
   const handleClear = () => {
     setEmail("");
-    setHasError(false);
+    setError(null);
+  };
+
+  /** Returns the message to show for the current value, or null if valid. */
+  const validate = (value: string): string | null => {
+    if (!value.trim()) return "Enter the customer's email address";
+    if (!isValidEmail(value)) return "Enter a valid email address";
+    return null;
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    // Only flag a typed value; leaving the field empty isn't an error yet.
+    if (email.trim()) setError(validate(email));
   };
 
   const handleSend = async () => {
-    if (isSendingRef.current || !email.trim()) return;
-    if (!isValidEmail(email)) {
-      setHasError(true);
+    if (isSendingRef.current) return;
+    const validationError = validate(email);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -119,14 +134,14 @@ export default function EmailReceiptScreen() {
   };
 
   const borderColor = hasError
-    ? Theme["icon-error"]
+    ? Theme["icon-error-default"]
     : isFocused
-      ? Theme["border-accent-primary"]
-      : Theme["border-primary"];
+      ? Theme["border-primary-default"]
+      : Theme["border-subtle"];
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: Theme["bg-primary"] }]}
+      style={[styles.container, { backgroundColor: Theme["surface-default"] }]}
       // Padding on Android too: older versions (e.g. Android 10) don't resize
       // the window for the keyboard under edge-to-edge. Where the window does
       // resize, the keyboard no longer overlaps the view, so no padding is added.
@@ -143,25 +158,17 @@ export default function EmailReceiptScreen() {
         ]}
       >
         <View style={styles.header}>
-          <ScalePressable
+          {/* Same back arrow as the stack header on other screens. */}
+          <HeaderBackButton
             testID="email-receipt-close"
-            accessibilityRole="button"
-            accessibilityLabel="Close"
+            accessibilityLabel="Go back"
             onPress={handleClose}
             disabled={isPending}
-            style={[
-              styles.closeButton,
-              { borderColor: Theme["border-secondary"] },
-            ]}
-          >
-            <Image
-              source={require("@/assets/images/close.png")}
-              style={styles.closeIcon}
-              tintColor={Theme["text-primary"]}
-              cachePolicy="memory-disk"
-            />
-          </ScalePressable>
-          <HeaderImage tintColor={Theme["text-primary"]} />
+            tintColor={Theme["content-default"]}
+            displayMode="minimal"
+            style={styles.backButton}
+          />
+          <HeaderImage tintColor={Theme["content-default"]} />
           <View style={styles.headerSpacer} />
         </View>
 
@@ -169,18 +176,29 @@ export default function EmailReceiptScreen() {
           <ThemedText
             fontSize={isTablet ? 24 : 18}
             lineHeight={isTablet ? 28 : 20}
-            color="text-primary"
+            color="content-default"
+            accessibilityRole="header"
+            aria-level={1}
             style={styles.title}
           >
             Enter customer email
           </ThemedText>
           <View>
+            <ThemedText
+              nativeID="email-receipt-label"
+              fontSize={14}
+              lineHeight={18}
+              color="content-subtle"
+              style={styles.label}
+            >
+              Email address
+            </ThemedText>
             <View
               style={[
                 styles.inputContainer,
                 {
                   borderColor,
-                  backgroundColor: Theme["foreground-primary"],
+                  backgroundColor: Theme["fill-default-strong"],
                 },
               ]}
             >
@@ -189,10 +207,14 @@ export default function EmailReceiptScreen() {
                 value={email}
                 onChangeText={handleChangeText}
                 onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
+                onBlur={handleBlur}
                 onSubmitEditing={handleSend}
-                placeholder="Customer email"
-                placeholderTextColor={Theme["text-tertiary"]}
+                accessibilityLabelledBy="email-receipt-label"
+                aria-labelledby="email-receipt-label"
+                aria-describedby={hasError ? "email-receipt-error" : undefined}
+                aria-invalid={hasError}
+                placeholder="name@company.com"
+                placeholderTextColor={Theme["content-subtle"]}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -204,7 +226,7 @@ export default function EmailReceiptScreen() {
                 style={[
                   styles.input,
                   webInputReset,
-                  { color: Theme["text-primary"] },
+                  { color: Theme["content-default"] },
                 ]}
               />
               {email.length > 0 && !isPending && (
@@ -218,13 +240,13 @@ export default function EmailReceiptScreen() {
                   <View
                     style={[
                       styles.clearCircle,
-                      { backgroundColor: Theme["text-secondary"] },
+                      { backgroundColor: Theme["content-subtle"] },
                     ]}
                   >
                     <Image
                       source={require("@/assets/images/close.png")}
                       style={styles.clearIcon}
-                      tintColor={Theme["bg-primary"]}
+                      tintColor={Theme["surface-default"]}
                       cachePolicy="memory-disk"
                     />
                   </View>
@@ -234,12 +256,15 @@ export default function EmailReceiptScreen() {
             {hasError && (
               <ThemedText
                 testID="email-receipt-error"
+                nativeID="email-receipt-error"
+                accessibilityLiveRegion="polite"
+                role="alert"
                 fontSize={14}
                 lineHeight={18}
-                color="icon-error"
+                color="icon-error-default"
                 style={styles.errorText}
               >
-                Enter a valid email address
+                {error}
               </ThemedText>
             )}
           </View>
@@ -249,9 +274,9 @@ export default function EmailReceiptScreen() {
           type="accent"
           variant="primary"
           testID="email-receipt-submit"
-          size={isTablet ? "lg" : "md"}
           onPress={handleSend}
-          disabled={isSubmitDisabled}
+          // Not pre-disabled: tapping with an empty or invalid email shows why.
+          disabled={isPending}
         >
           Email receipt
         </Button>
@@ -281,17 +306,8 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
   },
-  closeButton: {
-    width: 38,
-    height: 38,
-    borderRadius: BorderRadius["3"],
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  closeIcon: {
-    width: 20,
-    height: 20,
+  backButton: {
+    marginLeft: 0,
   },
   form: {
     flex: 1,
@@ -306,7 +322,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 60,
     borderWidth: 1,
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["2"],
     paddingHorizontal: Spacing["spacing-5"],
     gap: Spacing["spacing-3"],
   },
@@ -333,6 +349,9 @@ const styles = StyleSheet.create({
   clearIcon: {
     width: 10,
     height: 10,
+  },
+  label: {
+    marginBottom: Spacing["spacing-2"],
   },
   errorText: {
     marginTop: Spacing["spacing-2"],

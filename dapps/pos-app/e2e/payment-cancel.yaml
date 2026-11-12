@@ -13,9 +13,9 @@ tags:
 # merchant-credential requirements).
 - runFlow: common/create-payment-qr.yaml
 
-# Cancel returns to a fresh amount screen (empty amount -> "Enter amount")
+# Cancel returns to a fresh amount screen (empty amount -> "Charge $0.00")
 # and cancels the open payment at the gateway.
 - tapOn:
     id: "cancel-button"
 - assertVisible:
-    text: "Enter amount"
+    text: "Charge \\$0.00"

@@ -54,13 +54,13 @@ describe("useSettingsStore", () => {
       expect(biometricEnabled).toBe(false);
     });
 
-    it("should have Test Mode enabled", () => {
-      expect(useSettingsStore.getState().testMode).toBe(true);
+    it("should have Test Mode disabled", () => {
+      expect(useSettingsStore.getState().testMode).toBe(false);
     });
 
-    it("should default Test Mode to on in the store itself", () => {
+    it("should default Test Mode to off in the store itself", () => {
       // Fresh installs never saved the setting, so they fall back to this value.
-      expect(useSettingsStore.getInitialState().testMode).toBe(true);
+      expect(useSettingsStore.getInitialState().testMode).toBe(false);
     });
 
     it("should have email receipt enabled", () => {

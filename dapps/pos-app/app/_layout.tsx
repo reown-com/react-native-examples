@@ -5,9 +5,11 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import Toast from "react-native-toast-message";
 
+import { DocumentTitle } from "@/components/document-title";
 import HeaderImage from "@/components/header-image";
 import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useAssets } from "expo-asset";
 import { useFonts } from "expo-font";
 
 import { useTheme } from "@/hooks/use-theme-color";
@@ -15,6 +17,7 @@ import { usePosBridge } from "@/hooks/use-pos-bridge";
 import * as Sentry from "@sentry/react-native";
 
 import { WalletConnectLoading } from "@/components/walletconnect-loading";
+import { PRELOAD_IMAGES } from "@/constants/preload-images";
 import { Spacing } from "@/constants/spacing";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
@@ -40,7 +43,12 @@ export const unstable_settings = { initialRouteName: "index" };
 
 const renderHeaderTitle = (title: string) => {
   const HeaderTitle = () => (
-    <ThemedText fontSize={18} style={{ fontWeight: "500" }}>
+    <ThemedText
+      fontSize={18}
+      accessibilityRole="header"
+      aria-level={1}
+      style={{ fontWeight: "500" }}
+    >
       {title}
     </ThemedText>
   );
@@ -67,6 +75,10 @@ export default Sentry.wrap(function RootLayout() {
     "KH Teka Medium": require("@/assets/fonts/KHTeka-Medium.otf"),
     "KH Teka Mono": require("@/assets/fonts/KHTekaMono-Regular.otf"),
   });
+  // Resolves to the assets, or sets an error; either way stop waiting so a
+  // failed icon download never blocks the app.
+  const [preloadedImages, preloadError] = useAssets(PRELOAD_IMAGES);
+  const imagesReady = !!preloadedImages || !!preloadError;
 
   // Ends Sentry's app-start span once real UI can render (after hydration + fonts).
   useEffect(() => {
@@ -110,14 +122,14 @@ export default Sentry.wrap(function RootLayout() {
     checkBluetoothPermission();
   }, []);
 
-  if (!_hasHydrated || !fontsLoaded) {
+  if (!_hasHydrated || !fontsLoaded || !imagesReady) {
     return (
       <View
         style={{
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: Theme["bg-primary"],
+          backgroundColor: Theme["surface-default"],
         }}
       >
         <WalletConnectLoading size={180} />
@@ -128,24 +140,25 @@ export default Sentry.wrap(function RootLayout() {
   // Match the navigator's background (shown behind screens during transitions)
   // to the app background so iOS native-stack push/pop doesn't flash the white
   // window underneath. react-navigation's DarkTheme background is pure black
-  // (rgb(1,1,1)), not our bg-primary.
+  // (rgb(1,1,1)), not our surface-default.
   const baseNavTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
   const navigationTheme = {
     ...baseNavTheme,
     colors: {
       ...baseNavTheme.colors,
-      background: Theme["bg-primary"],
-      card: Theme["bg-primary"],
+      background: Theme["surface-default"],
+      card: Theme["surface-default"],
     },
   };
 
   return (
     <GestureHandlerRootView
-      style={{ flex: 1, backgroundColor: Theme["bg-primary"] }}
+      style={{ flex: 1, backgroundColor: Theme["surface-default"] }}
     >
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider value={navigationTheme}>
+            <DocumentTitle />
             <Stack
               screenOptions={({ route }) => {
                 return {
@@ -157,11 +170,14 @@ export default Sentry.wrap(function RootLayout() {
                     />
                   ),
                   headerShadowVisible: false,
-                  headerTintColor: Theme["text-primary"],
+                  headerTintColor: Theme["content-default"],
                   headerBackButtonDisplayMode: "minimal",
+                  // Not shown (minimal mode); gives the back button the
+                  // accessible name "Go back" instead of "index, back".
+                  headerBackTitle: "Back",
                   headerTitleAlign: "center",
                   headerStyle: {
-                    backgroundColor: Theme["bg-primary"],
+                    backgroundColor: Theme["surface-default"],
                   },
                   headerRightContainerStyle: {
                     ...(Platform.OS === "web" && {
@@ -174,7 +190,7 @@ export default Sentry.wrap(function RootLayout() {
                     }),
                   },
                   contentStyle: {
-                    backgroundColor: Theme["bg-primary"],
+                    backgroundColor: Theme["surface-default"],
                     paddingBottom: Platform.select({
                       ios: Spacing["spacing-6"],
                       android: Spacing["spacing-12"],
@@ -188,7 +204,7 @@ export default Sentry.wrap(function RootLayout() {
                 name="index"
                 options={{
                   contentStyle: {
-                    backgroundColor: Theme["bg-primary"],
+                    backgroundColor: Theme["surface-default"],
                     paddingBottom: 0,
                   },
                 }}
@@ -215,7 +231,7 @@ export default Sentry.wrap(function RootLayout() {
                   headerShown: false,
                   gestureEnabled: false,
                   contentStyle: {
-                    backgroundColor: Theme["bg-primary"],
+                    backgroundColor: Theme["surface-default"],
                     paddingBottom: 0,
                   },
                 }}
@@ -225,7 +241,7 @@ export default Sentry.wrap(function RootLayout() {
                 options={{
                   headerShown: false,
                   contentStyle: {
-                    backgroundColor: Theme["bg-primary"],
+                    backgroundColor: Theme["surface-default"],
                     paddingBottom: 0,
                   },
                 }}

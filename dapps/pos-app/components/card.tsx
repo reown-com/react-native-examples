@@ -17,7 +17,7 @@ export function Card({ children, onPress, style }: Props) {
       onPress={onPress}
       style={[
         styles.card,
-        { backgroundColor: Theme["foreground-primary-fix"] },
+        { backgroundColor: Theme["fill-default-strong"] },
         style,
       ]}
     >
@@ -27,7 +27,7 @@ export function Card({ children, onPress, style }: Props) {
     <View
       style={[
         styles.card,
-        { backgroundColor: Theme["foreground-primary-fix"] },
+        { backgroundColor: Theme["fill-default-strong"] },
         style,
       ]}
     >

@@ -74,7 +74,7 @@ export default function AmountScreen() {
       <View
         style={[
           styles.amountContainer,
-          { borderColor: Theme["border-primary"] },
+          { borderColor: Theme["border-subtle"] },
         ]}
       >
         <BigAmountInput
@@ -82,7 +82,6 @@ export default function AmountScreen() {
           value={watchAmount}
           currency={currency.symbol}
           symbolPosition={currency.symbolPosition}
-          size={isTablet ? "lg" : "md"}
         />
       </View>
       <Controller
@@ -136,12 +135,12 @@ export default function AmountScreen() {
         testID="charge-button"
         onPress={handleSubmit(onSubmit)}
         disabled={!isValid}
-        size={isTablet ? "lg" : "md"}
         style={[styles.button, isTablet && styles.buttonTablet]}
       >
-        {isValid
-          ? `Charge ${formatAmountWithSymbol(formatAmount(watchAmount), currency)}`
-          : "Enter amount"}
+        {`Charge ${formatAmountWithSymbol(
+          formatAmount(isValid ? watchAmount : "0"),
+          currency,
+        )}`}
       </Button>
     </View>
   );

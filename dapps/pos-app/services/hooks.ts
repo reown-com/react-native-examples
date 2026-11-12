@@ -1,4 +1,5 @@
 import { useLogsStore } from "@/store/useLogsStore";
+import { useTestPaymentsStore } from "@/store/useTestPaymentsStore";
 import {
   selectTestModeActive,
   useSettingsStore,
@@ -223,6 +224,11 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
   const { enabled = true, filter = "all", dateRangeFilter = "today" } = options;
   const testMode = useSettingsStore(selectTestModeActive);
   const testActive = testMode;
+  // Part of the query key so a payment just taken in Test Mode shows up
+  // without waiting for the 5-minute staleTime.
+  const testPaymentsCount = useTestPaymentsStore(
+    (state) => state.payments.length,
+  );
 
   const addLog = useLogsStore.getState().addLog;
 
@@ -233,7 +239,13 @@ export function useTransactions(options: UseTransactionsOptions = {}) {
   );
 
   const query = useInfiniteQuery<TransactionsResponse, Error>({
-    queryKey: ["transactions", filter, dateRangeFilter, testActive],
+    queryKey: [
+      "transactions",
+      filter,
+      dateRangeFilter,
+      testActive,
+      testActive ? testPaymentsCount : 0,
+    ],
     queryFn: ({ pageParam }) => {
       const statusFilter = filterToStatusArray(filter);
       return getTransactions({

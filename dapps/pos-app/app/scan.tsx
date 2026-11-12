@@ -14,6 +14,7 @@ import { usePaymentStatus } from "@/services/hooks";
 import { cancelPayment, startPayment } from "@/services/payment";
 import { isTestPaymentFailure } from "@/services/test-payment";
 import { useLogsStore } from "@/store/useLogsStore";
+import { useTestPaymentsStore } from "@/store/useTestPaymentsStore";
 import { usePosBridgeStore } from "@/store/usePosBridgeStore";
 import {
   selectTestModeActive,
@@ -100,6 +101,7 @@ export default function ScanScreen() {
   const nfcEnabled = useSettingsStore((state) => state.nfcEnabled);
   const currency = getCurrency(currencyCode);
   const addLog = useLogsStore((state) => state.addLog);
+  const addTestPayment = useTestPaymentsStore((state) => state.addTestPayment);
   const Theme = useTheme();
   const isTablet = useIsTablet();
 
@@ -273,15 +275,25 @@ export default function ScanScreen() {
       setTestProcessing(false);
       if (isTestPaymentFailure(amount)) {
         addLog("info", "Test payment declined", "scan", "testPayment");
+        addTestPayment({ paymentId, amount, status: "failed" });
         onFailure("failed");
       } else {
         addLog("info", "Test payment completed", "scan", "testPayment");
+        addTestPayment({ paymentId, amount, status: "succeeded" });
         onSuccess(paymentId);
       }
     }, 3000);
 
     return () => clearTimeout(timeout);
-  }, [addLog, amount, isTestPayment, onFailure, onSuccess, paymentId]);
+  }, [
+    addLog,
+    addTestPayment,
+    amount,
+    isTestPayment,
+    onFailure,
+    onSuccess,
+    paymentId,
+  ]);
 
   const { data: paymentStatusData } = usePaymentStatus(paymentId, {
     enabled: !isTestPayment && !!paymentId && !!qrUri,
@@ -318,7 +330,14 @@ export default function ScanScreen() {
   // resolved yet — cancel then too.
   const cancelPendingPayment = useCallback(() => {
     if (hasNavigatedRef.current || hasCancelledRef.current) return;
-    if (isTestPayment) return;
+    if (isTestPayment) {
+      // No API call to cancel, but record it so Transactions shows it.
+      if (paymentId) {
+        hasCancelledRef.current = true;
+        addTestPayment({ paymentId, amount, status: "cancelled" });
+      }
+      return;
+    }
     // Record the leave so an in-flight `startPayment` cancels the payment it
     // creates instead of leaking it (see `initiatePayment`).
     hasLeftRef.current = true;
@@ -335,7 +354,14 @@ export default function ScanScreen() {
         showErrorToast("We couldn't cancel this payment.");
       });
     }
-  }, [paymentId, paymentStatusData?.status, addLog, isTestPayment]);
+  }, [
+    paymentId,
+    paymentStatusData?.status,
+    addLog,
+    addTestPayment,
+    amount,
+    isTestPayment,
+  ]);
 
   // Hold the latest callback in a ref so the `beforeRemove` listener stays
   // registered once for the screen's lifetime instead of being torn down and
@@ -354,7 +380,12 @@ export default function ScanScreen() {
 
   const { remainingSeconds, isActive: isCountdownActive } = useCountdown({
     expiresAt,
-    onExpired: () => onFailure("expired"),
+    onExpired: () => {
+      if (isTestPayment && paymentId) {
+        addTestPayment({ paymentId, amount, status: "expired" });
+      }
+      onFailure("expired");
+    },
   });
 
   // The visible countdown is plain (non-live) text so screen readers don't
@@ -421,14 +452,14 @@ export default function ScanScreen() {
           <WalletConnectLoading size={isTablet ? 220 : 180} />
           <View style={styles.loadingTextContainer}>
             <ThemedText
-              style={{ color: Theme["text-primary"] }}
+              style={{ color: Theme["content-default"] }}
               fontSize={isTablet ? 24 : 20}
               lineHeight={isTablet ? 26 : 22}
             >
-              Waiting for confirmation...
+              Waiting for confirmation…
             </ThemedText>
             <ThemedText
-              style={{ color: Theme["text-secondary"], textAlign: "center" }}
+              style={{ color: Theme["content-subtle"], textAlign: "center" }}
               fontSize={isTablet ? 20 : 16}
               lineHeight={isTablet ? 22 : 18}
             >
@@ -454,7 +485,7 @@ export default function ScanScreen() {
                 style={[
                   styles.nfcIcon,
                   isTablet && styles.nfcIconTablet,
-                  { tintColor: Theme["icon-default"] },
+                  { tintColor: Theme["icon-subtle"] },
                 ]}
               />
             )}
@@ -462,7 +493,7 @@ export default function ScanScreen() {
               style={[
                 styles.amountValue,
                 isTablet && styles.amountValueTablet,
-                { color: Theme["text-primary"], textTransform: "uppercase" },
+                { color: Theme["content-default"], textTransform: "uppercase" },
               ]}
             >
               {formatAmountWithSymbol(amount, currency)}
@@ -473,11 +504,11 @@ export default function ScanScreen() {
             style={[
               styles.instructionText,
               isTablet && styles.instructionTextTablet,
-              { color: Theme["text-secondary"] },
+              { color: Theme["content-subtle"] },
             ]}
           >
             {testProcessing
-              ? "Waiting for confirmation..."
+              ? "Waiting for confirmation…"
               : showNfc
                 ? "Scan or tap to pay"
                 : "Scan to pay"}
@@ -520,7 +551,7 @@ export default function ScanScreen() {
               <ThemedText
                 fontSize={isTablet ? 20 : undefined}
                 lineHeight={isTablet ? 22 : undefined}
-                style={{ color: Theme["text-secondary"] }}
+                style={{ color: Theme["content-subtle"] }}
               >
                 Expires in
               </ThemedText>
@@ -528,7 +559,7 @@ export default function ScanScreen() {
                 fontSize={isTablet ? 20 : undefined}
                 lineHeight={isTablet ? 22 : undefined}
                 style={{
-                  color: Theme["bg-accent-primary"],
+                  color: Theme["fill-primary-default"],
                   fontVariant: ["tabular-nums"],
                 }}
               >
@@ -546,7 +577,6 @@ export default function ScanScreen() {
           testID="cancel-button"
           onPress={handleOnCancelPress}
           fullWidth={false}
-          size={isTablet ? "lg" : "md"}
           style={[styles.cancelButton, isTablet && styles.cancelButtonTablet]}
         >
           Cancel

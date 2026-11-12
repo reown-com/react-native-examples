@@ -34,14 +34,14 @@ const getLevelBadge = (
     case "error":
       return {
         bg: "rgba(223, 74, 52, 0.12)",
-        text: theme["icon-error"],
+        text: theme["icon-error-default"],
         label: "Error",
       };
     case "info":
     default:
       return {
-        bg: theme["bg-invert"],
-        text: theme["text-invert"],
+        bg: theme["fill-inverse-default"],
+        text: theme["content-inverse"],
         label: "Info",
       };
   }
@@ -88,7 +88,7 @@ function LogCardBase({ item }: { item: LogEntry }) {
               {badge.label}
             </ThemedText>
           </View>
-          <ThemedText fontSize={12} lineHeight={14} color="text-secondary">
+          <ThemedText fontSize={12} lineHeight={14} color="content-subtle">
             {formatTimestamp(item.timestamp)}
           </ThemedText>
         </View>
@@ -98,14 +98,7 @@ function LogCardBase({ item }: { item: LogEntry }) {
           size="sm"
           fullWidth={false}
           onPress={handleCopy}
-          icon={
-            <Image
-              source={require("@/assets/images/copy.png")}
-              tintColor={theme["text-primary"]}
-              contentFit="contain"
-              style={styles.copyIcon}
-            />
-          }
+          iconLeft={require("@/assets/images/copy.png")}
         >
           Copy entry
         </Button>
@@ -115,13 +108,13 @@ function LogCardBase({ item }: { item: LogEntry }) {
           <ThemedText
             fontSize={15}
             lineHeight={20}
-            color="text-primary"
+            color="content-default"
             style={styles.message}
           >
             {item.message}
           </ThemedText>
           {context ? (
-            <ThemedText fontSize={13} lineHeight={16} color="text-secondary">
+            <ThemedText fontSize={13} lineHeight={16} color="content-subtle">
               {context}
             </ThemedText>
           ) : null}
@@ -130,7 +123,7 @@ function LogCardBase({ item }: { item: LogEntry }) {
           <Animated.View style={chevronStyle}>
             <Image
               source={require("@/assets/images/chevron-down.png")}
-              tintColor={theme["text-secondary"]}
+              tintColor={theme["content-subtle"]}
               contentFit="contain"
               style={styles.chevron}
             />
@@ -142,7 +135,7 @@ function LogCardBase({ item }: { item: LogEntry }) {
           <ThemedText
             fontSize={11}
             lineHeight={14}
-            color="text-secondary"
+            color="content-subtle"
             style={styles.data}
           >
             {JSON.stringify(item.data, null, 2)}
@@ -154,7 +147,7 @@ function LogCardBase({ item }: { item: LogEntry }) {
 
   const cardStyle = [
     styles.logItem,
-    { backgroundColor: theme["foreground-primary-fix"] },
+    { backgroundColor: theme["fill-default-strong"] },
   ];
 
   if (!hasData) {
@@ -195,10 +188,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing["spacing-2"],
     flexShrink: 1,
-  },
-  copyIcon: {
-    width: 14,
-    height: 14,
   },
   levelBadge: {
     padding: Spacing["spacing-1"] + Spacing["spacing-05"],

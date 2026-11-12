@@ -26,14 +26,14 @@ export function SettingsToggleItem({
       testID={testID}
       style={[
         styles.container,
-        { backgroundColor: Theme["foreground-primary-fix"] },
+        { backgroundColor: Theme["fill-default-strong"] },
       ]}
     >
       <View style={styles.labelRow}>
         <ThemedText
           fontSize={16}
           lineHeight={18}
-          color="text-primary"
+          color="content-default"
           style={styles.title}
         >
           {title}
@@ -42,7 +42,7 @@ export function SettingsToggleItem({
           <ThemedText
             fontSize={16}
             lineHeight={18}
-            color="text-tertiary"
+            color="content-subtle"
             numberOfLines={1}
             style={styles.description}
           >
@@ -53,6 +53,7 @@ export function SettingsToggleItem({
       <Switch
         value={value}
         onValueChange={onValueChange}
+        accessibilityLabel={title}
         style={styles.switch}
         testID={testID ? `${testID}-switch` : undefined}
       />
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     minHeight: 68,
     paddingHorizontal: Spacing["spacing-5"],
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["3"],
     gap: Spacing["spacing-2"],
   },
   labelRow: {

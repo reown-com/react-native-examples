@@ -151,7 +151,7 @@ export default function HomeScreen() {
             minHeight: primaryActionMinHeight,
             maxHeight: primaryActionMaxHeight,
           },
-          { backgroundColor: Theme["foreground-primary-fix"] },
+          { backgroundColor: Theme["fill-default-strong"] },
         ]}
       >
         <Image
@@ -160,7 +160,7 @@ export default function HomeScreen() {
             styles.actionButtonImage,
             isTablet && styles.actionButtonImageTablet,
           ]}
-          tintColor={Theme["icon-invert"]}
+          tintColor={Theme["icon-default"]}
           cachePolicy="memory-disk"
           priority="high"
         />
@@ -188,7 +188,7 @@ export default function HomeScreen() {
             styles.actionButton,
             secondaryActionDimensions,
             styles.baseActionButton,
-            { backgroundColor: Theme["foreground-primary-fix"] },
+            { backgroundColor: Theme["fill-default-strong"] },
           ]}
         >
           <Image
@@ -197,7 +197,7 @@ export default function HomeScreen() {
               styles.actionButtonImage,
               isTablet && styles.actionButtonImageTablet,
             ]}
-            tintColor={Theme["icon-invert"]}
+            tintColor={Theme["icon-default"]}
             cachePolicy="memory-disk"
             priority="high"
           />
@@ -218,7 +218,7 @@ export default function HomeScreen() {
             styles.baseActionButton,
             styles.actionButton,
             secondaryActionDimensions,
-            { backgroundColor: Theme["foreground-primary-fix"] },
+            { backgroundColor: Theme["fill-default-strong"] },
           ]}
         >
           <Image
@@ -227,7 +227,7 @@ export default function HomeScreen() {
               styles.actionButtonImage,
               isTablet && styles.actionButtonImageTablet,
             ]}
-            tintColor={Theme["icon-invert"]}
+            tintColor={Theme["icon-default"]}
             cachePolicy="memory-disk"
             priority="high"
           />
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   baseActionButton: {
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: BorderRadius["5"],
+    borderRadius: BorderRadius["3"],
     gap: Spacing["spacing-4"],
   },
   actionButton: {

@@ -61,9 +61,9 @@ export const AnimatedNumber = ({
         isEmpty={isEmpty}
         decimalSeparator={decimalSeparator}
         layout={layout}
-        textPrimaryColor={Theme["text-primary"]}
-        textSecondaryColor={Theme["text-secondary"]}
-        textTertiaryColor={Theme["text-tertiary"]}
+        textPrimaryColor={Theme["content-default"]}
+        textSecondaryColor={Theme["content-subtle"]}
+        textTertiaryColor={Theme["content-subtle"]}
       />
     </Animated.View>
   );

@@ -25,13 +25,20 @@ function TransactionCardBase({
 }: TransactionCardProps) {
   const theme = useTheme();
   const meta = getTransactionStatusMeta(payment.status);
+  const amount = formatFiatAmount(
+    payment.fiatAmount?.value,
+    payment.fiatAmount?.unit,
+  );
+  const dateTime = formatDateTime(payment.createdAt);
 
   return (
     <Pressable
       onPress={onPress}
+      accessibilityLabel={`${meta.label} payment, ${amount}, ${dateTime}`}
+      accessibilityHint="Shows payment details"
       style={[
         styles.container,
-        { backgroundColor: theme["foreground-primary-fix"] },
+        { backgroundColor: theme["fill-default-strong"] },
         style,
       ]}
     >
@@ -56,22 +63,19 @@ function TransactionCardBase({
         >
           {meta.label}
         </ThemedText>
-        <ThemedText fontSize={14} lineHeight={18} color="text-secondary">
-          {formatDateTime(payment.createdAt)}
+        <ThemedText fontSize={14} lineHeight={18} color="content-subtle">
+          {dateTime}
         </ThemedText>
       </View>
 
       <View style={styles.trailing}>
-        <ThemedText fontSize={16} lineHeight={18} color="text-primary">
-          {formatFiatAmount(
-            payment.fiatAmount?.value,
-            payment.fiatAmount?.unit,
-          )}
+        <ThemedText fontSize={16} lineHeight={18} color="content-default">
+          {amount}
         </ThemedText>
         <Image
           source={CHEVRON}
           style={styles.chevron}
-          tintColor={theme["icon-invert"]}
+          tintColor={theme["icon-default"]}
           contentFit="contain"
           cachePolicy="memory-disk"
         />

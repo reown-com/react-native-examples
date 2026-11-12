@@ -42,8 +42,8 @@ function QrCode_({
   const _logoSize = arenaClear ? 0 : (logoSize ?? qrSize / 4);
   const logoAreaSize = _logoSize > 0 ? _logoSize + Spacing["spacing-6"] : 0;
 
-  const dotColor = Theme["bg-invert"];
-  const edgeColor = Theme["bg-primary"];
+  const dotColor = Theme["fill-inverse-default"];
+  const edgeColor = Theme["surface-default"];
 
   if (!uri) {
     return (
@@ -60,8 +60,8 @@ function QrCode_({
         {
           height: size,
           width: size,
-          backgroundColor: Theme["bg-primary"],
-          borderColor: Theme["foreground-tertiary"],
+          backgroundColor: Theme["surface-default"],
+          borderColor: Theme["border-default"],
         },
         style,
       ]}

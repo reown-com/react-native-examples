@@ -24,12 +24,15 @@ import { useIsTablet } from "@/hooks/use-is-tablet";
 import { useTheme } from "@/hooks/use-theme-color";
 import { useLogsStore } from "@/store/useLogsStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { formatAmountWithSymbol, getCurrency } from "@/utils/currency";
+import {
+  formatAmountWithSymbol,
+  formatTokenAmount,
+  getCurrency,
+} from "@/utils/currency";
 import { buildReceiptLogo } from "@/utils/build-receipt-logo";
 import { isRunningInIframe } from "@/utils/is-running-in-iframe";
 import { resetNavigation } from "@/utils/navigation";
 import { connectPrinter, printReceipt } from "@/utils/printer";
-import { Image } from "expo-image";
 
 // The params can't be declared optional here: `UnknownOutputParams` indexes to
 // `string | string[]`, so `?` widens to undefined and breaks the constraint.
@@ -71,6 +74,21 @@ export default function PaymentSuccessScreen() {
   const addLog = useLogsStore((state) => state.addLog);
   const { top, bottom } = useSafeAreaInsets();
   const { amount = "", paymentId } = params;
+  // Settlement detail under the title, e.g. "15.50 USDC · 14:12". The time is
+  // when this screen opened, in the device's timezone.
+  const [confirmedAt] = useState(() =>
+    new Date().toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  );
+  const tokenLabel =
+    params.tokenAmount && params.token && params.tokenDecimals
+      ? `${formatTokenAmount(params.tokenAmount, Number(params.tokenDecimals))} ${params.token}`
+      : null;
+  const confirmationDetail = tokenLabel
+    ? `${tokenLabel} · ${confirmedAt}`
+    : confirmedAt;
   // Email receipts aren't offered in the dashboard iframe.
   const canSendReceipt =
     emailReceiptEnabled && !!paymentId && !isRunningInIframe();
@@ -212,7 +230,7 @@ export default function PaymentSuccessScreen() {
         style={[
           styles.circle,
           {
-            backgroundColor: Theme["bg-accent-primary"],
+            backgroundColor: Theme["fill-primary-default"],
             width: initialCircleSize,
             height: initialCircleSize,
             borderRadius: initialCircleSize / 2,
@@ -225,7 +243,7 @@ export default function PaymentSuccessScreen() {
         pointerEvents="none"
         style={[
           styles.backgroundOverlay,
-          { backgroundColor: Theme["bg-primary"] },
+          { backgroundColor: Theme["surface-default"] },
           backgroundOverlayAnimatedStyle,
         ]}
       />
@@ -245,7 +263,7 @@ export default function PaymentSuccessScreen() {
         ]}
       >
         <View style={styles.header}>
-          <HeaderImage tintColor={Theme["text-primary"]} />
+          <HeaderImage tintColor={Theme["content-default"]} />
         </View>
         <View
           testID="pos-payment-success"
@@ -271,16 +289,28 @@ export default function PaymentSuccessScreen() {
           <ThemedText
             fontSize={isTablet ? 52 : 38}
             lineHeight={isTablet ? 54 : 38}
-            style={[styles.amountValue, { color: Theme["text-primary"] }]}
+            style={[styles.amountValue, { color: Theme["content-default"] }]}
           >
             {formatAmountWithSymbol(amount, currency)}
           </ThemedText>
           <ThemedText
             fontSize={isTablet ? 24 : 18}
             lineHeight={isTablet ? 28 : 20}
-            style={[styles.amountDescription, { color: Theme["text-primary"] }]}
+            style={[
+              styles.amountDescription,
+              { color: Theme["content-default"] },
+            ]}
           >
-            Payment successful
+            Payment confirmed
+          </ThemedText>
+          <ThemedText
+            testID="payment-success-detail"
+            fontSize={isTablet ? 18 : 16}
+            lineHeight={isTablet ? 22 : 20}
+            color="content-subtle"
+            style={styles.amountDetail}
+          >
+            {confirmationDetail}
           </ThemedText>
         </View>
         <View
@@ -295,17 +325,7 @@ export default function PaymentSuccessScreen() {
               variant="secondary"
               testID="send-receipt-button"
               onPress={handleSendReceipt}
-              size={isTablet ? "lg" : "md"}
-              icon={
-                <Image
-                  source={require("@/assets/images/paper-plane.png")}
-                  style={[
-                    styles.buttonIcon,
-                    isTablet && styles.buttonIconTablet,
-                  ]}
-                  tintColor={Theme["text-secondary"]}
-                />
-              }
+              iconLeft={require("@/assets/images/paper-plane.png")}
             >
               Send receipt
             </Button>
@@ -318,28 +338,13 @@ export default function PaymentSuccessScreen() {
               testID="print-receipt-button"
               onPress={handlePrintReceipt}
               disabled={isPrinting}
-              size={isTablet ? "lg" : "md"}
-              icon={
-                <Image
-                  source={require("@/assets/images/printer.png")}
-                  style={[
-                    styles.buttonIcon,
-                    isTablet && styles.buttonIconTablet,
-                  ]}
-                  tintColor={Theme["text-secondary"]}
-                />
-              }
+              iconLeft={require("@/assets/images/printer.png")}
             >
               {isPrinting ? "Printing receipt…" : "Print receipt"}
             </Button>
           )}
 
-          <Button
-            type="accent"
-            variant="primary"
-            size={isTablet ? "lg" : "md"}
-            onPress={handleNewPayment}
-          >
+          <Button type="accent" variant="primary" onPress={handleNewPayment}>
             Start new payment
           </Button>
         </View>
@@ -395,6 +400,9 @@ const styles = StyleSheet.create({
   amountDescription: {
     textAlign: "center",
   },
+  amountDetail: {
+    textAlign: "center",
+  },
   amountValue: {
     textAlign: "center",
   },
@@ -404,13 +412,5 @@ const styles = StyleSheet.create({
   },
   buttonContainerTablet: {
     gap: Spacing["spacing-5"],
-  },
-  buttonIcon: {
-    width: 16,
-    height: 16,
-  },
-  buttonIconTablet: {
-    width: 20,
-    height: 20,
   },
 });

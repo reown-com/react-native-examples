@@ -33,14 +33,14 @@ describe("Badge", () => {
       <Badge
         testID="badge"
         label="Not set"
-        backgroundColor="bg-warning"
-        color="text-tertiary"
+        backgroundColor="fill-warning-default"
+        color="content-subtle"
       />,
     );
 
     expect(getByText("Not set")).toBeTruthy();
     expect(StyleSheet.flatten(getByTestId("badge").props.style)).toMatchObject({
-      backgroundColor: Colors.light["bg-warning"],
+      backgroundColor: Colors.light["fill-warning-default"],
     });
   });
 });

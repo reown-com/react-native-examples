@@ -45,7 +45,7 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
               style={[
                 styles.key,
                 isTablet && styles.keyTablet,
-                { backgroundColor: Theme["foreground-primary-fix"] },
+                { backgroundColor: Theme["fill-default-strong"] },
               ]}
             >
               {key === "erase" ? (
@@ -55,10 +55,10 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                     styles.backspace,
                     isTablet && styles.backspaceTablet,
                     {
-                      tintColor: Theme["text-primary"],
+                      tintColor: Theme["content-default"],
                     },
                   ]}
-                  tintColor={Theme["text-primary"]}
+                  tintColor={Theme["content-default"]}
                   cachePolicy="memory-disk"
                   priority="high"
                 />
@@ -67,7 +67,7 @@ function NumericKeyboardBase({ onKeyPress, style }: NumericKeyboardProps) {
                   style={[
                     styles.keyText,
                     isTablet && styles.keyTextTablet,
-                    { color: Theme["text-primary"] },
+                    { color: Theme["content-default"] },
                   ]}
                 >
                   {key}

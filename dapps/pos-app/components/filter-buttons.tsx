@@ -10,6 +10,8 @@ import { ThemedText } from "./themed-text";
 export interface FilterButtonConfig {
   label: string;
   onPress: () => void;
+  /** Spoken name; the visible label alone ("Status", "Today") lacks context. */
+  accessibilityLabel?: string;
 }
 
 interface FilterButtonsProps {
@@ -26,16 +28,20 @@ function FilterButtonsBase({ buttons }: FilterButtonsProps) {
         <Pressable
           key={`${button.label}-${index}`}
           onPress={button.onPress}
-          style={[styles.button, { borderColor: theme["border-secondary"] }]}
+          accessibilityLabel={button.accessibilityLabel ?? button.label}
+          style={[styles.button, { borderColor: theme["border-default"] }]}
         >
-          <ThemedText fontSize={16} lineHeight={18} color="text-primary">
+          <ThemedText fontSize={16} lineHeight={18} color="content-default">
             {button.label}
           </ThemedText>
           {assets?.[0] && (
             <Image
               source={assets[0]}
-              style={[styles.caretIcon, { tintColor: theme["text-primary"] }]}
-              tintColor={theme["text-primary"]}
+              style={[
+                styles.caretIcon,
+                { tintColor: theme["content-default"] },
+              ]}
+              tintColor={theme["content-default"]}
               cachePolicy="memory-disk"
             />
           )}
@@ -60,7 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 48,
     paddingHorizontal: Spacing["spacing-5"],
-    borderRadius: BorderRadius["4"],
+    borderRadius: BorderRadius["full"],
     borderWidth: 1,
     gap: Spacing["spacing-2"],
   },

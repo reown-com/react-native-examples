@@ -73,7 +73,7 @@ export function SettingsBottomSheet({
       style={[
         styles.sheet,
         {
-          backgroundColor: Theme["bg-primary"],
+          backgroundColor: Theme["surface-default"],
           maxHeight: windowHeight * 0.85,
         },
         sheetAnimatedStyle,
@@ -93,7 +93,7 @@ export function SettingsBottomSheet({
             <ThemedText
               fontSize={20}
               lineHeight={20}
-              color="text-primary"
+              color="content-default"
               style={styles.title}
             >
               {title}
@@ -102,13 +102,16 @@ export function SettingsBottomSheet({
               onPress={onClose}
               style={[
                 styles.closeButton,
-                { borderColor: Theme["border-secondary"] },
+                { borderColor: Theme["border-default"] },
               ]}
             >
               <Image
                 source={assets?.[0]}
-                style={[styles.closeIcon, { tintColor: Theme["text-primary"] }]}
-                tintColor={Theme["text-primary"]}
+                style={[
+                  styles.closeIcon,
+                  { tintColor: Theme["content-default"] },
+                ]}
+                tintColor={Theme["content-default"]}
                 cachePolicy="memory-disk"
               />
             </ScalePressable>
@@ -117,7 +120,7 @@ export function SettingsBottomSheet({
             <ThemedText
               fontSize={14}
               lineHeight={18}
-              color="text-secondary"
+              color="content-subtle"
               style={styles.subtitle}
             >
               {subtitle}
@@ -163,8 +166,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   sheet: {
-    borderTopLeftRadius: BorderRadius["8"],
-    borderTopRightRadius: BorderRadius["8"],
+    borderTopLeftRadius: BorderRadius["4"],
+    borderTopRightRadius: BorderRadius["4"],
     shadowColor: "#000",
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 0.04,

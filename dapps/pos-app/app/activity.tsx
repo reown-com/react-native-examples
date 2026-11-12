@@ -99,24 +99,32 @@ export default function ActivityScreen() {
       {
         value: "all",
         label: "All",
-        dotColor: theme["icon-accent-primary"],
+        dotColor: theme["icon-primary-default"],
       },
       {
         value: "pending",
         label: "Pending",
-        dotColor: theme["bg-invert"],
+        dotColor: theme["fill-inverse-default"],
       },
       {
         value: "completed",
         label: "Confirmed",
-        dotColor: theme["icon-success"],
+        dotColor: theme["icon-success-default"],
       },
-      { value: "failed", label: "Failed", dotColor: theme["icon-error"] },
-      { value: "expired", label: "Expired", dotColor: theme["icon-warning"] },
+      {
+        value: "failed",
+        label: "Failed",
+        dotColor: theme["icon-error-default"],
+      },
+      {
+        value: "expired",
+        label: "Expired",
+        dotColor: theme["icon-warning-default"],
+      },
       {
         value: "cancelled",
         label: "Cancelled",
-        dotColor: theme["icon-default"],
+        dotColor: theme["icon-subtle"],
       },
     ],
     [theme],
@@ -220,7 +228,7 @@ export default function ActivityScreen() {
         <View style={styles.loadingContainer}>
           <ActivityIndicator
             size="large"
-            color={theme["icon-accent-primary"]}
+            color={theme["icon-primary-default"]}
           />
         </View>
       );
@@ -313,7 +321,7 @@ export default function ActivityScreen() {
 
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color={theme["icon-accent-primary"]} />
+        <ActivityIndicator size="small" color={theme["icon-primary-default"]} />
       </View>
     );
   }, [isFetchingNextPage, theme]);
@@ -328,10 +336,18 @@ export default function ActivityScreen() {
             buttons={[
               {
                 label: STATUS_LABELS[transactionFilter],
+                accessibilityLabel:
+                  transactionFilter === "all"
+                    ? "Status filter, all statuses"
+                    : `Status filter, ${STATUS_LABELS[transactionFilter]}`,
                 onPress: () => setActiveSheet("status"),
               },
               {
                 label: DATE_RANGE_LABELS[dateRangeFilter],
+                accessibilityLabel:
+                  dateRangeFilter === "all_time"
+                    ? "Date range filter, all time"
+                    : `Date range filter, ${DATE_RANGE_LABELS[dateRangeFilter]}`,
                 onPress: () => setActiveSheet("dateRange"),
               },
             ]}
@@ -339,7 +355,7 @@ export default function ActivityScreen() {
           <View
             style={[
               styles.divider,
-              { backgroundColor: theme["border-primary"] },
+              { backgroundColor: theme["border-subtle"] },
             ]}
           />
         </>
@@ -367,7 +383,7 @@ export default function ActivityScreen() {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={refetch}
-            tintColor={theme["icon-accent-primary"]}
+            tintColor={theme["icon-primary-default"]}
           />
         }
       />

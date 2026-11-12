@@ -13,7 +13,7 @@ export function SettingsSection({ title, children }: SettingsSectionProps) {
       <ThemedText
         fontSize={18}
         lineHeight={20}
-        color="text-tertiary"
+        color="content-subtle"
         style={styles.title}
       >
         {title}

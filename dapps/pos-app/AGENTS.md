@@ -103,7 +103,7 @@ npm run prebuild     # Create native folders
 
 ## Theming
 
-- Theme colors are defined in `constants/theme.ts` and accessed via `useTheme()` from `hooks/use-theme-color.ts` (e.g. `Theme["bg-accent-primary"]`).
+- Theme colors are defined in `constants/theme.ts` and accessed via `useTheme()` from `hooks/use-theme-color.ts` (e.g. `Theme["fill-primary-default"]`). Keys are design system token paths with `/` replaced by `-` (`fill/primary/default` → `fill-primary-default`).
 - Light/dark mode is toggled in Settings and persisted in `store/useSettingsStore.ts`.
 - Thermal printer receipt logos are base64-encoded strings in `constants/printer-logos.ts` — this is a hardware constraint of the printer library, not an optimization choice.
 

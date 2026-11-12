@@ -83,17 +83,17 @@ export default function PaymentFailureScreen() {
           style={[
             styles.warningCircle,
             isTablet && styles.warningCircleTablet,
-            { tintColor: Theme["bg-accent-primary"] },
+            { tintColor: Theme["fill-primary-default"] },
           ]}
           cachePolicy="memory-disk"
-          tintColor={Theme["bg-accent-primary"]}
+          tintColor={Theme["fill-primary-default"]}
           priority="high"
         />
         <ThemedText
           style={[
             styles.failedText,
             isTablet && styles.failedTextTablet,
-            { color: Theme["text-primary"] },
+            { color: Theme["content-default"] },
           ]}
         >
           {title}
@@ -102,18 +102,13 @@ export default function PaymentFailureScreen() {
           style={[
             styles.failedDescription,
             isTablet && styles.failedDescriptionTablet,
-            { color: Theme["text-tertiary"] },
+            { color: Theme["content-subtle"] },
           ]}
         >
           {subtitle}
         </ThemedText>
       </View>
-      <Button
-        type="accent"
-        variant="primary"
-        size={isTablet ? "lg" : "md"}
-        onPress={handlePrimaryPress}
-      >
+      <Button type="accent" variant="primary" onPress={handlePrimaryPress}>
         {shouldRouteToSettings ? "Go to Settings" : "Start new payment"}
       </Button>
     </View>

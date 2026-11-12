@@ -79,16 +79,16 @@ function DetailRow({ label, value, children, onPress }: DetailRowProps) {
     <View
       style={[
         styles.detailRow,
-        { backgroundColor: theme["foreground-primary"] },
+        { backgroundColor: theme["fill-default-strong"] },
       ]}
     >
-      <ThemedText fontSize={16} color="text-secondary">
+      <ThemedText fontSize={16} color="content-subtle">
         {label}
       </ThemedText>
       {children || (
         <ThemedText
           fontSize={16}
-          color="text-primary"
+          color="content-default"
           numberOfLines={1}
           ellipsizeMode="middle"
           style={styles.valueText}
@@ -118,7 +118,7 @@ function CopyableId({ value }: { value: string }) {
       <ThemedText
         fontSize={16}
         lineHeight={18}
-        color="text-primary"
+        color="content-default"
         numberOfLines={1}
         style={styles.monoValue}
       >
@@ -126,7 +126,7 @@ function CopyableId({ value }: { value: string }) {
       </ThemedText>
       <Image
         source={require("@/assets/images/copy.png")}
-        tintColor={theme["icon-invert"]}
+        tintColor={theme["icon-default"]}
         contentFit="contain"
         style={styles.copyIcon}
       />
@@ -185,7 +185,7 @@ function TransactionDetailModalBase({
         <Animated.View
           style={[
             styles.container,
-            { backgroundColor: theme["bg-primary"] },
+            { backgroundColor: theme["surface-default"] },
             sheetAnimatedStyle,
           ]}
         >
@@ -202,12 +202,12 @@ function TransactionDetailModalBase({
                 onPress={onClose}
                 style={[
                   styles.closeButton,
-                  { borderColor: theme["border-secondary"] },
+                  { borderColor: theme["border-default"] },
                 ]}
               >
                 <Image
                   style={styles.closeIcon}
-                  tintColor={theme["icon-invert"]}
+                  tintColor={theme["icon-default"]}
                   source={require("@/assets/images/close.png")}
                 />
               </Pressable>
@@ -241,7 +241,7 @@ function TransactionDetailModalBase({
                       <ThemedText
                         fontSize={16}
                         lineHeight={18}
-                        color="text-primary"
+                        color="content-default"
                       >
                         {formatTokenAmountLabel(payment.tokenAmount)}
                       </ThemedText>
