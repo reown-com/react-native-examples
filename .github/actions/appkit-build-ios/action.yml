@@ -24,6 +24,20 @@ outputs:
 runs:
   using: composite
   steps:
+    # Same Xcode as the wallet (walletkit-build-and-maestro), so both apps are
+    # built with one toolchain. Before the cache key, which includes it.
+    - name: Select Xcode 26.6
+      shell: bash
+      run: |
+        XCODE_PATH=/Applications/Xcode_26.6.app/Contents/Developer
+        if [ ! -d "$XCODE_PATH" ]; then
+          echo "Available Xcode versions:"
+          ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
+          exit 1
+        fi
+        sudo xcode-select -s "$XCODE_PATH"
+        xcodebuild -version
+
     - name: Cache key
       id: key
       shell: bash
@@ -36,7 +50,8 @@ runs:
           ':(exclude,glob)dapps/appkit-wagmi/**/*.web.*' \
           ':(exclude,glob)dapps/appkit-wagmi/__tests__/**' \
           "$GITHUB_ACTION_PATH/action.yml" | shasum -a 256 | cut -d' ' -f1)
-        echo "key=appkit-ios-sim-internal-arm64-v1-$HASH" >> "$GITHUB_OUTPUT"
+        XCODE=$(xcodebuild -version | tr -d '\n ' )
+        echo "key=appkit-ios-sim-internal-arm64-v1-$XCODE-$HASH" >> "$GITHUB_OUTPUT"
 
     - name: Restore cached app
       id: cache
@@ -93,6 +108,16 @@ runs:
         restore-keys: |
           ${{ runner.os }}-rnrepo-ios-dapps/appkit-wagmi-
 
+    - name: Cache Pods
+      if: steps.cache.outputs.cache-hit != 'true'
+      id: pods-cache
+      uses: actions/cache@v4
+      with:
+        path: dapps/appkit-wagmi/ios/Pods
+        # Prebuild skips pod install, so there is no Podfile.lock yet: hash the
+        # inputs of the generated Podfile instead (same as the wallet's cache).
+        key: ${{ runner.os }}-pods-dapps/appkit-wagmi-${{ github.ref_name }}-${{ hashFiles('dapps/appkit-wagmi/yarn.lock', 'dapps/appkit-wagmi/app.json', 'dapps/appkit-wagmi/app.config.js') }}
+
     - name: Build for Simulator
       if: steps.cache.outputs.cache-hit != 'true'
       uses: maierj/fastlane-action@v3.0.0
@@ -108,6 +133,7 @@ runs:
         RELEASE_TYPE: internal
         BUILD_FOR_SIMULATOR: true
         SENTRY_DISABLE_AUTO_UPLOAD: true
+        PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
         LANG: en_US.UTF-8
         LC_ALL: en_US.UTF-8
 

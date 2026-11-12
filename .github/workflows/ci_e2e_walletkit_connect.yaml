@@ -33,6 +33,7 @@ on:
       - '.github/actions/walletkit-build-and-maestro/**'
       - '.github/actions/derive-e2e-wallet/**'
       - '.github/actions/appkit-build-android/**'
+      - '.github/actions/appkit-build-ios/**'
       - '.github/workflows/ci_e2e_walletkit_connect.yaml'
   push:
     branches: [main]
@@ -45,6 +46,7 @@ on:
       - '.github/actions/walletkit-build-and-maestro/**'
       - '.github/actions/derive-e2e-wallet/**'
       - '.github/actions/appkit-build-android/**'
+      - '.github/actions/appkit-build-ios/**'
       - '.github/workflows/ci_e2e_walletkit_connect.yaml'
   workflow_dispatch:
     inputs:
