@@ -1,0 +1,162 @@
+name: Build AppKit sample dApp (iOS simulator, internal)
+description: >-
+  Builds the internal variant of dapps/appkit-wagmi as an unsigned iOS
+  simulator .app (arm64) with the shared `build_for_simulator` fastlane lane.
+  It is the dApp side of the WalletKit connect E2E flows
+  (.maestro/connect_*.yaml). Cached by the dApp's sources: the app only embeds
+  the public project id / Sentry DSN (also shipped in the public web build), so
+  a plain actions/cache is used, saved from trusted main runs only.
+
+inputs:
+  env-file:
+    description: 'dApp .env contents (secrets.APPKIT_ENV_FILE).'
+    required: true
+  cache-save:
+    description: "'true' to save the built app to the cache (trusted main runs only)."
+    required: false
+    default: 'false'
+
+outputs:
+  app-path:
+    description: 'Absolute path of the built (or restored) .app.'
+    value: ${{ steps.out.outputs.app-path }}
+
+runs:
+  using: composite
+  steps:
+    # Same Xcode as the wallet (walletkit-build-and-maestro), so both apps are
+    # built with one toolchain. Before the cache key, which includes it.
+    - name: Select Xcode 26.6
+      shell: bash
+      run: |
+        XCODE_PATH=/Applications/Xcode_26.6.app/Contents/Developer
+        if [ ! -d "$XCODE_PATH" ]; then
+          echo "Available Xcode versions:"
+          ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
+          exit 1
+        fi
+        sudo xcode-select -s "$XCODE_PATH"
+        xcodebuild -version
+
+    - name: Cache key
+      id: key
+      shell: bash
+      run: |
+        set -euo pipefail
+        # Every tracked dApp file except web-only/docs, plus this action and the
+        # fastlane lane that builds it.
+        HASH=$(git ls-files -s -- dapps/appkit-wagmi fastlane/Fastfile \
+          ':(exclude,glob)dapps/appkit-wagmi/**/*.md' \
+          ':(exclude,glob)dapps/appkit-wagmi/**/*.web.*' \
+          ':(exclude,glob)dapps/appkit-wagmi/__tests__/**' \
+          "$GITHUB_ACTION_PATH/action.yml" | shasum -a 256 | cut -d' ' -f1)
+        XCODE=$(xcodebuild -version | tr -d '\n ' )
+        echo "key=appkit-ios-sim-internal-arm64-v1-$XCODE-$HASH" >> "$GITHUB_OUTPUT"
+
+    - name: Restore cached app
+      id: cache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ runner.temp }}/appkit-ios-build
+        key: ${{ steps.key.outputs.key }}
+
+    - name: Setup Node.js
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: yarn
+        cache-dependency-path: dapps/appkit-wagmi/yarn.lock
+
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: dapps/appkit-wagmi
+      run: yarn install --immutable
+
+    - name: Write .env
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: dapps/appkit-wagmi
+      env:
+        ENV_FILE: ${{ inputs.env-file }}
+      run: |
+        [ -n "$ENV_FILE" ] || { echo "Error: env-file input is empty"; exit 1; }
+        printf '%s\n' "$ENV_FILE" > .env
+
+    - name: Install Ruby
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.3.0
+        bundler-cache: true
+
+    # iOS has no build variants: APP_VARIANT at prebuild picks the internal
+    # bundle id and redirect scheme (see app.config.js).
+    - name: Expo Prebuild (iOS)
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: dapps/appkit-wagmi
+      run: APP_VARIANT=internal npx expo prebuild --platform ios --no-install
+
+    - name: Cache RNRepo frameworks
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: actions/cache@v4
+      with:
+        path: ~/.rnrepo-cache
+        key: ${{ runner.os }}-rnrepo-ios-dapps/appkit-wagmi-${{ hashFiles('dapps/appkit-wagmi/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-rnrepo-ios-dapps/appkit-wagmi-
+
+    - name: Cache Pods
+      if: steps.cache.outputs.cache-hit != 'true'
+      id: pods-cache
+      uses: actions/cache@v4
+      with:
+        path: dapps/appkit-wagmi/ios/Pods
+        # Prebuild skips pod install, so there is no Podfile.lock yet: hash the
+        # inputs of the generated Podfile instead (same as the wallet's cache).
+        key: ${{ runner.os }}-pods-dapps/appkit-wagmi-${{ github.ref_name }}-${{ hashFiles('dapps/appkit-wagmi/yarn.lock', 'dapps/appkit-wagmi/app.json', 'dapps/appkit-wagmi/app.config.js') }}
+
+    - name: Build for Simulator
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: maierj/fastlane-action@v3.0.0
+      with:
+        lane: build_for_simulator
+      env:
+        SCHEME: RNAppKit
+        BUNDLE_ID: com.walletconnect.web3modal.rnsample.internal
+        PODFILE_PATH: dapps/appkit-wagmi/ios/Podfile
+        XCWORKSPACE_PATH: dapps/appkit-wagmi/ios/RNAppKit.xcworkspace
+        XCODE_PROJECT_PATH: dapps/appkit-wagmi/ios/RNAppKit.xcodeproj
+        PROJECT_TYPE: dapp
+        RELEASE_TYPE: internal
+        BUILD_FOR_SIMULATOR: true
+        SENTRY_DISABLE_AUTO_UPLOAD: true
+        PODS_CACHE_HIT: ${{ steps.pods-cache.outputs.cache-hit }}
+        LANG: en_US.UTF-8
+        LC_ALL: en_US.UTF-8
+
+    # The lane writes the .app path to build/app_path.txt and archives to a
+    # fixed path that the wallet's build reuses, so copy the app out now.
+    - name: Stage app
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        BUILT_APP=$(cat build/app_path.txt)
+        rm -rf "$RUNNER_TEMP/appkit-ios-build"
+        mkdir -p "$RUNNER_TEMP/appkit-ios-build"
+        ditto "$BUILT_APP" "$RUNNER_TEMP/appkit-ios-build/$(basename "$BUILT_APP")"
+
+    - name: Save app to cache
+      if: steps.cache.outputs.cache-hit != 'true' && inputs.cache-save == 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ runner.temp }}/appkit-ios-build
+        key: ${{ steps.key.outputs.key }}
+
+    - name: Output app path
+      id: out
+      shell: bash
+      run: echo "app-path=$(ls -d "$RUNNER_TEMP"/appkit-ios-build/*.app | head -1)" >> "$GITHUB_OUTPUT"

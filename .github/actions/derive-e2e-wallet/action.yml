@@ -8,7 +8,7 @@ inputs:
     description: 'BIP-39 mnemonic (secrets.TEST_WALLET_MNEMONIC).'
     required: true
   index:
-    description: 'Account index: 0 = Android, 1 = iOS, 2 = web.'
+    description: 'Account index: 0 = Android, 1 = iOS, 2 = web (Pay, funded); 3 = WalletKit connect (unfunded).'
     required: true
   expected-address:
     description: >-

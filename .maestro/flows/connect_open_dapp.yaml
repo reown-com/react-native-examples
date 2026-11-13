@@ -1,0 +1,17 @@
+appId: ${APP_ID}
+---
+# Shared flow: start the AppKit sample dApp (dapps/appkit-wagmi, internal
+# build) from a clean state. SIWX is off by default, so connecting is a plain
+# session proposal.
+# Env: DAPP_APP_ID (defaults to the internal build's package).
+
+- runFlow: connect_dapp_id.yaml
+
+- clearState: ${output.dappAppId}
+- runFlow:
+    file: connect_launch_dapp.yaml
+
+- extendedWaitUntil:
+    visible:
+      id: "connect-button"
+    timeout: 30000

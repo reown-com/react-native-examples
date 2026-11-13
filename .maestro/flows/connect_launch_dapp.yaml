@@ -1,0 +1,18 @@
+appId: ${APP_ID}
+---
+# Shared flow: (re)start the dApp and wait for its home screen. Same retry as
+# connect_launch_wallet.yaml: a launch right after clearState/stopApp can be
+# killed by the old task's teardown on a slow emulator.
+- runFlow: connect_dapp_id.yaml
+- retry:
+    maxRetries: 3
+    commands:
+      - stopApp:
+          appId: ${output.dappAppId}
+      - launchApp:
+          appId: ${output.dappAppId}
+          permissions:
+            all: allow
+      - extendedWaitUntil:
+          visible: "AppKit \\+ Multichain"
+          timeout: 45000

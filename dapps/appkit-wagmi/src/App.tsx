@@ -57,7 +57,17 @@ Sentry.init({
 const projectId = process.env.EXPO_PUBLIC_PROJECT_ID ?? '';
 
 // 2. Create config
-const metadata = getMetadata();
+// Explorer id of "React Native Sample Wallet" (wallets/rn_cli_wallet).
+const RN_SAMPLE_WALLET_ID =
+  '6880782cf8ff712bf8772b585960346290fd2499c1f1c51df9fe713d9d2e9384';
+
+// On web, don't advertise the native app's redirect: after approving, a wallet
+// would open lab.reown.com/rn_appkit (the native app's universal link) in a new
+// browser tab instead of returning the user to this tab.
+const metadata =
+  Platform.OS === 'web'
+    ? {...getMetadata(), redirect: undefined}
+    : getMetadata();
 
 const clipboardClient = {
   setString: async (value: string) => {
@@ -84,6 +94,9 @@ const appKit = createAppKit({
   debug: __DEV__,
   storage,
   extraConnectors,
+  // Our React Native sample wallet first in the connect list, so it's one tap
+  // away (also what the WalletKit connect E2E flows tap).
+  featuredWalletIds: [RN_SAMPLE_WALLET_ID],
 });
 
 const queryClient = new QueryClient();

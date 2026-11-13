@@ -15,6 +15,9 @@ export interface ModalFooterProps {
   disabled?: boolean;
 }
 
+// Every request modal (session proposal, authenticate, sign/send) renders this
+// footer, so these testIDs are shared. They match the Kotlin sample wallet's IDs
+// so the WalletKit connect E2E flows (.maestro/connect_*.yaml) stay portable.
 export function ModalFooter({
   onApprove,
   onReject,
@@ -32,6 +35,7 @@ export function ModalFooter({
         style={styles.button}
         onPress={onReject}
         variant="secondary"
+        testID="wallet-request-reject"
       >
         {rejectLabel}
       </ActionButton>
@@ -40,6 +44,7 @@ export function ModalFooter({
         disabled={disabled || approveLoader || rejectLoader}
         style={styles.button}
         onPress={onApprove}
+        testID="wallet-request-approve"
       >
         {approveLabel}
       </ActionButton>

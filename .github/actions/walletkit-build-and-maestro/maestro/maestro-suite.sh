@@ -1,6 +1,6 @@
 #!/bin/bash
-# Runs the tagged Maestro Pay suite with one retry that re-runs only the flows
-# that failed. Shared by the iOS and Android legs.
+# Runs the tagged Maestro suite (Pay, or WalletKit connect) with one retry that
+# re-runs only the flows that failed. Shared by the iOS and Android legs.
 #
 # Usage: maestro-suite.sh <label>
 # Env:

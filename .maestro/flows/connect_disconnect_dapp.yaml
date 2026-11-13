@@ -1,0 +1,15 @@
+appId: ${APP_ID}
+---
+# Shared flow: disconnect the dApp from its "Disconnect" action (rendered by
+# dapps/appkit-wagmi ActionsView while connected) and wait for the logged-out
+# state.
+- scrollUntilVisible:
+    element:
+      id: "disconnect-button"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: "disconnect-button"
+- extendedWaitUntil:
+    notVisible: "Connected to"
+    timeout: 30000

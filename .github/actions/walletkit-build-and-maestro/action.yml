@@ -52,23 +52,29 @@ inputs:
     required: false
     default: 'https://polygon.drpc.org'
   merchant-api-key-single-nokyc:
-    description: 'Partner API key for the single-option no-KYC merchant (WPAY_CUSTOMER_KEY_SINGLE_NOKYC).'
-    required: true
+    description: 'Partner API key for the single-option no-KYC merchant (WPAY_CUSTOMER_KEY_SINGLE_NOKYC). Pay flows only.'
+    required: false
+    default: ''
   merchant-id-single-nokyc:
-    description: 'Merchant id for the single-option no-KYC merchant (WPAY_MERCHANT_ID_SINGLE_NOKYC).'
-    required: true
+    description: 'Merchant id for the single-option no-KYC merchant (WPAY_MERCHANT_ID_SINGLE_NOKYC). Pay flows only.'
+    required: false
+    default: ''
   merchant-api-key-multi-nokyc:
-    description: 'Partner API key for the multi-option no-KYC merchant (WPAY_CUSTOMER_KEY_MULTI_NOKYC).'
-    required: true
+    description: 'Partner API key for the multi-option no-KYC merchant (WPAY_CUSTOMER_KEY_MULTI_NOKYC). Pay flows only.'
+    required: false
+    default: ''
   merchant-id-multi-nokyc:
-    description: 'Merchant id for the multi-option no-KYC merchant (WPAY_MERCHANT_ID_MULTI_NOKYC).'
-    required: true
+    description: 'Merchant id for the multi-option no-KYC merchant (WPAY_MERCHANT_ID_MULTI_NOKYC). Pay flows only.'
+    required: false
+    default: ''
   merchant-api-key-multi-kyc:
-    description: 'Partner API key for the multi-option KYC merchant (WPAY_CUSTOMER_KEY_MULTI_KYC).'
-    required: true
+    description: 'Partner API key for the multi-option KYC merchant (WPAY_CUSTOMER_KEY_MULTI_KYC). Pay flows only.'
+    required: false
+    default: ''
   merchant-id-multi-kyc:
-    description: 'Merchant id for the multi-option KYC merchant (WPAY_MERCHANT_ID_MULTI_KYC).'
-    required: true
+    description: 'Merchant id for the multi-option KYC merchant (WPAY_MERCHANT_ID_MULTI_KYC). Pay flows only.'
+    required: false
+    default: ''
   maestro-tags:
     description: 'Maestro test tags to run (comma-separated).'
     required: false
@@ -79,6 +85,14 @@ inputs:
       callers running against a local pay-core that can't satisfy certain
       flows (e.g. pay-needs-kyc-backend skips the two flows that submit
       personal-details data through the prod KYC webview).
+    required: false
+    default: ''
+  extra-apps:
+    description: |
+      Newline-separated paths of other apps to install next to the wallet (an
+      .apk on Android, a simulator .app on iOS, installed on every simulator),
+      e.g. the AppKit sample dApp that the WalletKit connect flows
+      (tag `connect`) pair with.
     required: false
     default: ''
   apple-key-id:
@@ -507,7 +521,11 @@ runs:
       shell: bash
       working-directory: ${{ steps.paths.outputs.wallet_root }}
       run: |
+        # Leading newline: prebuild's gradle.properties doesn't end with one,
+        # so without it the first line here is glued onto its last property
+        # (VisionCamera_enableCodeScanner=trueorg.gradle.jvmargs=...).
         {
+          echo ""
           echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
           echo "org.gradle.parallel=true"
           echo "org.gradle.caching=true"
@@ -726,11 +744,18 @@ runs:
     - name: Install app on Simulator
       if: inputs.platform == 'ios'
       shell: bash
+      env:
+        EXTRA_APPS: ${{ inputs.extra-apps }}
       run: |
         set -euo pipefail
         IFS=, read -ra IDS <<< "$DEVICE_IDS"
+        APPS=("$APP_PATH")
+        while IFS= read -r app; do [ -z "$app" ] || APPS+=("$app"); done <<< "$EXTRA_APPS"
         PIDS=()
-        for ID in "${IDS[@]}"; do xcrun simctl install "$ID" "$APP_PATH" & PIDS+=($!); done
+        for ID in "${IDS[@]}"; do
+          # One background job per simulator; its apps install one after another.
+          ( for app in "${APPS[@]}"; do xcrun simctl install "$ID" "$app"; done ) & PIDS+=($!)
+        done
         for PID in "${PIDS[@]}"; do wait "$PID"; done
 
     # Pinned to WalletConnect/actions master (390045a = merge of #116): the flows
@@ -741,7 +766,10 @@ runs:
     # (payments only expire 15 min after creation, so each run uses one an
     # earlier run created). Left empty when the caller targets a non-prod
     # pay-api-url or passes its own expired-gateway-url (e.g. pay-core).
+    # Connect-only runs (tag `connect`) use the local .maestro/connect_*.yaml
+    # flows and don't need the Pay ones.
     - name: Copy shared Pay test flows
+      if: contains(inputs.maestro-tags, 'pay')
       uses: WalletConnect/actions/maestro/pay-tests@390045a88d335d438c972b422090144158df6823
       with:
         merchant-api-key: ${{ inputs.pay-api-url == '' && inputs.expired-gateway-url == '' && inputs.merchant-api-key-single-nokyc || '' }}
@@ -860,6 +888,7 @@ runs:
         DEEPLINK_PREFIX: rn-web3wallet-internal://wc?uri=
         MAESTRO_TAGS: ${{ inputs.maestro-tags }}
         MAESTRO_EXCLUDE_TAGS: ${{ inputs.maestro-exclude-tags }}
+        EXTRA_APPS: ${{ inputs.extra-apps }}
         APK_PATH: ${{ runner.temp }}/e2e-build/android/app-internal.apk
         # Inside the emulator action, GITHUB_ACTION_PATH is that action's own dir.
         # Not scripts/: build-cache.sh hashes every file there into the key.
@@ -886,6 +915,7 @@ runs:
         disable-animations: true
         script: |
           adb install "$APK_PATH"
+          printf '%s\n' "$EXTRA_APPS" | while IFS= read -r apk; do [ -z "$apk" ] || adb install "$apk"; done
           bash "$MAESTRO_SCRIPTS/maestro-android.sh"
 
     # Besides media, keeps launch diagnostics: the logcat events buffer

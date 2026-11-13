@@ -1,0 +1,28 @@
+appId: ${APP_ID}
+name: WalletKit Connect - Reject session proposal
+tags:
+  - connect
+---
+- clearState
+- runFlow: flows/connect_launch_wallet.yaml
+- runFlow: flows/connect_open_dapp.yaml
+
+- startRecording: "Connect - Reject session proposal"
+
+- runFlow: flows/connect_select_wallet.yaml
+- tapOn:
+    id: "wallet-request-reject"
+- extendedWaitUntil:
+    notVisible:
+      id: "wallet-request-reject"
+    timeout: 30000
+
+# The dApp stays disconnected: the modal shows the rejection and the
+# session never settles.
+- runFlow: flows/connect_back_to_dapp.yaml
+- extendedWaitUntil:
+    visible: "(?i).*(rejected|declined|denied).*"
+    timeout: 30000
+- assertNotVisible: "Connected to"
+
+- stopRecording

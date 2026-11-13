@@ -1,0 +1,51 @@
+appId: ${APP_ID}
+name: WalletKit Connect - Session survives a wallet restart
+tags:
+  - connect
+---
+# Connect, kill the wallet, start it again: the session must be restored from
+# storage and listed under "Connected apps".
+# Env: APP_ID (wallet), DAPP_APP_ID (dApp, optional).
+
+- clearState
+- runFlow: flows/connect_launch_wallet.yaml
+- runFlow: flows/connect_open_dapp.yaml
+
+- startRecording: "Connect - Session survives a wallet restart"
+
+# Connect
+- runFlow: flows/connect_select_wallet.yaml
+- tapOn:
+    id: "wallet-request-approve"
+- extendedWaitUntil:
+    notVisible:
+      id: "wallet-request-approve"
+    timeout: 30000
+- runFlow: flows/connect_back_to_dapp.yaml
+- extendedWaitUntil:
+    visible: "Connected to"
+    timeout: 30000
+
+# Close the wallet (force-stop, so nothing stays in memory) and start it again.
+- runFlow: flows/connect_launch_wallet.yaml
+
+# The restored session is listed under "Connected apps" (rows show the dApp's
+# metadata name: "AppKit + Multichain", plus " (internal)" for that build).
+# Right after launch the tab bar can ignore a tap; retry until the tab opens
+# (it shows the empty state or a session row).
+- retry:
+    maxRetries: 3
+    commands:
+      - tapOn: "Connected apps"
+      - extendedWaitUntil:
+          visible: "AppKit \\+ Multichain.*|No connected apps yet"
+          timeout: 15000
+# After a cold start WalletKit takes a few seconds to reconnect to the relay
+# and load the stored sessions, and until then the tab shows the empty state.
+# So wait for the session row itself instead of failing on the empty state.
+- extendedWaitUntil:
+    visible: "AppKit \\+ Multichain.*"
+    timeout: 10000
+- assertNotVisible: "No connected apps yet"
+
+- stopRecording

@@ -1,0 +1,46 @@
+appId: ${APP_ID}
+name: WalletKit Connect - Reject sign request
+tags:
+  - connect
+---
+- clearState
+- runFlow: flows/connect_launch_wallet.yaml
+- runFlow: flows/connect_open_dapp.yaml
+
+- startRecording: "Connect - Reject sign request"
+
+- runFlow: flows/connect_select_wallet.yaml
+- tapOn:
+    id: "wallet-request-approve"
+- extendedWaitUntil:
+    notVisible:
+      id: "wallet-request-approve"
+    timeout: 30000
+- runFlow: flows/connect_back_to_dapp.yaml
+- extendedWaitUntil:
+    visible: "Connected to"
+    timeout: 30000
+
+- scrollUntilVisible:
+    element:
+      id: "sign-message-button"
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: "sign-message-button"
+- runFlow: flows/connect_wallet_request.yaml
+- tapOn:
+    id: "wallet-request-reject"
+- extendedWaitUntil:
+    notVisible:
+      id: "wallet-request-reject"
+    timeout: 30000
+
+- runFlow: flows/connect_back_to_dapp.yaml
+- extendedWaitUntil:
+    visible: "Sign message: failed"
+    timeout: 30000
+
+- runFlow: flows/connect_disconnect_dapp.yaml
+
+- stopRecording

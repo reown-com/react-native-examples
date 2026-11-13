@@ -1,0 +1,20 @@
+appId: ${APP_ID}
+---
+# Shared flow (iOS only): when one app opens another by custom scheme
+# (dApp -> wallet to pair or send a request, wallet -> dApp after answering),
+# iOS 26 asks “<From>” wants to open “<To>” (older iOS: Open in “<To>”?).
+# Confirm it if it shows up. It is a system alert: clearState/stopApp don't
+# dismiss it, so a missed one blocks every later flow on that simulator.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - extendedWaitUntil:
+          visible: ".*wants to open.*|Open in .*"
+          timeout: 5000
+          optional: true
+      - runFlow:
+          when:
+            visible: ".*wants to open.*|Open in .*"
+          commands:
+            - tapOn: "Open"

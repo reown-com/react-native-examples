@@ -1,0 +1,33 @@
+appId: ${APP_ID}
+---
+# Shared flow: from the dApp, open the AppKit modal and pick "React Native
+# Sample Wallet". The dApp features it (featuredWalletIds), so it's on the
+# modal's first screen; the explorer lists it with the internal build's deep
+# link (rn-web3wallet-internal://), so AppKit hands the pairing URI straight to
+# the wallet installed by CI. Ends with the session proposal in the wallet.
+
+- tapOn:
+    id: "connect-button"
+# Featured rows have no testID; match the name (iOS may add more to the
+# row's label, e.g. a "Recent" tag).
+- extendedWaitUntil:
+    visible: "React Native Sample Wallet.*"
+    timeout: 30000
+
+# Done once the wallet shows the session proposal. Each tap waits for the
+# modal to settle (connect_settle.yaml), and is repeated only while the row is
+# still on screen: a tap that lands moves AppKit to its "connecting" screen.
+- retry:
+    maxRetries: 3
+    commands:
+      - runFlow: connect_settle.yaml
+      - runFlow:
+          when:
+            visible: "React Native Sample Wallet.*"
+          commands:
+            - tapOn: "React Native Sample Wallet.*"
+      - runFlow: connect_ios_open_prompt.yaml
+      - extendedWaitUntil:
+          visible:
+            id: "wallet-request-approve"
+          timeout: 20000

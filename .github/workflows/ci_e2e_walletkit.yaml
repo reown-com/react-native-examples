@@ -26,6 +26,10 @@ on:
     paths:
       - 'wallets/rn_cli_wallet/**'
       - '.maestro/**'
+      # WalletKit connect flows run in ci_e2e_walletkit_connect.yaml
+      - '!.maestro/connect_*.yaml'
+      - '!.maestro/sign_*.yaml'
+      - '!.maestro/flows/connect_*.yaml'
       - '.github/actions/walletkit-build-and-maestro/**'
       - '.github/actions/derive-e2e-wallet/**'
       - '.github/actions/install-cast/**'
@@ -36,6 +40,10 @@ on:
     paths:
       - 'wallets/rn_cli_wallet/**'
       - '.maestro/**'
+      # WalletKit connect flows run in ci_e2e_walletkit_connect.yaml
+      - '!.maestro/connect_*.yaml'
+      - '!.maestro/sign_*.yaml'
+      - '!.maestro/flows/connect_*.yaml'
       - '.github/actions/walletkit-build-and-maestro/**'
       - '.github/actions/derive-e2e-wallet/**'
       - '.github/actions/install-cast/**'
