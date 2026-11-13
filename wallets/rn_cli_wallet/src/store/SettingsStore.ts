@@ -82,6 +82,8 @@ interface State {
   logs: string[];
   isLinkModeRequest: boolean;
   themeMode: 'light' | 'dark';
+  // Explore (H2b): auto-approve proposals from Explore-launched apps
+  exploreAutoConnect: boolean;
 }
 
 /**
@@ -124,6 +126,7 @@ const state = proxy<State>({
   logs: [],
   isLinkModeRequest: false,
   themeMode: getInitialThemeMode(),
+  exploreAutoConnect: new MMKV().getBoolean('EXPLORE_AUTO_CONNECT') ?? true,
 });
 
 /**
@@ -175,6 +178,11 @@ const SettingsStore = {
 
   setIsLinkModeRequest(value: State['isLinkModeRequest']) {
     state.isLinkModeRequest = value;
+  },
+
+  toggleExploreAutoConnect() {
+    state.exploreAutoConnect = !state.exploreAutoConnect;
+    new MMKV().set('EXPLORE_AUTO_CONNECT', state.exploreAutoConnect);
   },
 
   toggleTestNets() {

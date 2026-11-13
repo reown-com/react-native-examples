@@ -5,6 +5,7 @@ import { HomeTabNavigator } from './HomeTabNavigator';
 import Scan from '@/screens/Scan';
 import { useTheme } from '@/hooks/useTheme';
 import { LogList } from '@/screens/LogList';
+import AppBrowser from '@/screens/AppBrowser';
 import SecretPhrase from '@/screens/SecretPhrase';
 import { useLogs } from '@/hooks/useLogs';
 import { FontFamily } from '@/utils/ThemeUtil';
@@ -48,6 +49,20 @@ export function RootStackNavigator() {
         name="Scan"
         component={Scan}
         options={{ headerShown: false }}
+      />
+      <StackNavigator.Screen
+        name="AppBrowser"
+        component={AppBrowser}
+        options={({ route }) => ({
+          headerShown: true,
+          title: route.params.name,
+          headerBackButtonDisplayMode: 'minimal',
+          headerTintColor: Theme['text-primary'],
+          headerTitleStyle: {
+            ...headerTitleStyle,
+            fontWeight: '400',
+          },
+        })}
       />
       <StackNavigator.Screen
         name="Logs"

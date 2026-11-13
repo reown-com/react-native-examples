@@ -86,7 +86,7 @@ function ToggleCard({
 }
 
 export default function Settings() {
-  const { socketStatus, themeMode, testNets } = useSnapshot(
+  const { socketStatus, themeMode, testNets, exploreAutoConnect } = useSnapshot(
     SettingsStore.state,
   );
   const [clientId, setClientId] = useState('');
@@ -135,6 +135,11 @@ export default function Settings() {
           label="Enable testnets"
           value={testNets}
           onToggle={() => SettingsStore.toggleTestNets()}
+        />
+        <ToggleCard
+          label="Explore: auto-connect"
+          value={exploreAutoConnect}
+          onToggle={() => SettingsStore.toggleExploreAutoConnect()}
         />
         <Card
           title="Secret keys & phrases"
