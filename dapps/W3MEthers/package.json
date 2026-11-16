@@ -21,7 +21,7 @@
     "@reown/appkit-bitcoin-react-native": "2.0.5",
     "@reown/appkit-react-native": "2.0.5",
     "@walletconnect/react-native-compat": "2.22.2",
-    "bitcoinjs-lib": "7.0.0",
+    "bitcoinjs-lib": "7.0.2",
     "bs58": "6.0.0",
     "ethers": "6.15.0",
     "expo": "50.0.6",
