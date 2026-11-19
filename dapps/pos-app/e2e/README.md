@@ -17,8 +17,8 @@ serve them.
   (`serve -s dist`).
 - Payment flows (`payment-flow`, `payment-cancel`) require the `/api` proxy →
   run against `vercel dev` or a Vercel preview URL.
-- Fresh installs start in Test Mode (simulated payments), so the payment flows
-  first run `common/disable-test-mode.yaml` to switch it off in Settings.
+- Fresh installs start with Test Mode off, so the payment flows hit the real
+  gateway after `launchApp: clearState: true`.
 
 ## Prerequisites
 
