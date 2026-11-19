@@ -20,7 +20,7 @@ export function resetSettingsStore() {
     pinFailedAttempts: 0,
     pinLockoutUntil: null,
     biometricEnabled: false,
-    testMode: true,
+    testMode: false,
     emailReceiptEnabled: true,
   });
 }
