@@ -8,6 +8,7 @@ run-name: "E2E WalletKit -${{ github.event_name == 'workflow_dispatch' && (input
 
 permissions:
   contents: read
+  actions: read # maestro/pay-tests (via walletkit-build-and-maestro) reads earlier pay-expired-pool artifacts
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

@@ -758,19 +758,20 @@ runs:
         done
         for PID in "${PIDS[@]}"; do wait "$PID"; done
 
-    # Pinned to WalletConnect/actions master (390045a = merge of #116): the flows
+    # Pinned to WalletConnect/actions master (5a9fa55 = merge of #126): the flows
     # deliver each payment link via `openLink` to <DEEPLINK_PREFIX><encoded link>
     # instead of typing it into a paste input. Each Maestro step below passes
     # DEEPLINK_PREFIX.
     # The merchant inputs enable the expired-payment pool for pay_expired_link
     # (payments only expire 15 min after creation, so each run uses one an
-    # earlier run created). Left empty when the caller targets a non-prod
+    # earlier run created, kept in `pay-expired-pool` artifacts, so the calling
+    # workflow needs `actions: read`). Left empty when the caller targets a non-prod
     # pay-api-url or passes its own expired-gateway-url (e.g. pay-core).
     # Connect-only runs (tag `connect`) use the local .maestro/connect_*.yaml
     # flows and don't need the Pay ones.
     - name: Copy shared Pay test flows
       if: contains(inputs.maestro-tags, 'pay')
-      uses: WalletConnect/actions/maestro/pay-tests@390045a88d335d438c972b422090144158df6823
+      uses: WalletConnect/actions/maestro/pay-tests@5a9fa5523fa15e82407806076d1c61cb8aa1bd6c
       with:
         merchant-api-key: ${{ inputs.pay-api-url == '' && inputs.expired-gateway-url == '' && inputs.merchant-api-key-single-nokyc || '' }}
         merchant-id: ${{ inputs.pay-api-url == '' && inputs.expired-gateway-url == '' && inputs.merchant-id-single-nokyc || '' }}
