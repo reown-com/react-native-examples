@@ -8,6 +8,9 @@ jest.mock('react-native-mmkv', () => ({
     getString() {
       return undefined;
     }
+    getBoolean() {
+      return undefined;
+    }
     set() {}
     delete() {}
     getAllKeys() {
