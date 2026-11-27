@@ -115,7 +115,7 @@ jobs:
       && (github.event_name != 'schedule' || github.event.schedule == '0 9 * * *')
       && (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
     name: E2E Tests - iOS
-    runs-on: macos-latest-xlarge
+    runs-on: xcode-27-xlarge
     timeout-minutes: 60
     # One wallet per platform (see derive-e2e-wallet): runs on other refs queue
     # instead of paying from the same account at the same time. GitHub keeps

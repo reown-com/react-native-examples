@@ -176,7 +176,7 @@ jobs:
       && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.ios))
     # The KPI job matches this name (job_pattern) to get a per-platform rate.
     name: E2E Connect - iOS
-    runs-on: macos-latest-xlarge
+    runs-on: xcode-27-xlarge
     timeout-minutes: 60
     concurrency:
       group: e2e-connect-ios

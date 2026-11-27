@@ -26,17 +26,10 @@ runs:
   steps:
     # Same Xcode as the wallet (walletkit-build-and-maestro), so both apps are
     # built with one toolchain. Before the cache key, which includes it.
-    - name: Select Xcode 26.6
-      shell: bash
-      run: |
-        XCODE_PATH=/Applications/Xcode_26.6.app/Contents/Developer
-        if [ ! -d "$XCODE_PATH" ]; then
-          echo "Available Xcode versions:"
-          ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
-          exit 1
-        fi
-        sudo xcode-select -s "$XCODE_PATH"
-        xcodebuild -version
+    - name: Select Xcode 27 (iOS 27 SDK)
+      uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+      with:
+        xcode-version: '27'
 
     - name: Cache key
       id: key
