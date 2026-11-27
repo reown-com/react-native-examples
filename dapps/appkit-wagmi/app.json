@@ -117,7 +117,8 @@
       "expo-system-ui",
       "./plugins/withAndroidVariants.js",
       "./plugins/withAndroidWalletQueries.js",
-      "./plugins/withAndroidVariantIcons.js"
+      "./plugins/withAndroidVariantIcons.js",
+      "./plugins/withIosPodsMinDeploymentTarget.js"
     ]
   }
 }
