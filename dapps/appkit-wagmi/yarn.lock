@@ -6900,7 +6900,7 @@ __metadata:
     react-native-reanimated: 4.3.1
     react-native-safe-area-context: 5.7.0
     react-native-screens: 4.25.2
-    react-native-svg: 15.15.4
+    react-native-svg: 15.16.0
     react-native-toast-message: 2.3.3
     react-native-web: 0.21.2
     react-native-webview: 13.16.1
@@ -15043,17 +15043,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-svg@npm:15.15.4":
-  version: 15.15.4
-  resolution: "react-native-svg@npm:15.15.4"
+"react-native-svg@npm:15.16.0":
+  version: 15.16.0
+  resolution: "react-native-svg@npm:15.16.0"
   dependencies:
     css-select: ^5.1.0
     css-tree: ^1.1.3
-    warn-once: 0.1.1
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 6438a3e05e6da7891d9170a3e4bb4c75efa48270b2af926eb0dbf0c8f64bea659c28e008f1ceafefd157213344b54fb6b007fbce6817feed7fb9f550f015189e
+  checksum: 86ba5d629146248e77123c4f71f6066ae3c642956d6b0432a5065e66b2f6d11000704dc986d76ec13509fe8f60490c5ae50f1e313c799dc3e1c1b5fc737f1802
   languageName: node
   linkType: hard
 
@@ -17621,7 +17620,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"warn-once@npm:0.1.1, warn-once@npm:^0.1.0, warn-once@npm:^0.1.1":
+"warn-once@npm:^0.1.0, warn-once@npm:^0.1.1":
   version: 0.1.1
   resolution: "warn-once@npm:0.1.1"
   checksum: e6a5a1f5a8dba7744399743d3cfb571db4c3947897875d4962a7c5b1bf2195ab4518c838cb4cea652e71729f21bba2e98dc75686f5fccde0fabbd894e2ed0c0d
