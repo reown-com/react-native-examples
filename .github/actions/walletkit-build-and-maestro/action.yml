@@ -228,18 +228,11 @@ runs:
         echo "Wrote $(pwd)/.env"
 
     # Before the build cache key: it includes `xcodebuild -version`.
-    - name: Select Xcode 26.6
+    - name: Select Xcode 27 (iOS 27 SDK)
       if: inputs.platform == 'ios'
-      shell: bash
-      run: |
-        XCODE_PATH=/Applications/Xcode_26.6.app/Contents/Developer
-        if [ ! -d "$XCODE_PATH" ]; then
-          echo "Available Xcode versions:"
-          ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
-          exit 1
-        fi
-        sudo xcode-select -s "$XCODE_PATH"
-        xcodebuild -version
+      uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+      with:
+        xcode-version: '27'
 
     # --- Encrypted build cache (scripts/build-cache.sh) ---
     # Reuses the last build of this exact wallet tree + build config instead of
@@ -723,13 +716,32 @@ runs:
         # overrides while the device is still off, then boots it slim (no extra
         # reboot on a fresh device). Fails on drift rather than silently testing
         # on a stock simulator.
+        # A first boot can die from a host-level CoreSimulator hiccup (seen on the
+        # Xcode 27 image, reown-swift#379), so shut down and slim-boot once more
+        # before failing. Wait for every device so all failures are logged.
+        slim_boot() {
+          local ID=$1
+          for ATTEMPT in 1 2; do
+            if simslim on "$ID" --profile "$SIMSLIM_PROFILE" &&
+                simslim verify "$ID" --profile "$SIMSLIM_PROFILE"; then
+              return 0
+            fi
+            if [ "$ATTEMPT" -eq 1 ]; then
+              echo "::warning::Slim boot of $ID failed; shutting it down and retrying once"
+              xcrun simctl shutdown "$ID" 2>/dev/null || true
+            fi
+          done
+          echo "::error::Slim boot of $ID failed twice"
+          return 1
+        }
         PIDS=()
         for ID in "${DEVICE_IDS[@]}"; do
-          ( simslim on "$ID" --profile "$SIMSLIM_PROFILE" &&
-              simslim verify "$ID" --profile "$SIMSLIM_PROFILE" ) &
+          slim_boot "$ID" &
           PIDS+=($!)
         done
-        for PID in "${PIDS[@]}"; do wait "$PID"; done
+        BOOT_FAILED=0
+        for PID in "${PIDS[@]}"; do wait "$PID" || BOOT_FAILED=1; done
+        [ "$BOOT_FAILED" -eq 0 ] || exit 1
         for ID in "${DEVICE_IDS[@]}"; do
           # Wait for full boot so the steps below don't race a not-ready simulator
           xcrun simctl bootstatus "$ID" -b

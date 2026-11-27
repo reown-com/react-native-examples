@@ -32,7 +32,7 @@ on:
 
 jobs:
   create-certs:
-    runs-on: macos-latest-xlarge
+    runs-on: xcode-27-xlarge
     steps:
       - name: Checkout
         uses: actions/checkout@v4

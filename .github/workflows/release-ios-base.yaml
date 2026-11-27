@@ -99,21 +99,15 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest-xlarge
+    runs-on: xcode-27-xlarge
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode 26 (iOS 26 SDK)
-        run: |
-          XCODE_PATH=/Applications/Xcode_26.6.app/Contents/Developer
-          if [ ! -d "$XCODE_PATH" ]; then
-            echo "Available Xcode versions:"
-            ls /Applications/Xcode*.app 2>/dev/null || echo "None found"
-            exit 1
-          fi
-          sudo xcode-select -s "$XCODE_PATH"
-          xcodebuild -version
+      - name: Select Xcode 27 (iOS 27 SDK)
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: '27'
 
       - name: webfactory/ssh-agent
         uses: webfactory/ssh-agent@v0.9.0
