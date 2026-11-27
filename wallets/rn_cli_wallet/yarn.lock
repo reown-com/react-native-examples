@@ -4700,19 +4700,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reown/walletkit@npm:1.6.0":
-  version: 1.6.0
-  resolution: "@reown/walletkit@npm:1.6.0"
+"@reown/walletkit@npm:1.7.0":
+  version: 1.7.0
+  resolution: "@reown/walletkit@npm:1.7.0"
   dependencies:
-    "@walletconnect/core": 2.25.0
+    "@walletconnect/core": 2.26.1
     "@walletconnect/jsonrpc-provider": 1.0.14
     "@walletconnect/jsonrpc-utils": 1.0.8
     "@walletconnect/logger": 3.0.2
-    "@walletconnect/pay": 1.1.0
-    "@walletconnect/sign-client": 2.25.0
-    "@walletconnect/types": 2.25.0
-    "@walletconnect/utils": 2.25.0
-  checksum: f8a085985159662043e934d760717d2b0b79d156411cbcfe4281ec093c1b33d5b6ebb231bb4d4695b1cefaa50dc8a7b09a73b0776ed13505e9421d4d4cfb08da
+    "@walletconnect/pay": 1.1.2
+    "@walletconnect/sign-client": 2.26.1
+    "@walletconnect/types": 2.26.1
+    "@walletconnect/utils": 2.26.1
+  checksum: 243657a0a94d8de4137ec40fadc92d124da782d3aca884ab6797760669ddc09d142a0af573ffdf926e2afcfde6102077aea05db454405e9b64336c7b44341b52
   languageName: node
   linkType: hard
 
@@ -5877,9 +5877,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/core@npm:2.25.0":
-  version: 2.25.0
-  resolution: "@walletconnect/core@npm:2.25.0"
+"@walletconnect/core@npm:2.26.1":
+  version: 2.26.1
+  resolution: "@walletconnect/core@npm:2.26.1"
   dependencies:
     "@walletconnect/heartbeat": 1.2.2
     "@walletconnect/jsonrpc-provider": 1.0.14
@@ -5892,13 +5892,13 @@ __metadata:
     "@walletconnect/relay-auth": 1.1.0
     "@walletconnect/safe-json": 1.0.2
     "@walletconnect/time": 1.0.2
-    "@walletconnect/types": 2.25.0
-    "@walletconnect/utils": 2.25.0
+    "@walletconnect/types": 2.26.1
+    "@walletconnect/utils": 2.26.1
     "@walletconnect/window-getters": 1.0.1
     es-toolkit: 1.45.1
     events: 3.3.0
     uint8arrays: 3.1.1
-  checksum: 140428c715234056109e4c578cf3dfecc32298dd3365c84a263a16f2bf9693655194587b4856bd032229e3522dfbccd2c384e2e393edf6425007517e6cfcd818
+  checksum: 7540f81f6b64195705a24c28166232252eddf37e75ae2bf8b3bab8f5caf892c34d5cff7ffe20dcd1ea6264fe72ed1c362dcfeb7d7f23983b58972ac3272b4132
   languageName: node
   linkType: hard
 
@@ -6002,25 +6002,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/pay@npm:1.1.0":
-  version: 1.1.0
-  resolution: "@walletconnect/pay@npm:1.1.0"
+"@walletconnect/pay@npm:1.1.2":
+  version: 1.1.2
+  resolution: "@walletconnect/pay@npm:1.1.2"
   dependencies:
     "@walletconnect/logger": 3.0.2
-    "@walletconnect/utils": 2.25.0
+    "@walletconnect/utils": 2.26.1
     brotli: 1.3.3
   peerDependencies:
     react-native: ">=0.64.0"
   peerDependenciesMeta:
     react-native:
       optional: true
-  checksum: c8110c55b40a4cdb73bc3c22f0ae351dacbf8ca56c0cebfa3e17ed0cc732c2621bd0a097317b8c6aed2a828d3652cedc03f822692824ace7d04bbb74857ab823
+  checksum: 2b007d72a62b1040caa76874b1dd43f7d6d10b98da9161fab0931cb03721240812b44e5abddc9c997a726117311dfa1f2459e53987e3e5b05ee6a324b5e58086
   languageName: node
   linkType: hard
 
-"@walletconnect/react-native-compat@npm:2.27.0-canary.3":
-  version: 2.27.0-canary.3
-  resolution: "@walletconnect/react-native-compat@npm:2.27.0-canary.3"
+"@walletconnect/react-native-compat@npm:2.26.1":
+  version: 2.26.1
+  resolution: "@walletconnect/react-native-compat@npm:2.26.1"
   dependencies:
     fast-text-encoding: 1.0.6
     react-native-url-polyfill: 2.0.0
@@ -6033,7 +6033,7 @@ __metadata:
   peerDependenciesMeta:
     expo-application:
       optional: true
-  checksum: c166305394deed23be1ba4be3c84b5b979e387124947d1502f3d6c41fe171a0f15e863873ca0174c43f54714bbef778516bcc315bf97787803bd64228fe99fbb
+  checksum: ae16b5bac0e4d1e1c5d5d51b762a5d27b22041068ba965eded6e728d4a5cbfde48c834c8d474833c6d5470e25aaef62eb07dc281027b97bf7ee4ff594f66e4b9
   languageName: node
   linkType: hard
 
@@ -6068,18 +6068,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/sign-client@npm:2.25.0":
-  version: 2.25.0
-  resolution: "@walletconnect/sign-client@npm:2.25.0"
+"@walletconnect/sign-client@npm:2.26.1":
+  version: 2.26.1
+  resolution: "@walletconnect/sign-client@npm:2.26.1"
   dependencies:
-    "@walletconnect/core": 2.25.0
+    "@walletconnect/core": 2.26.1
     "@walletconnect/jsonrpc-utils": 1.0.8
     "@walletconnect/logger": 3.0.2
     "@walletconnect/time": 1.0.2
-    "@walletconnect/types": 2.25.0
-    "@walletconnect/utils": 2.25.0
+    "@walletconnect/types": 2.26.1
+    "@walletconnect/utils": 2.26.1
     events: 3.3.0
-  checksum: f30561fb36012619b01cb4c3c91d02154e972d70754c2883c902a35073adab40e6587dd7b14022fa92db4f461bedcde6809c09a5b782bcce4e84a3fcc51f4101
+  checksum: c09061d7ef099abe67f7cbaf1ede2bc36a8afa24939f7fa08003b700a8700ec8a3e4024c9e66a9a77d891128f52376ffe717268eefb1c9a30686b0697fc48894
   languageName: node
   linkType: hard
 
@@ -6092,9 +6092,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/types@npm:2.25.0":
-  version: 2.25.0
-  resolution: "@walletconnect/types@npm:2.25.0"
+"@walletconnect/types@npm:2.26.1":
+  version: 2.26.1
+  resolution: "@walletconnect/types@npm:2.26.1"
   dependencies:
     "@walletconnect/events": 1.0.1
     "@walletconnect/heartbeat": 1.2.2
@@ -6102,13 +6102,13 @@ __metadata:
     "@walletconnect/keyvaluestorage": 1.1.1
     "@walletconnect/logger": 3.0.2
     events: 3.3.0
-  checksum: dd8a60dc02fe3c02257ea35a9aa7696286f02ab607e2e8560cbec7e1cfcb8cc1880624f6ef45d5239623e3ba76a59c14eb1e28a15c39f435957fa8bad868c037
+  checksum: 4b09d0f4469c17d67bdb90faec7216eb24f0dafce1dff10b262cf02d3f9fbbe8626d88a68486404084b40c74335320f2e9d616d5558dc12d0fb65583da4af421
   languageName: node
   linkType: hard
 
-"@walletconnect/utils@npm:2.25.0":
-  version: 2.25.0
-  resolution: "@walletconnect/utils@npm:2.25.0"
+"@walletconnect/utils@npm:2.26.1":
+  version: 2.26.1
+  resolution: "@walletconnect/utils@npm:2.26.1"
   dependencies:
     "@msgpack/msgpack": 3.1.3
     "@noble/ciphers": 1.3.0
@@ -6121,14 +6121,14 @@ __metadata:
     "@walletconnect/relay-api": 1.0.11
     "@walletconnect/relay-auth": 1.1.0
     "@walletconnect/time": 1.0.2
-    "@walletconnect/types": 2.25.0
+    "@walletconnect/types": 2.26.1
     "@walletconnect/window-getters": 1.0.1
     "@walletconnect/window-metadata": 1.0.1
     blakejs: 1.2.1
     detect-browser: 5.3.0
     ox: 0.9.3
     uint8arrays: 3.1.1
-  checksum: 821bb846d9283e3b87bc116e9c92b114693e3feaaa19dead29cabf113000401e50afbd40af58b84e6694b0a6473ff9f44645f21678a0aebca87b6c173a08693a
+  checksum: e33c9a868bf25f3a2ad57a5b87ef4f3b520dc16b5b326724ae722ed21a75a9cf0c559538c3b1286d6e952a53b4a793c41fa8cdff4515555beff086ae84cdf796
   languageName: node
   linkType: hard
 
@@ -6223,7 +6223,7 @@ __metadata:
     "@react-navigation/native": 7.3.4
     "@react-navigation/native-stack": 7.17.6
     "@react-navigation/stack": 7.10.6
-    "@reown/walletkit": 1.6.0
+    "@reown/walletkit": 1.7.0
     "@rnrepo/expo-config-plugin": 0.3.6
     "@sentry/react-native": 8.28.0
     "@solana/web3.js": 1.98.2
@@ -6235,7 +6235,7 @@ __metadata:
     "@types/lodash.clonedeep": ^4.5.9
     "@types/react": ^19.1.1
     "@types/react-test-renderer": ^19.1.0
-    "@walletconnect/react-native-compat": 2.27.0-canary.3
+    "@walletconnect/react-native-compat": 2.26.1
     "@zxing/browser": 0.2.1
     "@zxing/library": 0.23.0
     babel-plugin-module-resolver: ^5.0.0
