@@ -84,3 +84,8 @@ To update **only the changed lockfile entries** (this is NOT a full lockfile reg
 - **`concurrent-ruby < 1.3.4`** was pinned in some `Gemfile`s to dodge the broken 1.3.4 `logger` regression. With `gem 'logger'` present (it is), `1.3.7` is safe — pin to `1.3.7` rather than capping below the security fix.
 - **`faraday`** was capped at `~> 1.0` by fastlane < 2.239. The root `Gemfile` now pins fastlane `2.240.1`, which resolves faraday `2.14.x` (past the `2.14.3` CVE fix).
 - **fastlane ≥ 2.239.0 is required** for iOS release builds that run `pod install` through fastlane's `cocoapods` action. Older `sh_helper` calls `line.strip` on raw output and crashes with `invalid byte sequence in UTF-8` when RNRepo's parallel download logs interleave mid-emoji (flaky, not every run).
+
+## Pull Requests
+
+- Opening a PR or refreshing its description: `/pr-handoff` (`.claude/skills/pr-handoff/`), which writes the agent blocks through `/visual-recap`.
+- `Why`, `Decisions`, `Worth looking at` and the Breaking change checkbox in `.github/pull_request_template.md` are author-owned. Never write them unless the author supplies or approves the exact text in the current conversation.
