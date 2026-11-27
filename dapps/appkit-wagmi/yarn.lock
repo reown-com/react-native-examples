@@ -7862,7 +7862,7 @@ __metadata:
     "@walletconnect/react-native-compat": 2.26.1
     babel-plugin-module-resolver: 5.0.3
     babel-preset-expo: 58.0.24
-    bitcoinjs-lib: 7.0.0
+    bitcoinjs-lib: 7.0.2
     bs58: 6.0.0
     buffer: 6.0.3
     eslint: 8.57.1
@@ -8608,18 +8608,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bitcoinjs-lib@npm:7.0.0":
-  version: 7.0.0
-  resolution: "bitcoinjs-lib@npm:7.0.0"
+"bitcoinjs-lib@npm:7.0.2":
+  version: 7.0.2
+  resolution: "bitcoinjs-lib@npm:7.0.2"
   dependencies:
     "@noble/hashes": ^1.2.0
     bech32: ^2.0.0
     bip174: ^3.0.0
     bs58check: ^4.0.0
     uint8array-tools: ^0.0.9
-    valibot: ^0.38.0
+    valibot: ^1.2.0
     varuint-bitcoin: ^2.0.0
-  checksum: f61064637a92a30b8edf1aeac864fab1625a817a445c7debdf8a13b4161028800408127d8753a22c05554747ae9753d739a47db660205f72a839ab02b8db77ef
+  checksum: f7f4a012c6af5c1b421dae1ac294c194331a9adf7c390e62423c45e9a08b28ada4d5bb6384ec4a200f952fab554a55b72ea32a784ee1773e3558b3fbf545adfa
   languageName: node
   linkType: hard
 
